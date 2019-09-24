@@ -10,10 +10,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.chain.FacilioContext;
 import com.facilio.queue.ObjectMessage;
 import com.facilio.queue.ObjectQueue;
@@ -63,47 +64,53 @@ public enum InstantJobExecutor implements Runnable {
     public void run(){
     	LOGGER.info("Executor run status : "+isRunning);
     	while (isRunning) {
-    		handleTimeOut();
-	        List<ObjectMessage> messageList = ObjectQueue.getObjects(InstantJobConf.getInstantJobQueue(), getNoOfFreeThreads());
-	        if(messageList != null) {
-	            for (ObjectMessage message : messageList) {
-                    FacilioContext context = (FacilioContext) message.getSerializable();
-                    if(context != null) {
-						String jobName = (String) context.get(InstantJobConf.getJobNameKey());
-						LOGGER.debug("Gonna Execute job : " + jobName);
-						if (jobName != null) {
-							InstantJobConf.Job instantJob = FacilioScheduler.getInstantJob(jobName);
-							if (instantJob != null) {
-								Class<? extends InstantJob> jobClass = instantJob.getClassObject();
-								if (jobClass != null) {
-									try {
-										final InstantJob job = jobClass.newInstance();
-										if(instantJob.getTransactionTimeout() != InstantJobConf.getDefaultTimeOut()) {
-											ObjectQueue.changeVisibilityTimeout(InstantJobConf.getInstantJobQueue(), message.getReceiptHandle(), instantJob.getTransactionTimeout());
-										}
-										String receiptHandle = message.getReceiptHandle();
-										job.setReceiptHandle(receiptHandle);
+    		try {
+				handleTimeOut();
+				List<ObjectMessage> messageList = ObjectQueue.getObjects(InstantJobConf.getInstantJobQueue(), getNoOfFreeThreads());
+				if (messageList != null) {
+					for (ObjectMessage message : messageList) {
+						FacilioContext context = (FacilioContext) message.getSerializable();
+						if (context != null) {
+							String jobName = (String) context.get(InstantJobConf.getJobNameKey());
+							LOGGER.debug("Gonna Execute job : " + jobName);
+							if (jobName != null) {
+								InstantJobConf.Job instantJob = FacilioScheduler.getInstantJob(jobName);
+								if (instantJob != null) {
+									Class<? extends InstantJob> jobClass = instantJob.getClassObject();
+									if (jobClass != null) {
+										try {
+											final InstantJob job = jobClass.newInstance();
+											if (instantJob.getTransactionTimeout() != InstantJobConf.getDefaultTimeOut()) {
+												ObjectQueue.changeVisibilityTimeout(InstantJobConf.getInstantJobQueue(), message.getReceiptHandle(), instantJob.getTransactionTimeout());
+											}
+											String receiptHandle = message.getReceiptHandle();
+											job.setReceiptHandle(receiptHandle);
 
-										LOGGER.debug("Executing job : " + jobName);
-										Future f = THREAD_POOL_EXECUTOR.submit(() -> job._execute(context, (instantJob.getTransactionTimeout()-JOB_TIMEOUT_BUFFER)*1000));
-										JOB_MONITOR_MAP.put(receiptHandle, new JobTimeOutInfo(System.currentTimeMillis(), (instantJob.getTransactionTimeout() + JOB_TIMEOUT_BUFFER)*1000, f, job));
-									} catch (InstantiationException | IllegalAccessException e) {
-										LOGGER.info("Exception while executing job " + e);
+											LOGGER.debug("Executing job : " + jobName);
+											Future f = THREAD_POOL_EXECUTOR.submit(() -> job._execute(context, (instantJob.getTransactionTimeout() - JOB_TIMEOUT_BUFFER) * 1000));
+											JOB_MONITOR_MAP.put(receiptHandle, new JobTimeOutInfo(System.currentTimeMillis(), (instantJob.getTransactionTimeout() + JOB_TIMEOUT_BUFFER) * 1000, f, job));
+										} catch (InstantiationException | IllegalAccessException e) {
+											LOGGER.error("Exception while executing job " + e);
+										}
 									}
 								}
 							}
+						} else {
+							ObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), message.getReceiptHandle());
 						}
-					} else {
-                    	ObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), message.getReceiptHandle());
 					}
-	            }
-	        }
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				LOGGER.info("Exception in sleep ", e);
+				}
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					LOGGER.error("Exception in sleep ", e);
+				}
+			} catch (Exception e) {
+    			LOGGER.error("Exception in instant job executor "+ e.getMessage());
+				CommonCommandUtil.emailException(InstantJobExecutor.class.getSimpleName(), "Exception in instant job executor", e);
 			}
 		}
+    	LOGGER.info("Executor running is false and so stopping executor thread");
     }
 
     public void jobEnd(String receiptHandle) {

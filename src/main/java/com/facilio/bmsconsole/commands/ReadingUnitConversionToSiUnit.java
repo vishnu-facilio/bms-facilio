@@ -39,11 +39,10 @@ public class ReadingUnitConversionToSiUnit extends FacilioCommand {
 							if(readingNumberField.getMetricEnum() != null && reading!= null)
 							{								
 								Unit displayUnit = UnitsUtil.getDisplayUnit(readingNumberField);
-								Double convertedreading = UnitsUtil.convertToSiUnit(reading.getReading(readingNumberField.getName()), displayUnit);
-								reading.addReading(readingNumberField.getName(), convertedreading);
+								reading.addReading(readingNumberField.getName(), UnitsUtil.convertToSiUnit(reading.getReading(readingNumberField.getName()), displayUnit));
 								context.put(FacilioConstants.ContextNames.READING, reading);
 								
-								currentTask.setInputValue(String.valueOf(convertedreading));
+								currentTask.setInputValue(String.valueOf(UnitsUtil.convertToSiUnit(reading.getReading(readingNumberField.getName()), displayUnit)));
 								context.put(FacilioConstants.ContextNames.TASK, currentTask);									
 							}
 						}

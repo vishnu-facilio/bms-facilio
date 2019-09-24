@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -15,6 +14,7 @@ import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStoreFactory;
@@ -36,7 +36,7 @@ public class FloorAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BUILDING_ID, getBuildingId());
 		
-		Chain getAllFloor = FacilioChainFactory.getAllFloorChain();
+		FacilioChain getAllFloor = FacilioChainFactory.getAllFloorChain();
 		getAllFloor.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -49,7 +49,7 @@ public class FloorAction extends ActionSupport {
 	public String newFloor() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		Chain newFloor = FacilioChainFactory.getNewFloorChain();
+		FacilioChain newFloor = FacilioChainFactory.getNewFloorChain();
 		newFloor.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -72,7 +72,7 @@ public class FloorAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FLOOR, floor);
 		
-		Chain addFloor = FacilioChainFactory.getAddFloorChain();
+		FacilioChain addFloor = FacilioChainFactory.getAddFloorChain();
 		addFloor.execute(context);
 		
 		setFloorId(floor.getId());
@@ -85,7 +85,7 @@ public class FloorAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, floor);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "floor");
-		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setFloor(floor);
 		return SUCCESS;
@@ -93,7 +93,7 @@ public class FloorAction extends ActionSupport {
 	public String deleteFloor() throws Exception {
 		FacilioContext context = new FacilioContext();
 		SetTableNamesCommand.getForFloor();
-		Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
+		FacilioChain deleteCampus = FacilioChainFactory.deleteSpaceChain();
 		deleteCampus.execute(context);
 		return SUCCESS;
 	}
@@ -103,7 +103,7 @@ public class FloorAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getFloorId());
 		
-		Chain getFloorChain = FacilioChainFactory.getFloorDetailsChain();
+		FacilioChain getFloorChain = FacilioChainFactory.getFloorDetailsChain();
 		getFloorChain.execute(context);
 		
 		setFloor((FloorContext) context.get(FacilioConstants.ContextNames.FLOOR));
@@ -164,7 +164,7 @@ public class FloorAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, floor);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "floor");
-		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setFloor(floor);
 		return SUCCESS;
@@ -191,7 +191,7 @@ public class FloorAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getFloorId());
 		
-		Chain getReportCardsChain = FacilioChainFactory.getFloorReportCardsChain();
+		FacilioChain getReportCardsChain = FacilioChainFactory.getFloorReportCardsChain();
 		getReportCardsChain.execute(context);
 		
 		JSONObject reports = (JSONObject) context.get(FacilioConstants.ContextNames.REPORTS);

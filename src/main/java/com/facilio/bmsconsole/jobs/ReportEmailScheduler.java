@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.jobs;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -11,6 +10,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -54,7 +54,7 @@ public class ReportEmailScheduler extends FacilioJob {
 				context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 				context.put("isS3Url", true);
 				
-				Chain mailReportChain;
+				FacilioChain mailReportChain;
 				if (reportContext.getTypeEnum() == ReportType.WORKORDER_REPORT) {
 					mailReportChain = TransactionChainFactory.sendModuleReportMailChain();
 				}

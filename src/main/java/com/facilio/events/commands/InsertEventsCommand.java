@@ -11,7 +11,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.util.EventAPI;

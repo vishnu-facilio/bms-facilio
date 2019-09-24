@@ -1,4 +1,9 @@
 package com.facilio.bmsconsole.commands;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
@@ -6,28 +11,15 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.HistoricalLoggerContext;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BmsJobUtil;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
 import com.facilio.time.DateRange;
-
 import com.facilio.time.DateTimeUtil;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class RunThroughReadingRulesCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(RunThroughReadingRulesCommand.class.getName());

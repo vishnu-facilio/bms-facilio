@@ -8,13 +8,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -111,6 +110,26 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			return IAMOrgUtil.createOrgFromProps(props.get(0));
+		}
+		return null;
+	}
+	
+	@Override
+	public List<Organization> getOrgs() throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getOrgFields())
+				.table(IAMAccountConstants.getOrgModule().getTableName());
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<Organization> orgList = new ArrayList<Organization>();
+			for(Map<String, Object> org : props) {
+				orgList.add(IAMOrgUtil.createOrgFromProps(org));
+			}
+			return orgList;
 		}
 		return null;
 	}

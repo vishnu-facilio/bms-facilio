@@ -1,8 +1,8 @@
 package com.facilio.leed.constants;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
+import com.facilio.chain.FacilioChain;
 import com.facilio.leed.commands.ArcLoginCommand;
 import com.facilio.leed.commands.FetchLeedListCommand;
 import com.facilio.leed.commands.FetchMeterListCommand;
@@ -32,23 +32,23 @@ public class LeedConstants {
 		
 	}
 	
-	public static Chain FetchLeedListChain()
+	public static FacilioChain FetchLeedListChain()
 	{
-		Chain c = new ChainBase();
+		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new FetchLeedListCommand());
 		return c;
 	}
 	
-	public static Chain ArcLoginChain()
+	public static FacilioChain ArcLoginChain()
 	{
-		Chain c = new ChainBase();
+		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new ArcLoginCommand());
 		return c;
 	}
 	
-	public static Chain MeterListChain()
+	public static FacilioChain MeterListChain()
 	{
-		Chain c = new ChainBase();
+		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new FetchMeterListCommand());
 		return c;
 	}

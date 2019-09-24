@@ -7,20 +7,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.HVACPressurePredictorUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -220,7 +220,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 			 context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
 			 context.put(FacilioConstants.ContextNames.READINGS, newList);
 			 context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.ML);
-			 Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+			 FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 			 chain.execute(context);
 		}
 		catch(Exception e)

@@ -1,19 +1,18 @@
 package com.facilio.events.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.context.BMSAlarmContext;
 import com.facilio.bmsconsole.context.BMSEventContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FetchEventFromBaseEventCommand extends FacilioCommand {
 

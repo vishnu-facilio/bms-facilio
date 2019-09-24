@@ -8,11 +8,11 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.FileContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
@@ -147,7 +147,7 @@ public class FileAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.FILE_NAME, this.fileContentFileName);
  		context.put(FacilioConstants.ContextNames.FILE_CONTENT_TYPE, this.fileContentContentType);
  		
-		Chain addFileChain = FacilioChainFactory.getAddFileChain();
+		FacilioChain addFileChain = FacilioChainFactory.getAddFileChain();
 		addFileChain.execute(context);
 		
 		FileContext newFile = (FileContext) context.get(FacilioConstants.ContextNames.FILE_CONTEXT_LIST);

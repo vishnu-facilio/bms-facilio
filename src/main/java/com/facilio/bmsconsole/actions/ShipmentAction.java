@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -11,6 +10,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.ShipmentLineItemContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -115,11 +115,11 @@ public class ShipmentAction extends FacilioAction{
  	 		pagination.put("perPage", 5000);
  	 	}
  	 	
-		Chain chain = ReadOnlyChainFactory.getShipmentListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getShipmentListChain();
 		chain.execute(context);
 		
 		if (getFetchCount()) {
-			setResult(FacilioConstants.ContextNames.RECORD_COUNT,(Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 		}
 		else {
 			List<ShipmentContext> shipments = (List<ShipmentContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
@@ -134,7 +134,7 @@ public class ShipmentAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, shipment);
 		
-		Chain chain = TransactionChainFactory.getAddOrUpdateShipmentChain();
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateShipmentChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.SHIPMENTS, context.get(FacilioConstants.ContextNames.RECORD));
@@ -145,7 +145,7 @@ public class ShipmentAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, recordId);
 		
-		Chain chain = ReadOnlyChainFactory.getShipmentDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getShipmentDetailsChain();
 		chain.execute(context);
 		
 		ShipmentContext shipmentContext = (ShipmentContext) context.get(FacilioConstants.ContextNames.RECORD);
@@ -157,7 +157,7 @@ public class ShipmentAction extends FacilioAction{
 	public String deleteShipment() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
-		Chain chain = TransactionChainFactory.getDeleteShipmentChain();
+		FacilioChain chain = TransactionChainFactory.getDeleteShipmentChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
@@ -188,7 +188,7 @@ public class ShipmentAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, getLineItems());
 		
-		Chain chain = TransactionChainFactory.getAddShipmentLineItem();
+		FacilioChain chain = TransactionChainFactory.getAddShipmentLineItem();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -200,7 +200,7 @@ public class ShipmentAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		
-		Chain chain = TransactionChainFactory.getDeleteShipmentLineItemChain();
+		FacilioChain chain = TransactionChainFactory.getDeleteShipmentLineItemChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
@@ -213,7 +213,7 @@ public class ShipmentAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, shipment);
 		context.put(FacilioConstants.ContextNames.SHIPMENT, shipment);
 		
-		Chain chain = TransactionChainFactory.getReceiveShipmentChain();
+		FacilioChain chain = TransactionChainFactory.getReceiveShipmentChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.SHIPMENTS, context.get(FacilioConstants.ContextNames.RECORD));
@@ -225,7 +225,7 @@ public class ShipmentAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, shipment);
 		context.put(FacilioConstants.ContextNames.SHIPMENT, shipment);
 		
-		Chain chain = TransactionChainFactory.getStageShipmentChain();
+		FacilioChain chain = TransactionChainFactory.getStageShipmentChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.SHIPMENTS, context.get(FacilioConstants.ContextNames.RECORD));
@@ -237,7 +237,7 @@ public class ShipmentAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, shipment);
 		context.put(FacilioConstants.ContextNames.SHIPMENT, shipment);
 		
-		Chain chain = TransactionChainFactory.getTransferShipmentChain();
+		FacilioChain chain = TransactionChainFactory.getTransferShipmentChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.SHIPMENTS, context.get(FacilioConstants.ContextNames.RECORD));

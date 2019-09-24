@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
@@ -12,7 +12,7 @@ public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		StateflowTransitionContext stateFlowRuleContext = (StateflowTransitionContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		if (stateFlowRuleContext != null) {
-			Chain chain;
+			FacilioChain chain;
 			if (stateFlowRuleContext.getId() < 0) {
 				chain = TransactionChainFactory.addWorkflowRuleChain();
 			} 

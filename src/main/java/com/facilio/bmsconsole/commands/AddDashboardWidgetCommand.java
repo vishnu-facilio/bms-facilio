@@ -2,11 +2,11 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class AddDashboardWidgetCommand extends FacilioCommand {
@@ -26,7 +26,7 @@ public class AddDashboardWidgetCommand extends FacilioCommand {
 					
 					widget.setId(-1l);
 					
-					Chain addWidgetChain = TransactionChainFactory.getAddWidgetChain();
+					FacilioChain addWidgetChain = TransactionChainFactory.getAddWidgetChain();
 
 					widget.setDashboardId(dashboard.getId());
 					context.put(FacilioConstants.ContextNames.WIDGET, widget);

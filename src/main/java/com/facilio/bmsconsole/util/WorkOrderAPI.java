@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.chargebee.internal.StringJoiner;
@@ -201,7 +200,7 @@ public class WorkOrderAPI {
 		List<Map<String,Object>> asProps = builder.getAsProps();
 		Map lookupMap = new HashMap<>();
 		for (Map<String, Object> map : asProps) {
-			lookupMap.put((Long) map.get("id"), map.get(mainField.getName()));
+			lookupMap.put(map.get("id"), map.get(mainField.getName()));
 		}
 		return lookupMap;
 	}
@@ -1416,7 +1415,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		 resMap.put("plannedCount",planned.get("count"));
 		 resMap.put("percentage",Math.abs(diff));
 		 resMap.put("resourceId",map.get("buildingId"));
-		 resMap.put("resourceName",resourceArray.get((Long)map.get("buildingId")));
+		 resMap.put("resourceName",resourceArray.get(map.get("buildingId")));
 		 finalResult.add(resMap);
 	 }
 	
@@ -1548,7 +1547,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		 }
 		 resMap.put("percentage",Math.abs(diff));
 		 resMap.put("resourceId",map.get("buildingId"));
-		 resMap.put("resourceName",resourceArray.get((Long)map.get("buildingId")));
+		 resMap.put("resourceName",resourceArray.get(map.get("buildingId")));
 		 finalResult.add(resMap);
 	 }
 	

@@ -197,7 +197,8 @@ public abstract class Template implements Serializable {
 		JOB_PLAN_SECTION(21),
 		PM_PRE_REQUEST(22),
 		PM_PRE_REQUEST_SECTION(23),
-		PM_PREREQUISITE_APPROVER(24)
+		PM_PREREQUISITE_APPROVER(24),
+		FORM(25)
 		;
 
 		

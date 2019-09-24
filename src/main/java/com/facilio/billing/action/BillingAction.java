@@ -3,11 +3,10 @@ package com.facilio.billing.action;
 import java.io.File;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.billing.context.BillContext;
 import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -26,7 +25,7 @@ public class BillingAction extends ActionSupport {
 		context.put(BillContext.ContextNames.FILENAME, getExcelFileFileName());
 		context.put(BillContext.ContextNames.TEMPLATENAME, getTemplateName());
 		context.put(BillContext.ContextNames.CONTENTTYPE, getExcelFileContentType());
-		Chain handleExcelFileUploadChain = BillContext.HandleExcelFileUploadChain();
+		FacilioChain handleExcelFileUploadChain = BillContext.HandleExcelFileUploadChain();
 		handleExcelFileUploadChain.execute(context);
 		ExcelTemplate excelTemplate = (ExcelTemplate) context.get(BillContext.ContextNames.EXCELOBJECT);
 		setExcelTemplate(excelTemplate);
@@ -46,7 +45,7 @@ public class BillingAction extends ActionSupport {
 		context.put(BillContext.ContextNames.STARTTIME,getStartTime());
 		context.put(BillContext.ContextNames.ENDTIME,getEndTime());
 		context.put(BillContext.ContextNames.TEMPLATEID,getTemplateId());
-		Chain handleBillGenerationChain = BillContext.HandleBillGenerationChain();
+		FacilioChain handleBillGenerationChain = BillContext.HandleBillGenerationChain();
 		handleBillGenerationChain.execute(context);
 		setDownloadURL((String)context.get(BillContext.ContextNames.EXCEL_FILE_DOWNLOAD_URL));
 		return SUCCESS;

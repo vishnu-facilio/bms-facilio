@@ -1,12 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,16 +18,18 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.EncodeException;
 
-import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
+import org.json.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.actions.FacilioAuthAction;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.AdminAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
@@ -252,18 +258,17 @@ public class AdminAction extends ActionSupport
 		return SUCCESS;
 	}
 
-	public String demoRollUp() throws IOException{
+	public static String demoRollUp() throws IOException{
 
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long orgId=Long.parseLong(request.getParameter("orgId"));
 		long timeDuration = Long.parseLong(request.getParameter("durations"));
 
 		try {
-			FacilioContext context=new FacilioContext();
-			context.put(ContextNames.DEMO_ROLLUP_EXECUTION_TIME,timeDuration);
-			context.put(ContextNames.DEMO_ROLLUP_JOB_ORG,orgId);
-			Chain demoRollupChain = TransactionChainFactory.demoRollUpChain();
-				demoRollupChain.execute(context);
+			FacilioChain demoRollupChain = TransactionChainFactory.demoRollUpChain();
+			demoRollupChain.getContext().put(ContextNames.DEMO_ROLLUP_EXECUTION_TIME,timeDuration);
+			demoRollupChain.getContext().put(ContextNames.DEMO_ROLLUP_JOB_ORG,orgId);
+			demoRollupChain.execute();
 		}		
 		catch(Exception e) {
 			logger.log(Level.SEVERE, "Exception while executing Demojob" +e.getMessage(), e);
@@ -273,6 +278,8 @@ public class AdminAction extends ActionSupport
 		
 	}
 
+	
+	
 	public String adminReadingTools() throws Exception {
 
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -333,6 +340,67 @@ public class AdminAction extends ActionSupport
 		return SUCCESS;
 	}
 	
+	public static JSONArray getAlertsPointsData(String domain) throws Exception {
+		
+		
+		String orgDomain = domain;
+		String bridgeUrl =FacilioProperties.getBridgeUrl();
+		if(bridgeUrl ==null) {
+			throw new IllegalArgumentException("Facilio ALerts URL is null  ");
+		}
+		bridgeUrl = bridgeUrl +"="+orgDomain;
+		URL url = new URL(bridgeUrl);
+		JSONArray  jsonArray = new JSONArray();
+
+		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+
+		conn.setRequestMethod("GET");
+		try{
+			conn.connect(); 
+			int responsecode = conn.getResponseCode(); 
+			if(responsecode != 200) {
+				throw new RuntimeException("HttpResponseCode:" +responsecode);
+			} 
+			else
+			{
+				Scanner sc = new Scanner(url.openStream());
+				String inline="";
+				while(sc.hasNext())
+				{
+					inline = inline + sc.nextLine();
+				}
+				System.out.println("JSON data in string format");
+				System.out.println(inline);
+				sc.close();
+				jsonArray = new JSONArray(inline);
+
+
+
+			}
+
+		}catch(Exception e){
+			System.out.println("#Alters points Exception "+e);
+			logger.log(Level.SEVERE, "Alters points Exception" +e.getMessage(), e);
+
+		}
+		finally{
+			conn.disconnect();
+		}
+
+
+
+		return jsonArray;
+
+	}
+	
+	private String orgDomain;
+	public String getOrgDomain() {
+		return orgDomain;
+	}
+
+	public void setOrgDomain(String orgDomain) {
+		this.orgDomain = orgDomain;
+	}
 	private long statusLevel;
 	public long getStatusLevel() {
 		return statusLevel;

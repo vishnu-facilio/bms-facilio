@@ -12,10 +12,14 @@ import org.json.simple.JSONObject;
 import com.facilio.agentIntegration.wattsense.WattsenseUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 
-public class    AgentIntegrationAction extends FacilioAction
+public class AgentIntegrationAction extends FacilioAction
 {
 
-    private String userName;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String userName;
     public String getUserName() { return userName; }
     public void setUserName(String userName) { this.userName = userName; }
 

@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -14,6 +13,7 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
@@ -32,7 +32,7 @@ public class CampusAction extends ActionSupport {
 	public String campusList() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		Chain getAllCampus = FacilioChainFactory.getAllCampusChain();
+		FacilioChain getAllCampus = FacilioChainFactory.getAllCampusChain();
 		getAllCampus.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -45,7 +45,7 @@ public class CampusAction extends ActionSupport {
 	public String newCampus() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		Chain newCampus = FacilioChainFactory.getNewCampusChain();
+		FacilioChain newCampus = FacilioChainFactory.getNewCampusChain();
 		newCampus.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -73,14 +73,14 @@ public class CampusAction extends ActionSupport {
 		{
 			location.setName(site.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
-			Chain addLocation = FacilioChainFactory.addLocationChain();
+			FacilioChain addLocation = FacilioChainFactory.addLocationChain();
 			addLocation.execute(context);
 			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 			location.setId(locationId);
 		}
 		System.out.println(">>>>>>>>>>>>> Site :"+site);
 		context.put(FacilioConstants.ContextNames.SITE, site);
-		Chain addCampus = FacilioChainFactory.getAddCampusChain();
+		FacilioChain addCampus = FacilioChainFactory.getAddCampusChain();
 		addCampus.execute(context);
 		
 		setCampusId(site.getId());
@@ -100,7 +100,7 @@ public class CampusAction extends ActionSupport {
 				site.setLocation(null);
 			}
 			else {
-				Chain addLocation = FacilioChainFactory.addLocationChain();
+				FacilioChain addLocation = FacilioChainFactory.addLocationChain();
 				addLocation.execute(context);
 				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 				location.setId(locationId);
@@ -112,7 +112,7 @@ public class CampusAction extends ActionSupport {
 		
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, site);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "site");
-		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setSite(site);
 		return SUCCESS;
@@ -129,7 +129,7 @@ public class CampusAction extends ActionSupport {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ID, id);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, "site");
-			Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
+			FacilioChain deleteCampus = FacilioChainFactory.deleteSpaceChain();
 			deleteCampus.execute(context);
 			setId(id);
 			return SUCCESS;
@@ -145,7 +145,7 @@ public class CampusAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getCampusId());
 		
-		Chain getCampusChain = FacilioChainFactory.getCampusDetailsChain();
+		FacilioChain getCampusChain = FacilioChainFactory.getCampusDetailsChain();
 		getCampusChain.execute(context);
 		
 		setSite((SiteContext) context.get(FacilioConstants.ContextNames.SITE));
@@ -158,7 +158,7 @@ public class CampusAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getCampusId());
 		
-		Chain getReportCardsChain = FacilioChainFactory.getSiteReportCardsChain();
+		FacilioChain getReportCardsChain = FacilioChainFactory.getSiteReportCardsChain();
 		getReportCardsChain.execute(context);
 		
 		setReports((JSONObject) context.get(FacilioConstants.ContextNames.REPORTS));

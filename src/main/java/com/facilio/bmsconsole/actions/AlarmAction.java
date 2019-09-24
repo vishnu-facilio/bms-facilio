@@ -10,8 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.commands.FetchAlarmFromOccurrenceCommand;
-import org.apache.commons.chain.Chain;
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -20,6 +19,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FetchAlarmFromOccurrenceCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -68,16 +69,13 @@ public class AlarmAction extends FacilioAction {
 	}
 	
 	public String fetchAlarmSummary() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getId());
-		context.put(FacilioConstants.ContextNames.IS_FROM_SUMMARY, true);
+		FacilioChain alarmChain = ReadOnlyChainFactory.getAlarmDetailsChain();
+		alarmChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, getId());
+		alarmChain.getContext().put(FacilioConstants.ContextNames.IS_FROM_SUMMARY, true);
+ 		alarmChain.execute();
  		
- 		Chain alarmChain = ReadOnlyChainFactory.getAlarmDetailsChain();
- 		alarmChain.execute(context);
- 		
-		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
-		setAlarms((List<AlarmContext>) context.get(FacilioConstants.ContextNames.ALARM_LIST));
+		setModuleName((String) alarmChain.getContext().get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+		setAlarms((List<AlarmContext>) alarmChain.getContext().get(FacilioConstants.ContextNames.ALARM_LIST));
 		
 		return SUCCESS;
 		
@@ -96,7 +94,7 @@ public class AlarmAction extends FacilioAction {
 		woContext.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
 		woContext.put(FacilioConstants.ContextNames.RECORD, alarm);
 
-		Chain addWorkOrder = TransactionChainFactory.getAddWoFromAlarmChain();
+		FacilioChain addWorkOrder = TransactionChainFactory.getAddWoFromAlarmChain();
 		addWorkOrder.execute(woContext);
 		
 		rowsUpdated = (int) woContext.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -107,19 +105,17 @@ public class AlarmAction extends FacilioAction {
 	}
 
 	public String updateStatus() throws Exception {
-		FacilioContext context = new FacilioContext();
-		return updateAlarm(context);
+		return updateAlarm();
 	}
 	
-	private String updateAlarm(FacilioContext context) throws Exception {
+	private String updateAlarm() throws Exception {
 		//		System.out.println(id);
 		//		System.out.println(alarm);
-		context.put(FacilioConstants.ContextNames.ALARM, alarm);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-
-		Chain updateAlarm = TransactionChainFactory.getUpdateAlarmChain();
-		updateAlarm.execute(context);
-		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		FacilioChain updateAlarm = TransactionChainFactory.getUpdateAlarmChain();
+		updateAlarm.getContext().put(FacilioConstants.ContextNames.ALARM, alarm);
+		updateAlarm.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		updateAlarm.execute();
+		rowsUpdated = (int) updateAlarm.getContext().get(FacilioConstants.ContextNames.ROWS_UPDATED);
 
 		return SUCCESS;
 	}
@@ -140,14 +136,12 @@ public class AlarmAction extends FacilioAction {
 		this.woId = woId;
 	}
 	public String deleteAlarm() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		
-		Chain deleteAlarm = FacilioChainFactory.getDeleteAlarmChain();
-		deleteAlarm.execute(context);
-		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		
+		FacilioChain deleteAlarm = FacilioChainFactory.getDeleteAlarmChain();
+		deleteAlarm.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
+		deleteAlarm.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		deleteAlarm.execute();
+		rowsUpdated = (int) deleteAlarm.getContext().get(FacilioConstants.ContextNames.ROWS_UPDATED);
+
 		return SUCCESS;
 	}
 
@@ -174,8 +168,8 @@ public class AlarmAction extends FacilioAction {
 	public void setCount(long count) {
 		this.count = count;
 	}
-	private FacilioContext constructChainContext() throws Exception {
-		FacilioContext context = new FacilioContext();
+	private void populateChainContext(FacilioContext context) throws Exception {
+		
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
  		if(getFilters() != null)
  		{	
@@ -210,8 +204,6 @@ public class AlarmAction extends FacilioAction {
  		pagination.put("perPage", getPerPage());
  		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
  		System.out.println("PAGINATION ####### "+ pagination);
- 		
- 		return context;
 	}
 	
 	public String v2alarmCount () throws Exception {
@@ -221,36 +213,36 @@ public class AlarmAction extends FacilioAction {
 	}
 
 	public String alarmList() throws Exception {
- 		FacilioContext context = constructChainContext();
-
+		FacilioChain chain = null;
  		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-			Chain chain = ReadOnlyChainFactory.getAllAlarmOccurrenceListChain();
-			chain.execute(context);
+			chain = ReadOnlyChainFactory.getAllAlarmOccurrenceListChain();
+			populateChainContext(chain.getContext());
+			chain.execute();
 
 			setModuleName("Alarms");
 		}
  		else {
-			context.put(FacilioConstants.ContextNames.ALARM_ENTITY_ID, entityId);
+			chain = ReadOnlyChainFactory.getAlarmListChain();
+			populateChainContext(chain.getContext());
+			chain.getContext().put(FacilioConstants.ContextNames.ALARM_ENTITY_ID, entityId);
 
-			System.out.println("View Name : " + getViewName());
-			Chain alarmListChain = ReadOnlyChainFactory.getAlarmListChain();
-			alarmListChain.execute(context);
+//			System.out.println("View Name : " + getViewName());
+			chain.execute();
 
-			setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+			setModuleName((String) chain.getContext().get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		}
 		if (getIsCount() != null) {
-			setCount((long) context.get(FacilioConstants.ContextNames.COUNT));
+			setCount((long) chain.getContext().get(FacilioConstants.ContextNames.COUNT));
 			System.out.println("data" + getCount());
 		}
 		else {
-			setAlarms((List<AlarmContext>) context.get(FacilioConstants.ContextNames.ALARM_LIST));
+			setAlarms((List<AlarmContext>) chain.getContext().get(FacilioConstants.ContextNames.ALARM_LIST));
 		}
 
-		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		FacilioView cv = (FacilioView) chain.getContext().get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if(cv != null) {
 			setViewDisplayName(cv.getDisplayName());
 		}
-		
 		return SUCCESS;
 	}
 	
@@ -264,28 +256,27 @@ public class AlarmAction extends FacilioAction {
 	}
 	
 	public String viewAlarm() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		if (getViewName() != null) {
-			context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		}
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getId());
-
+		FacilioChain chain = null;
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-			Chain chain = ReadOnlyChainFactory.getAlarmOccurrenceDetailsChain();
+			chain = ReadOnlyChainFactory.getAlarmOccurrenceDetailsChain();
+			if (getViewName() != null) {
+				chain.getContext().put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+			}
+			chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, getId());
 			chain.addCommand(new FetchAlarmFromOccurrenceCommand());
-			chain.execute(context);
-
+			chain.execute();
 			setModuleName("Alarms");
 		}
  		else {
-			Chain alarmChain = ReadOnlyChainFactory.getAlarmDetailsChain();
-			alarmChain.execute(context);
-
-			setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+			chain = ReadOnlyChainFactory.getAlarmDetailsChain();
+			if (getViewName() != null) {
+				chain.getContext().put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+			}
+			chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, getId());
+			chain.execute();
+			setModuleName((String) chain.getContext().get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
 		}
- 		setAlarms((List<AlarmContext>) context.get(FacilioConstants.ContextNames.ALARM_LIST));
-		
+ 		setAlarms((List<AlarmContext>) chain.getContext().get(FacilioConstants.ContextNames.ALARM_LIST));
 		return SUCCESS;
 	}
 	
@@ -454,7 +445,7 @@ public class AlarmAction extends FacilioAction {
 				}
 				
 				mailJson.put("to", value);
-				AwsUtil.sendEmail(mailJson);
+				FacilioFactory.getEmailClient().sendEmail(mailJson);
 			}
 			else if ("mobile".equalsIgnoreCase(type)) {
 				value = AlarmAPI.sendAlarmSMS(alarm, value, message);
@@ -592,10 +583,10 @@ public class AlarmAction extends FacilioAction {
 	}
 	
 	public String fetchReadingAlarms() throws Exception {
-		FacilioContext context = constructChainContext();
-		Chain getReadingAlarmsChain = FacilioChainFactory.getReadingAlarmsChain();
-		getReadingAlarmsChain.execute(context);
-		readingAlarms = (List<ReadingAlarmContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		FacilioChain getReadingAlarmsChain = FacilioChainFactory.getReadingAlarmsChain();
+		populateChainContext(getReadingAlarmsChain.getContext());
+		getReadingAlarmsChain.execute();
+		readingAlarms = (List<ReadingAlarmContext>) getReadingAlarmsChain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
 		return SUCCESS;
 	}
 	
@@ -637,18 +628,27 @@ public class AlarmAction extends FacilioAction {
 		setResult("workorderId", woId);
 		return SUCCESS;
 	}
-	
+	private List<Long> resourceList;
+
+	public List<Long> getResourceList() {
+		return resourceList;
+	}
+	public void setResourceList(List<Long> resourceList) {
+		this.resourceList = resourceList;
+	}
+
 	public String fetchAlarmInsightsForResource() throws Exception{
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.IS_RCA, getIsRca());
-		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
-		context.put(FacilioConstants.ContextNames.READING_RULE_ID, ruleId);
-		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
-		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
-		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
-		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
-		ReadOnlyChainFactory.getAlarmInsightChain().execute(context);
-		setResult(ContextNames.ALARM_LIST, context.get(ContextNames.ALARM_LIST));
+		FacilioChain chain = ReadOnlyChainFactory.getAlarmInsightChain();
+		chain.getContext().put(FacilioConstants.ContextNames.IS_RCA, getIsRca());
+		chain.getContext().put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		chain.getContext().put(FacilioConstants.ContextNames.READING_RULE_ID, ruleId);
+		chain.getContext().put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
+		chain.getContext().put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
+		chain.getContext().put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		chain.getContext().put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
+		chain.getContext().put(FacilioConstants.ContextNames.RESOURCE_LIST, resourceList);
+		chain.execute();
+		setResult(ContextNames.ALARM_LIST, chain.getContext().get(ContextNames.ALARM_LIST));
 		return SUCCESS;
 	}
 	private long ruleId = -1;

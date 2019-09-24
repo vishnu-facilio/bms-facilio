@@ -656,7 +656,7 @@
 			<param name="fetchTriggers">true</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">^result\.workorders\[\d+\]\.(id|createdTime|subject|assignedTo|trigger|resource)\..*</param>
+				<param name="includeProperties">^result\.workorders\[\d+\]\.(id|createdTime|subject|assignedTo|moduleState|assignmentGroup|trigger|resource|category|priority|type|data)\..*</param>
 			</result>
 		</action>
 	</package>
@@ -2826,6 +2826,19 @@
 		</action>
 
 	</package>
+	
+	<package name="purchaseRequestViewApi"
+		namespace="/api/v2/purchaserequest/view" extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PurchaseRequestAction"
+			method="getPurchaseRequestList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
+		
+	
 
 	<package name="purchaseRequestApi"
 		namespace="/api/v2/purchaserequest" extends="v2Api">
@@ -2883,6 +2896,7 @@
 			<param name="moduleName">purchaseorder</param>
 			<param name="permission">READ</param>
 		</action>
+		
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PurchaseRequestAction"
 			method="getPurchaseRequestList">
@@ -2892,9 +2906,19 @@
 		</action>
 
 	</package>
-
-
-
+	<package name="purchaseOrderViewApi"
+		namespace="/api/v2/purchaseorder/view" extends="v2Api">
+	
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PurchaseOrderAction"
+			method="getPurchaseOrderList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">READ</param>
+		</action>
+		</package>
+		
+	
 	<package name="purchaseOrderApi"
 		namespace="/api/v2/purchaseorder" extends="v2Api">
 		<action name="addOrUpdate"
@@ -2999,6 +3023,18 @@
 			<param name="viewName">{1}</param>
 			<param name="moduleName">purchaseorder</param>
 			<param name="permission">READ</param>
+		</action>
+		<action name="associateTerms"
+			class="com.facilio.bmsconsole.actions.PurchaseOrderAction"
+			method="associateTerms">
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+		<action name="disassociateTerms"
+			class="com.facilio.bmsconsole.actions.PurchaseOrderAction"
+			method="disAssociateTerms">
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">CREATE,UPDATE</param>
 		</action>
 	</package>
 
@@ -4055,37 +4091,37 @@
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="termsAndConditionsList">
-			<param name="moduleName">contract</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">READ</param>
 		</action>
 		<action name="getById"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="termsAndConditionsDetails">
-			<param name="moduleName">contract</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">READ</param>
 		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="addTermsAndConditions">
-			<param name="moduleName">contract</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="updateTermsAndConditions">
-			<param name="moduleName">contract</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="deleteTermsAndConditions">
-			<param name="moduleName">contract</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">DELETE</param>
 		</action>
 		<action name="termsAndConditionsCount"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="termsAndConditionsCount">
-			<param name="moduleName">contract</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">READ</param>
 		</action>
 
@@ -4093,7 +4129,7 @@
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="termsAndConditionsList">
 			<param name="viewName">{1}</param>
-			<param name="moduleName">contract</param>
+			<param name="moduleName">inventory</param>
 			<param name="permission">READ</param>
 		</action>
 
@@ -4114,17 +4150,17 @@
 			<param name="permission">READ</param>
 		</action>
 		<action name="associateTerms"
-			class="com.facilio.bmsconsole.actions.ContractsAction"
-			method="associateTerms">
-			<param name="moduleName">contract</param>
-			<param name="permission">CREATE,UPDATE</param>
-		</action>
-		<action name="disassociateTerms"
-			class="com.facilio.bmsconsole.actions.ContractsAction"
-			method="disAssociateTerms">
-			<param name="moduleName">contract</param>
-			<param name="permission">CREATE,UPDATE</param>
-		</action>
+	class="com.facilio.bmsconsole.actions.ContractsAction"
+	method="associateTerms">
+	<param name="moduleName">contract</param>
+	<param name="permission">CREATE,UPDATE</param>
+</action>
+	<action name="disassociateTerms"
+		class="com.facilio.bmsconsole.actions.ContractsAction"
+		method="disAssociateTerms">
+		<param name="moduleName">contract</param>
+		<param name="permission">CREATE,UPDATE</param>
+	</action>
 
 		<action name="associateAsset"
 			class="com.facilio.bmsconsole.actions.ContractsAction"
@@ -4138,7 +4174,6 @@
 			<param name="moduleName">contract</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
-		
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ContractsAction"
 			method="getContractList">
@@ -4149,6 +4184,17 @@
 
 	</package>
 
+	<package name="contractsViewApi" namespace="/api/v2/contracts/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ContractsAction"
+			method="getContractList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		</package>
+	
 	<package name="recordRule" namespace="/api/v2/recordrule"
 		extends="v2Api">
 		<action name="addOrUpdate"

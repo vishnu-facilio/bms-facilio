@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -19,6 +18,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.server.ServerInfo;
 import com.facilio.wms.endpoints.SessionManager;
 import com.facilio.wms.message.Message;

@@ -1,10 +1,9 @@
 	package com.facilio.mv.action;
 
-	import org.apache.commons.chain.Chain;
-
-import com.facilio.bmsconsole.actions.FacilioAction;
+	import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
@@ -59,7 +58,7 @@ public class MVAction extends FacilioAction {
 		
 		context.put(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
 		
-		Chain addMVProjectChain =  TransactionChainFactory.getAddMVProjectChain(); 
+		FacilioChain addMVProjectChain =  TransactionChainFactory.getAddMVProjectChain();
 		addMVProjectChain.execute(context);
 		
 		setResult(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
@@ -69,12 +68,12 @@ public class MVAction extends FacilioAction {
 	public String updateMVProject() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		
+
 		context.put(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
 		
 		context.put(MVUtil.MV_PROJECT_WRAPPER_OLD, MVUtil.getMVProject(mvProjectWrapper.getMvProject().getId()));
 		
-		Chain addMVProjectChain =  TransactionChainFactory.getUpdateMVProjectChain(); 
+		FacilioChain addMVProjectChain =  TransactionChainFactory.getUpdateMVProjectChain();
 		addMVProjectChain.execute(context);
 		
 		setResult(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
@@ -87,7 +86,7 @@ public class MVAction extends FacilioAction {
 
 		context.put(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
 
-		Chain updateMVProjectChain =  TransactionChainFactory.getUpdateMVProjectMetaChain();
+		FacilioChain updateMVProjectChain =  TransactionChainFactory.getUpdateMVProjectMetaChain();
 		updateMVProjectChain.execute(context);
 
 		setResult(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
@@ -104,7 +103,7 @@ public class MVAction extends FacilioAction {
 		
 		context.put(MVUtil.MV_PROJECTS_WIDGET_ID, widgetId);
 
-		Chain widgetResultChain =  ReadOnlyChainFactory.fetchMVWidgetResultChain();
+		FacilioChain widgetResultChain =  ReadOnlyChainFactory.fetchMVWidgetResultChain();
 		widgetResultChain.execute(context);
 
 		setResult(MVUtil.RESULT_JSON, context.get(MVUtil.RESULT_JSON));
@@ -131,7 +130,7 @@ public class MVAction extends FacilioAction {
 		
 		context.put(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
 		
-		Chain deleteMVProjectChain =  TransactionChainFactory.getDeleteMVProjectChain(); 
+		FacilioChain deleteMVProjectChain =  TransactionChainFactory.getDeleteMVProjectChain();
 		deleteMVProjectChain.execute(context);
 		
 		setResult(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);

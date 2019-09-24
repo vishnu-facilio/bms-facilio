@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.text.StringSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -34,6 +33,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -70,7 +70,7 @@ public class TemplateAction  extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		
-		Chain deleteTemplateChain = FacilioChainFactory.deleteTemplateChain();
+		FacilioChain deleteTemplateChain = FacilioChainFactory.deleteTemplateChain();
 		deleteTemplateChain.execute(context);
 		
 		result = "success";
@@ -93,7 +93,7 @@ public class TemplateAction  extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.WORKORDER);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_NAME, templateName);
 		
-		Chain addTemplate = FacilioChainFactory.getAddWorkorderTemplateChain();
+		FacilioChain addTemplate = FacilioChainFactory.getAddWorkorderTemplateChain();
 		addTemplate.execute(context);
 		
 		id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
@@ -109,7 +109,7 @@ public class TemplateAction  extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.WORKORDER);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_NAME, templateName);
 		
-		Chain addTemplate = FacilioChainFactory.updateWorkorderTemplateChain();
+		FacilioChain addTemplate = FacilioChainFactory.updateWorkorderTemplateChain();
 		addTemplate.execute(context);
 		
 		id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
@@ -178,7 +178,7 @@ public class TemplateAction  extends FacilioAction {
 			for (String key : ruleskeys) {
 				JSONObject rule = (JSONObject) rulesObj.get(key);
 				ObjectMapper mapper = FieldUtil.getMapper(WorkflowContext.class);
-				JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray((JSONObject) rule.get("workflow"));
+				JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray(rule.get("workflow"));
 				long thresholdType = (long) rule.get("thresholdType");
 				List<WorkflowContext> list = mapper.readValue(JSONArray.toJSONString(fieldJsons), mapper.getTypeFactory().constructCollectionType(List.class, WorkflowContext.class));
 				if (((String)rule.get("action")).equals("PreRequsite")) {
@@ -224,7 +224,7 @@ public class TemplateAction  extends FacilioAction {
 			FacilioContext facilioContext = new FacilioContext();
 
 			facilioContext.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
-			Chain addRule = TransactionChainFactory.addAlarmRuleChain();
+			FacilioChain addRule = TransactionChainFactory.addAlarmRuleChain();
 			addRule.execute(facilioContext);
 			
 			setResult("rule", alarmRule);
@@ -248,7 +248,7 @@ public class TemplateAction  extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TEMPLATE, taskGroup);
 		
-		Chain addTaskGroup = FacilioChainFactory.addTaskGroupTemplateChain();
+		FacilioChain addTaskGroup = FacilioChainFactory.addTaskGroupTemplateChain();
 		addTaskGroup.execute(context);
 		
 		id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
@@ -261,7 +261,7 @@ public class TemplateAction  extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		context.put(FacilioConstants.ContextNames.TEMPLATE, taskGroup);
 		
-		Chain addTaskGroup = FacilioChainFactory.updateTaskGroupTemplateChain();
+		FacilioChain addTaskGroup = FacilioChainFactory.updateTaskGroupTemplateChain();
 		addTaskGroup.execute(context);
 		
 		id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
@@ -273,7 +273,7 @@ public class TemplateAction  extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		
-		Chain getTemplate = FacilioChainFactory.getTemplateChain();
+		FacilioChain getTemplate = FacilioChainFactory.getTemplateChain();
 		getTemplate.execute(context);
 		
 		template = (Template) context.get(FacilioConstants.ContextNames.TEMPLATE);
@@ -292,7 +292,7 @@ public class TemplateAction  extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, type);
 		
-		Chain getTemplatesChain = FacilioChainFactory.getTemplatesOfTypeChain();
+		FacilioChain getTemplatesChain = FacilioChainFactory.getTemplatesOfTypeChain();
 		getTemplatesChain.execute(context);
 		
 		templates = (List<Template>) context.get(FacilioConstants.ContextNames.TEMPLATE_LIST);
@@ -340,7 +340,7 @@ public class TemplateAction  extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		
-		Chain addTemplate = FacilioChainFactory.getAddTemplateChain();
+		FacilioChain addTemplate = FacilioChainFactory.getAddTemplateChain();
 		addTemplate.execute(context);
 		
 		setTemplateId(emailTemplate.getId());
@@ -361,7 +361,7 @@ public class TemplateAction  extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.Workflow.TEMPLATE, smsTemplate);
 		
-		Chain addTemplate = FacilioChainFactory.getAddTemplateChain();
+		FacilioChain addTemplate = FacilioChainFactory.getAddTemplateChain();
 		addTemplate.execute(context);
 		
 		setTemplateId(smsTemplate.getId());
@@ -381,7 +381,7 @@ public class TemplateAction  extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.Workflow.TEMPLATE, pushNotificationTemplate);
 		
-		Chain addTemplate = FacilioChainFactory.getAddTemplateChain();
+		FacilioChain addTemplate = FacilioChainFactory.getAddTemplateChain();
 		addTemplate.execute(context);
 		
 		setTemplateId(pushNotificationTemplate.getId());
@@ -400,7 +400,7 @@ public class TemplateAction  extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.Workflow.TEMPLATE, webNotificationTemplate);
 		
-		Chain addTemplate = FacilioChainFactory.getAddTemplateChain();
+		FacilioChain addTemplate = FacilioChainFactory.getAddTemplateChain();
 		addTemplate.execute(context);
 		
 		setTemplateId(webNotificationTemplate.getId());

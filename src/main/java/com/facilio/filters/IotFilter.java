@@ -13,11 +13,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.time.DateTimeUtil;
@@ -73,7 +73,7 @@ public class IotFilter implements Filter {
 
 								FacilioContext context = new FacilioContext();
 								context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
-								Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+								FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 								getAddEventChain.execute(context);
 							} catch (Exception e) {
 								LOGGER.error("IOTFilter Exception :", e);

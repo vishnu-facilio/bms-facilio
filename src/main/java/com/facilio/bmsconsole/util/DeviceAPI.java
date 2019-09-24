@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.stat.StatUtils;
@@ -32,6 +31,7 @@ import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -666,7 +666,7 @@ public class DeviceAPI
 				context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
 			}
 			//data Gap implementation ends..
-			Chain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+			FacilioChain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			addReading.execute(context);
 		}
 		return vmReadings;

@@ -12,8 +12,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
@@ -23,6 +21,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.JoinBuilderIfc;
@@ -32,6 +31,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -484,6 +484,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return builder.constructSelectStatement();
 	}
 
+	public Object[] getWhereValues() {
+		return builder.getWhereValue();
+	}
+
 	private boolean queryConstructed = false;
 
 	private Set<FacilioField> constructQuery() {
@@ -549,7 +553,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 								addToLookupIds(lookupField, recordId, lookupIds);
 							}
 							else {
-								Object val = isMap || !lookupField.isDefault() ? FieldUtil.getEmptyLookedUpProp(recordId) : FieldUtil.getEmptyLookupVal((LookupField) lookupField, recordId);
+								Object val = isMap || !lookupField.isDefault() ? FieldUtil.getEmptyLookedUpProp(recordId) : FieldUtil.getEmptyLookupVal(lookupField, recordId);
 								props.put(lookupField.getName(), val);
 							}
 						}

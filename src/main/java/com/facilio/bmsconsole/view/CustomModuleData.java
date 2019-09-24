@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.view;
 
-import com.facilio.modules.ModuleBaseWithCustomFields;
-
 import java.io.File;
+
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class CustomModuleData extends ModuleBaseWithCustomFields {
 

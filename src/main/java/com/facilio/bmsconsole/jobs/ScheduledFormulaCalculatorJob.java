@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -24,6 +23,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -89,7 +89,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									context.put(FacilioConstants.ContextNames.READINGS, readings);
 									context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
 									
-									Chain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+									FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 									addReadingChain.execute(context);
 									
 								}

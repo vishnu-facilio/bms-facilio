@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.HistoricalLoggerContext.Status;
-
 public class WorkflowRuleHistoricalLoggerContext {
 
 	private long id = -1;

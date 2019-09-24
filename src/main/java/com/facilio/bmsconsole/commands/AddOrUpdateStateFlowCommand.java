@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -13,6 +12,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -63,7 +63,7 @@ public class AddOrUpdateStateFlowCommand extends FacilioCommand {
 			}
 			
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateFlow);
-			Chain ruleChain;
+			FacilioChain ruleChain;
 			if (add) {
 				ruleChain = TransactionChainFactory.addWorkflowRuleChain();
 			} else {

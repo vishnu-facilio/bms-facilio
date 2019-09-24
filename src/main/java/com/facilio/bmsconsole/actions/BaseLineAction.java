@@ -2,9 +2,8 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.BaseLineContext;
@@ -18,7 +17,7 @@ public class BaseLineAction extends ActionSupport {
 	public String addBaseLine() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BASE_LINE, baseLine);
-		Chain addBlChain = FacilioChainFactory.addBaseLineChain();
+		FacilioChain addBlChain = FacilioChainFactory.addBaseLineChain();
 		addBlChain.execute(context);
 		
 		return SUCCESS;
@@ -34,7 +33,7 @@ public class BaseLineAction extends ActionSupport {
 	
 	public String getAllBaseLineList() throws Exception {
 		FacilioContext context = new FacilioContext();
-		Chain getBaseLineChain = FacilioChainFactory.getAllBaseLinesChain();
+		FacilioChain getBaseLineChain = FacilioChainFactory.getAllBaseLinesChain();
 		getBaseLineChain.execute(context);
 		
 		baseLines = (List<BaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST);
@@ -45,7 +44,7 @@ public class BaseLineAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SPACE_ID, space);
 		
-		Chain getBaseLineChain = FacilioChainFactory.getBaseLinesOfSpaceChain();
+		FacilioChain getBaseLineChain = FacilioChainFactory.getBaseLinesOfSpaceChain();
 		getBaseLineChain.execute(context);
 		
 		baseLines = (List<BaseLineContext>) context.get(FacilioConstants.ContextNames.BASE_LINE_LIST);
@@ -81,7 +80,7 @@ public class BaseLineAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, baseLines);
 		context.put(FacilioConstants.ContextNames.REPORT_ID, reportId);
 		
-		Chain addReportBl = FacilioChainFactory.addReportBaseLinesChain();
+		FacilioChain addReportBl = FacilioChainFactory.addReportBaseLinesChain();
 		addReportBl.execute(context);
 		
 		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
@@ -94,7 +93,7 @@ public class BaseLineAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, baseLines);
 		context.put(FacilioConstants.ContextNames.REPORT_ID, reportId);
 		
-		Chain addReportBl = FacilioChainFactory.updateReportBaseLinesChain();
+		FacilioChain addReportBl = FacilioChainFactory.updateReportBaseLinesChain();
 		addReportBl.execute(context);
 		
 		result = (String) context.get(FacilioConstants.ContextNames.RESULT);

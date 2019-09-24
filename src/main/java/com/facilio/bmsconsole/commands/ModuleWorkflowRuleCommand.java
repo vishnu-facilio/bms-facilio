@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
 public class ModuleWorkflowRuleCommand extends FacilioCommand {
 
@@ -16,7 +17,9 @@ public class ModuleWorkflowRuleCommand extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
         if (workflowRule != null && StringUtils.isNotEmpty(moduleName)) {
-            workflowRule.setRuleType(WorkflowRuleContext.RuleType.MODULE_RULE);
+            if (workflowRule.getRuleTypeEnum() == null) {
+                workflowRule.setRuleType(WorkflowRuleContext.RuleType.MODULE_RULE);
+            }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(moduleName);
             if (module == null) {

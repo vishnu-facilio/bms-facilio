@@ -1,10 +1,10 @@
 package com.facilio.billing.context;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
 import com.facilio.billing.command.GenerateUsageRecordCommand;
 import com.facilio.billing.command.StoreExcelFileCommand;
+import com.facilio.chain.FacilioChain;
 
 public class BillContext {
 
@@ -22,16 +22,16 @@ public class BillContext {
 		
 	}
 	
-	public static Chain HandleExcelFileUploadChain()
+	public static FacilioChain HandleExcelFileUploadChain()
 	{
-		Chain c = new ChainBase();
+		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new StoreExcelFileCommand());
 		return c;
 	}
 	
-	public static Chain HandleBillGenerationChain()
+	public static FacilioChain HandleBillGenerationChain()
 	{
-		Chain c = new ChainBase();
+		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GenerateUsageRecordCommand());
 		return c;
 	}

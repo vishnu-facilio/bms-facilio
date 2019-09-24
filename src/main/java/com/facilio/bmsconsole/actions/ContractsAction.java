@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -11,7 +10,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
 import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
 import com.facilio.bmsconsole.context.ContractsContext;
-import com.facilio.bmsconsole.context.LabourContractContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -118,11 +117,11 @@ public class ContractsAction extends FacilioAction{
  	 		pagination.put("perPage", 5000);
  	 	}
  	 	
-		Chain chain = ReadOnlyChainFactory.getContractListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getContractListChain();
 		chain.execute(context);
 		
 		if (getFetchCount()) {
-			setResult(FacilioConstants.ContextNames.RECORD_COUNT,(Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 		}
 		else {
 			List<ContractsContext> contracts = (List<ContractsContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
@@ -134,7 +133,7 @@ public class ContractsAction extends FacilioAction{
 	public String addOrUpdateLineItem() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONTRACT_TYPE, getContractType());
-		Chain chain = TransactionChainFactory.getAddPurchaseContractLineItem();
+		FacilioChain chain = TransactionChainFactory.getAddPurchaseContractLineItem();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
@@ -145,7 +144,7 @@ public class ContractsAction extends FacilioAction{
 	public String getActiveContractAssociatedAssets() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONTRACT_TYPE, getContractType());
-		Chain chain = TransactionChainFactory.getActiveContractAssociatedAssetChain();
+		FacilioChain chain = TransactionChainFactory.getActiveContractAssociatedAssetChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.ASSET_ID, context.get(FacilioConstants.ContextNames.ASSET_ID));
@@ -156,7 +155,7 @@ public class ContractsAction extends FacilioAction{
 	public String changeNextPaymentDate() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
-		Chain chain = TransactionChainFactory.getChangeContractPaymentStatusChain();
+		FacilioChain chain = TransactionChainFactory.getChangeContractPaymentStatusChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.NEXT_PAYMENT_DATE, context.get(FacilioConstants.ContextNames.NEXT_PAYMENT_DATE));
@@ -170,7 +169,7 @@ public class ContractsAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
 		context.put(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS, associatedTerms );
 		
-		Chain chain = TransactionChainFactory.getAssociateTermsChain();
+		FacilioChain chain = TransactionChainFactory.getAssociateTermsChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS, context.get(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS));
@@ -184,7 +183,7 @@ public class ContractsAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
 		context.put(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS, associatedAssets );
 		
-		Chain chain = TransactionChainFactory.getAssociateAssetChain();
+		FacilioChain chain = TransactionChainFactory.getAssociateAssetChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS, context.get(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS));
@@ -197,7 +196,7 @@ public class ContractsAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds );
 		
-		Chain chain = TransactionChainFactory.getDisAssociateAssetChain();
+		FacilioChain chain = TransactionChainFactory.getDisAssociateAssetChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS, context.get(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS));
@@ -210,7 +209,7 @@ public class ContractsAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds );
 		
-		Chain chain = TransactionChainFactory.getDisAssociateTermsChain();
+		FacilioChain chain = TransactionChainFactory.getDisAssociateTermsChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS, context.get(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS));

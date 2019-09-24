@@ -2,11 +2,9 @@ package com.facilio.bmsconsole.interceptors;
 
 import java.util.HashMap;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
@@ -15,6 +13,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
+import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
@@ -57,7 +56,17 @@ public class DataSourceInterceptor extends AbstractInterceptor {
                     	request.setAttribute("iamAccount", iamAccount);
                     }
             }
-		} 
+		}
+		//remote screen handling
+		else if(request.getAttribute("remoteScreen") != null && request.getAttribute("remoteScreen") instanceof RemoteScreenContext) {
+			RemoteScreenContext remoteScreen = (RemoteScreenContext) request.getAttribute("remoteScreen");
+			Organization org = IAMOrgUtil.getOrg(remoteScreen.getOrgId());
+			if(org != null) {
+				IAMAccount account = new IAMAccount(org, null);
+				request.setAttribute("iamAccount", account);
+			}
+			
+		}
 		else {
 			if (iamAccount != null) {
 				String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");

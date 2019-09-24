@@ -4,13 +4,14 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import com.facilio.aws.util.FacilioProperties;
 
 public class ErrorDataProducer {
 

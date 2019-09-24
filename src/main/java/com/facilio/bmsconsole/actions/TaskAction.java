@@ -5,8 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -17,6 +16,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -33,6 +33,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.exception.ReadingValidationException;
@@ -52,7 +53,7 @@ public class TaskAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		try {
-		Chain newTask = FacilioChainFactory.getNewTaskChain();
+		FacilioChain newTask = FacilioChainFactory.getNewTaskChain();
 		newTask.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -95,7 +96,7 @@ public class TaskAction extends FacilioAction {
 		try {
 		context.put(FacilioConstants.ContextNames.TASK_SECTION, section);
 		
-		Chain addSectionChain = FacilioChainFactory.addTaskSectionChain();
+		FacilioChain addSectionChain = FacilioChainFactory.addTaskSectionChain();
 		addSectionChain.execute(context);
 		}
 		catch (Exception e) {
@@ -150,7 +151,7 @@ public class TaskAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 	    context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
-		Chain addTask = FacilioChainFactory.getAddTaskChain();
+		FacilioChain addTask = FacilioChainFactory.getAddTaskChain();
 		addTask.execute(context);
 		
 		setTaskId(task.getId());
@@ -233,10 +234,11 @@ public class TaskAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, skipValidation);
 		context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();
-		Chain updateTask;
+		FacilioChain updateTask;
 		if (task.isPreRequest()) {
 			updateTask = TransactionChainFactory.getUpdatePreRequestChain();
 		} else {
@@ -297,6 +299,17 @@ public class TaskAction extends FacilioAction {
 	public void setTaskIdList(List<Long> taskIdList) {
 		this.taskIdList = taskIdList;
 	}
+	
+	private boolean skipValidation = true;
+
+
+	public boolean isSkipValidation() {
+		return skipValidation;
+	}
+
+	public void setSkipValidation(boolean skipValidation) {
+		this.skipValidation = skipValidation;
+	}
 
 	Long parentTicketId;
 	public Long getParentTicketId() {
@@ -349,7 +362,7 @@ public class TaskAction extends FacilioAction {
 		    }
 			context.put(FacilioConstants.ContextNames.PARENT_ID, parentTicketId);
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
-			Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
+			FacilioChain updateTask = TransactionChainFactory.getUpdateTaskChain();
 			updateTask.execute(context);
 			if(context.get(FacilioConstants.ContextNames.TASK_ERRORS) != null) {
 				List<TaskErrorContext> errors = (List<TaskErrorContext>) context.get(FacilioConstants.ContextNames.TASK_ERRORS);
@@ -376,13 +389,25 @@ public class TaskAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
+
+	public String correctPMReadings() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TASKS, taskContextList);
+		FacilioChain pmReadingCorrectionChain = TransactionChainFactory.getPMReadingCorrectionChain();
+		pmReadingCorrectionChain.execute(context);
+		return SUCCESS;
+	}
+
 	public String updateAllTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();
+		
+		
 		try {
 		for (TaskContext singleTask :taskContextList)
 		{
 			context.clear();
+			context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, skipValidation);
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 			context.put(FacilioConstants.ContextNames.TASK, singleTask);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
@@ -391,7 +416,7 @@ public class TaskAction extends FacilioAction {
 				context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 			}
 			context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
-			Chain updateTask;
+			FacilioChain updateTask;
 			try {
 					if (singleTask.isPreRequest()) {
 						updateTask = TransactionChainFactory.getUpdatePreRequestChain();
@@ -425,6 +450,7 @@ public class TaskAction extends FacilioAction {
 				if (context.get(FacilioConstants.ContextNames.PRE_REQUEST_STATUS) != null) {
 					preRequestStatus = (Integer) context.get(FacilioConstants.ContextNames.PRE_REQUEST_STATUS);
 				}
+			
 		}
 	}
 		catch (Exception e) {
@@ -465,7 +491,7 @@ public class TaskAction extends FacilioAction {
 		try {
 		context.put(FacilioConstants.ContextNames.ID, getTaskId());
 		
-		Chain getTaskChain = FacilioChainFactory.getTaskDetailsChain();
+		FacilioChain getTaskChain = FacilioChainFactory.getTaskDetailsChain();
 		getTaskChain.execute(context);
 		
 		setTask((TaskContext) context.get(FacilioConstants.ContextNames.TASK));
@@ -523,7 +549,7 @@ public class TaskAction extends FacilioAction {
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
 
-				Chain getRelatedTasksChain = FacilioChainFactory.getRelatedTasksChain();
+				FacilioChain getRelatedTasksChain = FacilioChainFactory.getRelatedTasksChain();
 				getRelatedTasksChain.execute(context);
 				
 				setTasks((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
@@ -545,7 +571,7 @@ public class TaskAction extends FacilioAction {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 
-			Chain taskListChain = FacilioChainFactory.getTaskListChain();
+			FacilioChain taskListChain = FacilioChainFactory.getTaskListChain();
 			taskListChain.execute(context);
 
 			setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -724,7 +750,7 @@ public class TaskAction extends FacilioAction {
 		try {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, this.id);
 
-		Chain getRelatedTasksChain = FacilioChainFactory.getRelatedMultipleTasksChain();
+		FacilioChain getRelatedTasksChain = FacilioChainFactory.getRelatedMultipleTasksChain();
 		getRelatedTasksChain.execute(context);
 
 		setTaskMap((Map<Long, Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
@@ -780,7 +806,7 @@ public class TaskAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TASK);
 			context.put(FacilioConstants.ContextNames.CUSTOM_OBJECT, errors);
 			
-			Chain offlineSync = FacilioChainFactory.addOfflineSyncErrorChain();
+			FacilioChain offlineSync = FacilioChainFactory.addOfflineSyncErrorChain();
 			offlineSync.execute(context);
 			
 			setResult("error", errors.size() + " task(s) sync failed");
@@ -834,7 +860,7 @@ public class TaskAction extends FacilioAction {
 				mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
 				mailJson.put("subject", "Task Exception");
 				mailJson.put("message", body.toString());
-				AwsUtil.sendEmail(mailJson);
+				FacilioFactory.getEmailClient().sendEmail(mailJson);
 			}
 			else {
 				CommonCommandUtil.emailException(TaskAction.class.getName(), "Error in Task api", e, inComingDetails.toString());

@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.facilio.aws.util.FacilioProperties;
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -35,6 +35,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityContext;
 import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
@@ -262,7 +263,7 @@ public class CommonCommandUtil {
 										;
 				json.put("message", body.toString());
 				
-				AwsUtil.sendEmail(json);
+				FacilioFactory.getEmailClient().sendEmail(json);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -350,8 +351,8 @@ public class CommonCommandUtil {
 			checkDB(errorTrace, body);
 			String message = body.toString();
 			json.put("message", message);
-			//AwsUtil.sendEmail(json);
-			if(FacilioProperties.isProduction()) {
+			//FacilioFactory.getEmailClient().sendEmail(json);
+			if(FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
 				FAWSQueue.sendMessage("Exception", message);
 			}
 		} catch (Exception e1) {
@@ -810,5 +811,17 @@ public class CommonCommandUtil {
 		eventTypes = eventTypes instanceof ArrayList ? eventTypes : new ArrayList<>(eventTypes);
 		eventTypes.add(type);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, eventTypes);
+	}
+	
+	public static List<EventType> getEventTypes(Context context) {
+		List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
+		if (eventTypes == null) {
+			EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
+			if (eventType != null) {
+				eventTypes = new ArrayList<>();
+				eventTypes.add(eventType);
+			}
+		}
+		return eventTypes;
 	}
 }

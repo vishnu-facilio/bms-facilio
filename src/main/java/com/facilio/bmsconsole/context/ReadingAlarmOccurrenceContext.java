@@ -4,7 +4,11 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 
 public class ReadingAlarmOccurrenceContext extends AlarmOccurrenceContext {
 
-    private ReadingAlarmCategoryContext readingAlarmCategory;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private ReadingAlarmCategoryContext readingAlarmCategory;
     public ReadingAlarmCategoryContext getReadingAlarmCategory() {
         return readingAlarmCategory;
     }

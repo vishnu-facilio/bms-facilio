@@ -24,7 +24,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.util.FacilioUtil;
 
 public class UpdateGeoLocationCommand extends FacilioCommand {
 

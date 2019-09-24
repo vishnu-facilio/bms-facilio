@@ -42,7 +42,7 @@ public class AddActionToDigestConfigCommand extends FacilioCommand{
 				throw new IllegalArgumentException("To addresses must be specified for digest configuration");
 			}
 			
-			Template template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION, (int) config.getDefaultTemplateId());
+			Template template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION, config.getDefaultTemplateId());
 			template.setType(Type.EMAIL);
 			template.setFtl(true);
 			WorkflowContext workflowContext = template.getWorkflow();

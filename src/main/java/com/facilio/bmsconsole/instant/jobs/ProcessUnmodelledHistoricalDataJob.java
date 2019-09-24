@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -13,6 +12,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -57,7 +57,7 @@ public class ProcessUnmodelledHistoricalDataJob extends InstantJob {
 				context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
 				readingsContext.put(FacilioConstants.ContextNames.MODULE_NAME,field.getModule().getName());
 				
-				Chain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+				FacilioChain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 				addReading.execute(readingsContext);
 			}
 		}

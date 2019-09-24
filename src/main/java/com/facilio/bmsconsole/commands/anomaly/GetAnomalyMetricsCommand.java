@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -20,13 +19,13 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
-import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
-import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 

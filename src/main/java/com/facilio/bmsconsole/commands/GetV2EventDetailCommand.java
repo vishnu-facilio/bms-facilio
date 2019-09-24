@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
-import org.apache.commons.chain.Context;
-
-import java.util.Collections;
 
 public class GetV2EventDetailCommand extends FacilioCommand {
     @Override

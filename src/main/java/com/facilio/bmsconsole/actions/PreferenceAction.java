@@ -2,9 +2,8 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -67,7 +66,7 @@ public class PreferenceAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PREFERENCE_NAME, getName());
 		context.put(FacilioConstants.ContextNames.PREFERENCE_ID, getPreferenceId());
 		
-		Chain chain = TransactionChainFactory.getEnablePreference();
+		FacilioChain chain = TransactionChainFactory.getEnablePreference();
 		chain.execute(context);
 		setResult(FacilioConstants.ContextNames.PREFERENCE_META, context.get(FacilioConstants.ContextNames.PREFERENCE_META));
 		
@@ -79,7 +78,7 @@ public class PreferenceAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PREFERENCE_ID, getPreferenceId());
 		
-		Chain chain = TransactionChainFactory.getDisablePreference();
+		FacilioChain chain = TransactionChainFactory.getDisablePreference();
 		chain.execute(context);
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
 		
@@ -92,7 +91,7 @@ public class PreferenceAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_SPECIFIC, isModuleSpecific());
 		
-		Chain chain = TransactionChainFactory.getAllPreferences();
+		FacilioChain chain = TransactionChainFactory.getAllPreferences();
 		chain.execute(context);
 		setResult(FacilioConstants.ContextNames.PREFERENCE_LIST, context.get(FacilioConstants.ContextNames.PREFERENCE_LIST));
 		
@@ -106,7 +105,7 @@ public class PreferenceAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
 		
-		Chain chain = TransactionChainFactory.getAllEnabledPreferences();
+		FacilioChain chain = TransactionChainFactory.getAllEnabledPreferences();
 		chain.execute(context);
 		setResult(FacilioConstants.ContextNames.PREFERENCE_LIST, context.get(FacilioConstants.ContextNames.PREFERENCE_LIST));
 		

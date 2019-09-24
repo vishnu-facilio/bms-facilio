@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.MultiRuleContext;
@@ -17,9 +15,9 @@ import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 public class StoreRoomAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
@@ -37,7 +35,7 @@ public class StoreRoomAction extends FacilioAction{
 //		if(location!=null)
 //		{
 //			context.put(FacilioConstants.ContextNames.RECORD, location);
-//			Chain addLocation = FacilioChainFactory.addLocationChain();
+//			FacilioChain addLocation = FacilioChainFactory.addLocationChain();
 //			addLocation.execute(context);
 //			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 //			location.setId(locationId);
@@ -45,16 +43,21 @@ public class StoreRoomAction extends FacilioAction{
 		storeRoom.setTtime(System.currentTimeMillis());
 		storeRoom.setModifiedTime(System.currentTimeMillis());
 		context.put(FacilioConstants.ContextNames.RECORD, storeRoom);
+
 		//adding located site as one of the serving sites if no serving site is given
-		if(CollectionUtils.isEmpty(storeRoom.getSites())) {
-			List<Long> sites = new ArrayList<Long>();
-			if(storeRoom.getSite() != null) {
-				sites.add(storeRoom.getSite().getId());
-				storeRoom.setSites(sites);
-			}
-		}
+			if(CollectionUtils.isEmpty(storeRoom.getSites())) {
+				List<Long> sites = new ArrayList<Long>();
+				if(storeRoom.getSite() != null && storeRoom.getSite().getId() > 0) {
+					sites.add(storeRoom.getSite().getId());
+					storeRoom.setSites(sites);
+				}
+				else
+				{
+					throw new IllegalArgumentException("StoreRoom Located Site cannot be empty");
+				}
+		     }
 		context.put(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM, storeRoom.getSites());
-		Chain addStoreRoom = TransactionChainFactory.getAddStoreRoomChain();
+		FacilioChain addStoreRoom = TransactionChainFactory.getAddStoreRoomChain();
 		addStoreRoom.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
@@ -78,7 +81,7 @@ public class StoreRoomAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(storeRoom.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 
-		Chain updatestoreroomChain = TransactionChainFactory.getUpdateStoreRoomChain();
+		FacilioChain updatestoreroomChain = TransactionChainFactory.getUpdateStoreRoomChain();
 		updatestoreroomChain.execute(context);
 		setStoreRoomId(storeRoom.getId());
 		storeRoomDetails();
@@ -90,7 +93,7 @@ public class StoreRoomAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getStoreRoomId());
 
-		Chain storeRoomDetailsChain = ReadOnlyChainFactory.fetchStoreRoomDetails();
+		FacilioChain storeRoomDetailsChain = ReadOnlyChainFactory.fetchStoreRoomDetails();
 		storeRoomDetailsChain.execute(context);
 
 		setStoreRoom((StoreRoomContext) context.get(FacilioConstants.ContextNames.STORE_ROOM));
@@ -128,7 +131,7 @@ public class StoreRoomAction extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain storeRoomList = ReadOnlyChainFactory.getStoreRoomList();
+		FacilioChain storeRoomList = ReadOnlyChainFactory.getStoreRoomList();
 		storeRoomList.execute(context);
 		if (getCount()) {
 			setStoreRoomCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
@@ -247,7 +250,7 @@ public class StoreRoomAction extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.RECORD_ID, storeRoomId);
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, rules);
 			
-			Chain addRule = TransactionChainFactory.addMultiStoreRulesChain();
+			FacilioChain addRule = TransactionChainFactory.addMultiStoreRulesChain();
 			addRule.execute(context);
 			setResult("rules", rules);
 			return SUCCESS;
@@ -257,7 +260,7 @@ public class StoreRoomAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, rules);
 		
-		Chain updateRule = TransactionChainFactory.updateMultiStoreRulesChain();
+		FacilioChain updateRule = TransactionChainFactory.updateMultiStoreRulesChain();
 		updateRule.execute(context);
 		
 		setResult("rules", rules);
@@ -269,7 +272,7 @@ public class StoreRoomAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, ruleIds);
 		
-		Chain deleteRule = TransactionChainFactory.getDeleteWorkflowRuleChain();
+		FacilioChain deleteRule = TransactionChainFactory.getDeleteWorkflowRuleChain();
 		deleteRule.execute(context);
 		
 		setResult("result", context.get(FacilioConstants.ContextNames.RESULT));
@@ -282,7 +285,7 @@ public class StoreRoomAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, storeRoomId);
 		
-		Chain fetchWorkflowChain = ReadOnlyChainFactory.fetchWorkflowRulesForStoreChain();
+		FacilioChain fetchWorkflowChain = ReadOnlyChainFactory.fetchWorkflowRulesForStoreChain();
 		fetchWorkflowChain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));

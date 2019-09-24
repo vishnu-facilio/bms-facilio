@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class InstanceAssetMappingCommand extends FacilioCommand implements PostT
 	public static void insertOrUpdateInstance(String deviceName, long assetId, long categoryId, long controllerId, String instance, long fieldId ,Integer unit) throws Exception {
 		Map<String, Object> modeledData = TimeSeriesAPI.getMappedInstance(deviceName, instance, controllerId);
 		if (modeledData == null) {
-			TimeSeriesAPI.insertInstanceAssetMapping(deviceName, assetId, categoryId, controllerId, Collections.singletonMap(instance, fieldId),unit);	
+			TimeSeriesAPI.insertInstanceAssetMapping(deviceName, assetId, categoryId, controllerId, instance, fieldId,unit);	
 			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceName);

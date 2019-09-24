@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -33,6 +31,7 @@ import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.UserUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -45,6 +44,7 @@ import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -53,10 +53,8 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
@@ -197,7 +195,7 @@ public class UserBeanImpl implements UserBean {
 		context.put(FacilioConstants.ContextNames.MODULE_LIST,
 				modBean.getSubModules(FacilioConstants.ContextNames.USERS, FacilioModule.ModuleType.READING));
 
-		Chain addRDMChain = FacilioChainFactory.addResourceRDMChain();
+		FacilioChain addRDMChain = FacilioChainFactory.addResourceRDMChain();
 		addRDMChain.execute(context);
 	}
 	
@@ -325,7 +323,7 @@ public class UserBeanImpl implements UserBean {
 	public boolean acceptInvite(String token, String password) throws Exception {
 		IAMUser iamUser = IAMUserUtil.acceptInvite(token, password);
 		if(iamUser != null) {
-		   return AccountUtil.getTransactionalUserBean().acceptUser(new User(iamUser));	
+		   return AccountUtil.getTransactionalUserBean(iamUser.getOrgId()).acceptUser(new User(iamUser));	
 		}
 		return false;
 	}
@@ -847,9 +845,15 @@ public class UserBeanImpl implements UserBean {
 			boolean isPortalRequest) throws Exception {
 		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 		if (user.getPhotoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
-			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
-			user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
+			if(!FacilioProperties.isProduction() || FacilioProperties.isServicesEnabled()){
+				com.facilio.services.filestore.FileStore fs = com.facilio.services.factory.FacilioFactory.getFileStoreFromOrg(user.getOrgId(), user.getOuid());
+				user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
+				user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
+			}else {
+				FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
+				user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
+				user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
+			}
 		}
 
 		if (fetchRole) {
@@ -986,12 +990,14 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public Account getPermalinkAccount(String token, List<String> urls) throws Exception {
+	public Account getPermalinkAccount(IAMAccount iamAccount) throws Exception {
 		// TODO Auto-generated method stub
-      IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urls);
-      User user = getUser(iamAccount.getUser().getOrgId(), iamAccount.getUser().getUid());
-      Account account = new Account(iamAccount.getOrg(), user);
-      return account;
+	  if(iamAccount != null) {
+	      User user = getUser(iamAccount.getUser().getOrgId(), iamAccount.getUser().getUid());
+	      Account account = new Account(iamAccount.getOrg(), user);
+	      return account;
+	  }
+	  return null;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.facilio.iam.accounts.util;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -21,23 +22,27 @@ public class IAMOrgUtil {
 	}
 	
 	public static boolean updateOrg(long orgId, Organization org) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean(orgId).updateOrgv2(orgId, org));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().updateOrgv2(orgId, org));
 	}
 	
 	public static boolean deleteOrg(long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean(orgId).deleteOrgv2(orgId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().deleteOrgv2(orgId));
 	}
 	
 	public static Organization getOrg(long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean(orgId).getOrgv2(orgId));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getOrgv2(orgId));
 	}
 	
 	public static Organization getOrg(String orgDomain) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getOrgv2(orgDomain));
 	}
 	
+	public static List<Organization> getOrgs() throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getOrgs());
+	}
+	
 	public static void updateLoggerLevel(int level, long orgId) throws Exception {
-		FacilioService.runAsService(() -> IAMUtil.getOrgBean(orgId).updateLoggerLevel(level, orgId));
+		FacilioService.runAsService(() -> IAMUtil.getOrgBean().updateLoggerLevel(level, orgId));
 	}
 	
 	public static Organization createOrgFromProps(Map<String, Object> prop) throws Exception {

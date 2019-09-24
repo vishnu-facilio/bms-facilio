@@ -39,6 +39,18 @@ public class AddOrUpdateRentalLeaseContractCommand extends FacilioCommand{
 		boolean isContractRevised = (boolean) context.get(FacilioConstants.ContextNames.IS_CONTRACT_REVISED);
 		
 		if (rentalLeaseContractContext != null) {
+			if (rentalLeaseContractContext.getVendor() == null || rentalLeaseContractContext.getVendor().getId() <= 0){
+				throw new IllegalArgumentException("Vendor cannot be empty");
+			}
+			
+			if(rentalLeaseContractContext.getFromDate() > 0 && rentalLeaseContractContext.getEndDate() > 0)
+				{
+					if(rentalLeaseContractContext.getEndDate() <= rentalLeaseContractContext.getFromDate())
+					{
+						throw new IllegalArgumentException("Contract End Date should be greater than From Date");
+					}
+				}
+
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -47,9 +59,7 @@ public class AddOrUpdateRentalLeaseContractCommand extends FacilioCommand{
 //			if (CollectionUtils.isEmpty(rentalLeaseContractContext.getLineItems())) {
 //				throw new Exception("Line items cannot be empty");
 //			}
-			if (rentalLeaseContractContext.getVendor() == null) {
-				throw new Exception("Vendor cannot be empty");
-			}
+			
 			rentalLeaseContractContext.setContractType(ContractType.RENTAL_LEASE);
 			
 			if (!isContractRevised && rentalLeaseContractContext.getId() > 0) {
@@ -67,7 +77,7 @@ public class AddOrUpdateRentalLeaseContractCommand extends FacilioCommand{
 			} 
 			else if (isContractRevised && rentalLeaseContractContext.getId() > 0) {
 				if(rentalLeaseContractContext.getStatusEnum() == Status.APPROVED) {
-					RentalLeaseContractContext revisedContract = (RentalLeaseContractContext)rentalLeaseContractContext.clone();
+					RentalLeaseContractContext revisedContract = rentalLeaseContractContext.clone();
 					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
 					rentalLeaseContractContext.setStatus(Status.REVISED);
 					ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields, true, (FacilioContext) context);

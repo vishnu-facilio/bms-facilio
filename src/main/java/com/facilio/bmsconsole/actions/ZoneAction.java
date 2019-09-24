@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -17,6 +16,7 @@ import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
@@ -35,7 +35,7 @@ public class ZoneAction extends ActionSupport {
 	public String zoneList() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		Chain getAllZone = FacilioChainFactory.getAllZoneChain();
+		FacilioChain getAllZone = FacilioChainFactory.getAllZoneChain();
 		getAllZone.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -52,7 +52,7 @@ public class ZoneAction extends ActionSupport {
 		idList.add(getZoneId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, idList);
 		
-		Chain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
+		FacilioChain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
 		getAllZone.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -69,7 +69,7 @@ public class ZoneAction extends ActionSupport {
 		idList.add(getZoneId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, idList);
 		
-		Chain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
+		FacilioChain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
 		getAllZone.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -90,7 +90,7 @@ public class ZoneAction extends ActionSupport {
 	public String newZone() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		Chain newZone = FacilioChainFactory.getNewZoneChain();
+		FacilioChain newZone = FacilioChainFactory.getNewZoneChain();
 		newZone.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -113,7 +113,7 @@ public class ZoneAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ZONE, zone);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
-		Chain addZone = FacilioChainFactory.getAddZoneChain();
+		FacilioChain addZone = FacilioChainFactory.getAddZoneChain();
 		addZone.execute(context);
 		
 		setZoneId(zone.getId());
@@ -126,7 +126,7 @@ public class ZoneAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ZONE, zone);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
-		Chain updateZone = FacilioChainFactory.getUpdateZoneChain();
+		FacilioChain updateZone = FacilioChainFactory.getUpdateZoneChain();
 		updateZone.execute(context);
 		
 		setZoneId(zone.getId());
@@ -138,7 +138,7 @@ public class ZoneAction extends ActionSupport {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ID, zoneId);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, "zone");
-			Chain deleteZone = FacilioChainFactory.deleteSpaceChain();
+			FacilioChain deleteZone = FacilioChainFactory.deleteSpaceChain();
 			deleteZone.execute(context);
 			setZoneId(zoneId);
 			return SUCCESS;
@@ -154,7 +154,7 @@ public class ZoneAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getZoneIds());
 		
-		Chain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
+		FacilioChain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
 		getAllZone.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -172,7 +172,7 @@ public class ZoneAction extends ActionSupport {
 		}
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,zoneIds);
 		
-		Chain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
+		FacilioChain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
 		getAllZone.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -195,7 +195,7 @@ public class ZoneAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getZoneId());
 		
-		Chain getZoneChain = FacilioChainFactory.getZoneDetailsChain();
+		FacilioChain getZoneChain = FacilioChainFactory.getZoneDetailsChain();
 		getZoneChain.execute(context);
 		
 		setZone((ZoneContext) context.get(FacilioConstants.ContextNames.ZONE));

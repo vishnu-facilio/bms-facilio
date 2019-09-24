@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -12,6 +11,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractLineItemsContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -156,11 +156,11 @@ public class RentalLeaseContractAction extends FacilioAction{
  	 		pagination.put("perPage", 5000);
  	 	}
  	 	
-		Chain chain = ReadOnlyChainFactory.getRentalLeaseContractListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getRentalLeaseContractListChain();
 		chain.execute(context);
 		
 		if (getFetchCount()) {
-			setResult(FacilioConstants.ContextNames.RECORD_COUNT,(Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 		}
 		else {
 			List<RentalLeaseContractContext> rentalLeaseContracts = (List<RentalLeaseContractContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
@@ -184,7 +184,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		context.put(FacilioConstants.ContextNames.STATUS, getStatus());
 		
-		Chain chain = TransactionChainFactory.getUpdateRentalLeaseContractStatusChain();
+		FacilioChain chain = TransactionChainFactory.getUpdateRentalLeaseContractStatusChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
@@ -198,7 +198,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, false );
 		
 		
-		Chain chain = TransactionChainFactory.getAddRentalLeaseContractChain();
+		FacilioChain chain = TransactionChainFactory.getAddRentalLeaseContractChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACT, context.get(FacilioConstants.ContextNames.RECORD));
@@ -209,7 +209,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, recordId);
 		
-		Chain chain = ReadOnlyChainFactory.getRentalLeaseContractDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getRentalLeaseContractDetailsChain();
 		chain.execute(context);
 		
 		RentalLeaseContractContext rentalLeaseContractContext = (RentalLeaseContractContext) context.get(FacilioConstants.ContextNames.RECORD);
@@ -221,7 +221,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 	public String deleteRentalLeaseContract() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
-		Chain chain = TransactionChainFactory.getRentalLeaseContractDeleteChain();
+		FacilioChain chain = TransactionChainFactory.getRentalLeaseContractDeleteChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
@@ -243,7 +243,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		else if(inventoryType == 2) {
 			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, getToolTypeId());
 		}
-		Chain chain = TransactionChainFactory.getActivePurchaseContractPrice();
+		FacilioChain chain = TransactionChainFactory.getActivePurchaseContractPrice();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.UNIT_PRICE, context.get(FacilioConstants.ContextNames.UNIT_PRICE));
@@ -257,7 +257,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContract );
 		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, true );
 		
-		Chain chain = TransactionChainFactory.getAddRentalLeaseContractChain();
+		FacilioChain chain = TransactionChainFactory.getAddRentalLeaseContractChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.REVISED_RECORD, context.get(FacilioConstants.ContextNames.REVISED_RECORD));
@@ -270,7 +270,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContract );
 		
-		Chain chain = TransactionChainFactory.getDuplicateRentalLeaseContract();
+		FacilioChain chain = TransactionChainFactory.getDuplicateRentalLeaseContract();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
@@ -281,7 +281,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS, associatedAssets );
 		
-		Chain chain = TransactionChainFactory.getReturnAssetChain();
+		FacilioChain chain = TransactionChainFactory.getReturnAssetChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
@@ -293,7 +293,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS, associatedAssets );
 		
-		Chain chain = TransactionChainFactory.getPurchaseAssetChain();
+		FacilioChain chain = TransactionChainFactory.getPurchaseAssetChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER, context.get(FacilioConstants.ContextNames.RECORD));
@@ -304,7 +304,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		
-		Chain chain = TransactionChainFactory.getDeleteRentalLeaseContractLineItemChain();
+		FacilioChain chain = TransactionChainFactory.getDeleteRentalLeaseContractLineItemChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
@@ -325,7 +325,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, getLineItems());
 		
-		Chain chain = TransactionChainFactory.getAddRentalLeaseContractLineItem();
+		FacilioChain chain = TransactionChainFactory.getAddRentalLeaseContractLineItem();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));

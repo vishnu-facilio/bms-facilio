@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -17,6 +16,7 @@ import com.facilio.bmsconsole.actions.ImportTemplateContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -85,7 +85,7 @@ public class InsertReadingCommand extends FacilioCommand {
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.IMPORT);
 		
 		context.put(FacilioConstants.ContextNames.READINGS_MAP , readingMap);
-		Chain importDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+		FacilioChain importDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 		importDataChain.execute(context);	
 	}
 }

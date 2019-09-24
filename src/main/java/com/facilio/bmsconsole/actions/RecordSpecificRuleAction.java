@@ -2,13 +2,12 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -77,7 +76,7 @@ public class RecordSpecificRuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, recordRule);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
 		
-		Chain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_RULE, recordRule);
@@ -89,7 +88,7 @@ public class RecordSpecificRuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		
-		Chain chain = ReadOnlyChainFactory.getRecordSpecificRuleList();
+		FacilioChain chain = ReadOnlyChainFactory.getRecordSpecificRuleList();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_RULE_LIST, context.get(FacilioConstants.ContextNames.RECORD_RULE_LIST));
@@ -99,10 +98,10 @@ public class RecordSpecificRuleAction extends FacilioAction {
 	public String viewRule() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
-		Chain chain = ReadOnlyChainFactory.viewRecordRule();
+		FacilioChain chain = ReadOnlyChainFactory.viewRecordRule();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD_RULE, (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.RECORD_RULE, context.get(FacilioConstants.ContextNames.RECORD));
 		return SUCCESS;
 	}
 	
@@ -110,7 +109,7 @@ public class RecordSpecificRuleAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
-		Chain chain = TransactionChainFactory.getDeleteRecordRule();
+		FacilioChain chain = TransactionChainFactory.getDeleteRecordRule();
 		chain.execute(context);
 		return SUCCESS;
 	}

@@ -16,8 +16,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,7 +24,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -101,6 +101,7 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -116,12 +117,12 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.EnergyPurposeAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
-import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
@@ -389,7 +390,7 @@ public class DashboardAction extends FacilioAction {
 		LOGGER.severe("From here");
 		FacilioContext context = new FacilioContext();
 		context.put("orgId", AccountUtil.getCurrentOrg().getId());
-		Chain adddefaultReportChain = FacilioChainFactory.addDefaultReportChain();
+		FacilioChain adddefaultReportChain = FacilioChainFactory.addDefaultReportChain();
 		adddefaultReportChain.execute(context);
 		
 		return SUCCESS;
@@ -6164,7 +6165,7 @@ public class DashboardAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_CONTEXT, reportContext);
 		context.put(FacilioConstants.ContextNames.DATE_FILTER, dateFilter);
 		
-		Chain dataChain = ReportsChainFactory.getReportUnderlyingDataChain();
+		FacilioChain dataChain = ReportsChainFactory.getReportUnderlyingDataChain();
 		dataChain.execute(context);
 		
 		return (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
@@ -6263,7 +6264,7 @@ public class DashboardAction extends FacilioAction {
 			widgetWebContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		}
 		
-		Chain addWidgetChain = null;
+		FacilioChain addWidgetChain = null;
 		if(dashboardWidget != null && dashboardWidget.getId() != -1) {
 //			addWidgetChain = FacilioChainFactory.getAddDashboardVsWidgetChain();
 		}
@@ -6289,8 +6290,18 @@ public class DashboardAction extends FacilioAction {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		String[] mods = new String[]{"workorder", "alarm", "energydata"};
+		
 		for (String mod : mods) {
 			supportedModules.add(modBean.getModule(mod));
+		}
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.INVENTORY)) {
+			String[] inventorySupportedModules = new String[] {"item", "inventoryrequest", "purchaseorder", "purchaserequest"};
+			for (String mod : inventorySupportedModules) {
+				supportedModules.add(modBean.getModule(mod));
+			}
+		}
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.CONTRACT)) {
+			supportedModules.add(modBean.getModule("contracts"));
 		}
 		setModules(supportedModules);
 		return SUCCESS;
@@ -6391,7 +6402,7 @@ public class DashboardAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		
-		Chain mailReportChain = ReportsChainFactory.getSendMailReportChain();
+		FacilioChain mailReportChain = ReportsChainFactory.getSendMailReportChain();
 		mailReportChain.execute(context);
  		
  		return SUCCESS;
@@ -6412,7 +6423,7 @@ public class DashboardAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MAX_COUNT, maxCount);
 		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
  		
-		Chain mailReportChain = ReportsChainFactory.getReportScheduleChain();
+		FacilioChain mailReportChain = ReportsChainFactory.getReportScheduleChain();
 		mailReportChain.execute(context);
  		
  		return SUCCESS;
@@ -6422,7 +6433,7 @@ public class DashboardAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		Chain mailReportChain = ReportsChainFactory.getScheduledReportsChain();
+		FacilioChain mailReportChain = ReportsChainFactory.getScheduledReportsChain();
 		mailReportChain.execute(context);
 		setScheduledReports((List<ReportInfo>) context.get(FacilioConstants.ContextNames.REPORT_LIST));
 		
@@ -6432,7 +6443,7 @@ public class DashboardAction extends FacilioAction {
 	public String deleteScheduledReport () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		Chain mailReportChain = ReportsChainFactory.deleteScheduledReportsChain();
+		FacilioChain mailReportChain = ReportsChainFactory.deleteScheduledReportsChain();
 		mailReportChain.execute(context);
 		
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -6456,7 +6467,7 @@ public class DashboardAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		Chain mailReportChain = ReportsChainFactory.updateScheduledReportsChain();
+		FacilioChain mailReportChain = ReportsChainFactory.updateScheduledReportsChain();
 		mailReportChain.execute(context);
 		
 //		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -6584,7 +6595,7 @@ public class DashboardAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		
-		Chain calculateBenchmarkChain = FacilioChainFactory.calculateBenchmarkValueChain();
+		FacilioChain calculateBenchmarkChain = FacilioChainFactory.calculateBenchmarkValueChain();
 		calculateBenchmarkChain.execute(context);
 		
 		LOGGER.log(Level.SEVERE, "benchmarkId -- "+benchmarkId+" spaceId -- "+spaceId+" units -- "+units+" dateAggr -- "+dateAggr+" startTime -- "+startTime);
@@ -6679,7 +6690,7 @@ public class DashboardAction extends FacilioAction {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.DASHBOARD_FOLDER, dashboardFolderContext);
 			
-			Chain chain = TransactionChainFactory.getAddDashboardFolderChain();
+			FacilioChain chain = TransactionChainFactory.getAddDashboardFolderChain();
 			chain.execute(context);
 		}
 		return SUCCESS;
@@ -6694,7 +6705,7 @@ public class DashboardAction extends FacilioAction {
 		else if(dashboardFolders != null) {
 			context.put(FacilioConstants.ContextNames.DASHBOARD_FOLDERS, dashboardFolders);
 		}
-		Chain chain = TransactionChainFactory.getUpdateDashboardFolderChain();
+		FacilioChain chain = TransactionChainFactory.getUpdateDashboardFolderChain();
 		chain.execute(context);
 		return SUCCESS;
 	}
@@ -6706,7 +6717,7 @@ public class DashboardAction extends FacilioAction {
 			
 			context.put(FacilioConstants.ContextNames.DASHBOARD_FOLDER, dashboardFolderContext);
 			
-			Chain chain = TransactionChainFactory.getDeleteDashboardFolderChain();
+			FacilioChain chain = TransactionChainFactory.getDeleteDashboardFolderChain();
 			chain.execute(context);
 			
 		}
@@ -6716,7 +6727,7 @@ public class DashboardAction extends FacilioAction {
 	public String addDashboard() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		Chain addDashboardChain = TransactionChainFactory.getAddDashboardChain();
+		FacilioChain addDashboardChain = TransactionChainFactory.getAddDashboardChain();
 		addDashboardChain.execute(context);
 		return SUCCESS;
 	}
@@ -6724,7 +6735,7 @@ public class DashboardAction extends FacilioAction {
 	public String addDashboardTab() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
-		Chain addDashboardChain = TransactionChainFactory.getAddDashboardTabChain();
+		FacilioChain addDashboardChain = TransactionChainFactory.getAddDashboardTabChain();
 		addDashboardChain.execute(context);
 		return SUCCESS;
 	}
@@ -6735,7 +6746,7 @@ public class DashboardAction extends FacilioAction {
 			if(dashboardTabContexts != null) {
 				context.put(FacilioConstants.ContextNames.DASHBOARD_TABS_LIST, dashboardTabContexts);
 			}
-			Chain chain = TransactionChainFactory.getUpdateDashboardTabsListChain();
+			FacilioChain chain = TransactionChainFactory.getUpdateDashboardTabsListChain();
 			chain.execute(context);
 			return SUCCESS;
 		}
@@ -6764,7 +6775,7 @@ public class DashboardAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.BUILDING_ID, buildingId);
 		
-		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
+		FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
 		updateDashboardChain.execute(context);
 		return SUCCESS;
 	}
@@ -6785,7 +6796,7 @@ public class DashboardAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
 		
-		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardTabChain();
+		FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardTabChain();
 		updateDashboardChain.execute(context);
 		return SUCCESS;
 	}
@@ -6837,7 +6848,7 @@ public class DashboardAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.DASHBOARDS, dashboards);
 		
-		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardsChain();
+		FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardsChain();
 		updateDashboardChain.execute(context);
 		
 		return SUCCESS;
@@ -6849,7 +6860,7 @@ public class DashboardAction extends FacilioAction {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboardId);
 			
-			Chain deleteDashboardChain = TransactionChainFactory.getDeleteDashboardChain();
+			FacilioChain deleteDashboardChain = TransactionChainFactory.getDeleteDashboardChain();
 			deleteDashboardChain.execute(context);
 			
 			if(context.get(FacilioConstants.ContextNames.DASHBOARD_ERROR_MESSAGE) != null) {
@@ -6867,7 +6878,7 @@ public class DashboardAction extends FacilioAction {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.DASHBOARD_TAB_ID, dashboardTabId);
 			
-			Chain deleteDashboardChain = TransactionChainFactory.getDeleteDashboardTabChain();
+			FacilioChain deleteDashboardChain = TransactionChainFactory.getDeleteDashboardTabChain();
 			deleteDashboardChain.execute(context);
 			
 		}
@@ -7010,7 +7021,7 @@ public class DashboardAction extends FacilioAction {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
 			
-			Chain enableMobileDashboardChain = FacilioChainFactory.getEnableMobileDashboardChain();
+			FacilioChain enableMobileDashboardChain = FacilioChainFactory.getEnableMobileDashboardChain();
 			enableMobileDashboardChain.execute(context);
 		}
 		
@@ -7025,7 +7036,7 @@ public class DashboardAction extends FacilioAction {
 			throw new IllegalArgumentException(" Send Atleast one of widgetId,staticKey,baseSpaceId,workflow,paramsJson,reportSpaceFilterContext Params Should be specified");
 		}
 		
-		Chain fetchCardData = ReadOnlyChainFactory.fetchCardDataChain();
+		FacilioChain fetchCardData = ReadOnlyChainFactory.fetchCardDataChain();
 		FacilioContext context = new FacilioContext();
 		
 		if (getFilters() != null) {

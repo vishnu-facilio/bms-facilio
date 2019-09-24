@@ -5,8 +5,9 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 public class WorkorderCostContext extends ModuleBaseWithCustomFields {
 
 	private static final long serialVersionUID = 1L;
-	private long parentId, ttime, modifiedTime;
+	private long ttime, modifiedTime;
 	private double cost=-1;
+	private WorkOrderContext parentId;
 
 	public long getTtime() {
 		return ttime;
@@ -24,14 +25,15 @@ public class WorkorderCostContext extends ModuleBaseWithCustomFields {
 		this.modifiedTime = modifiedTime;
 	}
 
-	public long getParentId() {
+	public WorkOrderContext getParentId() {
 		return parentId;
 	}
 
-	public void setParentId(long parentId) {
+
+	public void setParentId(WorkOrderContext parentId) {
 		this.parentId = parentId;
 	}
-
+	
 	public double getCost() {
 		return cost;
 	}
@@ -126,5 +128,7 @@ public class WorkorderCostContext extends ModuleBaseWithCustomFields {
 	public void setQuantity(long quantity) {
 		this.quantity = quantity;
 	}
+	
+	
 
 }

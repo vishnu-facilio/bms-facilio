@@ -69,7 +69,7 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 			
 			ReadingInputType[] types = null;
 			if (!readingTypes.isEmpty()) {
-				types = (ReadingInputType[]) readingTypes.toArray(new ReadingInputType[readingTypes.size()]);
+				types = readingTypes.toArray(new ReadingInputType[readingTypes.size()]);
 			}
 			
 			if (fetchCount) {

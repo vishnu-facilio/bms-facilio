@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.context;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -115,7 +116,15 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	public void setClearedTime(long clearedTime) {
 		this.clearedTime = clearedTime;
 	}
-	
+
+	@JsonInclude
+	public long getDuration() {
+		if (clearedTime != -1) {
+			return (clearedTime - createdTime) / 1000;
+		}
+		return -1;
+	}
+
 	private long woId = -1;
 	public long getWoId() {
 		return woId;

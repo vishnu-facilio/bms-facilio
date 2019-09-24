@@ -2,9 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-import org.apache.commons.chain.Context;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -20,7 +21,6 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateTimeUtil;
 
 public class HistoricalVMCalculationCommand extends FacilioCommand implements PostTransactionCommand {

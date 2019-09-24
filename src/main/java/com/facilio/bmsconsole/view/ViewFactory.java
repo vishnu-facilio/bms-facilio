@@ -11,7 +11,6 @@ import java.util.Map;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.billing.context.BillContext.ContextNames;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
@@ -86,9 +85,11 @@ public class ViewFactory {
 					}
 					List<FacilioField> allFields = modBean.getAllFields(moduleName);
 					for (FacilioField field : allFields) {
+						if (module.getTypeEnum() == ModuleType.CUSTOM && (!field.getName().equals("stateFlowId"))) {
 					    ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
 					    viewField.setField(field);
 					    columns.add(viewField);
+						}
 					}
 				}
 				view.setFields(columns);
@@ -292,6 +293,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventry().setOrder(order++));
+		views.put("stale", getStalePartsView().setOrder(order++));
 		views.put("understocked", getUnderStockedItemView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ITEM, views);
 		
@@ -346,8 +348,10 @@ public class ViewFactory {
 		views.put("pending", getPurchaseOrderForStatus("pending", "Pending", 1).setOrder(order++));
 		views.put("overdue", getOverDuePurchaseOrder().setOrder(order++));
 		views.put("approved", getPurchaseOrderForStatus("approved", "Approved", 2).setOrder(order++));
+		views.put("ongoing", getOnGoingPurchaseOrder().setOrder(order++));
 		views.put("rejected", getPurchaseOrderForStatus("rejected", "Rejected", 3).setOrder(order++));
 		views.put("completed", getPurchaseOrderForStatus("completed", "Completed", 7).setOrder(order++));
+		
 		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, views);
 
 		order = 1;
@@ -360,28 +364,43 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule(), -1).setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.CONTRACTS, views);
+
+		
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllPurchaseContractView().setOrder(order++));
+		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule(), 1).setOrder(order++));
+		
 		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, views);
 
 	
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllLabourContractView().setOrder(order++));
+		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule(), 2).setOrder(order++));
+		
 		viewsMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllRentalLeaseContractView().setOrder(order++));
+		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule(), 4).setOrder(order++));
+		
 		viewsMap.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllWarrantyContractView().setOrder(order++));
+		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule(), 3).setOrder(order++));
+		
 		viewsMap.put(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPoLineItemsSerialNumeberView().setOrder(order++));
+		
 		viewsMap.put(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS, views);
 		
 
@@ -2655,13 +2674,13 @@ public class ViewFactory {
 
 	private static FacilioView getStalePartsView() {
 
-		Criteria criteria = getStalePartsCriteria(ModuleFactory.getInventoryModule());
+		Criteria criteria = getStalePartsCriteria(ModuleFactory.getInventryModule());
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(ModuleFactory.getInventoryModule());
+		createdTime.setModule(ModuleFactory.getInventryModule());
 
 		FacilioView staleParts = new FacilioView();
 		staleParts.setName("stale");
@@ -3405,6 +3424,23 @@ public class ViewFactory {
 		return overDueOrder;
 		
 	}
+	private static FacilioView getOnGoingPurchaseOrder() {
+		Criteria criteria = getOngoingPurchaseOrderCriteria(ModuleFactory.getPurchaseOrderModule());
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("orderedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("ORDERED_TIME");
+		createdTime.setModule(ModuleFactory.getPurchaseOrderModule());
+
+		FacilioView ongoingPurchaseOrder = new FacilioView();
+		ongoingPurchaseOrder.setName("ongoing");
+		ongoingPurchaseOrder.setDisplayName("Ongoing");
+		ongoingPurchaseOrder.setCriteria(criteria);
+		ongoingPurchaseOrder.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return ongoingPurchaseOrder;
+		
+	}
 	
 	private static Criteria getOverDuePurchaseOrderCriteria (FacilioModule module) {
 		NumberField requiredTime = new NumberField();
@@ -3440,6 +3476,35 @@ public class ViewFactory {
 		criteria.addAndCondition(overDueOrder);
 		criteria.addAndCondition(statusCond);
 		criteria.addAndCondition(rejCond);
+		return criteria;
+	}
+
+	
+	private static Criteria getOngoingPurchaseOrderCriteria (FacilioModule module) {
+		NumberField requestedTime = new NumberField();
+		requestedTime.setName("orderedTime");
+		requestedTime.setColumnName("ORDERED_TIME");
+		requestedTime.setDataType(FieldType.NUMBER);
+		requestedTime.setModule(module);
+
+		Condition requestedTimeCond = new Condition();
+		requestedTimeCond.setField(requestedTime);
+		requestedTimeCond.setOperator(DateOperators.CURRENT_MONTH);
+		
+		FacilioField poStatusField = new FacilioField();
+		poStatusField.setName("status");
+		poStatusField.setColumnName("STATUS");
+		poStatusField.setDataType(FieldType.NUMBER);
+		poStatusField.setModule(ModuleFactory.getPurchaseOrderModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(poStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf("2,5"));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(requestedTimeCond);
+		criteria.addAndCondition(statusCond);
 		return criteria;
 	}
 
@@ -3516,6 +3581,22 @@ public class ViewFactory {
 		Criteria receivableStatusCriteria = new Criteria();
 		receivableStatusCriteria.addAndCondition(statusCond);
 		return receivableStatusCriteria;
+	}
+	
+	
+	private static FacilioView getExpiringContractView(FacilioModule module, int type) {
+		FacilioField endDateField = new FacilioField();
+		endDateField.setName("endDate");
+		endDateField.setColumnName("END_DATE");
+		endDateField.setDataType(FieldType.DATE);
+		endDateField.setModule(module);
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("expiring");
+		allView.setDisplayName("Expiring This Month");
+		allView.setCriteria(getExpiringContractListCriteria(module, type));
+		allView.setSortFields(Arrays.asList(new SortField(endDateField, false)));
+		return allView;
 	}
 
 	private static FacilioView getAllPurchaseContractView() {
@@ -3679,6 +3760,14 @@ public class ViewFactory {
 		statusView.setDisplayName(viewDisplayName);
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
+		List<ViewField> fields = new ArrayList<ViewField>();
+		fields.add(new ViewField("id", "ID"));
+		fields.add(new ViewField("name", "Name"));
+		fields.add(new ViewField("requestedBy", "Requested By"));
+		fields.add(new ViewField("requestedTime", "Requested Time"));
+		fields.add(new ViewField("status", "Valid Till"));
+		fields.add(new ViewField("totalCost", "Total Cost"));
+		
 
 		return statusView;
 	}
@@ -4316,6 +4405,52 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria ();
 		criteria.addAndCondition(statusCond);
+
+		return criteria;
+	}
+	
+	private static Criteria getExpiringContractListCriteria(FacilioModule module, int type) {
+
+		FacilioField statusField = new FacilioField();
+		statusField.setName("status");
+		statusField.setColumnName("STATUS");
+		statusField.setDataType(FieldType.NUMBER);
+		FacilioModule contract = module;
+		statusField.setModule(contract);
+
+		FacilioField endDateField = new FacilioField();
+		endDateField.setName("endDate");
+		endDateField.setColumnName("END_DATE");
+		endDateField.setDataType(FieldType.DATE);
+		endDateField.setModule(contract);
+
+		Condition expiryCond = new Condition();
+		expiryCond.setField(endDateField);
+		expiryCond.setOperator(DateOperators.CURRENT_MONTH);
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(statusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(ContractsContext.Status.APPROVED.getValue()));
+
+		Criteria criteria = new Criteria ();
+		criteria.addAndCondition(statusCond);
+		criteria.addAndCondition(expiryCond);
+		
+		if(type > 0) {
+			FacilioField typeField = new FacilioField();
+			typeField.setName("contractType");
+			typeField.setColumnName("CONTRACT_TYPE");
+			typeField.setDataType(FieldType.ENUM);
+			typeField.setModule(contract);
+			
+			Condition typeCond = new Condition();
+			typeCond.setField(typeField);
+			typeCond.setValue(String.valueOf(type));
+			typeCond.setOperator(EnumOperators.IS);
+			criteria.addAndCondition(typeCond);
+			
+		}
 
 		return criteria;
 	}

@@ -3,13 +3,13 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -44,7 +44,7 @@ public class DuplicateBaseSpaceForDashboard extends FacilioCommand {
 					context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
 					context.put(FacilioConstants.ContextNames.BUILDING_ID, dashboard.getBaseSpaceId());
 				
-					Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
+					FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
 					updateDashboardChain.execute(context);
 				}
 //				else if(dashboard.getLinkName().equals("sitedashboard") && siteId != -1l) {
@@ -54,7 +54,7 @@ public class DuplicateBaseSpaceForDashboard extends FacilioCommand {
 //					context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
 //					context.put(FacilioConstants.ContextNames.BUILDING_ID, dashboard.getBaseSpaceId());
 //					
-//					Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
+//					FacilioChain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
 //					updateDashboardChain.execute(context);
 //				}
 		   }

@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.facilio.services.factory.FacilioFactory;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -9,12 +17,6 @@ import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
-import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SendEmailCommand extends FacilioCommand implements Serializable{
 	
@@ -43,7 +45,7 @@ public class SendEmailCommand extends FacilioCommand implements Serializable{
 				template.setSubject("Import of" + fileInfo.getFileName());
 				JSONObject emailJSON = template.getOriginalTemplate();
 				emailJSON.put("mailType", "html");
-				AwsUtil.sendEmail(emailJSON);
+				FacilioFactory.getEmailClient().sendEmail(emailJSON);
 				LOGGER.info("Import email sent for importJob:" + importProcessContext.getId() + "to" + user.getEmail());
 			}
 			else {

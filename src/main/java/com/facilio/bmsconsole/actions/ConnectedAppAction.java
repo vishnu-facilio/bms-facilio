@@ -8,16 +8,16 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ConnectedAppContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.SAMLAttribute;
@@ -52,7 +52,7 @@ public class ConnectedAppAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, connectedApp);
 		
-		Chain addItem = TransactionChainFactory.getAddOrUpdateConnectedAppChain();
+		FacilioChain addItem = TransactionChainFactory.getAddOrUpdateConnectedAppChain();
 		addItem.execute(context);
 		setResult(FacilioConstants.ContextNames.CONNECTED_APPS, connectedApp);
 		return SUCCESS;
@@ -63,7 +63,7 @@ public class ConnectedAppAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, connectedApp);
 		context.put(FacilioConstants.ContextNames.ID, connectedApp.getId());
 
-		Chain updateItemChain = TransactionChainFactory.getAddOrUpdateConnectedAppChain();
+		FacilioChain updateItemChain = TransactionChainFactory.getAddOrUpdateConnectedAppChain();
 		updateItemChain.execute(context);
 		setConnectedAppId(connectedApp.getId());
 		setResult(FacilioConstants.ContextNames.CONNECTED_APPS, connectedApp);
@@ -74,7 +74,7 @@ public class ConnectedAppAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, connectedAppId);
 
-		Chain updateItemChain = TransactionChainFactory.getDeleteConnectedAppChain();
+		FacilioChain updateItemChain = TransactionChainFactory.getDeleteConnectedAppChain();
 		updateItemChain.execute(context);
 		setResult(FacilioConstants.ContextNames.ID, connectedAppId);
 		return SUCCESS;
@@ -95,7 +95,7 @@ public class ConnectedAppAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ID, getConnectedAppId());
 		context.put(FacilioConstants.ContextNames.LINK_NAME, getLinkName());
 
-		Chain fetchDetailsChain = ReadOnlyChainFactory.fetchConnectedAppDetails();
+		FacilioChain fetchDetailsChain = ReadOnlyChainFactory.fetchConnectedAppDetails();
 		fetchDetailsChain.execute(context);
 
 		setConnectedApp((ConnectedAppContext) context.get(FacilioConstants.ContextNames.RECORD));
@@ -116,7 +116,7 @@ public class ConnectedAppAction extends FacilioAction {
 	public String connectedAppList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
-		Chain fetchListChain = ReadOnlyChainFactory.getConnectedAppsList();
+		FacilioChain fetchListChain = ReadOnlyChainFactory.getConnectedAppsList();
 		fetchListChain.execute(context);
 		
 		connectedAppList = (List<ConnectedAppContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);

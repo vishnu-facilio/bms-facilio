@@ -283,6 +283,7 @@
 			"usage" : "AssetSummary",
 			"workflow" : "Map assetAlarmDetails(Number resourceId) {
 				date = NameSpace(\"date\");
+				durtaion = 0;
 				thisCurrentYear = date.getDateRange(\"Current Year\");
 				readingAlarmOccurrence = Module(\"readingalarmoccurrence\");
 				occurenceThisMonthCrit = null;
@@ -300,28 +301,99 @@
 				if (thisYearOccurrence != null) {
 					for each index, value in thisYearOccurrence {
 						if (occurrenceCount < value.rule) {
-						ruleId = value.result;
-						occurrenceCount = value.rule;
+							ruleId = value.result.id;
+							occurrenceCount = value.rule;
 						}
 					}
 				}
 				if (ruleId > 0) {
 					readingRuleModule = Module(\"workflowrule\");
 					readingRuleCrite = {
-					criteria: [id == ruleId]
-				};
-				ruleObj = readingRuleModule.fetch(readingRuleCrite);
-
+						criteria: [id == ruleId]
+					};
+					ruleDurationCriteria = {
+						criteria: [rule == ruleId],
+						field: \"duration\",
+						aggregation: \"sum, duration\"
+					};
+					durationrecord = readingAlarmOccurrence.fetch(ruleDurationCriteria);
+					duration = durationrecord;
+					ruleObj = readingRuleModule.fetch(readingRuleCrite);
 					if (ruleObj != null) {
-					firstRes =ruleObj[0];
-					commonRule = firstRes.name;
+						firstRes =ruleObj[0];
+						commonRule = firstRes.name;
 					}
 				}
 				resMap[\"commonRule\"] = commonRule;
-				resMap[\"duration\"] = 0;
+				resMap[\"duration\"] = duration;
+				resMap[\"durationInSeconds\"] = duration;
 				log resMap;
 				return resMap;
 			}"
+		},
+		"6": {
+			"description": "",
+			"usage": "",
+			"workflow": "Map assetAlarmDetails(Number resourceId) {
+				date = NameSpace(\"date\");
+				thisCurrentYear = date.getDateRange(\"Current Year\");
+				readingAlarmOccurrence = Module(\"readingalarm\");
+				occurenceThisMonthCrit = null;
+				resMap = {};
+				durationForYear =0;
+				durationInSeconds = 0;
+				occurenceThisYearCrit = {
+					criteria: [resource == resourceId && createdTime ==  thisCurrentYear],
+					field: \"ruleId\",
+					aggregation: \"count, ruleId\",
+					groupBy: \"ruleId\"
+				};
+				thisYearOccurrence = readingAlarmOccurrence.fetch(occurenceThisYearCrit);
+				occurrenceCount = 0;
+				ruleId = 0;
+				mcName = null;
+				if (thisYearOccurrence != null) {
+					for each index, value in thisYearOccurrence {
+						if (occurrenceCount < value.ruleId) {
+							ruleId = value.result;
+							occurrenceCount = value.ruleId;
+						}
+					}
+				}
+				if (ruleId > 0) {
+					readingRuleModule = Module(\"workflowrule\");
+					readingRuleCrite = {
+						criteria: [id == ruleId]
+					};
+					ruleObj = readingRuleModule.fetch(readingRuleCrite);
+
+					if (ruleObj != null) {
+						firstRes =ruleObj[0];
+						commonRule = firstRes.name;
+					}
+					sumOfCreatedTime = {
+						criteria : [ createdTime == thisCurrentYear && ruleId == ruleId ],
+						aggregation : \"sum, createdTime\",
+						field: \"createdTime\"
+					};
+
+					createdTimeSum = readingAlarmOccurrence.fetch(sumOfCreatedTime);
+					sumClearedTime = {
+						criteria : [ createdTime == thisCurrentYear && ruleId == ruleId ],
+						aggregation : \"sum, clearedTime\",
+						field: \"clearedTime\"
+					};
+
+					clearedTimeSum = readingAlarmOccurrence.fetch(sumClearedTime);
+					durationForYear = (clearedTimeSum - createdTimeSum);
+					durationInSeconds = durationForYear / 1000;
+					log durationForYear;
+				}
+				resMap[\"commonRule\"] = commonRule;
+				resMap[\"duration\"] = durationForYear;
+				resMap[\"durationInSeconds\"] = durationInSeconds;
+				return resMap;
+				}"
 		},
 		"46": {
 			"description" : "ML Deviation",
@@ -352,11 +424,15 @@
 			    deviationCount = 0;
 			    if (thismothoccurence != null) {
 			      for each index,value in thismothoccurence {
+			        startTime = value.createdTime;
+			        if (value.createdTime < thisMonthStartTime) {
+			          startTime = thisMonthStartTime;
+			        }
 			        endTime = value.clearedTime;
 			        if (endTime == null) {
 			          endTime = thisMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime);
+			        ttimes = date.dateRange(startTime, endTime);
 			        thisMonthEnergy = {
 			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField]
 			        };
@@ -379,11 +455,15 @@
 			    deviationCount = 0;
 			    if (lastmonthoccurrence != null) {
 			      for each index,value in lastmonthoccurrence {
+			      	startTime = value.createdTime;
+			        if (value.createdTime < lastMonthStartTime) {
+			          startTime = lastMonthStartTime;
+			        }
 			        endTime = value.clearedTime;
-			        if (endTime == null) {
+			        if (endTime == null || endTime > lastMonthEndTime) {
 			          endTime = lastMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime);
+			        ttimes = date.dateRange(startTime, endTime);
 			        lastMonthEnergy = {
 			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
 			        };
@@ -853,36 +933,40 @@
 			"usage" : "AnomalySummary",
 			"workflow": "Map calculateEnergyWastage(List resourceIds, Number alarmId){
 			  resultMap = {};
-              lsMnRs = {};
+			  lsMnRs = {};
 			  mlReadings = Module(\"anomalydetectionmllogreadings\");
 			  date = NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
 			  thisMonthStartTime = dateRange().getStartTime(thisMonthRanges);
 			  thisMonthEndTime = dateRange().getEndTime(thisMonthRanges);
-  			  lastMonthRanges = date.getDateRange(\"Last Month\");
-  			  lastMonthStartTime = dateRange().getStartTime(lastMonthRanges);
+			  lastMonthRanges = date.getDateRange(\"Last Month\");
+			  lastMonthStartTime = dateRange().getStartTime(lastMonthRanges);
 			  lastMonthEndTime = dateRange().getEndTime(lastMonthRanges);
 			
 			  occurenceThisMonthCrit = {
 			    criteria: [alarm == alarmId && createdTime < thisMonthEndTime && (clearedTime == null || clearedTime > thisMonthStartTime)]
 			  };
- 			 occurenceLastMonthCrit = {
+			  occurenceLastMonthCrit = {
 			    criteria: [alarm == alarmId && createdTime < lastMonthEndTime && (clearedTime == null || clearedTime > lastMonthStartTime)]
 			  };
 			  thismothoccurence =  Module(\"alarmoccurrence\").fetch(occurenceThisMonthCrit);
-  			  lastmonthoccurrence = Module(\"alarmoccurrence\").fetch(occurenceLastMonthCrit);
-  			  adjustedUpperBoundField = NameSpace(\"module\").getField(\"adjustedUpperBound\", \"anomalydetectionmllogreadings\");
+			  lastmonthoccurrence = Module(\"alarmoccurrence\").fetch(occurenceLastMonthCrit);
+			  adjustedUpperBoundField = NameSpace(\"module\").getField(\"adjustedUpperBound\", \"anomalydetectionmllogreadings\");
 			  result = {};
 			  for each rindex,resourceId in resourceIds {
 			    energyWastage = 0;
-                lstMntWastage= 0;
+			    lstMntWastage= 0;
 			    if (thismothoccurence != null) {
 			      for each index,value in thismothoccurence {
+			        startTime = value.createdTime;
+			        if (value.createdTime < thisMonthStartTime) {
+			          startTime = thisMonthStartTime;
+			        }
 			        endTime = value.clearedTime;
 			        if (endTime == null) {
 			          endTime = thisMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime);
+			        ttimes = date.dateRange(startTime, endTime);
 			        thisMonthEnergy = {
 			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
 			        };
@@ -893,15 +977,19 @@
 			          }
 			        }
 			      }
-			  	}
-                result[resourceId] = energyWastage;
-                if (lastmonthoccurrence != null) {
+			    }
+			    result[resourceId] = energyWastage;
+			    if (lastmonthoccurrence != null) {
 			      for each index,value in lastmonthoccurrence {
+			        startTime = value.createdTime;
+			        if (value.createdTime < lastMonthStartTime) {
+			          startTime = lastMonthStartTime;
+			        }
 			        endTime = value.clearedTime;
-			        if (endTime == null) {
+			        if (endTime == null || endTime > lastMonthEndTime) {
 			          endTime = lastMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime);
+			        ttimes = date.dateRange(startTime, endTime);
 			        lastMonthEnergy = {
 			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
 			        };
@@ -912,12 +1000,12 @@
 			          }
 			        }
 			      }			   
+			    }
+			    lsMnRs[resourceId] = lstMntWastage;
 			  }
-              lsMnRs[resourceId] = lstMntWastage;
 			  resultMap[\"currentMonthWastage\"] = result;
-              resultMap[\"lastMonthWastage\"] = lsMnRs;
+			  resultMap[\"lastMonthWastage\"] = lsMnRs;
 			  return resultMap;
-			  }
 			}"
 		},
 		"100" : {

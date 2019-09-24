@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountConstants;
@@ -58,7 +57,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
-import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;

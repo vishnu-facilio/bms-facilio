@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -11,6 +10,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -73,7 +73,7 @@ public class ItemTransactionsAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
-		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUpdateItemTransactionsChain();
+		FacilioChain addWorkorderPartChain = TransactionChainFactory.getAddOrUpdateItemTransactionsChain();
 		addWorkorderPartChain.execute(context);
 		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("itemTransactionsId", itemTransactionsId);
@@ -86,7 +86,7 @@ public class ItemTransactionsAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, itemTransactionsId);
 
-		Chain deleteInventoryChain = TransactionChainFactory.getDeleteItemTransactionsChain();
+		FacilioChain deleteInventoryChain = TransactionChainFactory.getDeleteItemTransactionsChain();
 		deleteInventoryChain.execute(context);
 		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("itemTransactionsId", itemTransactionsId);
@@ -97,7 +97,7 @@ public class ItemTransactionsAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
-		Chain addWorkorderPartChain = TransactionChainFactory.getUpdateInventoryTransactionsChain();
+		FacilioChain addWorkorderPartChain = TransactionChainFactory.getUpdateInventoryTransactionsChain();
 		addWorkorderPartChain.execute(context);
 		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("inventoryActionsId", itemTransactionsId);
@@ -111,7 +111,7 @@ public class ItemTransactionsAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ITEM_TRANSACTION_APPORVED_STATE, approvedState);
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
-		Chain addWorkorderPartChain;
+		FacilioChain addWorkorderPartChain;
 		addWorkorderPartChain = TransactionChainFactory.getApproveRejectWorkorderItemsChain();
 //		if (transactionType == 3) {
 //			addWorkorderPartChain = TransactionChainFactory.getApproveRejectManualItemsChain();
@@ -158,7 +158,7 @@ public class ItemTransactionsAction extends FacilioAction {
 		else if(getShowItemsForIssue()) {
 			context.put(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_ISSUE, showItemsForIssue);
 		}
-		Chain itemsListChain = ReadOnlyChainFactory.getItemTransactionsList();
+		FacilioChain itemsListChain = ReadOnlyChainFactory.getItemTransactionsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setItemsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));

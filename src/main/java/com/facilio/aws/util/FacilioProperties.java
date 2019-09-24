@@ -1,17 +1,5 @@
 package com.facilio.aws.util;
 
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.dynamodbv2.xspec.S;
-import com.amazonaws.services.secretsmanager.AWSSecretsManager;
-import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
-import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
-import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
-import com.facilio.agent.AgentKeys;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +8,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.secretsmanager.AWSSecretsManager;
+import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
+import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
+import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
+import com.facilio.agent.AgentKeys;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class FacilioProperties {
 
@@ -63,6 +63,16 @@ public class FacilioProperties {
     private static HashSet<String> dbIdentifiers = new HashSet<String>();
     private static Long messageReprocessInterval;
     private static String domain;
+    private static String iotUser;
+    private static String iotPassword;
+    private static String iotVirtualHost;
+    private static int iotEndPointPort;
+    private static String iotExchange;
+    private static String bridgeUrl;
+
+    private static String emailClient;
+    private static String fileStore;
+    private static boolean isServicesEnabled;
 
     static {
         loadProperties();
@@ -93,6 +103,9 @@ public class FacilioProperties {
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
                 isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
+                isServicesEnabled="enabled".equalsIgnoreCase(PROPERTIES.getProperty("services.isEnabled"));
+                emailClient = PROPERTIES.getProperty("service.email");
+                fileStore=PROPERTIES.getProperty("service.file.store");
                 anomalyTempDir = PROPERTIES.getProperty("anomalyTempDir", "/tmp");
                 anomalyCheckServiceURL = PROPERTIES.getProperty("anomalyCheckServiceURL", "http://localhost:7444/api");
                 anomalyBucket = PROPERTIES.getProperty("anomalyBucket","facilio-analytics");
@@ -109,6 +122,18 @@ public class FacilioProperties {
                 defaultAppDB = PROPERTIES.getProperty("db.default.app.db");
                 messageQueue = PROPERTIES.getProperty("messageQueue");
                 domain = PROPERTIES.getProperty("domain");
+                iotUser = PROPERTIES.getProperty("iot.accessKeyId");
+                iotPassword = PROPERTIES.getProperty("iot.secretKeyId");
+                iotVirtualHost = PROPERTIES.getProperty("iot.virtual.host");
+                iotExchange = PROPERTIES.getProperty("iot.exchange");
+                bridgeUrl = PROPERTIES.getProperty("bridge.url");
+                if(PROPERTIES.containsKey("iot.endpoint.port")) {
+                    try {
+                        iotEndPointPort = Integer.parseInt(PROPERTIES.getProperty("iot.endpoint.port"));
+                    } catch (NumberFormatException e) {
+                        LOGGER.info("Exception while parsing iot.endpoint.port, " + PROPERTIES.getProperty("iot.endpoint.port"));
+                    }
+                }
                 
                 PROPERTIES.put("clientapp.url", clientAppUrl);
                 URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
@@ -323,5 +348,41 @@ public class FacilioProperties {
             }
         }
         return secretMap;
+    }
+
+    public static String getIotUser() {
+        return iotUser;
+    }
+
+    public static String getIotPassword() {
+        return iotPassword;
+    }
+
+    public static String getIotVirtualHost() {
+        return iotVirtualHost;
+    }
+
+    public static int getIotEndPointPort() {
+        return iotEndPointPort;
+    }
+
+    public static String getIotExchange() {
+        return iotExchange;
+    }
+
+
+    public static String getEmailClient(){return emailClient;}
+
+    
+    public static String getBridgeUrl() {
+        return bridgeUrl;
+    }
+
+    public static String getFileStore() {
+        return fileStore;
+    }
+
+    public static boolean isServicesEnabled() {
+        return isServicesEnabled;
     }
 }

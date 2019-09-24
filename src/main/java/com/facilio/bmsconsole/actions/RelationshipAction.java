@@ -1,10 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.RelationshipContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -38,7 +37,7 @@ public class RelationshipAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 
 		context.put(FacilioConstants.ContextNames.RELATIONSHIP, relationship);
-		Chain chain;
+		FacilioChain chain;
 		if (relationship.getId() > 0) {
 			chain = TransactionChainFactory.getUpdateRelationShipChain();
 		} else {
@@ -52,7 +51,7 @@ public class RelationshipAction extends FacilioAction {
 	public String getRelationshipList() throws Exception {
 		FacilioContext context = new FacilioContext();
 
-		Chain chain = ReadOnlyChainFactory.getRelationshipChain();
+		FacilioChain chain = ReadOnlyChainFactory.getRelationshipChain();
 		chain.execute(context);
 
 		setResult("RelationshipList", context.get(FacilioConstants.ContextNames.RELATIONSHIP_LIST));
@@ -63,7 +62,7 @@ public class RelationshipAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 
 		context.put(FacilioConstants.ContextNames.ID, id);
-		Chain chain = TransactionChainFactory.getDeleteRelationshipChain();
+		FacilioChain chain = TransactionChainFactory.getDeleteRelationshipChain();
 		chain.execute(context);
 		return SUCCESS;
 	}

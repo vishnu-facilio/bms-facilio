@@ -1,14 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
 
 public class AddDefaultStateFlowCommand extends FacilioCommand {
 
@@ -35,7 +36,7 @@ public class AddDefaultStateFlowCommand extends FacilioCommand {
         defaultRule.setModuleId(module.getModuleId());
         context.put(FacilioConstants.ContextNames.RECORD, defaultRule);
         context.put(FacilioConstants.ContextNames.DEFAULT_STATEFLOW, true);
-        Chain addStateFlowTransition = TransactionChainFactory.getAddOrUpdateStateFlow();
+        FacilioChain addStateFlowTransition = TransactionChainFactory.getAddOrUpdateStateFlow();
         addStateFlowTransition.execute(context);
 
         StateflowTransitionContext transitionContext = new StateflowTransitionContext();
@@ -47,7 +48,7 @@ public class AddDefaultStateFlowCommand extends FacilioCommand {
         transitionContext.setStateFlowId(defaultRule.getId());
         transitionContext.setRuleType(WorkflowRuleContext.RuleType.STATE_RULE);
         context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, transitionContext);
-        Chain transitionChain = TransactionChainFactory.getAddOrUpdateStateFlowTransition();
+        FacilioChain transitionChain = TransactionChainFactory.getAddOrUpdateStateFlowTransition();
         transitionChain.execute(context);
 
         return false;

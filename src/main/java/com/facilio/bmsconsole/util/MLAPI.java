@@ -11,7 +11,6 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -85,7 +84,7 @@ public class MLAPI {
 		FacilioField resourceFieldColumn = fieldMaps.get("resource");
 
 		StringBuilder durationAggrColumn = new StringBuilder("SUM(COALESCE(")
-				.append(clearedTimeFieldColumn).append(",").append(System.currentTimeMillis()).append(") - ")
+				.append(clearedTimeFieldColumn).append(",").append(dateRange.getEndTime()).append(") - ")
 				.append(createdTimeFieldColumn).append(")")
 				;
 		FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);

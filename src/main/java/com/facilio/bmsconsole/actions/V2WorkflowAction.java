@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -27,7 +26,7 @@ public class V2WorkflowAction extends FacilioAction {
 		FacilioContext facilioContext = new FacilioContext();
 		approvalRule.setRuleType(RuleType.APPROVAL_RULE);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, approvalRule);
-		Chain addRule = TransactionChainFactory.addApprovalRuleChain();
+		FacilioChain addRule = TransactionChainFactory.addApprovalRuleChain();
 		addRule.execute(facilioContext);
 		setResult("rule", approvalRule);
 		
@@ -38,7 +37,7 @@ public class V2WorkflowAction extends FacilioAction {
 		FacilioContext facilioContext = new FacilioContext();
 		approvalRule.setRuleType(RuleType.APPROVAL_RULE);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, approvalRule);
-		Chain addRule = TransactionChainFactory.updateApprovalRuleChain();
+		FacilioChain addRule = TransactionChainFactory.updateApprovalRuleChain();
 		addRule.execute(facilioContext);
 		setResult("rule", approvalRule);
 		
@@ -57,7 +56,7 @@ public class V2WorkflowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, ruleId);
 		
-		Chain fetchWorkflowChain = ReadOnlyChainFactory.fetchApprovalRuleWithActionsChain();
+		FacilioChain fetchWorkflowChain = ReadOnlyChainFactory.fetchApprovalRuleWithActionsChain();
 		fetchWorkflowChain.execute(context);
 		
 		approvalRule = (ApprovalRuleContext) context.get(FacilioConstants.ContextNames.APPROVAL_RULE);

@@ -7,8 +7,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -34,12 +32,14 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -117,6 +117,13 @@ public class UserAction extends FacilioAction {
 		setSetup(SetupLayout.getUsersListLayout());
 		setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId()));
 		
+		return SUCCESS;
+	}
+	
+	public String v2userList() throws Exception {
+		setSetup(SetupLayout.getUsersListLayout());
+		setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId()));
+		setResult("users", getUsers());
 		return SUCCESS;
 	}
 
@@ -246,16 +253,16 @@ public class UserAction extends FacilioAction {
 		}
 
 		user.setUserType(UserType.REQUESTER.getValue());
-		//if(emailVerificationNeeded) {
+		if(emailVerificationNeeded) {
 			user.setUserVerified(false);
 			user.setInviteAcceptStatus(false);
 			user.setInvitedTime(System.currentTimeMillis());
-//		}
-//		else {
-//			user.setUserVerified(true);
-//			user.setInviteAcceptStatus(true);
-//			user.setInvitedTime(System.currentTimeMillis());
-//		}
+		}
+		else {
+			user.setUserVerified(true);
+			user.setInviteAcceptStatus(true);
+			user.setInvitedTime(System.currentTimeMillis());
+		}
 		
 		try {
 			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true) > 0) {
@@ -306,17 +313,17 @@ public class UserAction extends FacilioAction {
 		user.setFacilioAuth("facilio".equals(value));
 		user.setDomainName("app");
 		
-		//if(emailVerificationNeeded) {
+		if(emailVerificationNeeded) {
 			user.setUserVerified(false);
 			user.setInviteAcceptStatus(false);
 			user.setInvitedTime(System.currentTimeMillis());
-//		}
-//		else {
-//			user.setUserVerified(true);
-//			user.setInviteAcceptStatus(true);
-//			user.setInvitedTime(System.currentTimeMillis());
-//
-//		}
+		}
+		else {
+			user.setUserVerified(true);
+			user.setInviteAcceptStatus(true);
+			user.setInvitedTime(System.currentTimeMillis());
+
+		}
 
 
 		FacilioContext context = new FacilioContext();
@@ -333,7 +340,7 @@ public class UserAction extends FacilioAction {
 		
 		try {
 				context.put(FacilioConstants.ContextNames.USER, user);
-				Chain addUser = FacilioChainFactory.getAddUserCommand();
+				FacilioChain addUser = FacilioChainFactory.getAddUserCommand();
 				addUser.execute(context);
 		}
 		catch (Exception e) {
@@ -613,13 +620,23 @@ public class UserAction extends FacilioAction {
 	}
 	
 	public String uploadUserAvatar() throws Exception {
-		
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
-		long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
-		
-		AccountUtil.getUserBean().updateUserPhoto(userId, fileId);
-		
-		setAvatarUrl(fs.getPrivateUrl(fileId));
+		if(!FacilioProperties.isProduction() || FacilioProperties.isServicesEnabled()){
+			com.facilio.services.filestore.FileStore fs = com.facilio.services.factory.FacilioFactory.getFileStore();
+			long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
+
+			AccountUtil.getUserBean().updateUserPhoto(userId, fileId);
+
+			setAvatarUrl(fs.getPrivateUrl(fileId));
+		}
+		else{
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
+
+			AccountUtil.getUserBean().updateUserPhoto(userId, fileId);
+
+			setAvatarUrl(fs.getPrivateUrl(fileId));
+		}
+
 		
 		return SUCCESS;
 	}

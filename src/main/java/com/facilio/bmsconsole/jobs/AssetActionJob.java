@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -12,6 +11,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -26,7 +26,7 @@ public class AssetActionJob extends FacilioJob {
 			
 			FacilioContext context = new FacilioContext();
 			context.put("workflowRules", workflowRules);
-			Chain assetAction = FacilioChainFactory.getAssetActionChain();
+			FacilioChain assetAction = FacilioChainFactory.getAssetActionChain();
 			assetAction.execute(context);
 		}
 		catch(Exception e) {

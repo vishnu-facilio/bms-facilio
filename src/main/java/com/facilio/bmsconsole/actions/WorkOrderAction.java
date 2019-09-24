@@ -3,11 +3,18 @@ package com.facilio.bmsconsole.actions;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Chain;
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -69,6 +76,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -292,7 +300,7 @@ public class WorkOrderAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
 
- 		Chain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
+ 		FacilioChain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
  		addTemplate.execute(context);
 
 		return SUCCESS;
@@ -407,7 +415,7 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			context.put(FacilioConstants.ContextNames.TASK_MAP, taskPm1);
 			context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
-			Chain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
+			FacilioChain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
 			addTemplate.execute(context);
 		}
 		return SUCCESS;
@@ -464,7 +472,7 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 
 			
-			Chain executePm = TransactionChainFactory.getExecutePMsChain();
+			FacilioChain executePm = TransactionChainFactory.getExecutePMsChain();
 			executePm.execute(context);
 			
 			return context;
@@ -811,7 +819,7 @@ public class WorkOrderAction extends FacilioAction {
  			}
  		}
 
- 		Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
+ 		FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
  		updatePM.execute(context);
 
 		return SUCCESS;
@@ -845,7 +853,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PM_RESOURCE_ID, resourceId);
 		context.put(FacilioConstants.ContextNames.PM_ID, pmId);
 
-		Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
+		FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
 		updatePM.execute(context);
 
 		return SUCCESS;
@@ -856,7 +864,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
 
-		Chain pmSummary = FacilioChainFactory.getNewPreventiveMaintenanceSummaryChain();
+		FacilioChain pmSummary = FacilioChainFactory.getNewPreventiveMaintenanceSummaryChain();
 		pmSummary.execute(context);
 
 		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
@@ -879,7 +887,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
 
-		Chain pmReadings = FacilioChainFactory.getPreventiveMaintenanceReadingsChain();
+		FacilioChain pmReadings = FacilioChainFactory.getPreventiveMaintenanceReadingsChain();
 		pmReadings.execute(context);
 
 		Collection<WorkOrderContext> workOrderContexts = (Collection<WorkOrderContext>) context.get(ContextNames.RESULT);
@@ -931,7 +939,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 
-		Chain deletePM = FacilioChainFactory.getDeletePreventiveMaintenanceChain();
+		FacilioChain deletePM = FacilioChainFactory.getDeletePreventiveMaintenanceChain();
 		deletePM.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 
@@ -942,7 +950,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
-		Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+		FacilioChain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
 		addTemplate.execute(context);
 
 		return SUCCESS;
@@ -1013,7 +1021,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 
-		Chain getPmchain = FacilioChainFactory.getGetNewPMJobListChain();
+		FacilioChain getPmchain = FacilioChainFactory.getGetNewPMJobListChain();
 		getPmchain.execute(context);
 
 		setPmMap((Map<Long, PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
@@ -1055,7 +1063,7 @@ public class WorkOrderAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 
-		Chain getPmchain = FacilioChainFactory.getGetPreventiveMaintenanceListChain();
+		FacilioChain getPmchain = FacilioChainFactory.getGetPreventiveMaintenanceListChain();
 		getPmchain.execute(context);
 		if (getCount() != null) {
 			setWoCount((long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT));
@@ -1269,7 +1277,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 
-		Chain deleteWorkOrder = FacilioChainFactory.getDeleteWorkOrderChain();
+		FacilioChain deleteWorkOrder = FacilioChainFactory.getDeleteWorkOrderChain();
 		deleteWorkOrder.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 	}
@@ -1339,7 +1347,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
-		Chain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
+		FacilioChain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
 		updateWorkOrder.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		setWorkOrders((List<WorkOrderContext>) context.get(ContextNames.RECORD_LIST));
@@ -1372,7 +1380,7 @@ public class WorkOrderAction extends FacilioAction {
 		try {
 		context.put(FacilioConstants.ContextNames.ID, getWorkOrderId());
 
-		Chain getWorkOrderChain = ReadOnlyChainFactory.getWorkOrderDetailsChain();
+		FacilioChain getWorkOrderChain = ReadOnlyChainFactory.getWorkOrderDetailsChain();
 		getWorkOrderChain.execute(context);
 
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
@@ -1517,7 +1525,7 @@ public class WorkOrderAction extends FacilioAction {
 				mailJson.put("to", "shaan@facilio.com, tharani@facilio.com");
 				mailJson.put("subject", "Workorder Exception");
 				mailJson.put("message", body.toString());
-				AwsUtil.sendEmail(mailJson);
+				FacilioFactory.getEmailClient().sendEmail(mailJson);
 			}
 			else {
 				CommonCommandUtil.emailException(WorkOrderAction.class.getName(), "Error in Workorder api", e, inComingDetails.toString());
@@ -1696,7 +1704,7 @@ public class WorkOrderAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID, pmId);
 
-		Chain getResourcesListForMultiplePM = ReadOnlyChainFactory.getResourcesListForMultiplePM();
+		FacilioChain getResourcesListForMultiplePM = ReadOnlyChainFactory.getResourcesListForMultiplePM();
 		getResourcesListForMultiplePM.execute(context);
 		
 		setMultiPmResourceIds((List<Long>)context.get(FacilioConstants.ContextNames.MULTI_PM_RESOURCE_IDS));
@@ -1858,6 +1866,7 @@ public class WorkOrderAction extends FacilioAction {
 		
 		if (isCalendarApi()) {
 			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getCalendarSelectFields());
+			context.put(FacilioConstants.ContextNames.FETCH_CUSTOM_FIELDS, true);
 		}
 		else if (getSelectFields() != null) {
  			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getSelectFields());			
@@ -1869,7 +1878,7 @@ public class WorkOrderAction extends FacilioAction {
 
 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		
-		Chain workOrderListChain = ReadOnlyChainFactory.getWorkOrderListChain();
+		FacilioChain workOrderListChain = ReadOnlyChainFactory.getWorkOrderListChain();
 		workOrderListChain.execute(context);
 
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -2188,7 +2197,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET_ID, workOrderId);
 
-		Chain activitiesChain = FacilioChainFactory.getTicketActivitiesChain();
+		FacilioChain activitiesChain = FacilioChainFactory.getTicketActivitiesChain();
 		activitiesChain.execute(context);
 
 		setActivities((List<TicketActivity>) context.get(FacilioConstants.TicketActivity.TICKET_ACTIVITIES));
@@ -2208,7 +2217,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_ID, workOrderId);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		
-		Chain workOrderActivity = ReadOnlyChainFactory.getActivitiesChain();
+		FacilioChain workOrderActivity = ReadOnlyChainFactory.getActivitiesChain();
 		workOrderActivity.execute(context);
 		List<ActivityContext> activity =  (List<ActivityContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<ActivityContext> woActivities = new ArrayList<>();
@@ -2277,7 +2286,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getWorkOrderId());
 
-		Chain getWorkOrderChain = FacilioChainFactory.getWorkOrderDataChain();
+		FacilioChain getWorkOrderChain = FacilioChainFactory.getWorkOrderDataChain();
 		getWorkOrderChain.execute(context);
 
 		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
@@ -2297,7 +2306,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
 
 
-		Chain workOrderStatusPercentageListChain = ReadOnlyChainFactory.getWorkOrderStatusPercentageChain();
+		FacilioChain workOrderStatusPercentageListChain = ReadOnlyChainFactory.getWorkOrderStatusPercentageChain();
 		workOrderStatusPercentageListChain.execute(context);
 
 
@@ -2315,7 +2324,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
 
 
-		Chain avgResponseResolutionTimeChain = ReadOnlyChainFactory.getAvgResponseResolutionTimeBySiteChain();
+		FacilioChain avgResponseResolutionTimeChain = ReadOnlyChainFactory.getAvgResponseResolutionTimeBySiteChain();
 		avgResponseResolutionTimeChain.execute(context);
 
 
@@ -2334,7 +2343,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
 		
-		Chain woTechCountBySite = ReadOnlyChainFactory.getTopNTechBySiteChain();
+		FacilioChain woTechCountBySite = ReadOnlyChainFactory.getTopNTechBySiteChain();
 		woTechCountBySite.execute(context);
 
 
@@ -2352,7 +2361,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
 
 
-		Chain woCountBySite = ReadOnlyChainFactory.getWorkOrderCountBySiteChain();
+		FacilioChain woCountBySite = ReadOnlyChainFactory.getWorkOrderCountBySiteChain();
 		woCountBySite.execute(context);
 
 
@@ -2372,7 +2381,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, getSiteId());
 
-		Chain avgCompletionTimeByCategoryChain = ReadOnlyChainFactory.getAvgCompletionTimeByCategoryChain();
+		FacilioChain avgCompletionTimeByCategoryChain = ReadOnlyChainFactory.getAvgCompletionTimeByCategoryChain();
 		avgCompletionTimeByCategoryChain.execute(context);
 		Map<String, Object> resp = (Map<String,Object>) context.get(FacilioConstants.ContextNames.WORK_ORDER_AVG_RESOLUTION_TIME);
 
@@ -2529,7 +2538,7 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 			context.put(FacilioConstants.ContextNames.CUSTOM_OBJECT, errors);
 			
-			Chain offlineSync = FacilioChainFactory.addOfflineSyncErrorChain();
+			FacilioChain offlineSync = FacilioChainFactory.addOfflineSyncErrorChain();
 			offlineSync.execute(context);
 			
 			setResult("error", errors.size() + " workorder(s) sync failed");
@@ -2585,7 +2594,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
 		context.put(FacilioConstants.ContextNames.COUNT, isCount);
 		
-		Chain woChain = ReadOnlyChainFactory.getCalendarWorkOrdersChain();
+		FacilioChain woChain = ReadOnlyChainFactory.getCalendarWorkOrdersChain();
 		woChain.execute(context);
 		
 		if (isCount) {
@@ -2628,7 +2637,7 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 	private List<String> getCalendarSelectFields() {
-		return Arrays.asList("createdTime", "subject", "assignedTo", "assignmentGroup", "trigger", "resource");
+		return Arrays.asList("createdTime", "subject", "assignedTo", "assignmentGroup", "trigger", "resource", "category", "priority", "type", "moduleState");
 	}
 
 

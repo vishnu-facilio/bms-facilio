@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimerTask;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -12,6 +13,7 @@ import org.json.simple.JSONObject;
 import com.amazonaws.services.sqs.model.DeleteMessageBatchRequestEntry;
 import com.amazonaws.services.sqs.model.Message;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 
 public class FacilioExceptionProcessor extends TimerTask {
@@ -25,8 +27,11 @@ public class FacilioExceptionProcessor extends TimerTask {
 
 
     public void run() {
-        List<Message> messageList = FAWSQueue.receiveMessages(QUEUE);
+        if(FacilioProperties.isOnpremise() || !FacilioProperties.isProduction()) {
+            return;
+        }
 
+        List<Message> messageList = FAWSQueue.receiveMessages(QUEUE);
 
         while(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 20) {
             processMessages(messageList);
@@ -46,7 +51,7 @@ public class FacilioExceptionProcessor extends TimerTask {
                 json.put("subject", orgWithClass+" - Exception Mail");
                 json.put("message", builder.toString());
                 try {
-                    AwsUtil.sendEmail(json);
+                    FacilioFactory.getEmailClient().sendEmail(json);
                     LOGGER.info("calling delete msg with "+ RECEIPT_HANDLE_LIST.get(orgWithClass).size());
                     FAWSQueue.deleteMessage(QUEUE, RECEIPT_HANDLE_LIST.get(orgWithClass));
                 } catch (Exception e) {

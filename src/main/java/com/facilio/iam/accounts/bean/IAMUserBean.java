@@ -8,7 +8,6 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.modules.fields.FacilioField;
 
 public interface IAMUserBean {

@@ -426,6 +426,7 @@ public class FieldFactory {
 		span.setColumnName("SPAN");
 		span.setModule(module);
 		
+		fields.add(getField("showField", "SHOW_FIELD", module, FieldType.BOOLEAN));
 		fields.add(getField("value", "DEFAULT_VALUE", module, FieldType.STRING));
 		fields.add(getField("sectionId", "SECTIONID", module, FieldType.NUMBER));
 		
@@ -623,6 +624,7 @@ public class FieldFactory {
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 		fields.add(getField("createdBy", "CREATED_BY", module, FieldType.LOOKUP));
+		fields.add(getField("stateFlowEnabled", "STATE_FLOW_ENABLED", module, FieldType.BOOLEAN));
 		return fields;
 	}
 
@@ -2247,6 +2249,18 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getFormTemplateFields() {
+		FacilioModule module = ModuleFactory.getFormTemplatesModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+
 
 	public static List<FacilioField> getTenantFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -5056,6 +5070,7 @@ public class FieldFactory {
 		fields.add(getField("timeMetricSettingsJson", "TIME_METRIC_SETTINGS", module, FieldType.STRING));
 		fields.add(getField("moveType", "MOVE_TYPE", module,FieldType.STRING));
 		fields.add(getField("legendSettingsJson", "LEGEND_SETTINGS", module,FieldType.STRING));
+		fields.add(getField("plannerType", "PLANNER_TYPE", FieldType.NUMBER));
 		
 
 		return fields;
@@ -5942,7 +5957,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
-		//fields.add(getOrgIdField(module));
+		fields.add(AccountConstants.getOrgIdField(module));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("interval", "REFRESH_INTERVAL", module, FieldType.NUMBER));
 		fields.add(getField("screenSettingString","SCREEN_SETTING",module,FieldType.STRING));

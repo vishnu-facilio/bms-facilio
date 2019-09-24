@@ -3,17 +3,20 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facilio.modules.*;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class GetAllFieldsCommand extends FacilioCommand {
@@ -51,7 +54,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 			
 			context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
 			
-			Chain addCurrentOccupancy = FacilioChainFactory.getCategoryReadingsChain();
+			FacilioChain addCurrentOccupancy = FacilioChainFactory.getCategoryReadingsChain();
 			addCurrentOccupancy.execute(context);
 			
 			List<FacilioModule> readingModules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
@@ -63,7 +66,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 		}
 		else
 		{
-			Chain getFieldsChain = FacilioChainFactory.getGetFieldsChain();
+			FacilioChain getFieldsChain = FacilioChainFactory.getGetFieldsChain();
 			getFieldsChain.execute(context);
 			allFields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			

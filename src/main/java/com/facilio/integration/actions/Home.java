@@ -28,7 +28,6 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import com.opensymphony.xwork2.ActionSupport;

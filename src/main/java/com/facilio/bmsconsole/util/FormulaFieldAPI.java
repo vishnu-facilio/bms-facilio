@@ -12,8 +12,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import com.facilio.modules.*;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -31,6 +29,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -45,7 +44,14 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
@@ -293,7 +299,7 @@ public class FormulaFieldAPI {
 		//						context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
 								context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
 								
-								Chain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+								FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 								addReadingChain.execute(context);
 							}
 						}
@@ -809,7 +815,7 @@ public class FormulaFieldAPI {
 				context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
 				context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
 				
-				Chain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 				addReadingChain.execute(context);
 			}
 		}
@@ -1054,7 +1060,7 @@ public class FormulaFieldAPI {
 				context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
 				context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
 				
-				Chain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 				addReadingChain.execute(context);
 			}
 			

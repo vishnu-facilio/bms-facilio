@@ -7,19 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.modules.*;
-import org.apache.commons.collections4.MapUtils;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.HistoricalLoggerContext;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -29,8 +18,12 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class WorkflowRuleHistoricalLoggerUtil {
@@ -246,7 +239,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 
 	public static void deleteAlarmOccurrencesWithEdgeCases(long ruleId, Long startTime, Long endTime, long resourceId) throws Exception {
 		
-		NewAlarmAPI.deleteIntervalBasedAlarmOccurrences(ruleId, (long)startTime, (long)endTime, resourceId);
+		NewAlarmAPI.deleteIntervalBasedAlarmOccurrences(ruleId, startTime, endTime, resourceId);
 		
 	}	
 }

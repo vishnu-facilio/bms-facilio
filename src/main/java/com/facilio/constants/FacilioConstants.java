@@ -75,6 +75,9 @@ public class FacilioConstants {
 	public static class ContextNames {
 
         public static final String SCHEDULE_GENERATION_TIME = "scheduleGenerationTime";
+        public static final String OLD_TASKS = "oldTasks";
+		public static final String TASKS = "tasks";
+        public static final String TASK_READINGS = "taskReadings";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
@@ -116,6 +119,7 @@ public class FacilioConstants {
 		public static final String IS_BULK_EXECUTE_COMMAND = "isbulkExecuteCommand";
 		public static final String FETCH_COUNT = "fetchCount";
 		public static final String FETCH_SELECTED_FIELDS = "fetchSelectedFields";
+		public static final String FETCH_CUSTOM_FIELDS = "fetchCustomFields";
 		public static final String RECORD_COUNT = "recordCount";
 		public static final String ROWS_UPDATED = "rowsUpdated";
 		public static final String EVENT_TYPE = "eventType";
@@ -303,6 +307,7 @@ public class FacilioConstants {
 		public static final String MODULE_NAME = "moduleName";
 		public static final String MODULE_DESCRIPTION = "moduleDescription";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
+		public static final String STATE_FLOW_ENABLED = "stateFlowEnabled";
 		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
 		public static final String MODULE_DATA = "moduleData";
 		public static final String MODULE_DATA_LIST = "moduleDatas";
@@ -344,6 +349,7 @@ public class FacilioConstants {
 		public static final String PREVIOUS_VALUE = "previousValue";
 		public static final String ONLY_READING = "onylyReading";
 		public static final String ADJUST_READING_TTIME = "adjustReadingTtime";
+		public static final String KPI = "kpi";
 		
 		public static final String DASHBOARD = "dashboard";
 		public static final String DASHBOARD_TAB = "dashboardTab";
@@ -439,6 +445,7 @@ public class FacilioConstants {
 		public static final String FIELD_NAME_LIST = "fieldList";
 		public static final String DEFAULT_FIELD = "defaultField";
 		public static final String MODULE_FIELD_IDS = "moduleFieldIds";
+		public static final String CHECK_FIELD_DISPLAY_NAME_DUPLICATION= "avoidFieldDisplayNameDuplication";
 		public static final String FIELD_ID = "fieldId";
 		public static final String LOOKUP_FIELD_META_LIST = "lookupFieldMetaList";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
@@ -783,6 +790,7 @@ public class FacilioConstants {
 		public static final String UNSUBSCRIBE_IDS="unsubscribeIds";
 		public static final String UPDATE_LAST_READINGS = "updateLastReadings";
 		public static final String SKIP_LAST_READING_CHECK = "skipLastReadingCheck";
+		public static final String SKIP_VALIDATION = "skipValidation";
 		public static final String PREVIOUS_READING_DATA_META = "previousReadingDataMeta";
 		public static final String CURRRENT_READING_DATA_META = "currentReadingDataMeta";
 		public static final String READING_DATA_META_ID = "readingDataMetaId";
@@ -1143,6 +1151,7 @@ public class FacilioConstants {
 		public static final String WARRANTY_CONTRACT_TYPE = "Warranty_Contract_Type";
 		public static final String CONTRACT_ASSOCIATED_ASSETS = "contractassets";
 		public static final String CONTRACT_ASSOCIATED_TERMS = "contractterms";
+		public static final String PO_ASSOCIATED_TERMS = "poterms";
 		
 		public static final String CONTRACT_TYPE = "Contract_Type";
 		

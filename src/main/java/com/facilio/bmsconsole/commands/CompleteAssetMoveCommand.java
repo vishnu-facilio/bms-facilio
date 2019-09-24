@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -16,7 +15,6 @@ import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.workflow.rule.StateContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -24,7 +22,6 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.util.FacilioUtil;
 
 ;
 

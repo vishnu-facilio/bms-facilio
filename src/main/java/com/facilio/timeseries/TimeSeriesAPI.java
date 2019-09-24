@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -27,6 +25,7 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bacnet.BACNetUtil.InstanceType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -38,6 +37,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -101,7 +101,7 @@ public class TimeSeriesAPI {
 		//Temp code. To be removed later *END*
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
 		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, adjustTime);
-		Chain processDataChain = TransactionChainFactory.getProcessDataChain();
+		FacilioChain processDataChain = TransactionChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
 	}
 	
@@ -121,7 +121,7 @@ public class TimeSeriesAPI {
 			context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
 		}
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
-		Chain processDataChain = TransactionChainFactory.getProcessDataChain();
+		FacilioChain processDataChain = TransactionChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
 	}
 	
@@ -231,9 +231,9 @@ public class TimeSeriesAPI {
 	}
 	
 	
-public static void insertInstanceAssetMapping(String deviceName, long assetId, long categoryId, Long controllerId, Map<String,Long> instanceFieldMap, Integer unit) throws Exception {
+public static void insertInstanceAssetMapping(String deviceName, long assetId, long categoryId, Long controllerId, String instanceName, Long fieldId, Integer unit) throws Exception {
 		
-		List<Map<String, Object>> instanceDetails = getUnmodeledInstances(deviceName, instanceFieldMap.keySet(), controllerId, null);
+		List<Map<String, Object>> instanceDetails = getUnmodeledInstances(deviceName, instanceName, controllerId, null);
 		//List<Map<String, Object>> instancePointsDetails = getPoinstUnmodeledInstances(deviceName, instanceFieldMap.keySet(), controllerId, null);
 		Map<String,Map<String, Object>> instanceMap = instanceDetails.stream().collect(Collectors.toMap(instance -> (String) instance.get("instance"), Function.identity()));
 		//Map<String,Map<String, Object>> instancepointsMap = instancePointsDetails.stream().collect(Collectors.toMap(instance -> (String) instance.get("instance"), Function.identity()));
@@ -241,56 +241,52 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		List<ReadingDataMeta> writableReadingList = new ArrayList<>();
 		List<ReadingDataMeta> remainingReadingList = new ArrayList<>();
 		
-		Map<String, ReadingDataMeta> metaMap = getMetaMap(assetId, instanceFieldMap);
+		Map<String, ReadingDataMeta> metaMap = getMetaMap(assetId, Collections.singletonMap(instanceName, fieldId));
 		List<Map<String, Object>> records = new ArrayList<>();
 		
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		
 		
-		for (Map.Entry<String, Long> entry : instanceFieldMap.entrySet()) {
-			String instanceName = entry.getKey();
-			long fieldId = entry.getValue();
-			
-			checkForInputType(assetId, fieldId, instanceName, metaMap);
+		checkForInputType(assetId, fieldId, instanceName, metaMap);
 
-//			if(isStage()) {
-				Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
-//				pointsRecord.put("unit", unit);
-				updatePointsData(deviceName, instanceName, pointsRecord);
+//		if(isStage()) {
+			Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
+//			pointsRecord.put("unit", unit);
+			updatePointsData(deviceName, instanceName, pointsRecord);
 
-//			}
+//		}
 
-			Map<String, Object> record = new HashMap<String,Object>();
-			record.put("orgId", orgId);
-			record.put("device", deviceName);
-			record.put("assetId", assetId);
-			record.put("categoryId", categoryId);
-			record.put("instance", instanceName);
-			record.put("fieldId", fieldId);
-			record.put("mappedTime", System.currentTimeMillis());
-			if(controllerId!=null) {
-				record.put("controllerId", controllerId);
+		Map<String, Object> record = new HashMap<String,Object>();
+		record.put("orgId", orgId);
+		record.put("device", deviceName);
+		record.put("assetId", assetId);
+		record.put("categoryId", categoryId);
+		record.put("instance", instanceName);
+		record.put("fieldId", fieldId);
+		record.put("mappedTime", System.currentTimeMillis());
+		if(controllerId!=null) {
+			record.put("controllerId", controllerId);
+		}
+		records.add(record);
+		
+		Map<String, Object> instance = instanceMap.get(instanceName);
+		InstanceType rType=null;
+		if(instance!=null) {
+			Object typeObj= instance.get("instanceType");
+			if(typeObj!=null) {
+				rType =  InstanceType.valueOf((int)typeObj );
 			}
-			records.add(record);
-			
-			Map<String, Object> instance = instanceMap.get(instanceName);
-			InstanceType rType=null;
-			if(instance!=null) {
-				Object typeObj= instance.get("instanceType");
-				if(typeObj!=null) {
-					rType =  InstanceType.valueOf((int)typeObj );
-				}
-			}
-			
-			ReadingDataMeta meta = metaMap.get(getRDMKey(assetId, fieldId));
-			if (rType==null || rType.isWritable()) {
-				writableReadingList.add(meta);
-			}
-			else {
-				remainingReadingList.add(meta);
-			}
-		};		
+		}
+		
+		ReadingDataMeta meta = metaMap.get(getRDMKey(assetId, fieldId));
+		if (rType==null || rType.isWritable()) {
+			writableReadingList.add(meta);
+		}
+		else {
+			remainingReadingList.add(meta);
+		}
+		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.fields(FieldFactory.getInstanceMappingFields())
 				.table("Instance_To_Asset_Mapping")
@@ -312,8 +308,8 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.fields(FieldFactory.getPointsFields())
 				.table(module.getTableName())
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module),deviceName, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module),instanceName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module),deviceName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module),instanceName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 				;
 		builderPoints.update(pointsRecord);
 	}
@@ -349,8 +345,8 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.fields(fields)
 				.table(module.getTableName())
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 				;
 			updatePointsData(deviceName, instanceName,prop );
 
@@ -414,7 +410,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), device, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instance, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instance.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), StringOperators.IS))
 				;
 		List<Map<String, Object>> props = builder.get();
@@ -593,7 +589,13 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		 */
 		List<String> instanceNames = null;
 		if (controllerId != null) {
+			if(AccountUtil.getCurrentOrg().getId()==152) {
+				LOGGER.info("## Device Points in come payload " + instanceArray);
+			}
 			List<Map<String, Object>> instances = getPointsInstancesForController(controllerId, true);
+			if(AccountUtil.getCurrentOrg().getId()==152) {
+				LOGGER.info("## Device Points Data already added in Points Table" + instances);
+			}
 			if (instances != null && !instances.isEmpty()) {
 				instanceNames = instances.stream().map(instance -> instance.get("device") + "|" + instance.get("instance")).collect(Collectors.toList());
 			}
@@ -623,9 +625,9 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				instanceObj.put("controllerId", controllerId);
 			}
 			insertBuilderPoints.addRecord(instanceObj);
-//			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
-				LOGGER.info(instanceObj+"device points data######");
-//			}
+			if(AccountUtil.getCurrentOrg().getId()==152) {
+				LOGGER.info("## Device Points Data comes form ORG 152 check" + instanceObj);
+			}
 		}
 		insertBuilderPoints.save();
 		return insertBuilderPoints.getRecords().size();
@@ -837,7 +839,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		return getUnmodeledInstances(null, null, null, ids);
 	}
 	
-	public static List<Map<String, Object>> getUnmodeledInstances (String device, Collection<String> instances, Long controllerId, List<Long> ids) throws Exception {
+	public static List<Map<String, Object>> getUnmodeledInstances (String device, String instance, Long controllerId, List<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
 //		fields.add(FieldFactory.getIdField(module));
@@ -852,11 +854,11 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		if (ids != null ) {
 			builder.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		}
-		else if (instances != null) {
-			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), device, StringOperators.IS))
+		else if (instance != null) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), device.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_EMPTY))
 				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_EMPTY))
-				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), StringUtils.join(instances, ","), StringOperators.IS))
+				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instance.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), StringOperators.IS));
 		}
 		

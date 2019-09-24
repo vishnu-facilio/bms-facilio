@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class DuplicateDashboardForBuildingCommand extends FacilioCommand {
@@ -33,7 +33,7 @@ public class DuplicateDashboardForBuildingCommand extends FacilioCommand {
 				db.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 				context.put(FacilioConstants.ContextNames.DASHBOARD, db);
 				
-				Chain addDashboardChain = TransactionChainFactory.getAddDashboardChain();
+				FacilioChain addDashboardChain = TransactionChainFactory.getAddDashboardChain();
 				
 				addDashboardChain.execute(context);
 

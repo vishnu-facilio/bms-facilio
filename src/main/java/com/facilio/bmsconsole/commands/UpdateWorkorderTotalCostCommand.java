@@ -3,13 +3,13 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -56,7 +56,7 @@ public class UpdateWorkorderTotalCostCommand extends FacilioCommand {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, parentIds);
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, java.util.Collections.singletonList(workorder));
 				
-				Chain c = TransactionChainFactory.getUpdateWorkOrderChain();
+				FacilioChain c = TransactionChainFactory.getUpdateWorkOrderChain();
 				c.execute(context);
 					
 				context.put(FacilioConstants.ContextNames.WO_TOTAL_COST, totalcost);

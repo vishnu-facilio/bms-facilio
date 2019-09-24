@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -11,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class AddOrUpdateReadingsCommand extends FacilioCommand {
@@ -20,7 +20,7 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		Chain addOrUpdateChain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+		FacilioChain addOrUpdateChain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		addOrUpdateChain.execute(context);
 		
 		ControllerContext controller = updateCheckPointAndControllerActivity(context);
@@ -42,7 +42,7 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 	private ControllerContext updateCheckPointAndControllerActivity (Context context) throws Exception {
 		//Update Check point
 		try {
-			Chain controllerActivityChain = TransactionChainFactory.controllerActivityAndWatcherChain();
+			FacilioChain controllerActivityChain = TransactionChainFactory.controllerActivityAndWatcherChain();
 			controllerActivityChain.execute(context);
 			
 			return (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER);
@@ -57,7 +57,7 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 	
 	private void executeWorkflowsRules (Context context) {
 		try {
-			Chain executeWorkflowChain = ReadOnlyChainFactory.executeWorkflowsForReadingChain();
+			FacilioChain executeWorkflowChain = ReadOnlyChainFactory.executeWorkflowsForReadingChain();
 			executeWorkflowChain.execute(context);
 		}
 		catch (Exception e) {
@@ -69,7 +69,7 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 	
 	private void executeFormulae (Context context) {
 		try {
-			Chain formulaChain = ReadOnlyChainFactory.calculateFormulaChain();
+			FacilioChain formulaChain = ReadOnlyChainFactory.calculateFormulaChain();
 			formulaChain.execute(context);
 		}
 		catch (Exception e) {
@@ -81,7 +81,7 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 	
 	private void publishReadingChangeMessage (Context context) {
 		try {
-			Chain publishChain = ReadOnlyChainFactory.getPubSubPublishMessageChain();
+			FacilioChain publishChain = ReadOnlyChainFactory.getPubSubPublishMessageChain();
 			publishChain.execute(context);
 		}
 		catch (Exception e) {

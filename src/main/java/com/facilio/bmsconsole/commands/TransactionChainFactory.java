@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
@@ -52,7 +54,6 @@ import com.facilio.workflows.command.UpdateNameSpaceCommand;
 import com.facilio.workflows.command.UpdateUserFunctionCommand;
 import com.facilio.workflows.command.UpdateWorkflowCommand;
 import com.facilio.workflows.command.updateScheduledWorkflowCommand;
-import org.apache.commons.chain.Context;
 
 public class TransactionChainFactory {
 
@@ -76,7 +77,7 @@ public class TransactionChainFactory {
 		}
 
 		public static FacilioChain getAddNotesChain() {
-			FacilioChain c = (FacilioChain) getDefaultChain();
+			FacilioChain c = getDefaultChain();
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddNotesCommand());
 			c.addCommand(new ExecuteNoteWorkflowCommand());
@@ -253,7 +254,7 @@ public class TransactionChainFactory {
 		}
 
 		public static FacilioChain getAddNewTasksChain() {
-			FacilioChain c = (FacilioChain) getDefaultChain();
+			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTask());
 			c.addCommand(new ValidateNewTasksCommand());
 			c.addCommand(new LoadAllFieldsCommand());
@@ -271,7 +272,7 @@ public class TransactionChainFactory {
 		}
 
 		public static FacilioChain getAddTasksChain() {
-			FacilioChain c = (FacilioChain) getDefaultChain();
+			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTask());
 			c.addCommand(new ValidateTasksCommand());
 			c.addCommand(new LoadAllFieldsCommand());
@@ -959,12 +960,26 @@ public class TransactionChainFactory {
 			c.addCommand(new ReadingUnitConversionToDisplayUnit());
 			return c;
 		}
+
+
+		public static FacilioChain getPMReadingCorrectionChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidatePMReadingCorrection());
+			c.addCommand(new AddPMCorrectiveReadingsContext());
+			c.addCommand(new UpdateTaskInputValuesCommand());
+			c.addCommand(new ReadingUnitConversionToRdmOrSiUnit());
+			c.addCommand(TransactionChainFactory.onlyAddOrUpdateReadingsChain());
+			c.addCommand(new AddTaskReadingCorrectionActivityCommand());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+			return c;
+		}
+
 		
 		public static FacilioChain getUpdateTaskChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ValidatePrerequisiteStatusForTaskUpdateCommnad());
-			c.addCommand(new ValidateReadingInputForTask());
 			c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
+			c.addCommand(new ValidateReadingInputForTask());
 			c.addCommand(new ReadingUnitConversionToRdmOrSiUnit());
 			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
 			c.addCommand(new ReadingUnitConversionToSiUnit());
@@ -975,6 +990,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTaskTicketActivityCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new AddActivitiesCommand());
+			c.addCommand(new SiUnitConversionToEnteredReadingUnit());
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			return c;
 		}
@@ -985,6 +1001,7 @@ public class TransactionChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateTaskCommand());
 		c.addCommand(new AddActivitiesCommand());
+		c.addCommand(new SiUnitConversionToEnteredReadingUnit());
 		return c;
 	}
 		public static FacilioChain getProcessDataChain() {
@@ -2069,6 +2086,7 @@ public class TransactionChainFactory {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
 			chain.addCommand(new AddOrUpdatePurchaseOrderCommand());
+			chain.addCommand(new AssociateDefaultTermsToPoCommand());
 			chain.addCommand(getPurchaseOrderTotalCostChain()); //update purchase order total cost
 			chain.addCommand(new AddPurchaseRequestOrderRelation());
 			return chain;
@@ -2220,6 +2238,9 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddFormCommand() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddFormCommand());
+			c.addCommand(new AddSystemFieldsCommand());
+			c.addCommand(new AddFormForCustomModuleCommand());
+			
 			return c;
 		}
 
@@ -3500,12 +3521,23 @@ public class TransactionChainFactory {
 		chain.addCommand(updateWorkflowRuleChain());
 		return chain;
 	}
-		public static FacilioChain generateScheduleChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new BlockPMEditOnWOGeneration(false, false, true));
-			c.addCommand(new SchedulePMWorkOrderGenerationCommand());
-			return c;
-		}
+	public static FacilioChain generateScheduleChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new BlockPMEditOnWOGeneration(false, false, true));
+		c.addCommand(new SchedulePMWorkOrderGenerationCommand());
+		return c;
+	}
+	
+	public static FacilioChain getAssociateTermsToPOChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AssociateTermsToPOCommand());
+		return c;
+	}
+	public static FacilioChain getDisAssociateTermsToPOChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DisAssociateTermsFromPoCommand());
+		return c;
+	}
 }
 
 

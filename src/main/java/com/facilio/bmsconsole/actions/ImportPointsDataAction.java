@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
@@ -20,6 +19,7 @@ import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ImportPointsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -56,7 +56,7 @@ public class ImportPointsDataAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.IMPORT_MODE, importMode);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
 		
-		Chain uploadFile = TransactionChainFactory.UploadImportPointsFileChain();
+		FacilioChain uploadFile = TransactionChainFactory.UploadImportPointsFileChain();
 		uploadFile.execute(context);
 		
 		PointsProcessContext imp = (PointsProcessContext) context.get(FacilioConstants.ContextNames.POINTS_PROCESS_CONTEXT);

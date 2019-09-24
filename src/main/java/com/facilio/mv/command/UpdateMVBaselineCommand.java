@@ -3,13 +3,13 @@ package com.facilio.mv.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -59,14 +59,14 @@ public class UpdateMVBaselineCommand extends FacilioCommand {
 				
 				if(baseline.getId() < 0) {
 					context.put(MVUtil.MV_BASELINE, baseline);
-					Chain chain = TransactionChainFactory.getAddMVBaselineChain();
+					FacilioChain chain = TransactionChainFactory.getAddMVBaselineChain();
 					chain.execute(context);
 				}
 				else {
 					if(baseline.getFormulaField() != null) {
 						context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseline.getFormulaField());
 						MVUtil.fillFormulaFieldDetailsForUpdate(baseline.getFormulaField(), mvProjectWrapper.getMvProject(),baseline,null,context);
-						Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
+						FacilioChain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 						updateEnPIChain.execute(context);
 					}
 					

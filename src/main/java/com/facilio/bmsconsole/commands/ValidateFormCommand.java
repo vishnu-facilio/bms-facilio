@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
@@ -13,6 +12,7 @@ import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -99,7 +99,7 @@ public class ValidateFormCommand extends FacilioCommand {
 					
 					c1.put(FacilioConstants.ContextNames.MODULE_NAME, field.getLookupModule().getName());
 					
-					Chain c = FacilioChainFactory.getPickListChain();
+					FacilioChain c = FacilioChainFactory.getPickListChain();
 					c.execute(c1);
 					
 					map = (Map<Long, String>) c1.get(FacilioConstants.ContextNames.PICKLIST);

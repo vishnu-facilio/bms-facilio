@@ -604,6 +604,13 @@
 				<param name="includeProperties">rowsUpdated,preRequestStatus,^error.*</param>
 			</result>
 		</action>
+		<action name="correctPMReadings" class="com.facilio.bmsconsole.actions.TaskAction" method="correctPMReadings">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 		<action name="addorupdatetaskinput" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="addTaskInput">
 			<param name="moduleName">workorder</param>
@@ -1049,7 +1056,7 @@
 			method="jobs">
 			<result name="success">/jsps/adminjobs.jsp</result>
 		</action>
-<action name="showcache" class="com.facilio.bmsconsole.actions.AdminAction">
+       <action name="showcache" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result name="success">/jsps/admin/showCache.jsp</result>
 		</action>
 		<action name="clearcache" class="com.facilio.bmsconsole.actions.AdminAction" method="clearCache">
@@ -1121,7 +1128,12 @@
 			<action name="adminReadingTools" class="com.facilio.bmsconsole.actions.AdminAction" method="adminReadingTools">
 			<result  type="tiles">adminpage/deltacalculation.jsp</result>
 			</action>
-						
+			<action name="data" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/data.jsp</result>
+			</action>					
+			<action name="getAlertsPointsData" class="com.facilio.bmsconsole.actions.AdminAction" method ="getAlertsPointsData">
+			<result   type="tiles">adminpage/data.jsp</result>
+			</action>							
 			
 			</package>
 
@@ -3849,4 +3861,5 @@
 			</result>
 		</action>
 	</package>
+	
 </struts>

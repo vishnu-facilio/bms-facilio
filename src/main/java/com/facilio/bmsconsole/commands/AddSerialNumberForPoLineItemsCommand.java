@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -20,6 +19,7 @@ import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.util.StoreroomApi;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -67,7 +67,7 @@ public class AddSerialNumberForPoLineItemsCommand extends FacilioCommand {
 				context.put(FacilioConstants.ContextNames.RECORD, ast);
 				context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, Long.valueOf(-1));
 				context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-				Chain addAssetChain = TransactionChainFactory.getAddAssetChain();
+				FacilioChain addAssetChain = TransactionChainFactory.getAddAssetChain();
 				addAssetChain.execute(context);
 				PoLineItemsSerialNumberContext record = new PoLineItemsSerialNumberContext();
 				record.setLineItem(polineitemSerialNumber.getLineItem());

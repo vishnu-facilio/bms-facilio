@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -12,6 +11,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
@@ -121,7 +121,7 @@ public class AttachmentAction  extends FacilioAction {
  				context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
  				}
  		
-		Chain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
+		FacilioChain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
 		addAttachmentChain.execute(context);
 		
 		List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
@@ -166,7 +166,7 @@ public class AttachmentAction  extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
 		context.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
 		
-		Chain getAttachmentsChain = FacilioChainFactory.getAttachmentsChain();
+		FacilioChain getAttachmentsChain = FacilioChainFactory.getAttachmentsChain();
 		getAttachmentsChain.execute(context);
 		
 		List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
@@ -193,7 +193,7 @@ public class AttachmentAction  extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
  		
-		Chain deleteAttachmentChain = FacilioChainFactory.getDeleteAttachmentChain();
+		FacilioChain deleteAttachmentChain = FacilioChainFactory.getDeleteAttachmentChain();
 		deleteAttachmentChain.execute(context);
 		return SUCCESS;
 	}

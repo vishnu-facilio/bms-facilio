@@ -1,10 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.util.KPIUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 
 public class KPIAction extends FacilioAction {
@@ -36,7 +35,7 @@ public class KPIAction extends FacilioAction {
 		
 		context.put(KPIUtil.KPI_CATEGORY_CONTEXT, kpiCategory);
 		
-		Chain addMVProjectChain =  TransactionChainFactory.getAddKPICategoryChain(); 
+		FacilioChain addMVProjectChain =  TransactionChainFactory.getAddKPICategoryChain();
 		addMVProjectChain.execute(context);
 		
 		setResult(KPIUtil.KPI_CATEGORY_CONTEXT, kpiCategory);
@@ -48,7 +47,7 @@ public class KPIAction extends FacilioAction {
 		
 		context.put(KPIUtil.KPI_CATEGORY_CONTEXT, kpiCategory);
 		
-		Chain addMVProjectChain =  TransactionChainFactory.getUpdateKPICategoryChain(); 
+		FacilioChain addMVProjectChain =  TransactionChainFactory.getUpdateKPICategoryChain();
 		addMVProjectChain.execute(context);
 		
 		setResult(KPIUtil.KPI_CATEGORY_CONTEXT, kpiCategory);
@@ -61,7 +60,7 @@ public class KPIAction extends FacilioAction {
 		
 		context.put(KPIUtil.KPI_CATEGORY_CONTEXT, kpiCategory);
 		
-		Chain addMVProjectChain =  TransactionChainFactory.getDeleteKPICategoryChain(); 
+		FacilioChain addMVProjectChain =  TransactionChainFactory.getDeleteKPICategoryChain();
 		addMVProjectChain.execute(context);
 		
 		setResult(KPIUtil.KPI_CATEGORY_CONTEXT, kpiCategory);

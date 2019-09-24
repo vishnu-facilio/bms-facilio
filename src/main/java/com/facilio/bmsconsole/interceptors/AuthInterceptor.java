@@ -3,10 +3,8 @@ package com.facilio.bmsconsole.interceptors;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.HttpHeaders;
@@ -14,16 +12,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.UserUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
 import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
+import com.facilio.service.FacilioService;
 import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
@@ -131,17 +126,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 			String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");
 			if (deviceToken != null && !"".equals(deviceToken)) {
 				long connectedScreenId = Long.parseLong(IAMUserBeanImpl.validateJWT(deviceToken, "auth0").getSubject().split(IAMUserBeanImpl.JWT_DELIMITER)[0]);
-				RemoteScreenContext remoteScreen = ScreenUtil.getRemoteScreen(connectedScreenId);
+				RemoteScreenContext remoteScreen = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getRemoteScreen(connectedScreenId));
 				if (remoteScreen != null) {
-					// TODO - check here
-					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(remoteScreen.getOrgId()), null /*AccountUtil.getOrgBean().getSuperAdmin(remoteScreen.getOrgId())*/);
-					currentAccount.setRemoteScreen(remoteScreen);
-					
-					AccountUtil.cleanCurrentAccount();
-					AccountUtil.setCurrentAccount(currentAccount);
-					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
-					request.setAttribute("USERID", currentAccount.getUser().getOuid());
-					
+					request.setAttribute("remoteScreen", remoteScreen);
 					return true;
 				}
 			}

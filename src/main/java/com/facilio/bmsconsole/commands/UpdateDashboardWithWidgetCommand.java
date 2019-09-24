@@ -2,25 +2,19 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
 public class UpdateDashboardWithWidgetCommand extends FacilioCommand {
@@ -48,7 +42,7 @@ public class UpdateDashboardWithWidgetCommand extends FacilioCommand {
 					if(widget.getId() <= 0) {
 						
 						
-						Chain addWidgetChain = TransactionChainFactory.getAddWidgetChain();
+						FacilioChain addWidgetChain = TransactionChainFactory.getAddWidgetChain();
 
 						widget.setDashboardId(dashboard.getId());
 						context.put(FacilioConstants.ContextNames.WIDGET, widget);
@@ -63,7 +57,7 @@ public class UpdateDashboardWithWidgetCommand extends FacilioCommand {
 			
 			List<DashboardWidgetContext> updatedWidgets = dashboard.getDashboardWidgets();
 			
-			Chain updateWidgetChain = TransactionChainFactory.getUpdateWidgetsChain();
+			FacilioChain updateWidgetChain = TransactionChainFactory.getUpdateWidgetsChain();
 			
 			context.put(FacilioConstants.ContextNames.WIDGET_UPDATE_LIST,updatedWidgets);
 

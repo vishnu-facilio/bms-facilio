@@ -118,8 +118,11 @@ public class GetFormMetaCommand extends FacilioCommand {
 		if (form != null) {
 			for(FormField field: form.getFields()) {
 				if (field.getValue() != null && field.getField() != null && field.getField().getDataTypeEnum() == FieldType.LOOKUP && ((LookupField)field.getField()).getLookupModule().getName().equals(ContextNames.RESOURCE)) {
-					ResourceContext resource = ResourceAPI.getResource(Long.parseLong(field.getValue().toString()));
-					field.setValue(resource);
+					String val = field.getValue().toString();
+					if (StringUtils.isNumeric(val)) {
+						ResourceContext resource = ResourceAPI.getResource(Long.parseLong(val.toString()));
+						field.setValue(resource);
+					}
 				}
 			}
 			if (AccountUtil.getCurrentUser() == null && AccountUtil.getCurrentOrg().getOrgId() != 104) {

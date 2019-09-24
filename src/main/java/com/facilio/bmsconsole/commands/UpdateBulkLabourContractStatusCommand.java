@@ -9,7 +9,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LabourContractContext;
-import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -36,8 +35,8 @@ public class UpdateBulkLabourContractStatusCommand extends FacilioCommand{
 						.fields(updatedfields)
 						.andCondition(CriteriaAPI.getIdCondition(labourContractIds,labourContractModule));
 		updateBuilder.withChangeSet(LabourContractContext.class);
-		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, updateBuilder.getChangeSet());
 	     context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.updateViaMap(updateMap));
+	 	context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, updateBuilder.getChangeSet());
 		return false;
 	}
 

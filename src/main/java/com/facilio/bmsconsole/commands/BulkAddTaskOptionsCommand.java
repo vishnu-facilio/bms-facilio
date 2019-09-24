@@ -1,22 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import  com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Context;
-
-import java.util.logging.Level;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import  com.facilio.bmsconsole.context.TaskContext.InputType;
 
 public class BulkAddTaskOptionsCommand extends FacilioCommand {
 	private static final Logger LOGGER = Logger.getLogger(BulkAddActionForTaskCommand.class.getName());

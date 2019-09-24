@@ -2,7 +2,6 @@ package com.facilio.mv.command;
 
 import java.util.regex.Pattern;
 
-import com.facilio.modules.BmsAggregateOperators;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,7 +11,7 @@ import com.facilio.bmsconsole.actions.V2ReportAction;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;

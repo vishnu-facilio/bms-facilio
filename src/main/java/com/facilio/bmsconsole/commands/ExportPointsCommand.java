@@ -3,20 +3,12 @@
  */
 package com.facilio.bmsconsole.commands;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.bmsconsole.util.ExportPointsDataAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
@@ -50,8 +42,13 @@ public class ExportPointsCommand extends FacilioCommand {
 
 			String name = ModuleFactory.getPointsModule().getDisplayName();
 			List<Map<String ,Object>> records= ExportPointsDataAPI.getPointsData(controllerId);
-			Map<String,Object> table = ExportPointsDataAPI.getTableData(headers ,records);
-			fileUrl = ExportUtil.exportData(fileFormat, name, table, false);
+			if(!CollectionUtils.isNotEmpty(records)) {
+				throw new IllegalArgumentException("##Select record data is empty in ExportPoints..  ");
+			}else {
+				Map<String,Object> table = ExportPointsDataAPI.getTableData(headers ,records);
+				fileUrl = ExportUtil.exportData(fileFormat, name, table, false);
+			}
+			
 		}
 		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);

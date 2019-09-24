@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountConstants;
@@ -23,6 +22,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
@@ -298,7 +298,7 @@ public class LocationAPI {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
 	
 		if (location.getId() > 0) {
-			Chain editLocation = FacilioChainFactory.updateLocationChain();
+			FacilioChain editLocation = FacilioChainFactory.updateLocationChain();
 			editLocation.execute(context);
 		}
 		else {
@@ -337,7 +337,7 @@ public class LocationAPI {
 				}
 			}
 			
-			Chain addLocation = FacilioChainFactory.addLocationChain();
+			FacilioChain addLocation = FacilioChainFactory.addLocationChain();
 			addLocation.execute(context);
 			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 			location.setId(locationId);

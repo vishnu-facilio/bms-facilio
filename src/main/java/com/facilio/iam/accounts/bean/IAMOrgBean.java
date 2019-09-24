@@ -38,5 +38,7 @@ public interface IAMOrgBean {
 	public void updateLoggerLevel(int level, long orgId) throws Exception;
 
 	public boolean rollbackSignUpOrg(long orgId, long superAdminUserId) throws Exception;
+	
+	public List<Organization> getOrgs() throws Exception ;
 		
 }

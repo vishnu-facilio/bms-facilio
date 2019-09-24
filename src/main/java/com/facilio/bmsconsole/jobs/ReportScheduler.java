@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.jobs;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -14,6 +13,7 @@ import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -70,7 +70,7 @@ public class ReportScheduler extends FacilioJob {
 //				context.put(FacilioConstants.ContextNames.PARENT_VIEW, "report");
 				context.put(FacilioConstants.ContextNames.LIMIT_VALUE, -1);
 								
-				Chain mailReportChain = ReportsChainFactory.getSendMailReportChain();
+				FacilioChain mailReportChain = ReportsChainFactory.getSendMailReportChain();
 				mailReportChain.execute(context);
 				
 			}

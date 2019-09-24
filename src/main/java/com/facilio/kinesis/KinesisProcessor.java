@@ -2,9 +2,9 @@ package com.facilio.kinesis;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 
 import com.amazonaws.services.kinesis.AmazonKinesis;
@@ -12,12 +12,10 @@ import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcess
 import com.amazonaws.services.kinesis.model.LimitExceededException;
 import com.amazonaws.services.kinesis.model.ListStreamsResult;
 import com.amazonaws.services.kinesis.model.ResourceNotFoundException;
-import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.iam.accounts.util.IAMAccountConstants;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.processor.ProcessorFactory;
 
 public class KinesisProcessor {
@@ -59,31 +57,30 @@ public class KinesisProcessor {
 
 //        PropertyConfigurator.configure(getLoggingProps());
 
-        List<FacilioField> columnList = IAMAccountConstants.getOrgFields();
-
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table("Organizations")
-                .select(columnList);
-
+       
+    	
         try {
-            List<Map<String, Object>> props = builder.get();
-            for (Map<String, Object> prop : props) {
-                Long orgId = (Long) prop.get("orgId");
-                String orgDomainName = (String) prop.get("domain");
-                if( ! EXISTING_ORGS.contains(orgDomainName)) {
-                    try {
-                        startProcessor(orgId, orgDomainName);
-                    } catch (Exception e) {
-                        try {
-                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
-                            Thread.sleep(10000L);
-                            startProcessor(orgId, orgDomainName);
-                        } catch (InterruptedException | LimitExceededException interrupted) {
-                            log.info("Exception occurred ", interrupted);
-                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, interrupted);
-                        }
-                    }
-                }
-            }
+        	 List<Organization> orgs = IAMOrgUtil.getOrgs();
+        	 if(CollectionUtils.isNotEmpty(orgs)) {
+	        	 for (Organization org : orgs) {
+	                Long orgId = org.getOrgId();
+	                String orgDomainName = org.getDomain();
+	                if( ! EXISTING_ORGS.contains(orgDomainName)) {
+	                    try {
+	                        startProcessor(orgId, orgDomainName);
+	                    } catch (Exception e) {
+	                        try {
+	                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
+	                            Thread.sleep(10000L);
+	                            startProcessor(orgId, orgDomainName);
+	                        } catch (InterruptedException | LimitExceededException interrupted) {
+	                            log.info("Exception occurred ", interrupted);
+	                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, interrupted);
+	                        }
+	                    }
+	                }
+	            }
+        	 }
         } catch (Exception e){
             log.info("Exception occurred ", e);
         }

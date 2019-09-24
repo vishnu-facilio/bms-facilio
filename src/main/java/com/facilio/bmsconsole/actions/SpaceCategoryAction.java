@@ -2,11 +2,11 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -76,7 +76,7 @@ public class SpaceCategoryAction  extends ActionSupport{
 
 	public String spaceCategoriesList() throws Exception {
 		FacilioContext context = new FacilioContext();
-		Chain getSpaceCategoriesChain = FacilioChainFactory.getAllSpaceCategoriesChain();
+		FacilioChain getSpaceCategoriesChain = FacilioChainFactory.getAllSpaceCategoriesChain();
 		getSpaceCategoriesChain.execute(context);
 		setSpaceCategories((List<SpaceCategoryContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST));
 		
@@ -86,7 +86,7 @@ public class SpaceCategoryAction  extends ActionSupport{
 	public String addSpaceCategory() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, getSpaceCategory());
-		Chain addSpaceCategoryChain = FacilioChainFactory.addSpaceCategoryChain();
+		FacilioChain addSpaceCategoryChain = FacilioChainFactory.addSpaceCategoryChain();
 		addSpaceCategoryChain.execute(context);
 		
 		return SUCCESS;
@@ -96,7 +96,7 @@ public class SpaceCategoryAction  extends ActionSupport{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, getSpaceCategory());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getSpaceCategoryIds());
-		Chain updateSpaceCategoryChain = FacilioChainFactory.updateSpaceCategoryChain();
+		FacilioChain updateSpaceCategoryChain = FacilioChainFactory.updateSpaceCategoryChain();
 		updateSpaceCategoryChain.execute(context);
 		
 		return SUCCESS;
@@ -106,7 +106,7 @@ public class SpaceCategoryAction  extends ActionSupport{
 		try {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getSpaceCategoryIds());
-		Chain deleteSpaceCategoryChain = FacilioChainFactory.deleteSpaceCategoryChain();
+		FacilioChain deleteSpaceCategoryChain = FacilioChainFactory.deleteSpaceCategoryChain();
 		deleteSpaceCategoryChain.execute(context);
 		setResultAction(true);
 		setResultMessage("Category deleted Successfully");

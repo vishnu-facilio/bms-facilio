@@ -3,13 +3,13 @@ package com.facilio.bmsconsole.actions;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -20,7 +20,7 @@ public class InventoryVendorAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryVendor);
-		Chain addInventoryVendorChain = TransactionChainFactory.getAddInventoryVendorChain();
+		FacilioChain addInventoryVendorChain = TransactionChainFactory.getAddInventoryVendorChain();
 		addInventoryVendorChain.execute(context);
 		setInventoryVendorId(inventoryVendor.getId());
 		setResult(FacilioConstants.ContextNames.INVENTORY_VENDOR, inventoryVendor);
@@ -35,7 +35,7 @@ public class InventoryVendorAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(inventoryVendor.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 
-		Chain updateInventoryChain = TransactionChainFactory.getUpdateInventoryVendorChain();
+		FacilioChain updateInventoryChain = TransactionChainFactory.getUpdateInventoryVendorChain();
 		updateInventoryChain.execute(context);
 		setInventoryVendorId(inventoryVendor.getId());
 		inventoryVendorDetails();
@@ -50,7 +50,7 @@ public class InventoryVendorAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getInventoryVendorId());
 
-		Chain inventoryVendorDetailsChain = ReadOnlyChainFactory.fetchInventoryVendorDetails();
+		FacilioChain inventoryVendorDetailsChain = ReadOnlyChainFactory.fetchInventoryVendorDetails();
 		inventoryVendorDetailsChain.execute(context);
 
 		setInventoryVendor((InventoryVendorContext) context.get(FacilioConstants.ContextNames.INVENTORY_VENDOR));
@@ -67,7 +67,7 @@ public class InventoryVendorAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryVendors);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, inventoryVendorsId);
 
-		Chain deleteInventoryChain = TransactionChainFactory.getDeleteVendorChain();
+		FacilioChain deleteInventoryChain = TransactionChainFactory.getDeleteVendorChain();
 		deleteInventoryChain.execute(context);
 		setInventoryVendorsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);

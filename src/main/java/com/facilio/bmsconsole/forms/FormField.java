@@ -183,6 +183,19 @@ public class FormField implements Serializable {
 		return displayType;
 	}
 	
+	
+	
+	private Boolean showField;
+	
+
+	public Boolean getShowField() {
+		return showField;
+	}
+
+	public void setShowField(Boolean showField) {
+		this.showField = showField;
+	}
+
 	private Boolean allowCreate = false;
 	
 	public Boolean getAllowCreate() {

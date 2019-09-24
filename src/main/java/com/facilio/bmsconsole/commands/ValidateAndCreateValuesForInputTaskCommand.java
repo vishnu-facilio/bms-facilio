@@ -1,32 +1,28 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
-import java.util.Map;
 
 
 
@@ -67,7 +63,7 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 								case READING:
 									if (completeRecord.getReadingFieldId() != -1) {
 										validateReading(context, task);
-										addReading(task, completeRecord, completeRecord.getReadingField(), context, false);
+										PreventiveMaintenanceAPI.addReading(task, completeRecord, completeRecord.getReadingField(), context);
 									}
 									break;
 								case NUMBER:
@@ -138,42 +134,12 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 		String nextExecFmt = DateTimeUtil.getFormattedTime(nextExec, "MMM dd, h:mm a");
 
 		if (inputTime < createdTime || inputTime >= nextExec) {
-			throw new IllegalArgumentException("Remember to choose a time between " + createdTimeFmt + " and " + nextExecFmt);
+			if (!AccountUtil.getCurrentAccount().isFromIos()) { //temporary
+				throw new IllegalArgumentException("Remember to choose a time between " + createdTimeFmt + " and " + nextExecFmt);
+			}
 		}
 	}
 
-	private void addReading(TaskContext newTask, TaskContext oldTask, FacilioField field, Context context, boolean isPMReading) throws Exception {
-		
-		long pmId = -1;
-		if (isPMReading) {
-			WorkOrderContext wo = getWO(oldTask.getParentTicketId());
-			pmId = wo.getPm() != null ? wo.getPm().getId() : -1;
-		}
-		
-		if (!isPMReading || pmId != -1) {
-			FacilioModule readingModule = field.getModule();
-			ReadingContext reading = new ReadingContext();
-			reading.setId(oldTask.getReadingDataId());
-			reading.addReading(field.getName(), newTask.getInputValue());
-			reading.setTtime(newTask.getInputTime());
-			long resourceId = isPMReading ? pmId : oldTask.getResource().getId();
-			reading.setParentId(resourceId);
-			if (oldTask.getLastReading() == null) {
-				ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, field);
-				newTask.setLastReading(meta.getValue() != null ? meta.getValue() : -1);
-			}
-			
-			if (isPMReading) {
-				ReadingsAPI.addDefaultPMTaskReading(oldTask, reading);
-			}
-			
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
-			context.put(FacilioConstants.ContextNames.READING, reading);
-			context.put(FacilioConstants.ContextNames.RECORD, reading);						
-			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
-		}
-	}
 	
 	private WorkOrderContext getWO(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

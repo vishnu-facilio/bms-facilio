@@ -3,13 +3,13 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BreakTransactionContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -44,7 +44,7 @@ public class BreakTransactionAction extends ModuleAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, breakTransaction);
 		context.put(FacilioConstants.ContextNames.USER_ID, userId);
-		Chain addItem = TransactionChainFactory.getAddBreakTransactionChain();
+		FacilioChain addItem = TransactionChainFactory.getAddBreakTransactionChain();
 		addItem.execute(context);
 		setResult(FacilioConstants.ContextNames.BREAK_TRANSACTION, breakTransaction);
 		return SUCCESS;
@@ -78,7 +78,7 @@ public class BreakTransactionAction extends ModuleAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain itemsListChain = ReadOnlyChainFactory.getBreakTransactionsList();
+		FacilioChain itemsListChain = ReadOnlyChainFactory.getBreakTransactionsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setBreakTransactionCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));

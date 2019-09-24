@@ -3,9 +3,8 @@
  */
 package com.facilio.bmsconsole.actions;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
@@ -27,7 +26,7 @@ public class CommissionAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, FileFormat.getFileFormat(type));
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, getControllerId());
 
-		Chain exportModule = TransactionChainFactory.getExportPointsChain();
+		FacilioChain exportModule = TransactionChainFactory.getExportPointsChain();
 		exportModule.execute(context);
 		String fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
 		return SUCCESS;
@@ -43,7 +42,7 @@ public class CommissionAction extends FacilioAction{
 	public void setType(int type) {
 		this.type = type;
 	}
-	private long controllerId=1;
+	private long controllerId=-1;
 
 	/**
 	 * @return the controllerId

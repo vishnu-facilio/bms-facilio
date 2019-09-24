@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -11,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -39,7 +39,7 @@ public class AddClearCommentInWoOnAlarmClearCommand extends FacilioCommand imple
 				noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
 				noteContext.put(FacilioConstants.ContextNames.NOTE, note);
 
-				Chain addNote = TransactionChainFactory.getAddNotesChain();
+				FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
 				addNote.execute(noteContext);
 			}
 		}

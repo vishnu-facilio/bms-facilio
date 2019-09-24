@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
@@ -418,7 +417,7 @@ public class ProcessImportCommand extends FacilioCommand {
 							if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.PURCHASED_ITEM) 
 									|| importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)) {
 								Map<String, Object> secondLookup = new HashMap<String, Object>();
-								secondLookup.put("name", (String)colVal.get(fieldMapping.get(field.getModule().getName() + "__" + field.getName())));
+								secondLookup.put("name", colVal.get(fieldMapping.get(field.getModule().getName() + "__" + field.getName())));
 								lookupFieldMap.put(field.getName(), secondLookup);
 							}
 						}
@@ -496,7 +495,7 @@ public class ProcessImportCommand extends FacilioCommand {
 						
 						addCategory.execute(context);
 						
-						FacilioModule AssetModuleId = (FacilioModule) ((List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST)).get(0);
+						FacilioModule AssetModuleId = ((List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST)).get(0);
 						insertProps.put("type", AssetCategoryContext.AssetCategoryType.MISC.getIntVal());
 						insertProps.put("assetModuleID", AssetModuleId.getModuleId());
 					}

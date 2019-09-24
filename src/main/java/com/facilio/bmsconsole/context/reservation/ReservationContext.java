@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.context.reservation;
 
+import java.util.List;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-
-import java.util.List;
 
 public class ReservationContext extends ModuleBaseWithCustomFields {
 

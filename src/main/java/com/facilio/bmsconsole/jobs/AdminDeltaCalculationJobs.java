@@ -5,7 +5,7 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -14,6 +14,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ReadingToolsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -53,7 +54,7 @@ public class AdminDeltaCalculationJobs extends FacilioJob{
 			context.put(ContextNames.ADMIN_USER_EMAIL, email);
 			context.put(ContextNames.FIELD_OPTION_TYPE,fieldOptionType );
 			
-			Chain deltaCalculationChain = TransactionChainFactory.deltaCalculationChain();
+			FacilioChain deltaCalculationChain = TransactionChainFactory.deltaCalculationChain();
 			deltaCalculationChain.execute(context);
 			String msg = "Time taken for Delta calculation of JobId : "+jobId+" for asset : "+assetId+" between "+startTtime+" and "+endTtime+" is "+(System.currentTimeMillis() - jobStartTime);
 			System.out.println(msg);
@@ -64,7 +65,7 @@ public class AdminDeltaCalculationJobs extends FacilioJob{
 				json.put("subject", "Delta Calculation completed : "+jobId);
 				json.put("message", msg);
 				
-				AwsUtil.sendEmail(json);
+				FacilioFactory.getEmailClient().sendEmail(json);
 		}		
 		catch(Exception e) {
 			System.out.println("Error occurred during delta calculation for job id : "+jc.getJobId()+ e);

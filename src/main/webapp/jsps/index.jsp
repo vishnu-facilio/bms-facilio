@@ -29,6 +29,9 @@
 	rebrandInfo.put("copyright", copyrightInfo);
 
 	boolean isBuildingstalk = (request.getServerName().endsWith("buildingsoncloud.com")  || ( brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )));
+	
+	String userAgent = request.getHeader("User-Agent");
+	boolean isWindows = (userAgent != null && userAgent.indexOf("Windows") >= 0) ? true : false;
 %>
 <html>
 
@@ -104,6 +107,67 @@
       }
 
   </style>
+  
+  <% if (isWindows) { %>
+  	<style>
+ 		::-webkit-scrollbar {
+       width: 8px;
+       height: 20px;
+	  display: block !important;
+	}
+	
+ 	::scrollbar {
+    width: 8px;
+	display: block !important;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #fff; 
+    }
+
+    ::scrollbar-track {
+      background: #fff; 
+      background-clip: content-box;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      height: 10px;
+	  background-color: rgba(68, 68, 68, 0.4);
+      border-radius: 10px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+      box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    }
+
+	  ::-webkit-scrollbar-thumb:hover {
+	    background-color: rgba(68, 68, 68, 0.6);
+	  }
+
+      ::scrollbar-thumb:hover {
+        background-color: rgba(68, 68, 68, 0.6);
+      }
+      
+      ::-webkit-scroll-thumb:vertical{
+      	height: 10px;
+      }
+      
+      ::scroll-thumb:vertical{
+      	height: 10px;
+      }
+      
+      ::-webkit-scrollbar:horizontal{
+         height: 10px;
+      }
+      
+      ::scrollbar:horizontal{
+      	width: 10px;
+      	height: 8px;
+      }
+      
+	  ::-webkit-scrollbar:vertical{
+	   height: 10px; 
+	  }
+  	</style>
+  <% } %>
 
   <script type="text/javascript">
         window.isFacilioAuth = (document.cookie.indexOf('fc.authtype=facilio') !== -1)

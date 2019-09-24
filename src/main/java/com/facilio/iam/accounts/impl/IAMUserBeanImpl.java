@@ -32,7 +32,6 @@ import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.UserMobileSetting;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -219,7 +218,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					fields.add(fieldMap.get("userVerified"));
 					fields.add(IAMAccountConstants.getUserPasswordField());
 					
-					IAMUtil.getTransactionalUserBean(orgId).updateUserv2(user, fields);
+					IAMUtil.getTransactionalUserBean().updateUserv2(user, fields);
 				} catch (Exception e) {
 					log.info("Exception occurred ", e);
 				}
@@ -240,7 +239,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		IAMUser user = getUserFromToken(token);
 		user.setPassword(password);
 		long orgId=(user.getOrgId());
-		if(IAMUtil.getTransactionalUserBean(orgId).acceptUserv2(user)) {
+		if(IAMUtil.getTransactionalUserBean().acceptUserv2(user)) {
 			return user;
 		}
 		return null;

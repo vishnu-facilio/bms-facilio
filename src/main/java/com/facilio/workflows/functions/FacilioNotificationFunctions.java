@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.SMSUtil;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
@@ -25,7 +26,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			Map<String,Object> sendMailMap =  (Map<String, Object>) objects[0];
 			sendMailMap.put("sender", "noreply@facilio.com");
 			Map<String,String> attachements = (Map<String,String>)sendMailMap.get("attachments");
-			AwsUtil.sendEmail(WorkflowV2Util.getAsJSONObject(sendMailMap),attachements);
+			FacilioFactory.getEmailClient().sendEmail(WorkflowV2Util.getAsJSONObject(sendMailMap),attachements);
 			return null;
 		};
 		

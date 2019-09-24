@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -21,6 +20,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -64,7 +64,7 @@ public class PostFormulaCalculationJob extends InstantJob {
 					formulaContext.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, context.get(FacilioConstants.ContextNames.CONTROLLER_LEVEL));
 				}
 				formulaContext.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
-				Chain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+				FacilioChain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 				addReading.execute(formulaContext);
 			}
 			else if (controller != null) {

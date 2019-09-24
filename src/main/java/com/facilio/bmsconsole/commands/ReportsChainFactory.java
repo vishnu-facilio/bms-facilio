@@ -1,59 +1,57 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.chain.FacilioChain;
 
 public class ReportsChainFactory {
 	
-	private static void addReportCommands(Chain c) {
+	private static void addReportCommands(FacilioChain c) {
 		//c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadSelectFieldsCommand());
 		c.addCommand(new GenerateCondtionsFromFiltersCommand());
 		c.addCommand(new SetOrderByCommand());
 	}
-	private static void addSummaryReportCommand(Chain c) {
+	private static void addSummaryReportCommand(FacilioChain c) {
 		c.addCommand(new GenerateGrpByQueryCommand());
 		c.addCommand(new GetSummaryReportCommand());
 		c.addCommand(new SetReportResultCommand());
 	}
-	private static void addTopNReportCommand(Chain c) {
+	private static void addTopNReportCommand(FacilioChain c) {
 		c.addCommand(new SetTopNReportCommand());
 	}
-	public static Chain getSummaryReportChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getSummaryReportChain() {
+		FacilioChain c = getDefaultChain();
 		addReportCommands(c);
 		addSummaryReportCommand(c);
 		return c;
 	}
-	public static Chain getNumericReportChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getNumericReportChain() {
+		FacilioChain c = getDefaultChain();
 		addReportCommands(c);
 		addSummaryReportCommand(c);
 		return c;
 	}
-	public static Chain getTabularReportChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getTabularReportChain() {
+		FacilioChain c = getDefaultChain();
 		addReportCommands(c);
 		addSummaryReportCommand(c);
 		return c;
 	}
-	public static Chain getTopNTabularReportChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getTopNTabularReportChain() {
+		FacilioChain c = getDefaultChain();
 		addTopNReportCommand(c);
 		addReportCommands(c);
 		addSummaryReportCommand(c);
 		return c;
 	}
-	public static Chain getTopNSummaryReportChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getTopNSummaryReportChain() {
+		FacilioChain c = getDefaultChain();
 		addTopNReportCommand(c);
 		addReportCommands(c);
 		addSummaryReportCommand(c);
 		return c;
 	}
-	public static Chain getWorkOrderReportChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getWorkOrderReportChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new SetJoinsCommand());
@@ -61,8 +59,8 @@ public class ReportsChainFactory {
 		c.addCommand(new LoadReportTypeChainCommand());
 		return c;
 	}
-	public static Chain getWorkOrderRequestReportChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getWorkOrderRequestReportChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new SetJoinsCommand());
@@ -71,76 +69,76 @@ public class ReportsChainFactory {
 		return c;
 	}
 	
-	public static Chain getSendMailReportChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getSendMailReportChain() {
+		FacilioChain c = getDefaultChain();
 //		c.addCommand(new LoadViewCommand());
 //		c.addCommand(new GetReportUnderlyingDataCommand());
 		c.addCommand(new SendReportMailCommand());
 		return c;
 	}
 	
-	public static Chain getReportUnderlyingDataChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getReportUnderlyingDataChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GetReportUnderlyingDataCommand());
 		return c;
 	}
 	
-	public static Chain getReportScheduleChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getReportScheduleChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new ScheduleReportCommand());
 		return c;
 	}
 	
-	public static Chain getWoViewScheduleChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getWoViewScheduleChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new AddWoViewScheduleCommand());
 		return c;
 	}
 	
-	public static Chain getScheduledReportsChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getScheduledReportsChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new ReportScheduledListCommand());
 		return c;
 	}
 	
-	public static Chain getWoScheduledViewListChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getWoScheduledViewListChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetWoScheduledViewList());
 		return c;
 	}
 	
-	public static Chain updateWoScheduledViewChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain updateWoScheduledViewChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new DeleteWoScheduledViewCommand());
 		c.addCommand(new AddWoViewScheduleCommand());
 		return c;
 	}
 	
-	public static Chain deleteWoScheduledViewChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain deleteWoScheduledViewChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new DeleteWoScheduledViewCommand());
 		return c;
 	}
 	
-	public static Chain deleteScheduledReportsChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain deleteScheduledReportsChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new DeleteScheduledReportsCommand());
 		return c;
 	}
 	
-	public static Chain updateScheduledReportsChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain updateScheduledReportsChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new DeleteScheduledReportsCommand());
 		c.addCommand(new ScheduleReportCommand());
 		return c;
 	}
 	
-	private static Chain getDefaultChain() {
+	private static FacilioChain getDefaultChain() {
 		return FacilioChain.getNonTransactionChain();
     }
 

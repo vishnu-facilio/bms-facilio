@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -15,6 +14,7 @@ import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.util.SkillAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -78,7 +78,7 @@ public class SkillActions extends ActionSupport {
 //		setSetup(SetupLayout.getNewSkillLayout());
 //		
 //		FacilioContext context = new FacilioContext();
-//		Chain newSkill = FacilioChainFactory.getNewSkillChain();
+//		FacilioChain newSkill = FacilioChainFactory.getNewSkillChain();
 //		newSkill.execute(context);
 //
 //		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
@@ -148,7 +148,7 @@ public class SkillActions extends ActionSupport {
 		//skill.setOrgId(OrgInfo.getCurrentOrgInfo().getOrgid());
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, getSkill());
-		Chain addSkill = FacilioChainFactory.addSkillChain();
+		FacilioChain addSkill = FacilioChainFactory.addSkillChain();
 		addSkill.execute(context);
 		
 		//context.get(FacilioConstants.ContextNames.SKILL);
@@ -164,7 +164,7 @@ public class SkillActions extends ActionSupport {
 //		setSetup(SetupLayout.getEditSkillLayout());
 //		FacilioContext context = new FacilioContext();
 //		context.put(FacilioConstants.ContextNames.ID, skillId);
-//		Chain editSkill = FacilioChainFactory.getSkillChain();
+//		FacilioChain editSkill = FacilioChainFactory.getSkillChain();
 //		editSkill.execute(context);
 //		context.get(FacilioConstants.ContextNames.SKILL);
 //		setSkill((SkillContext) context.get(FacilioConstants.ContextNames.SKILL));

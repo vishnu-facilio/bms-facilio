@@ -2,12 +2,12 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.util.FormRuleAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -70,7 +70,7 @@ public class FormRuleAction extends FacilioAction {
 		
 		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
 		
-		Chain c = TransactionChainFactory.getAddFormRuleChain();
+		FacilioChain c = TransactionChainFactory.getAddFormRuleChain();
 		c.execute(context);
 		
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
@@ -83,7 +83,7 @@ public class FormRuleAction extends FacilioAction {
 		
 		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
 		
-		Chain c = TransactionChainFactory.getUpdateFormRuleChain();
+		FacilioChain c = TransactionChainFactory.getUpdateFormRuleChain();
 		c.execute(context);
 		
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
@@ -96,7 +96,7 @@ public class FormRuleAction extends FacilioAction {
 		
 		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
 		
-		Chain c = TransactionChainFactory.getDeleteFormRuleChain();
+		FacilioChain c = TransactionChainFactory.getDeleteFormRuleChain();
 		c.execute(context);
 		
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
@@ -119,7 +119,7 @@ public class FormRuleAction extends FacilioAction {
 		context.put(FormRuleAPI.FORM_RULE_TRIGGER_TYPE,FormRuleContext.TriggerType.getAllTriggerType().get(triggerType));
 		context.put(FormRuleAPI.FORM_DATA,formData);
 		
-		Chain c = TransactionChainFactory.getExecuteFormActionRules();
+		FacilioChain c = TransactionChainFactory.getExecuteFormActionRules();
 		c.execute(context);
 		
 		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, context.get(FormRuleAPI.FORM_RULE_RESULT_JSON));

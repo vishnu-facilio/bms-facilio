@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.Serializable;
-import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
@@ -130,14 +130,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+entry.getValue());
 				continue;
 			}
-			List<EventType> activities = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
-			if (activities == null) {
-				EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-				if (activityType != null) {
-					activities = new ArrayList<>();
-					activities.add(activityType);
-				}
-			}
+			List<EventType> activities = CommonCommandUtil.getEventTypes(context);
 			if(activities != null) {
 				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
 				if (currentChangeSet != null && !currentChangeSet.isEmpty()) {

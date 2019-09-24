@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -22,6 +21,7 @@ import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -223,7 +223,7 @@ public class AddPMReadingsForTasks extends FacilioCommand {
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
 		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "PM_Readings");
 		
-		Chain addReadingChain = TransactionChainFactory.getAddReadingsChain();
+		FacilioChain addReadingChain = TransactionChainFactory.getAddReadingsChain();
 		addReadingChain.execute(context);
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);

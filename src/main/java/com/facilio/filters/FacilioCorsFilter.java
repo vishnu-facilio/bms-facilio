@@ -13,10 +13,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.fw.listener.FacilioContextListener;
 
 public class FacilioCorsFilter implements Filter {

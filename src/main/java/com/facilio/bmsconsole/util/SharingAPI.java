@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

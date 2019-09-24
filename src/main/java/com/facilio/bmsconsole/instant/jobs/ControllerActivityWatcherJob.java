@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,6 +22,7 @@ import com.facilio.bmsconsole.context.MultiModuleReadingData;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ControllerAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
@@ -158,7 +158,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 			formulaJC.put(FacilioConstants.ContextNames.CONTROLLER_LEVEL, watcher.getLevel() + 1);
 			formulaJC.put(FacilioConstants.ContextNames.CONTROLLER_TIME, watcher.getRecordTime());
 			
-			Chain formulaChain = ReadOnlyChainFactory.calculateFormulaChain();
+			FacilioChain formulaChain = ReadOnlyChainFactory.calculateFormulaChain();
 			formulaChain.execute(formulaJC);
 			
 			return (List<ControllerContext>) formulaJC.get(FacilioConstants.ContextNames.CONTROLLER_LIST);

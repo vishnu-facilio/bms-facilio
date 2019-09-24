@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -25,6 +26,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.context.ScreenDashboardRelContext;
+import com.facilio.service.FacilioService;
 import com.facilio.wms.message.WmsRemoteScreenMessage;
 import com.facilio.wms.util.WmsApi;
 
@@ -32,6 +34,23 @@ public class ScreenUtil {
 
 	public static void addScreen(ScreenContext screen) throws Exception {
 		
+		screen.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		FacilioService.runAsService(() ->  addScreenAsService(screen));
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getScreenDashboardRelModule().getTableName())
+				.fields(FieldFactory.getScreenDashboardRelModuleFields());
+		
+		Map<String, Object> props = new HashMap<String, Object>();
+		for(ScreenDashboardRelContext screenDashboard :screen.getScreenDashboards()) {
+			
+			screenDashboard.setScreenId(screen.getId());
+			props = FieldUtil.getAsProperties(screenDashboard);
+			insertBuilder.addRecord(props);
+		}
+		insertBuilder.save();
+	}
+	
+	private static void addScreenAsService(ScreenContext screen) throws Exception {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getScreenModule().getTableName())
 				.fields(FieldFactory.getScreenModuleFields());
@@ -42,30 +61,24 @@ public class ScreenUtil {
 		
 		screen.setId((Long) props.get("id"));
 		
-		insertBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getScreenDashboardRelModule().getTableName())
-				.fields(FieldFactory.getScreenDashboardRelModuleFields());
-		
-		
-		for(ScreenDashboardRelContext screenDashboard :screen.getScreenDashboards()) {
-			
-			screenDashboard.setScreenId(screen.getId());
-			props = FieldUtil.getAsProperties(screenDashboard);
-			insertBuilder.addRecord(props);
-		}
-		insertBuilder.save();
 	}
 	
-	public static void updateScreen(ScreenContext screen) throws Exception {
+	private static void updateScreenAsService(ScreenContext screen) throws Exception {
 		
+		Map<String, Object> props = FieldUtil.getAsProperties(screen);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getScreenModule().getTableName())
 				.fields(FieldFactory.getScreenModuleFields())
 				.andCustomWhere("ID = ?", screen.getId());
 
-		Map<String, Object> props = FieldUtil.getAsProperties(screen);
-		updateBuilder.update(props);
+		 updateBuilder.update(props);
+	}
+	public static void updateScreen(ScreenContext screen) throws Exception {
 		
+		Map<String, Object> props = FieldUtil.getAsProperties(screen);
+		FacilioService.runAsService(() -> updateScreenAsService(screen));
+		
+				
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		
 		deleteRecordBuilder.table(ModuleFactory.getScreenDashboardRelModule().getTableName())
@@ -107,26 +120,24 @@ public class ScreenUtil {
 		.andCustomWhere("SCREEN_ID = ?", screen.getId());
 		deleteRecordBuilder.delete();
 		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		FacilioService.runAsService(() -> deleteScreenAsService(screen));
+		
+	}
+	
+	private static void deleteScreenAsService(ScreenContext screen) throws Exception {
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		
 		deleteRecordBuilder.table(ModuleFactory.getScreenModule().getTableName())
 		.andCustomWhere("ID = ?", screen.getId());
 		deleteRecordBuilder.delete();
-		
 	}
 	
 	public static List<ScreenContext> getAllScreen() throws Exception {
 		
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
-		
-		builder.table(ModuleFactory.getScreenModule().getTableName());
-		builder.select(FieldFactory.getScreenModuleFields());
-		builder.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), ModuleFactory.getScreenModule()));
-		
-		List<Map<String, Object>> props = builder.get();
-		
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		List<Map<String, Object>> mapList = FacilioService.runAsServiceWihReturn(() ->  getAllScreenAsService(orgId));
 		List<ScreenContext> screens = new ArrayList<>();
-		for(Map<String, Object> prop :props) {
+		for(Map<String, Object> prop :mapList) {
 			
 			ScreenContext screenContext = FieldUtil.getAsBeanFromMap(prop, ScreenContext.class);
 			getScreenDashboardRel(screenContext);
@@ -137,8 +148,23 @@ public class ScreenUtil {
 		return screens;
 	}
 	
-	public static ScreenContext getScreen(Long screenId) throws Exception {
+	private static List<Map<String, Object>> getAllScreenAsService(long orgId) throws Exception {
+	
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 		
+		builder.table(ModuleFactory.getScreenModule().getTableName());
+		builder.select(FieldFactory.getScreenModuleFields());
+		builder.andCondition(CriteriaAPI.getOrgIdCondition(orgId, ModuleFactory.getScreenModule()));
+		
+		List<Map<String, Object>> props = builder.get();
+		return props;
+	}
+	
+	public static ScreenContext getScreen(Long screenId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() ->  getScreenAsService(screenId));
+	}
+	
+	private static ScreenContext getScreenAsService(long screenId) throws Exception {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 		
 		builder.table(ModuleFactory.getScreenModule().getTableName());
@@ -147,14 +173,8 @@ public class ScreenUtil {
 		
 		List<Map<String, Object>> props = builder.get();
 		
-		for(Map<String, Object> prop :props) {
-			
-			ScreenContext screenContext = FieldUtil.getAsBeanFromMap(prop, ScreenContext.class);
-			getScreenDashboardRel(screenContext);
-			
-			return screenContext;
-		}
-		return null;
+		ScreenContext screenContext = FieldUtil.getAsBeanFromMap(props.get(0), ScreenContext.class);
+		return screenContext;
 	}
 	
 	public static List<ScreenDashboardRelContext> getScreenDashboardRel(ScreenContext screenContext) throws Exception {
@@ -194,7 +214,18 @@ public class ScreenUtil {
 	
 	
 	public static List<RemoteScreenContext> getAllRemoteScreen(long screenId) throws Exception {
-		
+		List<RemoteScreenContext> remosteScreens = FacilioService.runAsServiceWihReturn(() ->  getAllRemoteScreenAsService(screenId));
+		if(CollectionUtils.isNotEmpty(remosteScreens)) {
+			for(RemoteScreenContext remoteScreen : remosteScreens) {
+				if(remoteScreen.getScreenContext() != null && remoteScreen.getScreenContext().getId() > 0) {
+					getScreenDashboardRel(remoteScreen.getScreenContext());
+				}
+			}
+		}
+		return remosteScreens;
+	}
+	
+	private static List<RemoteScreenContext> getAllRemoteScreenAsService(long screenId) throws Exception {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 		
 		builder.table(ModuleFactory.getRemoteScreenModule().getTableName());
@@ -219,15 +250,10 @@ public class ScreenUtil {
 	
 	public static List<RemoteScreenContext> getAllRemoteScreen() throws Exception {
 		
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		
-		builder.table(ModuleFactory.getRemoteScreenModule().getTableName());
-		builder.select(FieldFactory.getRemoteScreenModuleFields());
-		builder.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), ModuleFactory.getRemoteScreenModule()));
-		
-		List<Map<String, Object>> props = builder.get();
-		
-		List<RemoteScreenContext> remoteScreens = new ArrayList<>();
+		List<RemoteScreenContext> remoteScreens = new ArrayList<RemoteScreenContext>();
+		List<Map<String, Object>> props = FacilioService.runAsServiceWihReturn(() ->  getRemoteScreensForOrgAsService(orgId));
 		for(Map<String, Object> prop :props) {
 			
 			RemoteScreenContext remoteSreenContext = FieldUtil.getAsBeanFromMap(prop, RemoteScreenContext.class);
@@ -239,6 +265,17 @@ public class ScreenUtil {
 			remoteScreens.add(remoteSreenContext);
 		}
 		return remoteScreens;
+	}
+	
+	private static List<Map<String, Object>> getRemoteScreensForOrgAsService(long orgId) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+		
+		builder.table(ModuleFactory.getRemoteScreenModule().getTableName());
+		builder.select(FieldFactory.getRemoteScreenModuleFields());
+		builder.andCondition(CriteriaAPI.getOrgIdCondition(orgId, ModuleFactory.getRemoteScreenModule()));
+		
+		List<Map<String, Object>> props = builder.get();
+		return props;
 	}
 	
 	public static RemoteScreenContext getRemoteScreen(Long remoteScreenId) throws Exception {
@@ -272,7 +309,7 @@ public class ScreenUtil {
 		remoteScreenContext.setId((Long) props.get("id"));
 	}
 	
-	public static void updateRemoteScreen(RemoteScreenContext remoteScreenContext) throws Exception {
+	public static int updateRemoteScreen(RemoteScreenContext remoteScreenContext) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getRemoteScreenModule().getTableName())
@@ -280,20 +317,17 @@ public class ScreenUtil {
 				.andCustomWhere("ID = ?", remoteScreenContext.getId());
 
 		Map<String, Object> props = FieldUtil.getAsProperties(remoteScreenContext);
-		updateBuilder.update(props);
+		return updateBuilder.update(props);
 		
-		WmsApi.sendRemoteMessage(remoteScreenContext.getId(), new WmsRemoteScreenMessage().setAction(WmsRemoteScreenMessage.RemoteScreenAction.REFRESH));
 	}
 	
-	public static void deleteRemoteScreen(RemoteScreenContext remoteScreenContext) throws Exception {
+	public static int deleteRemoteScreen(RemoteScreenContext remoteScreenContext) throws Exception {
 		
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		
 		deleteRecordBuilder.table(ModuleFactory.getRemoteScreenModule().getTableName())
 		.andCustomWhere("ID = ?", remoteScreenContext.getId());
-		deleteRecordBuilder.delete();
-		
-		WmsApi.sendRemoteMessage(remoteScreenContext.getId(), new WmsRemoteScreenMessage().setAction(WmsRemoteScreenMessage.RemoteScreenAction.REFRESH));
+		return deleteRecordBuilder.delete();
 	}
 	
 	private static String getRandomPasscode(int noOfLetters) {

@@ -15,12 +15,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyConfigContext;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
@@ -30,6 +29,7 @@ import com.facilio.bmsconsole.context.TemperatureContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.util.AnomalySchedulerUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -405,7 +405,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 
 			FacilioContext addEventContext = new FacilioContext();
 			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
-			Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+			FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 			getAddEventChain.execute(addEventContext);
 		}
 	}

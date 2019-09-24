@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.util.ConnectionUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -54,7 +54,7 @@ public class ConnectionAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
 		
-		Chain chain = TransactionChainFactory.getAddConnectionChain();
+		FacilioChain chain = TransactionChainFactory.getAddConnectionChain();
 		chain.execute(context);
 		
 		setResult("connection", connectionContext);
@@ -71,7 +71,7 @@ public class ConnectionAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
 		
-		Chain chain = TransactionChainFactory.getUpdateConnectionChain();
+		FacilioChain chain = TransactionChainFactory.getUpdateConnectionChain();
 		chain.execute(context);
 		
 		setResult("connection", connectionContext);
@@ -83,7 +83,7 @@ public class ConnectionAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
 		
-		Chain chain = TransactionChainFactory.getUpdateConnectionChain();
+		FacilioChain chain = TransactionChainFactory.getUpdateConnectionChain();
 		chain.execute(context);
 		
 		setResult("connection", connectionContext);
@@ -102,7 +102,7 @@ public class ConnectionAction extends FacilioAction {
 	FacilioContext context = new FacilioContext();
 	context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
 	
-	Chain chain = TransactionChainFactory.getDeleteConnectionChain();
+	FacilioChain chain = TransactionChainFactory.getDeleteConnectionChain();
 	chain.execute(context);
 	
 	setResult("connection", connectionContext);

@@ -4,12 +4,9 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
-import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -28,9 +25,11 @@ import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.modules.FieldUtil;
 
 public class TriggerAlarmForMLCommand extends FacilioCommand {
 	
@@ -287,7 +286,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
             eventList.add(event);
 	        FacilioContext context = new FacilioContext();
 			context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
-			Chain chain = TransactionChainFactory.getV2AddEventChain();
+			FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
 			chain.execute(context);
         }
 	}
@@ -325,7 +324,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 			}
 			/*FacilioContext addEventContext = new FacilioContext();
 			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
-			Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+			FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 			getAddEventChain.execute(addEventContext);*/
 		}
 		catch (JSONException e) 

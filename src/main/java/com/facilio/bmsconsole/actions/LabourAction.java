@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.LabourContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -54,7 +53,7 @@ public class LabourAction extends FacilioAction {
 		{	
 			location.setName(labour.getName()+"_location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
-			Chain addLocation = FacilioChainFactory.addLocationChain();
+			FacilioChain addLocation = FacilioChainFactory.addLocationChain();
 			addLocation.execute(context);
 			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 			location.setId(locationId);
@@ -63,7 +62,7 @@ public class LabourAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, labour);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		context.remove(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		Chain addLabour = TransactionChainFactory.getAddLabourChain();
+		FacilioChain addLabour = TransactionChainFactory.getAddLabourChain();
 		addLabour.execute(context);
 		setResult(FacilioConstants.ContextNames.LABOUR, labour);
 		context.put(FacilioConstants.ContextNames.LABOUR_ID, labour.getId());
@@ -76,7 +75,7 @@ public class LabourAction extends FacilioAction {
 		idList.add(labourId);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, idList);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-		Chain deleteLabour = TransactionChainFactory.getDeleteLabourChain();
+		FacilioChain deleteLabour = TransactionChainFactory.getDeleteLabourChain();
 		deleteLabour.execute(context);
 		setResult(FacilioConstants.ContextNames.LABOUR_ID, labourId);
 		return SUCCESS;
@@ -97,12 +96,12 @@ public class LabourAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
 		
 			if (location.getId() > 0) {
-				Chain editLocation = FacilioChainFactory.updateLocationChain();
+				FacilioChain editLocation = FacilioChainFactory.updateLocationChain();
 				editLocation.execute(context);
 				labour.setLocation(location);
 			}
 			else {
-				Chain addLocation = FacilioChainFactory.addLocationChain();
+				FacilioChain addLocation = FacilioChainFactory.addLocationChain();
 				addLocation.execute(context);
 				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 				location.setId(locationId);
@@ -120,7 +119,7 @@ public class LabourAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ID, labour.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID, labour.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(labour.getId()));
-		Chain updateLabourChain = TransactionChainFactory.getUpdateLabourChain();
+		FacilioChain updateLabourChain = TransactionChainFactory.getUpdateLabourChain();
 		updateLabourChain.execute(context);
 		setLabourId(labour.getId());
 		setResult(FacilioConstants.ContextNames.LABOUR, labour);
@@ -132,7 +131,7 @@ public class LabourAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getLabourId());
 
-		Chain labourDetailsChain = ReadOnlyChainFactory.fetchLabourDetails();
+		FacilioChain labourDetailsChain = ReadOnlyChainFactory.fetchLabourDetails();
 		labourDetailsChain.execute(context);
 
 		setLabour((LabourContext) context.get(FacilioConstants.ContextNames.LABOUR));
@@ -142,7 +141,7 @@ public class LabourAction extends FacilioAction {
 
 	public String labourList() throws Exception {
 		FacilioContext context = new FacilioContext();
-		Chain labourListChain = ReadOnlyChainFactory.getLabourList();
+		FacilioChain labourListChain = ReadOnlyChainFactory.getLabourList();
 		labourListChain.execute(context);
 		labours = (List<LabourContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			// Temp...needs to handle in client

@@ -1,7 +1,6 @@
 package com.facilio.urjanet.actions;
 
-import org.apache.commons.chain.Chain;
-
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.urjanet.contants.UrjanetConstants;
 import com.facilio.urjanet.context.UtilityProviderCredentials;
@@ -18,7 +17,7 @@ public class UrjanetAction extends ActionSupport{
 	{
 		   FacilioContext context = new FacilioContext();    
 		   context.put(UrjanetConstants.ContextNames.CREDENTIAL, getUtilityProviderCredentials());			
-		   Chain urjanetloginChain = UrjanetConstants.UrjanetLoginChain();
+		   FacilioChain urjanetloginChain = UrjanetConstants.UrjanetLoginChain();
 		   urjanetloginChain.execute(context);
 		   return SUCCESS;
 	}

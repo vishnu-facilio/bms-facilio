@@ -1,33 +1,26 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -108,13 +101,13 @@ public class AdminDeltaCalculationCommand extends FacilioCommand {
 				Double prevVal = (Double) rowFirst.getReading(nameField);
 				Double currentValue = (Double) rowSecond.getReading(nameField);
 				if (prevVal != -1) {
-					deltaVal = (Double) currentValue - prevVal;
+					deltaVal = currentValue - prevVal;
 				}
 			} else {
 				Long prevVal = (Long) rowFirst.getReading(nameField);
 				Long currentValue = (Long) rowSecond.getReading(nameField);
 				if (prevVal != -1) {
-					deltaVal = (Long) currentValue - prevVal;
+					deltaVal = currentValue - prevVal;
 				}
 			}
 

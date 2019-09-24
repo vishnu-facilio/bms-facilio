@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Level;
@@ -21,6 +19,7 @@ import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
@@ -54,6 +53,7 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -96,7 +96,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
 		
-		Chain addAlarmChain = TransactionChainFactory.getAddAlarmFromEventChain();
+		FacilioChain addAlarmChain = TransactionChainFactory.getAddAlarmFromEventChain();
 		addAlarmChain.execute(context);
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		return alarm;
@@ -110,7 +110,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 
-			Chain deleteAlarmChain = FacilioChainFactory.getDeleteAlarmChain();
+			FacilioChain deleteAlarmChain = FacilioChainFactory.getDeleteAlarmChain();
 			deleteAlarmChain.execute(context);
 
 			int rowsDeleted = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -130,7 +130,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
         if(controller != null) {
             FacilioContext context = new FacilioContext();
             context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controller);
-            Chain addcontrollerSettings = FacilioChainFactory.getAddControllerChain();
+            FacilioChain addcontrollerSettings = FacilioChainFactory.getAddControllerChain();
             addcontrollerSettings.execute(context);
         }
         return controller;
@@ -195,7 +195,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 		
-		Chain updateAlarm = TransactionChainFactory.updateAlarmFromJsonChain();
+		FacilioChain updateAlarm = TransactionChainFactory.updateAlarmFromJsonChain();
 		updateAlarm.execute(context);
 
 		return (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -341,7 +341,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				
 				//Temp fix. Have to be removed eventually
 				PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
-				Chain addWOChain = TransactionChainFactory.getAddWorkOrderChain();
+				FacilioChain addWOChain = TransactionChainFactory.getAddWorkOrderChain();
 				addWOChain.execute(context);
 				
 				// if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE) { //Need to be handled for multiple resources, it causes deadlock
@@ -940,10 +940,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(ContextNames.FIELD_OPTION_TYPE,fieldsOptionType );
 
 			if(fieldsOptionType == 1) {
-				Chain readingToolsChain = TransactionChainFactory.readingToolsDeltaCalculationChain();
+				FacilioChain readingToolsChain = TransactionChainFactory.readingToolsDeltaCalculationChain();
 				readingToolsChain.execute(context);
 			}else {
-				Chain readingToolsChain = TransactionChainFactory.readingToolsDuplicateRemoveChain();
+				FacilioChain readingToolsChain = TransactionChainFactory.readingToolsDuplicateRemoveChain();
 				readingToolsChain.execute(context);
 			}
 			
@@ -999,11 +999,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				if (wo.getDueDate() > 0) {
 					newWo.setDueDate(wo.getDueDate());
 				}
-				if (wo.getAssignedTo() != null && wo.getAssignedTo().getId() > 0) {
+				if (wo.getAssignedTo() != null && wo.getAssignedTo().getId() != -1) {
 					newWo.setAssignedTo(wo.getAssignedTo());
 					newWo.setAssignedBy(AccountUtil.getCurrentUser());
 				}
-				if (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() > 0) {
+				if (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() != -1) {
 					newWo.setAssignmentGroup(wo.getAssignmentGroup());
 					newWo.setAssignedBy(AccountUtil.getCurrentUser());
 				}
@@ -1016,7 +1016,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 				context.put(FacilioConstants.ContextNames.IS_NEW_EVENT, true);	// temp
 
-				Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
+				FacilioChain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
 				updatePM.execute(context);
 				
 				context.clear();
@@ -1027,7 +1027,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				
 				EventType activityType = EventType.EDIT;
 				// Temp
-				if((wo.getAssignedTo() != null && wo.getAssignedTo().getId() > 0) || (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() > 0)) {
+				if((wo.getAssignedTo() != null && wo.getAssignedTo().getId() != -1) || (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() != -1)) {
 					activityType = EventType.ASSIGN_TICKET;
 				}
 				
@@ -1037,7 +1037,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
 				context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 				
-				Chain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
+				FacilioChain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
 				updateWorkOrder.execute(context);
 
 				context.clear();

@@ -1,18 +1,21 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
-
-import java.util.List;
 
 public class ModuleWorkflowRuleAction extends FacilioAction {
 
-    private String moduleName;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String moduleName;
     public String getModuleName() {
         return moduleName;
     }
@@ -20,11 +23,19 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
         this.moduleName = moduleName;
     }
 
-    public String fetchWorkflowRules() throws Exception {
+    private int ruleType;
+    public int getRuleType() {
+        return ruleType;
+    }
+    public void setRuleType(int ruleType) {
+        this.ruleType = ruleType;
+    }
 
+    public String fetchWorkflowRules() throws Exception {
         FacilioChain c = ReadOnlyChainFactory.getCustomModuleWorkflowRulesChain();
         FacilioContext context = c.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+        context.put(FacilioConstants.ContextNames.RULE_TYPE, ruleType);
         c.execute();
 
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));

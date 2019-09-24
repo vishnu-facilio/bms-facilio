@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.workflow.rule;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -78,7 +77,7 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		c.put("default_state", true);
 		c.put("default_state_flow_id", getId());
 		
-		Chain chain = FacilioChain.getTransactionChain();
+		FacilioChain chain = FacilioChain.getTransactionChain();
 		chain.addCommand(new UpdateStateCommand());
 		chain.execute(c);
 		

@@ -12,6 +12,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -53,17 +54,20 @@ public class PMPlannerAPI {
 	}
 	
 			
-	public static PMPlannerSettingsContext getPMPlannerSettings() throws Exception
+	public static PMPlannerSettingsContext getPMPlannerSettings(PMPlannerSettingsContext settingsContext) throws Exception
 	{
 		FacilioModule plannerModule= ModuleFactory.getPMPlannerSettingsModule();
+		
+		
 		GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder()
 				.table(plannerModule.getTableName())
-				.select(FieldFactory.getPMPlannerSettingsFields());
+				.select(FieldFactory.getPMPlannerSettingsFields())
+				.andCondition(CriteriaAPI.getCondition("PLANNER_TYPE", "plannerType", String.valueOf(settingsContext.getPlannerType()), NumberOperators.EQUALS));
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(plannerModule));
 		List<Map<String, Object>> settingRows=builder.get();
 		if(settingRows.isEmpty())
 		{
-			return getDefaultSettings();
+			return getDefaultSettings(settingsContext.getPlannerTypeEnum());
 		}
 		else {
 			return FieldUtil.getAsBeanFromMap(settingRows.get(0),PMPlannerSettingsContext.class);
@@ -75,7 +79,8 @@ public class PMPlannerAPI {
 		FacilioModule plannerModule=ModuleFactory.getPMPlannerSettingsModule();
 		GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder()
 				.table(plannerModule.getTableName())
-				.select(FieldFactory.getPMPlannerSettingsFields());
+				.select(FieldFactory.getPMPlannerSettingsFields())
+			    .andCondition(CriteriaAPI.getCondition("PLANNER_TYPE", "plannerType", String.valueOf(settingsContext.getPlannerType()), NumberOperators.EQUALS));
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(plannerModule));
 		List<Map<String, Object>> settingRows=builder.get();
 		
@@ -204,18 +209,27 @@ public class PMPlannerAPI {
 		
 		JSONObject none=new JSONObject();
 		none.put("name","none");
+		none.put("displayName","NONE");
+		
 		legendSettings.add(none);
 				
 		return legendSettings;
 	}
-	private static PMPlannerSettingsContext getDefaultSettings() {
+	private static PMPlannerSettingsContext getDefaultSettings(PMPlannerSettingsContext.PlannerType plannerType) {
 		PMPlannerSettingsContext pmPLannerSettings = new PMPlannerSettingsContext();
+		
 		pmPLannerSettings.setViewSettings(DEFAULT_VIEW_SETTING);
-		pmPLannerSettings.setColumnSettings(DEFAULT_COLUMN_SETTINGS);
-		pmPLannerSettings.setTimeMetricSettings(DEFAULT_TIME_METRIC_SETTINGS);
-        pmPLannerSettings.setMoveType(DEFAULT_MOVE_TYPE);
-        pmPLannerSettings.setLegendSettings(DEFAULT_LEGEND_SETTINGS);
-
+		pmPLannerSettings.setLegendSettings(DEFAULT_LEGEND_SETTINGS);
+		
+		if(plannerType.equals(PMPlannerSettingsContext.PlannerType.ASSET_PLANNER))
+		{
+			pmPLannerSettings.setColumnSettings(DEFAULT_COLUMN_SETTINGS);		
+			pmPLannerSettings.setTimeMetricSettings(DEFAULT_TIME_METRIC_SETTINGS);
+	        pmPLannerSettings.setMoveType(DEFAULT_MOVE_TYPE);
+		}
+		
+        
+		pmPLannerSettings.setPlannerType(plannerType);
 		return pmPLannerSettings;
 	}
 

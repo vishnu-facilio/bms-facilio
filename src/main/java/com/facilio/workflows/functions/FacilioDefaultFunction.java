@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;

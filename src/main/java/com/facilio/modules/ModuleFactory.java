@@ -761,6 +761,14 @@ public class ModuleFactory {
 		alarmModule.setExtendModule(getTicketsModule());
 		return alarmModule;
 	}
+
+	public static FacilioModule getAssetBreakdownModule() {
+		FacilioModule alarmModule = new FacilioModule();
+		alarmModule.setName(ContextNames.ASSET_BREAKDOWN);
+		alarmModule.setDisplayName("Asset Breakdown");
+		alarmModule.setTableName("Asset_Breakdown");
+		return alarmModule;
+	}
 	
 	public static FacilioModule getAlarmOccurenceModule() {
 		FacilioModule alarmModule = new FacilioModule();
@@ -2211,6 +2219,15 @@ public class ModuleFactory {
 		controlActionTemplate.setTableName("Control_Action_Template");
 		controlActionTemplate.setExtendModule(getTemplatesModule());
 		return controlActionTemplate;
+	}
+	
+	public static FacilioModule getFormTemplatesModule() {
+		FacilioModule formTemplate = new FacilioModule();
+		formTemplate.setName("formTemplate");
+		formTemplate.setDisplayName("Form Template");
+		formTemplate.setTableName("Form_Template");
+		formTemplate.setExtendModule(getTemplatesModule());
+		return formTemplate;
 	}
 	
 	public static FacilioModule getMLModule() 

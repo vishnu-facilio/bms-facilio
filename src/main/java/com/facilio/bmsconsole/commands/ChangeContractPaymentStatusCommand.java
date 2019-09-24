@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
@@ -13,10 +10,8 @@ import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class ChangeContractPaymentStatusCommand extends FacilioCommand{

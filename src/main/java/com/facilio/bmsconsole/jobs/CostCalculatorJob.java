@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -22,6 +21,7 @@ import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.CostAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -74,7 +74,7 @@ public class CostCalculatorJob extends FacilioJob {
 								context.put(FacilioConstants.ContextNames.COST_ASSET, asset);
 								context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
 								
-								Chain calculateCostChain = FacilioChainFactory.calculateCostChain();
+								FacilioChain calculateCostChain = FacilioChainFactory.calculateCostChain();
 								calculateCostChain.execute(context);
 								
 								List<ReadingContext> assetCostReadings = (List<ReadingContext>) context.get(FacilioConstants.ContextNames.COST_READINGS);
@@ -100,7 +100,7 @@ public class CostCalculatorJob extends FacilioJob {
 					context.put(FacilioConstants.ContextNames.READINGS_MAP, costReadings);
 					context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 					context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
-					Chain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+					FacilioChain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 					addReading.execute(context);
 					
 					LOGGER.info("Successfully added Cost Readings!!");

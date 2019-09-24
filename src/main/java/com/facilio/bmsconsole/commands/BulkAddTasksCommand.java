@@ -17,11 +17,13 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
@@ -94,8 +96,14 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
                    task.setParentTicketId(wo.getId());
 
                    task.setInputValue(task.getDefaultValue());
-                   if(StringUtils.isNotEmpty(task.getFailureValue()) && task.getFailureValue().equals(task.getInputValue())) {
-                       task.setFailed(true);
+                   if(StringUtils.isNotEmpty(task.getInputValue()) && StringUtils.isNotEmpty(task.getFailureValue())) {
+	            	   		if (task.getInputTypeEnum() == InputType.NUMBER) {
+	            	   			FacilioModulePredicate predicate = task.getDeviationOperator().getPredicate("inputValue", task.getFailureValue());
+            	   				task.setFailed(predicate.evaluate(task));
+	            	   		}
+	            	   		else if (task.getFailureValue().equals(task.getInputValue())) {
+	            	   			task.setFailed(true);
+	            	   		}
                    }
 
                    // LOGGER.log(Level.ERROR, "task uniqueness " + task.getParentTicketId() + " - " + task.getResource().getId() + " - " + task.getUniqueId());

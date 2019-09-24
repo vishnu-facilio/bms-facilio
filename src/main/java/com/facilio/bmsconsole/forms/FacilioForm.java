@@ -6,8 +6,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.modules.FacilioModule;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class FacilioForm implements Serializable {
 	public FacilioForm () {}
@@ -86,6 +91,15 @@ public class FacilioForm implements Serializable {
 	}
 	public void setFields(List<FormField> fields) {
 		this.fields = fields;
+	}
+	
+	@JsonIgnore
+	@JSON(serialize=false)
+	public Map<String, FormField> getFieldsMap() {
+		if (fields == null) {
+			return null;
+		}
+		return fields.stream().collect(Collectors.toMap(FormField::getName, Function.identity()));
 	}
 	
 	private List<FormSection> sections;

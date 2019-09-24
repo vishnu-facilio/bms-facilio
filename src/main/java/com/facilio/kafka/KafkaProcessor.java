@@ -3,21 +3,20 @@ package com.facilio.kafka;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import com.facilio.aws.util.FacilioProperties;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.log4j.LogManager;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.iam.accounts.util.IAMAccountConstants;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.procon.processor.FacilioProcessor;
 
 public class KafkaProcessor {
@@ -62,30 +61,28 @@ public class KafkaProcessor {
 
 //        PropertyConfigurator.configure(getLoggingProps());
 
-        List<FacilioField> columnList = IAMAccountConstants.getOrgFields();
-
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table("Organizations")
-                .select(columnList);
-
-        try {
-            List<Map<String, Object>> props = builder.get();
-            for (Map<String, Object> prop : props) {
-                Long orgId = (Long) prop.get("orgId");
-                String orgDomainName = (String) prop.get("domain");
-                if( ! EXISTING_ORGS.contains(orgDomainName)) {
-                    try {
-                        startProcessor(orgId, orgDomainName);
-                    } catch (Exception e) {
-                        try {
-                            CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
-                            Thread.sleep(10000L);
-                            startProcessor(orgId, orgDomainName);
-                        } catch (InterruptedException interrupted) {
-                            log.info("Exception occurred ", interrupted);
-                            CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, interrupted);
-                        }
-                    }
-                }
+          try {
+            List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
+            if(CollectionUtils.isNotEmpty(orgs)) {
+	           
+	            for (Organization org : orgs) {
+	                Long orgId = org.getOrgId();
+	                String orgDomainName = org.getDomain();
+	                if( ! EXISTING_ORGS.contains(orgDomainName)) {
+	                    try {
+	                        startProcessor(orgId, orgDomainName);
+	                    } catch (Exception e) {
+	                        try {
+	                            CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
+	                            Thread.sleep(10000L);
+	                            startProcessor(orgId, orgDomainName);
+	                        } catch (InterruptedException interrupted) {
+	                            log.info("Exception occurred ", interrupted);
+	                            CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, interrupted);
+	                        }
+	                    }
+	                }
+	            }
             }
         } catch (Exception e){
             log.info("Exception occurred ", e);

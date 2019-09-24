@@ -1,10 +1,8 @@
 
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -75,11 +73,11 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.BaseLineContext.RangeType;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
-import com.facilio.modules.BaseLineContext;
-import com.facilio.modules.BaseLineContext.RangeType;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;

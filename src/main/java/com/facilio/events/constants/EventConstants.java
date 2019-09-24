@@ -3,8 +3,6 @@ package com.facilio.events.constants;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.GetExportValueField;
 import com.facilio.bmsconsole.commands.UpdateEventCountCommand;
 import com.facilio.chain.FacilioChain;
@@ -50,7 +48,7 @@ public class EventConstants {
 	}
 	
 	public static class EventChainFactory {
-		public static Chain processEventChain() {
+		public static FacilioChain processEventChain() {
 			FacilioChain c = FacilioChain.getTransactionChain();
 			c.addCommand(new InsertEventsCommand());
 //			c.addCommand(new EvalEventBaseCriteriaCommand());
@@ -64,69 +62,69 @@ public class EventConstants {
 			return c;
 		}
 		
-		public static Chain getUpdateEventCountChain() {
+		public static FacilioChain getUpdateEventCountChain() {
 			FacilioChain chain = FacilioChain.getTransactionChain();
 			chain.addCommand(new UpdateEventCountCommand());
 			return chain;
 		}
 
-		public static Chain getAddEventChain() {
+		public static FacilioChain getAddEventChain() {
 			FacilioChain c = FacilioChain.getTransactionChain();
 			c.addCommand(new ProcessEventCommand());
 			c.addCommand(processEventChain());
 			return c;
 		}
 		
-		public static Chain getEventDetailChain() {
-			Chain c = FacilioChain.getNonTransactionChain();
+		public static FacilioChain getEventDetailChain() {
+			FacilioChain c = FacilioChain.getNonTransactionChain();
 			c.addCommand(new GetEventDetailCommand());
 			return c;
 		}
 		
-		public static Chain getActiveEventRuleChain() {
-			Chain c = FacilioChain.getNonTransactionChain();
+		public static FacilioChain getActiveEventRuleChain() {
+			FacilioChain c = FacilioChain.getNonTransactionChain();
 			c.addCommand(new GetActiveEventRulesCommand());
 			return c;
 		}
 		
-		public static Chain getEventRuleChain() {
-			Chain c = FacilioChain.getNonTransactionChain();
+		public static FacilioChain getEventRuleChain() {
+			FacilioChain c = FacilioChain.getNonTransactionChain();
 			c.addCommand(new GetNewEventRuleCommand());
 			return c;
 		}
 		
-		public static Chain addEventRuleChain() {
+		public static FacilioChain addEventRuleChain() {
 			FacilioChain c = FacilioChain.getTransactionChain();
 			c.addCommand(new AddNewEventRuleCommand());
 			return c;
 		}
 		
-		public static Chain updateEventRuleChain() {
+		public static FacilioChain updateEventRuleChain() {
 			FacilioChain c = FacilioChain.getTransactionChain();
 			c.addCommand(new UpdateNewEventRuleCommand());
 			return c;
 		}
 		
-		public static Chain deleteEventRuleChain() {
+		public static FacilioChain deleteEventRuleChain() {
 			FacilioChain c = FacilioChain.getTransactionChain();
 			c.addCommand(new DeleteNewEventRuleCommand());
 			return c;
 		}
 		
-		public static Chain getEventListChain() {
-			Chain c = FacilioChain.getNonTransactionChain();
+		public static FacilioChain getEventListChain() {
+			FacilioChain c = FacilioChain.getNonTransactionChain();
 			c.addCommand(new GetEventListCommand());
 			return c;
 		}
 		
-		public static Chain getExportFieldsValue() {
-			Chain c = FacilioChain.getNonTransactionChain();
+		public static FacilioChain getExportFieldsValue() {
+			FacilioChain c = FacilioChain.getNonTransactionChain();
 			c.addCommand(new GetEventListCommand());
 			c.addCommand(new GetExportValueField());
 			return c;
 		}
 		
-		public static Chain updateNodeToResourceMappingChain() {
+		public static FacilioChain updateNodeToResourceMappingChain() {
 			FacilioChain c = FacilioChain.getTransactionChain();
 			c.addCommand(new UpdateSourceToResourceMappingCommand());
 			c.addCommand(new UpdateEventResourcesMappingCommand());

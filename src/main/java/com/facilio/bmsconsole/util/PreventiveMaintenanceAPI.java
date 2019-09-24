@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -52,6 +51,8 @@ import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -68,6 +69,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -144,6 +146,26 @@ public class PreventiveMaintenanceAPI {
 		if(resourcePlanners != null) {
 			pm.setResourcePlanners(new ArrayList<>(resourcePlanners.values()));
 		}
+	}
+
+	public static void addReading(TaskContext newTask, TaskContext oldTask, FacilioField field, Context context) throws Exception {
+			FacilioModule readingModule = field.getModule();
+			ReadingContext reading = new ReadingContext();
+			reading.setId(oldTask.getReadingDataId());
+			reading.addReading(field.getName(), newTask.getInputValue());
+			reading.setTtime(newTask.getInputTime());
+			long resourceId = oldTask.getResource().getId();
+			reading.setParentId(resourceId);
+			if (oldTask.getLastReading() == null) {
+				ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, field);
+				newTask.setLastReading(meta.getValue() != null ? meta.getValue() : -1);
+			}
+
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
+			context.put(FacilioConstants.ContextNames.READING, reading);
+			context.put(FacilioConstants.ContextNames.RECORD, reading);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 	}
 
 	public enum ScheduleActions {
@@ -428,6 +450,7 @@ public class PreventiveMaintenanceAPI {
 		long currentTime = System.currentTimeMillis();
 		boolean isScheduled = false;
 		List<Long> nextExecutionTimes = new ArrayList<>();
+		LOGGER.log(Level.ERROR, "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId() + " next exec time " + nextExecutionTime.getLeft() + " end time " + endTime);
 		while (nextExecutionTime.getLeft() <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime.getLeft() <= pm.getEndTime())) {
 			if ((nextExecutionTime.getLeft() * 1000) < currentTime) {
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
@@ -729,7 +752,7 @@ public class PreventiveMaintenanceAPI {
 
 		//Temp fix. Have to be removed eventually
 		PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
-		Chain addWOChain = TransactionChainFactory.getAddPreOpenedWorkOrderChain();
+		FacilioChain addWOChain = TransactionChainFactory.getAddPreOpenedWorkOrderChain();
 		addWOChain.execute(context);
 
 		return wo;
@@ -863,6 +886,7 @@ public class PreventiveMaintenanceAPI {
 		workOrderBuilder.module(module)
 				.beanClass(WorkOrderContext.class)
 				.select(Arrays.asList(fieldMap.get("pm"), fieldMap.get("createdTime"), fieldMap.get("resource")))
+				.setAggregation()
 				.andCondition(CriteriaAPI.getIdCondition(workOrderId, module));
 		List<WorkOrderContext> workOrders = workOrderBuilder.get();
 
@@ -944,7 +968,7 @@ public class PreventiveMaintenanceAPI {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 
-				Chain migrationChain = TransactionChainFactory.getPMMigration(activePm.getId());
+				FacilioChain migrationChain = TransactionChainFactory.getPMMigration(activePm.getId());
 				migrationChain.execute(context);
 
 				// LOGGER.log(Level.WARN, "Migrated " + activePm.getId());
@@ -971,7 +995,7 @@ public class PreventiveMaintenanceAPI {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 
-				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
+				FacilioChain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
 				// LOGGER.log(Level.WARN, "Activated: " + activePm.getId());
@@ -993,7 +1017,7 @@ public class PreventiveMaintenanceAPI {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 
-				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
+				FacilioChain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
 				// LOGGER.log(Level.WARN, "Deactivated: " + activePm.getId());
@@ -2345,7 +2369,7 @@ public class PreventiveMaintenanceAPI {
 				PreventiveMaintenance pm = new PreventiveMaintenance();
 				pm.setStatus(PMStatus.INACTIVE);
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+				FacilioChain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
 				addTemplate.execute(context);
 
 				pm = new PreventiveMaintenance();

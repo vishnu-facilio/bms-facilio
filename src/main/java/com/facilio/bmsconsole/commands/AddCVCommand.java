@@ -93,11 +93,11 @@ public class AddCVCommand extends FacilioCommand {
 			FacilioModule module = ModuleFactory.getViewSharingModule();
 			List<FacilioField> fields =  FieldFactory.getViewSharingFields();
 			if (viewSharingList != null && !viewSharingList.isEmpty()) {
-				List<Long> orgUsersId = (List<Long>) viewSharingList.stream().filter(value -> (value.getSharingType() == SharingType.USER.getIntVal())).map(val -> val.getOrgUserId()).collect(Collectors.toList());
+				List<Long> orgUsersId = viewSharingList.stream().filter(value -> (value.getSharingType() == SharingType.USER.getIntVal())).map(val -> val.getOrgUserId()).collect(Collectors.toList());
 				if (!orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
 					ViewSharingContext newViewSharingContext = new ViewSharingContext();
-					((ViewSharingContext) newViewSharingContext).setOrgUserId(AccountUtil.getCurrentUser().getId());
-					((ViewSharingContext) newViewSharingContext).setSharingType(SharingType.USER.getIntVal());;
+					newViewSharingContext.setOrgUserId(AccountUtil.getCurrentUser().getId());
+					newViewSharingContext.setSharingType(SharingType.USER.getIntVal());;
 					viewSharingList.add(newViewSharingContext);	
 				}
 				ViewAPI.applyViewSharing(viewId, viewSharingList);

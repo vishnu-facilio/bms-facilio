@@ -12,7 +12,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.StoreroomApi;
+import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -159,6 +161,9 @@ public class GetItemTransactionsListCommand extends FacilioCommand {
 						item.setItemType(ItemsApi.getItemTypes(item.getItemType().getId()));
 						item.setStoreRoom(StoreroomApi.getStoreRoom(item.getStoreRoom().getId()));
 						itemTransactions.setItem(item);
+						if(itemTransactions.getTransactionType() == TransactionType.MANUAL.getValue()) {
+							itemTransactions.setResource(ResourceAPI.getExtendedResource(itemTransactions.getParentId()));
+						}
 					}
 				}
 

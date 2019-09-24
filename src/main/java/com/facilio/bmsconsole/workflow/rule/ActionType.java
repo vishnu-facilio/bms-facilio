@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,6 +58,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
@@ -101,7 +102,7 @@ public enum ActionType {
 					String to = (String) obj.get("to");
 					if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
 						List<String> emails = new ArrayList<>();
-						AwsUtil.sendEmail(obj);
+						FacilioFactory.getEmailClient().sendEmail(obj);
 
 						emails.add(to);
 						if (context != null) {
@@ -165,7 +166,7 @@ public enum ActionType {
 									LOGGER.info("Gonna Email : "+obj.toJSONString());
 								}
 
-								AwsUtil.sendEmail(obj);
+								FacilioFactory.getEmailClient().sendEmail(obj);
 								emails.add(to);
 							}
 						}
@@ -266,7 +267,7 @@ public enum ActionType {
 					}
 
 					if (!isHistorical) {
-						Chain addEvent = TransactionChainFactory.getV2AddEventChain();
+						FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
 						addEvent.execute(context);
 						if(currentRule.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) {
 							Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = (Map<String, PointedList<AlarmOccurrenceContext>>)context.get("alarmOccurrenceMap");
@@ -297,7 +298,7 @@ public enum ActionType {
 
 						FacilioContext addEventContext = new FacilioContext();
 						addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
-						Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+						FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 						getAddEventChain.execute(addEventContext);
 						EventContext event = ((List<EventContext>) addEventContext.get(EventConstants.EventContextNames.EVENT_LIST)).get(0);
 						if (currentRule instanceof ReadingRuleContext) {
@@ -493,7 +494,7 @@ public enum ActionType {
 					}
 
 					pmContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-					Chain executePm = TransactionChainFactory.getNewExecutePreventiveMaintenanceChain();
+					FacilioChain executePm = TransactionChainFactory.getNewExecutePreventiveMaintenanceChain();
 					executePm.execute(pmContext);
 
 
@@ -630,7 +631,7 @@ public enum ActionType {
 						if (workOrder == null) {
 							FacilioContext woContext = new FacilioContext();
 							woContext.put(FacilioConstants.ContextNames.RECORD_ID, lastOccurrence.getId());
-							Chain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
+							FacilioChain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
 							c.execute(woContext);
 						}
 						else {
@@ -644,7 +645,7 @@ public enum ActionType {
 							noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
 							noteContext.put(FacilioConstants.ContextNames.NOTE, note);
 
-							Chain addNote = TransactionChainFactory.getAddNotesChain();
+							FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
 							addNote.execute(noteContext);
 						}
 					}
@@ -657,7 +658,7 @@ public enum ActionType {
 						woContext.put(FacilioConstants.ContextNames.ALARM, alarm);
 						woContext.put(FacilioConstants.ContextNames.RECORD, obj);
 
-						Chain addWorkOrder = TransactionChainFactory.getAddWoFromAlarmChain();
+						FacilioChain addWorkOrder = TransactionChainFactory.getAddWoFromAlarmChain();
 						addWorkOrder.execute(woContext);
 
 					} else {
@@ -672,7 +673,7 @@ public enum ActionType {
 						noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
 						noteContext.put(FacilioConstants.ContextNames.NOTE, note);
 
-						Chain addNote = TransactionChainFactory.getAddNotesChain();
+						FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
 						addNote.execute(noteContext);
 
 						AlarmAPI.updateWoIdInAlarm(wo.getId(), alarm.getId());
@@ -712,7 +713,7 @@ public enum ActionType {
 					context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 					context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
 
-					Chain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
+					FacilioChain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
 					updateWorkOrder.execute(context);
 				}
 			}
@@ -788,19 +789,7 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) throws Exception {
-			// TODO Auto-generated method stub
-
-			LOGGER.info("Action::Add Workorder::"+obj);
-
-			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
-			wo.setSourceType(SourceType.WORKFLOW_RULE);
-			FacilioContext woContext = new FacilioContext();
-			woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
-			woContext.put(FacilioConstants.ContextNames.TASK_MAP, wo.getTaskList());
-
-			Chain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
-			addWorkOrder.execute(woContext);
-
+			addWorkOrder(obj, context, currentRecord, SourceType.WORKFLOW_RULE);
 		}
 
 	},
@@ -1010,7 +999,7 @@ public enum ActionType {
 					
 					Long controlActionGroupId = (Long) obj.get("controlActionGroupId");
 					
-					Chain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandForControlGroupChain();
+					FacilioChain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandForControlGroupChain();
 					
 					
 					context.put(ControlActionUtil.CONTROL_ACTION_GROUP_ID, controlActionGroupId);
@@ -1045,7 +1034,7 @@ public enum ActionType {
 					
 					context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS, Collections.singletonList(controlActionCommand));
 					
-					Chain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
+					FacilioChain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
 					executeControlActionCommandChain.execute(context);
 				}
 			}
@@ -1099,7 +1088,7 @@ public enum ActionType {
 			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
 			context.put(WorkflowV2Util.WORKFLOW_PARAMS, currentRecordList);
 
-			Chain chain = TransactionChainFactory.getExecuteWorkflowChain();
+			FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
 
 			chain.execute(context);
 
@@ -1132,7 +1121,7 @@ public enum ActionType {
 					assetBreakdown.setSourceId(alarm.getId());
 					assetBreakdown.setSourceType(AssetBDSourceDetailsContext.SourceType.ALARM.getValue());
 					context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);
-					Chain newAssetBreakdown = TransactionChainFactory.getAddAssetDowntimeChain();
+					FacilioChain newAssetBreakdown = TransactionChainFactory.getAddAssetDowntimeChain();
 					newAssetBreakdown.execute(context);
 				}
 				else if (currentRecord instanceof ReadingAlarm) {
@@ -1147,7 +1136,7 @@ public enum ActionType {
 					assetBreakdown.setSourceId(readingAlarm.getId());
 					assetBreakdown.setSourceType(AssetBDSourceDetailsContext.SourceType.ALARM.getValue());
 					context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);
-					Chain newAssetBreakdown = TransactionChainFactory.getAddAssetDowntimeChain();
+					FacilioChain newAssetBreakdown = TransactionChainFactory.getAddAssetDowntimeChain();
 					newAssetBreakdown.execute(context);
 				}
 			}
@@ -1168,6 +1157,15 @@ public enum ActionType {
 		public boolean isTemplateNeeded() {
 			return false;
 		}
+	},
+	CREATE_DEVIATION_WORK_ORDER(24) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+								  Object currentRecord) throws Exception {
+			addWorkOrder(obj, context, currentRecord, SourceType.TASK_DEVIATION);
+		}
+
 	},
 	;
 
@@ -1331,5 +1329,20 @@ public enum ActionType {
 			return;
 		}
 		StateFlowRulesAPI.updateState(moduleData, module, status, false, context);
+	}
+	
+	private static void addWorkOrder (JSONObject obj, Context context, Object currentRecord, SourceType sourceType) throws Exception {
+		// TODO Auto-generated method stub
+
+		LOGGER.debug("Action::Add Workorder::"+obj);
+
+		WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+		wo.setSourceType(sourceType);
+		FacilioContext woContext = new FacilioContext();
+		woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+		woContext.put(FacilioConstants.ContextNames.TASK_MAP, wo.getTaskList());
+
+		FacilioChain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
+		addWorkOrder.execute(woContext);
 	}
 }

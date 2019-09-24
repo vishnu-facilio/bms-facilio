@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -84,7 +84,7 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, newModule.getName());
 		context.put(FacilioConstants.ContextNames.READINGS, newList);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
-		Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		chain.execute(context);
 	}
 

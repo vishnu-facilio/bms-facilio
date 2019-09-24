@@ -65,41 +65,41 @@ public class RulePageFactory extends PageFactory {
 	private static void addRuleRankCard(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 2);
-		cardWidget.addToWidgetParams("type", CardType.RANK_RULE.getName());
+		cardWidget.addCardType(CardType.RANK_RULE);
 		section.addWidget(cardWidget);
 	}
 	private static void addAssetsNAlarmDetails(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 8, 7);
-		cardWidget.addToWidgetParams("type", CardType.RULE_ASSETS_ALARM.getName());
+		cardWidget.addCardType(CardType.RULE_ASSETS_ALARM);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addAlarmInsight(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 16, 7);
-		cardWidget.addToWidgetParams("type", CardType.RULE_ALARM_INSIGHT.getName());
+		cardWidget.addCardType(CardType.RULE_ALARM_INSIGHT);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addAssociatedWOCount(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 12, 5);
-		cardWidget.addToWidgetParams("type", CardType.RULE_ASSOCIATED_WO.getName());
+		cardWidget.addCardType(CardType.RULE_ASSOCIATED_WO);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addAssociatedWO(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 12, 5);
-		cardWidget.addToWidgetParams("type", CardType.RULE_WO_DURATION.getName());
+		cardWidget.addCardType(CardType.RULE_WO_DURATION);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addRuleInsight(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 11);
-		cardWidget.addToWidgetParams("type", CardType.ALARM_INSIGHTS.getName());
+		cardWidget.addCardType(CardType.ALARM_INSIGHTS);
 		section.addWidget(cardWidget);
 	}
 	

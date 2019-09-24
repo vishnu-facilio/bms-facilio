@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -36,9 +35,10 @@ public class UpdateBulkWarrantyContractCommand extends FacilioCommand{
 						.fields(updatedfields)
 						.andCondition(CriteriaAPI.getIdCondition(warrantyContractIds,warrantyContractModule));
 		updateBuilder.withChangeSet(WarrantyContractContext.class);
-		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, updateBuilder.getChangeSet());
-
+		
 	     context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.updateViaMap(updateMap));
+	     context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, updateBuilder.getChangeSet());
+
 		return false;
 	}
 

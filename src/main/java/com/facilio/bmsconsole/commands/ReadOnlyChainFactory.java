@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -817,8 +816,8 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetReceivablesListCommand());
 		return c;
 	}
-	public static Chain getContractListChain() {
-		Chain chain = getDefaultChain();
+	public static FacilioChain getContractListChain() {
+		FacilioChain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForContract());
 		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new LoadViewCommand());
@@ -1414,8 +1413,8 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static Chain getAssetMovementListChain() {
-		Chain chain = getDefaultChain();
+	public static FacilioChain getAssetMovementListChain() {
+		FacilioChain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForAssetMovement());
 		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new LoadViewCommand());
@@ -1427,7 +1426,7 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
-	public static Chain fetchControlGroupsChain() {
+	public static FacilioChain fetchControlGroupsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());

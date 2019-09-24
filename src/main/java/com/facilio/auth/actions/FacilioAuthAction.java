@@ -23,8 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -38,10 +36,12 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.exceptions.AccountException;
@@ -266,7 +266,7 @@ public class FacilioAuthAction extends FacilioAction {
 		try {
 			if (account != null && account.getOrg().getOrgId() > 0) {
 				signupContext.put("orgId", account.getOrg().getOrgId());
-				Chain c = TransactionChainFactory.getOrgSignupChain();
+				FacilioChain c = TransactionChainFactory.getOrgSignupChain();
 				c.execute(signupContext);
 			}
 		}
@@ -430,7 +430,7 @@ public class FacilioAuthAction extends FacilioAction {
 		JSONObject invitation = new JSONObject();
 		User user = AccountUtil.getUserBean().validateUserInvite(getInviteToken());
 		if(user != null) {
-			User us = AccountUtil.getUserBean().getUser(user.getOrgId(), user.getUid());
+			User us = AccountUtil.getUserBean(user.getOrgId()).getUser(user.getOrgId(), user.getUid());
 			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 			AccountUtil.cleanCurrentAccount();
 			AccountUtil.setCurrentAccount(new Account(org, us));

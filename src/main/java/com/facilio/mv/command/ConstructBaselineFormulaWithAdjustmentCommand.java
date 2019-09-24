@@ -3,7 +3,6 @@ package com.facilio.mv.command;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -12,6 +11,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.mv.context.MVAdjustment;
@@ -105,7 +105,7 @@ public class ConstructBaselineFormulaWithAdjustmentCommand extends FacilioComman
 				MVUtil.fillFormulaFieldDetailsForUpdate(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaFieldContext);
 				
-				Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
+				FacilioChain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 				updateEnPIChain.execute(context);
 				
 			}
@@ -116,7 +116,7 @@ public class ConstructBaselineFormulaWithAdjustmentCommand extends FacilioComman
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD,formulaFieldContext);
 				formulaFieldContext.setName(baseLine.getName()+"WithAjustment");
 				MVUtil.fillFormulaFieldDetailsForAdd(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
-				Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+				FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 				addEnpiChain.execute(context);
 				
 				baseLine.setFormulaFieldWithAjustment(formulaFieldContext);

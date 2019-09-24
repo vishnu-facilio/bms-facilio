@@ -1,10 +1,10 @@
 package com.facilio.events.actions;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.constants.EventConstants;
 
@@ -23,7 +23,7 @@ public class V2EventAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
 		
-		Chain chain = TransactionChainFactory.getV2AddEventPayloadChain();
+		FacilioChain chain = TransactionChainFactory.getV2AddEventPayloadChain();
 		chain.execute(context);
 		return SUCCESS;
 	}

@@ -13,6 +13,10 @@
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
 		</action>
+		<action name="userlist"  class="com.facilio.bmsconsole.actions.UserAction" method="v2userList">
+			<param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param>
+		</action>
 		
 		<action name="controllers" class="com.facilio.bmsconsole.actions.ControllerAction" method="controllerList">
 			<param name="moduleName">setup</param>
@@ -237,13 +241,29 @@
 	</package>
 
 	<package name="exportPointsV2" namespace="/api/v2/setup/exportpoints" extends="setupApiV2">
-	<action name="exportPointsData" class="com.facilio.bmsconsole.actions.CommissionAction" method="exportPointsModule">
-	</action>
-	</package>
-	<package name="importPointsV2" namespace="/api/v2/setup/importpoints" extends="setupApiV2">
-	<action name="*" class="com.facilio.bmsconsole.actions.ImportPointsDataAction" method="upload">
+	<action name="*" class="com.facilio.bmsconsole.actions.CommissionAction" method="exportPointsModule">
 	<param name="controllerId">{1}</param> 
 	</action>
 	</package>
+	<package name="importPointsV2" namespace="/api/v2/setup/importpoints" extends="setupApiV2">
+	
+	<action name="*"
+	class="com.facilio.bmsconsole.actions.ImportPointsDataAction"
+	method="upload">
+	<param name="controllerId">{1}</param>
+	</action>
+	
+	<action name="processImport"
+	class="com.facilio.bmsconsole.actions.ImportPointsDataAction"
+	method="processImport">
+	</action>
+	
+	<action name="checkImport"
+	class="com.facilio.bmsconsole.actions.ImportPointsDataAction"
+	method="checkImportStatus">
+	</action>
+
+	</package>
+	
 
 </struts>

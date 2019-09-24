@@ -10,10 +10,10 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.tasker.config.ExecutorsConf;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.config.SchedulerJobConf;

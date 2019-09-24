@@ -1,13 +1,17 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
 
 public class WorkOrderAssignmentAction extends FacilioAction {
 
-    private Long woId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Long woId;
     public Long getWoId() {
         return woId;
     }
@@ -37,7 +41,7 @@ public class WorkOrderAssignmentAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.ROLE, getRoleName());
         context.put(FacilioConstants.ContextNames.RECOMMENDED_COUNT, getCount());
 
-        Chain c = ReadOnlyChainFactory.getRecommendedUsers();
+        FacilioChain c = ReadOnlyChainFactory.getRecommendedUsers();
         c.execute(context);
 
         setResult(FacilioConstants.ContextNames.RECOMMENDED_USERS, context.get(FacilioConstants.ContextNames.RECOMMENDED_USERS));

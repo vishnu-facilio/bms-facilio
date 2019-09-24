@@ -1,38 +1,17 @@
 package com.facilio.processor;
 
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessor;
 import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.agent.AgentContent;
-import com.facilio.agent.AgentKeys;
-import com.facilio.agent.AgentType;
-import com.facilio.agent.AgentUtil;
-import com.facilio.agent.CommandStatus;
-import com.facilio.agent.ControllerCommand;
-import com.facilio.agent.FacilioAgent;
-import com.facilio.agent.MessageStatus;
-import com.facilio.agent.PublishType;
+import com.facilio.agent.*;
 import com.facilio.agentIntegration.wattsense.WattsenseUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
@@ -40,6 +19,18 @@ import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.ErrorDataProducer;
 import com.facilio.util.AckUtil;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class Processor implements IRecordProcessor {
@@ -143,6 +134,13 @@ public class Processor implements IRecordProcessor {
 
                     reader = new StringReader(data);
                     JSONObject payLoad = (JSONObject) parser.parse(reader);
+                    if(payLoad.containsKey(AgentKeys.VERSION)){
+                        String version = String.valueOf(payLoad.get(AgentKeys.VERSION));
+                        if( version.equals("2")){
+                            LOGGER.info("Message from new agent \n "+payLoad);
+                            continue;
+                        }
+                    }
                     String dataType = PublishType.event.getValue();
                     if(payLoad.containsKey(EventUtil.DATA_TYPE)) {
                         dataType = (String)payLoad.remove(EventUtil.DATA_TYPE);
@@ -242,7 +240,7 @@ public class Processor implements IRecordProcessor {
 
                         FacilioContext context = new FacilioContext();
                         context.put(AgentKeys.NAME, agentName);
-                        Chain updateAgentTable = TransactionChainFactory.updateAgentTable();
+                        FacilioChain updateAgentTable = TransactionChainFactory.updateAgentTable();
                         updateAgentTable.execute(context);
 
 

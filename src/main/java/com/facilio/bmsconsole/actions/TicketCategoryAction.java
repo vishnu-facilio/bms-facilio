@@ -2,11 +2,10 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -19,7 +18,7 @@ public class TicketCategoryAction extends ActionSupport {
 	public String categoryList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
-		Chain statusListChain = FacilioChainFactory.getTicketCategoryListChain();
+		FacilioChain statusListChain = FacilioChainFactory.getTicketCategoryListChain();
 		statusListChain.execute(context);
 		
 		setCategories((List<TicketCategoryContext>) context.get(FacilioConstants.ContextNames.TICKET_CATEGORY_LIST));

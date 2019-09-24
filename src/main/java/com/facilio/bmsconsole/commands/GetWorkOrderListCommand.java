@@ -67,8 +67,15 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 			
 			List<String> selectFields = (List<String>) context.get(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS);
 			if (CollectionUtils.isNotEmpty(selectFields)) {
+				List<FacilioField> fieldsToSelect = new ArrayList<>();
+				boolean fetchCustomFields = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_CUSTOM_FIELDS, false);
+				if (fetchCustomFields) {
+					fieldsToSelect.addAll(fields.stream().filter(field -> !field.isDefault()).collect(Collectors.toList()));
+				}
+				
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-				fields = selectFields.stream().map(fieldName -> fieldMap.get(fieldName)).collect(Collectors.toList());
+				fieldsToSelect.addAll(selectFields.stream().map(fieldName -> fieldMap.get(fieldName)).collect(Collectors.toList()));
+				fields = fieldsToSelect;
 			}
 		}
 		

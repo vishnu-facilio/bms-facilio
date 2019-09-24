@@ -2,11 +2,10 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.GraphicsFolderContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -46,7 +45,7 @@ public class GraphicsFolderAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
  		
 		context.put(FacilioConstants.ContextNames.SHOW_CHILDREN_GRAPHICS, showChildrenGraphics);
-		Chain chain = ReadOnlyChainFactory.getGraphicsFolderListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getGraphicsFolderListChain();
 		chain.execute(context);
 		
 		List<GraphicsFolderContext> graphicsList = (List<GraphicsFolderContext>) context.get(FacilioConstants.ContextNames.GRAPHICS_FOLDERS);
@@ -59,7 +58,7 @@ public class GraphicsFolderAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.GRAPHICS_FOLDER, graphicsFolder);
 		
-		Chain chain = TransactionChainFactory.getAddGraphicsFolderChain();
+		FacilioChain chain = TransactionChainFactory.getAddGraphicsFolderChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.GRAPHICS_FOLDER, graphicsFolder);
@@ -69,7 +68,7 @@ public class GraphicsFolderAction extends FacilioAction{
 	public String deleteGraphicsFolder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
-		Chain chain = TransactionChainFactory.getDeleteGraphicsFolderChain();
+		FacilioChain chain = TransactionChainFactory.getDeleteGraphicsFolderChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID, recordId);
@@ -80,7 +79,7 @@ public class GraphicsFolderAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.GRAPHICS_FOLDER, graphicsFolder);
 
-		Chain updateGraphicsChain = TransactionChainFactory.getUpdateGraphicsFolderChain();
+		FacilioChain updateGraphicsChain = TransactionChainFactory.getUpdateGraphicsFolderChain();
 		updateGraphicsChain.execute(context);
 		setRecordId(graphicsFolder.getId());
 		setResult(FacilioConstants.ContextNames.GRAPHICS_FOLDER, graphicsFolder);

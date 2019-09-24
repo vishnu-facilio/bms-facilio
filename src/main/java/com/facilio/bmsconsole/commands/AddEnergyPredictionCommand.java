@@ -1,10 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -15,6 +12,7 @@ import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.MLModelVariableContext;
 import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -94,7 +92,7 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
          context.put(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT, true);
          
 
-         Chain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
+         FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
          addReadingChain.execute(context);
 	}
 	

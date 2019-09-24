@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
@@ -76,7 +77,7 @@ public interface UserBean {
     
     public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
     
-    public Account getPermalinkAccount(String token, List<String> url) throws Exception ;
+    public Account getPermalinkAccount(IAMAccount iamAccount) throws Exception ;
 
     List<Long> getAccessibleSpaceList (long uid) throws Exception;
     List<Long> getAccessibleGroupList (long uid) throws Exception;

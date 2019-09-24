@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
-import com.facilio.modules.BmsAggregateOperators;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -27,6 +26,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule.ModuleType;
@@ -172,6 +172,9 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
 		setXAndDateFields(dataPoint, mode, fieldMap);
 		setCriteria(dataPoint, fieldMap, metric);
+		if(metric.isxDataPoint()) {
+			dataPoint.setxDataPoint(metric.isxDataPoint());
+		}
 		if (dataPoint.isFetchResource()) {
 			resourceAlias.add(report.getxAlias());
 		}

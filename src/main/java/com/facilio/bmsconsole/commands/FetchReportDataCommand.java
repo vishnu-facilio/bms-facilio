@@ -1,16 +1,28 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Stack;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -21,10 +33,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
@@ -322,6 +331,8 @@ public class FetchReportDataCommand extends FacilioCommand {
 			newSelectBuilder.andCriteria(report.getCriteria());
 		}
 
+		List<Map<String, Object>> props;
+
 		ReportFieldContext reportFieldContext = dp.getxAxis();
 		boolean outerJoin = reportFieldContext.isOuterJoin();
 		if (outerJoin) {
@@ -333,29 +344,37 @@ public class FetchReportDataCommand extends FacilioCommand {
 			String aggrFieldName = ReportUtil.getAggrFieldName(dp.getyAxis().getField(), dp.getyAxis().getAggrEnum());
 			FacilioModule lookupModule = ((LookupField) outerJoinField).getLookupModule();
 
-			FacilioField idField = FieldFactory.getIdField(lookupModule);
+			FacilioField idField;
+			if (LookupSpecialTypeUtil.isSpecialType(lookupModule.getName())) {
+				idField = LookupSpecialTypeUtil.getIdField(lookupModule.getName());
+			}
+			else {
+				idField = FieldFactory.getIdField(lookupModule);
+			}
 			FacilioField countField = new FacilioField();
 			countField.setColumnName("COALESCE(inn." + aggrFieldName + ", 0)");
 			countField.setName(aggrFieldName);
 
 			idField.setName(outerJoinField.getName());
-			SelectRecordsBuilder newSelect = new SelectRecordsBuilder()
-					.module(lookupModule)
+
+			String queryString = newSelectBuilder.constructQueryString();
+			GenericSelectRecordBuilder newSelect = new GenericSelectRecordBuilder()
+					.table(lookupModule.getTableName())
 					.select(Arrays.asList(idField, countField))
-					.leftJoinQuery(newSelectBuilder.constructQueryString(), "inn")
-						.on(lookupModule.getTableName() + ".ID = inn." + outerJoinField.getName())
-					.andCondition(CriteriaAPI.getIdCondition(dp.getxAxis().getSelectValuesOnly(), lookupModule))
-//					.groupBy(idField.getCompleteColumnName())
+					.leftJoinQuery(queryString, "inn")
+						.on(lookupModule.getTableName() + "." + idField.getColumnName() + " = inn." + outerJoinField.getName())
+					.andCondition(CriteriaAPI.getCondition(idField.getCompleteColumnName(), idField.getName(), StringUtils.join(dp.getxAxis().getSelectValuesOnly(), ","), NumberOperators.EQUALS))
 					;
+			newSelect.addWhereValue(Arrays.asList(newSelectBuilder.getWhereValues()), 0);
 			if (CollectionUtils.isNotEmpty(dp.getOrderBy()) && (dp.getOrderByFuncEnum() != null && dp.getOrderByFuncEnum() != OrderByFunction.NONE)) {
 				newSelect.orderBy(countField.getCompleteColumnName() + " " + dp.getOrderByFuncEnum().getStringValue());
 			}
 
-			newSelectBuilder = newSelect;
+			props = newSelect.get();
 		}
-
-		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
-
+		else {
+			props = newSelectBuilder.getAsProps();
+		}
 
 		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
 
@@ -707,7 +726,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		if (report.getDateOperatorEnum() != null) {
 			DateRange actualRange = null;
 			if(report.getDateRange() == null) {
-				actualRange = ((DateOperators) report.getDateOperatorEnum()).getRange(report.getDateValue());
+				actualRange = report.getDateOperatorEnum().getRange(report.getDateValue());
 				report.setDateRange(actualRange);
 			}
 			else {

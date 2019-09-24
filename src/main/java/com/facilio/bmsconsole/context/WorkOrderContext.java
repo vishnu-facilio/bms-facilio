@@ -4,11 +4,11 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.List;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;

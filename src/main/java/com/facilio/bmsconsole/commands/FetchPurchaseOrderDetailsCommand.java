@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.ReceivableContext;
+import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -42,7 +43,7 @@ public class FetchPurchaseOrderDetailsCommand extends FacilioCommand {
 			purchaseOrderContext.setReceivableContext(receivableList.get(0));
 			
 			PurchaseOrderAPI.setLineItems(purchaseOrderContext);
-					
+			purchaseOrderContext.setTermsAssociated(PurchaseOrderAPI.fetchAssociatedTerms(purchaseOrderContext.getId()));			
 		}
 		return false;
 	}

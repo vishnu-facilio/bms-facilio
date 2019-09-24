@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.json.simple.JSONObject;
 
@@ -21,6 +20,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -118,7 +118,7 @@ public class NotificationAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.Workflow.NOTIFICATION_EMAIL, email);
 		
-		Chain addAlarmEmailChain = FacilioChainFactory.getAddAlarmEMailNotifierChain();
+		FacilioChain addAlarmEmailChain = FacilioChainFactory.getAddAlarmEMailNotifierChain();
 		addAlarmEmailChain.execute(context);
 		
 		Boolean result = (Boolean) context.get(FacilioConstants.ContextNames.RESULT);
@@ -150,7 +150,7 @@ public class NotificationAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.Workflow.NOTIFICATION_SMS, phone);
 		
-		Chain addAlarmSMSChain = FacilioChainFactory.getAddAlarmSMSNotifierChain();
+		FacilioChain addAlarmSMSChain = FacilioChainFactory.getAddAlarmSMSNotifierChain();
 		addAlarmSMSChain.execute(context);
 		
 		Boolean result = (Boolean) context.get(FacilioConstants.ContextNames.RESULT);
@@ -173,7 +173,7 @@ public class NotificationAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		
-		Chain fetchAlarmCreationRules = FacilioChainFactory.getAlarmCreationRulesChain();
+		FacilioChain fetchAlarmCreationRules = FacilioChainFactory.getAlarmCreationRulesChain();
 		fetchAlarmCreationRules.execute(context);
 		
 		alarmCreationRules = (List<WorkflowRuleContext>) context.get(FacilioConstants.Workflow.WORKFLOW_LIST);
@@ -316,7 +316,7 @@ public class NotificationAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, RuleType.valueOf(ruleType));
 		
-		Chain workflowRuleType = FacilioChainFactory.getWorkflowRuleOfTypeChain();
+		FacilioChain workflowRuleType = FacilioChainFactory.getWorkflowRuleOfTypeChain();
 		workflowRuleType.execute(context);
 		workFlowNotifications = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
 		return SUCCESS;

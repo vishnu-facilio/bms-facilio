@@ -3,12 +3,11 @@ package com.facilio.bmsconsole.actions;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
@@ -46,7 +45,7 @@ public class CommonAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SPECIAL_FIELDS, false);
 		context.put(FacilioConstants.ContextNames.VIEW_LIMIT, null);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
-		Chain mailModuleChain = TransactionChainFactory.sendModuleMailChain();
+		FacilioChain mailModuleChain = TransactionChainFactory.sendModuleMailChain();
 		mailModuleChain.execute(context);
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, moduleName);
 		return SUCCESS;
@@ -61,7 +60,7 @@ public class CommonAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.IS_S3_VALUE, false);
 		context.put(FacilioConstants.ContextNames.SPECIAL_FIELDS, specialFields);
 		context.put(FacilioConstants.ContextNames.VIEW_LIMIT, null);
-		Chain exportModule = TransactionChainFactory.getExportModuleChain();
+		FacilioChain exportModule = TransactionChainFactory.getExportModuleChain();
 		exportModule.execute(context);
 		fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
 		return SUCCESS;

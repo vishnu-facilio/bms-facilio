@@ -37,8 +37,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.transaction.SystemException;
 
-import com.amazon.sqs.javamessaging.AmazonSQSExtendedClient;
-import com.amazon.sqs.javamessaging.ExtendedClientConfiguration;
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -56,6 +55,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.amazon.sqs.javamessaging.AmazonSQSExtendedClient;
+import com.amazon.sqs.javamessaging.ExtendedClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -90,10 +91,6 @@ import com.amazonaws.services.rekognition.AmazonRekognition;
 import com.amazonaws.services.rekognition.AmazonRekognitionClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.secretsmanager.AWSSecretsManager;
-import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
-import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
-import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.Body;
@@ -114,8 +111,8 @@ import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.email.EmailUtil;
+import com.facilio.service.FacilioService;
 import com.facilio.time.DateTimeUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AwsUtil 
 {
@@ -145,6 +142,10 @@ public class AwsUtil
 	private static volatile AmazonKinesis kinesis = null;
 	private static String region = null;
 	private static final Object LOCK = new Object();
+
+	public static Map<String, Object> getClientInfoAsService() throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> getClientInfo());
+	}
 
 	public static Map<String, Object> getClientInfo() {
 		Connection conn = null;
@@ -176,7 +177,17 @@ public class AwsUtil
 		return clientInfo;
 	}
 
-	public static int updateClientVersion(String newVersion,boolean isNewClientBuild) throws SystemException {
+	public static int updateClientVersion(String newVersion, boolean isNewClientBuild) throws Exception {
+		com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
+		if (currentUser != null) {
+			return FacilioService.runAsServiceWihReturn(() -> updateClientVersionervice(newVersion, isNewClientBuild, currentUser.getId()));
+		}
+		else {
+			throw new IllegalArgumentException("Current User cannot be null while updating Client Version");
+		}
+	}
+
+	private static int updateClientVersionervice(String newVersion,boolean isNewClientBuild, long userId) throws SystemException {
 		int updatedRows = 0;
 		if(newVersion != null) {
 			newVersion = newVersion.trim();
@@ -185,14 +196,13 @@ public class AwsUtil
 			PreparedStatement pstmt = null;
 			try {
 				if(checkIfVersionExistsInS3(newVersion)) {
-					com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
-					if (FacilioProperties.environment != null && currentUser != null) {
+					if (FacilioProperties.environment != null && userId != -1) {
 						FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 						conn = FacilioConnectionPool.INSTANCE.getConnection();
 						pstmt = conn.prepareStatement("Update ClientApp set version=?, updatedTime=?, updatedBy=?, is_new_client_build=?  WHERE environment=?");
 						pstmt.setString(1, newVersion);
 						pstmt.setLong(2, System.currentTimeMillis());
-						pstmt.setLong(3, currentUser.getId());
+						pstmt.setLong(3, userId);
 						pstmt.setBoolean(4, isNewClientBuild);
 						pstmt.setString(5, FacilioProperties.environment);
 
@@ -214,6 +224,9 @@ public class AwsUtil
 	}
 
 	private static boolean checkIfVersionExistsInS3(String newVersion) {
+		if (FacilioProperties.isDevelopment()) {
+			return true;
+		}
 		boolean objectExists = false;
 		String staticBucket = FacilioProperties.getConfig("static.bucket");
 		if(staticBucket != null) {
@@ -389,7 +402,10 @@ public class AwsUtil
     }
 	
 	public static void sendEmail(JSONObject mailJson) throws Exception  {
-		logEmail(mailJson);
+
+		FacilioFactory.getEmailClient().sendEmail(mailJson);
+
+		/*logEmail(mailJson);
 		if(FacilioProperties.isDevelopment()) {
 //			mailJson.put("subject", "Local - "+mailJson.get("subject"));
 			return;
@@ -398,7 +414,7 @@ public class AwsUtil
 			EmailUtil.sendEmail(mailJson);
 		} else {
 			sendEmailViaAws(mailJson);
-		}
+		}*/
 	}
 
 	private static void sendEmailViaAws(JSONObject mailJson) throws Exception  {
@@ -459,8 +475,9 @@ public class AwsUtil
 		}
 	}
 
-	private static void logEmail (JSONObject mailJson) {
-		try {
+	private static void logEmail (JSONObject mailJson) throws Exception {
+		FacilioFactory.getEmailClient().logEmail(mailJson);
+		/*try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				String toAddress = (String) mailJson.get("to");
 				if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
@@ -473,11 +490,13 @@ public class AwsUtil
 		}
 		catch (Exception e) {
 			LOGGER.error("Error occurred while logging email", e);
-		}
+		}*/
 	}
 	
 	public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception  {
-		if(files == null || files.isEmpty()) {
+
+		FacilioFactory.getEmailClient().sendEmail(mailJson,files);
+		/*if(files == null || files.isEmpty()) {
 			sendEmail(mailJson);
 			return;
 		}
@@ -486,7 +505,7 @@ public class AwsUtil
 			EmailUtil.sendEmail(mailJson, files);
 		} else {
 			sendEmailViaAws(mailJson, files);
-		}
+		}*/
 	}
 
 	private static void sendEmailViaAws(JSONObject mailJson, Map<String,String> files) throws Exception  {

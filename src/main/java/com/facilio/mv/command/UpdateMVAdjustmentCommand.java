@@ -3,13 +3,13 @@ package com.facilio.mv.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -62,7 +62,7 @@ public class UpdateMVAdjustmentCommand extends FacilioCommand {
 				if(adjustment.getId() < 0) {
 
 					context.put(MVUtil.MV_ADJUSTMENT, adjustment);
-					Chain chain = TransactionChainFactory.getAddMVAdjustmentChain();
+					FacilioChain chain = TransactionChainFactory.getAddMVAdjustmentChain();
 					chain.execute(context);
 				}
 				else {
@@ -74,14 +74,14 @@ public class UpdateMVAdjustmentCommand extends FacilioCommand {
 							MVUtil.fillFormulaFieldDetailsForAdd(adjustment.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment,context);
 							context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment.getFormulaField());
 
-							Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+							FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 							addEnpiChain.execute(context);
 						}
 						else {
 							context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment.getFormulaField());
 							MVUtil.fillFormulaFieldDetailsForUpdate(adjustment.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment,context);
 							
-							Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
+							FacilioChain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 							updateEnPIChain.execute(context);
 						}
 					}
@@ -89,7 +89,7 @@ public class UpdateMVAdjustmentCommand extends FacilioCommand {
 						if(oldAdjustment.getFormulaField() != null) {
 							context.put(FacilioConstants.ContextNames.RECORD_ID, oldAdjustment.getFormulaField().getId());
 							
-							Chain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
+							FacilioChain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 							deleteEnPIChain.execute(context);
 						}
 					}
@@ -109,7 +109,7 @@ public class UpdateMVAdjustmentCommand extends FacilioCommand {
 			if(deletedAdjustment.getFormulaField() != null && deletedAdjustment.getFormulaField().getId() > 0) {
 				context.put(FacilioConstants.ContextNames.RECORD_ID, deletedAdjustment.getFormulaField().getId());
 				
-				Chain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
+				FacilioChain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 				deleteEnPIChain.execute(context);
 			}
 			

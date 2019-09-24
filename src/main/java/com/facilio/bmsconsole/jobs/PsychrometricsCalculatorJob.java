@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -19,6 +18,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.PsychrometricUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.WeatherUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -54,7 +54,7 @@ public class PsychrometricsCalculatorJob extends FacilioJob {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
-		Chain addDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+		FacilioChain addDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 		addDataChain.execute(context);
 	}
 

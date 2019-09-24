@@ -3,13 +3,13 @@ package com.facilio.workflows.action;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Priority;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -161,7 +161,7 @@ public class WorkflowAction extends FacilioAction {
 			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 			context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramList);
 			
-			Chain chain = TransactionChainFactory.getExecuteWorkflowChain();
+			FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
 			
 			chain.execute(context);
 		}
@@ -178,7 +178,7 @@ public class WorkflowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-		Chain addWorkflowChain =  TransactionChainFactory.getAddWorkflowChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
@@ -188,7 +188,7 @@ public class WorkflowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-		Chain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
@@ -198,7 +198,7 @@ public class WorkflowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-		Chain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		return SUCCESS;
@@ -209,7 +209,7 @@ public class WorkflowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
-		Chain addWorkflowChain =  TransactionChainFactory.getAddWorkflowNameSpaceChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowNameSpaceChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
 		return SUCCESS;
@@ -218,7 +218,7 @@ public class WorkflowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
-		Chain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowNameSpaceChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowNameSpaceChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
 		return SUCCESS;
@@ -228,7 +228,7 @@ public class WorkflowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
-		Chain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowNameSpaceChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowNameSpaceChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
 		return SUCCESS;
@@ -239,7 +239,7 @@ public class WorkflowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
-		Chain addWorkflowChain =  TransactionChainFactory.getAddWorkflowUserFunctionChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowUserFunctionChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
 		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
@@ -250,7 +250,7 @@ public class WorkflowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
-		Chain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowUserFunctionChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowUserFunctionChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
 		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
@@ -260,7 +260,7 @@ public class WorkflowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
-		Chain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowUserFunctionChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowUserFunctionChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
 		return SUCCESS;
@@ -269,7 +269,7 @@ public class WorkflowAction extends FacilioAction {
 	public String getNameSpaceListWithFunctions() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
-		Chain getNameSpaceChain =  ReadOnlyChainFactory.getAllWorkflowNameSpaceChain(); 
+		FacilioChain getNameSpaceChain =  ReadOnlyChainFactory.getAllWorkflowNameSpaceChain();
 		getNameSpaceChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT_LIST, context.get(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT_LIST));
 		return SUCCESS;
@@ -287,7 +287,7 @@ public class WorkflowAction extends FacilioAction {
 			context.put(WorkflowV2Util.DEFAULT_WORKFLOW_ID, defaultWorkflowId);
 			context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramList);
 			
-			Chain chain = TransactionChainFactory.getExecuteDefaultWorkflowChain();
+			FacilioChain chain = TransactionChainFactory.getExecuteDefaultWorkflowChain();
 			
 			chain.execute(context);
 			
@@ -303,7 +303,7 @@ public class WorkflowAction extends FacilioAction {
 		
 		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
 		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
-		Chain addWorkflowChain =  TransactionChainFactory.getAddScheduledWorkflowChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddScheduledWorkflowChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
 		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
@@ -315,7 +315,7 @@ public class WorkflowAction extends FacilioAction {
 		
 		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
 		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
-		Chain addWorkflowChain =  TransactionChainFactory.getUpdateScheduledWorkflowChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getUpdateScheduledWorkflowChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
 		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
@@ -326,7 +326,7 @@ public class WorkflowAction extends FacilioAction {
 		
 		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
 		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
-		Chain addWorkflowChain =  TransactionChainFactory.getDeleteScheduledWorkflowChain(); 
+		FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteScheduledWorkflowChain();
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
 		return SUCCESS;
@@ -335,7 +335,7 @@ public class WorkflowAction extends FacilioAction {
 	public String getScheduledWorkflowList() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		Chain getNameSpaceChain =  ReadOnlyChainFactory.getAllScheduledWorkflowChain(); 
+		FacilioChain getNameSpaceChain =  ReadOnlyChainFactory.getAllScheduledWorkflowChain();
 		getNameSpaceChain.execute(context);
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT_LIST, context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT_LIST));
 		return SUCCESS;

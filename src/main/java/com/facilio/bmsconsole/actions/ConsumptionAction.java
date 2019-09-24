@@ -2,9 +2,8 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -72,7 +71,7 @@ public class ConsumptionAction  extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
 			
-			Chain totalConsumptionChain = FacilioChainFactory.getTotalConsumptionBySiteChain();
+			FacilioChain totalConsumptionChain = FacilioChainFactory.getTotalConsumptionBySiteChain();
 			totalConsumptionChain.execute(context);
 			Map<String,Object> consumptionDataByBuilding = (Map<String,Object>)context.get(FacilioConstants.ContextNames.TOTAL_CONSUMPTION);
 			

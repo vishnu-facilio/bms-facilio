@@ -17,7 +17,7 @@ public class GetPageCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		
-		Object record = (Object) context.get(FacilioConstants.ContextNames.RECORD);
+		Object record = context.get(FacilioConstants.ContextNames.RECORD);
 		Page page = PageFactory.getPage(module, record);
 		if (page == null) {
 			

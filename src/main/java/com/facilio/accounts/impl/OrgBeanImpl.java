@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -20,11 +18,13 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.UserUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -63,6 +63,11 @@ public class OrgBeanImpl implements OrgBean {
 	}
 	
 	@Override
+	public List<Organization> getOrgs() throws Exception {
+		return IAMOrgUtil.getOrgs();
+	}
+	
+	@Override
 	public Organization getPortalOrg(long portalId) throws Exception {
 		
 		PortalInfoContext portalInfo = getPortalInfo(portalId, true);
@@ -74,10 +79,18 @@ public class OrgBeanImpl implements OrgBean {
 			throw new IllegalArgumentException("Organization not found");
 		}
 		org.setPortalId(portalId);
-		FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
-		org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
-		org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
-        if(portalInfo.getCustomDomain() != null) { 
+		if(!FacilioProperties.isProduction() || (FacilioProperties.isServicesEnabled())){
+			com.facilio.services.filestore.FileStore fs= com.facilio.services.factory.FacilioFactory.getFileStoreFromOrg(org.getId());
+			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
+			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
+		}
+		else{
+			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
+			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
+			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
+		}
+
+        if(portalInfo.getCustomDomain() != null) {
             org.setDomain(portalInfo.getCustomDomain()); 
         } else { 
             org.setDomain(org.getDomain() + "." + FacilioProperties.getConfig("portal.domain"));
@@ -290,7 +303,7 @@ public class OrgBeanImpl implements OrgBean {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, "all");
 		
-		Chain getEnergyMeterListChain = FacilioChainFactory.getEnergyMeterListChain();
+		FacilioChain getEnergyMeterListChain = FacilioChainFactory.getEnergyMeterListChain();
 		getEnergyMeterListChain.execute(context);
 		
 		return ((List<EnergyMeterContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));

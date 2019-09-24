@@ -2,7 +2,11 @@ package com.facilio.bmsconsole.context;
 
 public class BMSAlarmContext extends BaseAlarmContext {
 
-    private String condition;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String condition;
     public String getCondition() {
         return condition;
     }

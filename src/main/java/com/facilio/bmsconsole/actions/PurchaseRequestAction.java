@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -11,6 +10,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -101,7 +101,7 @@ public class PurchaseRequestAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseRequest);
 		
-		Chain chain = TransactionChainFactory.getAddPurchaseRequestChain();
+		FacilioChain chain = TransactionChainFactory.getAddPurchaseRequestChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.PURCHASE_REQUEST, context.get(FacilioConstants.ContextNames.RECORD));
@@ -136,11 +136,11 @@ public class PurchaseRequestAction extends FacilioAction {
  	 		pagination.put("perPage", 5000);
  	 	}
  	 	
-		Chain chain = ReadOnlyChainFactory.getPurchaseRequestListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getPurchaseRequestListChain();
 		chain.execute(context);
 		
 		if (getFetchCount()) {
-			setResult(FacilioConstants.ContextNames.RECORD_COUNT,(Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 		}
 		else {
 			List<PurchaseRequestContext> purchaseRequests = (List<PurchaseRequestContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
@@ -153,7 +153,7 @@ public class PurchaseRequestAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, recordId);
 		
-		Chain chain = ReadOnlyChainFactory.getPurchaseRequestDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getPurchaseRequestDetailsChain();
 		chain.execute(context);
 		
 		PurchaseRequestContext purchaseRequestContext = (PurchaseRequestContext) context.get(FacilioConstants.ContextNames.RECORD);
@@ -165,7 +165,7 @@ public class PurchaseRequestAction extends FacilioAction {
 	public String deletePurchaseRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
-		Chain chain = TransactionChainFactory.getPurchaseRequestDeleteChain();
+		FacilioChain chain = TransactionChainFactory.getPurchaseRequestDeleteChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
@@ -192,7 +192,7 @@ public class PurchaseRequestAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, getLineItems());
 		
-		Chain chain = TransactionChainFactory.getAddPurchaseRequestLineItem();
+		FacilioChain chain = TransactionChainFactory.getAddPurchaseRequestLineItem();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -205,7 +205,7 @@ public class PurchaseRequestAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		context.put(FacilioConstants.ContextNames.STATUS, getStatus());
 		
-		Chain chain = TransactionChainFactory.getUpdatePurchaseRequestStatusChain();
+		FacilioChain chain = TransactionChainFactory.getUpdatePurchaseRequestStatusChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
@@ -217,7 +217,7 @@ public class PurchaseRequestAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		
-		Chain chain = TransactionChainFactory.getDeletePurchaseRequestLineItem();
+		FacilioChain chain = TransactionChainFactory.getDeletePurchaseRequestLineItem();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordIds));
@@ -234,7 +234,7 @@ public class PurchaseRequestAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.VENDOR_ID, getVendorId());
 		context.put(FacilioConstants.ContextNames.SERVICE, getServiceId());
-		Chain chain = TransactionChainFactory.getServicePriceForVendor();
+		FacilioChain chain = TransactionChainFactory.getServicePriceForVendor();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.UNIT_PRICE, context.get(FacilioConstants.ContextNames.UNIT_PRICE));

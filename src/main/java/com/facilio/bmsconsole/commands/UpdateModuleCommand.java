@@ -15,6 +15,7 @@ public class UpdateModuleCommand extends FacilioCommand {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String displayName = (String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME);
 		String description = (String) context.get(FacilioConstants.ContextNames.MODULE_DESCRIPTION);
+		Boolean stateFlowEnabled = (Boolean) context.get(FacilioConstants.ContextNames.STATE_FLOW_ENABLED);
 
 		if (StringUtils.isNotEmpty(moduleName) && StringUtils.isNotEmpty(displayName)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -24,6 +25,7 @@ public class UpdateModuleCommand extends FacilioCommand {
 			m.setModuleId(module.getModuleId());
 			m.setDisplayName(displayName);
 			m.setDescription(description);
+			m.setStateFlowEnabled(stateFlowEnabled);
 			modBean.updateModule(m);
 			
 			module.setDisplayName(displayName);

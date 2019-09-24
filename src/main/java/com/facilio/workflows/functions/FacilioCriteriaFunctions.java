@@ -2,15 +2,12 @@ package com.facilio.workflows.functions;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.Predicate;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 

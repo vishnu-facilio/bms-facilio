@@ -24,7 +24,7 @@ public class UpdateCategoryAssetModuleIdCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		AssetCategoryContext assetCategory = (AssetCategoryContext) context.get(FacilioConstants.ContextNames.RECORD);
-		FacilioModule module = (FacilioModule) ((List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST)).get(0);
+		FacilioModule module = ((List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST)).get(0);
 		assetCategory.setAssetModuleID(module.getModuleId());
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

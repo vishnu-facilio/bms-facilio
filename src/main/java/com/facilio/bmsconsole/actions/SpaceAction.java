@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,6 +17,7 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleFactory;
@@ -84,7 +84,7 @@ public class SpaceAction extends ActionSupport {
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 		
-		Chain getAllSpace = FacilioChainFactory.getAllSpaceChain();
+		FacilioChain getAllSpace = FacilioChainFactory.getAllSpaceChain();
 		getAllSpace.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -97,7 +97,7 @@ public class SpaceAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SITE_ID, getSiteId());
 		
-		Chain getIndependentSpace = FacilioChainFactory.getIndependentSpaceChain();
+		FacilioChain getIndependentSpace = FacilioChainFactory.getIndependentSpaceChain();
 		getIndependentSpace.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -110,7 +110,7 @@ public class SpaceAction extends ActionSupport {
 	public String newSpace() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		Chain newSpace = FacilioChainFactory.getNewSpaceChain();
+		FacilioChain newSpace = FacilioChainFactory.getNewSpaceChain();
 		newSpace.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -141,7 +141,7 @@ public class SpaceAction extends ActionSupport {
 		}
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
 		
-		Chain addSpace = FacilioChainFactory.getAddSpaceChain();
+		FacilioChain addSpace = FacilioChainFactory.getAddSpaceChain();
 		addSpace.execute(context);
 		
 		setSpaceId(space.getId());
@@ -155,7 +155,7 @@ public class SpaceAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, space);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "space");
-		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setSpace(space);
 		return SUCCESS;
@@ -164,7 +164,7 @@ public class SpaceAction extends ActionSupport {
 	public String deleteSpace() throws Exception {
 		FacilioContext context = new FacilioContext();
 		SetTableNamesCommand.getForSpace();
-		Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
+		FacilioChain deleteCampus = FacilioChainFactory.deleteSpaceChain();
 		deleteCampus.execute(context);
 		return SUCCESS;
 	}
@@ -174,7 +174,7 @@ public class SpaceAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getSpaceId());
 		
-		Chain getSpaceChain = FacilioChainFactory.getSpaceDetailsChain();
+		FacilioChain getSpaceChain = FacilioChainFactory.getSpaceDetailsChain();
 		getSpaceChain.execute(context);
 		
 		setSpace((SpaceContext) context.get(FacilioConstants.ContextNames.SPACE));
@@ -203,7 +203,7 @@ public class SpaceAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getSpaceId());
 		
-		Chain getReportCardsChain = FacilioChainFactory.getSpaceReportCardsChain();
+		FacilioChain getReportCardsChain = FacilioChainFactory.getSpaceReportCardsChain();
 		getReportCardsChain.execute(context);
 		
 		JSONObject reports = (JSONObject) context.get(FacilioConstants.ContextNames.REPORTS);

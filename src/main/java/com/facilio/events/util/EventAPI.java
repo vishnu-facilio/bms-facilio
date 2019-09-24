@@ -11,8 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,8 +18,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -49,7 +49,7 @@ public class EventAPI {
 //    	context.put(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP, lastEventTime);
 //    	context.put(EventConstants.EventContextNames.EVENT_COUNT_MAP, eventCountMap);
 //    	
-//    	Chain processEventChain = EventConstants.EventChainFactory.processEventChain();
+//    	FacilioChain processEventChain = EventConstants.EventChainFactory.processEventChain();
 //    	processEventChain.execute(context);
 //        return (long) context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP);
 //    }
@@ -72,12 +72,12 @@ public class EventAPI {
 			object.put("controllerId", 23);
 			jsonArray.add(object);
 			context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, jsonArray);
-			Chain c = TransactionChainFactory.getV2AddEventPayloadChain();
+			FacilioChain c = TransactionChainFactory.getV2AddEventPayloadChain();
 			c.execute(context);
 			return System.currentTimeMillis();
 		}
 		else {
-			Chain processEventChain = EventConstants.EventChainFactory.processEventChain();
+			FacilioChain processEventChain = EventConstants.EventChainFactory.processEventChain();
 			processEventChain.execute(context);
 		}
 	    return (long) context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP);

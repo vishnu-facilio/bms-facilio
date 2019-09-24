@@ -1,11 +1,11 @@
 package com.facilio.mv.command;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -47,10 +47,10 @@ public class DeleteMVProjectCommand extends FacilioCommand {
 		for(MVBaseline baseline : wrapper.getBaselines()) {
 			context.put(FacilioConstants.ContextNames.RECORD_ID, baseline.getFormulaField().getId());
 			
-			Chain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
+			FacilioChain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 			deleteEnPIChain.execute(context);
 			
-			Chain deleteEnPIChain1 = FacilioChainFactory.deleteFormulaChain();
+			FacilioChain deleteEnPIChain1 = FacilioChainFactory.deleteFormulaChain();
 			context.put(FacilioConstants.ContextNames.RECORD_ID, baseline.getFormulaFieldWithAjustment().getId());
 			
 			deleteEnPIChain1.execute(context);
@@ -60,7 +60,7 @@ public class DeleteMVProjectCommand extends FacilioCommand {
 				if(adjustment.getFormulaField() != null) {
 					context.put(FacilioConstants.ContextNames.RECORD_ID, adjustment.getFormulaField().getId());
 					
-					Chain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
+					FacilioChain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 					deleteEnPIChain.execute(context);
 				}
 			}

@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,6 +14,7 @@ import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -65,7 +65,7 @@ public class AssetMovementAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		if(assetMovement != null) {
 			if((!StringUtils.isNotEmpty(assetMovement.getFromGeoLocation()) && AssetsAPI.checkIfAssetMovementNecessary(assetMovement.getToGeoLocation(), assetMovement.getFromGeoLocation(), assetMovement.getAssetId())) || StringUtils.isEmpty(assetMovement.getFromGeoLocation())) {
-				Chain chain = TransactionChainFactory.getAddAssetMovementChain();
+				FacilioChain chain = TransactionChainFactory.getAddAssetMovementChain();
 				chain.execute(context);
 				setResult(FacilioConstants.ContextNames.ASSET_MOVEMENT_RECORDS, context.get(FacilioConstants.ContextNames.RECORD));
 			}
@@ -80,7 +80,7 @@ public class AssetMovementAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,Collections.singletonList(assetMovement.getId()));
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		
-		Chain chain = TransactionChainFactory.getUpdateAssetMovementChain();
+		FacilioChain chain = TransactionChainFactory.getUpdateAssetMovementChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.ASSET_MOVEMENT_RECORDS, context.get(FacilioConstants.ContextNames.RECORD));
@@ -116,11 +116,11 @@ public class AssetMovementAction extends FacilioAction{
  	 		pagination.put("perPage", 5000);
  	 	}
  	 	
-		Chain chain = ReadOnlyChainFactory.getAssetMovementListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getAssetMovementListChain();
 		chain.execute(context);
 		
 		if (getFetchCount()) {
-			setResult(FacilioConstants.ContextNames.RECORD_COUNT,(Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 		}
 		else {
 			List<AssetMovementContext> assetMovementRecords = (List<AssetMovementContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);

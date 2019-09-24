@@ -29,7 +29,7 @@ public class LocationActions extends ActionSupport {
 //	public String newLocation() throws Exception {
 //		setSetup(SetupLayout.getNewLocationLayout());
 //		FacilioContext context = new FacilioContext();
-//		Chain newLocation = FacilioChainFactory.getNewLocationChain();
+//		FacilioChain newLocation = FacilioChainFactory.getNewLocationChain();
 //		newLocation.execute(context);
 //		
 //		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
@@ -44,7 +44,7 @@ public class LocationActions extends ActionSupport {
 //		setSetup(SetupLayout.getEditLocationLayout());
 //		FacilioContext context = new FacilioContext();
 //		context.put(FacilioConstants.ContextNames.ID, locationId);
-//		Chain editLocation = FacilioChainFactory.getLocationChain();
+//		FacilioChain editLocation = FacilioChainFactory.getLocationChain();
 //		editLocation.execute(context);
 //		context.get(FacilioConstants.ContextNames.LOCATION);
 //		setLocation((LocationContext) context.get(FacilioConstants.ContextNames.LOCATION));

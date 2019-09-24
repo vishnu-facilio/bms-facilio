@@ -11,9 +11,8 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.UserUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
-import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.screen.util.ScreenUtil;
+import com.facilio.service.FacilioService;
 
 public class TVAction extends FacilioAction {
 	
@@ -45,7 +44,7 @@ public class TVAction extends FacilioAction {
 			info.put("userAgent", userAgent);
 			info.put("ipAddress", ipAddress);
 			
-			setResult("code", ScreenUtil.generateTVPasscode(info));
+			setResult("code", FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.generateTVPasscode(info)));
 		} catch (Exception e) {
 			throw new IllegalArgumentException("passcode_generation_failed");
 		}
@@ -56,7 +55,7 @@ public class TVAction extends FacilioAction {
 	public String validateCode() {
 		
 		try {
-			Map<String, Object> codeObj = ScreenUtil.getTVPasscode(getCode());
+			Map<String, Object> codeObj = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getTVPasscode(getCode()));
 			if (codeObj == null) {
 				throw new IllegalArgumentException("passcode_invalid");
 			}
@@ -75,19 +74,18 @@ public class TVAction extends FacilioAction {
 	                cookie.setMaxAge(60 * 60 * 24 * 30);
 	                cookie.setPath("/");
 	                cookie.setHttpOnly(true);
-	                cookie.setSecure(true);
+	             //   cookie.setSecure(true);
 	                response.addCookie(cookie);
-	                
-	                ScreenUtil.deleteTVPasscode(getCode());
+	                FacilioService.runAsService(() ->  ScreenUtil.deleteTVPasscode(getCode()));
+	               
 					return SUCCESS;
 				}
 				else {
 					long currentTime = System.currentTimeMillis();
 					long expiryTime = (Long) codeObj.get("expiryTime");
 					if (currentTime >= expiryTime) {
-						ScreenUtil.deleteTVPasscode(getCode());
-						
-						throw new IllegalArgumentException("passcode_expired");
+						  FacilioService.runAsService(() ->  ScreenUtil.deleteTVPasscode(getCode()));
+			              throw new IllegalArgumentException("passcode_expired");
 					}
 					else {
 						setResponseCode(0);

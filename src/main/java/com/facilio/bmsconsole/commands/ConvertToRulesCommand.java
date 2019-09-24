@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -8,6 +7,7 @@ import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.RuleTemplateAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class ConvertToRulesCommand extends FacilioCommand {
@@ -31,7 +31,7 @@ public class ConvertToRulesCommand extends FacilioCommand {
 		if (isEditTemplate) {
 			return false;
 		}
-		Chain addRule = TransactionChainFactory.addAlarmRuleChain();
+		FacilioChain addRule = TransactionChainFactory.addAlarmRuleChain();
 		addRule.execute(context);
 		RuleTemplateAPI.addRuleTemplateRel(templateId, alarmRule.getPreRequsite().getId());
 		return false;

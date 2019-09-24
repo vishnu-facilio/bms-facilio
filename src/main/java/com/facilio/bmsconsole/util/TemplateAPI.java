@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
@@ -46,6 +47,7 @@ import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
@@ -53,6 +55,7 @@ import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf.TemplateWorkflowConf;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.FormTemplate;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate;
 import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate.SharingType;
@@ -72,6 +75,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -90,7 +94,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class TemplateAPI {
 	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
-	private static final String[] RULE_CATEGORY = new String[] {"Ahu", "Fahu", "Ohu", "Fcu"};
+	private static final String[] RULE_CATEGORY = new String[] {"Ahu", "Fahu", "Fcu"};
 	private static final String DEFAULT_TEMPLATES_FILE_PATH = "conf/templates/defaultTemplates";
 	private static final String[] LANG = new String[]{"en"};
 	private static final Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
@@ -239,6 +243,10 @@ public class TemplateAPI {
 		else if (template instanceof  ControlActionTemplate) {
 			id = addControlActionTemplate((ControlActionTemplate) template);
 		}
+		else if (template instanceof FormTemplate) {
+			id = addFormTemplate((FormTemplate) template);
+			template.setId(id);
+		}
 		return id;
 	}
 	
@@ -299,10 +307,13 @@ public class TemplateAPI {
 				return WorkflowTemplate.class;
 			case CONTROL_ACTION:
 				return ControlActionTemplate.class;
+			case FORM:
+				return FormTemplate.class;
 			default:
 				return null;
 		}
 	}
+
 
 	public static List<Template> getTemplates(List<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getTemplatesModule();
@@ -328,19 +339,10 @@ public class TemplateAPI {
 	}
 	
 	public static Template getTemplate(long id) throws Exception {
-		FacilioModule module = ModuleFactory.getTemplatesModule();
-		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
-													.select(FieldFactory.getTemplateFields())
-													.table(module.getTableName())
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-													.andCondition(CriteriaAPI.getIdCondition(id, module))
-													;
-		
-		List<Map<String, Object>> templates = selectBuider.get();
+		List<Template> templates = getTemplates(Collections.singletonList(id));
 		
 		if(templates != null && !templates.isEmpty()) {
-			Map<String, Object> templateMap = templates.get(0);
-			return getExtendedTemplate(templateMap);
+			return templates.get(0);
 		}
 		return null;
 	}
@@ -516,6 +518,13 @@ public class TemplateAPI {
 					template = getPrerequisiteApproversTemplateFromMap(templateMap);
 				}
 			}
+		    case FORM: {
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getFormTemplatesModule(), FieldFactory.getFormTemplateFields(), id);
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					template = getFormTemplateFromMap(templateMap);
+				}
+			}break;
 			default: break;
 		}
 		
@@ -529,13 +538,36 @@ public class TemplateAPI {
 	private static ControlActionTemplate getControllerActionTemplateFromMap (Map<String, Object> templateMap) {
 		return FieldUtil.getAsBeanFromMap(templateMap, ControlActionTemplate.class);
 	}
- 	
+	
+	private static FormTemplate getFormTemplateFromMap (Map<String, Object> templateMap) throws Exception {
+		FormTemplate template =  FieldUtil.getAsBeanFromMap(templateMap, FormTemplate.class);
+		setFormInTemplate(template);
+		return template;
+	}
+	
+	public static void setFormInTemplate(FormTemplate template) throws Exception {
+		FacilioForm form = FormsAPI.getFormFromDB(template.getFormId());
+		template.setForm(form);
+	}
+	
 	private static List<Map<String, Object>> getExtendedProps(FacilioModule module, List<FacilioField> fields, long id) throws Exception {
+		return getExtendedProps(module, fields, id, null);
+	}
+ 	
+	private static List<Map<String, Object>> getExtendedProps(FacilioModule module, List<FacilioField> fields, long id, Criteria criteria) throws Exception {
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(id, module))
 				;
+		if (id <= 0 && criteria == null) {
+			throw new IllegalArgumentException("both id and criteria cannot be null");
+		}
+		if (id > 0) {
+			selectBuider.andCondition(CriteriaAPI.getIdCondition(id, module));
+		}
+		if (criteria != null) {
+			selectBuider.andCriteria(criteria);
+		}
 		
 		return selectBuider.get();
 	}
@@ -1216,6 +1248,34 @@ public class TemplateAPI {
 		return template;
 	}
 	
+	public static List<Template> getFormTemplates(List<Long> formIds) throws Exception {
+		List<FacilioField> fields =  FieldFactory.getFormTemplateFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), formIds, NumberOperators.EQUALS));
+		
+		 List<Map<String,Object>> props = getExtendedProps(ModuleFactory.getFormTemplatesModule(), fields, -1, criteria);
+		 if (CollectionUtils.isNotEmpty(props)) {
+			 List<Long> ids = props.stream().map(prop -> (long) prop.get("id")).collect(Collectors.toList());
+			 return getTemplates(ids);
+		 }
+		return null;
+	}
+	
+	public static Map<Long, FormTemplate> getFormTemplateMap(List<Long> formIds) throws Exception {
+		List<Template> templates = getFormTemplates(formIds);
+		if (CollectionUtils.isNotEmpty(templates)) {
+			Map<Long, FormTemplate> templateMap = new HashMap<>();
+			templates.stream().forEach(template -> {
+				FormTemplate formTemplate = (FormTemplate)template;
+				templateMap.put(formTemplate.getFormId(), formTemplate);
+			});
+			return templateMap;
+		}
+		return null;
+	}
+	
 	public static long addJsonTemplate(long orgId, JSONTemplate template) throws Exception {
 		return addJsonTemplate(orgId, template, Template.Type.JSON);
 	}
@@ -1275,6 +1335,12 @@ public class TemplateAPI {
 	public static long addControlActionTemplate (ControlActionTemplate template) throws Exception {
 		addDefaultProps(template);
 		return insertTemplateWithExtendedProps(ModuleFactory.getControlActionTemplateModule(), FieldFactory.getControlActionTemplateFields(), FieldUtil.getAsProperties(template));
+	}
+	
+	public static long addFormTemplate (FormTemplate template) throws Exception {
+		addDefaultProps(template);
+		template.setType(Type.FORM);
+		return insertTemplateWithExtendedProps(ModuleFactory.getFormTemplatesModule(), FieldFactory.getFormTemplateFields(), FieldUtil.getAsProperties(template));
 	}
 	
 	private static long addWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -80,7 +81,7 @@ public class ViewEmailScheduler extends FacilioJob {
 				log.error("email template " + emailTemplate.toJSONString());
 				log.error(fileUrl);
 				emailTemplate.replace("to", toList);
-				AwsUtil.sendEmail(emailTemplate, files);
+				FacilioFactory.getEmailClient().sendEmail(emailTemplate, files);
 			}
 		} catch (Exception e) {
 			CommonCommandUtil.emailAlert("Exception occurred ViewEmailScheduler", "View ID: "+ jc.getJobId());

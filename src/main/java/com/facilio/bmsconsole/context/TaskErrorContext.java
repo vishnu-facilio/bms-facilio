@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.unitconversion.Unit;
 
 public class TaskErrorContext {
-
+	
 	Mode mode;
 	FailType failType;
 	SuggestionType suggestionType;
@@ -34,6 +34,7 @@ public class TaskErrorContext {
 	}
 
 	String previousValue;
+	String nextValue;
 	String currentValue;
 	String averageValue;
 
@@ -51,6 +52,14 @@ public class TaskErrorContext {
 
 	public void setPreviousValue(String previousValue) {
 		this.previousValue = previousValue;
+	}
+	
+	public String getNextValue() {
+		return nextValue;
+	}
+
+	public void setNextValue(String nextValue) {
+		this.nextValue = nextValue;
 	}
 
 	public String getCurrentValue() {
@@ -92,7 +101,14 @@ public class TaskErrorContext {
 		this.mode = Mode.valueOf(mode);
 	}
 	
-	public enum FailType {
+	@Override
+	public String toString() {
+		return "TaskErrorContext [mode=" + mode + ", suggestionType=" + suggestionType
+				+ ", previousValue=" + previousValue + ", nextValue=" + nextValue
+				+ ", currentValue=" + currentValue + ", averageValue=" + averageValue + ", message=" + message + "]";
+	}
+	
+	public enum FailType {	
 		
 		NON_INCREMENTAL_VALUE,
 		;

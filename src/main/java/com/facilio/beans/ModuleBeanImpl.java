@@ -102,6 +102,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			if (dataInterval != 0) {
 				currentModule.setDataInterval(dataInterval);
 			}
+			currentModule.setStateFlowEnabled(rs.getBoolean("STATE_FLOW_ENABLED"));
 			
 			if(isFirst) {
 				module = currentModule;
@@ -479,6 +480,10 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (StringUtils.isNotBlank(module.getDescription())) {
 			joiner.add("DESCRIPTION = ?");
 			params.add(module.getDescription());
+		}
+		if (module.getStateFlowEnabled() != null) {
+			joiner.add("STATE_FLOW_ENABLED = ?");
+			params.add(module.isStateFlowEnabled());
 		}
 		
 		if (!params.isEmpty()) {
@@ -880,6 +885,8 @@ public class ModuleBeanImpl implements ModuleBean {
 							}
 							lookupField.setLookupModule(module);
 							fieldProps.put("lookupModuleId", module.getModuleId());
+
+							addSubModule(module.getModuleId(), lookupField.getModuleId());
 						}
 						else if (StringUtils.isNotEmpty(lookupField.getSpecialType())) {
 							FacilioModule module = getMod(lookupField.getSpecialType());
@@ -1217,15 +1224,23 @@ public class ModuleBeanImpl implements ModuleBean {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("parentModuleId",parentModuleId);
 		prop.put("childModuleId", childModuleId);
-		
-		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table("SubModulesRel")
-				.fields(FieldFactory.getSubModuleRelFields());
-		
-		insertBuilder.addRecord(prop);
-		insertBuilder.save();
-		
+				.select(FieldFactory.getSubModuleRelFields())
+				.andCondition(CriteriaAPI.getCondition("PARENT_MODULE_ID", "parentModuleId", String.valueOf(parentModuleId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("CHILD_MODULE_ID", "childModuleId", String.valueOf(parentModuleId), NumberOperators.EQUALS))
+				;
+		Map<String, Object> existingRecord = selectRecordBuilder.fetchFirst();
+		// if existing is not found add
+		if (existingRecord == null) {
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table("SubModulesRel")
+					.fields(FieldFactory.getSubModuleRelFields());
+
+			insertBuilder.addRecord(prop);
+			insertBuilder.save();
+		}
 	}
 	
 	public ServicePortalInfo getServicePortalInfo() throws Exception

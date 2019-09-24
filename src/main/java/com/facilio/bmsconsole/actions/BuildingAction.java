@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -19,6 +18,7 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -42,7 +42,7 @@ public class BuildingAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SITE_ID, getSiteId());
 		
-		Chain getAllBuilding = FacilioChainFactory.getAllBuildingChain();
+		FacilioChain getAllBuilding = FacilioChainFactory.getAllBuildingChain();
 		getAllBuilding.execute(context);
 		
 		
@@ -56,7 +56,7 @@ public class BuildingAction extends ActionSupport {
 	public String newBuilding() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		Chain newBuilding = FacilioChainFactory.getNewBuildingChain();
+		FacilioChain newBuilding = FacilioChainFactory.getNewBuildingChain();
 		newBuilding.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -82,13 +82,13 @@ public class BuildingAction extends ActionSupport {
 		{
 			location.setName(building.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
-			Chain addLocation = FacilioChainFactory.addLocationChain();
+			FacilioChain addLocation = FacilioChainFactory.addLocationChain();
 			addLocation.execute(context);
 			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 			location.setId(locationId);
 		}
 		context.put(FacilioConstants.ContextNames.BUILDING, building);
-		Chain addBuilding = FacilioChainFactory.getAddBuildingChain();
+		FacilioChain addBuilding = FacilioChainFactory.getAddBuildingChain();
 		addBuilding.execute(context);
 		
 		setBuildingId(building.getId());
@@ -111,7 +111,7 @@ public class BuildingAction extends ActionSupport {
 				building.setLocation(null);
 			}
 			else {
-				Chain addLocation = FacilioChainFactory.addLocationChain();
+				FacilioChain addLocation = FacilioChainFactory.addLocationChain();
 				addLocation.execute(context);
 				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 				location.setId(locationId);
@@ -123,7 +123,7 @@ public class BuildingAction extends ActionSupport {
 		
 		context.put(FacilioConstants.ContextNames.BASE_SPACE, building);
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "building");
-		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		FacilioChain updateCampus = FacilioChainFactory.getUpdateCampusChain();
 		updateCampus.execute(context);
 		setBuilding(building);
 		return SUCCESS;
@@ -131,7 +131,7 @@ public class BuildingAction extends ActionSupport {
 	public String deleteBuilding() throws Exception {
 		FacilioContext context = new FacilioContext();
 		SetTableNamesCommand.getForBuilding();
-		Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
+		FacilioChain deleteCampus = FacilioChainFactory.deleteSpaceChain();
 		deleteCampus.execute(context);
 		return SUCCESS;
 	}
@@ -141,7 +141,7 @@ public class BuildingAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
 		
-		Chain getBuildingChain = FacilioChainFactory.getBuildingDetailsChain();
+		FacilioChain getBuildingChain = FacilioChainFactory.getBuildingDetailsChain();
 		getBuildingChain.execute(context);
 		
 		setBuilding((BuildingContext) context.get(FacilioConstants.ContextNames.BUILDING));
@@ -180,7 +180,7 @@ public class BuildingAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
 		
-		Chain getReportCardsChain = FacilioChainFactory.getBuildingReportCardsChain();
+		FacilioChain getReportCardsChain = FacilioChainFactory.getBuildingReportCardsChain();
 		getReportCardsChain.execute(context);
 		
 		JSONObject reports = (JSONObject) context.get(FacilioConstants.ContextNames.REPORTS);

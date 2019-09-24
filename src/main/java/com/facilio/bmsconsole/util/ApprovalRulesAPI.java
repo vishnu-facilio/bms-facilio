@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -28,6 +26,7 @@ import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.ValidationContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -160,7 +159,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
 		
-		Chain addRule = TransactionChainFactory.addWorkflowRuleChain();
+		FacilioChain addRule = TransactionChainFactory.addWorkflowRuleChain();
 		addRule.execute(context);
 		
 		return rule.getId();

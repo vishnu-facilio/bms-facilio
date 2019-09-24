@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.jobs;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -8,6 +7,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -21,7 +21,7 @@ public class SingleRecordJob extends FacilioJob{
 	public void execute(JobContext jc) throws Exception {
 		// TODO Auto-generated method stub
 		try {
-			WorkflowRuleContext rule = (WorkflowRuleContext) WorkflowRuleAPI.getWorkflowRule(jc.getJobId());
+			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId());
 			
 			if (!rule.isActive()) {
 				return;
@@ -30,7 +30,7 @@ public class SingleRecordJob extends FacilioJob{
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 			context.put(FacilioConstants.Job.JOB_CONTEXT, jc);
-			Chain executeRule = TransactionChainFactory.recordRuleExecutionChain();
+			FacilioChain executeRule = TransactionChainFactory.recordRuleExecutionChain();
 			executeRule.execute(context);
 			
 		}

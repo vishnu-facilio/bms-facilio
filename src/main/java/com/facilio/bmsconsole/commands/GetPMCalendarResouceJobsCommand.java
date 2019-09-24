@@ -236,6 +236,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			selectFields.add(woFieldMap.get("priority"));
 			selectFields.add(woFieldMap.get("category"));
 			selectFields.add(woFieldMap.get("type"));
+			selectFields.add(woFieldMap.get("moduleState"));
 			selectFields.add(resourceField);
 			selectFields.add(frequencyField);
 			selectFields.add(FieldFactory.getIdField(woModule));

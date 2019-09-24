@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.workflow.rule.*;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -29,8 +27,14 @@ import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.ScheduledRuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -318,8 +322,81 @@ public class ContractsAPI {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
+	public static Long saveRenewalPrefs (Map<String, Object> map, Long contractId, String moduleName) throws Exception {
+		ContractsContext contract = getContractDetails(contractId);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 		
-		Chain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Renewal Date Notification");
+		workflowRuleContext.setRuleType(RuleType.RECORD_SPECIFIC_RULE);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.SCHEDULED);
+		workflowRuleContext.setScheduleType(ScheduledRuleType.BEFORE);
+		workflowRuleContext.setTime((String)map.get("time"));
+		
+		Condition condition = new Condition();
+		condition.setFieldName("status");
+		condition.setValue(String.valueOf(ContractsContext.Status.APPROVED.getValue()));
+		condition.setOperator(EnumOperators.IS);
+		condition.setColumnName("Contracts.STATUS");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.setPattern("(1)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
+		JSONObject json = new JSONObject();
+		List<String> ouIdList = (List<String>)map.get("to");
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		
+		StringJoiner userEmailStr = new StringJoiner(",");
+		for(String ouId : ouIdList) {
+			User user = userBean.getUser(Long.parseLong(ouId), false);
+			if(user != null) {
+				userEmailStr.add(user.getEmail());
+			}
+		}
+		json.put("to", userEmailStr);
+		json.put("subject", "Renewal notification");
+		json.put("name", "Renewal template");
+		String message = "Hi,\n\nYour contract " + contract.getName() + " from the vendor "+ contract.getVendor().getName() +" needs to be renewed on "+ DateTimeUtil.getFormattedTime(contract.getRenewalDate()) +".\nRegards,\nTeam Facilio";
+		json.put("message", message);
+		WorkflowContext workflow = new WorkflowContext();
+		ParameterContext param = new ParameterContext();
+		param.setName("org.domain");
+		param.setTypeString("String");
+		
+		workflow.setParameters(Collections.singletonList(param));
+		json.put("workflow", FieldUtil.getAsProperties(workflow));
+		emailAction.setTemplateJson(json);
+		
+		workflowRuleContext.setDateFieldId(fieldsMap.get("renewalDate").getFieldId());
+		int days = ((Number) map.get("days")).intValue();
+		workflowRuleContext.setInterval(1 * days * 24 * 60 * 60);
+		workflowRuleContext.setParentId(contractId);
+	   
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
 		chain.execute(context);
 	
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
@@ -360,6 +437,43 @@ public class ContractsAPI {
 		};
 		
 	}
+	
+	public static Preference getRenewalNotificationPref() {
+		FacilioForm form = new FacilioForm();
+		List<FormSection> sections = new ArrayList<FormSection>();
+		FormSection formSection = new FormSection();
+		formSection.setName("Renewal Date Notification Preference");
+		List<FormField> fields = new ArrayList<FormField>();
+		fields.add(new FormField("days", FieldDisplayType.NUMBER, "How many days before the renewal date has to be notified?", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("to", FieldDisplayType.MULTI_USER_LIST, "Select User", Required.REQUIRED,"users", 1, 1));
+		fields.add(new FormField("time", FieldDisplayType.TIME, "Enter Time", Required.REQUIRED,1, 1));
+		
+		formSection.setFields(fields);
+		sections.add(formSection);
+		form.setSections(sections);
+		form.setFields(fields);
+		form.setLabelPosition(LabelPosition.TOP);
+		return new Preference("renewalDateNotification", "Renewal Date Notifications", form) {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveRenewalPrefs(map, recordId, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+
+		};
+		
+	}
+	
 	public static Preference getPaymentNotificationPref() {
 		FacilioForm form = new FacilioForm();
 		List<FormSection> sections = new ArrayList<FormSection>();
@@ -465,7 +579,7 @@ public class ContractsAPI {
 		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
 		
-		Chain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
 		chain.execute(context);
 	
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);

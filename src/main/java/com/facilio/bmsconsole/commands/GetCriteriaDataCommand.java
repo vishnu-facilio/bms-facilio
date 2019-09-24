@@ -89,7 +89,7 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 				handleDateOperators(conditionObj, condition);
 			}else{
 				if (field.getDataTypeEnum()==FieldType.LOOKUP) {
-					List<Long> fieldIds = (List<Long>)value;
+					List<Long> fieldIds = value;
 					if(CollectionUtils.isNotEmpty(fieldIds)){
 						LookupField lookupField= (LookupField)field;
 						String fieldModuleName = lookupField.getSpecialType();
@@ -111,7 +111,7 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 					}
 				}
 				else if(fieldName.equals("siteId")){
-					List<Long> fieldIds = (List<Long>)value;
+					List<Long> fieldIds = value;
 					conditionObj.put("value", CommonCommandUtil.getPickList(fieldIds, modBean.getModule("Site")).values());
 				}else{
 					conditionObj.put("value", value);

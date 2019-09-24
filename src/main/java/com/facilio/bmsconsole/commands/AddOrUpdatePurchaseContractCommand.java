@@ -32,6 +32,18 @@ public class AddOrUpdatePurchaseContractCommand extends FacilioCommand {
 		boolean isContractRevised = (boolean) context.get(FacilioConstants.ContextNames.IS_CONTRACT_REVISED);
 
 		if (purchaseContractContext != null) {
+			if (purchaseContractContext.getVendor() == null || purchaseContractContext.getVendor().getId() <= 0) {
+				throw new IllegalArgumentException("Vendor cannot be empty");
+			}
+			
+			if(purchaseContractContext.getFromDate() > 0 && purchaseContractContext.getEndDate() > 0)
+				{
+					if(purchaseContractContext.getEndDate() <= purchaseContractContext.getFromDate())
+					{
+						throw new IllegalArgumentException("Contract End Date should be greater than From Date");
+					}
+				}
+
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -42,9 +54,7 @@ public class AddOrUpdatePurchaseContractCommand extends FacilioCommand {
 //			if (CollectionUtils.isEmpty(purchaseContractContext.getLineItems())) {
 //				throw new Exception("Line items cannot be empty");
 //			}
-			if (purchaseContractContext.getVendor() == null) {
-				throw new Exception("Vendor cannot be empty");
-			}
+			
 			purchaseContractContext.setContractType(ContractType.PURCHASE);
 			if (!isContractRevised && purchaseContractContext.getId() > 0) {
 				ContractsAPI.updateRecord(purchaseContractContext, module, fields, true, (FacilioContext) context);

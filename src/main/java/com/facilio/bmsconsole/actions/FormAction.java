@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -18,6 +17,7 @@ import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -56,7 +56,7 @@ public class FormAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.FORM_NAME, this.getFormNames());
 		context.put(FacilioConstants.ContextNames.FORM_ID, this.getFormId());
-		Chain c = FacilioChainFactory.getFormMetaChain();
+		FacilioChain c = FacilioChainFactory.getFormMetaChain();
 		c.execute(context);
 		
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
@@ -107,7 +107,7 @@ public class FormAction extends FacilioAction {
 		Context context = new FacilioContext();
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.getModuleName());
-		Chain c = FacilioChainFactory.getFormFieldsChain();
+		FacilioChain c = FacilioChainFactory.getFormFieldsChain();
 		c.execute(context);
 		
 		setFields((List<FormField>) context.get(FacilioConstants.ContextNames.FORM_FIELDS));
@@ -151,7 +151,7 @@ public class FormAction extends FacilioAction {
 		Context context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORM, this.getForm());
 		
-		Chain c = TransactionChainFactory.getUpdateFormChain();
+		FacilioChain c = TransactionChainFactory.getUpdateFormChain();
 		c.execute(context);
 		
 		setResult("result", "success");
@@ -163,7 +163,7 @@ public class FormAction extends FacilioAction {
 		Context context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORM_FIELD, getFormField());
 		
-		Chain c = TransactionChainFactory.getUpdateFormFieldChain();
+		FacilioChain c = TransactionChainFactory.getUpdateFormFieldChain();
 		c.execute(context);
 		
 		setResult("result", "success");
@@ -175,7 +175,7 @@ public class FormAction extends FacilioAction {
 		Context context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORM, this.getForm());
 		
-		Chain c = TransactionChainFactory.getUpdateFormFieldsChain();
+		FacilioChain c = TransactionChainFactory.getUpdateFormFieldsChain();
 		c.execute(context);
 		
 		setFormId(getForm().getId());
@@ -263,7 +263,7 @@ public class FormAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORM_NAME, formName);
 		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		Chain c = FacilioChainFactory.getFormMetaChain();
+		FacilioChain c = FacilioChainFactory.getFormMetaChain();
 		c.execute(context);
 		
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
@@ -285,7 +285,7 @@ public class FormAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORM_SECTION, formSection);
 		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
 		
-		Chain c = TransactionChainFactory.getUpdateFormSectionChain();
+		FacilioChain c = TransactionChainFactory.getUpdateFormSectionChain();
 		c.execute(context);
 		
 		setResult("result", "success");

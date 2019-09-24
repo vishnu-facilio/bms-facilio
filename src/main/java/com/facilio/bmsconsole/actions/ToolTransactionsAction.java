@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -11,6 +10,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -64,7 +64,7 @@ public class ToolTransactionsAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransaction);
 		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, purchasedTools);
-		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateToolTransactionsChain();
+		FacilioChain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateToolTransactionsChain();
 		addWorkorderPartChain.execute(context);
 		setToolTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("toolTransactionsId", toolTransactionsId);
@@ -78,7 +78,7 @@ public class ToolTransactionsAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.TOOL_TRANSACTION_APPORVED_STATE, approvedState);
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 2);
 		
-		Chain addWorkorderPartChain;
+		FacilioChain addWorkorderPartChain;
 		addWorkorderPartChain = TransactionChainFactory.getApproveRejectWorkorderToolsChain();
 //		if (transactionType == 3) {
 //			addWorkorderPartChain = TransactionChainFactory.getApproveRejectManualToolsChain();
@@ -97,7 +97,7 @@ public class ToolTransactionsAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, toolTransactionsId);
 
-		Chain deleteInventoryChain = TransactionChainFactory.getDeleteToolTransactChain();
+		FacilioChain deleteInventoryChain = TransactionChainFactory.getDeleteToolTransactChain();
 		deleteInventoryChain.execute(context);
 		setToolTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("toolTransactionsId", toolTransactionsId);
@@ -139,7 +139,7 @@ public class ToolTransactionsAction extends FacilioAction{
 		else if(getShowToolsForIssue()) {
 			context.put(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_ISSUE, showToolsForIssue);
 		}
-		Chain itemsListChain = ReadOnlyChainFactory.getToolTransactionsList();
+		FacilioChain itemsListChain = ReadOnlyChainFactory.getToolTransactionsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setItemsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));

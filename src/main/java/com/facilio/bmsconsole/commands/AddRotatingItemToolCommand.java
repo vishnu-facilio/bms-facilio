@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class AddRotatingItemToolCommand extends FacilioCommand {
@@ -17,9 +17,9 @@ public class AddRotatingItemToolCommand extends FacilioCommand {
 		
 		if (asset != null)
 		{
-			if(asset.getRotatingItem() != null && asset.getRotatingTool() != null)
+			if((asset.getRotatingItem() != null && asset.getRotatingItem().getId() > 0) && (asset.getRotatingTool() != null && asset.getRotatingTool().getId() > 0))
 			{
-				throw new IllegalArgumentException("An asset can be either a \"Rotating Item\" or a \"Rotating Tool\". Can't be both");
+				throw new IllegalArgumentException("An asset can be either a Rotating Item or a Rotating Tool. Can't be both");
 			}
 			else
 			{
@@ -30,7 +30,7 @@ public class AddRotatingItemToolCommand extends FacilioCommand {
 						{
 							ItemContext item = asset.getRotatingItem();
 							context.put(FacilioConstants.ContextNames.ITEM, item);
-							Chain c = TransactionChainFactory.getAddOrUpdateItemStockTransactionChain();
+							FacilioChain c = TransactionChainFactory.getAddOrUpdateItemStockTransactionChain();
 							c.execute(context);
 						}
 				}
@@ -39,7 +39,7 @@ public class AddRotatingItemToolCommand extends FacilioCommand {
 						{
 							ToolContext tool = asset.getRotatingTool();
 							context.put(FacilioConstants.ContextNames.TOOL, tool);
-							Chain c = TransactionChainFactory.getAddOrUpdateToolStockTransactionChain();
+							FacilioChain c = TransactionChainFactory.getAddOrUpdateToolStockTransactionChain();
 							c.execute(context);
 						}
 				}

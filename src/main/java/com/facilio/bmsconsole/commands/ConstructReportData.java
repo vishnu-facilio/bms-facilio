@@ -106,7 +106,9 @@ public class ConstructReportData extends FacilioCommand {
 				addDataPointContext(modBean, reportContext, xAxisJSON, dateFieldJSON, (Map) yAxisJSON.get(i), groupByJSONArray, criteria, sortFields, sortOrder, limit);
 			}
 		}
-		
+		if(context.get("chartState")!= null) {
+			reportContext.setChartState((String)context.get("chartState"));
+		}
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
 		return false;

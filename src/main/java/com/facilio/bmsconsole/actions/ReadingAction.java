@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -37,6 +36,7 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -65,7 +65,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
-		Chain addReadingChain = TransactionChainFactory.getAddReadingsChain();
+		FacilioChain addReadingChain = TransactionChainFactory.getAddReadingsChain();
 		addReadingChain.execute(context);
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		setReadingId(module.getModuleId());
@@ -107,7 +107,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
-		Chain addReadingChain = TransactionChainFactory.addResourceReadingChain();
+		FacilioChain addReadingChain = TransactionChainFactory.addResourceReadingChain();
 		addReadingChain.execute(context);
 		
 		return SUCCESS;
@@ -130,7 +130,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
 		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, getFieldReadingRules());
 		
-		Chain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
+		FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
 		addReadingChain.execute(context);
 		
 		return SUCCESS;
@@ -151,7 +151,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD, getField());
 		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, getDelReadingRulesIds());
 		
-		Chain c = FacilioChainFactory.getUpdateReadingChain();
+		FacilioChain c = FacilioChainFactory.getUpdateReadingChain();
 		c.execute(context);
 		
 		return SUCCESS;
@@ -163,7 +163,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
 		
-		Chain addSpaceReadingChain = TransactionChainFactory.addResourceReadingChain();
+		FacilioChain addSpaceReadingChain = TransactionChainFactory.addResourceReadingChain();
 		addSpaceReadingChain.execute(context);
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
@@ -177,7 +177,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
 		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
 		
-		Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
+		FacilioChain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
 		getSpaceSpecifcReadingsChain.execute(context);
 		
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
@@ -189,7 +189,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentId());
 		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
 		
-		Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getAssetReadingsChain();
+		FacilioChain getSpaceSpecifcReadingsChain = FacilioChainFactory.getAssetReadingsChain();
 		getSpaceSpecifcReadingsChain.execute(context);
 		
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
@@ -200,7 +200,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		
-		Chain addCurrentOccupancy = FacilioChainFactory.getGetLatestSpaceReadingValuesChain();
+		FacilioChain addCurrentOccupancy = FacilioChainFactory.getGetLatestSpaceReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		
 		return setReadingValues(context);
@@ -210,7 +210,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourcesId);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, fieldName);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		Chain occupantReadingValue = FacilioChainFactory.getResourcesOccupantReadingValuesChain();
+		FacilioChain occupantReadingValue = FacilioChainFactory.getResourcesOccupantReadingValuesChain();
 		occupantReadingValue.execute(context);
 		occupantReadingValues = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.READINGS);
 		setResult("readingValues", occupantReadingValues);
@@ -220,7 +220,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		
-		Chain latestAssetData = FacilioChainFactory.getGetLatestAssetReadingValuesChain();
+		FacilioChain latestAssetData = FacilioChainFactory.getGetLatestAssetReadingValuesChain();
 		latestAssetData.execute(context);
 		
 		return setReadingValues(context);
@@ -280,7 +280,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
 		
-		Chain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
+		FacilioChain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
 		getCategoryReadingChain.execute(context);
 		
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
@@ -415,7 +415,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.READINGS, getReadingValues());
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.WEB_ACTION);
 		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
-		Chain addCurrentOccupancy = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+		FacilioChain addCurrentOccupancy = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		return SUCCESS;
 	}
@@ -453,7 +453,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		
-		Chain addCurrentOccupancy = FacilioChainFactory.getGetLatestReadingValuesChain();
+		FacilioChain addCurrentOccupancy = FacilioChainFactory.getGetLatestReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		
 		readingData = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.READINGS);
@@ -486,7 +486,7 @@ public class ReadingAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
 		
-		Chain addCurrentOccupancy = FacilioChainFactory.getGetReadingValuesChain();
+		FacilioChain addCurrentOccupancy = FacilioChainFactory.getGetReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		
 		readingData = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.READINGS);
@@ -554,7 +554,7 @@ public class ReadingAction extends FacilioAction {
 	
 	public void spaceCategoriesList() throws Exception {
 		FacilioContext context = new FacilioContext();
-		Chain getSpaceCategoriesChain = FacilioChainFactory.getAllSpaceCategoriesChain();
+		FacilioChain getSpaceCategoriesChain = FacilioChainFactory.getAllSpaceCategoriesChain();
 		getSpaceCategoriesChain.execute(context);
 		setSpaceCategories((List<SpaceCategoryContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST));
 		
@@ -566,7 +566,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, assetCategoryIds);
-		Chain getCategoryReadingChain = FacilioChainFactory.getAllCategoryReadingsChain();
+		FacilioChain getCategoryReadingChain = FacilioChainFactory.getAllCategoryReadingsChain();
 		getCategoryReadingChain.execute(context);
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);	
@@ -578,7 +578,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.READING_FIELD, field);
-		Chain getSiteSpecificReadingChain = FacilioChainFactory.getSiteSpecificReadingsChain();
+		FacilioChain getSiteSpecificReadingChain = FacilioChainFactory.getSiteSpecificReadingsChain();
 		getSiteSpecificReadingChain.execute(context);
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);	
@@ -600,7 +600,7 @@ public class ReadingAction extends FacilioAction {
 	public String getAllSpaceTypeReadings() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE,getSpaceType());
-		Chain getSpaceTypeReading = FacilioChainFactory.getReadingsForSpaceTypeChain();
+		FacilioChain getSpaceTypeReading = FacilioChainFactory.getReadingsForSpaceTypeChain();
 		getSpaceTypeReading.execute(context);
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);
@@ -642,7 +642,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, spaceCategoryIds);
 		
-		Chain getCategoryReadingChain = FacilioChainFactory.getAllCategoryReadingsChain();
+		FacilioChain getCategoryReadingChain = FacilioChainFactory.getAllCategoryReadingsChain();
 		getCategoryReadingChain.execute(context);
 		
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
@@ -683,7 +683,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, assetCategoryIds);
 		
-		Chain getCategoryReadingChain = FacilioChainFactory.getAllCategoryReadingsChain();
+		FacilioChain getCategoryReadingChain = FacilioChainFactory.getAllCategoryReadingsChain();
 		getCategoryReadingChain.execute(context);
 		
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
@@ -706,7 +706,7 @@ public class ReadingAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
 		}
 
-		Chain getCategoryReadingChain = ReadOnlyChainFactory.getAllAssetReadingsChain();
+		FacilioChain getCategoryReadingChain = ReadOnlyChainFactory.getAllAssetReadingsChain();
 		getCategoryReadingChain.execute(context);
 		
 		if (isFetchCount()) {
@@ -807,7 +807,7 @@ public class ReadingAction extends FacilioAction {
 			formula.setInterval(interval);
 		}
 
-		Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+		FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 		addEnpiChain.execute(context);
 		
 		return SUCCESS;
@@ -833,7 +833,7 @@ public class ReadingAction extends FacilioAction {
 			WorkflowUtil.getWorkflowContextFromString(workflow.getWorkflowString(), workflow);
 		}
 		
-		Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
+		FacilioChain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 		updateEnPIChain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.MESSAGE, context.get(FacilioConstants.ContextNames.RESULT));
@@ -853,7 +853,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		
-		Chain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
+		FacilioChain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 		deleteEnPIChain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.MESSAGE, context.get(FacilioConstants.ContextNames.RESULT));
@@ -885,7 +885,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD_TYPE, type);
 		
-		Chain getAllENPIsChain = FacilioChainFactory.getAllFormulasOfTypeChain();
+		FacilioChain getAllENPIsChain = FacilioChainFactory.getAllFormulasOfTypeChain();
 		getAllENPIsChain.execute(context);
 		
 		formulaList = (List<FormulaFieldContext>) context.get(FacilioConstants.ContextNames.FORMULA_LIST);
@@ -1010,7 +1010,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.HISTORY_ALARM, historicalAlarm);
 		context.put(FacilioConstants.ContextNames.SKIP_OPTIMISED_WF, skipOptimisedWorkflow);
 		
-		Chain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
+		FacilioChain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
 		historicalCalculation.execute(context);
 		
 		setResult("success", "Historical Calculation is started and will be notified when done");
@@ -1059,7 +1059,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
 		context.put(FacilioConstants.ContextNames.IS_INCLUDE,isInclude);
 		
-		Chain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
+		FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
 		runThroughRuleChain.execute(context);
 		
 		setResult("success", "Rule evaluation for the readings in the given period has been started");
@@ -1089,7 +1089,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 		
-		Chain runThroughRuleChain = TransactionChainFactory.historicalScheduledRuleChain();
+		FacilioChain runThroughRuleChain = TransactionChainFactory.historicalScheduledRuleChain();
 		runThroughRuleChain.execute(context);
 		
 		setResult("success", "Historical run for the scheduled rule in the given period has been started");
@@ -1129,7 +1129,7 @@ public class ReadingAction extends FacilioAction {
 		}
 
 		
-		Chain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
+		FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
 		latestAssetData.execute(context);
 		
 		if (isFetchCount()) {
@@ -1150,7 +1150,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
 		context.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, true);
 		
-		Chain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
+		FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
 		latestAssetData.execute(context);
 		
 		setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
@@ -1191,7 +1191,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.READING_DATA_META_ID, readingId);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, inputValues);
 		
-		Chain chain = TransactionChainFactory.getSetReadingInputValuesChain();
+		FacilioChain chain = TransactionChainFactory.getSetReadingInputValuesChain();
 		chain.execute(context);
 		return SUCCESS;
 	}
@@ -1283,7 +1283,7 @@ public class ReadingAction extends FacilioAction {
 	public String resetReading() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RESET_COUNTER_META_LIST, resetCounterMetaList);
-		Chain chain = TransactionChainFactory.getResetReadingsChain();
+		FacilioChain chain = TransactionChainFactory.getResetReadingsChain();
 		chain.execute(context);
 		return SUCCESS;
 	}
@@ -1291,7 +1291,7 @@ public class ReadingAction extends FacilioAction {
 	public String getResetReadings() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
-		Chain chain = ReadOnlyChainFactory.getResetCounterMetaChain();
+		FacilioChain chain = ReadOnlyChainFactory.getResetCounterMetaChain();
 		chain.execute(context);
 		resetCounterMetaList = (List<ResetCounterMetaContext>)context.get(FacilioConstants.ContextNames.RESET_COUNTER_META_LIST);
 		setResult("resetCounterMetaList", resetCounterMetaList);

@@ -1,21 +1,30 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.BMSEventContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.MLAnomalyEvent;
+import com.facilio.bmsconsole.context.RCAEvent;
+import com.facilio.bmsconsole.context.ReadingEventContext;
+import com.facilio.bmsconsole.context.ReadingRCAEvent;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import java.util.*;
 
 public class NewEventAPI {
 

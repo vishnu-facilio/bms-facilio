@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
@@ -23,7 +21,10 @@ import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -56,6 +57,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.Workflow.WORKFLOW.equals(specialType)
 				|| "trigger".equals(specialType)
 				|| "connectedApps".equals(specialType)
+				|| ContextNames.FORMULA_FIELD.equals(specialType)
 				;
 	}
 	
@@ -552,6 +554,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if("connectedApps".equals(specialType)) {
 			return ModuleFactory.getConnectedAppsModule();
+		}
+		else if(ContextNames.FORMULA_FIELD.equals(specialType)) {
+			return ModuleFactory.getFormulaFieldModule();
 		}
 		return null;
 	}

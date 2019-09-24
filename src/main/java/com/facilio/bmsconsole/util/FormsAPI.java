@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,6 +29,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -55,7 +55,7 @@ public class FormsAPI {
 				Iterator<FacilioForm> iterator = entry.getValue().iterator();
 				List<FacilioForm> formsList = new ArrayList<>();
 				while (iterator.hasNext()) {
-					FacilioForm form = (FacilioForm) iterator.next();
+					FacilioForm form = iterator.next();
 					FacilioForm mutatedForm = new FacilioForm(form);
 					formsList.add(mutatedForm);
 					
@@ -362,7 +362,45 @@ public class FormsAPI {
 		return deleteBuilder.delete();
 	}
 	
-	public static List<FacilioForm> getFromsFromDB(Collection<Long> ids) throws Exception {
+	// To update fields based on formfieldid...values for fieldNamesToUpdate should not be null
+	public static void updateFormFields(List<FormField> formFields, List<String> fieldNamesToUpdate) throws Exception {
+		FacilioModule module = ModuleFactory.getFormFieldsModule();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormFieldsFields());
+		
+		List<FacilioField> updateFields = new ArrayList<>();
+		for(String fieldName: fieldNamesToUpdate) {
+			updateFields.add(fieldMap.get(fieldName));
+		}
+
+		List<FacilioField> whereFields = new ArrayList<>();
+		whereFields.add(fieldMap.get("resourceId"));
+		whereFields.add(fieldMap.get("fieldId"));
+		
+		List<Map<String, Object>> props = FieldUtil.getAsMapList(formFields, FormField.class);
+		
+		List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdateList = props.stream().map(field -> {
+			GenericUpdateRecordBuilder.BatchUpdateByIdContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateByIdContext();
+			
+//			Map<String, Object> fieldMap = FieldUtil.getAsProperties(field);
+//			List<Map<String, Object>> props = FieldUtil.getAsPropertiesList(formFields);
+			for(String fieldName: fieldNamesToUpdate) {
+//				Object value = PropertyUtils.getProperty(field, fieldName);
+				updateVal.addUpdateValue(fieldName,  field.get(fieldName));
+			}
+			
+			updateVal.setWhereId((long) field.get("id"));
+
+			return updateVal;
+		}).collect(Collectors.toList());
+
+		new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(updateFields)
+				.batchUpdateById(batchUpdateList)
+				;
+	}
+	
+	public static List<FacilioForm> getFormsFromDB(Collection<Long> ids) throws Exception {
 		Criteria formNameCriteria = new Criteria();
 		formNameCriteria.addAndCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getFormModule()));
 		List<FacilioForm> forms = getFormFromDB(formNameCriteria);
@@ -370,15 +408,15 @@ public class FormsAPI {
 	}
 	
 	public static FacilioForm getFormFromDB(long id) throws Exception {
-		List<FacilioForm> forms = getFromsFromDB(Arrays.asList(id));
+		List<FacilioForm> forms = getFormsFromDB(Arrays.asList(id));
 		if (forms != null && !forms.isEmpty()) {
 			return forms.get(0);
 		}
 		return null;
 	}
-	
+		
 	public static Map<Long, FacilioForm> getFormsAsMap(Collection<Long> ids) throws Exception {
-		List<FacilioForm> forms = getFromsFromDB(ids);
+		List<FacilioForm> forms = getFormsFromDB(ids);
 		if (forms != null && !forms.isEmpty()) {
 			Map<Long, FacilioForm> formMap = new HashMap<>();
 			for (FacilioForm form: forms) {
@@ -499,6 +537,7 @@ public class FormsAPI {
 		}
 
 		if (form.getModule().getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
+			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			boolean hasPhoto = false;
 			for (FormField field : form.getFields()) {

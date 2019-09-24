@@ -2,7 +2,11 @@ package com.facilio.bmsconsole.context;
 
 public class ReadingRCAEvent extends BaseEventContext {
 
-    private long parentId = -1;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private long parentId = -1;
     public long getParentId() {
         return parentId;
     }

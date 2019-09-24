@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -103,7 +103,7 @@ public class DeviceMonitorJob extends FacilioJob {
         try {
             FacilioContext addEventContext = new FacilioContext();
             addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, jsonObject);
-            Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+            FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
             getAddEventChain.execute(addEventContext);
         } catch (Exception e) {
             LOGGER.info("Exception while adding event");

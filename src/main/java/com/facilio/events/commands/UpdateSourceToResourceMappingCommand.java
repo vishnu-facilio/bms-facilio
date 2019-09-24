@@ -1,5 +1,7 @@
 package com.facilio.events.commands;
 
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -7,8 +9,6 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.util.EventAPI;
-
-import java.util.Map;
 
 public class UpdateSourceToResourceMappingCommand extends FacilioCommand {
 

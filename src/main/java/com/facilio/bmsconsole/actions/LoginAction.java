@@ -42,7 +42,6 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -54,12 +53,14 @@ import org.w3c.dom.NodeList;
 import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
@@ -802,14 +803,17 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String validatePermalink() throws Exception {
-		Account permalinkAccount = AccountUtil.getUserBean().getPermalinkAccount(getPermalink(), null);
-		if(permalinkAccount != null) {
-			
-			AccountUtil.setCurrentAccount(permalinkAccount);
-			account = new HashMap<>();
-			account.put("org", permalinkAccount.getOrg());
-			account.put("user", permalinkAccount.getUser());
-			return SUCCESS;
+		IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(getPermalink(), null);
+		if(iamAccount != null) {
+			Account permalinkAccount = AccountUtil.getUserBean(iamAccount.getOrg().getOrgId()).getPermalinkAccount(iamAccount);
+			if(permalinkAccount != null) {
+				
+				AccountUtil.setCurrentAccount(permalinkAccount);
+				account = new HashMap<>();
+				account.put("org", permalinkAccount.getOrg());
+				account.put("user", permalinkAccount.getUser());
+				return SUCCESS;
+			}
 		}
 		account = null;
 		return ERROR;

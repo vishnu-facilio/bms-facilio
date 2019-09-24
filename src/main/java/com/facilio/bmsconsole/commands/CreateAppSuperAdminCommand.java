@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 
 public class CreateAppSuperAdminCommand extends FacilioCommand{
 
@@ -15,7 +15,7 @@ public class CreateAppSuperAdminCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		long orgId = (long) context.get("orgId");
 		Role superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
-		User user = (User) AccountUtil.getCurrentUser();
+		User user = AccountUtil.getCurrentUser();
 		
 		user.setRoleId(superAdminRole.getRoleId());
 		user.setInviteAcceptStatus(true);

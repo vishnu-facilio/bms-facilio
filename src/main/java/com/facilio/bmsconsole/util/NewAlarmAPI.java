@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.context.*;
-import com.facilio.db.criteria.operators.*;
-import com.facilio.modules.*;
-import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -17,16 +17,46 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BMSAlarmContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
+import com.facilio.bmsconsole.context.MLAnomalyAlarm;
+import com.facilio.bmsconsole.context.RCAAlarm;
+import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.ReadingAlarmCategoryContext;
+import com.facilio.bmsconsole.context.ReadingAlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.ReadingRCAAlarm;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BuildingOperator;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.time.DateTimeUtil;
+import com.facilio.modules.fields.LookupField;
 
 public class NewAlarmAPI {
 
@@ -54,13 +84,13 @@ public class NewAlarmAPI {
 
 		Map<Type, List<Long>> alarmMap = new HashMap<>();
 		for (BaseAlarmContext map : list) {
-			Type type = Type.valueOf((int) map.getType());
+			Type type = Type.valueOf(map.getType());
 			List<Long> alarmIds = alarmMap.get(type);
 			if (CollectionUtils.isEmpty(alarmIds)) {
 				alarmIds = new ArrayList<>();
 				alarmMap.put(type, alarmIds);
 			}
-			alarmIds.add((Long) map.getId());
+			alarmIds.add(map.getId());
 		}
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -631,7 +661,7 @@ public class NewAlarmAPI {
 				if (alarmOccurrence.equals(initialEdgeCaseAlarmOccurrence) || alarmOccurrence.equals(finalEdgeCaseAlarmOccurrence)) {
 					continue;
 				}
-				delAlarmOccurrencesMap.put((Long) alarmOccurrence.getId(), alarmOccurrence);
+				delAlarmOccurrencesMap.put(alarmOccurrence.getId(), alarmOccurrence);
 			}
 						
 			if(MapUtils.isNotEmpty(delAlarmOccurrencesMap))

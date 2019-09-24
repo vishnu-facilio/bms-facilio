@@ -2,10 +2,10 @@ package com.facilio.kafka;
 
 import java.util.Properties;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.kinesis.ErrorDataProducer;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.producer.FacilioProducer;

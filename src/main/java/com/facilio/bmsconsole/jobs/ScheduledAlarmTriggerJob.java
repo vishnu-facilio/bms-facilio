@@ -1,8 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -21,7 +20,7 @@ public class ScheduledAlarmTriggerJob extends FacilioJob {
 		
 		context.put(FacilioConstants.ContextNames.IS_READING_RULE_EXECUTE_FROM_JOB,true);
 		
-		Chain scheduledChain = TransactionChainFactory.executeScheduledAlarmTriggerChain();
+		FacilioChain scheduledChain = TransactionChainFactory.executeScheduledAlarmTriggerChain();
 		
 		scheduledChain.execute(context);
 		
