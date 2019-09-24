@@ -339,7 +339,8 @@ public class ReportDataPointContext {
 	
 	public static enum DataPointType {
 		MODULE,
-		DERIVATION
+		DERIVATION,
+		TRENDLINE
 		;
 		
 		public int getValue() {
