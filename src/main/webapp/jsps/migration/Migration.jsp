@@ -78,14 +78,14 @@ for(Map<String, Object> org :orgids) {
 			boolean res = workflow.validateWorkflow();
 			
 			if(!res) {
-				out.println(workflow.getId()+" errors -----"+ workflow.getErrorListener());
+				out.println(workflow.getId()+" error occurs -----"+ workflow.getErrorListener().getErrorsAsString());
 			}
 			else {
-				out.println(workflow.getId()+" no errors -----"+ workflow.getErrorListener());
+				out.println(workflow.getId()+" -- passed");
 			}
 		}
 		catch(Exception e) {
-			out.println("error at -- "+workflow.getId());
+			out.println("exception occured  -- "+workflow.getId());
 		}
 	}
 }

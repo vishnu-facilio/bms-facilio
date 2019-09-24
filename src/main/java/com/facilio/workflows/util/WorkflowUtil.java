@@ -873,10 +873,7 @@ public class WorkflowUtil {
 		boolean res = workflow.validateWorkflow();
 		
 		if(!res) {
-			System.out.println("errors -----"+ workflow.getErrorListener());
-		}
-		else {
-			System.out.println("no errors -----"+ workflow.getErrorListener());
+			LOGGER.severe(workflow.getId()+"  errors ----- "+ workflow.getErrorListener().getErrors() +"   "+ code);
 		}
 		return workflow;
 	}
