@@ -886,7 +886,6 @@ public class PreventiveMaintenanceAPI {
 		workOrderBuilder.module(module)
 				.beanClass(WorkOrderContext.class)
 				.select(Arrays.asList(fieldMap.get("pm"), fieldMap.get("createdTime"), fieldMap.get("resource")))
-				.setAggregation()
 				.andCondition(CriteriaAPI.getIdCondition(workOrderId, module));
 		List<WorkOrderContext> workOrders = workOrderBuilder.get();
 
@@ -911,6 +910,7 @@ public class PreventiveMaintenanceAPI {
 		SelectRecordsBuilder woSelectBuilder = new SelectRecordsBuilder();
 		woSelectBuilder.module(module)
 				.select(Arrays.asList(minCreatedTime))
+				.setAggregation()
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(previousTime), NumberOperators.GREATER_THAN))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceId), NumberOperators.EQUALS));

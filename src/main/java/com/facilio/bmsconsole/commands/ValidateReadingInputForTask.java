@@ -168,7 +168,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		{
 			futureCase = true;
 			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
-			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", currentTask.getInputTime(), NumberOperators.GREATER_THAN);
+			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", (currentTask.getInputTime()+1000), NumberOperators.GREATER_THAN);
 		}	
 		
 		if(previousValue < 0 && nextValue < 0)
