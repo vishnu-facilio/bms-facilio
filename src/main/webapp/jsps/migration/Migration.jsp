@@ -71,6 +71,9 @@ for(Map<String, Object> org :orgids) {
 	List<WorkflowContext> wfs = WorkflowUtil.getWorkflowContext(criteria);
 
 	for(WorkflowContext workflow:wfs) {
+		if(wfIgnoreIds.contains(workflow.getId())) {
+			continue;
+		}
 		try {
 			out.println("current wf -- "+workflow.getId());
 			workflow = WorkflowUtil.convertOldWorkflowToNew(workflow.getId());
