@@ -46,7 +46,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	
 	public final static int averageboundPercentage = 50; 
 	
-	long taskContextId;
+	long taskContextId, currentInputTime;
 	String currentInputValue;
 	
 	private static final Logger LOGGER = Logger.getLogger(ValidateReadingInputForTask.class.getName());
@@ -83,7 +83,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 									case NUMBER:
 									case DECIMAL:
 										
-										taskContextId = taskContext.getId();
+										taskContextId = currentTask.getId();
 										ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
 										NumberField numberField = (NumberField) taskContext.getReadingField();
 										
@@ -97,6 +97,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 										}
 								
 										currentInputValue = currentTask.getInputValue();
+										currentInputTime = currentTask.getInputTime();
 										Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 										
 										Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
@@ -135,17 +136,19 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				if(!errors.isEmpty()) {
 					context.put(FacilioConstants.ContextNames.TASK_ERRORS, errors);
 					context.put(FacilioConstants.ContextNames.HAS_TASK_ERRORS, hasErrors);
-					LOGGER.log(Level.INFO, "Currenttask ID: "+ taskContextId + " Task Errors: "+ errors);
+					LOGGER.log(Level.INFO, "Currenttask ID: "+ taskContextId + " Current Input Value: " + currentInputValue + 
+							" Current Input Time: " + currentInputTime +" Task Errors: "+ errors);
 //					if(hasErrors) {
 						return true;
 //					}
 				}
 				
 			}
-
+			
 		}
 		catch(Exception e) {
-			LOGGER.log(Level.SEVERE, "Currenttask ID: "+ taskContextId + " Current Input Value: " + currentInputValue + " " + e.getMessage() , e);
+			LOGGER.log(Level.SEVERE, "Currenttask ID: "+ taskContextId + " Current Input Value: " + currentInputValue + 
+					" Current Input Time: " + currentInputTime + " " + e.getMessage() , e);
 		}
 		return false;
 	}
