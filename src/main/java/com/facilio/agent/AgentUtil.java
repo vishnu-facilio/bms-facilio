@@ -1,20 +1,5 @@
 package com.facilio.agent;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -39,6 +24,15 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.sql.SQLException;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * This class writes agent's payload data to a table in DB.
@@ -460,6 +454,7 @@ public  class AgentUtil
                 toUpdate.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.CONTENT));
             }
             try {
+                toUpdate.put(AgentKeys.CREATED_TIME,System.currentTimeMillis());
                 context.put(FacilioConstants.ContextNames.TO_INSERT_MAP,toUpdate);
                 addLogChain.execute(context);
                /* ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);

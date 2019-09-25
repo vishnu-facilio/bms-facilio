@@ -1,30 +1,17 @@
 package com.facilio.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.*;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -268,7 +255,7 @@ public class FieldFactory {
 		fields.add(getField(AgentKeys.MESSAGE_ID,"MSG_ID",module,FieldType.NUMBER));
 		fields.add(getField(AgentKeys.COMMAND,"COMMAND",module,FieldType.NUMBER));
 		fields.add(getField(AgentKeys.COMMAND_STATUS,"COMMAND_STATUS",module,FieldType.NUMBER));
-
+		fields.add(getCreatedTime(module));
 		return fields;
 	}
 
