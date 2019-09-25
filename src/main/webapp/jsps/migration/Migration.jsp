@@ -96,8 +96,11 @@ for(Map<String, Object> org :orgids) {
 			if(e.getMessage() != null && e.getMessage().contains("Workflow Contains '.'"))  {
 				out.println("workflow With . fields  -- "+workflow.getId());
 			}
+			if(e.getMessage() != null && e.getMessage().contains("Content is not allowed in prolog"))  {
+				out.println("xml parse exception  -- "+workflow.getId());
+			}
 			else {
-				out.println("exception occured  -- "+workflow.getId());
+				out.println("exception occured  -- "+workflow.getId() +" " +e.getMessage());
 			}
 		}
 	}

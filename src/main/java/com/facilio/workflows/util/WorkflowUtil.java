@@ -650,7 +650,7 @@ public class WorkflowUtil {
 			code = code + name +" = NameSpace(\""+exp.getDefaultFunctionContext().getNameSpace()+"\")."+exp.getDefaultFunctionContext().getFunctionName()+"("+paramString+");\n";
 		}
 		else if(exp.getConstant() != null) {
-			code = code + name +" = "+exp.getConstant()+";\n";
+			code = code + name +" = "+getValueStringFromValue(exp.getConstant().toString())+";\n";
 		}
 		else if(exp.getExpr() != null) {
 			code = code + name +" = "+exp.getExpr()+";\n";

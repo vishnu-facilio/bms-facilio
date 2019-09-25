@@ -65,7 +65,6 @@ function_return
  
 boolean_expr_atom																				
  : expr																												#exprForBoolean									
- | boolean_expr_atom op=(AND | OR) boolean_expr_atom																#booleanExprCalculation
  | OPEN_PARANTHESIS boolean_expr_atom CLOSE_PARANTHESIS																#boolExprParanthesis
  ;
  
@@ -75,6 +74,7 @@ expr
  | expr op=(MULT | DIV | MOD) expr  	    																		#arithmeticFirstPrecedenceExpr
  | expr op=(PLUS | MINUS) expr  	    																			#arithmeticSecondPrecedenceExpr
  | expr op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr     			    												#relationalExpr
+ | expr op=(AND | OR) expr																							#booleanExprCalculation
  | atom                                				    															#atomExpr
  | stand_alone_expr																									#standAloneStatements
  | db_param																											#dbParamInitialization
