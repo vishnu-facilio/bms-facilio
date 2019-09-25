@@ -258,7 +258,7 @@ CREATE TABLE IF NOT EXISTS Org_Units (
   UNIT int(11) DEFAULT NULL
 );
 
--- UtilityProviders not used
+-- UtilityProviders not used. to delete
 CREATE TABLE IF NOT EXISTS UtilityProviders (
 	UTILITYID BIGINT AUTO_INCREMENT PRIMARY KEY,
 	ORGID BIGINT NOT NULL,
