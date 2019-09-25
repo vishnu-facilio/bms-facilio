@@ -653,7 +653,10 @@ public class WorkflowUtil {
 			code = code + name +" = "+getValueStringFromValue(exp.getConstant().toString())+";\n";
 		}
 		else if(exp.getExpr() != null) {
-			code = code + name +" = "+exp.getExpr()+";\n";
+			String exprString = exp.getExpr();
+			exprString = exprString.replaceAll("\\&\\&", "&");
+			exprString = exprString.replaceAll("\\|\\|", "|");
+			code = code + name +" = "+exprString+";\n";
 		}
 		else if(exp.getPrintStatement() != null) {
 			String printStatement = exp.getPrintStatement().replace("'", "\"");
@@ -878,7 +881,10 @@ public class WorkflowUtil {
 		}
 		
 		if(workflow.getResultEvaluator() != null) {
-			code = code + "return "+workflow.getResultEvaluator()+";\n";
+			String resEval = workflow.getResultEvaluator();
+			resEval = resEval.replaceAll("\\&\\&", "&");
+			resEval = resEval.replaceAll("\\|\\|", "|");
+			code = code + "return "+resEval+";\n";
 		}
 		
 		code = code + "}";
