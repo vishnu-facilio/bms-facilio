@@ -745,7 +745,28 @@ public class WorkflowUtil {
 					if(operatorStringValue.equals("isn't")) {
 						operatorStringValue = "!=";
 					}
-					conditionString = conditionFieldName +" "+ operatorStringValue +" "+ value;
+					
+					if(value.contains(",")) {
+						String[] values = value.split(",");
+						conditionString = "(";
+						int j = 0;
+						for(String value1 : values) {
+							j++;
+							conditionString = conditionString + conditionFieldName +" "+ operatorStringValue +" "+ value1;
+							if(j != values.length) {
+								if(operatorStringValue.equals("==")) {
+									conditionString = conditionString + " || ";
+								}
+								else if (operatorStringValue.equals("!=")) {
+									conditionString = conditionString + " && ";
+								}
+							}
+						}
+						conditionString = conditionString + ")";
+					}
+					else {
+						conditionString = conditionFieldName +" "+ operatorStringValue +" "+ value;
+					}
 				}
 				patternBuilder.append(pattern.substring(i, matcher.start()));
 				patternBuilder.append(conditionString);
@@ -753,8 +774,12 @@ public class WorkflowUtil {
 			}
 			patternBuilder.append(pattern.substring(i, pattern.length()));
 			String db = "criteria : ["+patternBuilder.toString() +"],";
-			db = db + "field : \""+field+"\",";
-			db = db + "aggregation : \""+aggregate+"\",";
+			if(field != null) {
+				db = db + "field : \""+field+"\",";
+				if(aggregate != null) {
+					db = db + "aggregation : \""+aggregate+"\",";
+				}
+			}
 			if(orderBy != null) {
 				String sort = "asc";
 				if(sortBy != null) {
