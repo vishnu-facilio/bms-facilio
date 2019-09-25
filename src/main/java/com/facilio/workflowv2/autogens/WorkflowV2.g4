@@ -75,6 +75,7 @@ expr
  | expr op=(MULT | DIV | MOD) expr  	    																		#arithmeticFirstPrecedenceExpr
  | expr op=(PLUS | MINUS) expr  	    																			#arithmeticSecondPrecedenceExpr
  | expr op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr     			    												#relationalExpr
+ | expr op=(SINGLE_AND | SINGLE_OR) expr																			#booleanExpr
  | atom                                				    															#atomExpr
  | stand_alone_expr																									#standAloneStatements
  | db_param																											#dbParamInitialization
@@ -179,8 +180,10 @@ DATA_TYPE_LIST : 'List';
 RETURN : 'return';
   
 OR : '||';
+SINGLE_OR : '|';
 DOT : '.';
 AND : '&&';
+SINGLE_AND : '&';
 EQ : '==';
 NEQ : '!=';
 GT : '>';

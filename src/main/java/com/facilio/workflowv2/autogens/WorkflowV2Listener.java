@@ -266,6 +266,18 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code booleanExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code booleanExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code atomExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.
 	 * @param ctx the parse tree

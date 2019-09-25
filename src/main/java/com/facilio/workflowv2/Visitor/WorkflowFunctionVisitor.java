@@ -536,6 +536,23 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 		}
 		
 	}
+	
+	
+	@Override
+	public Value visitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx) {
+		Value left = this.visit(ctx.expr(0));
+		Value right = this.visit(ctx.expr(1));
+		
+		switch (ctx.op.getType()) {
+		case WorkflowV2Parser.SINGLE_AND:
+				return new Value(left.asBoolean() && right.asBoolean());
+		case WorkflowV2Parser.SINGLE_OR:
+				return new Value(left.asBoolean() || right.asBoolean());
+		default:
+			throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
+		}
+		
+	}
     
     @Override
     public Value visitLog(WorkflowV2Parser.LogContext ctx) {
