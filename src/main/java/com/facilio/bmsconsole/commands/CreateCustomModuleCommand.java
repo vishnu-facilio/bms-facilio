@@ -11,14 +11,14 @@ public class CreateCustomModuleCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		String displayName = (String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME);
 		Integer moduleType = (Integer) context.get(FacilioConstants.ContextNames.MODULE_TYPE);
 		String description = (String) context.get(FacilioConstants.ContextNames.MODULE_DESCRIPTION);
 
-		if(moduleName != null && !moduleName.isEmpty()) {
+		if(displayName != null && !displayName.isEmpty()) {
 			FacilioModule module = new FacilioModule();
-			module.setName(moduleName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-			module.setDisplayName(moduleName);
+			module.setName("custom_" + displayName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+			module.setDisplayName(displayName);
 			module.setTableName("CustomModuleData");
 			module.setDescription(description);
 			if (moduleType != null) {

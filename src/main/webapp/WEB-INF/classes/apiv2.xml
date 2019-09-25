@@ -3459,6 +3459,8 @@
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2updateField">
 		</action>
+		<action name="changeFieldTo" class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="changeNameToLocalID" />
 	</package>
 	<package name="moduleMetaApiV2" namespace="/api/v2/modules/meta" extends="v2Api">
 		<action name="*"

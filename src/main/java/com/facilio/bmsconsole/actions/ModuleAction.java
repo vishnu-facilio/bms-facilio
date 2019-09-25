@@ -38,7 +38,7 @@ public class ModuleAction extends FacilioAction {
 	public String addNewModule() throws Exception {
 		FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
 		FacilioContext context = addModulesChain.getContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, getModuleDisplayName());
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		addModulesChain.execute();
@@ -48,20 +48,11 @@ public class ModuleAction extends FacilioAction {
 		setModuleId(module.getModuleId());
 		return SUCCESS;
 	}
-	
 
-//	private boolean stateFlow = false;
-//	public boolean isStateFlow() {
-//		return stateFlow;
-//	}
-//	public void setStateFlow(boolean stateFlow) {
-//		this.stateFlow = stateFlow;
-//	}
-	
 	public String v2AddModule() throws Exception {
 		FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
 		FacilioContext context = addModulesChain.getContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, getModuleDisplayName());
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
 		
@@ -217,6 +208,26 @@ public class ModuleAction extends FacilioAction {
 		updateFieldChain.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
+		return SUCCESS;
+	}
+
+	private String moduleFieldChangeTo;
+	public String getModuleFieldChangeTo() {
+		return moduleFieldChangeTo;
+	}
+	public void setModuleFieldChangeTo(String moduleFieldChangeTo) {
+		this.moduleFieldChangeTo = moduleFieldChangeTo;
+	}
+
+	public String changeNameToLocalID() throws Exception {
+		FacilioChain chain = FacilioChainFactory.changeNameToLocalIdChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.MODULE_CHANGE_TO, moduleFieldChangeTo);
+//		setFieldJson(fieldJson);
+//		context.put(FacilioConstants.ContextNames.MODULE_FIELD, field);
+
+		chain.execute();
 		return SUCCESS;
 	}
 	

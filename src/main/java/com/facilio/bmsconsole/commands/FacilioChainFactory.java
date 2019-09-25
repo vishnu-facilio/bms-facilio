@@ -1324,6 +1324,12 @@ public class FacilioChainFactory {
 		c.addCommand(new UpdateFieldCommand());
 		return c;
 	}
+
+	public static FacilioChain changeNameToLocalIdChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new ChangeNameLocalIdCommand());
+		return c;
+	}
 	
 	public static FacilioChain getdeleteFieldsChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
@@ -1835,6 +1841,7 @@ public class FacilioChainFactory {
 	
 	public static FacilioChain addModuleDataChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new SetLocalIDCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		return c;
