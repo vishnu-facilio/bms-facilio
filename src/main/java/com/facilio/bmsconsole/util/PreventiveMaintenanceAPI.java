@@ -247,6 +247,11 @@ public class PreventiveMaintenanceAPI {
 				}
 			}
 			 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
+
+			if (AccountUtil.getCurrentAccount().getOrg().getOrgId() == 151L) {
+				LOGGER.log(Level.ERROR, "resource Ids " + Arrays.toString(resourceIds.toArray()));
+			}
+
 			 Map<String, Integer> dupSectionNameCount = new HashMap<>();
 			 for(Long resourceId :resourceIds) {
 				 if(resourceId == null || resourceId < 0) {
