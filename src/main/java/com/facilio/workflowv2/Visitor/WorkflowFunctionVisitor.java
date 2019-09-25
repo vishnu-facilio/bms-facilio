@@ -516,18 +516,18 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     
 	@Override
 	public Value visitBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx) {
-		Value left = this.visit(ctx.expr(0));
+		Value left = this.visit(ctx.boolean_expr_atom(0));
 		
 		switch (ctx.op.getType()) {
 		case WorkflowV2Parser.AND:
 			if(left.asBoolean()) {
-				Value right = this.visit(ctx.expr(1));
+				Value right = this.visit(ctx.boolean_expr_atom(1));
 				return new Value(left.asBoolean() && right.asBoolean());
 			}
 			return new Value(left.asBoolean());
 		case WorkflowV2Parser.OR:
 			if(!left.asBoolean()) {
-				Value right = this.visit(ctx.expr(1));
+				Value right = this.visit(ctx.boolean_expr_atom(1));
 				return new Value(left.asBoolean() || right.asBoolean());
 			}
 			return new Value(left.asBoolean());

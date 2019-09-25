@@ -220,6 +220,18 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDbParamInitialization(WorkflowV2Parser.DbParamInitializationContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -299,18 +311,6 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAtomExpr(WorkflowV2Parser.AtomExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

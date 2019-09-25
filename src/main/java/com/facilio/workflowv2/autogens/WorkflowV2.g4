@@ -13,7 +13,7 @@ function_name_declare: VAR ;
 function_param: data_type VAR ;
 
 data_type
- : op=(VOID | DATA_TYPE_STRING | DATA_TYPE_NUMBER | DATA_TYPE_DECIMAL | DATA_TYPE_BOOLEAN | DATA_TYPE_MAP | DATA_TYPE_LIST)
+ : op=(VOID | DATA_TYPE_STRING | DATA_TYPE_NUMBER | DATA_TYPE_BOOLEAN | DATA_TYPE_MAP | DATA_TYPE_LIST)
  ;
  
  block
@@ -64,7 +64,8 @@ function_return
  ;
  
 boolean_expr_atom																				
- : expr																												#exprForBoolean									
+ : expr																												#exprForBoolean		
+ | boolean_expr_atom op=(AND | OR) boolean_expr_atom																#booleanExprCalculation							
  | OPEN_PARANTHESIS boolean_expr_atom CLOSE_PARANTHESIS																#boolExprParanthesis
  ;
  
@@ -74,7 +75,6 @@ expr
  | expr op=(MULT | DIV | MOD) expr  	    																		#arithmeticFirstPrecedenceExpr
  | expr op=(PLUS | MINUS) expr  	    																			#arithmeticSecondPrecedenceExpr
  | expr op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr     			    												#relationalExpr
- | expr op=(AND | OR) expr																							#booleanExprCalculation
  | atom                                				    															#atomExpr
  | stand_alone_expr																									#standAloneStatements
  | db_param																											#dbParamInitialization
@@ -173,7 +173,6 @@ condition_atom
 VOID : 'void';
 DATA_TYPE_STRING : 'String';
 DATA_TYPE_NUMBER : 'Number';
-DATA_TYPE_DECIMAL : 'Decimal';
 DATA_TYPE_BOOLEAN : 'Boolean';
 DATA_TYPE_MAP : 'Map';
 DATA_TYPE_LIST : 'List';
