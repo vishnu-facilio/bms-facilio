@@ -45,7 +45,7 @@ public class FormatAnomalyMetricsCommand extends FacilioCommand {
 				String month = getMonth((long) metric.get("createdTime"));
 				rows.add(month);
 				
-				count.put(month, metric.get("id"));
+				count.put(month, metric.get("alarm"));
 				mttc.put(month, metric.get("duration"));
 			}
 		}
