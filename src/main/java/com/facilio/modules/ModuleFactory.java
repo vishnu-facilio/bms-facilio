@@ -2642,6 +2642,21 @@ public class ModuleFactory {
 		module.setTableName("ImportPoints");
 		return module;
 	}
+	public static FacilioModule getDevicePasscodesModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("devicePasscodes");
+		module.setDisplayName("Device Passcodes");
+		module.setTableName("DevicePasscodes");
+		return module;
+	}
+	public static FacilioModule getConnectedDevicesModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("connectedDevices");
+		module.setDisplayName("Connected Devices");
+		module.setTableName("ConnectedDevices");
+		return module;
+	}
+	
 
 
 }
