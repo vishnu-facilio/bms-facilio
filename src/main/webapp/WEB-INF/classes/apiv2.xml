@@ -4421,22 +4421,22 @@
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorDetails" />	
 	</package>
 	
-	<package name="visitorevent" namespace="/api/v2/visitorEvent"
+	<package name="visitorinvite" namespace="/api/v2/visitorInvite"
 		extends="v2Api">
 		<action name="add"
-			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="addVisitorEvents" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="addVisitorInvites" />
 		<action name="update"
-			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="updateVisitorEvents" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="updateVisitorInvites" />
 		<action name="list"
-			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="getVisitorEventsList" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" />
 		<action name="delete"
-			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="deleteVisitorEvents" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteVisitorInvites" />
 		<action name="details"
-			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="getVisitorEventDetails" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
 		<action name="addInvitees"
-			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="addEventInvitees" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="addInvitees" />
 		<action name="deleteInvitees"
-			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="deleteEventInvitees" />			
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteInvitees" />			
 	</package>
 	
 		<package name="visitorlogging" namespace="/api/v2/visitorLogging"

@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
@@ -40,6 +41,25 @@ private static final long serialVersionUID = 1L;
 	
 	private List<VisitorLoggingContext> visitorLoggingRecords;
 	
+	public VisitorLoggingContext getVisitorLogging() {
+		return visitorLogging;
+	}
+	public void setVisitorLogging(VisitorLoggingContext visitorLogging) {
+		this.visitorLogging = visitorLogging;
+	}
+	public List<VisitorLoggingContext> getVisitorLoggingRecords() {
+		return visitorLoggingRecords;
+	}
+	public void setVisitorLoggingRecords(List<VisitorLoggingContext> visitorLoggingRecords) {
+		this.visitorLoggingRecords = visitorLoggingRecords;
+	}
+	public List<Long> getVisitorLoggingIds() {
+		return visitorLoggingIds;
+	}
+	public void setVisitorLoggingIds(List<Long> visitorLoggingIds) {
+		this.visitorLoggingIds = visitorLoggingIds;
+	}
+
 	private List<Long> visitorLoggingIds;
 	
 	private long recordId = -1;
@@ -68,11 +88,19 @@ private static final long serialVersionUID = 1L;
 		this.id = id;
 	}
 
-	
+	private Long stateTransitionId;
+	public Long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(Long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+
 	public String addVisitorLogging() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(visitorLoggingRecords)) {
 			FacilioChain c = TransactionChainFactory.addVisitorLoggingRecordsChain();
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -84,6 +112,7 @@ private static final long serialVersionUID = 1L;
 		
 		if(!CollectionUtils.isEmpty(visitorLoggingRecords)) {
 			FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
+			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -103,7 +132,7 @@ private static final long serialVersionUID = 1L;
 	}
 	
 	public String getVisitorLoggingList() throws Exception {
-		FacilioChain chain = ReadOnlyChainFactory.getVisitorEventsListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getVisitorLoggingListChain();
 		
 		chain.getContext().put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
 		chain.getContext().put(FacilioConstants.ContextNames.CV_NAME, getViewName());
@@ -144,7 +173,7 @@ private static final long serialVersionUID = 1L;
 	
 	public String getVisitorLoggingDetails() throws Exception {
 		
-		FacilioChain chain = ReadOnlyChainFactory.getVisitorEventsDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getVisitorLoggingDetailsChain();
 		chain.getContext().put(FacilioConstants.ContextNames.ID, recordId);
 		
 		chain.execute();
@@ -158,6 +187,7 @@ private static final long serialVersionUID = 1L;
 	public String preRegisterVisitor() throws Exception {
 		
 		FacilioChain chain = TransactionChainFactory.preRegisterVisitorsChain();
+		chain.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 		chain.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
 		
 		chain.execute();

@@ -828,6 +828,84 @@
 		"subject": "Monthly Maintenance",
 		"to": "",
 		"message_ftl": "monthlyMaintenance"
+	},
+	"90": {
+		"name": "CHECKEDIN_EMAIL",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"subject": "Thanks for Checking in",
+		"to": "${visitorlogging.visitor.email:-}",
+		"message": "Thanks for visiting ${org.name}\n CheckInTime : \n${visitorlogging.checkInTime:-}\nPerson To Meet : ${visitorlogging.eventHost.name:-} \nAdmin Team."
+	
+	},
+	"91": {
+		"name": "CHECKING_IN",
+		"to": "${visitorlogging.visitor.phone:-}",
+		"message": "Thanks for visiting ${org.name}\n CheckInTime : \n${visitorlogging.checkInTime:-}\nPerson To Meet : ${visitorlogging.eventHost.name:-} \nAdmin Team."
+	},
+	"92": {
+		"name": "PREREGISTERATION_INVITATION_EMAIL",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"subject": "You are invited",
+		"to": "${visitorlogging.visitor.email:-}",
+		"message": "You are invited to visit ${visitorlogging.eventHost.name:-} of ${org.name} on ${visitorlogging.checkInTime:-} \n Please visit the reception to check in on the required date and time, \nAdmin Team."
+	
+	},
+	"93": {
+		"name": "PREREGISTER_INVITE",
+		"to": "${visitorlogging.visitor.phone:-}",
+		"message": "You are invited to visit ${visitorlogging.eventHost.name:-} of ${org.name} on ${visitorlogging.checkInTime:-} \n Please visit the reception to check in on the required date and time, \nAdmin Team."
+	},
+	"94": {
+		"name": "HOST_APPROVAL_EMAIL",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"subject": "Your request to visit is approved",
+		"to": "${visitorlogging.visitor.email:-}",
+		"message": "Your request to visit ${visitorlogging.eventHost.name:-} of ${org.name} is approved.Kindly proceed to check in.\n Please visit the reception for further details, \nAdmin Team."
+	
+	},
+	"95": {
+		"name": "HOST_APPROVAL_EMAIL",
+		"to": "${visitorlogging.visitor.phone:-}",
+		"message": "Your request to visit ${visitorlogging.eventHost.name:-} of ${org.name} is approved.Kindly proceed to check in.\n Please visit the reception for further details, \nAdmin Team."
+	},
+	"96": {
+		"name": "HOST_REJECTING_EMAIL",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"subject": "Your request to visit is rejected",
+		"to": "${visitorlogging.visitor.email:-}",
+		"message": "Your request to visit ${visitorlogging.eventHost.name:-} of ${org.name} is rejected.We regret the inconvenience caused, \nAdmin Team."
+	
+	},
+	"97": {
+		"name": "HOST_REJECTING_EMAIL",
+		"to": "${visitorlogging.visitor.phone:-}",
+		"message": "Your request to visit ${visitorlogging.eventHost.name:-} of ${org.name} is rejected.We regret the inconvenience caused, \nAdmin Team."
+	},
+	"98": {
+		"name": "VISITOR_REQUESTING_EMAIL",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"subject": "${visitorlogging.visitor.name:-} has requested to visit you",
+		"to": "${visitorlogging.eventHost.email:-}",
+		"message": "${visitorlogging.visitor.name:-} has requested to visit you and is now waiting in your premises.Kindly login facilio to proceed further \nAdmin Team."
+	
+	},
+	"99": {
+		"name": "VISITOR_REQUESTING_EMAIL",
+		"to": "${visitorlogging.eventHost.phone:-}",
+		"message": "${visitorlogging.visitor.name:-} has requested to visit you and is now waiting in your premises.Kindly login facilio to proceed further \nAdmin Team."
+	},
+	"100": {
+		"name": "VISITOR_CHECKINGOUT_EMAIL",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"subject": "You have checked out",
+		"to": "${visitorlogging.visitor.email:-}",
+		"message": "Thanks for visiting us.You have successfully checked out.\nAdmin Team."
+	
+	},
+	"101": {
+		"name": "VISITOR_CHECKINGOUT_EMAIL",
+		"to": "${visitorlogging.visitor.phone:-}",
+		"message": "Thanks for visiting us.You have successfully checked out.\nAdmin Team."
 	}
 	
 }

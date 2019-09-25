@@ -405,12 +405,12 @@ public class SetTableNamesCommand extends FacilioCommand {
 	public static SetTableNamesCommand getForVisitor() {
 		return new SetTableNamesCommand("visitor", "Visitor");
 	}
-	public static SetTableNamesCommand getForVisitorEvents() {
-		return new SetTableNamesCommand("visitorevent", "Visitor_Events");
+	public static SetTableNamesCommand getForVisitorInvites() {
+		return new SetTableNamesCommand("visitorinvite", "Visitor_Invites");
 	}
 	
-	public static SetTableNamesCommand getForVisitorEventRel() {
-		return new SetTableNamesCommand("visitoreventrel", "Event_Visitor_Rel");
+	public static SetTableNamesCommand getForVisitorInviteRel() {
+		return new SetTableNamesCommand("visitorinviterel", "Invite_Visitor_Rel");
 	}
 	
 	public static SetTableNamesCommand getForVisitorLogging() {

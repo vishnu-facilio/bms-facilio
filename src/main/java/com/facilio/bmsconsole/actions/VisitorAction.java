@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -115,6 +116,18 @@ public class VisitorAction extends FacilioAction
 	public String addVisitors() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(visitors)) {
+			for(VisitorContext v : visitors) {
+				LocationContext location = v.getLocation();
+				if(location!=null)
+				{	
+					location.setName(v.getName()+"_location");
+					FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+					addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+					addLocation.execute();
+					long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
+					location.setId(locationId);
+				}
+			}
 			FacilioChain c = TransactionChainFactory.addVisitorChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitors);
 			c.execute();
@@ -126,6 +139,34 @@ public class VisitorAction extends FacilioAction
 	public String updateVisitors() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(visitors)) {
+			for(VisitorContext v : visitors) {
+				//update location
+				LocationContext location = v.getLocation();
+				
+				if(location != null && location.getLat() != -1 && location.getLng() != -1)
+				{
+					FacilioChain locationChain = null;
+					location.setName(v.getName()+"_Location");
+					locationChain.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+					locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
+					locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
+				
+					if (location.getId() > 0) {
+						locationChain = FacilioChainFactory.updateLocationChain();
+						locationChain.execute();
+						v.setLocation(location);
+					}
+					else {
+						locationChain = FacilioChainFactory.addLocationChain();
+						locationChain.execute();
+						long locationId = (long) locationChain.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
+						location.setId(locationId);
+					}
+				}
+				else {
+					v.setLocation(null);
+				}
+			}
 			FacilioChain c = TransactionChainFactory.updateVisitorChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitors);
 			c.execute();
@@ -142,6 +183,16 @@ public class VisitorAction extends FacilioAction
 			visitor.setAvatarFileName(avatarFileName);
 			visitor.setAvatarContentType(avatarContentType);
 		}
+		LocationContext location = visitor.getLocation();
+		if(location!=null)
+		{	
+			location.setName(visitor.getName()+"_location");
+			FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+			addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+			addLocation.execute();
+			long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
+			location.setId(locationId);
+		}
 		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitor));
 		c.execute();
 		setResult(FacilioConstants.ContextNames.VISITORS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -152,6 +203,7 @@ public class VisitorAction extends FacilioAction
 		
 		if(!CollectionUtils.isEmpty(visitorIds)) {
 			FacilioChain c = FacilioChainFactory.deleteVisitorChain();
+			c.getContext().put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, visitorIds);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));

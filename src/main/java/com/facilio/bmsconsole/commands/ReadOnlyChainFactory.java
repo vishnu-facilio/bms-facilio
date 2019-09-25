@@ -1519,9 +1519,9 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
-	public static FacilioChain getVisitorEventsListChain() {
+	public static FacilioChain getVisitorInvitesListChain() {
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(SetTableNamesCommand.getForVisitorEvents());
+		chain.addCommand(SetTableNamesCommand.getForVisitorInvites());
 		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
@@ -1530,11 +1530,11 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 	
-	public static FacilioChain getVisitorEventsDetailsChain() {
+	public static FacilioChain getVisitorInvitesDetailsChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForVisitorEvents());
+		c.addCommand(SetTableNamesCommand.getForVisitorInvites());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		c.addCommand(new GetEventInviteesListCommand());
+		c.addCommand(new GetInviteesListCommand());
 		
 		return c;
 	}

@@ -388,7 +388,7 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE,
 					FacilioConstants.ContextNames.ASSET_MOVEMENT,
 					FacilioConstants.ContextNames.VISITOR,
-					FacilioConstants.ContextNames.VISITOR_EVENT,
+					FacilioConstants.ContextNames.VISITOR_INVITE,
 					FacilioConstants.ContextNames.VISITOR_LOGGING					
 					
 					

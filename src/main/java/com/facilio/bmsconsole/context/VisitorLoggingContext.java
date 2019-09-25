@@ -10,26 +10,26 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private VisitorEventContext event;
-	private User eventHost;
+	private VisitorInviteContext invite;
+	private User host;
 	private long checkInTime = -1;
 	private long checkOutTime = -1;
 	private VisitorContext visitor;
 	
-	public VisitorEventContext getEvent() {
-		return event;
+	public VisitorInviteContext getInvite() {
+		return invite;
 	}
 
-	public void setEvent(VisitorEventContext event) {
-		this.event = event;
+	public void setInvite(VisitorInviteContext invite) {
+		this.invite = invite;
 	}
 
-	public User getEventHost() {
-		return eventHost;
+	public User getHost() {
+		return host;
 	}
 
-	public void setEventHost(User eventHost) {
-		this.eventHost = eventHost;
+	public void setHost(User host) {
+		this.host = host;
 	}
 
 	public long getCheckInTime() {

@@ -2027,9 +2027,9 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain deleteVisitorEventsChain() {
+	public static FacilioChain deleteVisitorInvitesChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
-		c.addCommand(SetTableNamesCommand.getForVisitorEvents());
+		c.addCommand(SetTableNamesCommand.getForVisitorInvites());
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		return c;
 	}
@@ -2041,9 +2041,9 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain deleteEventVisitorRelChain() {
+	public static FacilioChain deleteInviteVisitorRelChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
-		c.addCommand(SetTableNamesCommand.getForVisitorEventRel());
+		c.addCommand(SetTableNamesCommand.getForVisitorInviteRel());
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		return c;
 	}

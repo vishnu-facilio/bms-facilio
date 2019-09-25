@@ -1014,4 +1014,162 @@
 		    </iterator>
 		</workflow>
 	</template>
+	<template id="90">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.email"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="91">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.phone"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+		</workflow>
+	</template>
+	
+	<template id="92">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.email"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="93">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.phone"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+		</workflow>
+	</template>
+	
+	<template id="94">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.email"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="95">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.phone"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+		</workflow>
+	</template>
+	
+	<template id="96">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.email"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="97">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.phone"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+		</workflow>
+	</template>
+	
+	<template id="98">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.name"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+			<parameter name="visitorlogging.eventHost.email"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="99">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.name"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+			<parameter name="visitorlogging.eventHost.phone"
+				type="String" />
+		</workflow>
+	</template>
+	
+	<template id="100">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.email"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+			<parameter name="visitorlogging.eventHost.email"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="101">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.phone"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString" type="String" />
+			<parameter name="visitorlogging.eventHost.name"
+				type="String" />
+			<parameter name="visitorlogging.eventHost.phone"
+				type="String" />
+		</workflow>
+	</template>
+	
 </workflows>

@@ -60,7 +60,7 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS_LINE_ITEMS);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.VISITOR);
-		modulesWithLocalId.add(FacilioConstants.ContextNames.VISITOR_EVENT);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.VISITOR_INVITE);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.VISITOR_LOGGING);
 		
 		

@@ -29,9 +29,9 @@ public class LoadVisitorLoggingLookUpCommand extends FacilioCommand{
 		}
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
-		LookupFieldMeta eventField = new LookupFieldMeta((LookupField) fieldsAsMap.get("event"));
+		LookupFieldMeta eventField = new LookupFieldMeta((LookupField) fieldsAsMap.get("invite"));
 		LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitor"));
-		LookupFieldMeta hostField = new LookupFieldMeta((LookupField) fieldsAsMap.get("eventHost"));
+		LookupFieldMeta hostField = new LookupFieldMeta((LookupField) fieldsAsMap.get("host"));
 		
 		additionaLookups.add(eventField);
 		additionaLookups.add(visitorField);

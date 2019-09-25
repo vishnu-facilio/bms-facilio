@@ -1249,11 +1249,11 @@ public class FacilioConstants {
 		public static final String VISITOR = "visitor";
 		public static final String VISITORS = "visitors";
 		public static final String VISITOR_LOGGING = "visitorlogging";
-		public static final String VISITOR_EVENT_REL = "visitoreventrel";
-		public static final String VISITOR_EVENT = "visitorevent";
-		public static final String VISITOR_EVENTS = "visitorevents";
-		public static final String VISITOR_EVENT_ID = "visitorEventId";
-		public static final String VISITOR_EVENT_INVITEES = "visitoreventinvitees";
+		public static final String VISITOR_INVITE_REL = "visitorinviterel";
+		public static final String VISITOR_INVITE = "visitorinvite";
+		public static final String VISITOR_INVITES = "visitorinvites";
+		public static final String VISITOR_INVITE_ID = "visitorInviteId";
+		public static final String INVITEES = "invitees";
 		public static final String VISITOR_LOGGING_RECORDS = "visitorloggingrecords";
 		
 		
@@ -1429,7 +1429,11 @@ public class FacilioConstants {
 			classMap.put(NEW_READING_ALARM, ReadingAlarm.class);
 			classMap.put(READING_EVENT, ReadingEventContext.class);
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
-
+			classMap.put(VISITOR, VisitorContext.class);
+			classMap.put(VISITOR_INVITE, VisitorInviteContext.class);
+			classMap.put(VISITOR_LOGGING, VisitorLoggingContext.class);
+			classMap.put(VISITOR_INVITE_REL, InviteVisitorRelContext.class);
+			
 			classMap.put(Reservation.RESERVATION, ReservationContext.class);
 			classMap.put(ModuleNames.DEVICES, DeviceContext.class);
 			classMap.put(Reservation.RESERVATIONS_INTERNAL_ATTENDEE, InternalAttendeeContext.class);
