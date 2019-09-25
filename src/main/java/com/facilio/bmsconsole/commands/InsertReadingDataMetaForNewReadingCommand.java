@@ -51,7 +51,9 @@ public class InsertReadingDataMetaForNewReadingCommand extends FacilioCommand {
 							dataMeta.setTtime(timestamp);
 							dataMeta.setValue("-1");
 							dataMeta.setInputType(type);
-							dataMeta.setCustom(true);
+							if (!field.isDefault()) {
+								dataMeta.setCustom(true);							
+							}
 							
 							builder.addRecord(FieldUtil.getAsProperties(dataMeta));
 						}

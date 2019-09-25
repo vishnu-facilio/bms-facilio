@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
@@ -35,7 +36,12 @@ public class PublishConfigMsgToIoTCommand extends FacilioCommand {
 	}
 	
 	public static void markInstancesAsNotInUse (List<Long> ids) { //static because this is used in lambda
+		LOGGER.debug("reverting config: " + ids);
 		try {
+			// temp
+			if (AccountUtil.getCurrentOrg().getOrgId() == 213l) {
+				return;
+			}
 			TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("inUse", false));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

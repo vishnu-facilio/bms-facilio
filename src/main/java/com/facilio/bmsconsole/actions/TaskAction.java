@@ -8,14 +8,11 @@ import java.util.Map;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -830,41 +827,10 @@ public class TaskAction extends FacilioAction {
 	public void setLastSyncTime(Long lastSyncTime) {
 		this.lastSyncTime = lastSyncTime;
 	}
+	
 	private void sendErrorMail(Exception e, JSONObject inComingDetails) throws Exception {
-		// TODO Auto-generated method stub
-		String errorTrace = null;
-		StringBuilder body = new StringBuilder("\n\nDetails: \n");
-		if (e != null && FacilioProperties.isProduction()) {
-			if (e instanceof IllegalArgumentException) {
-				if (AccountUtil.getCurrentOrg().getOrgId() == 155 || e.getMessage().equals("Task cannot be updated for completed tickets") || e.getMessage().equals("Tasks should be completed before resolve") || e.getMessage().equals("Atleast one file has to be attached since attachment is required to close the task")
-						|| ((e.getMessage().equals("Input task cannot be closed without entering input value") && AccountUtil.getCurrentAccount().isFromAndroid()))) {
-					return;
-				}
-				errorTrace = ExceptionUtils.getStackTrace(e);
-				body.append(inComingDetails.toString())
-				.append("\nOrgId: ")
-				.append(AccountUtil.getCurrentOrg().getOrgId())
-				.append("\nUser: ")
-				.append(AccountUtil.getCurrentUser().getName()).append(" - ").append(AccountUtil.getCurrentUser().getOuid())
-				.append("\nDevice Type: ")
-				.append(AccountUtil.getCurrentAccount().getDeviceType())
-				.append("\nUrl: ")
-				.append(ServletActionContext.getRequest().getRequestURI())
-				.append("\n\n-----------------\n\n")
-				.append("------------------\n\nStackTrace : \n--------\n")
-				.append(errorTrace);
-				String message = e.getMessage();
-				System.out.println("88888888" + body);
-				JSONObject mailJson = new JSONObject();
-				mailJson.put("sender", "noreply@facilio.com");
-				mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
-				mailJson.put("subject", "Task Exception");
-				mailJson.put("message", body.toString());
-				FacilioFactory.getEmailClient().sendEmail(mailJson);
-			}
-			else {
-				CommonCommandUtil.emailException(TaskAction.class.getName(), "Error in Task api", e, inComingDetails.toString());
-			}
+		if (e != null && FacilioProperties.isProduction() && !(e instanceof IllegalArgumentException)) {
+			CommonCommandUtil.emailException(TaskAction.class.getName(), "Error in Task api", e, inComingDetails.toString());
 		}
 	}
 	

@@ -70,6 +70,9 @@ public boolean executeCommand(Context context) throws Exception {
 					dataMeta.setTtime(timestamp);
 					dataMeta.setValue("-1");
 					dataMeta.setInputType(type);
+					if (!field.isDefault()) {
+						dataMeta.setCustom(true);							
+					}
 					builder.addRecord(FieldUtil.getAsProperties(dataMeta));
 				}
 			}

@@ -1503,7 +1503,8 @@ public class WorkOrderAction extends FacilioAction {
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
 		if (e != null && FacilioProperties.isProduction() ) {
 			if (e instanceof IllegalArgumentException && AccountUtil.getCurrentOrg().getOrgId() != 155) {
-				if (e.getMessage().equals("Please close all tasks before closing/resolving the workorder") || e.getMessage().equals("Tasks should be completed before resolve")) {
+				if (e.getMessage().equals("Please close all tasks before closing/resolving the workorder") || e.getMessage().equals("Tasks should be completed before resolve")
+						|| e.getMessage().equals("Record not found")) {
 					return;
 				}
 				errorTrace = ExceptionUtils.getStackTrace(e);
