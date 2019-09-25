@@ -527,7 +527,7 @@ public class NewAlarmAPI {
 		return builder;
 	}
 
-	private static SelectRecordsBuilder<AlarmOccurrenceContext> getAlarmBuilder(long startTime, long endTime,
+	public static SelectRecordsBuilder<AlarmOccurrenceContext> getAlarmBuilder(long startTime, long endTime,
 																				List<FacilioField> fields, Map<String, FacilioField> fieldMap) {
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.select(fields).moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)

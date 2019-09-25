@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.util.NewAlarmAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -217,13 +218,10 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		selectFields.add(resourceFieldColumn);
 		selectFields.addAll(FieldFactory.getCountField(occurrenceModule));
 		FacilioField alarmField = fieldMap.get("alarmId");
-		SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
-				.select(selectFields)
-				.beanClass(AlarmOccurrenceContext.class)
-				.module(readingAlarmModule)
-				.innerJoin(occurrenceModule.getTableName())
-				.on(occurrenceModule.getTableName() + ".ALARM_ID = " + readingAlarmModule.getTableName() + ".ID")
-				;
+
+		SelectRecordsBuilder<AlarmOccurrenceContext> builder = NewAlarmAPI.getAlarmBuilder(dateRange.getStartTime(), dateRange.getEndTime(), selectFields, fieldMap);
+		builder.innerJoin(readingAlarmModule.getTableName())
+				.on(occurrenceModule.getTableName() + ".ALARM_ID = " + readingAlarmModule.getTableName() + ".ID");
 
 		if (assetId > 0 ) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"),( assetId > 0 ? String.valueOf(assetId) : StringUtils.join(assetIds, ",") ), NumberOperators.EQUALS))
@@ -244,13 +242,6 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 
 		builder.andCondition(CriteriaAPI.getCondition(ruleField, CommonOperators.IS_NOT_EMPTY))
 				.orderBy(durationField.getName() + " desc");
-		;
-		if (dateRange != null) {
-			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN));
-		}
-		else {
-			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), operator));
-		}
 
 		List<Map<String, Object>> props = builder.getAsProps();
 		// backward-compatibility
