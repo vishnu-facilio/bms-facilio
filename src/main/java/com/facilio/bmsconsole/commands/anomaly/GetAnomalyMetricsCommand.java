@@ -80,7 +80,9 @@ public class GetAnomalyMetricsCommand extends FacilioCommand {
 		if (dateRange != null) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(createdTimeField, dateRange.toString(), DateOperators.BETWEEN));
 		}
-		
+		if (resourceId > -1) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceId), NumberOperators.EQUALS));
+		}
 		if (isRCA) {
 			FacilioModule anomalyOccurrence = modBean.getModule(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE);
 			Map<String, FacilioField> anomalyOccurrenceFields = FieldFactory.getAsMap(modBean.getAllFields(anomalyOccurrence.getName()));
