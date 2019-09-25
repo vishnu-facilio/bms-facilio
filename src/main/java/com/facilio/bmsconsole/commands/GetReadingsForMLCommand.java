@@ -72,6 +72,10 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			{
 				data.put((long)prop.get(ttimeField.getName()), prop.get(variableField.getName()));
 			}
+			if(mlContext.getOrgId()==232 && mlContext.getId()==83)
+			{
+				LOGGER.info("Javeed"+data);
+			}
 			mlContext.setMlVariablesDataMap(variables.getParentID(), variableField.getName(), data);
 		}
 		
