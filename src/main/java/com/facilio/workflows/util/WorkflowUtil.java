@@ -745,7 +745,34 @@ public class WorkflowUtil {
 					if(operatorStringValue.equals("isn't")) {
 						operatorStringValue = "!=";
 					}
-					conditionString = conditionFieldName +" "+ operatorStringValue +" "+ value;
+					if(operatorStringValue.equals("lookup")) {
+						operatorStringValue = "==";
+						if(value.contains("ID =")) {
+							value = value.substring(value.indexOf('=')+1, value.length()).trim();
+						}
+					}
+					
+					if(value.contains(",")) {
+						String[] values = value.split(",");
+						conditionString = "(";
+						int j = 0;
+						for(String value1 : values) {
+							j++;
+							conditionString = conditionString + conditionFieldName +" "+ operatorStringValue +" "+ value1;
+							if(j != values.length) {
+								if(operatorStringValue.equals("==")) {
+									conditionString = conditionString + " || ";
+								}
+								else if (operatorStringValue.equals("!=")) {
+									conditionString = conditionString + " && ";
+								}
+							}
+						}
+						conditionString = conditionString + ")";
+					}
+					else {
+						conditionString = conditionFieldName +" "+ operatorStringValue +" "+ value;
+					}
 				}
 				patternBuilder.append(pattern.substring(i, matcher.start()));
 				patternBuilder.append(conditionString);
@@ -753,8 +780,12 @@ public class WorkflowUtil {
 			}
 			patternBuilder.append(pattern.substring(i, pattern.length()));
 			String db = "criteria : ["+patternBuilder.toString() +"],";
-			db = db + "field : \""+field+"\",";
-			db = db + "aggregation : \""+aggregate+"\",";
+			if(field != null) {
+				db = db + "field : \""+field+"\",";
+				if(aggregate != null) {
+					db = db + "aggregation : \""+aggregate+"\",";
+				}
+			}
 			if(orderBy != null) {
 				String sort = "asc";
 				if(sortBy != null) {
@@ -839,7 +870,12 @@ public class WorkflowUtil {
 				 
 				 IfContext IfContext = conditionContext.getIfContext();
 				 
-				 code = code + "if( "+IfContext.getCriteria()+") { \n";
+				 String criteriaString = IfContext.getCriteria();
+				 
+				 criteriaString = criteriaString.replaceAll("IS NULL", "== null");
+				 criteriaString = criteriaString.replaceAll("IS NOT NULL", "!= null");
+				 
+				 code = code + "if( "+criteriaString+") { \n";
 				 
 				 if(IfContext.getExpressions() != null) {
 					 for(WorkflowExpression itrWorkflowExpression : IfContext.getExpressions()) {
@@ -853,7 +889,12 @@ public class WorkflowUtil {
 				
 				 if(conditionContext.getElseIfContexts() != null) {
 					 for(ElseIfContext elseIfContext : conditionContext.getElseIfContexts()) {
-						 code = code + "else if( "+elseIfContext.getCriteria()+") { \n";
+						 
+						 String elseCriteriaString = elseIfContext.getCriteria();
+						 elseCriteriaString = elseCriteriaString.replaceAll("IS NULL", "== null");
+						 elseCriteriaString = elseCriteriaString.replaceAll("IS NOT NULL", "!= null");
+						 
+						 code = code + "else if( "+elseCriteriaString+") { \n";
 						 if(elseIfContext.getExpressions() != null) {
 							 for(WorkflowExpression itrWorkflowExpression : elseIfContext.getExpressions()) {
 								 
@@ -880,8 +921,13 @@ public class WorkflowUtil {
 			 }
 		}
 		
-		if(workflow.getResultEvaluator() != null) {
+		if(workflow.getResultEvaluator() != null && !workflow.getResultEvaluator().isEmpty()) {
 			String resEval = workflow.getResultEvaluator();
+			
+			if(resEval.contains("if")) {
+				
+			}
+			
 			resEval = resEval.replaceAll("\\&\\&", "&");
 			resEval = resEval.replaceAll("\\|\\|", "|");
 			code = code + "return "+resEval+";\n";
