@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -222,36 +223,137 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	}
     }
     
-    @Override
-    public Value visitAssignment(WorkflowV2Parser.AssignmentContext ctx) {
+    @Override 
+    public Value visitAssignSingleVar(WorkflowV2Parser.AssignSingleVarContext ctx) { 
     	
     	String varName = ctx.VAR().getText();
     	
-    	if (ctx.expr(1) != null) {
-        	
-        	Value parentValue = varMemoryMap.get(varName);
-        	
-        	if(parentValue.asObject() instanceof List) {
-        		
-        		Value index = this.visit(ctx.expr(0));
-        		
-        		WorkflowV2Util.checkForNullAndThrowException(index, ctx.expr(0).getText());
-        		
-        		Value value = this.visit(ctx.expr(1));
-        		
-        		parentValue.asList().add(index.asInt(), value.asObject());
-        	}
-        	else if (parentValue.asObject() instanceof Map) {
-        		Value key = this.visit(ctx.expr(0));
-        		WorkflowV2Util.checkForNullAndThrowException(key, ctx.expr(0).getText());
-        		Value value = this.visit(ctx.expr(1));
-        		parentValue.asMap().put(key.asObject(), value.asObject());
-        	}
-        }
-        else {
-        	Value value = this.visit(ctx.expr(0));
-        	return varMemoryMap.put(varName, value);
-        }
+    	Value value = assignmentValue;
+    	
+    	varMemoryMap.put(varName, value);
+    	
+    	assignmentValue = null;
+    	
+    	return Value.VOID; 
+    }
+    
+    @Override 
+    public Value visitAssignSingleBracketVar(WorkflowV2Parser.AssignSingleBracketVarContext ctx) { 
+    	
+    	String varName = ctx.VAR().getText();
+    	
+    	Value value = assignmentValue;
+    	
+    	Value parentValue = varMemoryMap.get(varName);
+    	
+    	if(parentValue.asObject() instanceof List) {
+    		
+    		Value index = this.visit(ctx.expr());
+    		
+    		WorkflowV2Util.checkForNullAndThrowException(index, ctx.expr().getText());
+    		
+    		parentValue.asList().add(index.asInt(), value.asObject());
+    	}
+    	else if (parentValue.asObject() instanceof Map) {
+    		Value key = this.visit(ctx.expr());
+    		
+    		WorkflowV2Util.checkForNullAndThrowException(key, ctx.expr().getText());
+    		
+    		parentValue.asMap().put(key.asObject(), value.asObject());
+    	}
+    	assignmentValue = null;
+    	return Value.VOID; 
+    }
+    
+    @Override 
+    public Value visitAssignMultiDotVar(WorkflowV2Parser.AssignMultiDotVarContext ctx) {
+    	
+    	boolean isFirst = true;
+    	
+    	Value value = assignmentValue;
+    	
+    	Map parentMap = null;
+    	int varSize = ctx.VAR().size();					// min value is 2
+    	int i = 0;
+    	for(TerminalNode var : ctx.VAR()) {
+    		
+    		i++;
+    		
+    		String varName = var.getText();
+    		
+    		if(isFirst) {
+    			Value parentValue = varMemoryMap.get(varName);
+    			if (parentValue == null) {
+    				parentValue = new Value(new HashMap<>());
+    				varMemoryMap.put(varName, parentValue);
+    			}
+    			
+    			if(parentValue.asObject() instanceof Map) {
+    				parentMap = parentValue.asMap();
+    			}
+    			isFirst = false;
+    			continue;
+    		}
+    		
+    		if(i == varSize) {
+    			parentMap.put(varName, value.asObject());
+    		}
+    		else {
+    			Object currentObject = parentMap.get(varName);
+    			
+    			Map currentMap = null;
+    			if(currentObject instanceof Map) {
+    				currentMap = (Map) currentObject;
+    			}
+    			else {
+    				currentMap = new HashMap<>();
+    				parentMap.put(varName, currentMap);
+    			}
+    			parentMap = currentMap;
+    		}
+    	}
+    	
+    	assignmentValue = null;
+    	
+    	return Value.VOID; 
+    }
+    
+    @Override
+    public Value visitAssignment(WorkflowV2Parser.AssignmentContext ctx) {
+    	
+    	
+    	Value value = this.visit(ctx.expr());
+    	
+    	this.assignmentValue = value;
+    	this.visit(ctx.assignment_var());
+    	
+//    	String varName = ctx.VAR().getText();
+//    	
+//    	if (ctx.expr(1) != null) {
+//        	
+//        	Value parentValue = varMemoryMap.get(varName);
+//        	
+//        	if(parentValue.asObject() instanceof List) {
+//        		
+//        		Value index = this.visit(ctx.expr(0));
+//        		
+//        		WorkflowV2Util.checkForNullAndThrowException(index, ctx.expr(0).getText());
+//        		
+//        		Value value = this.visit(ctx.expr(1));
+//        		
+//        		parentValue.asList().add(index.asInt(), value.asObject());
+//        	}
+//        	else if (parentValue.asObject() instanceof Map) {
+//        		Value key = this.visit(ctx.expr(0));
+//        		WorkflowV2Util.checkForNullAndThrowException(key, ctx.expr(0).getText());
+//        		Value value = this.visit(ctx.expr(1));
+//        		parentValue.asMap().put(key.asObject(), value.asObject());
+//        	}
+//        }
+//        else {
+//        	Value value = this.visit(ctx.expr(0));
+//        	return varMemoryMap.put(varName, value);
+//        }
         return Value.VOID;
     }
     
@@ -564,6 +666,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     
     Criteria criteria = null;
     DBParamContext dbParamContext = null;
+    Value assignmentValue = null;
     
     @Override 
     public Value visitCondition_atom(WorkflowV2Parser.Condition_atomContext ctx) {

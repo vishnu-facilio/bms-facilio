@@ -31,7 +31,13 @@ statement
  ;
 
 assignment
- : VAR (OPEN_BRACKET expr CLOSE_BRACKET)* ASSIGN expr SEMICOLON
+ : assignment_var ASSIGN expr SEMICOLON
+ ;
+
+assignment_var
+ : VAR																			#assignSingleVar
+ | VAR (OPEN_BRACKET expr CLOSE_BRACKET)										#assignSingleBracketVar
+ | VAR(DOT VAR)+																#assignMultiDotVar
  ;
 
 if_statement
