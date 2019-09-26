@@ -81,7 +81,13 @@ public enum InstantJobExecutor implements Runnable {
 										try {
 											final InstantJob job = jobClass.newInstance();
 											if (instantJob.getTransactionTimeout() != InstantJobConf.getDefaultTimeOut()) {
-												ObjectQueue.changeVisibilityTimeout(InstantJobConf.getInstantJobQueue(), message.getReceiptHandle(), instantJob.getTransactionTimeout());
+												try {
+													ObjectQueue.changeVisibilityTimeout(InstantJobConf.getInstantJobQueue(), message.getReceiptHandle(), instantJob.getTransactionTimeout());
+												}
+												catch (Exception e) {
+													LOGGER.info("Ignoring job "+jobName+" since it's not available");
+													continue;
+												}
 											}
 											String receiptHandle = message.getReceiptHandle();
 											job.setReceiptHandle(receiptHandle);
@@ -89,8 +95,8 @@ public enum InstantJobExecutor implements Runnable {
 											LOGGER.debug("Executing job : " + jobName);
 											Future f = THREAD_POOL_EXECUTOR.submit(() -> job._execute(context, (instantJob.getTransactionTimeout() - JOB_TIMEOUT_BUFFER) * 1000));
 											JOB_MONITOR_MAP.put(receiptHandle, new JobTimeOutInfo(System.currentTimeMillis(), (instantJob.getTransactionTimeout() + JOB_TIMEOUT_BUFFER) * 1000, f, job));
-										} catch (InstantiationException | IllegalAccessException e) {
-											LOGGER.error("Exception while executing job " + e);
+										} catch (Exception e) {
+											LOGGER.error(e.getMessage()+" Exception while executing job "+jobName);
 										}
 									}
 								}
