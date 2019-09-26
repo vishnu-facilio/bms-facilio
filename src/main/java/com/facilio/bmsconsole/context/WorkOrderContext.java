@@ -219,6 +219,13 @@ public class WorkOrderContext extends TicketContext {
 	public void setPrerequisiteEnabled(Boolean prerequisiteEnabled) {
 		this.prerequisiteEnabled = prerequisiteEnabled;
 	}
+	public Boolean isPrerequisiteEnabled() {
+		if(prerequisiteEnabled != null) {
+			return prerequisiteEnabled.booleanValue();
+		}
+		return false;
+	}
+	
 	private Boolean photoMandatory;
 
 	public Boolean getPhotoMandatory() {
