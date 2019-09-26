@@ -15,8 +15,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 
 public class AttachmentAction  extends FacilioAction {
 
@@ -220,7 +220,7 @@ public class AttachmentAction  extends FacilioAction {
 	public String viewAttachment() {
 		
 		try {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			
 			fileInfo = fs.getFileInfo(this.id);
 			if (fileInfo != null) {
@@ -260,7 +260,7 @@ public class AttachmentAction  extends FacilioAction {
 	public String previewAttachment() throws Exception {
 		AttachmentContext attachment = AttachmentsAPI.fetchAttachment(module, recordId, fileId);
 		if (attachment != null) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			downloadStream = fs.readFile(attachment.getFileId());
 			setContentType(attachment.getContentType());
 			

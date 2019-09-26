@@ -24,8 +24,8 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.util.DBConf;
 import com.facilio.fs.FileInfo;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
@@ -199,7 +199,7 @@ public class BmsDBConf extends DBConf {
      */
     @Override
     public void fetchFileUrls(Collection<FacilioField> selectFields, List<Map<String,Object>> records, List<Long> fileIds) throws Exception {
-        FileStore fs = FileStoreFactory.getInstance().getFileStore();
+        FileStore fs = FacilioFactory.getFileStore();
 
         // TODO get filePrivateUrl in bulk
         Map<Long, String> fileUrls = new HashMap<>();
@@ -225,7 +225,7 @@ public class BmsDBConf extends DBConf {
         if (fileFields == null || fileFields.isEmpty()) {
             return;
         }
-        FileStore fs = FileStoreFactory.getInstance().getFileStore();
+        FileStore fs = FacilioFactory.getFileStore();
         for(Map<String, Object> value : values) {
             for(FacilioField field : fileFields) {
                 if (value.containsKey(field.getName())) {
@@ -270,7 +270,7 @@ public class BmsDBConf extends DBConf {
 
     @Override
     public void markFilesAsDeleted(List<Long> fileIds) throws Exception {
-        FileStore fs = FileStoreFactory.getInstance().getFileStore();
+        FileStore fs = FacilioFactory.getFileStore();
         fs.markAsDeleted(fileIds);
     }
 

@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ConnectedAppContext extends ModuleBaseWithCustomFields {
@@ -57,7 +57,7 @@ public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 	}
 	public String getLogoUrl() throws Exception {
 		if (this.logoId > 0) {
-			return FileStoreFactory.getInstance().getFileStore().getPrivateUrl(this.logoId);
+			return FacilioFactory.getFileStore().getPrivateUrl(this.logoId);
 		}
 		return null;
 	}

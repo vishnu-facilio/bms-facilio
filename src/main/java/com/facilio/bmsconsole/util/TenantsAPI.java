@@ -44,8 +44,8 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -367,7 +367,7 @@ public class TenantsAPI {
 				ids.add(tenant.getId());
 			//	zoneIds.add(tenant.getZoneId());
 				if (tenant.getLogoId()  != -1) {
-					FileStore fs = FileStoreFactory.getInstance().getFileStore();
+					FileStore fs = FacilioFactory.getFileStore();
 					tenant.setLogoUrl(fs.getPrivateUrl(tenant.getLogoId()));
 				}
 			}
@@ -750,7 +750,7 @@ public class TenantsAPI {
 	}
 	public static void addTenantLogo(TenantContext tenant) throws Exception {
 		if (tenant.getTenantLogo() != null) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			long fileId = fs.addFile(tenant.getTenantLogoFileName(), tenant.getTenantLogo(), tenant.getTenantLogoContentType());
 			tenant.setLogoId(fileId);
 			tenant.setTenantLogo(null);
@@ -759,7 +759,7 @@ public class TenantsAPI {
 	
 	public static void deleteTenantLogo(long logoId) throws Exception {
 		if (logoId != -1) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			fs.deleteFile(logoId);
 		}
 	}
@@ -1074,7 +1074,7 @@ public class TenantsAPI {
 			for (TenantContext tenant : tenants) {
 				ids.add(tenant.getId());
 				if (tenant.getLogoId()  != -1) {
-					FileStore fs = FileStoreFactory.getInstance().getFileStore();
+					FileStore fs = FacilioFactory.getFileStore();
 					tenant.setLogoUrl(fs.getPrivateUrl(tenant.getLogoId()));
 				}
 				tenant.setContact(AccountUtil.getUserBean().getUser(tenant.getContact().getId(), true));
@@ -1101,7 +1101,7 @@ public class TenantsAPI {
 	}
 	
 	public static String getLogoUrl(Long logoId) throws Exception {
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		return fs.getPrivateUrl(logoId);
 	}
 	

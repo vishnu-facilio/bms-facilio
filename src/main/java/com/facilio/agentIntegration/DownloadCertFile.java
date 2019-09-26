@@ -28,8 +28,8 @@ import com.facilio.agent.FacilioAgent;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.kinesis.KinesisProcessor;
 
 public class DownloadCertFile
@@ -46,13 +46,10 @@ public class DownloadCertFile
             orgInfo = CommonCommandUtil.getOrgInfo(orgId,certFileId);
             if (orgInfo != null) {
                 long fileId = Long.parseLong((String) orgInfo.get("value"));
-                if (!FacilioProperties.isProduction()|| FacilioProperties.isServicesEnabled()) {
-                    com.facilio.services.filestore.FileStore fs = com.facilio.services.factory.FacilioFactory.getFileStore();
+
+                    FileStore fs = FacilioFactory.getFileStore();
                     return fs.readFile(fileId);
-                } else {
-                    FileStore fs = FileStoreFactory.getInstance().getFileStore();
-                    return fs.readFile(fileId);
-                }
+
             }
         } catch (Exception e) {
             LOGGER.info("Exception Occurred ",e);
@@ -69,17 +66,11 @@ public class DownloadCertFile
         try {
             Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
             if (orgInfo != null) {
-                if(!FacilioProperties.isProduction() || FacilioProperties.isServicesEnabled()){
+
                     long fileId = Long.parseLong((String) orgInfo.get("value"));
-                    com.facilio.services.filestore.FileStore fs = com.facilio.services.factory.FacilioFactory.getFileStore();
+                    FileStore fs = FacilioFactory.getFileStore();
                     url = fs.getPrivateUrl(fileId);
 
-                }
-                else{
-                    long fileId = Long.parseLong((String) orgInfo.get("value"));
-                    FileStore fs = FileStoreFactory.getInstance().getFileStore();
-                    url = fs.getPrivateUrl(fileId);
-                }
 
             }
         } catch (Exception e) {
@@ -99,19 +90,12 @@ public class DownloadCertFile
                 addToZip(out, directoryName + "facilio.config", getFacilioConfig(orgName));
                 out.finish();
                 out.flush();
-                if(!FacilioProperties.isProduction() || FacilioProperties.isServicesEnabled()){
-                    com.facilio.services.filestore.FileStore fs = com.facilio.services.factory.FacilioFactory.getFileStore();
+
+                    FileStore fs = FacilioFactory.getFileStore();
                     long id = fs.addFile(file.getName(), file, "application/octet-stream");
                     url = fs.getPrivateUrl(id);
                     CommonCommandUtil.insertOrgInfo(orgId, certFileId, String.valueOf(id));
 
-                }
-                else{
-                    FileStore fs = FileStoreFactory.getInstance().getFileStore();
-                    long id = fs.addFile(file.getName(), file, "application/octet-stream");
-                    url = fs.getPrivateUrl(id);
-                    CommonCommandUtil.insertOrgInfo(orgId, certFileId, String.valueOf(id));
-                }
 
                 file.delete();
             } catch (Exception e) {

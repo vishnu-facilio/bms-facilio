@@ -26,8 +26,8 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissin
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 
 public class GenericParseDataForImportCommand extends FacilioCommand {
@@ -46,7 +46,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		HashMap<Integer, HashMap<String, Object>> duplicateEntries = new HashMap<>();
 		HashMap<String, List<ImportRowContext>> groupedContext = new HashMap<String, List<ImportRowContext>>();
 		ArrayList<String> requiredFields = getRequiredFields(importProcessContext.getModule().getName());
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		InputStream is = fs.readFile(importProcessContext.getFileId());
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 		Workbook workbook = WorkbookFactory.create(is);

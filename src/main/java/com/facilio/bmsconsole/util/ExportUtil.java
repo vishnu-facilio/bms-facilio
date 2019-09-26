@@ -33,8 +33,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fs.FileInfo.FileFormat;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -123,7 +123,7 @@ public class ExportUtil {
 		fileOut.close();
 
 		File file = new File(fileName);
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		long fileId = fs.addFile(file.getPath(), file, "application/xls");
 
 		if (isS3Url) {
@@ -210,7 +210,7 @@ public class ExportUtil {
 		fileOut.close();
 
 		File file = new File(fileName);
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		long fileId = fs.addFile(file.getPath(), file, "application/xls");
 		
 		if (isS3Url) {
@@ -286,7 +286,7 @@ public class ExportUtil {
         	writer.close();
         	
         	File file = new File(fileName);
-	    FileStore fs = FileStoreFactory.getInstance().getFileStore();
+	    FileStore fs = FacilioFactory.getFileStore();
 	    long fileId = fs.addFile(file.getPath(), file, "application/csv");
 
 	    if (isS3Url) {
@@ -372,7 +372,7 @@ public class ExportUtil {
         	writer.close();
         	
         	File file = new File(fileName);
-	    FileStore fs = FileStoreFactory.getInstance().getFileStore();
+	    FileStore fs = FacilioFactory.getFileStore();
 	    long fileId = fs.addFile(file.getPath(), file, "application/csv");
 	    
 	    if (isS3Url) {

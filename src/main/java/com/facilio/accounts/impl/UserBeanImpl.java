@@ -55,8 +55,8 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
@@ -845,15 +845,11 @@ public class UserBeanImpl implements UserBean {
 			boolean isPortalRequest) throws Exception {
 		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 		if (user.getPhotoId() > 0) {
-			if(!FacilioProperties.isProduction() || FacilioProperties.isServicesEnabled()){
-				com.facilio.services.filestore.FileStore fs = com.facilio.services.factory.FacilioFactory.getFileStoreFromOrg(user.getOrgId(), user.getOuid());
+
+				FileStore fs = FacilioFactory.getFileStoreFromOrg(user.getOrgId(), user.getOuid());
 				user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
 				user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
-			}else {
-				FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
-				user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
-				user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
-			}
+
 		}
 
 		if (fetchRole) {

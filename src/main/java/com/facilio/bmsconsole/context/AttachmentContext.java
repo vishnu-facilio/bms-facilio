@@ -4,8 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class AttachmentContext extends ModuleBaseWithCustomFields {
@@ -106,7 +106,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 						.append("/api/v2/").append(attachmentModule).append("/attachment/").append(recordId).append("?fileId=").append(fileId);
 				return builder.toString();
 			}
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			previewUrl = fs.getPrivateUrl(this.fileId);
 		}
 		return previewUrl;
@@ -115,7 +115,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 	private String downloadUrl;
 	public String getDownloadUrl() throws Exception {
 		if (this.downloadUrl == null && this.fileId > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile()) {
 				downloadUrl = fs.orginalFileUrl(this.fileId);
 			}
@@ -127,7 +127,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 	}
 	public String getOriginalUrl() throws Exception {
 		if (this.originalUrl == null && this.fileId > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			originalUrl = fs.orginalFileUrl(this.fileId);
 		}
 		return originalUrl;

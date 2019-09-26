@@ -9,8 +9,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class WidgetAction extends ActionSupport {
@@ -96,7 +96,7 @@ public class WidgetAction extends ActionSupport {
 
 	public String addPhoto() throws Exception {
 		
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 		
 		setPhotoId(fileId);

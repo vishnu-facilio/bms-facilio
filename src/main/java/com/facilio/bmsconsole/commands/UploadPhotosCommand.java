@@ -8,8 +8,8 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 
 public class UploadPhotosCommand extends FacilioCommand {
 
@@ -24,7 +24,7 @@ public class UploadPhotosCommand extends FacilioCommand {
 		List<String> attachmentName = (List<String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME);
 		List<String> attachmentContentType = (List<String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE);
 
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 
 		List<PhotosContext> photos = new ArrayList<>();
 

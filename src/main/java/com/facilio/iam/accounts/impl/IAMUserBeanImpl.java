@@ -745,7 +745,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	static IAMUser createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace) throws Exception {
 		IAMUser user = FieldUtil.getAsBeanFromMap(prop, IAMUser.class);
 //		if (user.getPhotoId() > 0) {
-//			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), -1);
+//			FileStore fs = FacilioFactory.getFileStoreFromOrg(user.getOrgId(), -1);
 //			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
 //			user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
 //		}

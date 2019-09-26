@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -49,7 +49,7 @@ public class DeleteAttachmentCommand extends FacilioCommand implements PostTrans
 			if (moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
 				if (attachments != null && !attachments.isEmpty()) {
 					List<Long> fileIds = attachments.stream().map(AttachmentContext::getFileId).collect(Collectors.toList());
-					FileStoreFactory.getInstance().getFileStore().deleteFiles(fileIds);
+					FacilioFactory.getFileStore().deleteFiles(fileIds);
 				}
 			}
 			

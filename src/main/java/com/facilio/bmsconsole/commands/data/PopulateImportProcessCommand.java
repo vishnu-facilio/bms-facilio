@@ -23,8 +23,8 @@ import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
@@ -56,7 +56,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 		
 		
 		
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		JSONObject meta = new JSONObject();	
 		Integer Setting = importProcessContext.getImportSetting();
 		List<Long> listOfIds = new ArrayList<>();

@@ -17,7 +17,7 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -154,7 +154,7 @@ public class FloorAction extends ActionSupport {
 		floor.setId(getFloorId());
 		
 		if (this.floorPlanImage != null) {
-			long floorPlanId = FileStoreFactory.getInstance().getFileStore().addFile(floorPlanImageFileName, floorPlanImage, floorPlanImageContentType);
+			long floorPlanId = FacilioFactory.getFileStore().addFile(floorPlanImageFileName, floorPlanImage, floorPlanImageContentType);
 				
 			floor.setFloorPlanId(floorPlanId);
 		}

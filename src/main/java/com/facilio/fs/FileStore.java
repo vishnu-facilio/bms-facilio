@@ -452,7 +452,7 @@ public abstract class FileStore {
 	private String getUrl (long fileId, boolean isDownload, boolean isPortal, int width, int height) throws Exception {
 		StringBuilder url = new StringBuilder();
 //		if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile()) {
-//			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+//			FileStore fs = FacilioFactory.getFileStore();
 //			if (isDownload) {
 //				return fs.getOrgiDownloadUrl(fileId);
 //			} else {
