@@ -32,8 +32,8 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
@@ -79,16 +79,11 @@ public class OrgBeanImpl implements OrgBean {
 			throw new IllegalArgumentException("Organization not found");
 		}
 		org.setPortalId(portalId);
-		if(!FacilioProperties.isProduction() || (FacilioProperties.isServicesEnabled())){
-			com.facilio.services.filestore.FileStore fs= com.facilio.services.factory.FacilioFactory.getFileStoreFromOrg(org.getId());
+
+			FileStore fs = FacilioFactory.getFileStoreFromOrg(org.getId());
 			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
 			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
-		}
-		else{
-			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
-			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
-			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
-		}
+
 
         if(portalInfo.getCustomDomain() != null) {
             org.setDomain(portalInfo.getCustomDomain()); 

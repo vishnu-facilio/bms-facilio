@@ -7,8 +7,8 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 
 public class AddAttachmentCommand extends FacilioCommand {
 
@@ -20,7 +20,7 @@ public class AddAttachmentCommand extends FacilioCommand {
 		List<String> attachmentName = (List<String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME);
 		List<String> attachmentContentType = (List<String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE);
 
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 
 		List<Long> attachmentIds = new ArrayList<Long>();
 

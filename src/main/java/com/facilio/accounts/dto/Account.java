@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.struts2.ServletActionContext;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -60,6 +61,9 @@ public class Account implements AccountsInterface<User>, Serializable{
 			HttpServletRequest request = ServletActionContext.getRequest();
 			setDeviceType(request.getHeader("X-Device-Type"));
 			setAppVersion(request.getHeader("X-App-Version"));
+		}
+		if (org != null) {
+			org.setBrand(FacilioProperties.getConfig("rebrand.brand"));
 		}
 	}
 

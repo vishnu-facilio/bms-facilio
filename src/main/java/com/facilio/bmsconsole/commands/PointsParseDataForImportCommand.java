@@ -29,8 +29,8 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFi
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportPointsAPI;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 
 /**
  * @author facilio
@@ -56,7 +56,7 @@ public class PointsParseDataForImportCommand implements Command {
 		HashMap<Integer, HashMap<String, Object>> duplicateEntries = new HashMap<>();
 		HashMap<String, List<ImportRowContext>> groupedContext = new HashMap<String, List<ImportRowContext>>();
 		ArrayList<String> requiredFields = getRequiredFields(importProcessContext.getModule().getName());
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		InputStream is = fs.readFile(importProcessContext.getFileId());
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 		Workbook workbook = WorkbookFactory.create(is);

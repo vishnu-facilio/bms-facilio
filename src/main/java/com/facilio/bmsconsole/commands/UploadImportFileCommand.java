@@ -14,8 +14,8 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ImportFieldFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.time.DateTimeUtil;
@@ -25,7 +25,7 @@ public class UploadImportFileCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		
 		String fileUploadFileName = (String) context.get(FacilioConstants.ContextNames.FILE_NAME);
 		File fileUpload = (File) context.get(FacilioConstants.ContextNames.FILE);

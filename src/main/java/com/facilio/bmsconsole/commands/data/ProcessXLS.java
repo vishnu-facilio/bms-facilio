@@ -45,8 +45,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
@@ -89,7 +89,7 @@ public class ProcessXLS extends FacilioCommand {
 		
 		
 		HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();			
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		List<ReadingContext> readingsList = new ArrayList<ReadingContext>();
 		InputStream ins = fs.readFile(importProcessContext.getFileId());
 		

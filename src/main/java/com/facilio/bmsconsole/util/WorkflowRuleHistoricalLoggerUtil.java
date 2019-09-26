@@ -163,9 +163,12 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				
 				FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("loggerGroupId"));
 				countField.setName("count");
+				FacilioField sumField = BmsAggregateOperators.NumberAggregateOperator.SUM.getSelectField(fieldMap.get("alarmCount"));
+				sumField.setName("sum");
 				List<FacilioField> selectFields = new ArrayList<FacilioField>();
 				selectFields.add(countField);
 				selectFields.add(fieldMap.get("loggerGroupId"));
+				selectFields.add(sumField);
 				
 				selectBuilder = new GenericSelectRecordBuilder()
 						.select(selectFields)
@@ -180,6 +183,10 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				{
 					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = workflowRuleHistoricalLoggerContextMap.get((long) prop.get("loggerGroupId"));
 					workflowRuleHistoricalLoggerContext.setResourceLogCount((long) prop.get("count"));
+					if(prop.get("sum") != null)
+					{
+						workflowRuleHistoricalLoggerContext.setTotalChildAlarmCount(Integer.valueOf(String.valueOf(prop.get("sum"))));
+					}
 				}
 				
 				return workflowRuleHistoricalLoggerContextMap.values();

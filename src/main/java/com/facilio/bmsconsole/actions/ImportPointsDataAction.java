@@ -26,8 +26,8 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -66,7 +66,7 @@ public class ImportPointsDataAction extends FacilioAction{
 	}
 	
 	public String deleteFile() throws Exception{
-		FileStore fs  = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs  = FacilioFactory.getFileStore();
 		if(fs.deleteFile(fileId)) {
 			System.out.println("File " + fileId + " has been deleted");
 		}

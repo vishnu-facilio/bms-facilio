@@ -15,8 +15,8 @@ import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fs.FileInfo;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 
 public class SendEmailCommand extends FacilioCommand implements Serializable{
 	
@@ -32,7 +32,7 @@ public class SendEmailCommand extends FacilioCommand implements Serializable{
 			ImportProcessContext importProcessContext = (ImportProcessContext) c.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 			ImportProcessContext updatedContext = ImportAPI.getImportProcessContext(importProcessContext.getId());
 			StringBuilder emailMessage = (StringBuilder) c.get(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE);
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			Integer mailSetting = updatedContext.getMailSetting();
 			
 			if (mailSetting != null) {

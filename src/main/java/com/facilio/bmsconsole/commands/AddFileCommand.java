@@ -5,8 +5,8 @@ import java.io.File;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 
 public class AddFileCommand extends FacilioCommand {
 
@@ -17,7 +17,7 @@ public class AddFileCommand extends FacilioCommand {
 		String newFileName = (String) context.get(FacilioConstants.ContextNames.FILE_NAME);
 		String newFileContentType = (String) context.get(FacilioConstants.ContextNames.FILE_CONTENT_TYPE);
 
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 
 
 		if (newFile != null) {

@@ -11,7 +11,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -29,7 +29,7 @@ public class HandlePortalSSOCommand extends FacilioCommand{
 		String contentType = (String)context.get(FacilioConstants.ContextNames.PUBLICKEYFILETYPE);
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 
-		servicePortal.setPublicKey(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile(fileName,publicKeyFile,contentType));
+		servicePortal.setPublicKey(FacilioFactory.getFileStore(superAdmin.getId()).addFile(fileName,publicKeyFile,contentType));
 
 		
 		ObjectMapper mapper = new ObjectMapper();

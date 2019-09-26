@@ -23,8 +23,8 @@ import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportTemplateContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.FieldUtil;
 
 public class WriteSkippedToFileCommand extends FacilioCommand {
@@ -63,7 +63,7 @@ public class WriteSkippedToFileCommand extends FacilioCommand {
 	
 		
 		if(!nullUniqueFields.isEmpty() || !nullResources.isEmpty()) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			CreationHelper createHelper = workbook.getCreationHelper();
 			StringBuilder emailMessage = (StringBuilder) context.get(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE);
 			

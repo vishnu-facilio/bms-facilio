@@ -15,6 +15,7 @@ public class WorkflowRuleHistoricalLoggerContext {
 	private long alarmCount;
 	private long loggerGroupId;
 	private long resourceLogCount;
+	private int totalChildAlarmCount;
 	private long startTime;
 	private long endTime;
 	private long calculationStartTime;
@@ -115,6 +116,14 @@ public class WorkflowRuleHistoricalLoggerContext {
 
 	public void setResourceLogCount(long resourceLogCount) {
 		this.resourceLogCount = resourceLogCount;
+	}
+	
+	public int getTotalChildAlarmCount() {
+		return totalChildAlarmCount;
+	}
+
+	public void setTotalChildAlarmCount(int totalChildAlarmCount) {
+		this.totalChildAlarmCount = totalChildAlarmCount;
 	}
 	
 	public long getAlarmCount() {

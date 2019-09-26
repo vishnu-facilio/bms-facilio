@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class PhotosContext extends ModuleBaseWithCustomFields {
@@ -32,11 +32,11 @@ public class PhotosContext extends ModuleBaseWithCustomFields {
 //						.append(AwsUtil.getConfig("clientapp.url") + "/files/preview/" + photoId);
 //				return builder.toString();
 //			}
-//			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+//			FileStore fs = FacilioFactory.getFileStore();
 //			url = fs.getPrivateUrl(this.parentId);
 //		}
 		if (this.photoId > 0) {
-			return FileStoreFactory.getInstance().getFileStore().getPrivateUrl(photoId);
+			return FacilioFactory.getFileStore().getPrivateUrl(photoId);
 		}
 		return null;
 	}

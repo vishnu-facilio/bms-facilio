@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -116,7 +116,7 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 	@JsonIgnore
 	public String getAvatarUrl() throws Exception {
 		if (avatarUrl == null && this.photoId > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			avatarUrl = fs.getPrivateUrl(this.photoId);
 		}
 		return avatarUrl;
@@ -129,7 +129,7 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 	@JsonIgnore // Have to check with Benitta
 	public String getOriginalUrl() throws Exception {
 		if (this.originalUrl == null && this.photoId > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			originalUrl = fs.orginalFileUrl(this.photoId);
 		}
 		return originalUrl;

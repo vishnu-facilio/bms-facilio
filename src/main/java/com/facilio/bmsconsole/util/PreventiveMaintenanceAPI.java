@@ -246,10 +246,16 @@ public class PreventiveMaintenanceAPI {
 					}
 				}
 			}
-			 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
 
-			if (AccountUtil.getCurrentAccount().getOrg().getOrgId() == 151L) {
-				LOGGER.log(Level.ERROR, "resource Ids " + Arrays.toString(resourceIds.toArray()));
+			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
+
+			if (CollectionUtils.isEmpty(resourceIds)) {
+				long woRId = woResourceId == null ? -1 : woResourceId;
+				long spaceCategoryId = sectiontemplate.getSpaceCategoryId() == null ? -1 : sectiontemplate.getSpaceCategoryId();
+				long assetCategoryId = sectiontemplate.getAssetCategoryId() == null ? -1 : sectiontemplate.getAssetCategoryId();
+				long rId = sectiontemplate.getResourceId() == null ? -1 : sectiontemplate.getResourceId();
+
+				LOGGER.log(Level.ERROR, "resource Ids in getTaskMapForNewPMExecution is empty " + Arrays.toString(resourceIds.toArray()) + " Assignment type " + sectiontemplate.getAssignmentType() + " woResourceId " + woRId  + " space categoryId " +  spaceCategoryId + " asset categoryId " + assetCategoryId + " resource id " + rId);
 			}
 
 			 Map<String, Integer> dupSectionNameCount = new HashMap<>();
@@ -657,7 +663,7 @@ public class PreventiveMaintenanceAPI {
 			PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
 
 			if (taskMap == null || taskMap.isEmpty()) {
-				LOGGER.log(Level.WARN, "task map is empty " + wo.getPm().getId());
+				LOGGER.log(Level.WARN, "task map is empty pm id " + wo.getPm().getId());
 			}
 
 			bulkWorkOrderContext.addContexts(wo, taskMap, preRequestMap, wo.getAttachments());

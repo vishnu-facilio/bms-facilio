@@ -69,7 +69,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 
 
 			ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
-			if (readingRule.getMatchedResources() == null || readingRule.getMatchedResources().isEmpty()) {
+			if (readingRule == null || readingRule.getMatchedResources() == null || readingRule.getMatchedResources().isEmpty()) {
 				return;
 			}
 			

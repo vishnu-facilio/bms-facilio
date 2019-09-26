@@ -13,8 +13,8 @@ import com.facilio.accounts.util.UserUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.executor.CommandExecutor;
 import com.facilio.fs.FileInfo.FileFormat;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 
 public class PdfUtil {
 
@@ -102,8 +102,8 @@ public class PdfUtil {
         String pdfFileLocation = convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), url, format);
         File pdfFile = new File(pdfFileLocation);
         if(pdfFileLocation != null) {
-            if(!FacilioProperties.isProduction() || FacilioProperties.isServicesEnabled()){
-                com.facilio.services.filestore.FileStore fs =  com.facilio.services.factory.FacilioFactory.getFileStore();
+
+                FileStore fs = FacilioFactory.getFileStore();
                 long fileId = 0;
                 try {
                     fileId = fs.addFile(name != null ? name+format.getExtention() : pdfFile.getName(), pdfFile, format.getContentType());
@@ -115,19 +115,6 @@ public class PdfUtil {
                     LOGGER.info("Exception occurred ", e);
                 }
 
-            }else{
-                FileStore fs = FileStoreFactory.getInstance().getFileStore();
-                long fileId = 0;
-                try {
-                    fileId = fs.addFile(name != null ? name+format.getExtention() : pdfFile.getName(), pdfFile, format.getContentType());
-                    if (isPublicUrl) {
-                        return fs.getOrgiDownloadUrl(fileId);
-                    }
-                    return fs.getDownloadUrl(fileId);
-                } catch (Exception e) {
-                    LOGGER.info("Exception occurred ", e);
-                }
-            }
 
         }
         return null;
