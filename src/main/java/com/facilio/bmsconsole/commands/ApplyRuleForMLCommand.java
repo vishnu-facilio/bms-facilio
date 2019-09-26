@@ -48,7 +48,7 @@ public class ApplyRuleForMLCommand extends FacilioCommand {
 					FacilioTimer.deleteJob(FacilioUtil.parseLong(jobid), "DefaultMLJob");
 				}
 				
-				FacilioTimer.scheduleOneTimeJobWithTimestampInSec(FacilioUtil.parseLong(jobid), "DefaultMLJob", mlContext.getPredictionTime(), "ml");
+				FacilioTimer.scheduleOneTimeJobWithTimestampInSec(FacilioUtil.parseLong(jobid), "DefaultMLJob",(System.currentTimeMillis()/1000)+5, "ml");
 				/*
 				jobContext = new JobContext();
 				jobContext.setJobId(FacilioUtil.parseLong(jobid));
