@@ -726,11 +726,13 @@ public class ImportAPI {
 	public static ImportProcessContext updateTotalRows (ImportProcessContext importProcessContext) throws Exception {
 		
 		FacilioField idField = FieldFactory.getField("id", "ID", FieldType.NUMBER);
-		
+		String errorConditions = ImportProcessContext.ImportLogErrorStatus.RESOLVED.getStringValue() + "," + ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getStringValue();
+
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getImportProcessLogModule().getTableName())
 				.select(new HashSet<>())
 				.andCondition(CriteriaAPI.getCondition("IMPORTID", "importId", importProcessContext.getId().toString() ,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ERROR_RESOLVED", "error_resolved", errorConditions, NumberOperators.EQUALS))
 				.aggregate(CommonAggregateOperator.COUNT, idField);
 		List<Map<String,Object>> result = selectRecordBuilder.get();
 		if (!result.isEmpty()) {

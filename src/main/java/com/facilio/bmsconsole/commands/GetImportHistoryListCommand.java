@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
@@ -35,6 +36,7 @@ public class GetImportHistoryListCommand extends FacilioCommand {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getImportProcessModule().getTableName())
 				.select(FieldFactory.getImportProcessFields())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(), CommonOperators.IS_NOT_EMPTY ))
 				.orderBy("IMPORT_TIME desc");
 		if (count > 0) {
 			selectRecordBuilder.limit(count);

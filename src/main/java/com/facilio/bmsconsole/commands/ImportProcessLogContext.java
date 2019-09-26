@@ -67,10 +67,9 @@ public class ImportProcessLogContext {
 		if(correctedRow != null) {
 			return FieldUtil.getAsJSON(correctedRow).toJSONString();
 		}
-		return null;
+		return "{}";
 	}
 	public void setCorrectedRowString(String correctedRowString) throws Exception {
-		System.out.println("corrected row string" + correctedRowString);
 		if(correctedRowString == null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject)parser.parse(getCorrectedRowString());
