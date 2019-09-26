@@ -45,6 +45,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.opensymphony.xwork2.ActionContext;
@@ -258,21 +259,34 @@ public class FacilioAuthAction extends FacilioAction {
 		FacilioContext signupContext = new FacilioContext();
 		signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
 		Locale locale = request.getLocale();
-
-		IAMAccount iamAccount = IAMOrgUtil.signUpOrg(signupInfo, locale);
-		Account account = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
-		
-		AccountUtil.setCurrentAccount(account);
+		IAMAccount iamAccount = null;
 		try {
+			iamAccount = IAMOrgUtil.signUpOrg(signupInfo, locale);
+			Account account = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
+			
+			AccountUtil.setCurrentAccount(account);
+		
 			if (account != null && account.getOrg().getOrgId() > 0) {
 				signupContext.put("orgId", account.getOrg().getOrgId());
 				FacilioChain c = TransactionChainFactory.getOrgSignupChain();
 				c.execute(signupContext);
 			}
 		}
-		catch(Exception e) {
-			IAMOrgUtil.rollBackSignedUpOrg(iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
-			throw e;
+		catch (Exception e) {
+			LOGGER.log(Level.INFO, "Exception while signing up, ", e);
+			Exception ex = e;
+			while (ex != null) {
+				if (ex instanceof AccountException) {
+					setJsonresponse("message", ex.getMessage());
+					break;
+				}
+				ex = (Exception) ex.getCause();
+			}
+			if(iamAccount != null && iamAccount.getOrg() != null && iamAccount.getOrg().getOrgId() > 0) {
+				IAMOrgUtil.rollBackSignedUpOrg(iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
+			}
+			setJsonresponse("errorcode", "1");
+			return ERROR;
 		}
 		setJsonresponse("message", "success");
 		return SUCCESS;

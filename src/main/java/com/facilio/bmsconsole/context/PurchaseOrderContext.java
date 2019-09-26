@@ -109,6 +109,9 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 			purchaseOrderContext.setDescription(list.get(0).getDescription());
 			purchaseOrderContext.setShipToAddress(list.get(0).getShipToAddress());
 			purchaseOrderContext.setBillToAddress(list.get(0).getBillToAddress());
+			if(!list.get(0).getData().isEmpty()) {
+				purchaseOrderContext.setData(list.get(0).getData());
+			}
 		}
 		long vendorId = -1;
 		long storeRoomId = -1;
