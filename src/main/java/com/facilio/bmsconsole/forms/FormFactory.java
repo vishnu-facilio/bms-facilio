@@ -177,6 +177,12 @@ public class FormFactory {
 				FormSection section = new FormSection("Purchase Order", 1, form.getFields(), true);
 				sections.add(section);
 			}
+			else if (moduleName.equals(FacilioConstants.ContextNames.PURCHASE_REQUEST)) {
+				List<FormSection> sections = new ArrayList<>();
+				form.setSections(sections);
+				FormSection section = new FormSection("Purchase Request", 1, form.getFields(), true);
+				sections.add(section);
+			}
 		}
 		return form;
 	}
@@ -185,12 +191,14 @@ public class FormFactory {
 		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm());
 		List<FacilioForm> assetForms = Arrays.asList(getAssetForm());
 		List<FacilioForm> poForm = Arrays.asList(getPurchaseOrderForm());
+		List<FacilioForm> prForm = Arrays.asList(getPurchaseRequestForm());
 		
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
 				.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getFormMap(poForm))
+				.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getFormMap(prForm))
 				.build();
 	}
 	
@@ -751,7 +759,7 @@ public class FormFactory {
 	public static FacilioForm getPurchaseRequestForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("PURCHASE REQUEST");
-		form.setName("web_default");
+		form.setName("default_purchaserequest_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getPurchaseRequestFormFields());
