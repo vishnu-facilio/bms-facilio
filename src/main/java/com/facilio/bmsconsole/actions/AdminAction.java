@@ -258,7 +258,7 @@ public class AdminAction extends ActionSupport
 		return SUCCESS;
 	}
 
-	public static String demoRollUp() throws IOException{
+	public  String demoRollUp() throws IOException{
 
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long orgId=Long.parseLong(request.getParameter("orgId"));
