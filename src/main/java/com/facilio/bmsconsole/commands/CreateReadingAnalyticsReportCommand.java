@@ -191,6 +191,9 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		xAxis.setField(field.getModule(), field);
 		dataPoint.setxAxis(xAxis);
 		dataPoint.setyAxis(metric.getyAxis());
+		if(metric.isxDataPoint()) {
+			dataPoint.setxDataPoint(metric.isxDataPoint());
+		}
 		if (dataPoint.isFetchResource()) {
 			resourceAlias.add(report.getxAlias());
 		}
