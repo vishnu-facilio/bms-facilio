@@ -15,6 +15,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
@@ -442,7 +443,7 @@ private static final String ALIAS = "alias";
 	private StringBuilder getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
 		// moduleName = FacilioConstants.ContextNames.ENERGY_DATA_READING;	// Temp
 		StringBuilder url = new StringBuilder(FacilioProperties.getConfig("clientapp.url")).append("/app/");
-		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER) || moduleName.equals(ContextNames.ASSET_BREAKDOWN) ) {
 			url.append("wo");
 		}
 		else if (moduleName.equals(FacilioConstants.ContextNames.ALARM)) {
