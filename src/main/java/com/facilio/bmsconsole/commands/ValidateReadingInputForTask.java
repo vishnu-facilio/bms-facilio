@@ -236,19 +236,20 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			double averageLowerLimitEnergyReading = previousValue + averageLowerLimit;
 			double averageHigherLimitEnergyReading = previousValue + averageHigherLimit;
 			
-			double averageLowerLimitInDisplayUnit  = (double)UnitsUtil.convertToDisplayUnit(averageLowerLimitEnergyReading, numberField);
-			double averageHigherLimitInDisplayUnit  = (double)UnitsUtil.convertToDisplayUnit(averageHigherLimitEnergyReading, numberField);
+			Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
+			Unit siUnit = Unit.valueOf(numberField.getMetricEnum().getSiUnitId());
+			
+			double averageLowerLimitInInputUnit = UnitsUtil.convert(averageLowerLimitEnergyReading, siUnit, currentInputUnit);		
+			double averageHigherLimitInInputUnit = UnitsUtil.convert(averageHigherLimitEnergyReading, siUnit, currentInputUnit);	
 					
-			String averageLowerLimitString = WorkflowUtil.getStringValueFromDouble(FacilioUtil.decimalClientFormat(averageLowerLimitInDisplayUnit));
-			String averageHigherLimitString = WorkflowUtil.getStringValueFromDouble(FacilioUtil.decimalClientFormat(averageHigherLimitInDisplayUnit));
+			String averageLowerLimitString = WorkflowUtil.getStringValueFromDouble(getDecimalClientFormat(averageLowerLimitInInputUnit));
+			String averageHigherLimitString = WorkflowUtil.getStringValueFromDouble(getDecimalClientFormat(averageHigherLimitInInputUnit));
 			
 			if(currentDelta <= averageLowerLimit) {
 				
 				TaskErrorContext error = new TaskErrorContext();
 				error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
 				error.setSuggestionType(TaskErrorContext.SuggestionType.LESS_THAN_AVG_VALUE.getValue());
-				
-				Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
 				error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
 				error.setAverageValue(setAverageValueString(averageValue, numberField));
 				
@@ -256,7 +257,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				{
 					error.setMessage("The reading you have entered " +error.getCurrentValue()+ " is not within the expected range of " 
 							+ averageLowerLimitString + " - " 
-							+ averageHigherLimitString + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol());	
+							+ averageHigherLimitString + " " + currentInputUnit.getSymbol());	
 				}
 				else
 				{
@@ -270,8 +271,6 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				TaskErrorContext error = new TaskErrorContext();
 				error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
 				error.setSuggestionType(TaskErrorContext.SuggestionType.GREATER_THAN_AVG_VALUE.getValue());
-					
-				Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
 				error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
 				error.setAverageValue(setAverageValueString(averageValue, numberField));
 				
@@ -279,7 +278,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				{
 					error.setMessage("The reading you have entered " +error.getCurrentValue()+ " is not within the expected range of " 
 							+ averageLowerLimitString + " - " 
-							+ averageHigherLimitString + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol());			
+							+ averageHigherLimitString + " " + currentInputUnit.getSymbol());			
 				}
 				else
 				{
@@ -466,6 +465,16 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			averageValueString  = (averageValueInString != null ? averageValueInString : averageValueInDisplayUnit) + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
 		} 
 		return averageValueString;
+	}
+	
+	public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.###");
+	    
+	public static Double getDecimalClientFormat(Double d) {
+	    	
+	   if(d != null) {
+	    	d = Double.parseDouble(DECIMAL_FORMAT.format(d));
+	    }
+	    return d;
 	}
 		
 }
