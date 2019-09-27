@@ -93,12 +93,14 @@ public class FormRuleAPI {
 		.andCondition(CriteriaAPI.getIdCondition(formRuleContext.getId(), ModuleFactory.getFormRuleModule()));
 	}
 	
-	public static void deleteFormRuleActionContext(FormRuleActionContext formRuleActionContext) {
+	public static void deleteFormRuleActionContext(FormRuleActionContext formRuleActionContext) throws Exception {
 		
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		
 		deleteRecordBuilder.table(ModuleFactory.getFormRuleActionModule().getTableName())
 		.andCondition(CriteriaAPI.getIdCondition(formRuleActionContext.getId(), ModuleFactory.getFormRuleActionModule()));
+		
+		deleteRecordBuilder.delete();
 	}
 	
 	public static FormRuleContext getFormRuleContext(long formRuleId) throws Exception {
