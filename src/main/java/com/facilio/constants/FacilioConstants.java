@@ -1217,8 +1217,9 @@ public class FacilioConstants {
 		public static final String POINTS_PROCESS_CONTEXT = "pointsProcessContext";
 		
 		public static final String NEXT_PAYMENT_DATE = "nextPaymentDate";
-		
-
+		public static final String DATA = "data";
+		public static final String CONDITIONAL_FORMATTING_RESULT = "conditionalFormattingResult";
+		public static final String CONDITIONAL_FORMATTINGS = "conditionalFormattings";
 
 
 	

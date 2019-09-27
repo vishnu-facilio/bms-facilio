@@ -1475,4 +1475,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetAssetAssociatedActiveContractsCommand());
 		return c;
 	}
+	
+	public static FacilioChain performConditionalFormattings() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new PerformConditionalFormatting());
+		return c;
+	}
 }

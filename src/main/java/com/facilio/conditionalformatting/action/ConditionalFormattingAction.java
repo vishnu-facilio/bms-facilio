@@ -7,7 +7,12 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.conditionalformatting.context.ConditionalFormattingContext;
+import com.facilio.constants.FacilioConstants;
+import com.opensymphony.xwork2.inject.Context;
 
 public class ConditionalFormattingAction extends FacilioAction {
 
@@ -22,39 +27,15 @@ public class ConditionalFormattingAction extends FacilioAction {
 	
 	public String getConditionalFormattingResult() throws Exception {
 
-		int rowNo = 1;
-		JSONObject result = new JSONObject();
+		FacilioChain chain = ReadOnlyChainFactory.performConditionalFormattings();
 		
-		List<String> alreadyFilledCollumns = null;
-		for(Map<String,Object> dataMap :data) {
-			
-			alreadyFilledCollumns = new ArrayList<String>();
-			JSONObject resJson = null;
-			
-			for(ConditionalFormattingContext conditionalFormating :conditionalFormatings) {
-				
-				if(alreadyFilledCollumns.containsAll(conditionalFormating.getApplyToFields())) {
-					continue;
-				}
-				boolean criteriaRes = conditionalFormating.evaluateCriteria(dataMap, null);
-				boolean workflowRes = conditionalFormating.evaluateWorkflowExpression(dataMap, null);
-				
-				if(criteriaRes && workflowRes) {
-					resJson = resJson == null ? new JSONObject() : resJson; 
-					for(String applyto: conditionalFormating.getApplyToFields()) {
-						if(!resJson.containsKey(applyto)) {
-							resJson.put(applyto, conditionalFormating.getActions());
-							alreadyFilledCollumns.add(applyto);
-						}
-					}
-				}
-			}
-			if(resJson != null) {
-				result.put(rowNo+"", resJson);
-			}
-			rowNo++;
-		}
-		setResult("result", result);
+		FacilioContext context = chain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.CONDITIONAL_FORMATTINGS, conditionalFormatings);
+		context.put(FacilioConstants.ContextNames.DATA, data);
+		
+		chain.execute();
+		setResult("result", context.get(FacilioConstants.ContextNames.CONDITIONAL_FORMATTING_RESULT));
 		return SUCCESS;
 	}
 
