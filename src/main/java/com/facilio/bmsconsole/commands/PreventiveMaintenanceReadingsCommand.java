@@ -92,6 +92,7 @@ public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
 
 			if (CollectionUtils.isEmpty(woTaskContexts)) {
 				workOrderItr.remove();
+				continue;
 			}
 
 			Map<Long, List<TaskContext>> woTasksMap = new HashMap<>();
