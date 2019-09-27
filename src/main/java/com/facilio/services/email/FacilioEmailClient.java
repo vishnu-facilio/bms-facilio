@@ -14,7 +14,7 @@ import java.util.Properties;
 class FacilioEmailClient extends EmailClient {
 
     private static final Logger LOGGER = LogManager.getLogger(FacilioEmailClient.class.getName());
-    private static final FacilioEmailClient instance = new FacilioEmailClient();
+    private static final FacilioEmailClient INSTANCE = new FacilioEmailClient();
 
     private static final String MAIL_USERNAME="mail.username";
     private static final String MAIL_PASSWORD="mail.password";
@@ -28,7 +28,7 @@ class FacilioEmailClient extends EmailClient {
     private static final String SOCKET_FACTORY_PORT= "mail.smtp.socketFactory.port";
 
 
-    FacilioEmailClient(){
+    private FacilioEmailClient(){
         LOGGER.info("FacilioEmail client created");
     }
     private static Properties getSMTPProperties() {
@@ -46,7 +46,7 @@ class FacilioEmailClient extends EmailClient {
         return props;
     }
     public static FacilioEmailClient getClient(){
-        return instance;
+        return INSTANCE;
     }
 
     public void sendEmail(JSONObject mailJson) throws Exception {

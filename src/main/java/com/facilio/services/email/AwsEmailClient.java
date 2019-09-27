@@ -21,16 +21,16 @@ import java.util.Map;
 import java.util.Properties;
 
 class AwsEmailClient extends EmailClient {
-    private static AwsEmailClient instance =new AwsEmailClient();
+	
+	private static final Logger LOGGER = LogManager.getLogger(AwsEmailClient.class.getName());
+	
+    private static final AwsEmailClient INSTANCE =new AwsEmailClient();
     private static final Object LOCK = new Object();
-    private static final Logger LOGGER = LogManager.getLogger(AwsEmailClient.class.getName());
     private static volatile AWSCredentialsProvider credentialsProvider = null;
 
-    AwsEmailClient(){
+    private AwsEmailClient(){
         LOGGER.error("AWS Email Client created");
     }
-
-
 
     public void sendEmail(JSONObject mailJson) throws Exception  {
             logEmail(mailJson);
@@ -38,7 +38,7 @@ class AwsEmailClient extends EmailClient {
 
     }
     public static AwsEmailClient getClient(){
-        return instance;
+        return INSTANCE;
     }
     private void sendEmailViaAws(JSONObject mailJson) throws Exception  {
 
