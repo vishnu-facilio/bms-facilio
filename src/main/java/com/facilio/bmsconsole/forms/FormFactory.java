@@ -173,15 +173,70 @@ public class FormFactory {
 			}
 			else if (moduleName.equals(FacilioConstants.ContextNames.PURCHASE_ORDER)) {
 				List<FormSection> sections = new ArrayList<>();
+				
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> lineItemFields = new ArrayList<>();
+				List<FormField> billingAddressFields = new ArrayList<>();
+				List<FormField> shippingAddressFields = new ArrayList<>();
+				
 				form.setSections(sections);
-				FormSection section = new FormSection("Purchase Order", 1, form.getFields(), true);
-				sections.add(section);
+				FormSection defaultSection = new FormSection("Purchase Order", 1, defaultFields, true);
+				FormSection billingSection = new FormSection("Billing Address", 2, billingAddressFields, true);
+				FormSection shippingSection = new FormSection("Shipping Address", 3, shippingAddressFields, true);
+				FormSection lineItemSection = new FormSection("Line Items", 4, lineItemFields, true);
+				
+				 form.getFields().forEach(field -> {
+					 if (field.getDisplayTypeEnum() == FieldDisplayType.LINEITEMS) {
+						 lineItemFields.add(field);
+					 }
+					 else if (field.getDisplayTypeEnum() == FieldDisplayType.SADDRESS && field.getDisplayName().equals("BILLING ADDRESS")) {
+						 billingAddressFields.add(field);
+					 }
+					 else if (field.getDisplayTypeEnum() == FieldDisplayType.SADDRESS && field.getDisplayName().equals("SHIPPING ADDRESS")) {
+						 shippingAddressFields.add(field);
+					 }
+					 else {
+						 defaultFields.add(field);
+					 }
+				 });
+				
+				sections.add(defaultSection);
+				sections.add(billingSection);
+				sections.add(shippingSection);
+				sections.add(lineItemSection);
 			}
 			else if (moduleName.equals(FacilioConstants.ContextNames.PURCHASE_REQUEST)) {
 				List<FormSection> sections = new ArrayList<>();
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> lineItemFields = new ArrayList<>();
+				List<FormField> billingAddressFields = new ArrayList<>();
+				List<FormField> shippingAddressFields = new ArrayList<>();
+				
 				form.setSections(sections);
-				FormSection section = new FormSection("Purchase Request", 1, form.getFields(), true);
-				sections.add(section);
+				FormSection defaultSection = new FormSection("Purchase Request", 1, defaultFields, true);
+				FormSection billingSection = new FormSection("Billing Address", 2, billingAddressFields, true);
+				FormSection shippingSection = new FormSection("Shipping Address", 3, shippingAddressFields, true);
+				FormSection lineItemSection = new FormSection("Line Items", 4, lineItemFields, true);
+				
+				 form.getFields().forEach(field -> {
+					 if (field.getDisplayTypeEnum() == FieldDisplayType.LINEITEMS) {
+						 lineItemFields.add(field);
+					 }
+					 else if (field.getDisplayTypeEnum() == FieldDisplayType.SADDRESS && field.getDisplayName().equals("BILLING ADDRESS")) {
+						 billingAddressFields.add(field);
+					 }
+					 else if (field.getDisplayTypeEnum() == FieldDisplayType.SADDRESS && field.getDisplayName().equals("SHIPPING ADDRESS")) {
+						 shippingAddressFields.add(field);
+					 }
+					 else {
+						 defaultFields.add(field);
+					 }
+				 });
+				
+				sections.add(defaultSection);
+				sections.add(billingSection);
+				sections.add(shippingSection);
+				sections.add(lineItemSection);
 			}
 		}
 		return form;
