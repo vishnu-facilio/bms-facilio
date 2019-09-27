@@ -2222,7 +2222,7 @@ public class WorkflowUtil {
 	public static String getStringValueFromDouble (Double value) {
 		if(value != null)
 		{
-			DecimalFormat decimalFormat = new DecimalFormat("#");
+			DecimalFormat decimalFormat = new DecimalFormat("#.###");
 			decimalFormat.setMaximumFractionDigits(340);
 		    String convertedString = decimalFormat.format(value);
 		    return convertedString;	
