@@ -422,6 +422,12 @@
 		</action>
 	</package>
 	
+	<package name="conditionalFormatting" namespace="/api/v2/conditionalFormatting" extends="v2Api">
+
+		<action name="getConditionalFormattingResult"
+			class="com.facilio.conditionalformatting.action.ConditionalFormattingAction" method="getConditionalFormattingResult"></action>
+	</package>
+	
 	<package name="controlActionModule" namespace="/api/v2/controlAction" extends="v2Api">
 
 		<action name="setReadingValue"
