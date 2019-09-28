@@ -24,8 +24,6 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.util.DBConf;
 import com.facilio.fs.FileInfo;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
@@ -33,6 +31,8 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 
@@ -211,10 +211,15 @@ public class BmsDBConf extends DBConf {
         for(Map<String, Object> record: records) {
             for(FacilioField field : selectFields) {
                 if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.containsKey(field.getName()+"Id")) {
-                    Long id = (Long) record.get(field.getName()+"Id");
-                    record.put(field.getName()+"Url", fileUrls.get(id));
-                    record.put(field.getName()+"FileName", files.get(id).getFileName());
-                    record.put(field.getName()+"ContentType", files.get(id).getContentType());
+                		Long id = (Long) record.get(field.getName()+"Id");
+                		try {
+	                    record.put(field.getName()+"Url", fileUrls.get(id));
+	                    record.put(field.getName()+"FileName", files.get(id).getFileName());
+	                    record.put(field.getName()+"ContentType", files.get(id).getContentType());
+                		}
+                		catch (Exception e) {
+                			LOGGER.error("Error in fetching file for id - " + id, e);
+					}
                 }
             }
         }
