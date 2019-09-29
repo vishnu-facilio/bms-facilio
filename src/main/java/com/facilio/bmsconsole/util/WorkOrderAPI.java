@@ -1704,9 +1704,9 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		 double unPlannedClosedCount = (long) map.get("closedUnPlannedCount");
 		 double totalUnPlannedCount = (long) map.get("totalUnPlannedCount");
 			
-		 double plannedClosedCountLastMonthPercentage = MapUtils.isNotEmpty(lastMonth) && lastMonth.get("plannedPercentage") != null ? (long) lastMonth.get("plannedPercentage") : 0;
+		 double plannedClosedCountLastMonthPercentage = MapUtils.isNotEmpty(lastMonth) && lastMonth.get("plannedPercentage") != null ? (double) lastMonth.get("plannedPercentage") : 0;
 		 //double totalPlannedCountLastMonth = (double) lastMonth.get("totalPlannedCount");
-		 double unPlannedClosedCountLastMonthPercentage = MapUtils.isNotEmpty(lastMonth) && lastMonth.get("unPlannedPercentage") != null ? (long) lastMonth.get("unPlannedPercentage") : 0;
+		 double unPlannedClosedCountLastMonthPercentage = MapUtils.isNotEmpty(lastMonth) && lastMonth.get("unPlannedPercentage") != null ? (double) lastMonth.get("unPlannedPercentage") : 0;
 		 //double totalUnPlannedCountLastMonth = (double) lastMonth.get("totalUnPlannedCount");
 		
 		 resMap.put("plannedPercentage",Math.round(((plannedClosedCount/totalPlannedCount)*100)*10.0)/10.0);
