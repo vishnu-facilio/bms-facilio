@@ -241,6 +241,7 @@ public class FacilioConstants {
 		public static final String ALARM_OCCURRENCE = "alarmoccurrence";
 		public static final String ANOMALY_ALARM_OCCURRENCE = "anomalyalarmoccurrence";
 		public static final String READING_ALARM_OCCURRENCE = "readingalarmoccurrence";
+		public static final String VIOLATION_ALARM_OCCURRENCE = "violationalarmoccurrence";
 		public static final String LATEST_ALARM_OCCURRENCE = "latestAlarmOccurrence";
 		public static final String BASE_ALARM = "basealarm";
 		public static final String BASE_EVENT = "baseevent";
@@ -250,6 +251,8 @@ public class FacilioConstants {
 		public static final String READING_ALARM_CATEGORY = "readingalarmcategory";
 		public static final String BMS_EVENT = "bmsevent";
 		public static final String BMS_ALARM ="bmsalarm";
+		public static final String VIOLATION_EVENT = "violationevent";
+		public static final String VIOLATION_ALARM ="violationalarm";
 		public static final String IS_INCLUDE = "isInclude";
 		public static final String ALARM_COUNT = "alarmCount";
 		
@@ -515,7 +518,7 @@ public class FacilioConstants {
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		public static final String RO_MODULE_SPI_CINEMAS = "rowaterenpinew";
 		
-		public static final String ASSET_BREAKDOWN = "assetBreakdown";
+		public static final String ASSET_BREAKDOWN = "assetbreakdown";
 		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";
 		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";
 		
