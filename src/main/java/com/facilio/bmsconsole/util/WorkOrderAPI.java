@@ -1858,50 +1858,48 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	Map<Long, Map<String, Object>> resourceMap = new HashMap<Long, Map<String,Object>>();
 	Map<Long, Object> resourceArray = WorkOrderAPI.getLookupFieldPrimary("resource");
 
-	 for(int i =0;i<unplannedCountForAsset.size();i++) {
-		 Map<String,Object> map = unplannedCountForAsset.get(i);
-		 Map<String,Object> asset = unplannedCountForAssetMap.get(map.get("buildingId"));
-		 Map<String, Object> resMap = new HashMap<String, Object>();
-		 long assetCount = 0;
-		 if(MapUtils.isNotEmpty(asset)) {
-			 AssetContext assetContext = AssetsAPI.getAssetInfo((long)asset.get("resourceId"));
-			 resMap.put("assetCategory", assetContext.getCategory().getName());
-		     assetCount = (long) asset.get("count");
-		 }
-		 
-		 resMap.put("resourceId",map.get("buildingId"));
-		 resMap.put("assetName",resourceArray.get(asset.get("resourceId")));
-		 resMap.put("assetWoCount",assetCount);
-		 resMap.put("resourceName",resourceArray.get(map.get("buildingId")));
+    Iterator<Entry<Long, Map<String, Object>>> itr = unplannedCountForAssetMap.entrySet().iterator(); 
+     
+     while(itr.hasNext()) 
+     { 
+          Map.Entry<Long, Map<String, Object>> entry = itr.next();
+          Map<String, Object> resMap = new HashMap<String, Object>();
+   		  Map<String, Object> map = entry.getValue();
+          AssetContext assetContext = AssetsAPI.getAssetInfo((long)map.get("resourceId"));
+		  resMap.put("assetCategory", assetContext.getCategory().getName());
+		  long assetCount = (long) map.get("count");
+		  resMap.put("resourceId",map.get("buildingId"));
+		  resMap.put("assetName",resourceArray.get(map.get("resourceId")));
+		  resMap.put("assetWoCount",assetCount);
+		  resMap.put("resourceName",resourceArray.get(map.get("buildingId")));
+		  resourceMap.put((Long) map.get("buildingId"), resMap);
+	}
+     
+ Iterator<Entry<Long, Map<String, Object>>> itr2 = spaceUnplannedCount.entrySet().iterator(); 
+     
+     while(itr2.hasNext()) 
+     { 
+          Map.Entry<Long, Map<String, Object>> entry = itr2.next();
+          Map<String, Object> resMap = null;
+          Map<String, Object> map = entry.getValue();
+          
+          if(resourceMap.containsKey((long)map.get("resourceId"))) {
+        	 resMap = resourceMap.get((long)map.get("resourceId"));
+          }
+          else {
+        	  resMap = new HashMap<String, Object>();
+          }
+     	 BaseSpaceContext baseSpacecontext = SpaceAPI.getBaseSpace((long)map.get("resourceId"));
+		 resMap.put("spaceCategory",baseSpacecontext.getSpaceTypeEnum());
+		 long spaceCount = (long) map.get("count");
 		 resourceMap.put((Long) map.get("buildingId"), resMap);
-		 finalResult.add(resMap);
-	 }
-	 
-	 for(int i =0;i<unplannedCountForSpace.size();i++) {
-		 Map<String,Object> map = unplannedCountForSpace.get(i);
-		 Map<String,Object> space = spaceUnplannedCount.get(map.get("buildingId"));
-		 Map<String, Object> resMap = null;
-		 long spaceCount = 0;
-		 
-		 if(resourceMap.containsKey(map.get("buildingId"))) {
-			 resMap = resourceMap.get(map.get("buildingId"));
-		 }
-		 else {
-			 resMap = new HashMap<String, Object>();
-			 finalResult.add(resMap);
-		 }
-		 if(MapUtils.isNotEmpty(space)) {
-			 BaseSpaceContext baseSpacecontext = SpaceAPI.getBaseSpace((long)space.get("resourceId"));
-			 resMap.put("spaceCategory",baseSpacecontext.getSpaceTypeEnum());
-			 spaceCount = (long) space.get("count");
-		 }
 		 resMap.put("resourceId",map.get("buildingId"));
-		 resMap.put("spaceName",resourceArray.get(space.get("resourceId")));
+		 resMap.put("spaceName",resourceArray.get(map.get("resourceId")));
 		 resMap.put("spaceWoCount",spaceCount);
 		 resMap.put("resourceName",resourceArray.get(map.get("buildingId")));
-		 
-	 }
-	
+		 resourceMap.put((Long) map.get("buildingId"), resMap);
+	} 
+	finalResult = new ArrayList<Map<String, Object>>(resourceMap.values());
 	
 	 return finalResult;
     }
