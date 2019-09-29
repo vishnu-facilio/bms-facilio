@@ -554,6 +554,32 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
+	GET_PREVIOUS_QUARTER_START_DATE(27,"getPreviousQuarterStartDate") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			return DateTimeUtil.getMonthStartTime(-3,false);
+			
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	GET_PREVIOUS_QUARTER_END_DATE(28,"getPreviousQuarterEndDate") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			 Long previousStart = DateTimeUtil.getMonthStartTime(-1,false);
+			 return DateTimeUtil.getMonthEndTimeOf(previousStart,false);
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;

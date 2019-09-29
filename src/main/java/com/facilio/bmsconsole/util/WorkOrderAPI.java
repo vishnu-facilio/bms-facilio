@@ -7,11 +7,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.Logger;
 
 import com.chargebee.internal.StringJoiner;
@@ -21,8 +23,11 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.SpaceContext;
@@ -1556,9 +1561,551 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
     }
 
 
+  public static List<Map<String, Object>> getTopNBuildingsWithUnPlannedPlannedClosedCount(String count,long startTime,long endTime, long siteId) throws Exception{
+	  List<BuildingContext> buildings = siteId > 0 ? SpaceAPI.getSiteBuildings(siteId) : SpaceAPI.getAllBuildings();
+	  StringJoiner buildingIdString = new StringJoiner(",");
+	  for(BuildingContext building : buildings) {
+		  buildingIdString.add(String.valueOf(building.getId()));
+	  }
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+				
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		
+		List<TicketTypeContext> types = TicketAPI.getPlannedTypes(AccountUtil.getCurrentOrg().getId());
+		StringJoiner idString = new StringJoiner(",");
+		for(TicketTypeContext type : types) {
+			idString.add(String.valueOf(type.getId()));
+		}
+		
+			
+		FacilioField idCountField = new FacilioField();
+		idCountField.setColumnName("count(IF(TYPE_ID in ("+idString+") and STATUS_TYPE = "+FacilioStatus.StatusType.CLOSED.getIntVal()+", 1, NULL))");
+		idCountField.setName("closedPlannedCount");
+		fields.add(idCountField);
+		
+		FacilioField totalUnPlannedCountField = new FacilioField();
+		totalUnPlannedCountField.setColumnName("count(IF(TYPE_ID not in ("+idString+"), 1, NULL))");
+		totalUnPlannedCountField.setName("totalUnPlannedCount");
+		fields.add(totalUnPlannedCountField);
+		
+		FacilioField plannedCountField = new FacilioField();
+		plannedCountField.setColumnName("count(IF(TYPE_ID in ("+idString+"), 1, NULL))");
+		plannedCountField.setName("totalPlannedCount");
+		fields.add(plannedCountField);
+		
+		FacilioField unPlannedCountField = new FacilioField();
+		unPlannedCountField.setColumnName("count(IF(TYPE_ID not in ("+idString+") and STATUS_TYPE = "+FacilioStatus.StatusType.CLOSED.getIntVal()+", 1, NULL))");
+		unPlannedCountField.setName("closedUnPlannedCount");
+		fields.add(unPlannedCountField);
+		
+		FacilioField resourceIdFld = new FacilioField();
+		resourceIdFld.setName("resourceId");
+		resourceIdFld.setColumnName("RESOURCE_ID");
+		resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+		resourceIdFld.setDataType(FieldType.NUMBER);
 
+		FacilioField buildingId = new FacilioField();
+		buildingId.setName("buildingId");
+		buildingId.setColumnName("BUILDING_ID");
+		buildingId.setModule(baseSpaceModule);
+		buildingId.setDataType(FieldType.NUMBER);
+
+		fields.add(buildingId);
 	
-	public static List<Map<String, Object>> getTopNTechnicians(String count,long startTime,long endTime) throws Exception{
+		Condition spaceCond = new Condition();
+		spaceCond.setField(buildingId);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(buildingIdString.toString());
+		
+		
+		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+				.module(workOrderModule)
+				.beanClass(WorkOrderContext.class)
+				.select(fields)
+				.innerJoin(ModuleFactory.getTicketStatusModule().getTableName())
+				.on("MODULE_STATE = TicketStatus.ID")
+				.innerJoin(resourceModule.getTableName())
+				.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+				.innerJoin(baseSpaceModule.getTableName())
+				.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
+				.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+				.andCondition(spaceCond)
+				.groupBy(buildingId.getCompleteColumnName())
+				.orderBy(idCountField.getColumnName()+" DESC")
+                .limit(Integer.parseInt(count))
+				;
+
+
+	 List<Map<String, Object>> plannedVsUnPlannedWorkOrders = builder.getAsProps();
+	 
+	 	StringJoiner selectedBuildingIdString = new StringJoiner(",");
+	    for(Map<String, Object> map : plannedVsUnPlannedWorkOrders) {
+	    	selectedBuildingIdString.add(String.valueOf(map.get("buildingId")));
+	    }
+	 
+	 	Condition spaceCond2 = new Condition();
+		spaceCond2.setField(buildingId);
+		spaceCond2.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond2.setValue(selectedBuildingIdString.toString());
+		
+		SelectRecordsBuilder<WorkOrderContext> builderLastMonth = new SelectRecordsBuilder<WorkOrderContext>()
+				.module(workOrderModule)
+				.beanClass(WorkOrderContext.class)
+				.select(fields)
+				.innerJoin(ModuleFactory.getTicketStatusModule().getTableName())
+				.on("MODULE_STATE = TicketStatus.ID")
+				.innerJoin(resourceModule.getTableName())
+				.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+				.innerJoin(baseSpaceModule.getTableName())
+				.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
+				.andCondition(spaceCond2)
+				.groupBy(buildingId.getCompleteColumnName())
+				.orderBy(idCountField.getColumnName()+" DESC")
+        		;
+		
+		Long lastMonthStartTime = DateTimeUtil.getMonthStartTime(-6,false);
+		Long endMonthStart = DateTimeUtil.getMonthStartTime(-4,false);
+			
+		Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(endMonthStart,false);
+		
+		builderLastMonth.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lastMonthStartTime+","+lastMonthEndTime, DateOperators.BETWEEN));
+		
+
+		List<Map<String, Object>> plannedVsUnPlannedWorkOrdersLastMonth = builderLastMonth.getAsProps();
+		 Map<Long, Object> resourceArray = WorkOrderAPI.getLookupFieldPrimary("resource");
+
+		Map<Long,Map<String, Object>> lastMonthmap = new HashMap<Long, Map<String,Object>>();
+		for(int i =0;i<plannedVsUnPlannedWorkOrdersLastMonth.size();i++) {
+			 Map<String,Object> map = plannedVsUnPlannedWorkOrdersLastMonth.get(i);
+			 Map<String, Object> resMap = new HashMap<String, Object>();
+			 double plannedClosedCount = (long) map.get("closedPlannedCount");
+			 double totalPlannedCount = (long) map.get("totalPlannedCount");
+			 double unPlannedClosedCount = (long) map.get("closedUnPlannedCount");
+			 double totalUnPlannedCount = (long) map.get("totalUnPlannedCount");
+				
+			 resMap.put("plannedPercentage",Math.round(((plannedClosedCount/totalPlannedCount)* 100)*10.0)/10.0);
+			 resMap.put("unPlannedPercentage",Math.round(((unPlannedClosedCount/totalUnPlannedCount)*100)*10.0)/10.0);
+			 resMap.put("resourceId",map.get("buildingId"));
+			 resMap.put("resourceName",resourceArray.get(map.get("buildingId")));
+			 lastMonthmap.put((long)map.get("buildingId"), resMap);
+		 }
+		
+	  List<Map<String, Object>> finalResult = new ArrayList<Map<String,Object>>();
+	
+	 for(int i =0;i<plannedVsUnPlannedWorkOrders.size();i++) {
+		 Map<String,Object> map = plannedVsUnPlannedWorkOrders.get(i);
+		 Map<String, Object> lastMonth = lastMonthmap.get((long)map.get("buildingId"));
+		 Map<String, Object> resMap = new HashMap<String, Object>();
+		 double plannedClosedCount = (long) map.get("closedPlannedCount");
+		 double totalPlannedCount = (long) map.get("totalPlannedCount");
+		 double unPlannedClosedCount = (long) map.get("closedUnPlannedCount");
+		 double totalUnPlannedCount = (long) map.get("totalUnPlannedCount");
+			
+		 double plannedClosedCountLastMonthPercentage = MapUtils.isNotEmpty(lastMonth) && lastMonth.get("plannedPercentage") != null ? (long) lastMonth.get("plannedPercentage") : 0;
+		 //double totalPlannedCountLastMonth = (double) lastMonth.get("totalPlannedCount");
+		 double unPlannedClosedCountLastMonthPercentage = MapUtils.isNotEmpty(lastMonth) && lastMonth.get("unPlannedPercentage") != null ? (long) lastMonth.get("unPlannedPercentage") : 0;
+		 //double totalUnPlannedCountLastMonth = (double) lastMonth.get("totalUnPlannedCount");
+		
+		 resMap.put("plannedPercentage",Math.round(((plannedClosedCount/totalPlannedCount)*100)*10.0)/10.0);
+		 resMap.put("unPlannedPercentage",Math.round(((unPlannedClosedCount/totalUnPlannedCount)*100)*10.0)/10.0);
+		 resMap.put("plannedPercentageLastMonth",plannedClosedCountLastMonthPercentage);
+		 resMap.put("unPlannedPercentageLastMonth",unPlannedClosedCountLastMonthPercentage);
+		 
+		 resMap.put("resourceId",map.get("buildingId"));
+		 resMap.put("resourceName",resourceArray.get(map.get("buildingId")));
+		 finalResult.add(resMap);
+	 }
+	
+	
+	 return finalResult;
+    }
+
+  
+  
+  public static List<Map<String, Object>> getTopNBuildingsWithRecurringUnPlannedCountForResource(long startTime,long endTime, long siteId) throws Exception{
+	  List<BuildingContext> buildings = siteId > 0 ? SpaceAPI.getSiteBuildings(siteId) : SpaceAPI.getAllBuildings();
+	  StringJoiner buildingIdString = new StringJoiner(",");
+	  for(BuildingContext building : buildings) {
+		  buildingIdString.add(String.valueOf(building.getId()));
+	  }
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+				
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
+		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
+		FacilioField plannedType = workorderFieldMap.get("type");
+		
+		List<TicketTypeContext> types = TicketAPI.getPlannedTypes(AccountUtil.getCurrentOrg().getId());
+		StringJoiner idString = new StringJoiner(",");
+		for(TicketTypeContext type : types) {
+			idString.add(String.valueOf(type.getId()));
+		}
+			
+		FacilioField idCountField = new FacilioField();
+		idCountField.setColumnName("count(*)");
+		idCountField.setName("count");
+		fields.add(idCountField);
+		
+		FacilioField resourceIdFld = new FacilioField();
+		resourceIdFld.setName("resourceId");
+		resourceIdFld.setColumnName("RESOURCE_ID");
+		resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+		resourceIdFld.setDataType(FieldType.NUMBER);
+
+		FacilioField buildingId = new FacilioField();
+		buildingId.setName("buildingId");
+		buildingId.setColumnName("BUILDING_ID");
+		buildingId.setModule(baseSpaceModule);
+		buildingId.setDataType(FieldType.NUMBER);
+
+		fields.add(buildingId);
+		fields.add(resourceIdFld);
+		
+	
+		Condition spaceCond = new Condition();
+		spaceCond.setField(buildingId);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(buildingIdString.toString());
+		
+		
+		SelectRecordsBuilder<WorkOrderContext> builderForAsset = new SelectRecordsBuilder<WorkOrderContext>()
+				.module(workOrderModule)
+				.beanClass(WorkOrderContext.class)
+				.select(fields)
+				.innerJoin(resourceModule.getTableName())
+				.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+				.innerJoin(baseSpaceModule.getTableName())
+				.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_TYPE","resourceType",String.valueOf(2) , NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+				.andCondition(spaceCond)
+				.groupBy(buildingId.getCompleteColumnName()+","+resourceIdFld.getCompleteColumnName())
+				.orderBy(idCountField.getColumnName()+" DESC")
+               ;
+
+
+	 List<Map<String, Object>> unplannedCountForAsset = builderForAsset.getAsProps();
+
+	 
+	 Map<Long,Map<String, Object>> unplannedCountForAssetMap = new HashMap<Long, Map<String,Object>>();
+	 StringJoiner resourceidString = new StringJoiner(",");
+	 for(int i =0;i<unplannedCountForAsset.size();i++) {
+		 Map<String, Object> map = unplannedCountForAsset.get(i);
+		 if(unplannedCountForAssetMap.containsKey((Long)map.get("buildingId"))) {
+			 if((long)map.get("count") > (long)unplannedCountForAssetMap.get(map.get("buildingId")).get("count")) {
+				 unplannedCountForAssetMap.put((Long)map.get("buildingId"),map);
+			 }
+		 }
+		 else {
+			 unplannedCountForAssetMap.put((Long)map.get("buildingId"),map);
+			 resourceidString.add(String.valueOf(map.get("buildingId")));
+		 }
+	 }
+	 
+	 
+	 Condition spaceCond2 = new Condition();
+		spaceCond2.setField(buildingId);
+		spaceCond2.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond2.setValue(resourceidString.toString());
+	 
+	 SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilderForSpace = new SelectRecordsBuilder<WorkOrderContext>()
+											.module(workOrderModule)
+											.beanClass(WorkOrderContext.class)
+											.select(fields)
+											.innerJoin(resourceModule.getTableName())
+											.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+											.innerJoin(baseSpaceModule.getTableName())
+											.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
+											.andCondition(CriteriaAPI.getCondition("RESOURCE_TYPE","resourceType",String.valueOf(1) , NumberOperators.EQUALS))
+											.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.NOT_EQUALS))
+											.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+											.groupBy(buildingId.getCompleteColumnName()+","+resourceIdFld.getCompleteColumnName())
+											.orderBy(idCountField.getColumnName()+" DESC")
+											;
+	 
+	 if(resourceidString.isEmpty()) {
+		 selectRecordsBuilderForSpace.andCondition(spaceCond);
+	 }
+	 else {
+		 selectRecordsBuilderForSpace.andCondition(spaceCond2);
+	 }
+
+	List<Map<String,Object>> unplannedCountForSpace = selectRecordsBuilderForSpace.getAsProps();	
+	
+	 Map<Long,Map<String, Object>> spaceUnplannedCount = new HashMap<Long, Map<String,Object>>();
+	 
+	 for(int i =0;i<unplannedCountForSpace.size();i++) {
+		 Map<String, Object> map = unplannedCountForSpace.get(i);
+		 if(spaceUnplannedCount.containsKey((Long)map.get("buildingId"))) {
+			 if((long)map.get("count") > (long)spaceUnplannedCount.get(map.get("buildingId")).get("count")) {
+				 spaceUnplannedCount.put((Long)map.get("buildingId"),map);
+			 }
+		 }
+		 else {
+			 spaceUnplannedCount.put((Long)map.get("buildingId"),map);
+		 }
+	 }
+	 
+	
+	List<Map<String, Object>> finalResult = new ArrayList<Map<String,Object>>();
+	Map<Long, Map<String, Object>> resourceMap = new HashMap<Long, Map<String,Object>>();
+	Map<Long, Object> resourceArray = WorkOrderAPI.getLookupFieldPrimary("resource");
+
+	 for(int i =0;i<unplannedCountForAsset.size();i++) {
+		 Map<String,Object> map = unplannedCountForAsset.get(i);
+		 Map<String,Object> asset = unplannedCountForAssetMap.get(map.get("buildingId"));
+		 Map<String, Object> resMap = new HashMap<String, Object>();
+		 long assetCount = 0;
+		 if(MapUtils.isNotEmpty(asset)) {
+			 AssetContext assetContext = AssetsAPI.getAssetInfo((long)asset.get("resourceId"));
+			 resMap.put("assetCategory", assetContext.getCategory().getName());
+		     assetCount = (long) asset.get("count");
+		 }
+		 
+		 resMap.put("resourceId",map.get("buildingId"));
+		 resMap.put("assetName",resourceArray.get(asset.get("resourceId")));
+		 resMap.put("assetWoCount",assetCount);
+		 resMap.put("resourceName",resourceArray.get(map.get("buildingId")));
+		 resourceMap.put((Long) map.get("buildingId"), resMap);
+		 finalResult.add(resMap);
+	 }
+	 
+	 for(int i =0;i<unplannedCountForSpace.size();i++) {
+		 Map<String,Object> map = unplannedCountForSpace.get(i);
+		 Map<String,Object> space = spaceUnplannedCount.get(map.get("buildingId"));
+		 Map<String, Object> resMap = null;
+		 long spaceCount = 0;
+		 
+		 if(resourceMap.containsKey(map.get("buildingId"))) {
+			 resMap = resourceMap.get(map.get("buildingId"));
+		 }
+		 else {
+			 resMap = new HashMap<String, Object>();
+			 finalResult.add(resMap);
+		 }
+		 if(MapUtils.isNotEmpty(space)) {
+			 BaseSpaceContext baseSpacecontext = SpaceAPI.getBaseSpace((long)space.get("resourceId"));
+			 resMap.put("spaceCategory",baseSpacecontext.getSpaceTypeEnum());
+			 spaceCount = (long) space.get("count");
+		 }
+		 resMap.put("resourceId",map.get("buildingId"));
+		 resMap.put("spaceName",resourceArray.get(space.get("resourceId")));
+		 resMap.put("spaceWoCount",spaceCount);
+		 resMap.put("resourceName",resourceArray.get(map.get("buildingId")));
+		 
+	 }
+	
+	
+	 return finalResult;
+    }
+
+
+
+  public static List<Map<String, Object>> getTopNBuildingsWithUnPlannedCountForCategories(String count, long startTime,long endTime, long siteId) throws Exception{
+	  List<BuildingContext> buildings = siteId > 0 ? SpaceAPI.getSiteBuildings(siteId) : SpaceAPI.getAllBuildings();
+	  StringJoiner buildingIdString = new StringJoiner(",");
+	  for(BuildingContext building : buildings) {
+		  buildingIdString.add(String.valueOf(building.getId()));
+	  }
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+				
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
+		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
+		FacilioField plannedType = workorderFieldMap.get("type");
+		
+		List<TicketTypeContext> types = TicketAPI.getPlannedTypes(AccountUtil.getCurrentOrg().getId());
+		StringJoiner idString = new StringJoiner(",");
+		for(TicketTypeContext type : types) {
+			idString.add(String.valueOf(type.getId()));
+		}
+			
+		FacilioField idCountField = new FacilioField();
+		idCountField.setColumnName("count(*)");
+		idCountField.setName("count");
+		fields.add(idCountField);
+		
+		FacilioField resourceIdFld = new FacilioField();
+		resourceIdFld.setName("resourceId");
+		resourceIdFld.setColumnName("RESOURCE_ID");
+		resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+		resourceIdFld.setDataType(FieldType.NUMBER);
+		
+		FacilioField categoryIdField = new FacilioField();
+		categoryIdField.setName("categoryId");
+		categoryIdField.setColumnName("CATEGORY_ID");
+		categoryIdField.setModule(ModuleFactory.getTicketsModule());
+		categoryIdField.setDataType(FieldType.NUMBER);
+		
+		FacilioField categoryNameField = new FacilioField();
+		categoryNameField.setName("displayName");
+		categoryNameField.setColumnName("DISPLAY_NAME");
+		categoryNameField.setModule(ModuleFactory.getTicketCategoryModule());
+		categoryNameField.setDataType(FieldType.STRING);
+		fields.add(categoryNameField);
+
+		FacilioField buildingId = new FacilioField();
+		buildingId.setName("buildingId");
+		buildingId.setColumnName("BUILDING_ID");
+		buildingId.setModule(baseSpaceModule);
+		buildingId.setDataType(FieldType.NUMBER);
+
+		fields.add(buildingId);
+		fields.add(categoryIdField);
+		
+		Condition spaceCond = new Condition();
+		spaceCond.setField(buildingId);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(buildingIdString.toString());
+		
+		FacilioField avgField = new FacilioField();
+		avgField.setName("avg_response_time");
+		avgField.setColumnName("avg((ACTUAL_WORK_START-CREATED_TIME)/(1000*60))");//to render client in mins
+		
+		
+		
+		SelectRecordsBuilder<WorkOrderContext> unplanedCountByCategoriesAcrossSite = new SelectRecordsBuilder<WorkOrderContext>()
+				.module(workOrderModule)
+				.beanClass(WorkOrderContext.class)
+				.select(fields)
+				.innerJoin(ModuleFactory.getTicketCategoryModule().getTableName())
+				.on("TicketCategory.ID = Tickets.CATEGORY_ID")
+				.innerJoin(resourceModule.getTableName())
+				.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+				.innerJoin(baseSpaceModule.getTableName())
+				.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
+				.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+				.andCondition(spaceCond)
+				.groupBy(categoryIdField.getCompleteColumnName())
+				.orderBy(idCountField.getColumnName()+" DESC")
+				.limit(Integer.parseInt(count))
+               ;
+
+
+	 List<Map<String, Object>> unplanedCountByCategoriesAcrossSiteRecords = unplanedCountByCategoriesAcrossSite.getAsProps();
+	 
+	 StringJoiner categoryIdString = new StringJoiner(",");
+	 for(int i =0;i<unplanedCountByCategoriesAcrossSiteRecords.size();i++) {
+		 Map<String, Object> map = unplanedCountByCategoriesAcrossSiteRecords.get(i);
+		 categoryIdString.add(String.valueOf(map.get("categoryId")));
+	 }
+	 fields.add(avgField);
+
+	  SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilderForSpace = new SelectRecordsBuilder<WorkOrderContext>()
+											.module(workOrderModule)
+											.beanClass(WorkOrderContext.class)
+											.select(fields)
+											.innerJoin(ModuleFactory.getTicketCategoryModule().getTableName())
+											.on("TicketCategory.ID = Tickets.CATEGORY_ID")
+											.innerJoin(resourceModule.getTableName())
+											.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+											.innerJoin(baseSpaceModule.getTableName())
+											.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
+											.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.NOT_EQUALS))
+											.andCondition(CriteriaAPI.getCondition("CATEGORY_ID", "categoryId", categoryIdString.toString() , NumberOperators.EQUALS))
+											.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+											.groupBy(buildingId.getCompleteColumnName()+","+categoryIdField.getCompleteColumnName()+","+categoryNameField.getCompleteColumnName())
+											.orderBy(idCountField.getColumnName()+" DESC")
+											;
+
+	List<Map<String,Object>> unplannedCountForCategories = selectRecordsBuilderForSpace.getAsProps();
+	
+	StringJoiner selectedBuildingIdString = new StringJoiner(",");
+    for(Map<String, Object> map : unplannedCountForCategories) {
+    	selectedBuildingIdString.add(String.valueOf(map.get("buildingId")));
+    }
+ 
+ 	Condition spaceCond2 = new Condition();
+	spaceCond2.setField(buildingId);
+	spaceCond2.setOperator(BuildingOperator.BUILDING_IS);
+	spaceCond2.setValue(selectedBuildingIdString.toString());
+	
+	SelectRecordsBuilder<WorkOrderContext> builderLastMonth = new SelectRecordsBuilder<WorkOrderContext>()
+			.module(workOrderModule)
+			.beanClass(WorkOrderContext.class)
+			.select(fields)
+			.innerJoin(ModuleFactory.getTicketCategoryModule().getTableName())
+			.on("TicketCategory.ID = Tickets.CATEGORY_ID")
+			.innerJoin(resourceModule.getTableName())
+			.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+			.innerJoin(baseSpaceModule.getTableName())
+			.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
+			.andCondition(spaceCond2)
+			.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.NOT_EQUALS))
+			.andCondition(CriteriaAPI.getCondition("CATEGORY_ID", "categoryId", categoryIdString.toString() , NumberOperators.EQUALS))
+			.groupBy(buildingId.getCompleteColumnName()+","+categoryIdField.getCompleteColumnName()+","+categoryNameField.getCompleteColumnName())
+			.orderBy(idCountField.getColumnName()+" DESC")
+    		;
+	
+	Long lastMonthStartTime = DateTimeUtil.getMonthStartTime(-6,false);
+	Long endMonthStart = DateTimeUtil.getMonthStartTime(-4,false);
+	
+	Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(endMonthStart,false);
+	
+	builderLastMonth.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lastMonthStartTime+","+lastMonthEndTime, DateOperators.BETWEEN));
+
+	List<Map<String,Object>> unplannedCountForCategoriesLastMonth = builderLastMonth.getAsProps();
+	Map<String,Map<String, Object>> categoryWiseLastMonth = new HashMap<String, Map<String,Object>>();
+	for(Map<String, Object> map : unplannedCountForCategoriesLastMonth) {
+		String key = map.get("categoryId")+"-"+map.get("buildingId");
+		categoryWiseLastMonth.put(key, map);
+	}
+	
+	
+	 Map<String,List<Map<String, Object>>> categoryUnplannedCount = new HashMap<String, List<Map<String,Object>>>();
+	 Map<Long, Object> resourceArray = WorkOrderAPI.getLookupFieldPrimary("resource");
+
+	 for(int i =0;i<unplannedCountForCategories.size();i++) {
+		 Map<String, Object> map = unplannedCountForCategories.get(i);
+		 Map<String, Object> categoryWiseForBuilding = new HashMap<String, Object>();
+		 String key = map.get("categoryId")+"-"+map.get("buildingId");
+		 Map<String, Object> categoryWiseForBuildingLastMonth = categoryWiseLastMonth.get(key);
+		 
+		 categoryWiseForBuilding.put("avgRespTime", Math.round(((Number)map.get("avg_response_time")).doubleValue()*100.0)/100.0);
+		 categoryWiseForBuilding.put("count", map.get("count"));
+		 categoryWiseForBuilding.put("lastAvgRespTime",  MapUtils.isNotEmpty(categoryWiseForBuildingLastMonth) ? Math.round(((Number)categoryWiseForBuildingLastMonth.get("avg_response_time")).doubleValue()*100.0)/100.0 : 0);
+		 categoryWiseForBuilding.put("lastCount", MapUtils.isNotEmpty(categoryWiseForBuildingLastMonth) ? categoryWiseForBuildingLastMonth.get("count") : 0);
+		 categoryWiseForBuilding.put("resourceName", resourceArray.get(map.get("buildingId")));
+			
+		 List<Map<String, Object>> list = null;
+		 if(!categoryUnplannedCount.containsKey((String)map.get("displayName"))) {
+			 list = new ArrayList<Map<String,Object>>();
+		 }
+		 else {
+			 list = categoryUnplannedCount.get((String)map.get("displayName"));
+		 }
+		 list.add(categoryWiseForBuilding);
+		 categoryUnplannedCount.put((String)map.get("displayName"), list);
+	 }
+	
+	List<Map<String, Object>> finalResult = new ArrayList<Map<String,Object>>();
+	 
+	 Iterator<Entry<String, List<Map<String, Object>>>> itr = categoryUnplannedCount.entrySet().iterator(); 
+     
+     while(itr.hasNext()) 
+     { 
+          Map.Entry<String, List<Map<String, Object>>> entry = itr.next();
+          Map<String, Object> resMap = new HashMap<String, Object>();
+ 		 resMap.put("categoryName",entry.getKey());
+ 		 resMap.put("categoryData",entry.getValue());
+ 		 finalResult.add(resMap);
+ 	 } 
+	 return finalResult;
+    }
+
+
+  	public static List<Map<String, Object>> getTopNTechnicians(String count,long startTime,long endTime) throws Exception{
 		  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 			FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
@@ -1629,8 +2176,6 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
 		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
-
-
 
 
 		List<FacilioField> fields = new ArrayList<FacilioField>();
