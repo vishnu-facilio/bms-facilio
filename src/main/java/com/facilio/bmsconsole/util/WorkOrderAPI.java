@@ -1883,8 +1883,8 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
           Map<String, Object> resMap = null;
           Map<String, Object> map = entry.getValue();
           
-          if(resourceMap.containsKey((long)map.get("resourceId"))) {
-        	 resMap = resourceMap.get((long)map.get("resourceId"));
+          if(resourceMap.containsKey((long)map.get("buildingId"))) {
+        	 resMap = resourceMap.get((long)map.get("buildingId"));
           }
           else {
         	  resMap = new HashMap<String, Object>();
