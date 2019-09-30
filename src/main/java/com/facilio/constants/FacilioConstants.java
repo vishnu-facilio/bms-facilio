@@ -70,6 +70,7 @@ public class FacilioConstants {
 		public static final String TOOL_TYPES="tooltypes";
 		public static final String ITEM_TYPES="itemtypes";
 		public static final String STORE_ROOM="storeroom";
+		public static final String DEVICES="devices";
 	}
 
 	public static class ContextNames {
@@ -1120,6 +1121,13 @@ public class FacilioConstants {
 
 
 		public static final String PM_PLANNER_SETTINGS="pm_planner_settings";
+		public static final String DEVICE_CODE="device_code";
+		public static final String DEVICE_INFO="device_info";
+		public static final String DEVICES_LIST="deviceList";
+		public static final String DEVICE_DETAILS="deviceDetails";
+		
+		
+		
 		
 		public static final String ATTENDANCE = "attendance";
 		public static final String ATTENDANCE_TRANSACTIONS = "attendanceTransaction";
@@ -1367,6 +1375,7 @@ public class FacilioConstants {
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
 
 			classMap.put(Reservation.RESERVATION, ReservationContext.class);
+			classMap.put(ModuleNames.DEVICES, DeviceContext.class);
 			classMap.put(Reservation.RESERVATIONS_INTERNAL_ATTENDEE, InternalAttendeeContext.class);
 			classMap.put(Reservation.RESERVATIONS_EXTERNAL_ATTENDEE, ExternalAttendeeContext.class);
 

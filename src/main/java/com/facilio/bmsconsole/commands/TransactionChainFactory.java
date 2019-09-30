@@ -3526,6 +3526,27 @@ public class TransactionChainFactory {
 			c.addCommand(new SchedulePMWorkOrderGenerationCommand());
 			return c;
 		}
+		public static FacilioChain addDeviceChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateCodeAndGetDeviceMetaCommand());
+			c.addCommand(getAddAssetChain());
+			c.addCommand(new ConnectDeviceCommand());
+			c.addCommand(getUpdateAssetChain());
+			return c;
+		}
+	    public static FacilioChain connectDeviceChain()
+	    {	
+	    	FacilioChain c = getDefaultChain();
+	    	
+			c.addCommand(new ValidateCodeAndGetDeviceMetaCommand());			
+			c.addCommand(new ConnectDeviceCommand());
+			c.addCommand(getUpdateAssetChain());
+			return c;
+	    	
+	    }
+	    
+	    
+		
 }
 
 

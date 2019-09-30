@@ -63,13 +63,7 @@ public class DeviceContext extends AssetContext {
 		this.associatedResource = associatedResource;
 	}
 
-	public boolean isConnected() {
-		return isConnected;
-	}
 
-	public void setConnected(boolean isConnected) {
-		this.isConnected = isConnected;
-	}
 
 	public long getConnectedTime() {
 		return connectedTime;
@@ -83,7 +77,17 @@ public class DeviceContext extends AssetContext {
 	private DeviceType deviceType;
 	private KioskType kioskType;
 	private ResourceContext associatedResource;
-	private boolean isConnected;
+	boolean isDeviceConnected;
+
+
+	public boolean getIsDeviceConnected() {
+		return isDeviceConnected;
+	}
+
+	public void setIsDeviceConnected(boolean isDeviceConnected) {
+		this.isDeviceConnected = isDeviceConnected;
+	}
+
 	private long connectedTime;
     public static enum DeviceType implements FacilioEnum {
         TV("Tv"),
