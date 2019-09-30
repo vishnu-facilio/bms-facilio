@@ -15,6 +15,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -29,14 +30,15 @@ public class GetImportHistoryListCommand extends FacilioCommand {
 		Integer importMode = (Integer) context.get(FacilioConstants.ContextNames.IMPORT_MODE);
 		String moduleName = (String) context.get(ImportAPI.ImportProcessConstants.CHOOSEN_MODULE);
 		Long moduleId = (long) -1;
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = null;
 		if (moduleName != null) {
-			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			moduleId = bean.getModule(moduleName).getModuleId();
+			module = bean.getModule(moduleName);
+			moduleId = module.getModuleId();
 		}
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getImportProcessModule().getTableName())
 				.select(FieldFactory.getImportProcessFields())
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(), CommonOperators.IS_NOT_EMPTY ))
 				.orderBy("IMPORT_TIME desc");
 		if (count > 0) {
 			selectRecordBuilder.limit(count);
@@ -47,7 +49,10 @@ public class GetImportHistoryListCommand extends FacilioCommand {
 		if (moduleId > 0) {
 			selectRecordBuilder.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", moduleId.toString(), NumberOperators.EQUALS));
 		}
-
+		if (module.getName().equals(FacilioConstants.ContextNames.ASSET) || (module.getExtendModule() != null && module.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) 
+		{
+			selectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(), CommonOperators.IS_NOT_EMPTY ));
+		}
 		List<Map<String, Object>> props = selectRecordBuilder.get();
 		
 		List<ImportProcessContext> importContexts = new ArrayList<>();
