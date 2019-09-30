@@ -1,4 +1,6 @@
 
+<%@page import="com.facilio.iam.accounts.util.IAMOrgUtil"%>
+<%@page import="com.facilio.accounts.dto.Organization"%>
 <%@page import="com.facilio.modules.FieldType"%>
 <%@page import="com.facilio.modules.FieldFactory"%>
 <%@page import="java.util.Map"%>
@@ -52,19 +54,11 @@ field.setDataType(FieldType.NUMBER);
 field.setColumnName("ORGID");
 
 
-GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
-List<FacilioField> fields = new ArrayList<>();
-fields.add(field);
-select.select(fields);
-select.table("Organizations");
-
-List<Map<String, Object>> orgids = select.get();
-
-List<Map<String, Object>> props = new ArrayList<>();
-for(Map<String, Object> org :orgids) {
+List<Organization> orgs = IAMOrgUtil.getOrgs();
+for(Organization org :orgs) {
 	long assignedStateId = -1;
 
-	Long orgId = (Long) org.get("orgId");
+	Long orgId = (Long) org.getId();
 	AccountUtil.setCurrentAccount(orgId);
 	
 	Map<String, String> paramValues = new HashMap<>(); 
