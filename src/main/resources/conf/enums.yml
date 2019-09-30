@@ -16,5 +16,5 @@ enums:
   - name: DeviceType
     enumClassName: com.facilio.bmsconsole.context.DeviceContext$DeviceType
 
-    - name: KioskType
+  - name: KioskType
     enumClassName: com.facilio.bmsconsole.context.DeviceContext$KioskType

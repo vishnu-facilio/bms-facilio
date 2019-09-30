@@ -4301,4 +4301,31 @@
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.AssetMovementAction" method="listAssetMovement" />
 	</package>
+	
+	<package name="deviceClientApi" namespace="/api/v2/deviceclient" extends="v2Api">
+		<action name="connect" class="com.facilio.bmsconsole.actions.LoginAction" method="tvAccount">
+			
+		</action>
+		
+		<action name="generatecode" class="com.facilio.bmsconsole.actions.DeviceClientAction" method="generateCode">
+			<param name="auth">false</param>
+		</action>
+		
+		<action name="validatecode" class="com.facilio.bmsconsole.actions.DeviceClientAction" method="validateCode">
+			<param name="auth">false</param>					
+		</action>
+	</package>
+	
+	<package name="deviceApi" namespace="/api/v2/devices" extends="v2Api">
+			<action name="add" class="com.facilio.bmsconsole.actions.DevicesAction" method="addDevice">							
+			</action>
+			<action name="connect" class="com.facilio.bmsconsole.actions.DevicesAction" method="connectDevice">							
+			</action>
+			<action name="update" class="com.facilio.bmsconsole.actions.DevicesAction" method="updateDevice">							
+			</action>
+			<action name="list" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceList">							
+			</action>
+			<action name="getdetails" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceDetails">							
+			</action>
+	</package>
 </struts>

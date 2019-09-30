@@ -6616,6 +6616,31 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getDevicePasscodesFields() {
+		FacilioModule module = ModuleFactory.getDevicePasscodesModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("code", "CODE", module, FieldType.STRING));
+		fields.add(getField("generatedTime", "GENERATED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));
+		fields.add(getField("connectedDeviceId", "CONNECTED_DEVICE_ID", module, FieldType.NUMBER));
+		fields.add(getField("info", "INFO", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getConnectedDeviceFields() {
+		FacilioModule module = ModuleFactory.getConnectedDevicesModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField("deviceId", "DEVICE_ID",module,FieldType.NUMBER));
+		fields.add(getField("orgId", "ORGID",module,FieldType.NUMBER));
+		fields.add(getField("sessionStartTime", "SESSION_START_TIME",module,FieldType.NUMBER));
+		
+		return fields;
+	}
+
 
 
 	
