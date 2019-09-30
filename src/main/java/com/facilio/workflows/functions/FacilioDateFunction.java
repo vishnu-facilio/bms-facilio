@@ -580,6 +580,50 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			
 		}
 	},
+	PREVIOUS_QUARTER_NAME(29,"getPreviousQuarterName") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			ZonedDateTime zdt = null;
+			if(objects == null || objects.length == 0) {
+			     zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getMonthStartTime(-1,false));
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				zdt = DateTimeUtil.getZonedDateTime(startTime);
+			}
+			int quarter = (zdt.getMonth().getValue() / 3) + 1;
+			return "Q"+quarter+" "+zdt.getYear();
+		
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	PREVIOUS_LAST_QUARTER_NAME(30,"getPreviousLastQuarterName") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			ZonedDateTime zdt = null;
+			if(objects == null || objects.length == 0) {
+			     zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getMonthStartTime(-6,false));
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				zdt = DateTimeUtil.getZonedDateTime(startTime);
+			}
+			int quarter = (zdt.getMonth().getValue() / 3) + 1;
+			return "Q"+quarter+" "+zdt.getYear();
+		
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
