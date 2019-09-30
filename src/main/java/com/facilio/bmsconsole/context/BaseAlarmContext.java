@@ -158,6 +158,7 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		RCA_ALARM,
 		READING_RCA_ALARM,
 		BMS_ALARM,
+		VIOLATION_ALARM
 		;
 		
 		public int getIndex() {

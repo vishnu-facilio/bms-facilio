@@ -279,6 +279,7 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		NORMAL,
 		ANOMALY,
 		READING,
+		VIOLATION
 		;
 
 		public int getIndex() {

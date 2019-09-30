@@ -217,7 +217,8 @@ public class PageWidget {
  		ANOMALY_METRICS("anomalyMetrics"),
  		FORMULA_LOG("formulaLog"),
 		ALARM_DETAILS("alarmDetails"),
- 		ALARM_REPORT("alarmReport");
+ 		ALARM_REPORT("alarmReport"),
+ 		KPI_DETAILS_WIDGET("kpiDetailsWidget"),
  		;
 		
 		private String name;

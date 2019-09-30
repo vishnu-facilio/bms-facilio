@@ -282,6 +282,7 @@ public class ActionAPI {
 								setMobileTemplate(action);
 								break;
 							case ADD_ALARM:
+							case ADD_VIOLATION_ALARM:
 								setJsonTemplate(action, rule, Type.ALARM);
 								break;
 							case CREATE_WO_FROM_ALARM:
@@ -449,12 +450,5 @@ public class ActionAPI {
 		}
 		action.setTemplate(woTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), woTemplate);
-	}
-	public static ActionContext getDefaultPropsForDowntimeAction(ActionType actionType){
-		ActionContext action=new ActionContext();
-		action.setActionType(actionType);
-		action.setStatus(Boolean.TRUE);
-		action.setTemplateJson(new JSONObject());
-		return action;
 	}
 }

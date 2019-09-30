@@ -30,7 +30,7 @@ public class UpdateMVProjectCommand extends FacilioCommand {
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, mvProjectContext.getSaveGoalFormulaField());
 				MVUtil.fillFormulaFieldDetailsForUpdate(mvProjectContext.getSaveGoalFormulaField(), mvProjectWrapper.getMvProject(),null,null,context);
 				
-				FacilioChain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
+				FacilioChain updateEnPIChain = TransactionChainFactory.updateFormulaChain();
 				updateEnPIChain.execute(context);
 			}
 			else {

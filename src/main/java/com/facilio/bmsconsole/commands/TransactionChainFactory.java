@@ -936,13 +936,15 @@ public class TransactionChainFactory {
 			c.addCommand(new AddFormulaFieldCommand());
 			c.addCommand(new SetValidationRulesContextCommand());
 			c.addCommand(new AddValidationRulesCommand());
+			c.addCommand(new AddKPIViolationRuleCommand());
 			return c;
 		}
 		
-		public static FacilioChain addDerivationFormulaChain() {
+		public static FacilioChain updateFormulaChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(addFormulaFieldChain());
-			c.addCommand(new UpdateDerivationCommand());
+			c.addCommand(new UpdateFormulaCommand());
+			c.addCommand(new AddValidationRulesCommand());
+			c.addCommand(new AddKPIViolationRuleCommand());
 			return c;
 		}
 		

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -802,28 +803,30 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.READING_RULES_LIST,readingRules);
 		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, getFieldReadingRules());
 
-		if (formula.getInterval() == -1) {
-			int interval = ReadingsAPI.getDataInterval(formula.getWorkflow());
-			formula.setInterval(interval);
-		}
-
 		FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 		addEnpiChain.execute(context);
+		
+		setResult(ContextNames.FORMULA_FIELD, formula);
 		
 		return SUCCESS;
 	}
 	
 	public String editFormula() throws Exception {
-		FacilioContext context = new FacilioContext();
+		FacilioChain updateEnPIChain = TransactionChainFactory.updateFormulaChain();
+		FacilioContext context = updateEnPIChain.getContext();
+		
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
 			
 	    List<List<ReadingRuleContext>> readingRules = getFieldReadingRules();
-	    List<List<List<ActionContext>>> actionsList = readingRules.stream().map(l -> {return l.stream().map(ReadingRuleContext::getActions).collect(Collectors.toList());}).collect(Collectors.toList());
-		   readingRules.stream().flatMap(List::stream).forEach((r) -> {
-			// r.setReadingFieldId(getField().getFieldId());
-			r.setModuleId(getModuleId());
-		});
+	    List<List<List<ActionContext>>> actionsList = new ArrayList<>();
+	    if (CollectionUtils.isNotEmpty(readingRules)) {
+		    	actionsList = readingRules.stream().map(l -> {return l.stream().map(ReadingRuleContext::getActions).collect(Collectors.toList());}).collect(Collectors.toList());
+		    	readingRules.stream().flatMap(List::stream).forEach((r) -> {
+		    		// r.setReadingFieldId(getField().getFieldId());
+		    		r.setModuleId(getModuleId());
+		    	});
+	    }
 		context.put(FacilioConstants.ContextNames.READING_RULES_LIST, readingRules);
 		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actionsList);
 		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, getDelReadingRulesIds());
@@ -833,8 +836,7 @@ public class ReadingAction extends FacilioAction {
 			WorkflowUtil.getWorkflowContextFromString(workflow.getWorkflowString(), workflow);
 		}
 		
-		FacilioChain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
-		updateEnPIChain.execute(context);
+		updateEnPIChain.execute();
 		
 		setResult(FacilioConstants.ContextNames.MESSAGE, context.get(FacilioConstants.ContextNames.RESULT));
 		
@@ -979,7 +981,7 @@ public class ReadingAction extends FacilioAction {
 	/**********  V2 apis *************/
 	
 	public String getFormulaField() throws Exception {
-		formula = FormulaFieldAPI.getFormulaField(id);
+		formula = FormulaFieldAPI.getFormulaField(id, true);
 		setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
 		return SUCCESS;
 	}

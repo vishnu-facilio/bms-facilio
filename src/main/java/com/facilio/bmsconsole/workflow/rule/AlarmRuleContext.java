@@ -12,7 +12,6 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 public class AlarmRuleContext {
 	
 	private ReadingRuleContext preRequsite;
-	WorkflowRuleContext reportDowntimeRule;
 	List<ReadingRuleContext> alarmTriggerRuleVersionHistory;
 	Map<Long,List<ReadingRuleContext>> alarmRCARulesVersionHistory;
 	ReadingRuleContext alarmTriggerRule;
@@ -166,13 +165,6 @@ public class AlarmRuleContext {
 		this.isAutoClear = isAutoClear;
 	}
 	
-	public WorkflowRuleContext getReportDowntimeRule() {
-		return reportDowntimeRule;
-	}
-
-	public void setReportDowntimeRule(WorkflowRuleContext reportDowntimeRule) {
-		this.reportDowntimeRule = reportDowntimeRule;
-	}
 	public Map<String,Long> getNameVsIdMap() {
 		Map<String,Long> ruleNameVsIdMap = new HashMap<>();
 		

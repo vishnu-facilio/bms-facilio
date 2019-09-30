@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -72,6 +73,7 @@ public class FormulaFieldAPI {
 	public static long addFormulaField (FormulaFieldContext formula) throws Exception {
 		updateChildIds(formula);
 		validateFormula(formula, true);
+		formula.setCreatedTime(System.currentTimeMillis());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getFormulaFieldModule().getTableName())
 				.fields(FieldFactory.getFormulaFieldFields())
@@ -192,6 +194,10 @@ public class FormulaFieldAPI {
 	}
 	
 	public static FormulaFieldContext getFormulaField(long id) throws Exception {
+		return getFormulaField(id, false);
+	}
+	
+	public static FormulaFieldContext getFormulaField(long id, boolean fetchChildren) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -201,7 +207,7 @@ public class FormulaFieldAPI {
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		
-		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get(), false);
+		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get(), fetchChildren);
 		if (enpiList != null && !enpiList.isEmpty()) {
 			return enpiList.get(0);
 		}
@@ -530,6 +536,7 @@ public class FormulaFieldAPI {
 				fetchMatchedResources(formula, fetchResources);
 				FacilioModule module = modBean.getModule(formula.getModuleId());
 				formula.setModuleName(module.getName());
+				setKPITarget(formula);
 				if (fetchResources && formula.getResourceId() != -1) {
 					resourceIds.add(formula.getResourceId());
 				}
@@ -1185,7 +1192,11 @@ public class FormulaFieldAPI {
 		}
 	}
 	
-	public static int getDataInterval(FormulaFieldContext formula) {
+	public static int getDataInterval(FormulaFieldContext formula) throws Exception {
+		if (formula.getInterval() == -1 && formula.getTriggerTypeEnum() != TriggerType.SCHEDULE && formula.getWorkflow() != null) {
+			formula.setInterval(ReadingsAPI.getDataInterval(formula.getWorkflow()));
+		}
+		
 		switch (formula.getTriggerTypeEnum()) {
 			case SCHEDULE:
 				switch (formula.getFrequencyEnum()) {
@@ -1210,6 +1221,15 @@ public class FormulaFieldAPI {
 				break;
 		}
 		return -1;
+	}
+	
+	private static void setKPITarget(FormulaFieldContext formula) throws Exception {
+		if (formula.getViolationRuleId() != -1) {
+			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(formula.getViolationRuleId(), true, false);
+			formula.setViolationRule(rule);
+			Condition condition = rule.getCriteria().getConditions().values().stream().findFirst().get();
+			formula.setTarget(Double.parseDouble(condition.getValue()));
+		}
 	}
 
 }

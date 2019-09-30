@@ -1610,13 +1610,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain updateFormulaChain() {
-		FacilioChain c = FacilioChain.getTransactionChain();
-		c.addCommand(new UpdateFormulaCommand());
-		c.addCommand(new AddValidationRulesCommand());
-		return c;
-	}
-	
 	public static FacilioChain deleteFormulaChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteFormulaCommand());

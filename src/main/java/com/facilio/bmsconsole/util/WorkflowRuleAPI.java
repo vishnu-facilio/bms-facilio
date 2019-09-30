@@ -20,7 +20,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
@@ -963,37 +962,5 @@ public class WorkflowRuleAPI {
 		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, executionTime);
 		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, context,true, Collections.singletonList(rule.getActivityTypeEnum()));
 	}
-	
-	private static void fillDefaultPropsForDowntimeRule(WorkflowRuleContext workFlowRule, ReadingRuleContext preRequsiteRule, WorkflowRuleContext.RuleType ruleType, Long parentId)throws Exception {
-		workFlowRule.setCriteriaId(-1l);
-		workFlowRule.setWorkflowId(-1l);
-		workFlowRule.setRuleType(ruleType);
-		workFlowRule.setName("ReportDowntimeRule");
-		workFlowRule.setModule(preRequsiteRule.getModule());
-		workFlowRule.setActivityType(preRequsiteRule.getActivityType());
-		workFlowRule.setStatus(true);
-		workFlowRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		workFlowRule.setParentRuleId(parentId);
-		workFlowRule.setOnSuccess(true);
-	}
 
-	private static void addReportDowntimeRule(AlarmRuleContext alarmRule) throws Exception {
-		if (alarmRule.isReportBreakdown()) {
-			if (alarmRule.getReportDowntimeRule() == null) {
-				alarmRule.setReportDowntimeRule(new WorkflowRuleContext());
-			}
-			WorkflowRuleContext reportDowntimeRule = alarmRule.getReportDowntimeRule();
-			fillDefaultPropsForDowntimeRule(reportDowntimeRule, alarmRule.getPreRequsite(),RuleType.REPORT_DOWNTIME_RULE, alarmRule.getPreRequsite().getId());
-			addWorkflowRule(reportDowntimeRule);
-		}
-	}
-
-	public static void UpdateReportDowntimeRule(AlarmRuleContext alarmRule) throws Exception {
-		WorkflowRuleContext existingReportDowntimeRule = getWorkflowRuleByRuletype(alarmRule.getPreRequsite().getId(), RuleType.REPORT_DOWNTIME_RULE);
-		if (alarmRule.isReportBreakdown() && existingReportDowntimeRule == null ) {
-			addReportDowntimeRule(alarmRule);
-		} else if ((!alarmRule.isReportBreakdown()) && existingReportDowntimeRule != null) {
-			deleteWorkFlowRules(Collections.singletonList(existingReportDowntimeRule.getId()));
-		}
-	}
 }

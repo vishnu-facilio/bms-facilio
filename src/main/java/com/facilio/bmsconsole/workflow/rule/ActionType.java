@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,6 +44,7 @@ import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.context.ViolationEventContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
@@ -82,6 +82,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
@@ -259,25 +260,8 @@ public enum ActionType {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
 					
 					BaseEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord,context);
-
-					context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
-					Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
-					if (isHistorical == null) {
-						isHistorical = false;
-					}
-
-					if (!isHistorical) {
-						FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
-						addEvent.execute(context);
-						if(currentRule.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) {
-							Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = (Map<String, PointedList<AlarmOccurrenceContext>>)context.get("alarmOccurrenceMap");
-							AlarmOccurrenceContext alarmOccuranceContext = alarmOccurrenceMap.entrySet().iterator().next().getValue().get(0);
-							context.put(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE, alarmOccuranceContext);
-						}
-						
-					} else {
-						processNewAlarmMeta((ReadingRuleContext) currentRule, (ResourceContext) ((ReadingContext) currentRecord).getParent(), ((ReadingContext) currentRecord).getTtime(), event, context);
-					}
+					addAlarm(event, obj, context, currentRule, currentRecord);
+					
 				} else {
 					if (obj != null) {
 						if (obj.containsKey("subject")) {
@@ -312,22 +296,6 @@ public enum ActionType {
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);
 			}
-		}
-
-
-		//Assuming readings will come in ascending order of time and this is needed only for historical
-		private void processNewAlarmMeta (ReadingRuleContext rule, ResourceContext resource, long time, BaseEventContext event, Context context) throws Exception {
-			Map<Long, ReadingRuleAlarmMeta> metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
-			ReadingRuleAlarmMeta alarmMeta = metaMap.get(resource.getId());
-			if (alarmMeta == null) {
-				metaMap.put(resource.getId(), addAlarmMeta(event.getAlarmOccurrence(), resource, rule));
-			} else if (alarmMeta.isClear()) {
-				alarmMeta.setClear(false);
-			}
-		}
-
-		private ReadingRuleAlarmMeta addAlarmMeta (AlarmOccurrenceContext alarmOccurence, ResourceContext resource, ReadingRuleContext rule) throws Exception {
-			return ReadingRuleAPI.constructNewAlarmMeta(-1, resource, rule, false);
 		}
 
 		//Assuming readings will come in ascending order of time
@@ -1077,6 +1045,7 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
 		{
 
+			try {
 			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
 			workflowContext.setLogNeeded(true);
 
@@ -1091,6 +1060,10 @@ public enum ActionType {
 			FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
 
 			chain.execute(context);
+			}
+			catch (Exception e) {
+				System.out.println(e);
+			}
 
 //			Map<String,Object> currentRecordMap = new HashMap<>();
 //			
@@ -1167,6 +1140,40 @@ public enum ActionType {
 		}
 
 	},
+	
+	ADD_VIOLATION_ALARM (25) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+				Object currentRecord) throws Exception {
+			try {
+				
+				BaseEventContext event = null;
+				ReadingRuleContext rule = ((ReadingRuleContext)currentRule);
+				
+				if (obj == null) {
+					event = new ViolationEventContext();
+				}
+				else {
+					obj.remove("alarmType");
+					event = FieldUtil.getAsBeanFromJson(obj, ViolationEventContext.class);
+				}
+				event.setSeverityString("Minor");
+				ViolationEventContext violationEvent = (ViolationEventContext)event;
+				violationEvent.setFormulaFieldId((long)obj.remove("formulaId"));
+				
+				rule.addDefaultEventProps(event, obj, (ReadingContext) currentRecord);
+				
+				addAlarm(event, obj, context, currentRule, currentRecord);
+				
+				event = null;
+			} catch (Exception e) {
+				LOGGER.error("Exception occurred ", e);
+			}
+		}
+		
+	}
+	
 	;
 
 	private static AlarmOccurrenceContext getAlarmOccurrenceFromAlarm(BaseAlarmContext baseAlarm) throws Exception {
@@ -1344,5 +1351,41 @@ public enum ActionType {
 
 		FacilioChain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(woContext);
+	}
+	
+	private static void addAlarm (BaseEventContext event, JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
+		context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
+		Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
+		if (isHistorical == null) {
+			isHistorical = false;
+		}
+
+		if (!isHistorical) {
+			FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
+			addEvent.execute(context);
+			if(currentRule.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) {
+				Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = (Map<String, PointedList<AlarmOccurrenceContext>>)context.get("alarmOccurrenceMap");
+				AlarmOccurrenceContext alarmOccuranceContext = alarmOccurrenceMap.entrySet().iterator().next().getValue().get(0);
+				context.put(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE, alarmOccuranceContext);
+			}
+			
+		} else {
+			processNewAlarmMeta((ReadingRuleContext) currentRule, (ResourceContext) ((ReadingContext) currentRecord).getParent(), ((ReadingContext) currentRecord).getTtime(), event, context);
+		}
+	}
+	
+	//Assuming readings will come in ascending order of time and this is needed only for historical
+	private static void processNewAlarmMeta (ReadingRuleContext rule, ResourceContext resource, long time, BaseEventContext event, Context context) throws Exception {
+		Map<Long, ReadingRuleAlarmMeta> metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+		ReadingRuleAlarmMeta alarmMeta = metaMap.get(resource.getId());
+		if (alarmMeta == null) {
+			metaMap.put(resource.getId(), addAlarmMeta(event.getAlarmOccurrence(), resource, rule));
+		} else if (alarmMeta.isClear()) {
+			alarmMeta.setClear(false);
+		}
+	}
+
+	private static ReadingRuleAlarmMeta addAlarmMeta (AlarmOccurrenceContext alarmOccurence, ResourceContext resource, ReadingRuleContext rule) throws Exception {
+		return ReadingRuleAPI.constructNewAlarmMeta(-1, resource, rule, false);
 	}
 }

@@ -359,7 +359,7 @@ public class ReadOnlyChainFactory {
 	
 	public static FacilioChain executeWorkflowsForReadingChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES, RuleType.PM_READING_TRIGGER,RuleType.REPORT_DOWNTIME_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES, RuleType.PM_READING_TRIGGER,RuleType.REPORT_DOWNTIME_RULE, RuleType.READING_VIOLATION_RULE));
 		return c;
 	}
 	

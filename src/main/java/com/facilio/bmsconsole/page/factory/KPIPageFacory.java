@@ -19,7 +19,7 @@ public class KPIPageFacory extends PageFactory {
 		tab1.addSection(tab1Sec1);
 		
 		addTimeWidget(tab1Sec1);
-		addDetailsWidget(tab1Sec1);
+		addKpiDetailsWidget(tab1Sec1);
 		addMetersWidget(tab1Sec1);
 		addViolationsWidget(tab1Sec1);
 		addTargetWidget(tab1Sec1);
@@ -42,6 +42,12 @@ public class KPIPageFacory extends PageFactory {
 		
 		return page;
 		
+	}
+	
+	private static void addKpiDetailsWidget(Section section) {
+		PageWidget pageWidget = new PageWidget(WidgetType.KPI_DETAILS_WIDGET);
+		pageWidget.addToLayoutParams(section, 24, 6);
+		section.addWidget(pageWidget);
 	}
 	
 	private static void addMetersWidget(Section section) {

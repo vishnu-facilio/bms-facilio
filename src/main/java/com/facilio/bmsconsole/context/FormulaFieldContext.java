@@ -3,7 +3,10 @@ package com.facilio.bmsconsole.context;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.struts2.json.annotations.JSON;
+
 import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
@@ -277,6 +280,47 @@ public class FormulaFieldContext implements Serializable {
 		return false;
 	}
 	
+	private double target = -1;
+	public double getTarget() {
+		return target;
+	}
+	public void setTarget(double target) {
+		this.target = target;
+	}
+	
+	private long createdTime = -1;
+	public long getCreatedTime() {
+		return createdTime;
+	}
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
+	
+	private long modifiedTime = -1;
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+	
+	private long violationRuleId = -1;
+	public long getViolationRuleId() {
+		return violationRuleId;
+	}
+	public void setViolationRuleId(long violationRuleId) {
+		this.violationRuleId = violationRuleId;
+	}
+	
+	private WorkflowRuleContext violationRule;
+	@JSON(serialize=false)
+	public WorkflowRuleContext getViolationRule() {
+		return violationRule;
+	}
+	public void setViolationRule(WorkflowRuleContext violationRule) {
+		this.violationRule = violationRule;
+	}
+
 	public enum TriggerType {
 		SCHEDULE,
 		POST_LIVE_READING,
