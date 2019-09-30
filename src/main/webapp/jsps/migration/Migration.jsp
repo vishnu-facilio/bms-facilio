@@ -57,6 +57,7 @@ field.setColumnName("ORGID");
 List<Organization> orgs = IAMOrgUtil.getOrgs();
 for(Organization org :orgs) {
 	long assignedStateId = -1;
+	AccountUtil.cleanCurrentAccount();
 
 	Long orgId = (Long) org.getId();
 	AccountUtil.setCurrentAccount(orgId);
