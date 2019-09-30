@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,8 +58,6 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
 import com.google.common.collect.ArrayListMultimap;
 
@@ -80,16 +77,12 @@ public class ProcessImportCommand extends FacilioCommand {
 		ImportProcessContext importProcessContext = (ImportProcessContext) c.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();
 		fieldMapParsing(fieldMapping);
-		FileStore fs = FacilioFactory.getFileStore();
-		InputStream ins = fs.readFile(importProcessContext.getFileId());
-		ArrayList<String> modulesPlusFields = new ArrayList(fieldMapping.keySet());
 		Map<String, Long> lookupHolder;
 		String module = importProcessContext.getModule().getName().toString();
 		
 		JSONObject importMeta = importProcessContext.getImportJobMetaJson();
 		JSONObject dateFormats = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
 
-		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 		List<Map<String, Object>> allRows = ImportAPI.getValidatedRows(importProcessContext.getId());
 
 		boolean isNewLookupFormat = isNewLookupFormat(importProcessContext);
