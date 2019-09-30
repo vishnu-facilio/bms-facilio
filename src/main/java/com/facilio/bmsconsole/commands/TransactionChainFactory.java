@@ -68,6 +68,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultReportCommand());
 			c.addCommand(new AddDefaultUnitsCommand());
 			c.addCommand(new AddDefaultGraphicsCommand());
+			c.addCommand(new AddDefaultWoStateflowCommand());
 			c.addCommand(new AddEventModuleCommand());
 			//add command to insert into product tables
 			c.addCommand(new AddOrgInfoCommand());

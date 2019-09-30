@@ -16,7 +16,8 @@
 <%@page import="com.facilio.cards.util.CardUtil"%>
 <%@page import="com.facilio.bmsconsole.jobs.*"%>
 <%@page import="com.facilio.tasker.job.JobContext"%>
-
+<%@page import="java.util.HashMap" %>
+<%@page import="java.io.File" %>
 <%@page import="com.facilio.workflows.util.WorkflowUtil"%>
 <%@page import="com.facilio.bmsconsole.util.ReadingsAPI"%>
 <%@page import="com.facilio.bmsconsole.util.ResourceAPI"%>
@@ -24,86 +25,25 @@
 <%@page import="com.facilio.accounts.util.AccountUtil"%>
 <%@page import="com.facilio.accounts.util.AccountUtil"%>
 <%@page import="com.facilio.bmsconsole.actions.DashboardAction,com.facilio.constants.*"%>
-
+<%@page import="com.facilio.bmsconsole.commands.AddDefaultWoStateflowCommand"%>
+<%@page import="com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext"%>
+<%@page import="com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext"%>
+<%@page import="com.facilio.beans.ModuleBean"%>
+<%@page import="com.facilio.modules.FacilioModule" %>
+<%@page import="com.facilio.bmsconsole.util.StateFlowRulesAPI" %>
+<%@page import="com.facilio.fw.BeanFactory" %>
+<%@page import="com.facilio.bmsconsole.util.TicketAPI" %>
+<%@page import="com.facilio.modules.FacilioStatus" %>
+<%@page import="com.facilio.db.util.SQLScriptRunner" %>
+<%@page import="com.facilio.db.builder.DBUtil" %>
+<%@page import="com.facilio.constants.FacilioConstants.ContextNames" %>
+<%@page import="com.facilio.db.util.DBConf" %>
+<%@page import="com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext" %>
 <%
 
-out.println("started123");
+out.println("Starting wo stateflow migration\n");
 
-
-List<Long> wfIgnoreIds = new ArrayList<>();		
-// with if and iterator
-wfIgnoreIds.add(3288l);
-wfIgnoreIds.add(3397l);
-wfIgnoreIds.add(3406l);
-wfIgnoreIds.add(3624l);
-wfIgnoreIds.add(3825l);
-wfIgnoreIds.add(4691l);
-wfIgnoreIds.add(4933l);
-
-// with if in expr or result
-wfIgnoreIds.add(4691l);
-wfIgnoreIds.add(5536l);
-wfIgnoreIds.add(5970l);
-wfIgnoreIds.add(5971l);
-wfIgnoreIds.add(5972l);
-wfIgnoreIds.add(5975l);
-wfIgnoreIds.add(5977l);
-wfIgnoreIds.add(5978l);
-wfIgnoreIds.add(5983l);
-wfIgnoreIds.add(5984l);
-wfIgnoreIds.add(5986l);
-wfIgnoreIds.add(7227l);
-wfIgnoreIds.add(7537l);
-wfIgnoreIds.add(7599l);
-wfIgnoreIds.add(2192l);
-wfIgnoreIds.add(2269l);
-wfIgnoreIds.add(2283l);
-wfIgnoreIds.add(2285l);
-wfIgnoreIds.add(2600l);
-wfIgnoreIds.add(2601l);
-wfIgnoreIds.add(2602l);
-wfIgnoreIds.add(2717l);
-wfIgnoreIds.add(2718l);
-wfIgnoreIds.add(2719l);
-wfIgnoreIds.add(2720l);
-wfIgnoreIds.add(2721l);
-wfIgnoreIds.add(2820l);
-wfIgnoreIds.add(2838l);
-wfIgnoreIds.add(3124l);
-wfIgnoreIds.add(3125l);
-wfIgnoreIds.add(3127l);
-wfIgnoreIds.add(3128l);
-wfIgnoreIds.add(3129l);
-wfIgnoreIds.add(3130l);
-wfIgnoreIds.add(3131l);
-wfIgnoreIds.add(3132l);
-wfIgnoreIds.add(3136l);
-wfIgnoreIds.add(3137l);
-wfIgnoreIds.add(3138l);
-wfIgnoreIds.add(3139l);
-wfIgnoreIds.add(3140l);
-wfIgnoreIds.add(3141l);
-wfIgnoreIds.add(3142l);
-wfIgnoreIds.add(3167l);
-wfIgnoreIds.add(3169l);
-wfIgnoreIds.add(3191l);
-wfIgnoreIds.add(3192l);
-wfIgnoreIds.add(3194l);
-wfIgnoreIds.add(3339l);
-wfIgnoreIds.add(5289l);
-wfIgnoreIds.add(5530l);
-wfIgnoreIds.add(5607l);
-wfIgnoreIds.add(5701l);
-wfIgnoreIds.add(5702l);
-wfIgnoreIds.add(5731l);
-wfIgnoreIds.add(5753l);
-wfIgnoreIds.add(7052l);
-wfIgnoreIds.add(7203l);
-wfIgnoreIds.add(7205l);
-wfIgnoreIds.add(7228l);
-wfIgnoreIds.add(7499l);
-wfIgnoreIds.add(7500l);
-wfIgnoreIds.add(7508l);
+File INSERT_STATEFLOW_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/db/" + DBConf.getInstance().getDBName() + "/defaultWOStateflow.sql").getFile());
 
 FacilioField field = new FacilioField();
 field.setName("orgId");
@@ -122,55 +62,56 @@ List<Map<String, Object>> orgids = select.get();
 
 List<Map<String, Object>> props = new ArrayList<>();
 for(Map<String, Object> org :orgids) {
+	long assignedStateId = -1;
+
+	Long orgId = (Long) org.get("orgId");
+	AccountUtil.setCurrentAccount(orgId);
 	
-	Long orgid = (Long) org.get("orgId");
+	Map<String, String> paramValues = new HashMap<>(); 
+	paramValues.put("orgId", String.valueOf(orgId));
+
+	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
+	FacilioModule module = modBean.getModule(ContextNames.WORK_ORDER);
 	
-	if(orgid != 75) {
+	if(module == null) {
 		continue;
 	}
 	
-	AccountUtil.setCurrentAccount(orgid);
+	StateFlowRuleContext stateflowContext = StateFlowRulesAPI.getDefaultStateFlow(module);
+
+	if(stateflowContext.getDiagramJson() != null) {
+		continue;
+	}
 	
-	out.println("orgid -- "+orgid);
+	out.println("\nOrgId: " + String.valueOf(orgId));
+	
+	paramValues.put("stateflowId", String.valueOf(stateflowContext.getId()));
 
-	Condition condition1 = CriteriaAPI.getOrgIdCondition(orgid, ModuleFactory.getWorkflowModule());
-	Condition condition2 = CriteriaAPI.getCondition("IS_V2", "isV2Script", Boolean.FALSE.toString(), BooleanOperators.IS);
-	Criteria criteria = new Criteria();
-	criteria.addAndCondition(condition1);
-	criteria.addAndCondition(condition2);
+	List<WorkflowRuleContext> transitions = StateFlowRulesAPI.getAllStateTransitionList(stateflowContext);
+	List<FacilioStatus> states = TicketAPI.getAllStatus(module, true);
 
-	List<WorkflowContext> wfs = WorkflowUtil.getWorkflowContext(criteria);
-
-	for(WorkflowContext workflow:wfs) {
-		if(wfIgnoreIds.contains(workflow.getId())) {
-			continue;
+	for (FacilioStatus state :states) {
+		if(state.getStatus().equals("Assigned")) {
+			assignedStateId = state.getId();
 		}
-		try {
-			out.println("current wf -- "+workflow.getId());
-			workflow = WorkflowUtil.convertOldWorkflowToNew(workflow.getId());
-			
-			boolean res = workflow.validateWorkflow();
-			
-			if(!res) {
-				out.println(workflow.getId()+" error occurs -----"+ workflow.getErrorListener().getErrorsAsString());
-			}
-			else {
-				out.println(workflow.getId()+" -- passed");
-			}
-		 }
-		catch(Exception e) {
-			if(e.getMessage() != null && e.getMessage().contains("Workflow Contains '.'"))  {
-				out.println("workflow With . fields  -- "+workflow.getId());
-			}
-			if(e.getMessage() != null && e.getMessage().contains("Content is not allowed in prolog"))  {
-				out.println("xml parse exception  -- "+workflow.getId());
-			}
-			else {
-				out.println("exception occured  -- "+workflow.getId() +" " +e.getMessage());
-			}
+		paramValues.put(state.getStatus(), String.valueOf(state.getId()));
+	}
+	
+	for(WorkflowRuleContext t :transitions) {
+		StateflowTransitionContext transition = (StateflowTransitionContext) t;
+
+		if(transition.getName().equals("Close") && transition.getFromStateId() == assignedStateId) {
+			paramValues.put("Close-1", String.valueOf(t.getId()));
+		} else {
+			paramValues.put(t.getName(), String.valueOf(t.getId()));	
 		}
 	}
+
+
+	System.out.println(paramValues);
+	SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_STATEFLOW_SQL, true, paramValues, DBUtil.getDBSQLScriptRunnerMode());
+	scriptRunner.runScript();
 }
 
-out.println("done123");
+out.println("\n\ncomplete");
 %>
