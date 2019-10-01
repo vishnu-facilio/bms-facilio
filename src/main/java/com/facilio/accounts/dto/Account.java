@@ -9,6 +9,7 @@ import org.apache.log4j.Level;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -113,6 +114,15 @@ public class Account implements AccountsInterface<User>, Serializable{
 	
 	public RemoteScreenContext getRemoteScreen() {
 		return this.remoteScreen;
+	}
+
+	private ConnectedDeviceContext connectedDevice;
+	public ConnectedDeviceContext getConnectedDevice() {
+		return connectedDevice;
+	}
+
+	public void setConnectedDevice(ConnectedDeviceContext connectedDevice) {
+		this.connectedDevice = connectedDevice;
 	}
 
 	public void setRemoteScreen(RemoteScreenContext remoteScreen) {

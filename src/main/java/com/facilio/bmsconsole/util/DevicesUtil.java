@@ -7,6 +7,8 @@ import java.util.Random;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
+import com.facilio.bmsconsole.context.DeviceContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -16,7 +18,9 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.screen.context.RemoteScreenContext;
 
 public class DevicesUtil {
 
@@ -150,6 +154,27 @@ public static int disconnectDevice(long deviceId, long orgId) throws Exception {
 	
 	
 	return deleteRecordBuilder.delete();
+}
+
+public static ConnectedDeviceContext getConnectedDevice(Long connectedDeviceId) throws Exception {
+	
+	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+	
+	builder.table(ModuleFactory.getConnectedDevicesModule().getTableName());
+	builder.select(FieldFactory.getConnectedDeviceFields());
+	builder.andCondition(CriteriaAPI.getIdCondition(connectedDeviceId+"", ModuleFactory.getConnectedDevicesModule()));
+	
+	List<Map<String, Object>> props = builder.get();
+	
+	
+	if(props!=null && props.size()>0)
+	{
+		ConnectedDeviceContext connectedDeviceContext = FieldUtil.getAsBeanFromMap(props.get(0), ConnectedDeviceContext.class);
+		return connectedDeviceContext;
+	}
+	
+	
+	return null;
 }
 
 

@@ -66,7 +66,7 @@ public String validateCode() {
 	                ServletActionContext.getRequest();
 	                HttpServletResponse response = ServletActionContext.getResponse();
 
-	                Cookie cookie = new Cookie("fc.deviceToken", jwt);
+	                Cookie cookie = new Cookie("fc.deviceTokenNew", jwt);
 	                cookie.setMaxAge(60 * 60 * 24 * 30);
 	                cookie.setPath("/");
 	                cookie.setHttpOnly(true);
