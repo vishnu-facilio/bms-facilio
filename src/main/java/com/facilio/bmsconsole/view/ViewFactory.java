@@ -469,13 +469,13 @@ public class ViewFactory {
 				.setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, views);
 
-		views.put("bmsAlarm", getBmsAlarm("bmsAlarm" , "All Bms Alarm", true).setOrder(order++));
-		views.put("bmsActive", getBmsAlarmSeverity("bmsActive", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("bmsAlarm", getBmsAlarm("bmsAlarm" , "All Alarms", true).setOrder(order++));
+		views.put("bmsActive", getBmsAlarmSeverity("bmsActive", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("unacknowledgedbmsalarm", getBmsAlarmUnacknowledged().setOrder(order++));
-		views.put("bmsCritical", getBmsAlarmSeverity("bmsCritical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
-		views.put("bmsMajor", getBmsAlarmSeverity("bmsMajor", "Bms Major Alarms", "Major", true).setOrder(order++));
-		views.put("bmsMinor", getBmsAlarmSeverity("bmsMinor", "Bms Minor Alarms", "Minor", true).setOrder(order++));
-		views.put("bmsCleared", getBmsAlarmSeverity("bmsCleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		views.put("bmsCritical", getBmsAlarmSeverity("bmsCritical", "Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("bmsMajor", getBmsAlarmSeverity("bmsMajor", "Major Alarms", "Major", true).setOrder(order++));
+		views.put("bmsMinor", getBmsAlarmSeverity("bmsMinor", "Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("bmsCleared", getBmsAlarmSeverity("bmsCleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.BMS_ALARM, views);
 		
 		
@@ -676,6 +676,13 @@ public class ViewFactory {
 		groupDetails.put("name", "bmsAlarmsViews");
 		groupDetails.put("displayName", "BMS Alarms");
 		groupDetails.put("views", bmsAlarms);
+		groupVsViews.add(groupDetails);
+		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "customalarms");
+		groupDetails.put("displayName", "Custom Views");
+		groupDetails.put("type", "custom");
+		groupDetails.put("views", null);
 		groupVsViews.add(groupDetails);
 		
 		moduleVsGroup.put(FacilioConstants.ContextNames.NEW_READING_ALARM, groupVsViews);

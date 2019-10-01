@@ -74,6 +74,10 @@ public class ViewAPI {
 				FacilioView view = FieldUtil.getAsBeanFromMap(viewProp, FacilioView.class);
 				viewMap.put(view.getId(), view);
 				viewIds.add(view.getId());
+				if (StringUtils.isEmpty(view.getModuleName()) && view.getModuleId() > 0) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					view.setModuleName(modBean.getModule(view.getModuleId()).getName());
+				}
 			}
 		} 
 		catch (Exception e) 
@@ -178,6 +182,10 @@ public class ViewAPI {
 				List<ViewField> columns = getViewColumns(view.getId());
 				view.setFields(columns);
 				view.setSortFields(getSortFields(view.getId()));
+				if (StringUtils.isEmpty(view.getModuleName()) && view.getModuleId() > 0) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					view.setModuleName(modBean.getModule(view.getModuleId()).getName());
+				}
 				return view;
 			}
 			
@@ -209,6 +217,10 @@ public class ViewAPI {
 				List<ViewField> columns = getViewColumns(view.getId());
 				view.setFields(columns);
 				view.setSortFields(getSortFields(view.getId()));
+				if (StringUtils.isEmpty(view.getModuleName()) && view.getModuleId() > 0) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					view.setModuleName(modBean.getModule(view.getModuleId()).getName());
+				}
 				return view;
 			}
 			

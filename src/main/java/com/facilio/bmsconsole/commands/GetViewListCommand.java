@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
@@ -33,8 +34,14 @@ public class GetViewListCommand extends FacilioCommand {
 			dbViews = ViewAPI.getAllViews(moduleName);
 		} else {
 			if (!moduleName.equals("approval")) {
-				moduleObj = modBean.getModule(moduleName);
-				dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
+				// Temp
+				if (moduleName.equals(ContextNames.ALARM_OCCURRENCE)) {
+					dbViews = ViewAPI.getAllViews(modBean.getModule(ContextNames.NEW_READING_ALARM).getModuleId());
+				}
+				else {
+					moduleObj = modBean.getModule(moduleName);
+					dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
+				}
 			}
 		}
 		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
