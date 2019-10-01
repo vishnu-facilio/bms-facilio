@@ -2842,7 +2842,7 @@ public class FieldFactory {
 		
 		fields.add(getField("connectionId", "CONNECTION_ID", module, FieldType.LOOKUP));
 		fields.add(getField("key", "KEY_STRING", module, FieldType.STRING));
-		fields.add(getField("value", "VALUE_STRING", module, FieldType.NUMBER));
+		fields.add(getField("value", "VALUE_STRING", module, FieldType.STRING));
 		
 		return fields;
 	}
