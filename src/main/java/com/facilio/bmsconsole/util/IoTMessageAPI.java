@@ -22,12 +22,13 @@ import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.client.AWSIotQos;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
-import com.facilio.agent.AgentKeys.AckMessageType;
 import com.facilio.agent.AgentUtil;
+import com.facilio.agent.CommandStatus;
 import com.facilio.agent.FacilioAgent;
+import com.facilio.agent.controller.context.Point.ConfigureStatus;
+import com.facilio.agent.controller.context.Point.SubscribeStatus;
 import com.facilio.agent.protocol.ProtocolUtil;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PublishData;
@@ -41,14 +42,13 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.serializable.SerializableConsumer;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.wms.message.WmsPublishResponse;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -102,17 +102,8 @@ public class IoTMessageAPI {
 			object.putAll(property);
 		}
 		else if (command != IotCommandType.DISCOVER && instances != null && !instances.isEmpty()) {
-			
-			JSONArray points = new JSONArray();
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			for(Map<String, Object> instance : instances) {
-				JSONObject point = new JSONObject();
-				ProtocolUtil.setPointData(controller.getControllerTypeEnum(), command, instance, point, modBean);
-				
-				points.add(point);
-			}
+			JSONArray points = ProtocolUtil.getPointsToPublish(controller, instances, command);
 			object.put("points", points);
-			
 		}
 
 		String objString = object.toJSONString();
@@ -174,16 +165,26 @@ public class IoTMessageAPI {
 		
 	}
 	
-	public static int acknowdledgeMessage (long id, String ackMessage) throws Exception {
+	public static int acknowdledgeMessage (long id, String ackMessage,String command) throws Exception {
 		Map<String, Object> prop;
 		boolean isExecuted = false;
-		if (StringUtils.isNotEmpty(ackMessage) && AckMessageType.EXECUTED.equals(ackMessage)) {
+		boolean isPing = false;
+		String ackField = "acknowledgeTime";
+		IotCommandType commandType = null;
+		
+		if (StringUtils.isNotEmpty(command)) {
+			commandType = IotCommandType.getCommandType(command);
+			isPing = commandType != null && IotCommandType.PING == commandType;
+		}
+		
+		if (StringUtils.isNotEmpty(ackMessage) && CommandStatus.EXECUTED.equals(ackMessage)) {
+			
 			isExecuted = true;
-			prop = Collections.singletonMap("responseAckTime", System.currentTimeMillis());
+			ackField = isPing ? "pingAckTime" : "responseAckTime";
 		}
-		else {
-			prop = Collections.singletonMap("acknowledgeTime", System.currentTimeMillis());
-		}
+		
+		prop = Collections.singletonMap(ackField, System.currentTimeMillis());
+		
 		FacilioChain updateChain = TransactionChainFactory.updateAckChain();
 		FacilioContext context = new FacilioContext();
 		context.put(AgentKeys.ID,id);
@@ -191,13 +192,53 @@ public class IoTMessageAPI {
 		context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,prop);
 		updateChain.execute(context);
 		if (isExecuted) {
-			handlePublishDataOnMessageAck(id);
+			if (isPing) {
+				PublishData publishData = getPublishData(id, true);
+				publishIotMessage(publishData, -1);
+			}
+			else {
+				handlePublishDataOnMessageAck(id, commandType);
+			}
 		}
 		
 		return 1;
 	}
 	
-	private static void handlePublishDataOnMessageAck(long messageId) throws Exception {
+	public static PublishData getPublishData(long id, boolean fetchMessages) throws Exception {
+		FacilioModule module = ModuleFactory.getPublishDataModule();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(FieldFactory.getPublishDataFields())
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+				;
+		Map<String, Object> prop = builder.fetchFirst();
+		PublishData data = FieldUtil.getAsBeanFromMap(prop, PublishData.class);
+		if (fetchMessages) {
+			List<PublishMessage> messages = getPublishMessages(id);
+			data.setMessages(messages);
+		}
+		return data;
+		
+	}
+	
+	public static List<PublishMessage> getPublishMessages(long parentId) throws Exception {
+		FacilioModule module = ModuleFactory.getPublishMessageModule();
+		List<FacilioField> fields = FieldFactory.getPublishMessageFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS))
+														;
+		List<Map<String, Object>> props = builder.get();
+		if (props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanListFromMapList(props, PublishMessage.class);
+		}
+		return null;
+	}
+	
+	private static void handlePublishDataOnMessageAck(long messageId, IotCommandType command) throws Exception {
 		FacilioModule module = ModuleFactory.getPublishMessageModule();
 		List<FacilioField> fields = FieldFactory.getPublishMessageFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -211,6 +252,9 @@ public class IoTMessageAPI {
 		Map<String, Object> prop = builder.fetchFirst();
 		if (prop != null && !prop.isEmpty()) {
 			PublishMessage message = FieldUtil.getAsBeanFromMap(prop, PublishMessage.class);
+			handlePublishMessageSuccess(command, message);
+			
+			
 			List<FacilioField> selectFields = FieldFactory.getCountField(module);
 			long parentId = message.getParentId();
 			builder = new GenericSelectRecordBuilder()
@@ -224,17 +268,7 @@ public class IoTMessageAPI {
 			long count = (long) prop.get("count");
 			if (count == 0) {
 				acknowdledgeData(parentId, true);
-				
-				module = ModuleFactory.getPublishDataModule();
-				builder = new GenericSelectRecordBuilder()
-						.table(module.getTableName())
-						.select(FieldFactory.getPublishDataFields())
-//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-						.andCondition(CriteriaAPI.getIdCondition(parentId, module));
-						;
-				prop =  builder.fetchFirst();
-				PublishData data = FieldUtil.getAsBeanFromMap(prop, PublishData.class);
-				
+				PublishData data = getPublishData(parentId, false);
 				try {
 					if (data.getCommandEnum() != null && data.getCommandEnum() == IotCommandType.SET) {
 						publishGetData(data.getControllerId(), message);
@@ -274,7 +308,7 @@ public class IoTMessageAPI {
 		data.setId((long) props.get("id"));
 	}
 	
-	private static void addAndPublishMessage (long parentId, List<PublishMessage> messages) throws Exception {
+	private static void addPublishMessage(long parentId, List<PublishMessage> messages) throws Exception {
 		GenericInsertRecordBuilder msgBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getPublishMessageModule().getTableName())
 				.fields(FieldFactory.getPublishMessageFields())
@@ -287,56 +321,50 @@ public class IoTMessageAPI {
 			msgBuilder.addRecord(FieldUtil.getAsProperties(msg));
 		}
 		msgBuilder.save();
-			
-		for (int i = 0; i < messages.size(); i++) {
-			long id = (long) msgBuilder.getRecords().get(i).get("id");
-			PublishMessage msg = messages.get(i);
-			msg.setId(id);
-			msg.getData().put("msgid", id);
-			publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), msg.getData());
-		}
 	}
 	
 	public static PublishData publishIotMessage(List<Map<String, Object>> instances, IotCommandType command) throws Exception {
-		return publishIotMessage(instances, command, null, null);
-	}
-	
-	public static PublishData publishIotMessage(List<Map<String, Object>> instances, IotCommandType command, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
 		PublishData data = constructIotMessage(instances, command);
-		return publishIotMessage(data, success, failure);
+		return addAndPublishData(data);
 	}
 	
 	public static PublishData publishIotMessage(long controllerId, IotCommandType command) throws Exception {
 		PublishData data = constructIotMessage(controllerId, command);
-		return publishIotMessage(data, null, null);
+		return addAndPublishData(data);
 	}
 	
-	public static PublishData publishIotMessage(long controllerId, IotCommandType command, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
-		PublishData data = constructIotMessage(controllerId, command);
-		return publishIotMessage(data, success, failure);
-	}
-	
-	public static PublishData publishIotMessage(long controllerId, JSONObject property, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
+	public static PublishData publishIotMessage(long controllerId, JSONObject property) throws Exception {
 		PublishData data = constructIotMessage(controllerId, property);
-		return publishIotMessage(data, success, failure);
+		return addAndPublishData(data);
 	}
 	
-	private static PublishData publishIotMessage(PublishData data, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
+	
+	private static PublishData addAndPublishData(PublishData data) throws Exception {
+		
 		addPublishData(data);
-		addAndPublishMessage(data.getId(), data.getMessages());
+		addPublishMessage(data.getId(), data.getMessages());
 		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.PUBLISH_DATA, data);
-		
-		if (success != null) {
-			context.put(FacilioConstants.ContextNames.PUBLISH_SUCCESS, success);
+		if (data.getCommandEnum() != IotCommandType.GET) {
+			// Pinging device to check if it is active
+			PublishData pingData = constructIotMessage(data.getControllerId(), IotCommandType.PING);
+			publishIotMessage(pingData, data.getId());
 		}
-		if (failure != null) {
-			context.put(FacilioConstants.ContextNames.PUBLISH_FAILURE, failure);
+		else {
+			publishIotMessage(data, -1);
 		}
-		FacilioTimer.scheduleInstantJob("PublishedDataChecker", context);
 		
 		return data;
+	}
+	
+	private static void publishIotMessage(PublishData data, long msgId) throws Exception {
+		for(PublishMessage message : data.getMessages()) {
+			message.getData().put("msgid", msgId != -1 ? msgId : message.getId());
+			publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), message.getData());
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.PUBLISH_DATA, data);
+			FacilioTimer.scheduleInstantJob("PublishedDataChecker", context);
+		}
 	}
 	
 	public static void publishMessagesDirectly (Collection<PublishMessage> collection) throws Exception {
@@ -410,6 +438,85 @@ public class IoTMessageAPI {
 			}
 		}
 	}
+	
+	private static void handlePublishMessageSuccess(IotCommandType command, PublishMessage message) throws Exception {
+		if (command == null) {
+			return;
+		}
+		
+		JSONObject obj = message.getData();
+		List<Long> ids = new ArrayList<>();
+		if (obj.containsKey("pointId")) {
+			Long id = (Long) obj.get("pointId");
+			if (id != null && id > 0) {
+				ids.add(id);
+			}
+		}
+		if (ids.isEmpty()) {
+			return;
+		}
+		
+		switch(command) {
+			case CONFIGURE:
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", ConfigureStatus.CONFIGURED.getIndex()));
+				break;
+				
+			case UNCONFIGURE:
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", ConfigureStatus.UNCONFIGURED.getIndex()));
+				break;
+				
+			case SUBSCRIBE:
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", SubscribeStatus.SUBSCRIBED.getIndex()));
+				break;
+				
+			case UNSUBSCRIBE:
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", SubscribeStatus.UNSUBSCRIBED.getIndex()));
+				break;
+		}
+	}
+	
+	public static void handlePublishMessageFailure(PublishData data) throws Exception {
+		for(PublishMessage message : data.getMessages()) {
+			handlePublishMessageFailure(data.getCommandEnum(), message);
+		}
+		sendFailureNotification(data);
+	}
+	
+	private static void handlePublishMessageFailure(IotCommandType command, PublishMessage message) throws Exception {
+		if (command == null) {
+			return;
+		}
+		
+		JSONObject obj = message.getData();
+		List<Long> ids = new ArrayList<>();
+		if (obj.containsKey("pointId")) {
+			Long id = (Long) obj.get("pointId");
+			if (id != null && id > 0) {
+				ids.add(id);
+			}
+		}
+		if (ids.isEmpty()) {
+			return;
+		}
+		
+		switch(command) {
+			case CONFIGURE:
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", ConfigureStatus.UNCONFIGURED.getIndex()));
+				break;
+				
+			case UNCONFIGURE:
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", ConfigureStatus.CONFIGURED.getIndex()));
+				break;
+				
+			case SUBSCRIBE:
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", SubscribeStatus.UNSUBSCRIBED.getIndex()));
+				break;
+				
+			case UNSUBSCRIBE:
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", SubscribeStatus.SUBSCRIBED.getIndex()));
+				break;
+		}
+	}
 
  	public static void sendPublishNotification(PublishData publishData, JSONObject info) {
 
@@ -434,13 +541,16 @@ public class IoTMessageAPI {
 	}
  	
  	public enum IotCommandType {
- 		CONFIGURE("configure"),
+ 		// Maintain the index. Always add at the bottom
+ 		CONFIGURE("configure"),	// 1
  		SET("set"),
  		GET("get"),
- 		PROPERTY("property"),
+ 		PROPERTY("property"),	// 4
  		DISCOVER("discoverPoints"),
  		SUBSCRIBE("subscribe"),
- 		UNSUBSCRIBE("unsubscribe")
+ 		UNSUBSCRIBE("unsubscribe"),
+ 		UNCONFIGURE("unconfigure"), // 8
+ 		PING("ping")
  		;
  		
  		private String name;
@@ -454,6 +564,19 @@ public class IoTMessageAPI {
  		
  		public int getValue() {
 			return ordinal() + 1;
+		}
+ 		
+ 		public static IotCommandType getCommandType(String name) {
+ 			return COMMAND_MAP.get(name);
+ 		}
+ 		
+ 		private static final Map<String, IotCommandType> COMMAND_MAP = Collections.unmodifiableMap(initCommandMap());
+		private static Map<String, IotCommandType> initCommandMap() {
+			Map<String, IotCommandType> typeMap = new HashMap<>();
+			for(IotCommandType command : values()) {
+				typeMap.put(command.getName(), command);
+			}
+			return typeMap;
 		}
 		
 		public static IotCommandType valueOf (int value) {

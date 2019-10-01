@@ -8,11 +8,13 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.agent.controller.context.Point.SubscribeStatus;
+import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.timeseries.TimeSeriesAPI;
 
 public class UnsubscribeInstanceIoTCommand extends FacilioCommand {
@@ -25,24 +27,16 @@ public class UnsubscribeInstanceIoTCommand extends FacilioCommand {
 		List<Long> ids = (List<Long>) context.get(FacilioConstants.ContextNames.UNSUBSCRIBE_IDS);
 		if (ids != null) {
 			long controllerId = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-			TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribed", false));
+			TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", SubscribeStatus.IN_PROGRESS.getIndex()));
 			
 			List<Map<String, Object>> instanceList =  TimeSeriesAPI.getUnmodeledInstances(ids);
-			IoTMessageAPI.publishIotMessage(instanceList, IotCommandType.UNSUBSCRIBE, null, data -> rollbackUnSubscribe(ids));
+			PublishData data = IoTMessageAPI.publishIotMessage(instanceList, IotCommandType.UNSUBSCRIBE);
+			
+			context.put(ContextNames.PUBLISH_DATA, data);
 			
 			ControllerAPI.updateControllerModifiedTime(controllerId);
 		}
 		return false;
-	}
-	
-	public static void rollbackUnSubscribe (List<Long> ids) {
-		try {
-			TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribed", true));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			LOGGER.error("Error occurred while unsubscribing" , e);
-			CommonCommandUtil.emailException("UnsubscribeInstanceIoTCommand", "Error occurred while unsubscribing", e);
-		}
 	}
 
 }

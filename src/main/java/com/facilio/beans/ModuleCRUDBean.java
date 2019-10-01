@@ -65,7 +65,7 @@ public interface ModuleCRUDBean {
 	
 	public ControllerContext addController(ControllerContext controllerContext) throws Exception;
 	
-	public int acknowledgePublishedMessage (long id, String message) throws Exception;
+	public int acknowledgePublishedMessage (long id, String message, String command) throws Exception;
 	
 	public long addDeviceId (String deviceId) throws Exception;
 	

@@ -22,8 +22,9 @@ public class AckUtil
         try {
             Long msgId = (Long) payLoad.get(AgentKeys.MESSAGE_ID);
             String message = (String) payLoad.get(AgentKeys.MESSAGE);
+            String command = (String) payLoad.get(AgentKeys.COMMAND);
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            bean.acknowledgePublishedMessage(msgId, message);
+            bean.acknowledgePublishedMessage(msgId, message, command);
         }catch(Exception e){
             LOGGER.info("EXxception occured",e);
         }

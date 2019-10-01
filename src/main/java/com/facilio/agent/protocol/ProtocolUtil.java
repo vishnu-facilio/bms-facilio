@@ -1,18 +1,32 @@
 package com.facilio.agent.protocol;
 
+import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
 
 public class ProtocolUtil {
 	
-	public static void setPointData(ControllerType controllerType, IotCommandType command, Map<String, Object> instance, Map<String, Object> point, ModuleBean modBean) throws Exception {
+	public static JSONArray getPointsToPublish(ControllerContext controller, List<Map<String, Object>> instances, IotCommandType command) throws Exception {
+		JSONArray points = new JSONArray();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for(Map<String, Object> instance : instances) {
+			addPointData(controller.getControllerTypeEnum(), command, instance, points, modBean);
+		}
+		return points;
+	}
+	
+	private static void addPointData(ControllerType controllerType, IotCommandType command, Map<String, Object> instance, JSONArray points, ModuleBean modBean) throws Exception {
+		JSONObject point = new JSONObject();
 		switch(controllerType) {
 			case BACNET_IP:
 			case BACNET_MSTP:
@@ -29,9 +43,12 @@ public class ProtocolUtil {
 				point.put("instance", instance.get("instance"));
 				break;
 		}
+
+		point.put("pointId", instance.get("id"));
 		
 		setCommandData(command, controllerType, instance, point, modBean);
 		
+		points.add(point);
 	}
 	
 	private static void setCommandData(IotCommandType command, ControllerType controllerType, Map<String, Object> instance, Map<String, Object> point, ModuleBean modBean) throws Exception {

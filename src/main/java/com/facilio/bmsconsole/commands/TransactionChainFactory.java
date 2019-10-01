@@ -1,12 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Context;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.events.commands.NewExecuteEventRulesCommand;
-import com.facilio.events.constants.EventConstants;
-import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
-import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
-import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
@@ -28,9 +22,15 @@ import com.facilio.agentIntegration.UpdateIntegrationCommand;
 import com.facilio.agentIntegration.wattsense.AgentIntegrationDeleteCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
+import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
+import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
+import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
+import com.facilio.events.commands.NewExecuteEventRulesCommand;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.mv.command.AddMVAdjustmentCommand;
 import com.facilio.mv.command.AddMVBaselineCommand;
 import com.facilio.mv.command.AddMVProjectCommand;
@@ -1040,7 +1040,7 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain getMarkUnmodeledInstanceChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new MarkUnmodeledInstanceCommand());
+//			c.addCommand(new MarkUnmodeledInstanceCommand());
 			c.addCommand(new PublishConfigMsgToIoTCommand());
 			return c;
 		}
@@ -1054,6 +1054,12 @@ public class TransactionChainFactory {
 		public static FacilioChain getUnSubscribeInstanceChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UnsubscribeInstanceIoTCommand());
+			return c;
+		}
+		
+		public static FacilioChain discoverControllerChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DiscoverControllerIoTCommand());
 			return c;
 		}
 

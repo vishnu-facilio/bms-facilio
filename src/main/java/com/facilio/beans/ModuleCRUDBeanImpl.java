@@ -688,9 +688,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public int acknowledgePublishedMessage(long id, String message) throws Exception {
+	public int acknowledgePublishedMessage(long id, String message, String command) throws Exception {
 		// TODO Auto-generated method stub
-		return IoTMessageAPI.acknowdledgeMessage(id, message);
+		return IoTMessageAPI.acknowdledgeMessage(id, message, command);
 	}
 
 	@Override

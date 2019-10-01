@@ -11,7 +11,6 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.bmsconsole.util.ControllerAPI;
-import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class PublishControllerPropertyToIoTCommand extends FacilioCommand {
@@ -26,7 +25,7 @@ public class PublishControllerPropertyToIoTCommand extends FacilioCommand {
 			JSONObject prop = new JSONObject();
 			prop.put("key", "interval");
 			prop.put("value", controller.getDataInterval() * 60 * 1000);
-			IoTMessageAPI.publishIotMessage(controller.getId(), prop, null, data -> rollBackIntervalTime(controller.getId(), oldController.getDataInterval()));
+//			IoTMessageAPI.publishIotMessage(controller.getId(), prop, null, data -> rollBackIntervalTime(controller.getId(), oldController.getDataInterval()));
 		}
 
 		return false;

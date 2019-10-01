@@ -24,6 +24,8 @@ import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.controller.context.Point.ConfigureStatus;
+import com.facilio.agent.controller.context.Point.SubscribeStatus;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bacnet.BACNetUtil.InstanceType;
@@ -767,6 +769,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
 		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(6), NumberOperators.LESS_THAN));
+		
 		if (searchText != null) {
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), searchText, StringOperators.CONTAINS));
 		}
@@ -775,21 +778,26 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 
 		if (configuredOnly != null) {
 			Criteria inUseCriteria = new Criteria();
-			inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"), String.valueOf(configuredOnly), BooleanOperators.IS));
 			if (configuredOnly) {
-				Criteria typeCriteria = new Criteria();
-				// To get all points if not from niagara and bacnet
-				typeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), CommonOperators.IS_EMPTY));			
-				typeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("pointPath"), CommonOperators.IS_EMPTY));
-				inUseCriteria.orCriteria(typeCriteria);
+				ControllerContext controller = ControllerAPI.getController(controllerId);
+				if (controller.getControllerTypeEnum() != null && controller.getControllerTypeEnum().isConfigurable()) {
+					inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("configureStatus"), String.valueOf(ConfigureStatus.CONFIGURED.getIndex()), NumberOperators.EQUALS));
+				}
 			}
-			builder.andCriteria(inUseCriteria);
+			else {
+				inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("configureStatus"), String.valueOf(ConfigureStatus.CONFIGURED.getIndex()), NumberOperators.NOT_EQUALS));
+			}
+			if (!inUseCriteria.isEmpty()) {
+				builder.andCriteria(inUseCriteria);
+			}
 		}
 		if (isSubscribed != null) {
 			Criteria isSubscribedCriteria = new Criteria();
-			isSubscribedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subscribed"), String.valueOf(isSubscribed), BooleanOperators.IS));
+			NumberOperators operator = isSubscribed ? NumberOperators.EQUALS : NumberOperators.NOT_EQUALS;
+			isSubscribedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subscribeStatus"), String.valueOf(SubscribeStatus.SUBSCRIBED.getIndex()), operator));
 			builder.andCriteria(isSubscribedCriteria);
 		}
+		
 		if(fetchMapped!=null) {
 			if (!fetchMapped) {
 				builder

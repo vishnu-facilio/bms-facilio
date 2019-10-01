@@ -1,17 +1,30 @@
 package com.facilio.modules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.*;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import com.facilio.modules.fields.BooleanField;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.SystemEnumField;
 
 public class FieldFactory {
 
@@ -3195,6 +3208,7 @@ public class FieldFactory {
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("acknowledgeTime", "ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("responseAckTime", "RESPONSE_ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("pingAckTime", "PING_ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("responseJson", "RESPONSE_JSON", module, FieldType.STRING));
 		fields.add(getField("command", "COMMAND", module, FieldType.NUMBER));
 		return fields;
@@ -5124,8 +5138,17 @@ public class FieldFactory {
         fields.add(getField("dataType", "DATA_TYPE", module, FieldType.NUMBER));
         fields.add(getField("pointPath", "POINT_PATH", module, FieldType.STRING));
         fields.add(getField("isWritable", "IS_WRITABLE", module, FieldType.BOOLEAN));
+        
         fields.add(getField("inUse", "IN_USE", module, FieldType.BOOLEAN));
+        SystemEnumField configureStatusfield = (SystemEnumField) getField("configureStatus", "CONFIGURE_STATUS", module, FieldType.SYSTEM_ENUM);
+        configureStatusfield.setEnumName("ConfigureStatus");
+        fields.add(configureStatusfield);
+        
         fields.add(getField("subscribed", "IS_SUBSCRIBED", module, FieldType.BOOLEAN));
+        SystemEnumField subscribeStatusfield = (SystemEnumField) getField("subscribeStatus", "SUBSCRIBE_STATUS", module, FieldType.SYSTEM_ENUM);
+        subscribeStatusfield.setEnumName("SubscribeStatus");
+        fields.add(subscribeStatusfield);
+        
         fields.add(getField("thresholdJson", "THRESHOLD_JSON", module, FieldType.STRING));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));

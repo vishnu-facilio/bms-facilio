@@ -7,11 +7,11 @@ import java.util.Map;
 public enum ControllerType {
 	MISC(0, "Misc"),
 
-	BACNET_IP(1,"BACnet Ip"),
+	BACNET_IP(1,"BACnet Ip", true),
 
-	BACNET_MSTP(2,"BACnet MSTP"),
+	BACNET_MSTP(2,"BACnet MSTP", true),
 
-	NIAGARA(3, "Niagara"),
+	NIAGARA(3, "Niagara", true),
 
 	MODBUS_IP(4,"Modbus_Ip"),
 
@@ -21,17 +21,22 @@ public enum ControllerType {
 
 	OPC_UA (7,"Opc UA"),
 	
-	LON_WORKS (8,"Lon Works"),
+	LON_WORKS (8,"Lon Works", true),
 	
-	KNX (9, "Knx")
+	KNX (9, "Knx", true)
 	;
 
 	private int key;
 	private String label;
+	private boolean configurable;
 
 	ControllerType(int key, String label) {
+		this(key, label, false);
+	}
+	ControllerType(int key, String label, boolean configurable) {
 		this.key = key;
 		this.label = label;
+		this.configurable = configurable;
 	}
 
 	public  int getKey(){
@@ -40,6 +45,10 @@ public enum ControllerType {
 
 	public  String getLabel() {
 		return label;
+	}
+	
+	public  boolean isConfigurable() {
+		return configurable;
 	}
 	
 	public static ControllerType valueOf(int value) {

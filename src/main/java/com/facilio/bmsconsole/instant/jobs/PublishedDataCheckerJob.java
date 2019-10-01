@@ -1,10 +1,8 @@
 package com.facilio.bmsconsole.instant.jobs;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,8 +12,10 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.PublishMessage;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
+import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -38,13 +38,26 @@ public class PublishedDataCheckerJob extends InstantJob {
 		Thread.sleep(THREAD_SLEEP_BUFFER); //Wait at first for ack
 		
 		PublishData data = (PublishData) context.get(FacilioConstants.ContextNames.PUBLISH_DATA);
-		LOGGER.info(data);
+		LOGGER.debug(data);
+		if (data.getCommandEnum() == IotCommandType.PING) {
+			checkPingStatus(data.getId());
+			return;
+		}
+		
 		Map<Long, PublishMessage> msgMap = data.getMessages().stream().collect(Collectors.toMap(PublishMessage::getId, Function.identity()));
-		checkPublishedMsg(data, msgMap);
+		checkPublishedMsg(data, msgMap, context);
 		handleSuccessFailure(data, msgMap, context);
 	}
 	
-	public void checkPublishedMsg(PublishData data, Map<Long, PublishMessage> msgMap) throws Exception {
+	private void checkPingStatus(long id) throws Exception {
+		PublishData data = IoTMessageAPI.getPublishData(id, true);
+		if (data.getPingAckTime() == -1) {
+			LOGGER.info("Agent not active. Controller Id: " + data.getControllerId());
+			IoTMessageAPI.handlePublishMessageFailure(data);
+		}
+	}
+	
+	public void checkPublishedMsg(PublishData data, Map<Long, PublishMessage> msgMap, FacilioContext context) throws Exception {
 		FacilioModule module = ModuleFactory.getPublishMessageModule();
 		List<FacilioField> fields = FieldFactory.getPublishMessageFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -61,6 +74,9 @@ public class PublishedDataCheckerJob extends InstantJob {
 														;
 		
 		int retries = 0;
+		long timeOut = (long) context.getOrDefault(ContextNames.TIMEOUT, -1l);
+		timeOut = timeOut != -1 ? timeOut : THREAD_SLEEP_BUFFER;
+				
 		while (!msgMap.isEmpty()) {
 			LOGGER.info("Msg Map for retry "+retries+" : "+msgMap);
 			
@@ -87,7 +103,7 @@ public class PublishedDataCheckerJob extends InstantJob {
 			
 			try {
 				IoTMessageAPI.publishMessagesDirectly(msgMap.values());
-				Thread.sleep(THREAD_SLEEP_BUFFER);
+				Thread.sleep(timeOut);
 			}
 			catch (Exception e) {
 				LOGGER.error("Error occurred during retrying publish message", e);
@@ -95,20 +111,13 @@ public class PublishedDataCheckerJob extends InstantJob {
 		}
 	}
 	
-	public void handleSuccessFailure (PublishData data, Map<Long, PublishMessage> msgMap, FacilioContext context) throws SQLException {
-		String key = null;
+	public void handleSuccessFailure (PublishData data, Map<Long, PublishMessage> msgMap, FacilioContext context) throws Exception {
 		LOGGER.info("Msg Map : "+msgMap);
 		if (msgMap.isEmpty()) {
 			IoTMessageAPI.acknowdledgeData(data.getId(), false);
-			key = FacilioConstants.ContextNames.PUBLISH_SUCCESS;
 		}
 		else {
-			key = FacilioConstants.ContextNames.PUBLISH_FAILURE;
-			IoTMessageAPI.sendFailureNotification(data);
-		}
-		Consumer<PublishData> consumer = (Consumer<PublishData>) context.get(key);
-		if (consumer != null) {
-			consumer.accept(data);
+			IoTMessageAPI.handlePublishMessageFailure(data);
 		}
 	}
 	

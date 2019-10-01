@@ -16,13 +16,11 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
-import com.facilio.bmsconsole.util.IoTMessageAPI;
-import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.wms.message.Message;
@@ -182,7 +180,7 @@ public class TimeSeries extends FacilioAction {
 		FacilioChain markChain = TransactionChainFactory.getMarkUnmodeledInstanceChain();
 		markChain.execute(context);
 
-		setResult("result", "success");
+		setResult("data", context.get(ContextNames.PUBLISH_DATA));
 		return SUCCESS;
 	}
 	
@@ -194,7 +192,7 @@ public class TimeSeries extends FacilioAction {
 		FacilioChain markChain = TransactionChainFactory.getSubscribeInstanceChain();
 		markChain.execute(context);
 
-		setResult("result", "success");
+		setResult("data", context.get(ContextNames.PUBLISH_DATA));
 		return SUCCESS;
 	}
 	
@@ -206,15 +204,20 @@ public class TimeSeries extends FacilioAction {
 		FacilioChain markChain = TransactionChainFactory.getUnSubscribeInstanceChain();
 		markChain.execute(context);
 
-		setResult("result", "success");
+		setResult("data", context.get(ContextNames.PUBLISH_DATA));
 		return SUCCESS;
 	}
 	
 	public String discoverInstances () throws Exception {
 		
-		PublishData data = IoTMessageAPI.publishIotMessage(controllerId, IotCommandType.DISCOVER);
+		FacilioChain chain = TransactionChainFactory.getUnSubscribeInstanceChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
+		
+		chain.execute();
 
-		setResult("data", data);
+		setResult("data", context.get(ContextNames.PUBLISH_DATA));
+
 		return SUCCESS;
 	}
 	private Integer unit;
