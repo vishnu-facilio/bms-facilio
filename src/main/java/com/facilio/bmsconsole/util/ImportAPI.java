@@ -330,7 +330,10 @@ public class ImportAPI {
 			if (columnHeadings.get(i) == null || columnHeadings.get(i) == "null") {
 				continue;
 			} else {
-				if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+				if (cell == null) {
+					firstRow.put(columnHeadings.get(i), null);
+				}
+				else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
 					throw new IllegalArgumentException("Unsupported Date/Time Formatted Field under column "
 							+ columnHeadings.get(i) + " Kindly Use Plain text");
 				} else {
