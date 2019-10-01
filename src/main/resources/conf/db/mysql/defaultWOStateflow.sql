@@ -4,13 +4,13 @@ SET @WO_JSON = '{
       "stateId": ${Assigned},
       "x": 360,
       "y": 370,
-      "anchors": [null, ${Assign}, null, ${Close-1}, null, ${Start Work}, null, null]
+      "anchors": [null, ${Assign}, null, ${Close-1}, ${Re-Open}, ${Start Work}, null, null]
     },
     {
       "stateId": ${Closed},
-      "x": 790,
-      "y": 630,
-      "anchors": [null, ${Re-Open}, null, ${Close-1}, null, ${Close}, null, null]
+      "x": 900,
+      "y": 600,
+      "anchors": [null, ${Close-1}, null, null, ${Close}, null, null, ${Re-Open}]
     },
     {
       "stateId": ${On Hold},
@@ -52,7 +52,7 @@ SET @WO_JSON = '{
       "stateId": ${Work in Progress},
       "x": 360,
       "y": 530,
-      "anchors": [${Resume}, ${Start Work}, null, ${Re-Open}, null, ${Resolve}, ${Pause}, null]
+      "anchors": [${Resume}, ${Start Work}, null, null, null, ${Resolve}, ${Pause}, null]
     }
   ],
   "zoom": 1,
