@@ -347,6 +347,7 @@ public class IoTMessageAPI {
 		if (data.getCommandEnum() != IotCommandType.GET) {
 			// Pinging device to check if it is active
 			PublishData pingData = constructIotMessage(data.getControllerId(), IotCommandType.PING);
+			pingData.setId(data.getId());
 			publishIotMessage(pingData, data.getId());
 		}
 		else {
