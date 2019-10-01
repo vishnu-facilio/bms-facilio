@@ -74,10 +74,10 @@ for(Organization org :orgs) {
 	
 	StateFlowRuleContext stateflowContext = StateFlowRulesAPI.getDefaultStateFlow(module);
 
-	if(stateflowContext.getDiagramJson() != null) {
+	if(stateflowContext != null && stateflowContext.getDiagramJson() != null) {
 		continue;
 	}
-	
+
 	out.println("\nOrgId: " + String.valueOf(orgId));
 	
 	paramValues.put("stateflowId", String.valueOf(stateflowContext.getId()));
@@ -91,7 +91,7 @@ for(Organization org :orgs) {
 		}
 		paramValues.put(state.getStatus(), String.valueOf(state.getId()));
 	}
-	
+
 	for(WorkflowRuleContext t :transitions) {
 		StateflowTransitionContext transition = (StateflowTransitionContext) t;
 
