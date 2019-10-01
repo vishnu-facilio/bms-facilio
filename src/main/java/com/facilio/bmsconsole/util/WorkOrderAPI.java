@@ -1710,7 +1710,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		 resMap.put("plannedPercentageLastMonth",plannedClosedCountLastMonthPercentage);
 		 resMap.put("unPlannedPercentageLastMonth",unPlannedClosedCountLastMonthPercentage);
 		 resMap.put("totalWoCount",totalWoCount);
-		 resMap.put("totalWoCountLastQuarter",lastMonth.get("totalWoCount"));
+		 resMap.put("totalWoCountLastQuarter",MapUtils.isNotEmpty(lastMonth) && lastMonth.get("totalWoCount") != null ? lastMonth.get("totalWoCount") : 0);
 		 
 		 resMap.put("resourceId",map.get("buildingId"));
 		 resMap.put("resourceName",resourceArray.get(map.get("buildingId")));
