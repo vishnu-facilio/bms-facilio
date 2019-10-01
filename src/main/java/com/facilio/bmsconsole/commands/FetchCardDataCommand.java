@@ -124,7 +124,7 @@ public class FetchCardDataCommand extends FacilioCommand {
 				
 				result = new HashMap<>();
 				
-//				Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.CRITERIA);
+				Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.CRITERIA);
 				
 				if(startTime != null && endTime != null && startTime > 0 && endTime > 0) {
 //					if(widgetStaticContext.getParamsJson().get("moduleName") != null) {
@@ -182,7 +182,7 @@ public class FetchCardDataCommand extends FacilioCommand {
 						wfResult = WorkflowUtil.getWorkflowExpressionResult(workflowString, widgetStaticContext.getParamsJson(),true);
 					}
 					else {
-						wfResult = WorkflowUtil.getWorkflowExpressionResult(workflowString, widgetStaticContext.getParamsJson(),false);
+						wfResult = WorkflowUtil.getWorkflowExpressionResult(workflowString, widgetStaticContext.getParamsJson(),criteria);
 					}
 					
 					wfResult = CardUtil.getWorkflowResultForClient(wfResult, widgetStaticContext); // parsing data suitable for client
@@ -197,7 +197,7 @@ public class FetchCardDataCommand extends FacilioCommand {
 					}
 				}
 				else {
-					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(workflowString, widgetStaticContext.getParamsJson(),null);
+					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(workflowString, widgetStaticContext.getParamsJson(),criteria);
 					
 					expResult = (Map<String, Object>) CardUtil.getWorkflowResultForClient(expResult, widgetStaticContext);
 					
