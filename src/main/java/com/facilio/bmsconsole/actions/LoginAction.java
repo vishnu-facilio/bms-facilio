@@ -501,6 +501,10 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String deviceAccount() throws Exception{
+		System.out.println("Device connect successfull");
+		return SUCCESS;
+	}
 	private String switchOrgDomain;
 
 	public String getSwitchOrgDomain() {

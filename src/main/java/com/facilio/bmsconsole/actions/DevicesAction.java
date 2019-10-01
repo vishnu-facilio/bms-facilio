@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,6 +40,36 @@ public class DevicesAction extends FacilioAction{
 
 	private DeviceContext device;
     
+    public String deleteDevice() throws Exception
+    {
+    	FacilioChain deleteDeviceChain = TransactionChainFactory.getDeleteDeviceChain();
+		
+		FacilioContext context=deleteDeviceChain.getContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD, device);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(device.getId()));		
+		deleteDeviceChain.execute();
+		
+		List<Long> recordIds=((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		int rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		setResult("rowsUpdated", rowsUpdated);
+		
+		return SUCCESS;
+    }
+    
+    
+    public String disconnectDevice() throws Exception{
+
+    	FacilioChain disconnectDeviceChain = TransactionChainFactory.getDisconnectDeviceChain();
+
+		FacilioContext context=disconnectDeviceChain.getContext();
+		setAssetUpdateDefaultsInContext(context);
+		setResult("status", "success");
+		context.put(FacilioConstants.ContextNames.RECORD, device);
+		disconnectDeviceChain.execute();
+    	
+    	return SUCCESS;
+    }
 	public String fetchDeviceDetails() throws Exception {
         
         

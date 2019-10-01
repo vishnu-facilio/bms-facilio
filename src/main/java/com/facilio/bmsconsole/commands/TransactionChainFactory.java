@@ -3545,7 +3545,24 @@ public class TransactionChainFactory {
 	    	
 	    }
 	    
+	    public static FacilioChain getDeleteDeviceChain()
+	    {	
+	    	FacilioChain c = getDefaultChain();
+	    	
+			c.addCommand(FacilioChainFactory.getDeleteAssetChain());			
+			c.addCommand(new DisconnectDeviceCommand());
+			c.addCommand(getUpdateAssetChain());
+			return c;
+	    	
+	    }
 	    
+	    public static FacilioChain getDisconnectDeviceChain()
+	    {
+	    	FacilioChain c=getDefaultChain();
+	    	c.addCommand(new DisconnectDeviceCommand());
+	    	c.addCommand(getUpdateAssetChain());
+	    	return c;
+	    }
 		
 }
 

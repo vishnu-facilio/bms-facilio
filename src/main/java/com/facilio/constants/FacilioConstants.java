@@ -1125,6 +1125,7 @@ public class FacilioConstants {
 		public static final String DEVICE_INFO="device_info";
 		public static final String DEVICES_LIST="deviceList";
 		public static final String DEVICE_DETAILS="deviceDetails";
+		public static final String CONNECTED_DEVICE_ID="connectedDeviceId";
 		
 		
 		

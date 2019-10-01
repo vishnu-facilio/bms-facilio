@@ -77,14 +77,14 @@ public class DeviceContext extends AssetContext {
 	private DeviceType deviceType;
 	private KioskType kioskType;
 	private ResourceContext associatedResource;
-	boolean isDeviceConnected;
+	Boolean isDeviceConnected;
 
 
-	public boolean getIsDeviceConnected() {
+	public Boolean getIsDeviceConnected() {
 		return isDeviceConnected;
 	}
 
-	public void setIsDeviceConnected(boolean isDeviceConnected) {
+	public void setIsDeviceConnected(Boolean isDeviceConnected) {
 		this.isDeviceConnected = isDeviceConnected;
 	}
 
