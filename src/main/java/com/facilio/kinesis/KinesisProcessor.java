@@ -1,5 +1,6 @@
 package com.facilio.kinesis;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -36,7 +37,8 @@ public class KinesisProcessor {
         try {
             AmazonKinesis kinesis = AwsUtil.getKinesisClient();
             ListStreamsResult streamList = kinesis.listStreams();
-            List<String> streamNames = streamList.getStreamNames();
+//            List<String> streamNames = streamList.getStreamNames();
+            List<String> streamNames = Collections.singletonList("cofelybesix");
             if (streamNames != null && STREAMS.isEmpty()) {
                 STREAMS.addAll(streamNames);
             } else {
