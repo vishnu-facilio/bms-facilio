@@ -1596,11 +1596,6 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		plannedCountField.setName("totalPlannedCount");
 		fields.add(plannedCountField);
 		
-		FacilioField unPlannedCountField = new FacilioField();
-		unPlannedCountField.setColumnName("count(IF(TYPE_ID not in ("+idString+") and STATUS_TYPE = "+FacilioStatus.StatusType.CLOSED.getIntVal()+", 1, NULL))");
-		unPlannedCountField.setName("closedUnPlannedCount");
-		fields.add(unPlannedCountField);
-		
 		FacilioField resourceIdFld = new FacilioField();
 		resourceIdFld.setName("resourceId");
 		resourceIdFld.setColumnName("RESOURCE_ID");
@@ -1683,11 +1678,11 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 			 Map<String, Object> resMap = new HashMap<String, Object>();
 			 double plannedClosedCount = (long) map.get("closedPlannedCount");
 			 double totalPlannedCount = (long) map.get("totalPlannedCount");
-			 double unPlannedClosedCount = (long) map.get("closedUnPlannedCount");
 			 double totalUnPlannedCount = (long) map.get("totalUnPlannedCount");
-				
+			 double totalWoCount = totalPlannedCount + totalUnPlannedCount;
+					
 			 resMap.put("plannedPercentage",Math.round(((plannedClosedCount/totalPlannedCount)* 100)*10.0)/10.0);
-			 resMap.put("unPlannedPercentage",Math.round(((unPlannedClosedCount/totalUnPlannedCount)*100)*10.0)/10.0);
+			 resMap.put("unPlannedPercentage",Math.round(((totalUnPlannedCount/totalWoCount)*100)*10.0)/10.0);
 			 resMap.put("resourceId",map.get("buildingId"));
 			 resMap.put("resourceName",resourceArray.get(map.get("buildingId")));
 			 lastMonthmap.put((long)map.get("buildingId"), resMap);
@@ -1701,16 +1696,16 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		 Map<String, Object> resMap = new HashMap<String, Object>();
 		 double plannedClosedCount = (long) map.get("closedPlannedCount");
 		 double totalPlannedCount = (long) map.get("totalPlannedCount");
-		 double unPlannedClosedCount = (long) map.get("closedUnPlannedCount");
 		 double totalUnPlannedCount = (long) map.get("totalUnPlannedCount");
-			
+		 double totalWoCount = totalUnPlannedCount + totalPlannedCount;
+				
 		 double plannedClosedCountLastMonthPercentage = MapUtils.isNotEmpty(lastMonth) && lastMonth.get("plannedPercentage") != null ? (double) lastMonth.get("plannedPercentage") : 0;
 		 //double totalPlannedCountLastMonth = (double) lastMonth.get("totalPlannedCount");
 		 double unPlannedClosedCountLastMonthPercentage = MapUtils.isNotEmpty(lastMonth) && lastMonth.get("unPlannedPercentage") != null ? (double) lastMonth.get("unPlannedPercentage") : 0;
 		 //double totalUnPlannedCountLastMonth = (double) lastMonth.get("totalUnPlannedCount");
 		
 		 resMap.put("plannedPercentage",Math.round(((plannedClosedCount/totalPlannedCount)*100)*10.0)/10.0);
-		 resMap.put("unPlannedPercentage",Math.round(((unPlannedClosedCount/totalUnPlannedCount)*100)*10.0)/10.0);
+		 resMap.put("unPlannedPercentage",Math.round(((totalUnPlannedCount/totalWoCount)*100)*10.0)/10.0);
 		 resMap.put("plannedPercentageLastMonth",plannedClosedCountLastMonthPercentage);
 		 resMap.put("unPlannedPercentageLastMonth",unPlannedClosedCountLastMonthPercentage);
 		 
