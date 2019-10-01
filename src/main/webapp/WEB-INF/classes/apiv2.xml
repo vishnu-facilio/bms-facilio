@@ -4303,7 +4303,7 @@
 	</package>
 	
 	<package name="deviceClientApi" namespace="/api/v2/deviceclient" extends="v2Api">
-		<action name="connect" class="com.facilio.bmsconsole.actions.LoginAction" method="tvAccount">
+		<action name="connect" class="com.facilio.bmsconsole.actions.LoginAction" method="deviceAccount">
 			
 		</action>
 		
@@ -4326,6 +4326,10 @@
 			<action name="list" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceList">							
 			</action>
 			<action name="getdetails" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceDetails">							
+			</action>
+			<action name="delete" class="com.facilio.bmsconsole.actions.DevicesAction" method="deleteDevice">							
+			</action>
+			<action name="disconnect" class="com.facilio.bmsconsole.actions.DevicesAction" method="disconnectDevice">							
 			</action>
 	</package>
 </struts>

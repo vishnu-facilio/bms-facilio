@@ -140,6 +140,17 @@ public static long addConnectedDevice(long deviceID,long orgId) throws Exception
 	
 
 }
+public static int disconnectDevice(long deviceId, long orgId) throws Exception {
+	
+	GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+	
+	deleteRecordBuilder.table(ModuleFactory.getConnectedDevicesModule().getTableName())
+	.andCondition(CriteriaAPI.getCondition("DEVICE_ID", "deviceId",deviceId+"", NumberOperators.EQUALS))
+	.andCondition(CriteriaAPI.getCondition("ORGID", "orgId",  orgId+"", NumberOperators.EQUALS));
+	
+	
+	return deleteRecordBuilder.delete();
+}
 
 
 
