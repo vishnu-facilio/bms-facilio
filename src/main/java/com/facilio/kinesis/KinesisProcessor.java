@@ -52,7 +52,9 @@ public class KinesisProcessor {
             log.info("Exception occurred ", e);
         }
     }
-
+    static {
+        EXISTING_ORGS.add("spinfo");
+    }
     private static void startProcessor() {
 
 //        PropertyConfigurator.configure(getLoggingProps());
