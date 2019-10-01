@@ -210,7 +210,7 @@ public class TimeSeries extends FacilioAction {
 	
 	public String discoverInstances () throws Exception {
 		
-		FacilioChain chain = TransactionChainFactory.getUnSubscribeInstanceChain();
+		FacilioChain chain = TransactionChainFactory.discoverControllerChain();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
 		
