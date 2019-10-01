@@ -7095,7 +7095,10 @@ public class DashboardAction extends FacilioAction {
 	
 	public void setFetchAlarmInfo(Boolean fetchAlarmInfo) {
 		this.fetchAlarmInfo = fetchAlarmInfo;
-	} 
+	}
+	public void setFetchAlarmInfo(boolean fetchAlarmInfo) {
+		this.fetchAlarmInfo = fetchAlarmInfo;
+	}
 	
 	// data part ends
 }

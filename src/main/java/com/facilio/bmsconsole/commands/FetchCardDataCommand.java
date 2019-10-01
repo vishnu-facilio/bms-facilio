@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -445,7 +446,7 @@ public class FetchCardDataCommand extends FacilioCommand {
 			Map<Long, AlarmOccurrenceContext> alarmMap = new HashMap<>();
 			JSONArray json = FetchReportAdditionalInfoCommand.splitAlarmOccurrence(readingAlarmOccurrences, dateRange, alarmMap);
 			result.put("alarms", json);
-			if (!fetchAlarmInfo) {
+			if (!fetchAlarmInfo && MapUtils.isNotEmpty(alarmMap)) {
 				// Getting minimal info only
 				Map<Long, JSONObject> alarmInfo = new HashMap<>();
 				for(Map.Entry<Long, AlarmOccurrenceContext> entry: alarmMap.entrySet()) {
