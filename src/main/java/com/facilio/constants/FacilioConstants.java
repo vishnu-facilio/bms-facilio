@@ -133,6 +133,8 @@ public class FacilioConstants {
 		public static final String REGRESSION_RESULT = "regressionResult";
 		public static final String REGRESSION_REPORT = "regressionReport";
 		public static final String REPORT_TEMPLATE = "reportTemplate";
+		
+		public static final String TIMEOUT = "timeout";
 
 		public static final String TENANT_STATUS = "tenantStatus";
 		public static final String USER_ID = "userId";
@@ -408,6 +410,7 @@ public class FacilioConstants {
 		public static final String REPORT_FROM_ALARM = "reportFromAlarm";
 		public static final String ALARM_RESOURCE = "alarmResource";
 		public static final String FETCH_EVENT_BAR = "fetchEventBar";
+		public static final String FETCH_ALARM_INFO = "fetchAlarmInfo";
 		public static final String CALCULATE_REPORT_AGGR_DATA = "calculateReportData";
 		public static final String REPORT_CARD_DATA = "reportCardData";
 		public static final String REPORT_VARIANCE_DATA = "reportVarianceData";
