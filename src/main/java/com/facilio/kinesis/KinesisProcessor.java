@@ -37,8 +37,8 @@ public class KinesisProcessor {
         try {
             AmazonKinesis kinesis = AwsUtil.getKinesisClient();
             ListStreamsResult streamList = kinesis.listStreams();
-//            List<String> streamNames = streamList.getStreamNames();
-            List<String> streamNames = Collections.singletonList("cofelybesix");
+            List<String> streamNames = streamList.getStreamNames();
+//            List<String> streamNames = Collections.singletonList("cofelybesix");
             if (streamNames != null && STREAMS.isEmpty()) {
                 STREAMS.addAll(streamNames);
             } else {
