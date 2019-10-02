@@ -121,11 +121,16 @@ public class GetViewListCommand extends FacilioCommand {
 						
 					int groupSize = groupViews.size();
 					Map<String, Object> group1 = groupViews.get(groupSize - 1);
-					if (group1.containsKey("type") && group1.get("type").equals("custom") && !customViews.isEmpty()) {
-						Map<String, Object> mutatedDetail = new HashMap<>(group1);
-						mutatedDetail.remove("type");
-						mutatedDetail.put("views", customViews);
-						groupViews.set(groupSize - 1, mutatedDetail);
+					if (group1.containsKey("type") && group1.get("type").equals("custom")) {
+						if (!customViews.isEmpty()) {
+							Map<String, Object> mutatedDetail = new HashMap<>(group1);
+							mutatedDetail.remove("type");
+							mutatedDetail.put("views", customViews);
+							groupViews.set(groupSize - 1, mutatedDetail);
+						}
+						else {
+							groupViews.remove(groupSize - 1);
+						}
 					}
 
 					if (upcomingView.isPresent()) {
