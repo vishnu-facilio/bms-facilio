@@ -17,6 +17,7 @@ import com.facilio.workflows.functions.FacilioFieldFunctions;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +35,7 @@ public class GetAssetAlarmDetailsCommand extends FacilioCommand {
 
             FacilioModule baseAlarmModule = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
             FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-            FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-
+            
             List<FacilioField> fields = new ArrayList<>();
             FacilioField alarmResourceField = modBean.getField("resource", baseAlarmModule.getName());
             fields.add(alarmResourceField);
@@ -74,29 +74,34 @@ public class GetAssetAlarmDetailsCommand extends FacilioCommand {
 
             context.put("assetAlarmCount", assetMap);
 
-            String readingModuleName = (String) context.get("readingModule");
-            List<String> readingFields = (List<String>) context.get("readingFields");
-            if (StringUtils.isNotEmpty(readingModuleName) && CollectionUtils.isNotEmpty(readingFields)) {
-                Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(readingModuleName));
-                List<FacilioField> readingFieldList = new ArrayList<>();
-                for (String fieldName : readingFields) {
-                    readingFieldList.add(fieldMap.get(fieldName));
-                }
-
-                List<ReadingDataMeta> readingDataMetaList = ReadingsAPI.getReadingDataMetaList(assetIds, readingFieldList, true, null, null);
-                if (CollectionUtils.isNotEmpty(readingDataMetaList)) {
-                    Map<Long, List<ReadingDataMeta>> assetReadingDataMeta = new HashMap<>();
-                    for (ReadingDataMeta rdm : readingDataMetaList) {
-                        List<ReadingDataMeta> list = assetReadingDataMeta.get(rdm.getResourceId());
-                        if (list == null) {
-                            list = new ArrayList<>();
-                            assetReadingDataMeta.put(rdm.getResourceId(), list);
-                        }
-                        list.add(rdm);
-                    }
-                    context.put("assetReadings", assetReadingDataMeta);
-                }
-                System.out.println(readingDataMetaList);
+            List<JSONObject> readingModuleFieldList = (List<JSONObject>) context.get("readingModuleFieldList");
+            if (CollectionUtils.isNotEmpty(readingModuleFieldList)) {
+            	List<FacilioField> readingFieldList = new ArrayList<>();
+               for(JSONObject readingModuleObj :readingModuleFieldList) {
+	             if(readingModuleObj.containsKey("readingModuleName") && readingModuleObj.containsKey("readingFieldList"))	
+		             {
+	            	   Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields((String) readingModuleObj.get("readingModuleName")));
+		                List<String> fieldNames = (List<String>) readingModuleObj.get("readingFieldList");
+		            	for (String fieldName : fieldNames) {
+		                    readingFieldList.add(fieldMap.get(fieldName));
+		                }
+		            }
+               }
+               if(CollectionUtils.isNotEmpty(readingFieldList)) {
+	               List<ReadingDataMeta> readingDataMetaList = ReadingsAPI.getReadingDataMetaList(assetIds, readingFieldList, true, null, null);
+	               if (CollectionUtils.isNotEmpty(readingDataMetaList)) {
+	                   Map<Long, List<ReadingDataMeta>> assetReadingDataMeta = new HashMap<>();
+	                   for (ReadingDataMeta rdm : readingDataMetaList) {
+	                       List<ReadingDataMeta> list = assetReadingDataMeta.get(rdm.getResourceId());
+	                       if (list == null) {
+	                           list = new ArrayList<>();
+	                           assetReadingDataMeta.put(rdm.getResourceId(), list);
+	                       }
+	                       list.add(rdm);
+	                   }
+	                   context.put("assetReadings", assetReadingDataMeta);
+	               }
+               }
             }
         }
         return false;

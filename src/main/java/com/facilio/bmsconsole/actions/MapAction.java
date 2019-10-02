@@ -6,6 +6,8 @@ import com.facilio.chain.FacilioContext;
 
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 public class MapAction extends FacilioAction {
 
     public String siteAlarmList() throws Exception {
@@ -26,28 +28,20 @@ public class MapAction extends FacilioAction {
         this.ids = ids;
     }
 
-    private String readingModuleName;
-    public String getReadingModuleName() {
-        return readingModuleName;
-    }
-    public void setReadingModuleName(String readingModuleName) {
-        this.readingModuleName = readingModuleName;
-    }
-
-    private List<String> readingFieldNames;
-    public List<String> getReadingFieldNames() {
-        return readingFieldNames;
-    }
-    public void setReadingFieldNames(List<String> readingFieldNames) {
-        this.readingFieldNames = readingFieldNames;
-    }
+    private List<JSONObject> readingModuleFieldList;
+    
+    public List<JSONObject> getReadingModuleFieldList() {
+		return readingModuleFieldList;
+	}
+	public void setReadingModuleFieldList(List<JSONObject> readingModuleFieldList) {
+		this.readingModuleFieldList = readingModuleFieldList;
+	}
 
     public String assetAlarmList() throws Exception {
         FacilioChain c = ReadOnlyChainFactory.getAssetAlarmList();
         FacilioContext context = c.getContext();
         context.put("assetIds", getIds());
-        context.put("readingModule", readingModuleName);
-        context.put("readingFields", readingFieldNames);
+        context.put("readingModuleFieldList", readingModuleFieldList);
         c.execute();
 
         setResult("assetAlarmCount", context.get("assetAlarmCount"));
