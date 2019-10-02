@@ -1488,4 +1488,16 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetImportHistoryListCommand());
 		return c;
 	}
+
+	public static FacilioChain getSiteAlarmList() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSiteLevelAlarmCountCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAssetAlarmList() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAssetAlarmDetailsCommand());
+		return chain;
+	}
 }

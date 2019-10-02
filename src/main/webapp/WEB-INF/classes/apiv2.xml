@@ -268,7 +268,14 @@
 			method="fetchMetrics">
 			</action>
 	</package>
-	
+
+	<package name="mapsApi" namespace="/api/v2/maps" extends="v2Api">
+		<action name="siteAlarm"
+				class="com.facilio.bmsconsole.actions.MapAction" method="siteAlarmList" />
+		<action name="assetAlarm"
+				class="com.facilio.bmsconsole.actions.MapAction" method="assetAlarmList" />
+	</package>
+
 	<package name="state" namespace="/api/v2/state" extends="v2Api">
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList" />
