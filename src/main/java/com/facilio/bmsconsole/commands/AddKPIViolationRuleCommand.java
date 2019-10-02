@@ -80,7 +80,7 @@ public class AddKPIViolationRuleCommand extends FacilioCommand {
 		violationRule.setClearAlarm(true);
 		violationRule.setStatus(true);
 		violationRule.setActions(Collections.singletonList(action));
-		violationRule.setRuleType(RuleType.READING_RULE);
+		violationRule.setRuleType(RuleType.READING_VIOLATION_RULE);
 		violationRule.setActivityType(EventType.CREATE);
 		violationRule.setModule(readingField.getModule());
 		violationRule.setAssetCategoryId(formula.getAssetCategoryId());

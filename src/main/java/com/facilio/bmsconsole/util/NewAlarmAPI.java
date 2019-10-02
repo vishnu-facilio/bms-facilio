@@ -34,6 +34,7 @@ import com.facilio.bmsconsole.context.ReadingAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.ReadingRCAAlarm;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ViolationAlarmContext;
+import com.facilio.bmsconsole.context.ViolationAlarmOccurrenceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -132,6 +133,8 @@ public class NewAlarmAPI {
 				return MLAlarmOccurenceContext.class;
 			case READING:
 				return ReadingAlarmOccurrenceContext.class;
+			case VIOLATION:
+				return ViolationAlarmOccurrenceContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}

@@ -100,6 +100,7 @@ public class WorkflowRuleAPI {
 			case ALARM_CLEAR_RULE:
 			case ALARM_RCA_RULES:
 			case PM_READING_TRIGGER:
+			case READING_VIOLATION_RULE:
 				if (((ReadingRuleContext) rule).getClearAlarm() == null) {
 					ruleProps.put("clearAlarm", true);
 				}
@@ -521,6 +522,7 @@ public class WorkflowRuleAPI {
 				case ALARM_CLEAR_RULE:
 				case ALARM_RCA_RULES:
 				case PM_READING_TRIGGER:
+				case READING_VIOLATION_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), entry.getValue()));
 					break;
 				case SLA_RULE:
@@ -636,6 +638,7 @@ public class WorkflowRuleAPI {
 						case ALARM_CLEAR_RULE:
 						case ALARM_RCA_RULES:
 						case PM_READING_TRIGGER:
+						case READING_VIOLATION_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = ReadingRuleAPI.constructReadingRuleFromProps(prop, modBean, fetchChildren);
 							break;

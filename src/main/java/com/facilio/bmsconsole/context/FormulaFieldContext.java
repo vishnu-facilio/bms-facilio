@@ -7,6 +7,7 @@ import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
@@ -163,6 +164,18 @@ public class FormulaFieldContext implements Serializable {
 	}
 	public void setModuleId(long moduleId) {
 		this.moduleId = moduleId;
+	}
+	
+	private FacilioModule module;
+	@JSON(serialize = false)
+	@JsonIgnore
+	public FacilioModule getModule() {
+		return module;
+	}
+	@JsonIgnore
+	public void setModule(FacilioModule module) {
+		this.module = module;
+		setModuleName(module.getName());
 	}
 
 	private long readingFieldId = -1;

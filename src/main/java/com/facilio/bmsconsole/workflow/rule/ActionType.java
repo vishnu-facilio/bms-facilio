@@ -1148,19 +1148,16 @@ public enum ActionType {
 				Object currentRecord) throws Exception {
 			try {
 				
-				BaseEventContext event = null;
+				obj.remove("alarmType");
+				long forumalaId = (long)obj.remove("formulaId");
+				
+				BaseEventContext event = FieldUtil.getAsBeanFromJson(obj, ViolationEventContext.class);
 				ReadingRuleContext rule = ((ReadingRuleContext)currentRule);
 				
-				if (obj == null) {
-					event = new ViolationEventContext();
-				}
-				else {
-					obj.remove("alarmType");
-					event = FieldUtil.getAsBeanFromJson(obj, ViolationEventContext.class);
-				}
+				
 				event.setSeverityString("Minor");
 				ViolationEventContext violationEvent = (ViolationEventContext)event;
-				violationEvent.setFormulaFieldId((long)obj.remove("formulaId"));
+				violationEvent.setFormulaFieldId(forumalaId);
 				
 				rule.addDefaultEventProps(event, obj, (ReadingContext) currentRecord);
 				

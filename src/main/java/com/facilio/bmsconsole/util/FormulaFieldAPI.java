@@ -535,7 +535,7 @@ public class FormulaFieldAPI {
 				fetchInclusions(formula);
 				fetchMatchedResources(formula, fetchResources);
 				FacilioModule module = modBean.getModule(formula.getModuleId());
-				formula.setModuleName(module.getName());
+				formula.setModule(module);
 				setKPITarget(formula);
 				if (fetchResources && formula.getResourceId() != -1) {
 					resourceIds.add(formula.getResourceId());

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import org.apache.commons.chain.Context;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
@@ -43,6 +44,18 @@ public class ViolationEventContext extends BaseEventContext {
 		violationAlarm.setFormulaField(formulaField);
 
 		return baseAlarm;
+	}
+	
+	@Override
+	public AlarmOccurrenceContext updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, Context context, boolean add) throws Exception {
+		if (add && alarmOccurrence == null) {
+			alarmOccurrence = new ViolationAlarmOccurrenceContext();
+		}
+
+		ViolationAlarmOccurrenceContext violationOccurrence = (ViolationAlarmOccurrenceContext) alarmOccurrence;
+		violationOccurrence.setFormulaField(formulaField);
+		
+		return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
 	}
 
 	@JsonIgnore
