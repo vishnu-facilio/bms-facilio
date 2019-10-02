@@ -1921,6 +1921,10 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
             
       List<FacilioField> fields = new ArrayList<FacilioField>();
       
+      List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
+      Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
+      FacilioField plannedType = workorderFieldMap.get("type");
+      
       List<TicketTypeContext> types = TicketAPI.getPlannedTypes(AccountUtil.getCurrentOrg().getId());
       StringJoiner idString = new StringJoiner(",");
       for(TicketTypeContext type : types) {
@@ -1963,6 +1967,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
             .on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
             .innerJoin(baseSpaceModule.getTableName())
             .on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
+            .andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.NOT_EQUALS))
             .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
             .andCondition(spaceCond)
             .groupBy(buildingId.getCompleteColumnName())
@@ -1990,6 +1995,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
             .on("MODULE_STATE = TicketStatus.ID")
             .innerJoin(resourceModule.getTableName())
             .on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+            .andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.NOT_EQUALS))
             .innerJoin(baseSpaceModule.getTableName())
             .on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
             .andCondition(spaceCond2)
