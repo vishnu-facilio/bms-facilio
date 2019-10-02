@@ -195,6 +195,10 @@ public class Processor implements IRecordProcessor {
                             continue;
                         }
                     }
+                    
+                    if (orgId == 152l && publishType != PublishType.timeseries) {
+                    	 LOGGER.info(payLoad);
+                    }
 
                     long i = 0;
 
