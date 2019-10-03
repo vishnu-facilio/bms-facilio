@@ -33,32 +33,33 @@ public class GetSiteLevelAlarmCountCommand extends FacilioCommand {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
-        FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+        FacilioModule assetModule = modBean.getModule(moduleName);
+
 
         List<FacilioField> fields = new ArrayList<>();
-        FacilioField siteIdField = FieldFactory.getSiteIdField(resourceModule);
+        FacilioField siteIdField = FieldFactory.getSiteIdField(assetModule);
         fields.add(siteIdField);
 
         fields.addAll(FieldFactory.getCountField(module));
 
         AlarmSeverityContext clearSeverity = AlarmAPI.getAlarmSeverity("Clear");
 
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+        SelectRecordsBuilder builder = new SelectRecordsBuilder()
+                .module(assetModule)
                 .table(module.getTableName())
                 .select(fields)
-                .innerJoin(resourceModule.getTableName())
-                .on(module.getTableName() + ".RESOURCE_ID = " + resourceModule.getTableName() + ".ID")
+                .innerJoin(module.getTableName())
+                    .on(module.getTableName() + ".RESOURCE_ID = " + assetModule.getTableName() + ".ID")
                 .andCondition(CriteriaAPI.getCondition("SEVERITY_ID", "severity", String.valueOf(clearSeverity.getId()), NumberOperators.NOT_EQUALS))
                 .groupBy(siteIdField.getCompleteColumnName())
                 ;
         if (CollectionUtils.isNotEmpty(siteIds)) {
             builder.andCondition(CriteriaAPI.getCondition(siteIdField, siteIds, NumberOperators.EQUALS));
         }
-        List<Map<String, Object>> maps = builder.get();
+        List<Map<String, Object>> maps = builder.getAsProps();
 
         Map<Long, Integer> siteAssetMap = null;
         if (StringUtils.isNotEmpty(moduleName)) {
-            FacilioModule assetModule = modBean.getModule(moduleName);
             List<FacilioField> assetFields = new ArrayList<>();
             assetFields.add(siteIdField);
             assetFields.addAll(FieldFactory.getCountField(assetModule));
@@ -115,7 +116,10 @@ public class GetSiteLevelAlarmCountCommand extends FacilioCommand {
 
         for (Map<String, Object> map : maps) {
             int count = ((Number) map.get("count")).intValue();
-            float per = count / totalCount;
+            float per = 0;
+            if (totalCount != 0) {
+                per = count / totalCount;
+            }
             map.put("colorCode", getColorCode(per));
         }
 
