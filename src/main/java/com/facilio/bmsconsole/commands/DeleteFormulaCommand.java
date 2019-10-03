@@ -6,6 +6,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -37,6 +38,9 @@ public class DeleteFormulaCommand extends FacilioCommand {
 			WorkflowUtil.deleteWorkflow(oldFormula.getWorkflowId());
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			modBean.deleteModule(oldFormula.getReadingField().getModule().getName());
+			if (oldFormula.getViolationRuleId() > 0) {
+				WorkflowRuleAPI.deleteWorkflowRule(oldFormula.getViolationRuleId());
+			}
 			
 			context.put(FacilioConstants.ContextNames.RESULT, "success");
 		}
