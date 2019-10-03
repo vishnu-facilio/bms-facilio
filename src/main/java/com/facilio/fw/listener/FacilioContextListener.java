@@ -175,9 +175,6 @@ public class FacilioContextListener implements ServletContextListener {
 	}
 
 	private void registerMBeans() {
-	    if(FacilioProperties.isProduction()) {
-	        return;
-        }
 		try {
 			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 			ObjectName name = new ObjectName("com.facilio.db:type=Query");
@@ -187,6 +184,7 @@ public class FacilioContextListener implements ServletContextListener {
 			LOGGER.info("Exception while registering Facilio MBeans");
 		}
 	}
+
 	private void initializeDB() {
 		if (FacilioProperties.isDevelopment()) {
 			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/PublicDB.sql", null);
