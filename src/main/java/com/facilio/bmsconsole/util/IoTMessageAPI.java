@@ -25,6 +25,7 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.CommandStatus;
 import com.facilio.agent.FacilioAgent;
+import com.facilio.agent.PublishType;
 import com.facilio.agent.controller.context.Point.ConfigureStatus;
 import com.facilio.agent.controller.context.Point.SubscribeStatus;
 import com.facilio.agent.protocol.ProtocolUtil;
@@ -42,6 +43,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -95,6 +97,11 @@ public class IoTMessageAPI {
 		if (controller.getAgentId() != -1) {
 			FacilioAgent agent = AgentUtil.getAgentDetails(controller.getAgentId());
 			object.put("agent", agent.getName());
+			// Temp...till it is handled in agent
+			if (command == IotCommandType.PING) {
+				object.put(EventUtil.DATA_TYPE, PublishType.ack.getValue());
+				object.put("pingAgent", agent.getName());
+			}
 			object.put(AgentKeys.AGENT_ID, agent.getId()); // Agent_Id key must be changes to camelcase.
 		}
 
@@ -165,16 +172,25 @@ public class IoTMessageAPI {
 		
 	}
 	
-	public static int acknowdledgeMessage (long id, String ackMessage,String command) throws Exception {
+	public static int acknowdledgeMessage (long id, String ackMessage, JSONObject payLoad) throws Exception {
 		Map<String, Object> prop;
 		boolean isExecuted = false;
 		boolean isPing = false;
 		String ackField = "acknowledgeTime";
 		IotCommandType commandType = null;
 		
+		String command = (String) payLoad.get(AgentKeys.COMMAND);
+		
 		if (StringUtils.isNotEmpty(command)) {
 			commandType = IotCommandType.getCommandType(command);
 			isPing = commandType != null && IotCommandType.PING == commandType;
+		}
+		if (isPing) {
+			String agent = (String) payLoad.get("agent");
+			String pingAgent = (String) payLoad.get("pingAgent");
+			if (!pingAgent.equals(agent)) {
+				return 0;
+			}
 		}
 		
 		if (StringUtils.isNotEmpty(ackMessage) && CommandStatus.EXECUTED.equals(ackMessage)) {
