@@ -1074,6 +1074,25 @@ public class PreventiveMaintenanceAPI {
 		}
 		return null;
 	}
+	
+	public static List<PreventiveMaintenance> getPM(Criteria criteria) throws Exception {
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
+		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCriteria(criteria)
+														;
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanListFromMapList(props, PreventiveMaintenance.class);
+		}
+		return null;
+	}
 
 
 	

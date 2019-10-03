@@ -194,7 +194,7 @@ public class LookupSpecialTypeUtil {
 			return null; //Returning null for now
 		}
 		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
-			return null; //Returning null for now
+			return PreventiveMaintenanceAPI.getPM(criteria);
 		}
 		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
 			return FormulaFieldAPI.getFormulaFields(criteria);
