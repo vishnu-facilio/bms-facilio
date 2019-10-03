@@ -66,7 +66,7 @@ public class KPIPageFacory extends PageFactory {
 	
 	private static void addTargetWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 5);
+		cardWidget.addToLayoutParams(section, 24, 10);
 		cardWidget.addCardType(CardType.KPI_TARGET);
 		section.addWidget(cardWidget);
 	}
