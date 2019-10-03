@@ -403,6 +403,9 @@ public class ReportFactoryFields {
 		case "alarm":
 			moduleResourceFieldName = "resource";
 			break;
+		case "alarmoccurrence":
+			moduleResourceFieldName = "resource";
+			break;
 		}
 		FacilioField moduleResourceField = FieldFactory.getAsMap(bean.getAllFields(moduleName)).get(moduleResourceFieldName);
 		if(moduleResourceField == null) {
