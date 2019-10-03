@@ -45,7 +45,6 @@ import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ControllerAPI;
-import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.PMStatus;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -688,9 +687,16 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public int acknowledgePublishedMessage(long id, String message, JSONObject payLoad) throws Exception {
-		// TODO Auto-generated method stub
-		return IoTMessageAPI.acknowdledgeMessage(id, message, payLoad);
+	public void acknowledgePublishedMessage(long id, String message, JSONObject payLoad) throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.getAcknowledgeMessageChain();
+		FacilioContext context = chain.getContext();
+		
+		context.put(ContextNames.ID, id);
+		context.put(ContextNames.MESSAGE, message);
+		context.put(ContextNames.PAY_LOAD, payLoad);
+		
+		chain.execute();
 	}
 
 	@Override

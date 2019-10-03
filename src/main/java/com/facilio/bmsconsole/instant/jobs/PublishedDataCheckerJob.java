@@ -114,7 +114,7 @@ public class PublishedDataCheckerJob extends InstantJob {
 	public void handleSuccessFailure (PublishData data, Map<Long, PublishMessage> msgMap, FacilioContext context) throws Exception {
 		LOGGER.info("Msg Map : "+msgMap);
 		if (msgMap.isEmpty()) {
-			IoTMessageAPI.acknowdledgeData(data.getId(), false);
+			IoTMessageAPI.acknowdledgeData(data.getId(), "acknowledgeTime");
 		}
 		else {
 			IoTMessageAPI.handlePublishMessageFailure(data);

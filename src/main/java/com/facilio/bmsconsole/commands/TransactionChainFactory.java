@@ -8,6 +8,7 @@ import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
 import com.facilio.agent.DeleteAgentCommand;
 import com.facilio.agent.commands.AckUpdateCommand;
+import com.facilio.agent.commands.AcknowledgeMessageCommand;
 import com.facilio.agent.commands.AddAgentMessageCommand;
 import com.facilio.agent.commands.AddAgentMetricsCommand;
 import com.facilio.agent.commands.AddLogChainCommand;
@@ -3547,6 +3548,12 @@ public class TransactionChainFactory {
 	public static FacilioChain getDisAssociateTermsToPOChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new DisAssociateTermsFromPoCommand());
+		return c;
+	}
+	
+	public static FacilioChain getAcknowledgeMessageChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AcknowledgeMessageCommand());
 		return c;
 	}
 }

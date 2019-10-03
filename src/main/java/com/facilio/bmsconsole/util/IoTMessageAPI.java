@@ -30,11 +30,9 @@ import com.facilio.agent.controller.context.Point.ConfigureStatus;
 import com.facilio.agent.controller.context.Point.SubscribeStatus;
 import com.facilio.agent.protocol.ProtocolUtil;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.PublishMessage;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -153,30 +151,21 @@ public class IoTMessageAPI {
 		return msg;
 	}
 
-	public static int acknowdledgeData (long id, boolean isResponseAck) throws SQLException {
-		Map<String, Object> prop;
-		if  (isResponseAck) {
-			prop = Collections.singletonMap("responseAckTime", System.currentTimeMillis());
-		}
-		else {
-			prop = Collections.singletonMap("acknowledgeTime", System.currentTimeMillis());
-		}
+	public static int acknowdledgeData (long id, String ackField) throws SQLException {
 		FacilioModule module = ModuleFactory.getPublishDataModule();
 		return new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(FieldFactory.getPublishDataFields())
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(id, module))
-				.update(prop)
+				.update(Collections.singletonMap(ackField, System.currentTimeMillis()))
 				;
 		
 	}
 	
-	public static int acknowdledgeMessage (long id, String ackMessage, JSONObject payLoad) throws Exception {
-		Map<String, Object> prop;
+	public static void acknowdledgeMessage (long id, String ackMessage, JSONObject payLoad) throws Exception {
 		boolean isExecuted = false;
 		boolean isPing = false;
-		String ackField = "acknowledgeTime";
 		IotCommandType commandType = null;
 		
 		String command = (String) payLoad.get(AgentKeys.COMMAND);
@@ -185,39 +174,40 @@ public class IoTMessageAPI {
 			commandType = IotCommandType.getCommandType(command);
 			isPing = commandType != null && IotCommandType.PING == commandType;
 		}
+		if (StringUtils.isNotEmpty(ackMessage) && CommandStatus.EXECUTED.equals(ackMessage)) {
+			isExecuted = true;
+		}
+		
 		if (isPing) {
 			String agent = (String) payLoad.get("agent");
 			String pingAgent = (String) payLoad.get("pingAgent");
 			if (!pingAgent.equals(agent)) {
-				return 0;
+				return;
 			}
-		}
-		
-		if (StringUtils.isNotEmpty(ackMessage) && CommandStatus.EXECUTED.equals(ackMessage)) {
 			
-			isExecuted = true;
-			ackField = isPing ? "pingAckTime" : "responseAckTime";
-		}
-		
-		prop = Collections.singletonMap(ackField, System.currentTimeMillis());
-		
-		FacilioChain updateChain = TransactionChainFactory.updateAckChain();
-		FacilioContext context = new FacilioContext();
-		context.put(AgentKeys.ID,id);
-		context.put(FacilioConstants.ContextNames.ID,id);
-		context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,prop);
-		updateChain.execute(context);
-		if (isExecuted) {
-			if (isPing) {
+			if (isExecuted) {
+				acknowdledgeData(id, "pingAckTime");
 				PublishData publishData = getPublishData(id, true);
 				publishIotMessage(publishData, -1);
 			}
-			else {
+		}
+		else {
+			updateMessageAckTime(id, isExecuted ? "responseAckTime" : "acknowledgeTime");
+			if (isExecuted) {
 				handlePublishDataOnMessageAck(id, commandType);
 			}
 		}
+	}
+	
+	private static void updateMessageAckTime(long id, String fieldName) throws SQLException {
+		FacilioModule module = ModuleFactory.getPublishMessageModule();
 		
-		return 1;
+		new GenericUpdateRecordBuilder()
+        .table(module.getTableName())
+        .fields(FieldFactory.getPublishMessageFields())
+        .andCondition(CriteriaAPI.getIdCondition(id, module))
+        .update(Collections.singletonMap(fieldName, System.currentTimeMillis()))
+        ;
 	}
 	
 	public static PublishData getPublishData(long id, boolean fetchMessages) throws Exception {
@@ -283,7 +273,7 @@ public class IoTMessageAPI {
 			prop = builder.fetchFirst();
 			long count = (long) prop.get("count");
 			if (count == 0) {
-				acknowdledgeData(parentId, true);
+				acknowdledgeData(parentId, "responseAckTime");
 				PublishData data = getPublishData(parentId, false);
 				try {
 					if (data.getCommandEnum() != null && data.getCommandEnum() == IotCommandType.SET) {
