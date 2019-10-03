@@ -1,19 +1,33 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.tiles.request.collection.CollectionUtil;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
@@ -25,6 +39,52 @@ import com.facilio.wms.util.WmsApi;
 ;
 
 public class NotificationAPI {
+	
+	private static final Logger LOGGER = LogManager.getLogger(NotificationAPI.class.getName());
+	
+	
+	private static List<Pair<String, Boolean>> getMobileInstanceIDs(List<Long> userIds) throws Exception {
+		List<Pair<String, Boolean>> mobileInstanceIds = new ArrayList<>();
+		List<User> userList = AccountUtil.getUserBean().getUsers(null, true, false, userIds);
+		List<Long> userIdList = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(userList)) {
+			userIdList = userList.stream().map(User::getUid).collect(Collectors.toList());
+			List<Map<String, Object>> instanceIdList = IAMUserUtil.getUserMobileSettingInstanceIds(userIdList);
+			for (Map<String, Object> instance : instanceIdList) {
+				Boolean fromPortal = (Boolean)instance.get("fromPortal");
+				if (fromPortal == null) {
+					fromPortal = false;
+				}
+				mobileInstanceIds.add(Pair.of((String) instance.get("mobileInstanceId"), fromPortal));
+			}
+		}
+		
+		return mobileInstanceIds;
+	}
+	
+	public static void sendPushNotification(List<Long> userIds,JSONObject message) throws Exception {
+
+		List<Pair<String, Boolean>> mobileInstanceSettings = getMobileInstanceIDs(userIds);
+		LOGGER.info("Sending push notifications for ids : "+userIds);
+		if (mobileInstanceSettings != null && !mobileInstanceSettings.isEmpty()) {
+			LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceSettings.stream().map(pair -> pair.getLeft()).collect(Collectors.toList()));
+			for (Pair<String, Boolean> mobileInstanceSetting : mobileInstanceSettings) {
+				if (mobileInstanceSetting != null) {
+					
+//					message.put("to","fHD-LqsgPBA:APA91bEuVMMnWqC_LaxYg1w1K9fF4bL9Exunbh7W4syfBBCkEIhQC0lYP2CT-EKAbdvS7Hl3iayAdKojXUgQ_OwAlMANO7Rtl8DbQ1-Zettsae6hXRG9bzh6ob9IjGXQBwNTBOu-qbmF");
+					message.put("to", mobileInstanceSetting.getLeft());
+
+					Map<String, String> headers = new HashMap<>();
+					headers.put("Content-Type", "application/json");
+					headers.put("Authorization", "key="+ (mobileInstanceSetting.getRight() ? FacilioProperties.getPortalPushNotificationKey() : FacilioProperties.getPushNotificationKey()));
+
+					String url = "https://fcm.googleapis.com/fcm/send";
+
+					AwsUtil.doHttpPost(url, headers, null, message.toJSONString());
+				}
+			}
+		}
+	}
 	
 	public static void sendNotification(Long recipient, NotificationContext notification) throws Exception {
 		
