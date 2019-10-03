@@ -17,13 +17,16 @@ public class AckUtil
      * @param payLoad
      * @param orgId
      */
-    public void processAck(JSONObject payLoad,long orgId)  {
+    public void processAck(JSONObject payLoad, String agent, long orgId)  {
 
         try {
             Long msgId = (Long) payLoad.get(AgentKeys.MESSAGE_ID);
             String message = (String) payLoad.get(AgentKeys.MESSAGE);
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            bean.acknowledgePublishedMessage(msgId, message, payLoad);
+            JSONObject newObj = new JSONObject();
+            newObj.putAll(payLoad);
+            newObj.put("agent", agent);
+            bean.acknowledgePublishedMessage(msgId, message, newObj);
         }catch(Exception e){
             LOGGER.info("EXxception occured",e);
         }
