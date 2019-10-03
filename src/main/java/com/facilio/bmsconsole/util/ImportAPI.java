@@ -225,7 +225,7 @@ public class ImportAPI {
 	}
 	
 	public static List<Map<String,Object>> getValidatedRows(Long importProcessId) throws Exception{
-		String validConditions = ImportProcessContext.ImportLogErrorStatus.RESOLVED.getStringValue() + "," + ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getStringValue();
+		String validConditions = ImportProcessContext.ImportLogErrorStatus.RESOLVED.getStringValue() + "," + ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getStringValue() + "," + ImportProcessContext.ImportLogErrorStatus.OTHER_ERRORS.getStringValue();
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getImportProcessLogModule().getTableName())
 				.select(FieldFactory.getImportProcessLogFields())

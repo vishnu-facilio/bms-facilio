@@ -70,7 +70,7 @@ public class ImportProcessLogContext {
 		return "{}";
 	}
 	public void setCorrectedRowString(String correctedRowString) throws Exception {
-		if(correctedRowString == null) {
+		if(correctedRowString == null || correctedRowString.equals("{}")) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject)parser.parse(getCorrectedRowString());
 			setCorrectedRow(FieldUtil.getAsBeanFromJson(json, ImportRowContext.class));
