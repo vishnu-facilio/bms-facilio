@@ -402,11 +402,9 @@ public class AwsUtil
     }
 	@Deprecated
 	public static void sendEmail(JSONObject mailJson) throws Exception  {
-
-
-		logEmail(mailJson);
 		if(FacilioProperties.isDevelopment()) {
 			mailJson.put("subject", "Local - "+mailJson.get("subject"));
+			logEmail(mailJson);
 			return;
 		}
 		if(FacilioProperties.isSmtp()) {
@@ -414,6 +412,7 @@ public class AwsUtil
 		} else {
 			sendEmailViaAws(mailJson);
 		}
+		logEmail(mailJson);
 	}
 
 	private static void sendEmailViaAws(JSONObject mailJson) throws Exception  {
