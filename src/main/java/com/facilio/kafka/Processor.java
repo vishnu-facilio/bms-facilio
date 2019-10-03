@@ -183,7 +183,7 @@ public class Processor extends FacilioProcessor {
                                     devicePointsUtil.processDevicePoints(payLoad, orgId, agent.getId());
                                     break;
                                 case ack:
-                                    ackUtil.processAck(payLoad, orgId);
+                                    ackUtil.processAck(payLoad, agentName, orgId);
                                     processLog(payLoad,agent.getId(),recordId);
                                     break;
                                 case agent:

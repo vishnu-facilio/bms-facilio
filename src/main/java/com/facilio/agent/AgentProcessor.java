@@ -141,7 +141,7 @@ public class AgentProcessor implements IRecordProcessor {
                                 // devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap);
                                 break;
                             case ack:
-                                 ackUtil.processAck(payLoad, orgId);
+                                 ackUtil.processAck(payLoad, deviceId, orgId);
                                 break;
 
                         }
