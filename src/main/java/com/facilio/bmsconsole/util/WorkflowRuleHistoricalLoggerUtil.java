@@ -179,15 +179,23 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				
 				List<Map<String, Object>> propsList = selectBuilder.get();
 				
-				for(Map<String, Object> prop :propsList)
+				if(!propsList.isEmpty())
 				{
-					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = workflowRuleHistoricalLoggerContextMap.get((long) prop.get("loggerGroupId"));
-					workflowRuleHistoricalLoggerContext.setResourceLogCount((long) prop.get("count"));
-					if(prop.get("sum") != null)
+					for(Map<String, Object> prop :propsList)
 					{
-						workflowRuleHistoricalLoggerContext.setTotalChildAlarmCount(Integer.valueOf(String.valueOf(prop.get("sum"))));
+						WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = workflowRuleHistoricalLoggerContextMap.get((long) prop.get("loggerGroupId"));
+						if(prop.get("count") != null) {
+							workflowRuleHistoricalLoggerContext.setResourceLogCount((long) prop.get("count"));
+							
+						}
+						if(prop.get("sum") != null)
+						{
+							workflowRuleHistoricalLoggerContext.setTotalChildAlarmCount(Integer.valueOf(String.valueOf(prop.get("sum"))));
+						}
 					}
+					
 				}
+				
 				
 				return workflowRuleHistoricalLoggerContextMap.values();
 	}
