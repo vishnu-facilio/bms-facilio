@@ -6,13 +6,23 @@ import com.facilio.chain.FacilioContext;
 
 import java.util.List;
 
+import com.facilio.constants.FacilioConstants;
 import org.json.simple.JSONObject;
 
 public class MapAction extends FacilioAction {
 
+    private String moduleName;
+    public String getModuleName() {
+        return moduleName;
+    }
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
     public String siteAlarmList() throws Exception {
         FacilioChain c = ReadOnlyChainFactory.getSiteAlarmList();
         FacilioContext context = c.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 
         c.execute();
 
