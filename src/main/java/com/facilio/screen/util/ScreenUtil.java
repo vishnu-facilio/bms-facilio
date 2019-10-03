@@ -174,6 +174,7 @@ public class ScreenUtil {
 		List<Map<String, Object>> props = builder.get();
 		
 		ScreenContext screenContext = FieldUtil.getAsBeanFromMap(props.get(0), ScreenContext.class);
+		screenContext.setScreenDashboards(getScreenDashboardRel(screenContext));
 		return screenContext;
 	}
 	
