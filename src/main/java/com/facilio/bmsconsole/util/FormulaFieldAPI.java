@@ -278,7 +278,9 @@ public class FormulaFieldAPI {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
 					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow, params, null, ignoreNullValues, false);
-					LOGGER.debug("Result of Formula : "+fieldName+" for resource : "+resourceId+" : "+workflowResult);
+					if (AccountUtil.getCurrentOrg().getId() == 169) {
+						LOGGER.info("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
+					}
 					if(workflowResult != null) {
 						Double resultVal = Double.parseDouble(workflowResult.toString());
 //						if (AccountUtil.getCurrentOrg().getId() == 135) {

@@ -690,7 +690,7 @@ public class ReadingsAPI {
 										&& lastTimeStamp != -1
 										&& !"-1".equals(meta.getActualValue())
 										&& timeStamp < lastTimeStamp)) {
-									if (AccountUtil.getCurrentOrg().getId() == 154l) {
+									if (AccountUtil.getCurrentOrg().getId() == 169) {
 										LOGGER.info("Not updating: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId);
 									}
 									continue;
