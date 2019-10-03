@@ -12,10 +12,8 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -104,9 +102,6 @@ public class GetAssetAlarmDetailsCommand extends FacilioCommand {
 	               }
                }
             }
-            
-            Map<Long, ResourceContext> resources = ResourceAPI.getResourceAsMapFromIds(assetIds);
-            context.put("assets", resources);
         }
         return false;
     }
