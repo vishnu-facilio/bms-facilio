@@ -221,7 +221,7 @@ public class PMPlannerAPI {
 		pmPLannerSettings.setViewSettings(DEFAULT_VIEW_SETTING);
 		pmPLannerSettings.setLegendSettings(DEFAULT_LEGEND_SETTINGS);
 		
-		if(plannerType.equals(PMPlannerSettingsContext.PlannerType.ASSET_PLANNER))
+		if(plannerType.equals(PMPlannerSettingsContext.PlannerType.ASSET_PLANNER)||plannerType.equals(PMPlannerSettingsContext.PlannerType.SPACE_PLANNER))
 		{
 			pmPLannerSettings.setColumnSettings(DEFAULT_COLUMN_SETTINGS);		
 			pmPLannerSettings.setTimeMetricSettings(DEFAULT_TIME_METRIC_SETTINGS);

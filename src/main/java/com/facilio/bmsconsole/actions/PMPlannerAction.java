@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.PMPlannerSettingsContext.PlannerType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -25,7 +26,25 @@ public class PMPlannerAction extends FacilioAction{
 
 	private static final long serialVersionUID = 1L;
 	private PMPlannerSettingsContext settings;
+	private PlannerType plannerType;
+
+	public PlannerType getPlannerTypeEnum() {
+		return plannerType;
+	}
+	public void setPlannerType(PlannerType type) {
+		this.plannerType = type;
+	}
+	public int getPlannerType() {
+		if (plannerType != null) {
+			return plannerType.getValue();
+		}
+		return -1;
+	}
+	public void setPlannerType(int type) {
+		this.plannerType = PlannerType.valueOf(type);
+	}
 	
+
 
 	
 	public PMPlannerSettingsContext getSettings() {
@@ -75,8 +94,8 @@ public class PMPlannerAction extends FacilioAction{
 		context.put(ContextNames.BUILDING_ID, buildingId);
 		context.put(ContextNames.CATEGORY_ID, categoryId);
       
-		PMPlannerSettingsContext assetSettings=new PMPlannerSettingsContext();
-        assetSettings.setPlannerType(PMPlannerSettingsContext.PlannerType.ASSET_PLANNER);
+		PMPlannerSettingsContext plannerSettings=new PMPlannerSettingsContext();
+		plannerSettings.setPlannerType(plannerType);
 		
 		
 		if (filterJson != null) {
@@ -84,7 +103,7 @@ public class PMPlannerAction extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.FILTERS, filterJson);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, ContextNames.WORK_ORDER);
 		}
-		context.put(ContextNames.PM_PLANNER_SETTINGS,assetSettings);
+		context.put(ContextNames.PM_PLANNER_SETTINGS,plannerSettings);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
