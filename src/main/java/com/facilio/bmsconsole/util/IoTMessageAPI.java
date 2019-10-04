@@ -451,14 +451,7 @@ public class IoTMessageAPI {
 			return;
 		}
 		
-		JSONObject obj = message.getData();
-		List<Long> ids = new ArrayList<>();
-		if (obj.containsKey("pointId")) {
-			Long id = (Long) obj.get("pointId");
-			if (id != null && id > 0) {
-				ids.add(id);
-			}
-		}
+		List<Long> ids = getPointIdsFromMessage(message);
 		if (ids.isEmpty()) {
 			return;
 		}
@@ -494,14 +487,7 @@ public class IoTMessageAPI {
 			return;
 		}
 		
-		JSONObject obj = message.getData();
-		List<Long> ids = new ArrayList<>();
-		if (obj.containsKey("pointId")) {
-			Long id = (Long) obj.get("pointId");
-			if (id != null && id > 0) {
-				ids.add(id);
-			}
-		}
+		List<Long> ids = getPointIdsFromMessage(message);
 		if (ids.isEmpty()) {
 			return;
 		}
@@ -523,6 +509,24 @@ public class IoTMessageAPI {
 				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", SubscribeStatus.SUBSCRIBED.getIndex()));
 				break;
 		}
+	}
+	
+	private static List<Long> getPointIdsFromMessage(PublishMessage message) {
+		List<Long> ids = new ArrayList<>();
+		JSONObject obj = message.getData();
+		if (obj.get("points") != null) {
+			JSONArray points = (JSONArray) obj.get("points");
+			for (int i = 0; i < points.size(); i++) {
+				JSONObject point = (JSONObject) points.get(0);
+				if (point.containsKey("pointId")) {
+					Long id = (Long) obj.get("pointId");
+					if (id != null && id > 0) {
+						ids.add(id);
+					}
+				}
+			}
+		}
+		return ids;
 	}
 
  	public static void sendPublishNotification(PublishData publishData, JSONObject info) {
