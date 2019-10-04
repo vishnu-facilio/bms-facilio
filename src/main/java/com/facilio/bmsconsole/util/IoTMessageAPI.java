@@ -447,11 +447,17 @@ public class IoTMessageAPI {
 	}
 	
 	private static void handlePublishMessageSuccess(IotCommandType command, PublishMessage message) throws Exception {
+		if (AccountUtil.getCurrentOrg().getOrgId() == 152l) {
+			LOGGER.info("publish success - " + message.getId());
+		}
 		if (command == null) {
 			return;
 		}
 		
 		List<Long> ids = getPointIdsFromMessage(message);
+		if (AccountUtil.getCurrentOrg().getOrgId() == 152l) {
+			LOGGER.info("publish success command- " + command.getName() + ", ids: " + ids);
+		}
 		if (ids.isEmpty()) {
 			return;
 		}

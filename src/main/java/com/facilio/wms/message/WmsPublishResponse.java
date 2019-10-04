@@ -39,9 +39,12 @@ public class WmsPublishResponse extends Message {
 	
 	private void addJsonData(PublishData data) throws Exception {
 		if (data != null) {
-			int count = data.getMessages().size();
-			if (count > 1) {
-				data.setMessages(null);
+			int count = 0;
+			if (data.getMessages() != null) {
+				count = data.getMessages().size();
+				if (count > 1) {
+					data.setMessages(null);
+				}
 			}
 			JSONObject jsonData = FieldUtil.getAsJSON(data);
 			jsonData.put("count", count);
