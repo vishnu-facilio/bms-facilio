@@ -73,7 +73,7 @@ public class KPIPageFacory extends PageFactory {
 	
 	private static void addTrendsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
-		cardWidget.addToLayoutParams(section, 12, 14);
+		cardWidget.addToLayoutParams(section, 24, 14);
 		cardWidget.addCardType(CardType.KPI_TREND);
 		
 //		addChartParams(cardWidget, "readingFieldId", null, null);
