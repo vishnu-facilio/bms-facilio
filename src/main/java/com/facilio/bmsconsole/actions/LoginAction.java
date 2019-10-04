@@ -80,6 +80,7 @@ import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
+import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
@@ -484,7 +485,10 @@ public class LoginAction extends FacilioAction {
 
 		RemoteScreenContext remoteScreen = AccountUtil.getCurrentAccount().getRemoteScreen();
 		if (remoteScreen.getScreenId() != null && remoteScreen.getScreenId() > 0) {
-			remoteScreen.setScreenContext(ScreenUtil.getScreen(remoteScreen.getScreenId()));
+			ScreenContext screenContext = ScreenUtil.getScreen(remoteScreen.getScreenId());
+			screenContext.setScreenDashboards(ScreenUtil.getScreenDashboardRel(screenContext));
+			remoteScreen.setScreenContext(screenContext);
+			
 		}
 		data.put("connectedScreen", remoteScreen);
 
