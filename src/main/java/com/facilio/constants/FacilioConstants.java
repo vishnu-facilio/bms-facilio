@@ -279,6 +279,7 @@ public class FacilioConstants {
 		public static final String TASK_SECTION_TEMPLATES = "taskSectionTemplates";
 		public static final String PREREQUISITE_APPROVER_TEMPLATES = "prerequisiteApproverTemplates";
 		public static final String TASK_SECTION = "taskSection";
+		public static final String TASK_SECTION_MODULE = "tasksection";
 		public static final String DEFAULT_TASK_SECTION = "default";
 		
 		public static final String PRE_REQUEST_STATUS="prerequestStatus";

@@ -54,6 +54,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)
 				|| FacilioConstants.ContextNames.READING_DATA_META.equals(specialType)
 				|| FacilioConstants.ContextNames.CONTROL_GROUP.equals(specialType)
+				|| FacilioConstants.ContextNames.TASK_SECTION_MODULE.equals(specialType)
 				|| FacilioConstants.Workflow.WORKFLOW.equals(specialType)
 				|| "trigger".equals(specialType)
 				|| "connectedApps".equals(specialType)
@@ -201,6 +202,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.Workflow.WORKFLOW.equals(specialType)) {
 			return WorkflowUtil.getWorkflowContext(criteria);
+		}
+		else if(FacilioConstants.ContextNames.TASK_SECTION_MODULE.equals(specialType)) {
+			return TicketAPI.getTaskSections(criteria);
 		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvent(criteria);
@@ -534,6 +538,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)) {
 			return ModuleFactory.getWorkOrderTemplateModule();
 		}
+		else if(FacilioConstants.ContextNames.TASK_SECTION_MODULE.equals(specialType)) {
+			return ModuleFactory.getTaskSectionModule();
+		}
 		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
 			return ModuleFactory.getFormulaFieldModule();
 		}
@@ -591,6 +598,9 @@ public class LookupSpecialTypeUtil {
 			List<FacilioField> fields = FieldFactory.getReadingRuleFields();
 			fields.addAll(FieldFactory.getWorkflowRuleFields());
 			return fields;
+		}
+		else if(FacilioConstants.ContextNames.TASK_SECTION_MODULE.equals(specialType)) {
+			return FieldFactory.getTaskSectionFields();
 		}
 		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
 			return FieldFactory.getFormulaFieldFields();
