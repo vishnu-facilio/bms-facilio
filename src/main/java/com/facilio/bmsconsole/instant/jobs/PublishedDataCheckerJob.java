@@ -40,7 +40,7 @@ public class PublishedDataCheckerJob extends InstantJob {
 		PublishData data = (PublishData) context.get(FacilioConstants.ContextNames.PUBLISH_DATA);
 		LOGGER.debug(data);
 		if (data.getCommandEnum() == IotCommandType.PING) {
-			checkPingStatus(data.getId());
+			checkPingStatus(data);
 			return;
 		}
 		
@@ -49,11 +49,11 @@ public class PublishedDataCheckerJob extends InstantJob {
 		handleSuccessFailure(data, msgMap, context);
 	}
 	
-	private void checkPingStatus(long id) throws Exception {
-		PublishData data = IoTMessageAPI.getPublishData(id, true);
+	private void checkPingStatus(PublishData pingData) throws Exception {
+		PublishData data = IoTMessageAPI.getPublishData(pingData.getId(), true);
 		if (data.getPingAckTime() == -1) {
 			LOGGER.info("Agent not active. Controller Id: " + data.getControllerId());
-			IoTMessageAPI.handlePublishMessageFailure(data);
+			IoTMessageAPI.handlePublishMessageFailure(pingData);
 		}
 	}
 	
