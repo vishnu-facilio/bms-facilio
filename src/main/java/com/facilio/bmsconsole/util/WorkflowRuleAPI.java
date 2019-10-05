@@ -477,10 +477,6 @@ public class WorkflowRuleAPI {
 		ruleBuilder.andCustomWhere(activityTypeWhere.toString(), values.toArray());
 		ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
 		List<Map<String, Object>> props = ruleBuilder.get();
-		if(AccountUtil.getCurrentOrg().getId() == 88l && module.getName().equals("alarm")) {
-			LOGGER.error("wokrlfow rule propssss --- "+props);
-			LOGGER.error("wokrlfow rule querry --- "+ruleBuilder);
-		}
 		return getWorkFlowsFromMapList(props, true, true);
 	}
 	

@@ -993,7 +993,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateTaskCommand());
 			c.addCommand(new UpdateClosedTasksCounterCommand());
 			c.addCommand(new AddTaskTicketActivityCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
 			c.addCommand(new AddActivitiesCommand());
 			c.addCommand(new UpdateRdmWithLatestInputUnit());
 			c.addCommand(new SiUnitConversionToEnteredReadingUnit());
