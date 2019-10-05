@@ -624,6 +624,27 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
+	GET_FROMATTED_TIME(31,"getFormattedTime") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Long ttime = (long) Double.parseDouble(objects[0].toString());
+			
+			if(objects == null || objects.length > 1) {
+			     String formatter = objects[1].toString();
+			     return DateTimeUtil.getFormattedTime(ttime,formatter);
+			}
+			else {
+				return DateTimeUtil.getFormattedTime(ttime);
+			}
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
