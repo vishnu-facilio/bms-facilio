@@ -447,17 +447,11 @@ public class IoTMessageAPI {
 	}
 	
 	private static void handlePublishMessageSuccess(IotCommandType command, PublishMessage message) throws Exception {
-		if (AccountUtil.getCurrentOrg().getOrgId() == 152l) {
-			LOGGER.info("publish success - " + message.getId());
-		}
 		if (command == null) {
 			return;
 		}
 		
 		List<Long> ids = getPointIdsFromMessage(message);
-		if (AccountUtil.getCurrentOrg().getOrgId() == 152l) {
-			LOGGER.info("publish success command- " + command.getName() + ", ids: " + ids);
-		}
 		if (ids.isEmpty()) {
 			return;
 		}
@@ -523,9 +517,9 @@ public class IoTMessageAPI {
 		if (obj.get("points") != null) {
 			JSONArray points = (JSONArray) obj.get("points");
 			for (int i = 0; i < points.size(); i++) {
-				JSONObject point = (JSONObject) points.get(0);
+				JSONObject point = (JSONObject) points.get(i);
 				if (point.containsKey("pointId")) {
-					Long id = (Long) obj.get("pointId");
+					Long id = (Long) point.get("pointId");
 					if (id != null && id > 0) {
 						ids.add(id);
 					}
