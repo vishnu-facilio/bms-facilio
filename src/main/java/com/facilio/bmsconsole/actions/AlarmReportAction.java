@@ -106,7 +106,7 @@ public class AlarmReportAction extends ActionSupport {
 			JSONObject buildingData=ReportsUtil.getBuildingData(building);
 			long spaceId=building.getId();
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-				buildingData.put("activeCount", NewAlarmAPI.getActiveAlarms(spaceId));
+//				buildingData.put("activeCount", NewAlarmAPI.getActiveAlarms(spaceId));
 			} else {
 				buildingData.put("activeCount", getActiveAlarms(spaceId));
 			}
