@@ -1,40 +1,9 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.log4j.LogManager;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.supercsv.io.CsvListReader;
-import org.supercsv.io.ICsvListReader;
-import org.supercsv.prefs.CsvPreference;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.ImportBuildingAction;
-import com.facilio.bmsconsole.actions.ImportFloorAction;
-import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.actions.*;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
-import com.facilio.bmsconsole.actions.ImportSiteAction;
-import com.facilio.bmsconsole.actions.ImportSpaceAction;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -50,13 +19,23 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.log4j.LogManager;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.supercsv.io.CsvListReader;
+import org.supercsv.io.ICsvListReader;
+import org.supercsv.prefs.CsvPreference;
+
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class ImportAPI {
 
@@ -69,7 +48,6 @@ public class ImportAPI {
 		JSONArray columnheadings = new JSONArray();
 		ArrayList<String> missingInSheet;
 		HashMap<Integer, ArrayList<String>> missingColumns = new HashMap<Integer, ArrayList<String>>();
-//        Workbook workbook = WorkbookFactory.create(excelfile);
         if(workbook.getNumberOfSheets() > 1) {
         	for(int i =0; i< workbook.getNumberOfSheets();i++) {
         		Sheet dataSheet =workbook.getSheetAt(i);
@@ -122,7 +100,6 @@ public class ImportAPI {
             	break;
             }
         }
-//        workbook.close();
         return columnheadings;
 	}
 	
@@ -629,9 +606,6 @@ public class ImportAPI {
 				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
 			}
 			else {
-//				if(customFields != null && !customFields.isEmpty()) {
-//					fieldsList.addAll(customFields);
-//				}
 
 				if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
 						(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
@@ -644,14 +618,12 @@ public class ImportAPI {
 					}
 					
 					fields.remove("space");
-					fields.remove("localId");
 					fields.remove("resourceType");
-					if(importMode == 1 || importMode == null) {
+					fields.remove("localId");
+					if(importMode == null || importMode == 1) {
 					if(module.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
 						fields.remove("purposeSpace");
 					}
-					
-//					fields.add("site");
 					fields.add("building");
 					fields.add("floor");
 					fields.add("spaceName");
@@ -683,11 +655,6 @@ public class ImportAPI {
 					}					
 				}
 				else {
-					
-//					if(customFields != null && !customFields.isEmpty()) {
-//						fieldsList.addAll(customFields);
-//					}
-					
 					for(FacilioField field : fieldsList)
 					{
 						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
@@ -720,7 +687,7 @@ public class ImportAPI {
 		
 		if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
 				(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-			if(importMode == 1 || importMode == null) {
+			if(importMode == null || importMode == 1) {
 				fields.add("category");
 			}
 		}
@@ -776,6 +743,26 @@ public class ImportAPI {
 			fieldMap.put(key, values);
 		}
 		return fieldMap;
+	}
+
+	public static boolean canUpdateAssetBaseSpace(ImportProcessContext importProcessContext) throws Exception {
+		JSONObject fieldMapping = importProcessContext.getFieldMappingJSON();
+		if (fieldMapping != null) {
+			if (isAssetBaseModule(importProcessContext) && importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue()) {
+				if (!(fieldMapping.containsKey("asset__floor") || fieldMapping.containsKey("asset__building") || fieldMapping.containsKey("asset__spaceName") || fieldMapping.containsKey("asset__space") || fieldMapping.containsKey("asset__space1") || fieldMapping.containsKey("asset__space2") || fieldMapping.containsKey("asset__space3"))) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public static boolean isAssetBaseModule(ImportProcessContext importProcessContext) throws Exception {
+		if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	

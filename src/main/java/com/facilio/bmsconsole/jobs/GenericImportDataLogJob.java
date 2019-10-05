@@ -27,7 +27,7 @@ public class GenericImportDataLogJob extends InstantJob{
 	public void execute(FacilioContext context) throws Exception{
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT); 
 		try {
-			LOGGER.severe("GENERIC IMPORT DATA LOG JOB CALLED -- ");
+			LOGGER.info("GENERIC IMPORT DATA LOG JOB CALLED -- ");
 			
 			if(importProcessContext.getImportJobMeta() != null) {
 				if(!importProcessContext.getImportJobMetaJson().isEmpty() ) {
@@ -54,7 +54,7 @@ public class GenericImportDataLogJob extends InstantJob{
 //				FacilioTimer.scheduleOneTimeJobWithDelay(importProcessContext.getId(), "importData" , 10, "priority");	
 			}
 			
-			LOGGER.severe("GENERIC IMPORT DATA LOG JOB COMPLETED -- ");
+			LOGGER.info("GENERIC IMPORT DATA LOG JOB COMPLETED -- ");
 			
 		} catch(Exception e) {
 			String message;

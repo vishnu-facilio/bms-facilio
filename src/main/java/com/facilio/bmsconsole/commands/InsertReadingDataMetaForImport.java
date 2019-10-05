@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -14,10 +8,15 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.google.common.collect.ArrayListMultimap;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class InsertReadingDataMetaForImport extends FacilioCommand {
 
-	private static Logger LOGGER = Logger.getLogger(UpdateBaseAndResourceCommand.class.getName());
+	private static Logger LOGGER = Logger.getLogger(InsertReadingDataMetaForImport.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 				
