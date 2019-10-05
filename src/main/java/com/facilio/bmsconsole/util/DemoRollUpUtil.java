@@ -13,13 +13,10 @@ public class DemoRollUpUtil {
 
 		Map<String, List<String>> tablesContainsDateField = new HashMap<String, List<String>>();
 
-//		tablesContainsDateField.put("Organizations" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("FacilioFile" ,Arrays.asList("UPLOADED_TIME"));
 		tablesContainsDateField.put("Role" , Arrays.asList("CREATED_TIME"));
-//		tablesContainsDateField.put("ORG_Users" , Arrays.asList("INVITEDTIME"));
 		tablesContainsDateField.put("Site" , Arrays.asList("DATE_CF1","DATE_CF2","DATE_CF3","DATE_CF4","DATE_CF5","DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4","DATETIME_CF5"));
-//		tablesContainsDateField.put("System_Jobs" , Arrays.asList("LAST_EXECUTION_TIME"));
-		tablesContainsDateField.put("Groups" , Arrays.asList("CREATED_TIME"));
+		tablesContainsDateField.put("Groups" , Arrays.asList("CREATED_TIME","DATE_CF1"));
 		tablesContainsDateField.put("Shift_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("ResizedFile" , Arrays.asList("GENERATED_TIME","EXPIRY_TIME"));
 		tablesContainsDateField.put("Workflow_Log" , Arrays.asList("EXECUTION_TIME"));
@@ -115,10 +112,8 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Report1_Folder" , Arrays.asList("MODIFIED_TIME"));
 		tablesContainsDateField.put("Report_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Dashboard_Notes" , Arrays.asList("CREATED_TIME"));
-		tablesContainsDateField.put("Unmodeled_Instance" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Points" , Arrays.asList("CREATED_TIME","MAPPED_TIME"));
 		tablesContainsDateField.put("Unmodeled_Data" , Arrays.asList("TTIME"));
-		tablesContainsDateField.put("Instance_To_Asset_Mapping" , Arrays.asList("MAPPED_TIME"));
 		tablesContainsDateField.put("Reading_Alarms" , Arrays.asList("START_TIME","END_TIME"));	
 		tablesContainsDateField.put("ML_Alarm_Occurrences" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Reading_Rule_Flaps" , Arrays.asList("FLAP_TIME"));
@@ -131,7 +126,6 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Tenant_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Cost_Assets" , Arrays.asList("FIRST_BILL_TIME"));
 		tablesContainsDateField.put("Cost_Readings" , Arrays.asList("ACTUAL_TTIME"));
-//		tablesContainsDateField.put("Sync_Errors" , Arrays.asList("CREATED_TIME","LAST_SYNC_TIME"));
 		tablesContainsDateField.put("DeviceDetails" , Arrays.asList("LAST_UPDATED_TIME","LAST_ALERTED_TIME"));
 		tablesContainsDateField.put("Workorder_cost" , Arrays.asList("TTIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Gate_Pass" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME"));
@@ -182,6 +176,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("ML_Log_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("FAHU_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("Chiller_Readings2" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+
 		return tablesContainsDateField;
 		
 	}
