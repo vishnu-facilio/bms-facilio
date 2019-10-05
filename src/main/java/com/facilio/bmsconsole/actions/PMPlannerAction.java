@@ -93,6 +93,7 @@ public class PMPlannerAction extends FacilioAction{
 		context.put(ContextNames.SITE_ID, siteId);
 		context.put(ContextNames.BUILDING_ID, buildingId);
 		context.put(ContextNames.CATEGORY_ID, categoryId);
+		context.put(ContextNames.FLOOR_ID, floorId);
       
 		PMPlannerSettingsContext plannerSettings=new PMPlannerSettingsContext();
 		plannerSettings.setPlannerType(plannerType);
@@ -138,6 +139,15 @@ public class PMPlannerAction extends FacilioAction{
 		this.categoryId = categoryId;
 	}
 	
+	private long floorId = -1;
+	
+	public long getFloorId() {
+		return floorId;
+	}
+	public void setFloorId(long floorId) {
+		this.floorId = floorId;
+	}
+
 	private JSONObject filterJson;
 	public JSONObject getFilterJson() {
 		return filterJson;
