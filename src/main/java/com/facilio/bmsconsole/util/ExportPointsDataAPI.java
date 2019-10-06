@@ -31,15 +31,15 @@ public class ExportPointsDataAPI {
 	private static final Logger LOGGER = Logger.getLogger(ExportPointsDataAPI.class.getName());
 
 	public static Map<String,Object> getTableData(List<String> columns, List<Map<String,Object>> recorddata) throws Exception {
-
+		
 		List<String> headers = new ArrayList<String>(); 
 
-		headers.add("device");
-		headers.add("instance");
-		headers.add("categoryId");
-		headers.add("resourceId");
-		headers.add("fieldId");
-		headers.add("unit");
+		headers.add("Device");
+		headers.add("Instance");
+		headers.add("Asset Category");
+		headers.add("Assets");
+		headers.add("Reading");
+		headers.add("Unit");
 
 		List<Long> category = new ArrayList<>();
 		List<Long> field = new ArrayList<>();
@@ -96,7 +96,7 @@ public class ExportPointsDataAPI {
 							continue;
 						}
 						else {
-							map1.put("resourceId", assetname);
+							map1.put("Assets", assetname);
 							break;
 						}
 
@@ -107,10 +107,14 @@ public class ExportPointsDataAPI {
 				}
 			}
 			for(Map<String,Object> map1 : recorddata) {
+				String deviceName = (String) map1.get("device");
+				String instanceName = (String) map1.get("instance");
 				String fieldName= (String) map1.get("displayName");
 				String categoryName =(String) map1.get("name") ;
-				map1.put("fieldId",fieldName);
-				map1.put("categoryId",categoryName);
+				map1.put("Device", deviceName);
+				map1.put("Instance", instanceName);
+				map1.put("Reading",fieldName);
+				map1.put("Asset Category",categoryName);
 			}
 		}
 
