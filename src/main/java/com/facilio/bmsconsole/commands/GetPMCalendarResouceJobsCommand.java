@@ -16,8 +16,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
 import com.facilio.bmsconsole.context.PMPlannerSettingsContext.PlannerType;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.PMPlannerAPI;
@@ -175,7 +175,6 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		FacilioField triggerField = woFieldMap.get("trigger");
 		FacilioField resourceField = woFieldMap.get("resource");
 
-		// To get the title part bases on asset (left side of the calendar)
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> commonBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 				.module(woModule)
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), CommonOperators.IS_NOT_EMPTY))
@@ -236,7 +235,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			groupBy.append(",").append(frequencyField.getColumnName());
 		}
 		
-		// To get the jobs data
+		// To get the title part bases on asset (left side of the calendar)
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> groupBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(commonBuilder)
 				.select(selectFields)
 				.innerJoin(plannerResourceTable).on(resourceField.getCompleteColumnName() + "=" + plannerResourceTable + ".ID")
@@ -347,6 +346,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 //				.append(StringUtils.join(triggerIds, ",")).append(")");
 			}
 			
+			// To get the jobs data
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> dataBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(commonBuilder)
 					.select(selectFields)
 					.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID")

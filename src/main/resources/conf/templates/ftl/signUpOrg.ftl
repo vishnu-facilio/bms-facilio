@@ -18,7 +18,11 @@
                               <td>
                                     <div class="td-width-mobile" style="padding-right: 30px;">
                                           <div style="font-size: 22px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.36; letter-spacing: 0.3px; color: #19191c;text-align: left;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;padding-top: 30px;padding-bottom: 30px;">
-                                          <img src="${brand.logo}" alt="" title="" width="80"/>
+                                          <#if facilioDomain??>
+                                          	<img src="${brand.logo}" alt="" title="" width="80"/>
+                                          <#else>
+	                                         <img src="${brand.logo}" alt="" title="" width="150"/>
+	                                      </#if>
                                           </div>      
                                         <div style="font-size: 16px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 530px;width: 530px;padding-bottom: 10px;">Hello ${toUser.name},</div>
                                         <div style="font-size: 16px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">
