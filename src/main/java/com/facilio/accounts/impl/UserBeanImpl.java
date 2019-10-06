@@ -55,8 +55,6 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
@@ -68,6 +66,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 
 ;
 
@@ -206,6 +206,7 @@ public class UserBeanImpl implements UserBean {
 				placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "inviter",
 				FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
+		addBrandPlaceHolders("url", placeholders);
 
 		if (user.isPortalUser()) {
 			String inviteLink = getUserLink(user, "/invitation/");
@@ -913,6 +914,10 @@ public class UserBeanImpl implements UserBean {
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
+		addBrandPlaceHolders("supportemail", placeholders);
+		addBrandPlaceHolders("url", placeholders);
+		addBrandPlaceHolders("logo", placeholders);
+		addBrandPlaceHolders("name", placeholders);
 		
 		AccountEmailTemplate.RESET_PASSWORD.send(placeholders);
 		return true;
@@ -1009,6 +1014,9 @@ public class UserBeanImpl implements UserBean {
 		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
 		if (user.getEmail().contains("@facilio.com") || FacilioProperties.isOnpremise()) {
+			addBrandPlaceHolders("name", placeholders);
+			addBrandPlaceHolders("url", placeholders);
+			addBrandPlaceHolders("logo", placeholders);
 			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
 		} else {
 			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders);
@@ -1104,5 +1112,31 @@ public class UserBeanImpl implements UserBean {
 
 	}
 	
+	private void addBrandPlaceHolders(String prop, Map<String, Object> placeHolder) {
+		String brandVal = null;
+		switch(prop) {
+			case "url":
+				brandVal = "www." + FacilioProperties.getConfig("rebrand.domain");
+				break;
+			case "name": 
+				brandVal = FacilioProperties.getConfig("rebrand.brand");
+				break;
+			case "logo":
+				String domain = FacilioProperties.getDomain();
+				boolean isFacilioDomain = true;
+				if (domain.equals("facilio")) {
+					brandVal = "https://facilio.com/assets/images/logo.png";
+				}
+				else {
+					isFacilioDomain = false;
+					String staticUrl = FacilioProperties.getConfig("static.url");
+					brandVal = staticUrl+"/statics/logo/"+domain+".png";
+				}
+				placeHolder.put("facilioDomain", isFacilioDomain);
+				break;
+		}
+		
+		placeHolder.put("brand." + prop, brandVal != null ? brandVal : FacilioProperties.getConfig("rebrand." + prop));
+	}
 	
 }
