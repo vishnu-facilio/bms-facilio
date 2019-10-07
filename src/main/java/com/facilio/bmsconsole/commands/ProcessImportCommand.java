@@ -6,7 +6,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.*;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
-import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
@@ -29,7 +28,6 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
 import java.time.Instant;
@@ -39,12 +37,11 @@ import java.util.logging.Logger;
 public class ProcessImportCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(ProcessImportCommand.class.getName());
-	private static org.apache.log4j.Logger log = LogManager.getLogger(ProcessXLS.class.getName());
 	private static ArrayListMultimap<String, String> groupedFields;
 	private static ArrayListMultimap<String, Long> recordsList = ArrayListMultimap.create();
 	
 	@Override
-	public boolean executeCommand(Context c) throws Exception,ImportFieldValueMissingException {
+	public boolean executeCommand(Context c) throws Exception {
 
 		HashMap<String, List<ReadingContext>> groupedContext = new HashMap<String, List<ReadingContext>>();
 		
@@ -53,7 +50,7 @@ public class ProcessImportCommand extends FacilioCommand {
 		HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();
 		fieldMapParsing(fieldMapping);
 		Map<String, Long> lookupHolder;
-		String module = importProcessContext.getModule().getName().toString();
+		String module = importProcessContext.getModule().getName();
 		
 		JSONObject importMeta = importProcessContext.getImportJobMetaJson();
 		JSONObject dateFormats = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
@@ -70,7 +67,9 @@ public class ProcessImportCommand extends FacilioCommand {
 			}
 			else if(rowLogContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.RESOLVED.getValue()) {
 				rowContext = rowLogContext.getCorrectedRow();
-			}	
+			} else {
+				continue;
+			}
 			
 			int row_no = rowContext.getRowNumber();
 			HashMap<String, Object> colVal = rowContext.getColVal();
@@ -91,19 +90,10 @@ public class ProcessImportCommand extends FacilioCommand {
 						}
 						
 						props.put(ImportAPI.ImportProcessConstants.RESOURCE_TYPE, ResourceType.ASSET.getValue());
-						
-//						String siteName = (String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
 
 						Long siteId = importProcessContext.getSiteId();
 						
 						if(!(importProcessContext.getImportSetting() == ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportSetting.UPDATE_NOT_NULL.getValue())) {
-//							List<SiteContext> sites = SpaceAPI.getAllSites();
-//							for (SiteContext site : sites) {
-//								if (site.getName().trim().toLowerCase().equals(siteName.trim().toLowerCase())) {
-//									props.put("siteId", site.getId());
-//									break;
-//								}
-//							}
 							props.put("siteId", siteId);
 						}
 						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
