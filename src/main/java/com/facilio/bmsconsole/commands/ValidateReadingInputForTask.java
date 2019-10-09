@@ -74,61 +74,64 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 						Map<Long, TaskContext> oldTasks = TicketAPI.getTaskMap(recordIds);
 						for(int i = 0; i < recordIds.size(); i++) {
 							TaskContext taskContext = oldTasks.get(recordIds.get(i));
-							
-							switch(taskContext.getInputTypeEnum()) {
-							case READING:
-								if (taskContext.getReadingField() != null && taskContext.getResource() != null) {
-									
-									switch(taskContext.getReadingField().getDataTypeEnum()) {
-									case NUMBER:
-									case DECIMAL:
+							if(taskContext.getInputTypeEnum() != null)
+							{
+								switch(taskContext.getInputTypeEnum()) {
+								case READING:
+									if (taskContext.getReadingField() != null && taskContext.getResource() != null) {
 										
-										taskContextId = currentTask.getId();
-										ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
-										NumberField numberField = (NumberField) taskContext.getReadingField();
-										
-										if(rdm != null && rdm.getValue() != null && rdm.getValue().equals("-1.0")) {
-											return false;
-										}
-										
-										if(currentTask.getInputValue().trim().isEmpty())
-										{
-											return false;
-										}
-								
-										currentInputValue = currentTask.getInputValue();
-										currentInputTime = currentTask.getInputTime();
-										Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
-										
-										Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
-										Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
-										
-										if(numberField.getMetric() > 0 && (numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata")))) 
-										{
-											List<TaskErrorContext> taskErrors = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
-											if(taskErrors!= null && !taskErrors.isEmpty()) {
-												hasErrors = true;
-												errors.addAll(taskErrors);
-												TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
-												if(unitSuggestion != null && errors.size() == 1) {
-													errors.add(unitSuggestion);
-												}
+										switch(taskContext.getReadingField().getDataTypeEnum()) {
+										case NUMBER:
+										case DECIMAL:
+											
+											taskContextId = currentTask.getId();
+											ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
+											NumberField numberField = (NumberField) taskContext.getReadingField();
+											
+											if(rdm != null && rdm.getValue() != null && rdm.getValue().equals("-1.0")) {
+												return false;
 											}
-											else {
-												TaskErrorContext taskError = checkValueRangeForCounterField(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
-												if(taskError!= null) {
-													errors.add(taskError);
-													TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
-													if(unitSuggestion != null) {
-														errors.add(unitSuggestion);
+											
+											if(currentTask.getInputValue().trim().isEmpty())
+											{
+												return false;
+											}
+									
+											currentInputValue = currentTask.getInputValue();
+											currentInputTime = currentTask.getInputTime();
+											Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
+											
+											Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
+											Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
+											if(currentInputUnit != null) 
+											{												
+												if((numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata")))) 
+												{
+													List<TaskErrorContext> taskErrors = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
+													if(taskErrors!= null && !taskErrors.isEmpty()) {
+														hasErrors = true;
+														errors.addAll(taskErrors);
+														TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
+														if(unitSuggestion != null && errors.size() == 1) {
+															errors.add(unitSuggestion);
+														}
 													}
-												}
-											}																					
-										}	
-										
+													else {
+														TaskErrorContext taskError = checkValueRangeForCounterField(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
+														if(taskError!= null) {
+															errors.add(taskError);
+															TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
+															if(unitSuggestion != null) {
+																errors.add(unitSuggestion);
+															}
+														}
+													}																					
+												}													
+											}																						
+										}
 									}
+									break;
 								}
-								break;
 							}
 						}
 					}
@@ -156,7 +159,6 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	private List<TaskErrorContext> checkIncremental(TaskContext currentTask, NumberField numberField, ReadingDataMeta rdm, Double currentValueInSiUnit, TaskContext taskContext) throws Exception {
 
 		List<TaskErrorContext> taskErrors = new ArrayList<TaskErrorContext>();
-		Unit siUnit = Unit.valueOf(numberField.getMetricEnum().getSiUnitId());
 		double previousValue = -1, nextValue = -1;
 		boolean futureCase = false;
 		
@@ -174,19 +176,22 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			futureCase = true;
 			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
 			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", (currentTask.getInputTime()+1000), NumberOperators.GREATER_THAN);
-		}	
-		
-		if(previousValue < 0 && nextValue < 0)
-			return null;
+		}
 		
 		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
+		
+		if(previousValue < 0 && nextValue < 0 && currentInputUnit == null) 
+		{
+			return null;
+		}
 		
 		if(currentValueInSiUnit < previousValue) 
 		{
 			TaskErrorContext error = setIncrementalErrorMode(currentTask, numberField, rdm);
 			String previousValueString = previousValue+"";	
 			
-			if(numberField.getMetric() > 0) {
+			if(numberField.getMetric() > 0) {	
+				Unit siUnit = Unit.valueOf(numberField.getMetricEnum().getSiUnitId());
 				previousValue = UnitsUtil.convert(previousValue, siUnit, currentInputUnit);	
 				
 				String previousValueInString = WorkflowUtil.getStringValueFromDouble(previousValue);
@@ -202,7 +207,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		{		
 			TaskErrorContext error = setIncrementalErrorMode(currentTask, numberField, rdm);
 			String nextValueString = nextValue+"";
-			if(numberField.getMetric() > 0) {
+			if(numberField.getMetric() > 0) {			
+				Unit siUnit = Unit.valueOf(numberField.getMetricEnum().getSiUnitId());
 				nextValue = UnitsUtil.convert(nextValue, siUnit, currentInputUnit);	
 				
 				String nextValueInString = WorkflowUtil.getStringValueFromDouble(nextValue);			 
@@ -219,8 +225,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 
 	private TaskErrorContext checkValueRangeForCounterField(TaskContext currentTask, NumberField numberField, ReadingDataMeta rdm,Double currentValueInSiUnit, TaskContext taskContext) throws Exception {
 
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");		
 		
 		double previousValue = getLatestPreviousReading (numberField, rdm, currentTask, taskContext);	
 		if(previousValue < 0)
@@ -243,6 +248,11 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			
 			Unit siUnit = Unit.valueOf(numberField.getMetricEnum().getSiUnitId());
 			Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
+			
+			if(currentInputUnit == null)
+			{
+				return null;
+			}
 			
 			double averageLowerLimitInInputUnit = UnitsUtil.convert(averageLowerLimitEnergyReading, siUnit, currentInputUnit);		
 			double averageHigherLimitInInputUnit = UnitsUtil.convert(averageHigherLimitEnergyReading, siUnit, currentInputUnit);	
@@ -310,7 +320,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
 		Unit suggestedUnit = UnitsUtil.getUnitMultiplierResult(currentInputUnit, diff);
 		
-		if(suggestedUnit != null) {
+		if(currentInputUnit != null && suggestedUnit != null) {
 			
 			TaskErrorContext error = new TaskErrorContext();		
 			error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
@@ -393,7 +403,11 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		else if(rdm.getUnit() > 0) {
 			return Unit.valueOf(rdm.getUnit());
 		}
-		return UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberField.getMetric());
+		else if (numberField.getMetric() > 0)
+		{
+			return UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberField.getMetric());
+		}
+		return null;
 	}
 	
 	public double getLatestPreviousReading(NumberField numberField, ReadingDataMeta rdm, TaskContext currentTask, TaskContext taskContext) throws Exception {
@@ -445,13 +459,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		error.setMode(TaskErrorContext.Mode.ERROR.getValue());
 		error.setFailType(TaskErrorContext.FailType.NON_INCREMENTAL_VALUE.getValue());
 		
-		String currentValueString = currentTask.getInputValue()+"";
-		
-		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
-		if(currentInputUnit != null) {
-			currentValueString = currentValueString + " "+currentInputUnit.getSymbol();
-		}
-		error.setCurrentValue(currentValueString);
+		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
+		error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
 		
 		return error;
 	}

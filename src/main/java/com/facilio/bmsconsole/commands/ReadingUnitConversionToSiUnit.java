@@ -26,7 +26,7 @@ public class ReadingUnitConversionToSiUnit extends FacilioCommand {
 		if(recordIds != null && !recordIds.isEmpty() && currentTask != null && currentTask.getReadingFieldUnitEnum() != null) 
 		{
 			Map<Long, TaskContext> tasks = TicketAPI.getTaskMap(recordIds);		
-			if(tasks != null && currentTask != null && reading != null) 
+			if(tasks != null && reading != null) 
 			{
 				TaskContext taskContext= tasks.get(recordIds.get(0));
 				if(taskContext.getInputTypeEnum() != null)
@@ -36,7 +36,7 @@ public class ReadingUnitConversionToSiUnit extends FacilioCommand {
 						if (taskContext.getReadingField() != null && taskContext.getResource() != null && taskContext.getReadingField() instanceof NumberField) 
 						{			
 							NumberField readingNumberField = (NumberField) taskContext.getReadingField();
-							if(readingNumberField.getMetricEnum() != null && reading!= null)
+							if(readingNumberField.getMetricEnum() != null)
 							{								
 								Unit displayUnit = UnitsUtil.getDisplayUnit(readingNumberField);
 								

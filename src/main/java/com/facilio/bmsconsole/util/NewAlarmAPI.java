@@ -707,6 +707,7 @@ public class NewAlarmAPI {
 						.module(modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE))
 						.beanClass(AlarmOccurrenceContext.class)
 						.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + firstOccurrence.getCreatedTime(), NumberOperators.LESS_THAN))
+						.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" +baseAlarmContext.getId(), NumberOperators.EQUALS))
 						.orderBy("CREATED_TIME DESC").limit(1);
 				AlarmOccurrenceContext newLatestAlarmOccurrence =  selectbuilder.fetchFirst();		
 	
