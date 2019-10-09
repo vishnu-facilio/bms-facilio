@@ -18,7 +18,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

@@ -24,12 +24,10 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.screen.util.ScreenUtil;
-import com.facilio.service.FacilioService;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -432,12 +430,4 @@ public String importData() throws Exception {
 		this.calendarColor = calendarColor;
 	}
 	
-	private long addOrgLogo() throws Exception {
-		long fileId = -1;
-		if (getOrgPhoto() != null) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			fileId = FacilioService.runAsServiceWihReturn(() -> fs.addFile(getOrgPhotoFileName(), getOrgPhoto(), getOrgPhotoContentType()));
-		}
-		return fileId;
-	}
 }

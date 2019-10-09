@@ -3589,6 +3589,22 @@ public class TransactionChainFactory {
 	    	return c;
 	    }
 		
+		public static FacilioChain getAssociateTermsToPOChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AssociateTermsToPOCommand());
+			return c;
+		}
+		public static FacilioChain getDisAssociateTermsToPOChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DisAssociateTermsFromPoCommand());
+			return c;
+		}
+	
+		public static FacilioChain getAcknowledgeMessageChain(){
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AcknowledgeMessageCommand());
+			return c;
+		}
 		public static FacilioChain getAddModuleWorkflowRuleChain() {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(new ModuleWorkflowRuleCommand());

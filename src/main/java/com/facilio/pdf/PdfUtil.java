@@ -3,8 +3,6 @@ package com.facilio.pdf;
 import java.io.File;
 import java.io.IOException;
 
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FacilioFileStore;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

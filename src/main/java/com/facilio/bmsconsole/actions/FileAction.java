@@ -16,8 +16,9 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
-import com.facilio.services.filestore.FileStore;
 import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.filestore.FileStoreFactory;
 
 public class FileAction extends FacilioAction {
 
@@ -199,12 +200,7 @@ public class FileAction extends FacilioAction {
 		if (request.getHeader("If-Modified-Since") == null) {
 			if (fileID > 0) {
 				FileStore fs = FileStoreFactory.getInstance().getFileStore();
-				if(isService) {
-					fileInfo = FacilioService.runAsServiceWihReturn(() ->  getFileInfo(fs));
-				}
-				else {
-					fileInfo = getFileInfo(fs);
-				}
+				fileInfo = getFileInfo(fs);
 				if (fileInfo != null) {
 					downloadStream = fs.readFile(fileInfo);
 					 if (downloadStream != null) {

@@ -1,39 +1,24 @@
 package com.facilio.services;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.db.builder.DBUtil;
-import com.facilio.db.transaction.FacilioConnectionPool;
-import com.facilio.db.transaction.FacilioTransactionManager;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.service.FacilioService;
-import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import javax.transaction.SystemException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.transaction.SystemException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.transaction.FacilioTransactionManager;
+import com.facilio.service.FacilioService;
+import com.facilio.services.factory.FacilioFactory;
 
 public class ServerUtils {
 
