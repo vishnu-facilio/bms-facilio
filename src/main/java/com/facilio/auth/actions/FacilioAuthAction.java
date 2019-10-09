@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -35,6 +36,7 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.UserUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.actions.FacilioAction;
@@ -48,6 +50,7 @@ import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.modules.FieldUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 public class FacilioAuthAction extends FacilioAction {
@@ -626,20 +629,15 @@ public class FacilioAuthAction extends FacilioAction {
 				invitation.put("status", "success");
 			}
 		} else {
-			User user;
+			User user = null;
 			HttpServletRequest request = ServletActionContext.getRequest();
 			String portalDomain = "app";
 			if(request.getAttribute("portalDomain") != null) {
 				portalDomain = (String)request.getAttribute("portalDomain");
 			}
-			if (portalId() > 0) {
-				user = AccountUtil.getUserBean().getUser(getEmailaddress(), portalDomain);
-			} else if(AccountUtil.getCurrentOrg() != null){
-				user = AccountUtil.getUserBean().getUser(getEmailaddress());
-			}
-			else
-			{
-				user = AccountUtil.getUserBean().getUser(getEmailaddress(), portalDomain);
+			Map<String, Object> userMap = UserUtil.getUserFromEmailOrPhone(getEmailaddress(), portalDomain);
+			if(MapUtils.isNotEmpty(userMap)) {
+				user = FieldUtil.getAsBeanFromMap(userMap, User.class);
 			}
 			if (user != null) {
 				AccountUtil.getUserBean().sendResetPasswordLinkv2(user);

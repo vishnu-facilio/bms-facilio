@@ -201,11 +201,15 @@ public class UserBeanImpl implements UserBean {
 	
 	private void sendInvitation(User user, boolean registration) throws Exception {
 		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
-		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()),
-				placeholders);
-		CommonCommandUtil.appendModuleNameInKey(null, "inviter",
-				FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
+		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
+		//CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()),
+		//		placeholders);
+		placeholders.put("toUser",user);
+		placeholders.put("org",AccountUtil.getCurrentOrg());
+		placeholders.put("inviter",AccountUtil.getCurrentUser());
+		
+	//	CommonCommandUtil.appendModuleNameInKey(null, "inviter",
+	//			FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
 		addBrandPlaceHolders("url", placeholders);
 
 		if (user.isPortalUser()) {
@@ -214,13 +218,13 @@ public class UserBeanImpl implements UserBean {
 				inviteLink = getUserLink(user, "/emailregistration/");
 			}
 			placeholders.put("invitelink", inviteLink);
-			AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders);
+			AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders, true);
 
 		} else {
 			String inviteLink = getUserLink(user, "/invitation/");
 			placeholders.put("invitelink", inviteLink);
 
-			AccountEmailTemplate.INVITE_USER.send(placeholders);
+			AccountEmailTemplate.INVITE_USER.send(placeholders, true);
 		}
 
 	}
@@ -912,14 +916,15 @@ public class UserBeanImpl implements UserBean {
 	public boolean sendResetPasswordLinkv2(User user) throws Exception {
 		String inviteLink = getUserLink(user, "/fconfirm_reset_password/");
 		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
+		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
+		placeholders.put("toUser", user);
 		placeholders.put("invitelink", inviteLink);
 		addBrandPlaceHolders("supportemail", placeholders);
 		addBrandPlaceHolders("url", placeholders);
 		addBrandPlaceHolders("logo", placeholders);
 		addBrandPlaceHolders("name", placeholders);
 		
-		AccountEmailTemplate.RESET_PASSWORD.send(placeholders);
+		AccountEmailTemplate.RESET_PASSWORD.send(placeholders, true);
 		return true;
 	}
 	
@@ -1011,15 +1016,16 @@ public class UserBeanImpl implements UserBean {
 
 		String inviteLink = getUserLink(user, "/emailregistration/");
 		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
+		placeholders.put("toUser",user);
+		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
 		if (user.getEmail().contains("@facilio.com") || FacilioProperties.isOnpremise()) {
 			addBrandPlaceHolders("name", placeholders);
 			addBrandPlaceHolders("url", placeholders);
 			addBrandPlaceHolders("logo", placeholders);
-			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
+			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders, true);
 		} else {
-			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders);
+			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders, true);
 		}
 
 	}
@@ -1136,7 +1142,7 @@ public class UserBeanImpl implements UserBean {
 				break;
 		}
 		
-		placeHolder.put("brand." + prop, brandVal != null ? brandVal : FacilioProperties.getConfig("rebrand." + prop));
+		placeHolder.put(prop, brandVal != null ? brandVal : FacilioProperties.getConfig("rebrand." + prop));
 	}
 	
 }
