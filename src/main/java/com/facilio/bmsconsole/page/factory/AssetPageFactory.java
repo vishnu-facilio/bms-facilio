@@ -124,14 +124,14 @@ public class AssetPageFactory extends PageFactory {
 		Section tab7Sec1 = page.new Section();
 		tab7.addSection(tab7Sec1);
 //		addAssetCostDetailsWidget(tab7Sec1);
-		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
+		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.TICKET));
 		
 		LookupField parentIdField = new LookupField();
-		parentIdField.setName("parentId");
+		parentIdField.setName("workorderCost.parentId");
 		parentIdField.setColumnName("PARENT_ID");
 		parentIdField.setDataType(FieldType.LOOKUP);
 		parentIdField.setModule(modBean.getModule("workorderCost"));
-		parentIdField.setLookupModule(modBean.getModule(ContextNames.WORK_ORDER));
+		parentIdField.setLookupModule(modBean.getModule(ContextNames.TICKET));
 
 		Criteria resourceCriteria = new Criteria();
 		resourceCriteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
