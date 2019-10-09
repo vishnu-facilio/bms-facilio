@@ -66,7 +66,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddDefaultModulesCommand());
 //			c.addCommand(new AddDefaultRoleAndPermissionCommand());
-			c.addCommand(new AddDefaultReportCommand());
+//			c.addCommand(new AddDefaultReportCommand());            // stoping default dashboard population since it has old reports.
 			c.addCommand(new AddDefaultUnitsCommand());
 			c.addCommand(new AddDefaultGraphicsCommand());
 			c.addCommand(new AddDefaultWoStateflowCommand());
