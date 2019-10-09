@@ -655,6 +655,11 @@ public class ExportUtil {
 			}
 
 		}
+		for (int j = 0; j < viewFields.size(); j++) {
+			if (viewFields.get(j).getField().getDataTypeEnum() == FieldType.FILE) {
+				viewFields.remove(viewFields.get(j));
+			}
+		}
 		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records, isS3Value);
 	}
 	

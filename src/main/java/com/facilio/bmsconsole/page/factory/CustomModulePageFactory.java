@@ -23,6 +23,7 @@ public class CustomModulePageFactory extends PageFactory {
 	public static Page getCustomModulePage(ModuleBaseWithCustomFields record) throws Exception {
 		Page page = new Page();
 		
+		
 		Tab tab1 = page.new Tab("summary");
 		page.addTab(tab1);
 		
@@ -31,6 +32,9 @@ public class CustomModulePageFactory extends PageFactory {
 		
 		addSecondaryDetailsWidget(tab1Sec1);
 		addCommonSubModuleGroup(tab1Sec1);
+		if (record == null) {
+			return page;
+		}
 
 		addRelatedList(tab1Sec1, record.getModuleId());
 

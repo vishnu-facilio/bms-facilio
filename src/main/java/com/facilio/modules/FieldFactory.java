@@ -876,15 +876,15 @@ public class FieldFactory {
 	public static FacilioField getSystemField (String fieldName, FacilioModule module) {
 		switch (fieldName) {
 			case "sysCreatedTime":
-				return getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.DATE_TIME);
+				return getField("sysCreatedTime", "System Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME);
 			case "sysModifiedTime":
-				return getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME);
+				return getField("sysModifiedTime", "System Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME);
 			case "sysCreatedBy":
-				LookupField createdBy = (LookupField) getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.LOOKUP);
+				LookupField createdBy = (LookupField) getField("sysCreatedBy","System Created By", "SYS_CREATED_BY", module, FieldType.LOOKUP);
 				createdBy.setSpecialType(FacilioConstants.ContextNames.USERS);
 				return createdBy;
 			case "sysModifiedBy":
-				LookupField modifiedBy = (LookupField) getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
+				LookupField modifiedBy = (LookupField) getField("sysModifiedBy","System Modified By", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
 				modifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
 				return modifiedBy;
 		}

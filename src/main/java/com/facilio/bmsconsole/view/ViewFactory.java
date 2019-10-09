@@ -87,9 +87,22 @@ public class ViewFactory {
 					for (FacilioField field : allFields) {
 							ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
 						    viewField.setField(field);
-						    columns.add(viewField);						
+						    columns.add(viewField);	
 				}
 				}
+				if (columns != null && module.getTypeEnum() == ModuleType.CUSTOM) {
+					List<ViewField> fieldsToRemove = new ArrayList<>();
+					for(ViewField column : columns) {
+						if (column.getName().equals("stateFlowId")) {
+							fieldsToRemove.add(column);
+						}
+						if (module.getStateFlowEnabled() != null && !module.getStateFlowEnabled() && column.getName().equals("moduleState")) {
+							fieldsToRemove.add(column);
+						}
+					}
+					columns.removeAll(fieldsToRemove);
+				}
+
 				view.setFields(columns);
 				view.setDefault(true);
 			}

@@ -137,6 +137,9 @@ public class FormField implements Serializable {
 	}
 	
 	public String getDisplayName() {
+		if (field != null) {
+			return field.getDisplayName();
+		}
 		return this.displayName;
 	}
 	

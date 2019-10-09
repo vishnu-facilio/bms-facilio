@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -17,6 +18,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 
 public class GetAllFieldsCommand extends FacilioCommand {
@@ -135,6 +137,20 @@ public class GetAllFieldsCommand extends FacilioCommand {
 			}
 		} else {
 			fields = allFields;
+		}
+		
+		if (mod.getTypeEnum() == ModuleType.CUSTOM ) {
+			List<FacilioField> fieldsToRemove = new ArrayList<>();
+			for(FacilioField field : fields) {
+				if (field.getName().equals("stateFlowId")) {
+					fieldsToRemove.add(field);
+				}
+				if (field.getName().equals("moduleState") && mod.getStateFlowEnabled() != null && !mod.getStateFlowEnabled()) {
+					fieldsToRemove.add(field);
+				}
+			}
+			fields.removeAll(fieldsToRemove);
+			fields.addAll(FieldFactory.getSystemFields(mod));
 		}
 		
 		JSONObject meta = new JSONObject();
