@@ -357,6 +357,7 @@ public class FacilioConstants {
 		public static final String ONLY_READING = "onylyReading";
 		public static final String ADJUST_READING_TTIME = "adjustReadingTtime";
 		public static final String KPI = "kpi";
+		public static final String KPI_CATEGORY = "kpiCategory";
 		
 		public static final String DASHBOARD = "dashboard";
 		public static final String DASHBOARD_TAB = "dashboardTab";

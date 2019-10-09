@@ -19,12 +19,14 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -34,6 +36,7 @@ import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
@@ -56,6 +59,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.CONTROL_GROUP.equals(specialType)
 				|| FacilioConstants.ContextNames.TASK_SECTION_MODULE.equals(specialType)
 				|| FacilioConstants.Workflow.WORKFLOW.equals(specialType)
+				|| FacilioConstants.ContextNames.KPI_CATEGORY.equals(specialType)
 				|| "trigger".equals(specialType)
 				|| "connectedApps".equals(specialType)
 				|| ContextNames.FORMULA_FIELD.equals(specialType)
@@ -115,6 +119,23 @@ public class LookupSpecialTypeUtil {
 			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.READING_RULE, false,false);
 			if (workflowRules != null){
 				return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, WorkflowRuleContext::getName));
+			}
+		}
+		else if(FacilioConstants.ContextNames.KPI_CATEGORY.equals(specialType)) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getKPICategoryFields())
+					.table(ModuleFactory.getKPICategoryModule().getTableName());
+
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				List<KPICategoryContext> kpiCategoryContext = FieldUtil.getAsBeanListFromMapList(props, KPICategoryContext.class);
+				Map<Long, String> kpiCategoryList = new HashMap<>();
+				
+				for(KPICategoryContext kpiCategory: kpiCategoryContext) {
+					kpiCategoryList.put(kpiCategory.getId(), kpiCategory.getName());
+				}
+				
+				return kpiCategoryList;
 			}
 		}
 		return null;

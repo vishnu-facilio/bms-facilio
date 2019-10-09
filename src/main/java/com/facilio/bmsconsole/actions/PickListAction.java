@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.ToolStatusContext;
 import com.facilio.bmsconsole.context.ToolTypesCategoryContext;
 import com.facilio.bmsconsole.context.ToolTypesStatusContext;
+import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
