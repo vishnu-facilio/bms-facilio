@@ -26,20 +26,24 @@ import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class AssetPageFactory extends PageFactory {
 	
 	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class.getName());
 	
-	public static Page getAssetPage(AssetContext asset) throws Exception {
+	public static Page getAssetPage(AssetContext asset,String costType) throws Exception {
 		Page page = new Page();
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -113,31 +117,51 @@ public class AssetPageFactory extends PageFactory {
 		
 		addFailureRateWidget(tab4Sec1, breakdownCriteria);
 		addAvgTtrWidget(tab4Sec1, breakdownCriteria);
+		
 		if (AccountUtil.getCurrentOrg().getOrgId() == 155){
 		Tab tab7 = page.new Tab("cost");
 		page.addTab(tab7);
-		
 		Section tab7Sec1 = page.new Section();
 		tab7.addSection(tab7Sec1);
-		addAssetCostDetailsWidget(tab7Sec1);
+//		addAssetCostDetailsWidget(tab7Sec1);
+		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
 		
-//		addMaintenanceCostWidget(tab7Sec1);
-//		addPlannedMaintenanceCostWidget(tab7Sec1);
-//		addUnplannedMaintenanceCostWidget(tab7Sec1);
+		LookupField parentIdField = new LookupField();
+		parentIdField.setName("parentId");
+		parentIdField.setColumnName("PARENT_ID");
+		parentIdField.setDataType(FieldType.LOOKUP);
+		parentIdField.setModule(modBean.getModule("workorderCost"));
+		parentIdField.setLookupModule(modBean.getModule(ContextNames.WORK_ORDER));
+
+		Criteria resourceCriteria = new Criteria();
+		resourceCriteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
 		
-        fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
-		Criteria maintenanceCostCriteria = new Criteria();
-		maintenanceCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
-		addCostBreakupWidget(tab7Sec1,maintenanceCostCriteria);
-		addMaintenanceCostTrendWidget(tab7Sec1, maintenanceCostCriteria);
+		Condition currentAssetCondition = new Condition();
+		currentAssetCondition.setField(parentIdField);
+		currentAssetCondition.setOperator(LookupOperator.LOOKUP);
 		
-		addDepreciationScheduleWidget(tab7Sec1);
-		
-		 fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
-			Criteria depreciationCostCriteria = new Criteria();
-			depreciationCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
-			addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria);
+		if(costType.equalsIgnoreCase("plannedmaintenance")){
+			resourceCriteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("sourceType"), "5", NumberOperators.EQUALS));
+		}else if(costType.equalsIgnoreCase("unplannedmaintenance")){
+			resourceCriteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("sourceType"), "5", NumberOperators.NOT_EQUALS));
 		}
+		currentAssetCondition.setCriteriaValue(resourceCriteria);
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(currentAssetCondition);
+		
+		addCostBreakupWidget(tab7Sec1,criteria);
+		
+		criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+		addMaintenanceCostTrendWidget(tab7Sec1, criteria);
+		
+//		addDepreciationScheduleWidget(tab7Sec1);
+//		fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
+//		Criteria depreciationCostCriteria = new Criteria();
+//		depreciationCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+//		addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria);
+		}
+		
 		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
 		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) || (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))) {
 			
@@ -304,7 +328,7 @@ public class AssetPageFactory extends PageFactory {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 14);
 		cardWidget.addCardType(CardType.COST_BREAKUP);
-		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
+		addChartParams(cardWidget, "costType", "cost", criteria);
 		section.addWidget(cardWidget);
 	}
 	

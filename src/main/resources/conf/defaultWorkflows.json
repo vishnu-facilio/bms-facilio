@@ -1363,23 +1363,44 @@
 							 ranges = date.getDateRange(\"Current Year\");
 						     res = woModule.fetch([totalCost !=null && resource == assetId && createdTime == ranges]); 
 						    
-						     maintenanceCost = 0;
-						     plannedMaintenanceCost = 0;
-						     unplannedMaintenanceCost = 0;
+						     maintenanceCostThisYear = 0;
+						     plannedMaintenanceCostThisYear = 0;
+						     unplannedMaintenanceCostThisYear = 0;
 						  if(res !=null) {
 						      for each index,value in res{
 						         if(value.sourceType == 5){
-						           plannedMaintenanceCost = plannedMaintenanceCost + value.totalCost;
+						           plannedMaintenanceCostThisYear = plannedMaintenanceCostThisYear + value.totalCost;
 						         }
 						         else{
-						           unplannedMaintenanceCost = unplannedMaintenanceCost + value.totalCost;
+						           unplannedMaintenanceCostThisYear = unplannedMaintenanceCostThisYear + value.totalCost;
 						         }
 						     } 
 						  }
 						     resMap = {};
-						     resMap[\"plannedMaintenanceCost\"] = plannedMaintenanceCost;
-						     resMap[\"unplannedMaintenanceCost\"] = unplannedMaintenanceCost;
-						     resMap[\"maintenanceCost\"] = plannedMaintenanceCost + unplannedMaintenanceCost;
+						     resMap[\"plannedMaintenanceCostThisYear\"] = plannedMaintenanceCostThisYear;
+						     resMap[\"unplannedMaintenanceCostThisYear\"] = unplannedMaintenanceCostThisYear;
+						     resMap[\"maintenanceCostThisYear\"] = plannedMaintenanceCostThisYear + unplannedMaintenanceCostThisYear;
+						     
+						     maintenanceCostLastYear = 0;
+						     plannedMaintenanceCostLastYear = 0;
+						     unplannedMaintenanceCostLastYear = 0;
+						     
+						     ranges = date.getDateRange(\"Last Year\");
+						     res = woModule.fetch([totalCost !=null && resource == assetId && createdTime == ranges]); 
+						     if(res !=null) {
+							      for each index,value in res{
+							         if(value.sourceType == 5){
+							           plannedMaintenanceCostLastYear = plannedMaintenanceCostLastYear + value.totalCost;
+							         }
+							         else{
+							           unplannedMaintenanceCostLastYear = unplannedMaintenanceCostLastYear + value.totalCost;
+							         }
+							     } 
+							  }
+						 	 resMap[\"plannedMaintenanceCostLastYear\"] = plannedMaintenanceCostLastYear;
+						     resMap[\"unplannedMaintenanceCostLastYear\"] = unplannedMaintenanceCostLastYear;
+						     resMap[\"maintenanceCostLastYear\"] = plannedMaintenanceCostLastYear + unplannedMaintenanceCostLastYear;
+						     
 						     return resMap; 
         			  	}"
         },

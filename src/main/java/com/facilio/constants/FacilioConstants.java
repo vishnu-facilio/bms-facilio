@@ -781,6 +781,7 @@ public class FacilioConstants {
 		public static final String TABULAR_STATE = "tabularState";
 		
 		public static final String COST = "cost";
+		public static final String COST_TYPE = "costType";
 		public static final String COST_ASSET = "costAsset";
 		public static final String COST_FIRST_BILL_TIME = "costFirstBillTime";
 		public static final String COST_READINGS = "costReadings";
