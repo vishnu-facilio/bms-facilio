@@ -30,6 +30,15 @@ public class User extends IAMUser {
 	}
 
 	
+	private long locatedSpace;
+	public long getLocatedSpace() {
+		return locatedSpace;
+	}
+	public void setLocatedSpace(long locatedSpace) {
+		this.locatedSpace = locatedSpace;
+	}
+
+
 	private Boolean inviteAcceptStatus;
 	public Boolean getInviteAcceptStatus() {
 		return inviteAcceptStatus;
