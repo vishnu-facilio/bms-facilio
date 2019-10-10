@@ -451,4 +451,11 @@ public class ActionAPI {
 		action.setTemplate(woTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), woTemplate);
 	}
+	public static ActionContext getDefaultPropsForDowntimeAction(ActionType actionType){
+		ActionContext action=new ActionContext();
+		action.setActionType(actionType);
+		action.setStatus(Boolean.TRUE);
+		action.setTemplateJson(new JSONObject());
+		return action;
+	}
 }

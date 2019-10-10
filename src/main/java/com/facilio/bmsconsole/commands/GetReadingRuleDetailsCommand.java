@@ -70,21 +70,21 @@ public class GetReadingRuleDetailsCommand extends FacilioCommand {
 							
 							List<ReadingRuleContext> allRcaRules = new ArrayList<>();
 							
-							for(ReadingRuleContext rcaRule :alarmRuleContext.getAlarmRCARules()) {
-								
-								rcaIds.add(rcaRule.getId());
-								allRcaRules.add(rcaRule);
-							}
-							if(alarmRuleContext.getAlarmRCARulesVersionHistory() !=  null) {
-								
-								for(Long versionId :alarmRuleContext.getAlarmRCARulesVersionHistory().keySet()) {
-									
-									for(ReadingRuleContext rcaRule : alarmRuleContext.getAlarmRCARulesVersionHistory().get(versionId)) {
-										rcaIds.add(rcaRule.getId());
-										allRcaRules.add(rcaRule);
-									}
-								}
-							}
+//							for(ReadingRuleContext rcaRule :alarmRuleContext.getAlarmRCARules()) {
+//
+//								rcaIds.add(rcaRule.getId());
+//								allRcaRules.add(rcaRule);
+//							}
+//							if(alarmRuleContext.getAlarmRCARulesVersionHistory() !=  null) {
+//
+//								for(Long versionId :alarmRuleContext.getAlarmRCARulesVersionHistory().keySet()) {
+//
+//									for(ReadingRuleContext rcaRule : alarmRuleContext.getAlarmRCARulesVersionHistory().get(versionId)) {
+//										rcaIds.add(rcaRule.getId());
+//										allRcaRules.add(rcaRule);
+//									}
+//								}
+//							}
 							
 							List<FacilioField> eventFields = EventConstants.EventFieldFactory.getEventFields();
 							Map<String, FacilioField> eventFieldsMap = FieldFactory.getAsMap(eventFields);

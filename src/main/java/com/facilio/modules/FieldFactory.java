@@ -1386,6 +1386,14 @@ public class FieldFactory {
 
 		return fields;
 	}
+
+	public static List<FacilioField> getWorkflowRuleRCAMapping() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWorkflowRuleRCAMapping();
+		fields.add(getField("rule", "RULE_ID", module, FieldType.NUMBER));
+		fields.add(getField("rcaRule", "RCA_RULE_ID", module, FieldType.NUMBER));
+		return fields;
+	}
 	
 	public static List<FacilioField> getWorkflowFieldChangeFields() {
 		List<FacilioField> fields = new ArrayList<>();

@@ -25,16 +25,16 @@ public class GetActionListForAlarmRuleCommand extends FacilioCommand {
 			alarmTriggerRule.setActions(actions);
 		}
 		
-		List<ReadingRuleContext> rules = alarmRule.getAlarmRCARules();
+//		List<ReadingRuleContext> rules = alarmRule.getAlarmRCARules();
 		List<ActionContext> actions = null;
-		if(rules != null && !rules.isEmpty()) {
-			for (WorkflowRuleContext rule : rules) {
-				if(rule.getActions() == null || rule.getActions().isEmpty()) {
-					actions  = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
-					rule.setActions(actions);
-				}
-			}
-		}
+//		if(rules != null && !rules.isEmpty()) {
+//			for (WorkflowRuleContext rule : rules) {
+//				if(rule.getActions() == null || rule.getActions().isEmpty()) {
+//					actions  = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
+//					rule.setActions(actions);
+//				}
+//			}
+//		}
 		
 		List<ReadingAlarmRuleContext> readingAlarmRuleContexts = alarmRule.getReadingAlarmRuleContexts();
 		if(readingAlarmRuleContexts != null && !readingAlarmRuleContexts.isEmpty()) {

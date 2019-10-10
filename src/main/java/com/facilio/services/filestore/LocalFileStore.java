@@ -10,8 +10,10 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.fs.FileInfo;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class LocalFileStore extends FileStore {
 
@@ -24,9 +26,13 @@ public class LocalFileStore extends FileStore {
 	@Override
 	protected String getRootPath() {
 		if (rootPath == null) {
-			ClassLoader classLoader = LocalFileStore.class.getClassLoader();
-			URL fcDataFolder = classLoader.getResource("");
-			rootPath = fcDataFolder.getFile() + File.separator + "facilio-data" + File.separator + getOrgId() + File.separator + "files";
+			String localFileStorePath = FacilioProperties.getLocalFileStorePath();
+			if (StringUtils.isEmpty(localFileStorePath)) {
+				ClassLoader classLoader = LocalFileStore.class.getClassLoader();
+				URL fcDataFolder = classLoader.getResource("");
+				localFileStorePath = fcDataFolder.getFile();
+			}
+			rootPath = localFileStorePath + File.separator + "facilio-data" + File.separator + getOrgId() + File.separator + "files";
 			
 			File rootDir = new File(rootPath);
 			if (!(rootDir.exists() && rootDir.isDirectory())) {

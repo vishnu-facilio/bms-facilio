@@ -5,70 +5,69 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class AlarmRuleContext {
-	
-	private ReadingRuleContext preRequsite;
-	List<ReadingRuleContext> alarmTriggerRuleVersionHistory;
-	Map<Long,List<ReadingRuleContext>> alarmRCARulesVersionHistory;
-	ReadingRuleContext alarmTriggerRule;
-	List<ReadingRuleContext> alarmRCARules;
-	List<ReadingRuleContext> deletedAlarmRCARules;
 
-	ReadingRuleContext alarmClearRule;
-	
-	ReadingRuleContext alarmClearRuleDuplicate;
-	
-	boolean isClearAlarmOnPreRequsiteFail = true;
-	
-	public boolean isClearAlarmOnPreRequsiteFail() {
-		return isClearAlarmOnPreRequsiteFail;
-	}
-	public void setClearAlarmOnPreRequsiteFail(boolean isClearAlarmOnPreRequsiteFail) {
-		this.isClearAlarmOnPreRequsiteFail = isClearAlarmOnPreRequsiteFail;
-	}
+	private ReadingRuleContext preRequsite;
+	private WorkflowRuleContext reportDowntimeRule;
+	private List<ReadingRuleContext> alarmTriggerRuleVersionHistory;
+//	private Map<Long,List<ReadingRuleContext>> alarmRCARulesVersionHistory;
+	private ReadingRuleContext alarmTriggerRule;
+	private List<Long> alarmRCARules;
+//	private List<ReadingRuleContext> deletedAlarmRCARules;
+
+	private ReadingRuleContext alarmClearRule;
+	private ReadingRuleContext alarmClearRuleDuplicate;
+
+//	private boolean isClearAlarmOnPreRequsiteFail = true;
+//	public boolean isClearAlarmOnPreRequsiteFail() {
+//		return isClearAlarmOnPreRequsiteFail;
+//	}
+//	public void setClearAlarmOnPreRequsiteFail(boolean isClearAlarmOnPreRequsiteFail) {
+//		this.isClearAlarmOnPreRequsiteFail = isClearAlarmOnPreRequsiteFail;
+//	}
 
 	public AlarmRuleContext() {
-		
 	}
+
 	public List<ReadingRuleContext> getAlarmTriggerRuleVersionHistory() {
 		return alarmTriggerRuleVersionHistory;
 	}
-	
-	public List<ReadingRuleContext> getDeletedAlarmRCARules() {
-		return deletedAlarmRCARules;
-	}
-	public void setDeletedAlarmRCARules(List<ReadingRuleContext> deletedAlarmRCARules) {
-		this.deletedAlarmRCARules = deletedAlarmRCARules;
-	}
+//	public List<ReadingRuleContext> getDeletedAlarmRCARules() {
+//		return deletedAlarmRCARules;
+//	}
+//	public void setDeletedAlarmRCARules(List<ReadingRuleContext> deletedAlarmRCARules) {
+//		this.deletedAlarmRCARules = deletedAlarmRCARules;
+//	}
 	public void addAlarmTriggerRuleVersionHistory(ReadingRuleContext alarmTriggerRule) {
 		this.alarmTriggerRuleVersionHistory = this.alarmTriggerRuleVersionHistory == null ? new ArrayList<>() : this.alarmTriggerRuleVersionHistory;
 		this.alarmTriggerRuleVersionHistory.add(alarmTriggerRule);
 	}
-	public Map<Long, List<ReadingRuleContext>> getAlarmRCARulesVersionHistory() {
-		return alarmRCARulesVersionHistory;
-	}
-	public void addAlarmRCARulesVersionHistory(Long parentRuleId, ReadingRuleContext alarmRCARule) {
-		this.alarmRCARulesVersionHistory = this.alarmRCARulesVersionHistory == null ? new HashMap<>() : this.alarmRCARulesVersionHistory;
-		List<ReadingRuleContext> list = alarmRCARulesVersionHistory.containsKey(parentRuleId) ? alarmRCARulesVersionHistory.get(parentRuleId) : new ArrayList<>();
-		list.add(alarmRCARule);
-		this.alarmRCARulesVersionHistory.put(parentRuleId, list);
-	}
-	
+//	public Map<Long, List<ReadingRuleContext>> getAlarmRCARulesVersionHistory() {
+//		return alarmRCARulesVersionHistory;
+//	}
+//	public void addAlarmRCARulesVersionHistory(Long parentRuleId, ReadingRuleContext alarmRCARule) {
+//		this.alarmRCARulesVersionHistory = this.alarmRCARulesVersionHistory == null ? new HashMap<>() : this.alarmRCARulesVersionHistory;
+//		List<ReadingRuleContext> list = alarmRCARulesVersionHistory.containsKey(parentRuleId) ? alarmRCARulesVersionHistory.get(parentRuleId) : new ArrayList<>();
+//		list.add(alarmRCARule);
+//		this.alarmRCARulesVersionHistory.put(parentRuleId, list);
+//	}
+
 
 	public AlarmRuleContext(List<ReadingRuleContext> rules) {
 		for(ReadingRuleContext rule :rules) {
-			
-			if(rule.getRuleTypeEnum().equals(RuleType.READING_RULE)) {
+
+			if(rule.getRuleTypeEnum().equals(WorkflowRuleContext.RuleType.READING_RULE)) {
 				preRequsite = rule;
 			}
-			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_CLEAR_RULE) && !rule.isOnSuccess()) {
+			else if(rule.getRuleTypeEnum().equals(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE) && !rule.isOnSuccess()) {
 				alarmClearRule = rule;
 			}
-			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_TRIGGER_RULE)) {
+			else if(rule.getRuleTypeEnum().equals(WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE)) {
 				if(rule.isActive()) {
 					alarmTriggerRule = rule;
 				}
@@ -76,13 +75,13 @@ public class AlarmRuleContext {
 					addAlarmTriggerRuleVersionHistory(rule);
 				}
 			}
-			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_RCA_RULES)) {
-				
+			else if(rule.getRuleTypeEnum().equals(WorkflowRuleContext.RuleType.ALARM_RCA_RULES)) {
+
 				if(rule.isActive()) {
-					addAlarmRCARules(rule);
+					addAlarmRCARules(rule.getId());
 				}
 				else {
-					addAlarmRCARulesVersionHistory(rule.getVersionGroupId(),rule);
+//					addAlarmRCARulesVersionHistory(rule.getVersionGroupId(),rule);
 				}
 			}
 		}
@@ -91,24 +90,31 @@ public class AlarmRuleContext {
 		this(rules);
 		this.readingAlarmRuleContexts = readingAlarmRuleContexts;
 	}
-	
+
 	public ReadingRuleContext getAlarmTriggerRule() {
 		return alarmTriggerRule;
 	}
 	public void setAlarmTriggerRule(ReadingRuleContext alarmTriggerRule) {
 		this.alarmTriggerRule = alarmTriggerRule;
 	}
-	public List<ReadingRuleContext> getAlarmRCARules() {
+	public List<Long> getAlarmRCARules() {
 		return alarmRCARules;
 	}
-	public void setAlarmRCARules(List<ReadingRuleContext> alarmRCARules) {
+	public void setAlarmRCARules(List<Long> alarmRCARules) {
 		this.alarmRCARules = alarmRCARules;
 	}
-	public void addAlarmRCARules(ReadingRuleContext alarmRCARules) {
+	public void setAlarmRCARulesInt(List<Integer> rules) {
+		if (CollectionUtils.isNotEmpty(rules)) {
+			for (int rule : rules) {
+				alarmRCARules.add((long) rule);
+			}
+		}
+	}
+	public void addAlarmRCARules(Long alarmRuleId) {
 		if(this.alarmRCARules == null) {
 			this.alarmRCARules = new ArrayList<>();
 		}
-		this.alarmRCARules.add(alarmRCARules);
+		this.alarmRCARules.add(alarmRuleId);
 	}
 	public ReadingRuleContext getAlarmClearRule() {
 		return alarmClearRule;
@@ -125,7 +131,7 @@ public class AlarmRuleContext {
 			this.alarmClearRuleDuplicate = (ReadingRuleContext) alarmClearRule.clone();
 		}
 	}
-	
+
 	@JSON(serialize=false)
 	public ReadingRuleContext getAlarmClearRuleDuplicate() {
 		return alarmClearRuleDuplicate;
@@ -133,28 +139,25 @@ public class AlarmRuleContext {
 	public void setAlarmClearRuleDuplicate(ReadingRuleContext alarmClearRuleDuplicate) {
 		this.alarmClearRuleDuplicate = alarmClearRuleDuplicate;
 	}
-	
+
 	List<ReadingAlarmRuleContext> readingAlarmRuleContexts;
-	
+
 	public List<ReadingAlarmRuleContext> getReadingAlarmRuleContexts() {
 		return readingAlarmRuleContexts;
 	}
 	public void setReadingAlarmRuleContexts(List<ReadingAlarmRuleContext> readingAlarmRuleContexts) {
 		this.readingAlarmRuleContexts = readingAlarmRuleContexts;
 	}
-	
-	private boolean reportBreakdown;
 
+	private boolean reportBreakdown;
 	public boolean isReportBreakdown() {
 		return reportBreakdown;
 	}
-
 	public void setReportBreakdown(boolean reportBreakdown) {
 		this.reportBreakdown = reportBreakdown;
 	}
 
-	boolean isAutoClear;
-
+	private boolean isAutoClear;
 	public boolean isAutoClear() {
 		return isAutoClear;
 	}
@@ -164,18 +167,25 @@ public class AlarmRuleContext {
 	public void setIsAutoClear(boolean isAutoClear) {
 		this.isAutoClear = isAutoClear;
 	}
-	
-	public Map<String,Long> getNameVsIdMap() {
-		Map<String,Long> ruleNameVsIdMap = new HashMap<>();
-		
-		if(alarmTriggerRule != null) {
-			ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
-		}
-		if(alarmRCARules != null) {
-			for(ReadingRuleContext alarmRCARule :alarmRCARules) {
-				ruleNameVsIdMap.put(alarmRCARule.getName(), alarmRCARule.getId());
-			}
-		}
-		return ruleNameVsIdMap;
+
+	public WorkflowRuleContext getReportDowntimeRule() {
+		return reportDowntimeRule;
 	}
+	public void setReportDowntimeRule(WorkflowRuleContext reportDowntimeRule) {
+		this.reportDowntimeRule = reportDowntimeRule;
+	}
+
+//	public Map<String,Long> getNameVsIdMap() {
+//		Map<String,Long> ruleNameVsIdMap = new HashMap<>();
+//
+//		if(alarmTriggerRule != null) {
+//			ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
+//		}
+////        if(alarmRCARules != null) {
+////            for(ReadingRuleContext alarmRCARule :alarmRCARules) {
+////                ruleNameVsIdMap.put(alarmRCARule.getName(), alarmRCARule.getId());
+////            }
+////        }
+//		return ruleNameVsIdMap;
+//	}
 }

@@ -76,6 +76,8 @@ public class FacilioProperties {
     private static String fileStore;
     private static boolean isServicesEnabled;
 
+    private static String localFileStorePath;
+
     static {
         loadProperties();
     }
@@ -138,6 +140,8 @@ public class FacilioProperties {
                         LOGGER.info("Exception while parsing iot.endpoint.port, " + PROPERTIES.getProperty("iot.endpoint.port"));
                     }
                 }
+
+                localFileStorePath = PROPERTIES.getProperty("files.localFileStore.path");
                 
                 PROPERTIES.put("clientapp.url", clientAppUrl);
                 URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
@@ -162,6 +166,11 @@ public class FacilioProperties {
             }
         }
     }
+
+    public static String getLocalFileStorePath() {
+        return localFileStorePath;
+    }
+
     public static Long getMessageReprocessInterval() {
         return messageReprocessInterval;
     }

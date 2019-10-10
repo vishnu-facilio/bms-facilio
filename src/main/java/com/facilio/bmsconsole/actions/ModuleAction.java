@@ -230,6 +230,11 @@ public class ModuleAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.FIELD, context.get(FacilioConstants.ContextNames.FIELD));
 		return SUCCESS;
 	}
+
+	public String canChangeNameLocalId() throws Exception {
+
+		return SUCCESS;
+	}
 	
 	public String v2updateField() throws Exception {
 		updateCustomField(true);

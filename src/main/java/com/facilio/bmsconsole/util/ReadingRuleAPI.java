@@ -640,25 +640,19 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
 		
 		
-		List<ReadingRuleContext> alarmRCARules = alarmRule.getAlarmRCARules();
+		List<Long> alarmRCARules = alarmRule.getAlarmRCARules();
 		
 		if(alarmRCARules != null) {
-			
-			int executionOrder = 1;
-			for(ReadingRuleContext alarmRCARule :alarmRCARules) {
-				
-				alarmRCARule.setExecutionOrder(executionOrder++);
-				
-				Long parentId = alarmRCARule.getParentRuleName() != null ? ruleNameVsIdMap.get(alarmRCARule.getParentRuleName()) : alarmTriggerRule.getId();
-				if(alarmRCARule.getParentRuleName() == null) {
-					alarmRCARule.setOnSuccess(true);
-				}
-				alarmRCARule.setClearAlarm(false);
-				fillDefaultPropsForAlarmRule(alarmRCARule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_RCA_RULES,parentId);
-				
-				WorkflowRuleAPI.addWorkflowRule(alarmRCARule);
-				ruleNameVsIdMap.put(alarmRCARule.getName(), alarmRCARule.getId());
+			GenericInsertRecordBuilder mappingInsert = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getWorkflowRuleRCAMapping().getTableName())
+					.fields(FieldFactory.getWorkflowRuleRCAMapping());
+			for(Long alarmRCARule :alarmRCARules) {
+				Map<String, Object> value = new HashMap<>();
+				value.put("rule", alarmTriggerRule.getId());
+				value.put("rcaRule", alarmRCARule);
+				mappingInsert.addRecord(value);
 			}
+			mappingInsert.save();
 		}
 		
 		if(!alarmRule.isAutoClear()) {

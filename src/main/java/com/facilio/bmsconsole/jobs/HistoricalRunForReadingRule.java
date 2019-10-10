@@ -92,16 +92,16 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 						fields.addAll(workflowFields);
 					}
 				}
-				if(alarmRule.getAlarmRCARules() != null) {
-					for(ReadingRuleContext rcaRules :alarmRule.getAlarmRCARules()) {
-						if(rcaRules.getWorkflow() != null) {
-							List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(rcaRules.getWorkflow().getId());
-							if(workflowFields != null) {
-								fields.addAll(workflowFields);
-							}
-						}
-					}
-				}
+//				if(alarmRule.getAlarmRCARules() != null) {
+//					for(ReadingRuleContext rcaRules :alarmRule.getAlarmRCARules()) {
+//						if(rcaRules.getWorkflow() != null) {
+//							List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(rcaRules.getWorkflow().getId());
+//							if(workflowFields != null) {
+//								fields.addAll(workflowFields);
+//							}
+//						}
+//					}
+//				}
 			}
 			
 			if (fields != null && !fields.isEmpty()) {

@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 
 public class AddActionForAlarmRuleCommand extends FacilioCommand {
@@ -27,14 +28,21 @@ public class AddActionForAlarmRuleCommand extends FacilioCommand {
 			actions = ActionAPI.addActions(alarmTriggerRule.getActions(), alarmTriggerRule);
 			ActionAPI.addWorkflowRuleActionRel(alarmTriggerRule.getId(), actions);
 		}
-		
-		if(alarmRule.getAlarmRCARules() != null) {
-			for( ReadingRuleContext rule :alarmRule.getAlarmRCARules()) {
-				
-				actions = ActionAPI.addActions(rule.getActions(), rule);
-				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
-			}
+
+		WorkflowRuleContext reportDowntimeRule=alarmRule.getReportDowntimeRule();
+		if(reportDowntimeRule!=null){
+			ActionContext action= ActionAPI.getDefaultPropsForDowntimeAction(ActionType.REPORT_DOWNTIME_ACTION);
+			reportDowntimeRule.setActions(Collections.singletonList(action));
+			actions = ActionAPI.addActions(reportDowntimeRule.getActions(), reportDowntimeRule);
+			ActionAPI.addWorkflowRuleActionRel(reportDowntimeRule.getId(), actions);
 		}
+//		if(alarmRule.getAlarmRCARules() != null) {
+//			for( ReadingRuleContext rule :alarmRule.getAlarmRCARules()) {
+//
+//				actions = ActionAPI.addActions(rule.getActions(), rule);
+//				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
+//			}
+//		}
 		
 		if(!alarmRule.isAutoClear()) {
 			ActionContext actionContext = new ActionContext();

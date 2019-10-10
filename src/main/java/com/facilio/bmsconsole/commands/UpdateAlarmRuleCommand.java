@@ -23,6 +23,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.FacilioTimer;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class UpdateAlarmRuleCommand extends FacilioCommand {
 
@@ -81,7 +82,7 @@ public class UpdateAlarmRuleCommand extends FacilioCommand {
 		
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 		
-		Map<String,Long> ruleNameVsIdMap = oldRule.getNameVsIdMap();
+//		Map<String,Long> ruleNameVsIdMap = oldRule.getNameVsIdMap();
 		
 		ReadingRuleContext alarmTriggerRule = alarmRule.getAlarmTriggerRule();
 		if(alarmTriggerRule != null) {
@@ -94,7 +95,7 @@ public class UpdateAlarmRuleCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, alarmTriggerRule);
 			chain.execute(context);
 			
-			ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
+//			ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
 			
 			updateParentRuleId(oldRule.getAlarmTriggerRule().getId(),alarmTriggerRule.getId());
 		}
@@ -103,44 +104,45 @@ public class UpdateAlarmRuleCommand extends FacilioCommand {
 			alarmTriggerRule = oldRule.getAlarmTriggerRule();			// setting it here since its used bellow
 		}
 		
-		List<ReadingRuleContext> alarmRCARules = alarmRule.getAlarmRCARules();
+		List<Long> alarmRCARules = alarmRule.getAlarmRCARules();
 		
-		if(alarmRCARules != null) {
+		if(CollectionUtils.isNotEmpty(alarmRCARules)) {
 			
-			int executionOrder = getMaxExecutionOrder (oldRule.getAlarmRCARules());
+//			int executionOrder = getMaxExecutionOrder (oldRule.getAlarmRCARules());
 			
-			for(ReadingRuleContext alarmRCARule :alarmRCARules) {
-				
-				Long parentId = alarmRCARule.getParentRuleName() != null ? ruleNameVsIdMap.get(alarmRCARule.getParentRuleName()) : alarmTriggerRule.getId();
-				if(alarmRCARule.getParentRuleName() == null) {
-					alarmRCARule.setOnSuccess(true);
-				}
-				alarmRCARule.setClearAlarm(false);
-				ReadingRuleAPI.fillDefaultPropsForAlarmRule(alarmRCARule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_RCA_RULES,parentId);
-				if(alarmRCARule.getId() > 0) {
-					long oldId = alarmRCARule.getId();
-					
-					FacilioChain chain = TransactionChainFactory.updateVersionedWorkflowRuleChain();
-					context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, alarmRCARule);
-					chain.execute(context);
-					
-					updateParentRuleId(oldId,alarmRCARule.getId());
-				}
-				else {
-					alarmRCARule.setExecutionOrder(++executionOrder);
-					WorkflowRuleAPI.addWorkflowRule(alarmRCARule);
-				}
-				
-				ruleNameVsIdMap.put(alarmRCARule.getName(), alarmRCARule.getId());
+			for(Long alarmRCARule :alarmRCARules) {
+				// TODO add mapping table entry
+
+//				Long parentId = alarmRCARule.getParentRuleName() != null ? ruleNameVsIdMap.get(alarmRCARule.getParentRuleName()) : alarmTriggerRule.getId();
+//				if(alarmRCARule.getParentRuleName() == null) {
+//					alarmRCARule.setOnSuccess(true);
+//				}
+//				alarmRCARule.setClearAlarm(false);
+//				ReadingRuleAPI.fillDefaultPropsForAlarmRule(alarmRCARule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_RCA_RULES,parentId);
+//				if(alarmRCARule.getId() > 0) {
+//					long oldId = alarmRCARule.getId();
+//
+//					FacilioChain chain = TransactionChainFactory.updateVersionedWorkflowRuleChain();
+//					context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, alarmRCARule);
+//					chain.execute(context);
+//
+//					updateParentRuleId(oldId,alarmRCARule.getId());
+//				}
+//				else {
+//					alarmRCARule.setExecutionOrder(++executionOrder);
+//					WorkflowRuleAPI.addWorkflowRule(alarmRCARule);
+//				}
+//
+//				ruleNameVsIdMap.put(alarmRCARule.getName(), alarmRCARule.getId());
 			}
 		}
 		
-		if(alarmRule.getDeletedAlarmRCARules() != null) {
-			for(ReadingRuleContext deletedRcaRule : alarmRule.getDeletedAlarmRCARules()) {
-				WorkflowRuleAPI.deleteWorkflowRule(deletedRcaRule.getId());
-				updateParentRuleId(deletedRcaRule.getId(), alarmTriggerRule.getId());
-			}
-		}
+//		if(alarmRule.getDeletedAlarmRCARules() != null) {
+//			for(ReadingRuleContext deletedRcaRule : alarmRule.getDeletedAlarmRCARules()) {
+//				WorkflowRuleAPI.deleteWorkflowRule(deletedRcaRule.getId());
+//				updateParentRuleId(deletedRcaRule.getId(), alarmTriggerRule.getId());
+//			}
+//		}
 		
 		if(!alarmRule.isAutoClear()) {
 			ReadingRuleContext alarmClearRule = alarmRule.getAlarmClearRule();
@@ -149,7 +151,7 @@ public class UpdateAlarmRuleCommand extends FacilioCommand {
 			alarmClearRule.setOnSuccess(false);
 			alarmClearRule.setClearAlarm(false);
 			WorkflowRuleAPI.addWorkflowRule(alarmClearRule);
-			ruleNameVsIdMap.put(alarmClearRule.getName(), alarmClearRule.getId());
+//			ruleNameVsIdMap.put(alarmClearRule.getName(), alarmClearRule.getId());
 			
 			
 			ReadingRuleContext alarmClearRuleDuplicate = alarmRule.getAlarmClearRuleDuplicate();
@@ -158,14 +160,14 @@ public class UpdateAlarmRuleCommand extends FacilioCommand {
 			alarmClearRuleDuplicate.setOnSuccess(false);
 			alarmClearRuleDuplicate.setClearAlarm(false);
 			WorkflowRuleAPI.addWorkflowRule(alarmClearRuleDuplicate);
-			ruleNameVsIdMap.put(alarmClearRuleDuplicate.getName(), alarmClearRuleDuplicate.getId());
+//			ruleNameVsIdMap.put(alarmClearRuleDuplicate.getName(), alarmClearRuleDuplicate.getId());
 		}
 	}
 
-	private int getMaxExecutionOrder(List<ReadingRuleContext> alarmRCARules) {
-		if(alarmRCARules != null) {
-			return alarmRCARules.get(alarmRCARules.size()-1).getExecutionOrder();
-		}
-		return 0;
-	}
+//	private int getMaxExecutionOrder(List<ReadingRuleContext> alarmRCARules) {
+//		if(alarmRCARules != null) {
+//			return alarmRCARules.get(alarmRCARules.size()-1).getExecutionOrder();
+//		}
+//		return 0;
+//	}
 }
