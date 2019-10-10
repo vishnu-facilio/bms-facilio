@@ -650,6 +650,18 @@ public class ViewFactory {
 		groupDetails.put("views", all);
 		groupVsViews.add(groupDetails);
 		
+		
+		ArrayList<String> upcoming = new ArrayList<>();
+		upcoming.add("upcomingThisWeek");
+		upcoming.add("upcomingNextWeek");
+		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "upcomingworkorders");
+		groupDetails.put("displayName", "Upcoming Work Orders");
+		groupDetails.put("views", upcoming);
+		groupVsViews.add(groupDetails);
+		
+		
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "customworkorders");
 		groupDetails.put("displayName", "Custom Work Orders");
@@ -719,7 +731,7 @@ public class ViewFactory {
 		return moduleVsGroup;
 
 	}
-
+	
 	private static FacilioView getEvents(String category) {
 
 		FacilioField createdTime = new FacilioField();
