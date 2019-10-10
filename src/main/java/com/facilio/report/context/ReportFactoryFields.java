@@ -267,6 +267,145 @@ public class ReportFactoryFields {
 		
 	}
 	
+	public static JSONObject getassetDownTimeReportFields() throws Exception{
+		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ModuleNames.ASSET_BREAKDOWN));
+		
+		
+		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
+		if(bean.getAllCustomFields(FacilioConstants.ModuleNames.ASSET_BREAKDOWN) != null) {
+			customFields = FieldFactory.getAsMap(bean.getAllCustomFields(FacilioConstants.ModuleNames.ASSET_BREAKDOWN));
+		}
+		
+		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
+		selectedFields.add(fields.get("parentId"));
+		selectedFields.add(fields.get("condition"));
+		selectedFields.add(fields.get("fromtime"));
+		selectedFields.add(fields.get("totime"));
+		selectedFields.add(fields.get("duration"));
+		selectedFields.add(fields.get("timeBetweenFailure"));
+		
+		if(customFields.size() != 0) {
+			for(String customFieldName: customFields.keySet()) {
+				selectedFields.add(customFields.get(customFieldName));
+			}
+		}
+		
+		//loading additional module fields
+		JSONObject rearrangedFields = rearrangeFields(selectedFields, FacilioConstants.ModuleNames.ASSET_BREAKDOWN);
+		setAdditionalModulemap(rearrangedFields, FacilioConstants.ModuleNames.ASSET_BREAKDOWN, bean);
+		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(FacilioConstants.ModuleNames.ASSET_BREAKDOWN, bean);
+				
+			
+		List<FacilioField> assetFields = new ArrayList<FacilioField>();
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("state"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("unitPrice"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("purchasedDate"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
+		
+		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
+
+		
+		dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
+		
+		ArrayList<String> dimensionListOrder = new ArrayList<String>();
+		dimensionListOrder.add("time");
+		dimensionListOrder.add(FacilioConstants.ModuleNames.ASSET_BREAKDOWN);
+		dimensionListOrder.add("asset");
+		
+		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
+		
+		return rearrangedFields;
+		
+	}
+	
+	public static JSONObject getitemTransactionsReportFields() throws Exception{
+		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ModuleNames.ITEM_TRANSCTIONS));
+		
+		
+		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
+		if(bean.getAllCustomFields(FacilioConstants.ModuleNames.ITEM_TRANSCTIONS) != null) {
+			customFields = FieldFactory.getAsMap(bean.getAllCustomFields(FacilioConstants.ModuleNames.ITEM_TRANSCTIONS));
+		}
+		
+		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
+		for(String fieldName: fields.keySet()) {
+			selectedFields.add(fields.get(fieldName));
+		}
+		if(customFields.size() != 0) {
+			for(String customFieldName: customFields.keySet()) {
+				selectedFields.add(customFields.get(customFieldName));
+			}
+		}
+		
+		//loading additional module fields
+		JSONObject rearrangedFields = rearrangeFields(selectedFields, FacilioConstants.ModuleNames.ITEM_TRANSCTIONS);
+		setAdditionalModulemap(rearrangedFields, FacilioConstants.ModuleNames.ITEM_TRANSCTIONS, bean);
+		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(FacilioConstants.ModuleNames.ITEM_TRANSCTIONS, bean);
+				
+		
+		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
+
+		
+		
+		ArrayList<String> dimensionListOrder = new ArrayList<String>();
+		dimensionListOrder.add("time");
+		dimensionListOrder.add(FacilioConstants.ModuleNames.ITEM_TRANSCTIONS);
+		
+		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
+		
+		return rearrangedFields;
+		
+	}
+	
+	public static JSONObject gettoolTransactionsReportFields() throws Exception{
+		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ModuleNames.TOOL_TRANSCTIONS));
+		
+		
+		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
+		if(bean.getAllCustomFields(FacilioConstants.ModuleNames.TOOL_TRANSCTIONS) != null) {
+			customFields = FieldFactory.getAsMap(bean.getAllCustomFields(FacilioConstants.ModuleNames.TOOL_TRANSCTIONS));
+		}
+		
+		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
+		for(String fieldName: fields.keySet()) {
+			selectedFields.add(fields.get(fieldName));
+		}
+		
+		if(customFields.size() != 0) {
+			for(String customFieldName: customFields.keySet()) {
+				selectedFields.add(customFields.get(customFieldName));
+			}
+		}
+		
+		//loading additional module fields
+		JSONObject rearrangedFields = rearrangeFields(selectedFields, FacilioConstants.ModuleNames.TOOL_TRANSCTIONS);
+		setAdditionalModulemap(rearrangedFields, FacilioConstants.ModuleNames.TOOL_TRANSCTIONS, bean);
+		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(FacilioConstants.ModuleNames.TOOL_TRANSCTIONS, bean);
+				
+		
+		
+		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
+
+		
+		
+		ArrayList<String> dimensionListOrder = new ArrayList<String>();
+		dimensionListOrder.add("time");
+		dimensionListOrder.add(FacilioConstants.ModuleNames.TOOL_TRANSCTIONS);
+		
+		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
+		
+		return rearrangedFields;
+		
+	}
+	
 	public static JSONObject getAlarmReportFields() throws Exception{
 		String moduleName = new String("alarm");
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.NEW_ALARMS)) {
@@ -356,6 +495,18 @@ public class ReportFactoryFields {
 			fields = gettoolReportFields();
 			break;
 		}
+		case "assetbreakdown":{
+			fields = getassetDownTimeReportFields();
+			break;
+		}
+		case "itemtransactions":{
+			fields = getitemTransactionsReportFields();
+			break;
+		}
+		case "tooltransactions":{
+			fields = gettoolTransactionsReportFields();
+			break;
+		}
 		}
 		return fields;
 	}
@@ -400,10 +551,19 @@ public class ReportFactoryFields {
 		case "asset":
 			moduleResourceFieldName = "space";
 			break;
+		case "assetbreakdown":
+			moduleResourceFieldName = "resource";
+			break;
 		case "alarm":
 			moduleResourceFieldName = "resource";
 			break;
 		case "alarmoccurrence":
+			moduleResourceFieldName = "resource";
+			break;
+		case "itemtransactions":
+			moduleResourceFieldName = "resource";
+			break;
+		case "tooltransactions":
 			moduleResourceFieldName = "resource";
 			break;
 		}
@@ -505,6 +665,8 @@ public class ReportFactoryFields {
 			case "tool":
 				moduleNames.add(FacilioConstants.ModuleNames.TOOL_TYPES);
 				moduleNames.add(FacilioConstants.ModuleNames.STORE_ROOM);
+			case "assetbreakdown":
+				moduleNames.add(FacilioConstants.ContextNames.ASSET);
 		}
 		
 		return moduleNames;

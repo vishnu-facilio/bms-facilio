@@ -76,6 +76,9 @@ public class FacilioConstants {
 		public static final String ITEM_TYPES="itemtypes";
 		public static final String STORE_ROOM="storeroom";
 		public static final String DEVICES="devices";
+		public static final String ASSET_BREAKDOWN = "assetbreakdown";
+		public static final String ITEM_TRANSCTIONS ="itemtransactions";
+		public static final String TOOL_TRANSCTIONS ="tooltransactions";
 	}
 
 	public static class ContextNames {
