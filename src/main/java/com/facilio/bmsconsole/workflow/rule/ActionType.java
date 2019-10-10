@@ -597,10 +597,14 @@ public enum ActionType {
 					if (lastOccurrence != null) {
 						WorkOrderContext workOrder = WorkOrderAPI.getWorkOrder(lastOccurrence.getWoId());
 						if (workOrder == null) {
-							FacilioContext woContext = new FacilioContext();
-							woContext.put(FacilioConstants.ContextNames.RECORD_ID, lastOccurrence.getId());
 							FacilioChain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
-							c.execute(woContext);
+							Context woContext = c.getContext();
+							if (obj != null) {
+								workOrder = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+								woContext.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
+							}
+							woContext.put(FacilioConstants.ContextNames.RECORD_ID, lastOccurrence.getId());
+							c.execute();
 						}
 						else {
 							NoteContext note = new NoteContext();
