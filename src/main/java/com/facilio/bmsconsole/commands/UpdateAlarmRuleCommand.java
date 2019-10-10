@@ -105,12 +105,14 @@ public class UpdateAlarmRuleCommand extends FacilioCommand {
 		}
 		
 		List<Long> alarmRCARules = alarmRule.getAlarmRCARules();
+		ReadingRuleAPI.deleteAlarmRCARules(alarmRule.getGroupId());
+		ReadingRuleAPI.addAlarmRCARules(alarmRCARules, alarmRule.getGroupId());
 		
-		if(CollectionUtils.isNotEmpty(alarmRCARules)) {
-			
+//		if(CollectionUtils.isNotEmpty(alarmRCARules)) {
+//
 //			int executionOrder = getMaxExecutionOrder (oldRule.getAlarmRCARules());
-			
-			for(Long alarmRCARule :alarmRCARules) {
+
+//			for(Long alarmRCARule :alarmRCARules) {
 				// TODO add mapping table entry
 
 //				Long parentId = alarmRCARule.getParentRuleName() != null ? ruleNameVsIdMap.get(alarmRCARule.getParentRuleName()) : alarmTriggerRule.getId();
@@ -134,8 +136,8 @@ public class UpdateAlarmRuleCommand extends FacilioCommand {
 //				}
 //
 //				ruleNameVsIdMap.put(alarmRCARule.getName(), alarmRCARule.getId());
-			}
-		}
+//			}
+//		}
 		
 //		if(alarmRule.getDeletedAlarmRCARules() != null) {
 //			for(ReadingRuleContext deletedRcaRule : alarmRule.getDeletedAlarmRCARules()) {

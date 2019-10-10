@@ -103,6 +103,13 @@ public class AlarmRuleContext {
 	public void setAlarmRCARules(List<Long> alarmRCARules) {
 		this.alarmRCARules = alarmRCARules;
 	}
+	public void addAlarmRCARules(List<Long> alarmRCARules) {
+		if (this.alarmRCARules == null) {
+			this.alarmRCARules = new ArrayList<>();
+		}
+		this.alarmRCARules.addAll(alarmRCARules);
+	}
+
 	public void setAlarmRCARulesInt(List<Integer> rules) {
 		if (CollectionUtils.isNotEmpty(rules)) {
 			for (int rule : rules) {
@@ -173,6 +180,13 @@ public class AlarmRuleContext {
 	}
 	public void setReportDowntimeRule(WorkflowRuleContext reportDowntimeRule) {
 		this.reportDowntimeRule = reportDowntimeRule;
+	}
+
+	public Long getGroupId() {
+		if (preRequsite != null) {
+			return preRequsite.getId();
+		}
+		return alarmTriggerRule.getId();
 	}
 
 //	public Map<String,Long> getNameVsIdMap() {

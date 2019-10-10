@@ -453,6 +453,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			
 			for(Long groupId :readingRuleMap.keySet()) {
 				AlarmRuleContext alarmRuleContext = new AlarmRuleContext(readingRuleMap.get(groupId));
+				alarmRuleContext.addAlarmRCARules(ReadingRuleAPI.getAlarmRCARules(groupId));
 				alarmRuleContextMap.put(groupId, alarmRuleContext);
 			}
 		}
@@ -641,19 +642,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		
 		
 		List<Long> alarmRCARules = alarmRule.getAlarmRCARules();
-		
-		if(alarmRCARules != null) {
-			GenericInsertRecordBuilder mappingInsert = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getWorkflowRuleRCAMapping().getTableName())
-					.fields(FieldFactory.getWorkflowRuleRCAMapping());
-			for(Long alarmRCARule :alarmRCARules) {
-				Map<String, Object> value = new HashMap<>();
-				value.put("rule", alarmTriggerRule.getId());
-				value.put("rcaRule", alarmRCARule);
-				mappingInsert.addRecord(value);
-			}
-			mappingInsert.save();
-		}
+		addAlarmRCARules(alarmRCARules, alarmRule.getGroupId());
 		
 		if(!alarmRule.isAutoClear()) {
 			ReadingRuleContext alarmClearRule = alarmRule.getAlarmClearRule();
@@ -672,6 +661,48 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			alarmClearRuleDuplicate.setClearAlarm(false);
 			WorkflowRuleAPI.addWorkflowRule(alarmClearRuleDuplicate);
 			ruleNameVsIdMap.put(alarmClearRuleDuplicate.getName(), alarmClearRuleDuplicate.getId());
+		}
+	}
+
+	public static void deleteAlarmRCARules(Long groupId) throws Exception {
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getWorkflowRuleRCAMapping().getTableName())
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "rule", String.valueOf(groupId), NumberOperators.EQUALS));
+		deleteRecordBuilder.delete();
+	}
+
+	public static List<Long> getAlarmRCARules(Long groupId) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getWorkflowRuleRCAMapping().getTableName())
+				.select(FieldFactory.getWorkflowRuleRCAMapping())
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "rule", String.valueOf(groupId), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = builder.get();
+		List<Long> rcaIds = new ArrayList<>();
+		for (Map<String, Object> prop : props) {
+			rcaIds.add((Long) prop.get("rcaRule"));
+		}
+		return rcaIds;
+	}
+
+	public static void addAlarmRCARules(List<Long> alarmRCARules, Long groupId) throws Exception {
+		if(alarmRCARules != null) {
+			// TODO to be tested
+			for (Long rcaID : alarmRCARules) {
+				if (groupId == rcaID) {
+					throw new IllegalArgumentException("Same Rule cannot be added as RCA");
+				}
+			}
+
+			GenericInsertRecordBuilder mappingInsert = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getWorkflowRuleRCAMapping().getTableName())
+					.fields(FieldFactory.getWorkflowRuleRCAMapping());
+			for(Long alarmRCARule :alarmRCARules) {
+				Map<String, Object> value = new HashMap<>();
+				value.put("rule", groupId);
+				value.put("rcaRule", alarmRCARule);
+				mappingInsert.addRecord(value);
+			}
+			mappingInsert.save();
 		}
 	}
 }
