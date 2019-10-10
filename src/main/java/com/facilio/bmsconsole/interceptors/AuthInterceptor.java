@@ -14,6 +14,8 @@ import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
+import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.screen.context.RemoteScreenContext;
@@ -78,7 +80,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 			else {
-				boolean authStatus = handleRemoteScreenAuth(request);
+				boolean authStatus = handleRemoteScreenAuth(request);//both tv mode and new device mode handled
 				if (!authStatus) {
 					LOGGER.log(Level.FATAL, "you are not allowed to access this page from remote screen.");
 					return Action.ERROR;
@@ -95,14 +97,14 @@ public class AuthInterceptor extends AbstractInterceptor {
 	private boolean isRemoteScreenMode(HttpServletRequest request) {
 		String remoteScreenHeader = request.getHeader("X-Remote-Screen");
 		String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");
-		
+		String deviceTokenNew = FacilioCookie.getUserCookie(request, "fc.deviceTokenNew");
 		String facilioToken1 = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
 		String facilioToken2 = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
 		
 		if ( remoteScreenHeader != null && "true".equalsIgnoreCase(remoteScreenHeader.trim())) {
 			return true;
 		}
-		else if (deviceToken != null && !"".equals(deviceToken) && facilioToken1 == null && facilioToken2 == null) {
+		else if ((deviceToken != null && !"".equals(deviceToken))||(deviceTokenNew != null && !"".equals(deviceTokenNew))  && facilioToken1 == null && facilioToken2 == null) {
 			return true;
 		}
 		return false;
@@ -125,10 +127,22 @@ public class AuthInterceptor extends AbstractInterceptor {
 			
 			String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");
 			if (deviceToken != null && !"".equals(deviceToken)) {
+				
 				long connectedScreenId = Long.parseLong(IAMUserBeanImpl.validateJWT(deviceToken, "auth0").getSubject().split(IAMUserBeanImpl.JWT_DELIMITER)[0]);
 				RemoteScreenContext remoteScreen = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getRemoteScreen(connectedScreenId));
 				if (remoteScreen != null) {
 					request.setAttribute("remoteScreen", remoteScreen);
+					return true;
+				}
+			}
+			
+			String deviceTokenNew = FacilioCookie.getUserCookie(request, "fc.deviceTokenNew");
+			if (deviceTokenNew != null && !"".equals(deviceTokenNew)) {
+				
+				long connectedDeviceId = Long.parseLong(IAMUserBeanImpl.validateJWT(deviceTokenNew, "auth0").getSubject().split(IAMUserBeanImpl.JWT_DELIMITER)[0]);
+				ConnectedDeviceContext deviceContext = FacilioService.runAsServiceWihReturn(() ->  DevicesUtil.getConnectedDevice(connectedDeviceId));
+				if (deviceContext != null) {
+					request.setAttribute("device", deviceContext);
 					return true;
 				}
 			}

@@ -18,3 +18,9 @@ enums:
 
   - name: ConfigureStatus
     enumClassName: com.facilio.agent.controller.context.Point$ConfigureStatus
+    
+  - name: DeviceType
+    enumClassName: com.facilio.bmsconsole.context.DeviceContext$DeviceType
+
+  - name: KioskType
+    enumClassName: com.facilio.bmsconsole.context.DeviceContext$KioskType

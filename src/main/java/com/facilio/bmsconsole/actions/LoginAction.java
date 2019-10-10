@@ -62,12 +62,14 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.InventoryApi;
@@ -505,6 +507,81 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String deviceAccount() throws Exception{
+		System.out.println("Device connect successfull");
+		HashMap<String, Object> appProps = new HashMap<>();
+		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
+		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
+
+		account = new HashMap<>();
+		account.put("org", AccountUtil.getCurrentOrg());
+		account.put("user", AccountUtil.getCurrentUser());
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
+		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
+		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
+
+		Map<String, Object> data = new HashMap<>();
+		data.put("users", users);
+		data.put("groups", groups);
+		data.put("roles", roles);
+		data.put("orgs", orgs);
+
+		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
+
+		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
+		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
+		data.put("ticketType", TicketAPI.getTypes(AccountUtil.getCurrentOrg().getOrgId()));
+
+		data.put("alarmSeverity", AlarmAPI.getAlarmSeverityList());
+		data.put("assetCategory", AssetsAPI.getCategoryList());
+		data.put("assetType", AssetsAPI.getTypeList());
+		data.put("assetDepartment", AssetsAPI.getDepartmentList());
+//		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
+//		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
+
+		try {
+		data.put("itemTypesCategory", InventoryApi.getItemTypesCategoryList());
+		data.put("toolTypesCategory", InventoryApi.getToolTypesCategoryList());
+		data.put("itemTypesStatus", InventoryApi.getItemTypesStatusList());
+		data.put("toolTypesStatus", InventoryApi.getToolTypesStatusList());
+		data.put("itemStatus", InventoryApi.getItemStatusList());
+		data.put("toolStatus", InventoryApi.getToolStatusList());
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		 
+		data.put("serviceList", ReportsUtil.getPurposeMapping());
+		data.put("buildingList", ReportsUtil.getBuildingMap());
+		data.put("ticketStatus", TicketAPI.getAllStatus(false));
+		data.put("energyMeters", DeviceAPI.getAllMainEnergyMeters());
+		
+		data.put(FacilioConstants.ContextNames.TICKET_TYPE,
+				CommonCommandUtil.getPickList(FacilioConstants.ContextNames.TICKET_TYPE));
+		data.put(FacilioConstants.ContextNames.SPACE_CATEGORY,
+				CommonCommandUtil.getPickList(FacilioConstants.ContextNames.SPACE_CATEGORY));
+		data.put(FacilioConstants.ContextNames.ASSET_CATEGORY,
+				CommonCommandUtil.getPickList(FacilioConstants.ContextNames.ASSET_CATEGORY));
+
+		ConnectedDeviceContext connectedDevice = AccountUtil.getCurrentAccount().getConnectedDevice();
+		if (connectedDevice!= null && connectedDevice.getDeviceId()> 0) {
+			data.put("connectedDevice", connectedDevice);
+		}
+		
+
+		Map<String, Object> config = new HashMap<>();
+		config.put("ws_endpoint", WmsApi.getRemoteWebsocketEndpoint(connectedDevice.getId()));
+
+		account.put("data", data);
+		account.put("config", config);
+		account.put("appProps", appProps);
+
+		int license = AccountUtil.getFeatureLicense();
+		account.put("License", license);
+
+		return SUCCESS;
+
+	}
 	private String switchOrgDomain;
 
 	public String getSwitchOrgDomain() {
