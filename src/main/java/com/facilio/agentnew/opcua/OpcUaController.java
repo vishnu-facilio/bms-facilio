@@ -1,0 +1,128 @@
+package com.facilio.agentnew.opcua;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agentnew.AgentConstants;
+import com.facilio.agentnew.controller.Controller;
+import com.facilio.constants.FacilioConstants;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.Map;
+
+public class OpcUaController extends Controller {
+
+    public static final String ASSETCATEGORY = FacilioConstants.ContextNames.OPC_UA_CONTROLLER_MODULE_NAME;
+    private static final Logger LOGGER = LogManager.getLogger(OpcUaController.class.getName());
+
+
+    private String url;
+    private String identifier;
+    private String certPath;
+    private int securityMode = -1;
+    private int securityPolicy = -1;
+
+
+
+    public OpcUaController() {
+    }
+
+    public OpcUaController(long agentId, long orgId) throws Exception {
+        new OpcUaController(agentId,orgId,null);
+    }
+
+    public OpcUaController(long agentId, long orgId, String identifier) throws Exception {
+        super(agentId, orgId);
+        processIdentifier(identifier);
+        setControllerType(FacilioControllerType.OPC_UA.asInt());
+    }
+
+
+    public void setUrl(String url) { this.url = url; }
+    public String getUrl() { return url; }
+
+    public void setCertPath(String certPath) { this.certPath = certPath; }
+    public String getCertPath() { return certPath; }
+
+    public void setSecurityMode(int securityMode) {
+        this.securityMode = securityMode;
+    }
+    public int getSecurityMode() { return securityMode; }
+
+    public void setSecurityPolicy(int securityPolicy) {
+        this.securityPolicy = securityPolicy;
+    }
+    public int getSecurityPolicy() { return securityPolicy; }
+
+    public String getModuleName() { return ASSETCATEGORY; }
+
+    public static OpcUaController getBacnetControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
+        if (controllerMap == null || controllerMap.isEmpty()) {
+            throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
+        }
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        if( containsValueCheck(AgentConstants.IDENTIFIER,controllerMap) ){
+            OpcUaController controller = new OpcUaController(agentId, orgId, (String) controllerMap.get(AgentConstants.IDENTIFIER));
+            if(containsValueCheck(AgentConstants.SECURITY_MODE,controllerMap)){
+                controller.setSecurityMode(Math.toIntExact((Long) controllerMap.get(AgentConstants.SECURITY_MODE)));
+            }
+            if(containsValueCheck(AgentConstants.SECURITY_POLICY,controllerMap)){
+                controller.setSecurityPolicy(Math.toIntExact((Long) controllerMap.get(AgentConstants.SECURITY_POLICY)));
+            }
+            return (OpcUaController) controller.getControllerFromJSON(controllerMap);
+        }
+        if( containsValueCheck(AgentConstants.URL,controllerMap) && containsValueCheck(AgentConstants.CERT_PATH,controllerMap) )
+            {
+            OpcUaController controller = new OpcUaController(agentId, orgId);
+            //controller.setModuleName(ASSETCATEGORY);
+            if(containsValueCheck(AgentConstants.SECURITY_MODE,controllerMap)){
+                controller.setSecurityMode(Math.toIntExact((Long) controllerMap.get(AgentConstants.SECURITY_MODE)));
+            }
+            if(containsValueCheck(AgentConstants.SECURITY_POLICY,controllerMap)){
+                controller.setSecurityPolicy(Math.toIntExact((Long) controllerMap.get(AgentConstants.SECURITY_POLICY)));
+            }
+            return (OpcUaController) controller.getControllerFromJSON(controllerMap);
+        }
+        throw  new Exception(" Mandatory fields like "+AgentConstants.URL+","+AgentConstants.CERT_PATH+" might be missing from input parameter -> "+controllerMap);
+    }
+
+
+    public void processIdentifier(String identifier) throws Exception {
+        if( (identifier != null) && ( ! identifier.isEmpty() ) ){
+            String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
+            if( (uniques.length == 3) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_UA) ) )
+            {
+                this.url = uniques[1];
+                this.certPath = uniques[2];
+                this.identifier = identifier;
+            }else {
+                throw  new Exception(" Exceprion while processing identifier -- length or Type didnt match ");
+            }
+        }else {
+            throw new Exception("Exception Occurred, identifier can't be null or empty ->"+identifier);
+        }
+    }
+
+    @Override
+    public String makeIdentifier() throws Exception {
+        if( (identifier != null ) && ( ! identifier.isEmpty() ) ){
+            return identifier;
+        }
+        if( (url != null && ( ! url.isEmpty() ) ) && ( certPath != null && ( ! certPath.isEmpty()) ) ){
+            identifier = FacilioControllerType.OPC_UA.asInt()+IDENTIFIER_SEPERATOR+url+IDENTIFIER_SEPERATOR+certPath;
+            return identifier;
+        }
+        throw new Exception("Exception Occurred, parameters for identifier not set yet");
+    }
+
+    @Override
+    public JSONObject getChildJSON() {
+        JSONObject controllerJSON = new JSONObject();
+        controllerJSON.put(AgentConstants.URL, this.url);
+        controllerJSON.put(AgentConstants.CERT_PATH, this.certPath);
+        controllerJSON.put(AgentConstants.SECURITY_MODE, securityMode);
+        controllerJSON.put(AgentConstants.SECURITY_POLICY, securityPolicy);
+        return controllerJSON;
+    }
+}

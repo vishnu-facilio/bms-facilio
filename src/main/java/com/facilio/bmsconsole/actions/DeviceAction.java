@@ -1,16 +1,26 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.logging.Logger;
-
-import org.apache.log4j.LogManager;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agentIntegration.DownloadCertFile;
+import com.facilio.agentnew.controller.ControllerUtil;
+import com.facilio.agentnew.device.DeviceUtil;
+import com.facilio.agentnew.point.Point;
+import com.facilio.agentnew.point.PointsUtil;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 public class DeviceAction extends ActionSupport
 {
+	private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(DeviceAction.class.getName());
+
 	/**
 	 * 
 	 */
@@ -29,9 +39,107 @@ public class DeviceAction extends ActionSupport
 	}
 
 	public String downloadCertificate() {
-		url = DownloadCertFile.downloadCertificate( AccountUtil.getCurrentOrg().getDomain(), AgentType.BACnet.getLabel());
+		String clientIdAndPolicyName = AccountUtil.getCurrentOrg().getDomain();
+		url = DownloadCertFile.downloadCertificate( clientIdAndPolicyName , AgentType.BACnet.getLabel());
 		return SUCCESS;
 	}
+
+	public String getDevices(){
+		List<Map<String, Object>> devices = new ArrayList<>();
+		devices = DeviceUtil.getDevices(getAgentId(), getIds());
+		setResult("devices",devices);
+		return SUCCESS;
+	}
+
+	private List<Long> ids;
+
+	public List<Long> getIds() {
+		return ids;
+	}
+
+	public void setIds(List<Long> ids) {
+		this.ids = ids;
+	}
+
+	public Long getAgentId() {
+		return agentId;
+	}
+
+	public void setAgentId(Long agentId) {
+		this.agentId = agentId;
+	}
+
+	private Long agentId;
+	public String discoverPoints(){
+//		LOGGER.info("iamcvijaylogs ids "+getIds()+"  ids size "+getIds().size()+"  agentId "+getAgentId());
+		if( ( getIds() != null  &&  ( ! getIds().isEmpty() ) ) && ( (getAgentId() != null) && (getAgentId() > 0 ) ) ){
+					ControllerUtil util = new ControllerUtil(getAgentId());
+			if(util.processController(getAgentId(),getIds())){
+				return SUCCESS;
+			}
+		}
+		return  ERROR;
+	}
+
+	public String getControllers(){
+		LOGGER.info(" in getControllers ");
+		JSONArray controllerData = new JSONArray();
+		if( checkValue(getAgentId()) ){
+			ControllerUtil util = new ControllerUtil(getAgentId());
+			controllerData = util.getAllControllerList();
+			if( (controllerData != null) && ( ! controllerData.isEmpty() ) ){
+				setResult("data",controllerData);
+				return  SUCCESS;
+			}
+		}
+		return NONE;
+	}
+
+	public Long getControllerId() {
+		return controllerId;
+	}
+
+	public void setControllerId(Long controllerId) {
+		this.controllerId = controllerId;
+	}
+
+	Long controllerId;
+
+	public String getPoints(){
+		JSONArray pointData = new JSONArray();
+		if((checkValue(getAgentId())) && checkValue(getControllerId())){
+			PointsUtil util = new PointsUtil(getAgentId(),getControllerId());
+			List<Point> points = util.getAllPoints();
+			LOGGER.info(" in device action "+points);
+			if( ! points.isEmpty() ){
+				for (Point point : points) {
+					pointData.add(point.toJSON());
+				}
+				LOGGER.info(" and pointdata is " + pointData);
+			setResult("data",pointData);
+			return SUCCESS;
+			}
+		}
+		return NONE;
+	}
+
+	boolean checkValue(Long value){
+		return (value != null) && (value >  0);
+	}
+
+	private JSONObject result;
+	public JSONObject getResult() {
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setResult(String key, Object result) {
+		if (this.result == null) {
+			this.result = new JSONObject();
+		}
+		this.result.put(key, result);
+	}
+
 
 //	public String show()
 //	{

@@ -192,6 +192,25 @@
 		</action>
 	</package>
 
+	<package name="vijaySetupApiV2" namespace="/api/v2/setup/vijay/device" extends="setupApiV2">
+		<action name="get"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getDevices">
+			</action>
+
+		<action name="discoverPoints"  class="com.facilio.bmsconsole.actions.DeviceAction" method="discoverPoints">
+		</action>
+
+		<action name="getControllers"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getControllers">
+		</action>
+
+		<action name="getPoints"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getPoints">
+		</action>
+	</package>
+
+	<package name="vijaySetupApiV2" namespace="/api/v2/setup/vijay/device" extends="setupApiV2">
+		<action name="get"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getDevices">
+		</action>
+	</package>
+
 	<package name="agentApiV2" namespace="/api/v2/setup/agent" extends="setupApiV2">
 		<action name="list"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getAgentDetails">
 		</action>

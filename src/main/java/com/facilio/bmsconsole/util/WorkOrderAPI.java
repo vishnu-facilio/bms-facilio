@@ -2223,7 +2223,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
           categoryWiseForBuilding.put("avgRespTime", MapUtils.isNotEmpty(categoryWiseForBuildingThisMonth) ? (Math.round(((Number)categoryWiseForBuildingThisMonth.get("avg_response_time")).doubleValue()*100.0)/100.0) : 0.0);
           categoryWiseForBuilding.put("unplannedCount", categoryUnplannedCountVal);
           categoryWiseForBuilding.put("totalCount", totalCountVal);
-          categoryWiseForBuilding.put("lastAvgRespTime",  MapUtils.isNotEmpty(categoryWiseForBuildingLastMonth) ? Math.round(((Number)categoryWiseForBuildingLastMonth.get("avg_response_time")).doubleValue()*100.0)/100.0 : 0);
+          categoryWiseForBuilding.put("lastAvgRespTime",  MapUtils.isNotEmpty(categoryWiseForBuildingLastMonth) ? categoryWiseForBuildingLastMonth.get("avg_response_time") != null ? Math.round(((Number)categoryWiseForBuildingLastMonth.get("avg_response_time")).doubleValue()*100.0)/100.0 : 0  : 0);
 
           long categoryUnplannedCountLastMonth = MapUtils.isNotEmpty(categoryWiseForBuildingLastMonth) ? (long) categoryWiseForBuildingLastMonth.get("count") : 0;
           categoryWiseForBuilding.put("lastTotalCount", totalCountValLastQuarter);

@@ -1,14 +1,12 @@
 package com.facilio.constants;
 
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.activity.ActivityContext;
+import com.facilio.agentnew.bacnet.BacnetIpController;
+import com.facilio.agentnew.modbusrtu.ModbusRtuController;
+import com.facilio.agentnew.modbustcp.ModbusTcpController;
+import com.facilio.agentnew.niagara.NiagaraController;
+import com.facilio.agentnew.opcua.OpcUaController;
+import com.facilio.agentnew.opcxmlda.OpcXmlDaController;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
@@ -21,6 +19,13 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
+import org.json.simple.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FacilioConstants {
 	
@@ -96,6 +101,8 @@ public class FacilioConstants {
         public static final String TO_INSERT_MAP = "toInsertMap";
         public static final String BULK_DATA = "BULK_DATA";
         public static final String FEDGE_ZIP = "/fedge.zip";
+		public static final String INNER_JOIN = "innerJoin";
+		public static final String ON_CONDITION = "onCondition";
 
 		public static final String FACILIO_RECORD = "facilioRecord";
 		public static final String FACILIO_CONSUMER = "facilioConsumer";
@@ -134,7 +141,7 @@ public class FacilioConstants {
 		public static final String REGRESSION_RESULT = "regressionResult";
 		public static final String REGRESSION_REPORT = "regressionReport";
 		public static final String REPORT_TEMPLATE = "reportTemplate";
-		
+
 		public static final String TIMEOUT = "timeout";
 
 		public static final String TENANT_STATUS = "tenantStatus";
@@ -525,6 +532,14 @@ public class FacilioConstants {
 		public static final String RO_MODULE_SPI_CINEMAS = "rowaterenpinew";
 		
 		public static final String ASSET_BREAKDOWN = "assetbreakdown";
+		public static final String BACNET_IP_CONTROLLER_MODULE_NAME = "bacnetipcontroller";
+		public static final String NIAGARA_CONTROLLER_MODULE_NAME = "niagaracontroller";
+		public static final String LON_WORKS_CONTROLLER_MODULE_NAME = "lonworkscontroller";
+		public static final String OPC_XML_DA_CONTROLLER_MODULE_NAME = "opcxmldacontroller";
+		public static final String OPC_UA_CONTROLLER_MODULE_NAME = "opcuacontroller";
+		public static final String MODBUS_TCP_CONTROLLER_MODULE_NAME = "modbustcpcontroller";
+        public static final String MODBUS_RTU_CONTROLLER_MODULE_NAME = "modbusrtucontroller";
+
 		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";
 		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";
 		
@@ -1239,7 +1254,8 @@ public class FacilioConstants {
 		public static final String CONDITIONAL_FORMATTING_RESULT = "conditionalFormattingResult";
 		public static final String CONDITIONAL_FORMATTINGS = "conditionalFormattings";
 		public static final String IMPORT_PROCESS_CONTEXT_LIST = "importProcessContextList";
-		
+
+
 
 
 	
@@ -1292,6 +1308,14 @@ public class FacilioConstants {
 			classMap.put(FCU, FCUContext.class);
 			classMap.put(HEAT_PUMP, HeatPumpContext.class);
 			classMap.put(UTILITY_METER, UtilityMeterContext.class);
+
+			classMap.put(MODBUS_TCP_CONTROLLER_MODULE_NAME, ModbusTcpController.class);
+			classMap.put(MODBUS_RTU_CONTROLLER_MODULE_NAME, ModbusRtuController .class);
+			classMap.put(BACNET_IP_CONTROLLER_MODULE_NAME, BacnetIpController.class);
+			classMap.put(OPC_UA_CONTROLLER_MODULE_NAME, OpcUaController.class);
+			classMap.put(OPC_XML_DA_CONTROLLER_MODULE_NAME, OpcXmlDaController.class);
+			classMap.put(NIAGARA_CONTROLLER_MODULE_NAME, NiagaraController.class);
+
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
 			classMap.put(WEATHER_READING, ReadingContext.class);

@@ -246,6 +246,13 @@ CREATE TABLE IF NOT EXISTS DevicePasscodes(
 );
 
 
+CREATE TABLE IF NOT EXISTS  Agent_Version(
+    ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+    VERSION VARCHAR(20) NOT NULL UNIQUE,
+    DESCRIPTION VARCHAR(200),
+    CREATED_BY VARCHAR(20),
+    CREATED_TIME bigint(20)
+);
 
 -- Insert Queries
 -- Add entry in Jobs for workorderemail parser

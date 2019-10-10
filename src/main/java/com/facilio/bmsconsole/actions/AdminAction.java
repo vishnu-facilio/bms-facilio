@@ -1,29 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.websocket.EncodeException;
-
-import org.apache.struts2.ServletActionContext;
-import org.json.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agentnew.AgentConstants;
 import com.facilio.auth.actions.FacilioAuthAction;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
@@ -36,6 +15,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.license.FreshsalesUtil;
+import com.facilio.modules.FieldFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -43,6 +23,26 @@ import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
+import org.apache.commons.chain.Context;
+import org.apache.struts2.ServletActionContext;
+import org.json.JSONArray;
+import org.json.simple.JSONObject;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.websocket.EncodeException;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AdminAction extends ActionSupport
 {
@@ -308,6 +308,33 @@ public class AdminAction extends ActionSupport
 		
 		return SUCCESS;
 	}
+
+	public String addAgentVersion() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String agentVersion = request.getParameter("version");
+		String user = request.getParameter("user");
+		String description = request.getParameter("desc");
+		if( ( (agentVersion != null) && ( !agentVersion.isEmpty() ) )
+				&& ( (user != null) && ( !user.isEmpty() ) )
+				&& ( (description != null) && ( !description.isEmpty() ) ) ){
+
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+			Context context = new FacilioContext();
+			context.put(ContextNames.TABLE_NAME,"Agent_Version");
+			context.put(ContextNames.FIELDS, FieldFactory.getAgentVersionFields());
+			Map<String,Object> toInsertMap = new HashMap<>();
+			toInsertMap.put(AgentConstants.AGENT_VERSION,agentVersion);
+			toInsertMap.put(AgentConstants.CREATED_BY,user);
+			toInsertMap.put(AgentConstants.CREATED_TIME,System.currentTimeMillis());
+			toInsertMap.put(AgentConstants.DESCRIPTION,description);
+			context.put(ContextNames.TO_INSERT_MAP,toInsertMap);
+			bean.genericInsert(context);
+			return SUCCESS;
+		}
+		// log fail case
+		return ERROR;
+	}
+
 
 	public long convertDatetoTTime(String time) {
 
