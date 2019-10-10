@@ -459,8 +459,7 @@ public  class AgentUtil
                 addLogChain.execute(context);
                /* ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
                 bean.addLog(toUpdate);*/
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 LOGGER.info("Exception occured ", e);
             }
         }
@@ -583,6 +582,8 @@ public  class AgentUtil
                         HashMap<String, Object> criteria = new HashMap<>();
                         criteria.put(AgentKeys.AGENT_ID, agentId);
                         criteria.put(EventUtil.DATA_TYPE, publishType);
+                        criteria.put(AgentKeys.CREATED_TIME, createdTime);
+                        criteria.put(AgentKeys.ID, record.get(AgentKeys.ID));
 
                         metrics.put(AgentKeys.SIZE, Integer.parseInt(record.get(AgentKeys.SIZE).toString()) + messageSize);
                         metrics.put(AgentKeys.NO_OF_MESSAGES, Integer.parseInt(record.get(AgentKeys.NO_OF_MESSAGES).toString()) + 1);
