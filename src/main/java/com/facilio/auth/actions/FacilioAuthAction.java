@@ -47,7 +47,6 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.exceptions.AccountException;
-import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldUtil;
@@ -873,6 +872,7 @@ public class FacilioAuthAction extends FacilioAction {
 		FacilioCookie.eraseUserCookie(request, response, portalId() > 0 ? "fc.idToken.facilioportal" : "fc.idToken.facilio", parentdomain);
 		FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
+		FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
 		return SUCCESS;
 	}
 
