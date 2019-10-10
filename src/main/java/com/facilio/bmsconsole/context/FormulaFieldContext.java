@@ -301,6 +301,14 @@ public class FormulaFieldContext implements Serializable {
 		this.target = target;
 	}
 	
+	private Object currentValue = -1;
+	public Object getCurrentValue() {
+		return currentValue;
+	}
+	public void setCurrentValue(Object currentValue) {
+		this.currentValue = currentValue;
+	}
+
 	private long createdTime = -1;
 	public long getCreatedTime() {
 		return createdTime;

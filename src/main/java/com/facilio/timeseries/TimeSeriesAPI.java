@@ -1,31 +1,11 @@
 package com.facilio.timeseries;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.controller.context.Point.ConfigureStatus;
-import com.facilio.agent.controller.context.Point.SubscribeStatus;
+import com.facilio.agentnew.point.PointEnum;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bacnet.BACNetUtil.InstanceType;
@@ -48,11 +28,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -61,6 +37,19 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.tasker.FacilioTimer;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TimeSeriesAPI {
 
@@ -68,11 +57,16 @@ public class TimeSeriesAPI {
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
 		LOGGER.debug(payLoad);
-		String stream = AccountUtil.getCurrentOrg().getDomain();
-		PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(stream, ByteBuffer.wrap(payLoad.toJSONString().getBytes(Charset.defaultCharset())), macAddr);
-		int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
-		if (status != 200) {
-			LOGGER.info("Couldn't add data to " + stream);
+		if(AccountUtil.getCurrentOrg() != null && FacilioProperties.isProduction()) {
+			String stream = AccountUtil.getCurrentOrg().getDomain();
+			if (macAddr == null) {
+				macAddr = stream;
+			}
+			PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(stream, ByteBuffer.wrap(payLoad.toJSONString().getBytes(Charset.defaultCharset())), macAddr);
+			int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
+			if (status != 200) {
+				LOGGER.info("Couldn't add data to " + stream);
+			}
 		}
 		// processPayLoad(ttime, payLoad, null, null, macAddr, true);
 	}
@@ -781,11 +775,11 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			if (configuredOnly) {
 				ControllerContext controller = ControllerAPI.getController(controllerId);
 				if (controller.getControllerTypeEnum() != null && controller.getControllerTypeEnum().isConfigurable()) {
-					inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("configureStatus"), String.valueOf(ConfigureStatus.CONFIGURED.getIndex()), NumberOperators.EQUALS));
+					inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("configureStatus"), String.valueOf(PointEnum.ConfigureStatus.CONFIGURED.getIndex()), NumberOperators.EQUALS));
 				}
 			}
 			else {
-				inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("configureStatus"), String.valueOf(ConfigureStatus.CONFIGURED.getIndex()), NumberOperators.NOT_EQUALS));
+				inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("configureStatus"), String.valueOf(PointEnum.ConfigureStatus.CONFIGURED.getIndex()), NumberOperators.NOT_EQUALS));
 			}
 			if (!inUseCriteria.isEmpty()) {
 				builder.andCriteria(inUseCriteria);
@@ -794,7 +788,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		if (isSubscribed != null) {
 			Criteria isSubscribedCriteria = new Criteria();
 			NumberOperators operator = isSubscribed ? NumberOperators.EQUALS : NumberOperators.NOT_EQUALS;
-			isSubscribedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subscribeStatus"), String.valueOf(SubscribeStatus.SUBSCRIBED.getIndex()), operator));
+			isSubscribedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subscribeStatus"), String.valueOf(PointEnum.SubscribeStatus.SUBSCRIBED.getIndex()), operator));
 			builder.andCriteria(isSubscribedCriteria);
 		}
 		

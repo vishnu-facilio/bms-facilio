@@ -14,5 +14,25 @@
             <username>AKIAZXPQEUDBT7OV3CEN</username>
             <password>POhpXKWuFV8AWExWP+7V2k1ykS9E6YaPY+q8msiQ</password>
         </server>
+        <server>
+            <id>facilio-agent-framework-java-release</id>
+            <username>AKIAZXPQEUDBT7OV3CEN</username>
+            <password>POhpXKWuFV8AWExWP+7V2k1ykS9E6YaPY+q8msiQ</password>
+        </server>
+        <server>
+            <id>facilio-agent-framework-java-snapshot</id>
+            <username>AKIAZXPQEUDBT7OV3CEN</username>
+            <password>POhpXKWuFV8AWExWP+7V2k1ykS9E6YaPY+q8msiQ</password>
+        </server>
+        <server>
+            <id>facilio-mqtt-client-java-release</id>
+            <username>AKIAZXPQEUDBT7OV3CEN</username>
+            <password>POhpXKWuFV8AWExWP+7V2k1ykS9E6YaPY+q8msiQ</password>
+        </server>
+        <server>
+            <id>facilio-mqtt-client-java-snapshot</id>
+            <username>AKIAZXPQEUDBT7OV3CEN</username>
+            <password>POhpXKWuFV8AWExWP+7V2k1ykS9E6YaPY+q8msiQ</password>
+        </server>
     </servers>
 </settings>

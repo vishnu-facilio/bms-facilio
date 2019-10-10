@@ -536,7 +536,7 @@ public class FormulaFieldAPI {
 				fetchMatchedResources(formula, fetchResources);
 				FacilioModule module = modBean.getModule(formula.getModuleId());
 				formula.setModule(module);
-				setKPITarget(formula);
+				setKPITarget(formula, modBean);
 				if (fetchResources && formula.getResourceId() != -1) {
 					resourceIds.add(formula.getResourceId());
 				}
@@ -1223,12 +1223,19 @@ public class FormulaFieldAPI {
 		return -1;
 	}
 	
-	private static void setKPITarget(FormulaFieldContext formula) throws Exception {
+	private static void setKPITarget(FormulaFieldContext formula, ModuleBean modBean) throws Exception {
 		if (formula.getViolationRuleId() != -1) {
 			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(formula.getViolationRuleId(), true, false);
 			formula.setViolationRule(rule);
 			Condition condition = rule.getCriteria().getConditions().values().stream().findFirst().get();
 			formula.setTarget(Double.parseDouble(condition.getValue()));
+			if (formula.getMatchedResourcesIds().size() == 1) {
+				long resourceId = formula.getMatchedResourcesIds().get(0);
+				long fieldId = formula.getReadingFieldId();
+				FacilioField field = modBean.getField(fieldId);
+				ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(resourceId, field);
+				formula.setCurrentValue(rdm.getValue());
+			}
 		}
 	}
 

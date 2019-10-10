@@ -22,7 +22,12 @@ public class KPIPageFacory extends PageFactory {
 		addKpiDetailsWidget(tab1Sec1);
 		addMetersWidget(tab1Sec1);
 		addViolationsWidget(tab1Sec1);
-		addTargetWidget(tab1Sec1);
+		if (formulaField.getMatchedResourcesIds().size() == 1) {
+			addTargetWidget(tab1Sec1);
+		}
+		else {
+			addLatestValueWidget(tab1Sec1);
+		}
 		
 		
 		Tab tab2 = page.new Tab("historicalTrends");
@@ -68,6 +73,13 @@ public class KPIPageFacory extends PageFactory {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 10);
 		cardWidget.addCardType(CardType.KPI_TARGET);
+		section.addWidget(cardWidget);
+	}
+	
+	private static void addLatestValueWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 24, 10);
+		cardWidget.addCardType(CardType.KPI_LATEST_VALUE);
 		section.addWidget(cardWidget);
 	}
 	

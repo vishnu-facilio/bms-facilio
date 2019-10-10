@@ -14,7 +14,7 @@ enums:
     enumClassName: com.facilio.bmsconsole.context.reservation.ReservationContext$ReservationStatus
 
   - name: SubscribeStatus
-    enumClassName: com.facilio.agent.controller.context.Point$SubscribeStatus
+    enumClassName: com.facilio.agentnew.point.PointEnum$SubscribeStatus
 
   - name: ConfigureStatus
-    enumClassName: com.facilio.agent.controller.context.Point$ConfigureStatus
+    enumClassName: com.facilio.agentnew.point.PointEnum$ConfigureStatus

@@ -1,24 +1,6 @@
 package com.facilio.kafka;
 
-import static com.facilio.agent.PublishType.event;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import com.facilio.agent.AgentContent;
-import com.facilio.agent.AgentKeys;
-import com.facilio.agent.AgentUtil;
-import com.facilio.agent.CommandStatus;
-import com.facilio.agent.ControllerCommand;
-import com.facilio.agent.FacilioAgent;
-import com.facilio.agent.MessageStatus;
-import com.facilio.agent.PublishType;
+import com.facilio.agent.*;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -33,10 +15,21 @@ import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.processor.FacilioProcessor;
 import com.facilio.server.ServerInfo;
 import com.facilio.util.AckUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import static com.facilio.agent.PublishType.event;
 
 
 public class Processor extends FacilioProcessor {
     private AgentUtil agentUtil;
+    //private com.facilio.agentnew.AgentUtil au;
     private DevicePointsUtil devicePointsUtil;
     private AckUtil ackUtil;
     private List<EventRuleContext> eventRules = new ArrayList<>();
@@ -46,7 +39,9 @@ public class Processor extends FacilioProcessor {
     private String orgDomainName;
     private Boolean isStage = !FacilioProperties.isProduction();
     private JSONParser parser = new JSONParser();
-
+    //private ControllerUtil cU;
+    //private DeviceUtil dU;
+    //private Map<Long,ControllerUtil> agentIdControllerUtilMap = new HashMap<>();
 
     private static final Logger LOGGER = LogManager.getLogger(Processor.class.getName());
 
@@ -63,15 +58,30 @@ public class Processor extends FacilioProcessor {
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));
         agentUtil = new AgentUtil(orgId, orgDomainName);
+        //au = new com.facilio.agentnew.AgentUtil(orgId,orgDomainName);
+        //au.populateAgentContextMap(null);
         agentUtil.populateAgentContextMap(null,null);
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
         eventUtil = new EventUtil();
+        //dU = new DeviceUtil();
         setEventType("processor");
         LOGGER.info("Initializing processor " + orgDomainName);
     }
 
 
+    /*public ControllerUtil getControllerUtil(long agentId){
+        ControllerUtil cU;
+        if(agentIdControllerUtilMap.containsKey(agentId)){
+            LOGGER.info(" returning existing controllerUtil");
+            cU = agentIdControllerUtilMap.get(agentId);
+        }else {
+            LOGGER.info(" creating new controllerUtil");
+            cU = new ControllerUtil(agentId);
+            agentIdControllerUtilMap.put(agentId,cU);
+        }
+        return cU;
+    }*/
 
     @Override
     public void processRecords(List<FacilioRecord> records) {
@@ -141,6 +151,9 @@ public class Processor extends FacilioProcessor {
                     }
                 }*/
                 String agentName = orgDomainName.trim();
+                /*if(  ( record.getPartitionKey() != null ) &&  ! record.getPartitionKey().equals(orgDomainName.trim())){
+                    agentName = record.getPartitionKey();
+                }*/
                 if (payLoad.containsKey(PublishType.agent.getValue())) {
                     agentName = payLoad.remove(PublishType.agent.getValue()).toString().trim();
                 }
@@ -157,6 +170,7 @@ public class Processor extends FacilioProcessor {
                 }
 
                 FacilioAgent agent = agentUtil.getFacilioAgent(agentName,null);
+                //com.facilio.agentnew.FacilioAgent agent = au.getFacilioAgent(agentName);
                 if (agent == null ) {
                     agent = getFacilioAgent(agentName);
                     long agentId = agentUtil.addAgent(agent);
@@ -166,6 +180,7 @@ public class Processor extends FacilioProcessor {
                     }
                     agent.setId(agentId);
                 }
+               //cU = getControllerUtil(agent.getId());
                 int dataLength = data.length();
                 HashMap<String, Long> dataTypeLastMessageTime = deviceMessageTime.getOrDefault(deviceId, new HashMap<>());
                 long deviceLastMessageTime = dataTypeLastMessageTime.getOrDefault(dataType, 0L);
@@ -180,6 +195,22 @@ public class Processor extends FacilioProcessor {
                                     processTimeSeries(record);
                                     break;
                                 case devicepoints:
+                                    /*if(payLoad.containsKey(AgentConstants.CONTROLLER) && payLoad.containsKey(AgentConstants.CONTROLLER_TYPE) ){ // change name to controller
+                                        String controllerIdentifier = String.valueOf(payLoad.get(AgentConstants.CONTROLLER));
+                                        if(controllerIdentifier != null){
+                                            BmsController controller = cU.getController(agent.getId(),controllerIdentifier, FacilioControllerType.valueOf(Math.toIntExact((Long) payLoad.get(AgentConstants.CONTROLLER_TYPE))));
+                                            if(controller == null){
+                                                LOGGER.info(" Exception occurred, No such Controller ");
+                                                continue;
+                                            }
+                                            payLoad.put(AgentConstants.DEVICE_NAME,controllerIdentifier);
+                                            PointsUtil pU = new PointsUtil(agent.getId(),controller.getId());
+                                            pU.processPoints(payLoad,controller);
+                                            break;
+                                        }
+                                    }else {
+                                        LOGGER.info(" Exception occurred , payload is missing " + AgentConstants.CONTROLLER + "," + AgentConstants.CONTROLLER_TYPE);
+                                    }*/
                                     devicePointsUtil.processDevicePoints(payLoad, orgId, agent.getId());
                                     break;
                                 case ack:
@@ -193,6 +224,9 @@ public class Processor extends FacilioProcessor {
                                 case event:
                                     alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
                                     break;
+                               /* case controllers:
+                                    LOGGER.info(" iamcvijaylogs   payload at case controllers "+payLoad);
+                                    dU.processDevices(agent,payLoad);*/
                             }
                             dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
                             deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
@@ -306,4 +340,13 @@ public class Processor extends FacilioProcessor {
         agent.setWritable(false);
         return agent;
     }
+
+    /*private com.facilio.agentnew.FacilioAgent getFacilioAgent(JSONObject payload, String agentName) {
+        LOGGER.info(" \n\n ------------------------\n-------------------------\n");
+        if (au.processAgent(payload,agentName)>0) {
+            LOGGER.info("\n-\n-\n process agent postive -\n-\n-\n");
+            return au.getFacilioAgent(agentName);
+        }
+        return null;
+    }*/
 }

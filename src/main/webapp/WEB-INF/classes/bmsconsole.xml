@@ -1133,9 +1133,10 @@
 			</action>					
 			<action name="getAlertsPointsData" class="com.facilio.bmsconsole.actions.AdminAction" method ="getAlertsPointsData">
 			<result   type="tiles">adminpage/data.jsp</result>
-			</action>							
-			
-			</package>
+			</action>
+			<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method ="addAgentVersion">
+			</action>
+	</package>
 
 	<package name="viewApi" namespace="/api/view" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.ViewAction"
