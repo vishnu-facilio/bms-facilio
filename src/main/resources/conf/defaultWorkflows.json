@@ -810,34 +810,36 @@
          "52": {
         	"description" : "newAlarmRuleRank",
         	"usage" : "ruleRank",
-        	"workflow": " Map newAlrmRankWorkflow(Number ruleId) {
-			date = NameSpace(\"date\");
-			  monthRanges = date.getDateRange(\"Current Year\");
-			    db = {
-			      criteria: [lastOccurredTime == monthRanges],
-			      field:\"rule\",
-			      aggregation:\"count, rule\",
-			      groupBy:\"rule\",
-			      orderBy:\"rule\" desc
-			    }; readingAlarmModule = Module(\"newreadingalarm\");
-			      activeRecord = readingAlarmModule.fetch(db); ranking = 0;
-			      if (activeRecord != null) {
-			        for each index, value in activeRecord {
-			          temp = value.result;
-			          temp = value.result + 0;
-			          if (temp == ruleId) {
-			            ranking = index + 1;
-			          }
-			        }
-			      }
-			      resultMap = {};
-			      if (activeRecord != null) {
-			        resultMap[\"ranks\"] = activeRecord;
-			        resultMap[\"ranking\"] = ranking;
-			        resultMap[\"outOfRule\"] = activeRecord.size();
-			      }
-			    return resultMap;
-			}",
+        	"workflow": "Map newAlrmRankWorkflow(Number ruleId) {
+				date = NameSpace(\"date\");
+				monthRanges = date.getDateRange(\"Current Year\");
+				db = {
+					criteria: [createdTime == monthRanges],
+					field:\"rule\",
+					aggregation:\"count, id\",
+					groupBy:\"rule\",
+					orderBy:\"id\" desc
+				};
+				readingAlarmModule = Module(\"readingalarmoccurrence\");
+				activeRecord = readingAlarmModule.fetch(db);
+				ranking = 0;
+				if (activeRecord != null) {
+					for each index, value in activeRecord {
+						temp = value.result.id;
+						temp = value.result.id + 0;
+						if (temp == ruleId) {
+							ranking = index + 1;
+						}
+					}
+				}
+				resultMap = {};
+				if (activeRecord != null) {
+					resultMap[\"ranks\"] = activeRecord;
+					resultMap[\"ranking\"] = ranking;
+					resultMap[\"outOfRule\"] = activeRecord.size();
+				}
+					return resultMap;
+				}",
         },
          "53": {
         	"description" : "newAlarmMeanTimeBetweenTriggers",
