@@ -210,7 +210,7 @@ public class UserBeanImpl implements UserBean {
 		
 	//	CommonCommandUtil.appendModuleNameInKey(null, "inviter",
 	//			FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
-		addBrandPlaceHolders("url", placeholders);
+		addBrandPlaceHolders("brandUrl", placeholders);
 
 		if (user.isPortalUser()) {
 			String inviteLink = getUserLink(user, "/invitation/");
@@ -920,9 +920,9 @@ public class UserBeanImpl implements UserBean {
 		placeholders.put("toUser", user);
 		placeholders.put("invitelink", inviteLink);
 		addBrandPlaceHolders("supportemail", placeholders);
-		addBrandPlaceHolders("url", placeholders);
-		addBrandPlaceHolders("logo", placeholders);
-		addBrandPlaceHolders("name", placeholders);
+		addBrandPlaceHolders("brandUrl", placeholders);
+		addBrandPlaceHolders("brandLogo", placeholders);
+		addBrandPlaceHolders("brandName", placeholders);
 		
 		AccountEmailTemplate.RESET_PASSWORD.send(placeholders, true);
 		return true;
@@ -1020,9 +1020,9 @@ public class UserBeanImpl implements UserBean {
 		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
 		if (user.getEmail().contains("@facilio.com") || FacilioProperties.isOnpremise()) {
-			addBrandPlaceHolders("name", placeholders);
-			addBrandPlaceHolders("url", placeholders);
-			addBrandPlaceHolders("logo", placeholders);
+			addBrandPlaceHolders("brandName", placeholders);
+			addBrandPlaceHolders("brandUrl", placeholders);
+			addBrandPlaceHolders("brandLogo", placeholders);
 			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders, true);
 		} else {
 			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders, true);
@@ -1121,13 +1121,13 @@ public class UserBeanImpl implements UserBean {
 	private void addBrandPlaceHolders(String prop, Map<String, Object> placeHolder) {
 		String brandVal = null;
 		switch(prop) {
-			case "url":
+			case "brandUrl":
 				brandVal = "www." + FacilioProperties.getConfig("rebrand.domain");
 				break;
-			case "name": 
+			case "brandName": 
 				brandVal = FacilioProperties.getConfig("rebrand.brand");
 				break;
-			case "logo":
+			case "brandLogo":
 				String domain = FacilioProperties.getDomain();
 				boolean isFacilioDomain = true;
 				if (domain.equals("facilio")) {

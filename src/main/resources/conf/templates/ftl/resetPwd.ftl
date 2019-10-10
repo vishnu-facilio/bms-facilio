@@ -19,14 +19,14 @@
                                     <div class="td-width-mobile" style="padding-right: 30px;">
                                           <div style="font-size: 22px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.36; letter-spacing: 0.3px; color: #19191c;text-align: left;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;padding-top: 30px;padding-bottom: 30px;">
 										 <#if facilioDomain??>
-                                          	<img src="${logo}" alt="" title="" width="80"/>
+                                          	<img src="${brandLogo}" alt="" title="" width="80"/>
                                           <#else>
-	                                         <img src="${logo}" alt="" title="" width="150"/>
+	                                         <img src="${brandLogo}" alt="" title="" width="150"/>
 	                                      </#if>
                                           </div>      
                                         <div style="font-size: 16px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 530px;width: 530px;padding-bottom: 10px;">Hello ${toUser.name},</div>
                                         <div style="padding-top: 16px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 550px;">
-                                          We have received a request to reset your ${name} account password associated with this email address. If you have not placed this request, you can safely ignore this email.
+                                          We have received a request to reset your ${brandName} account password associated with this email address. If you have not placed this request, you can safely ignore this email.
                                           </div>
                                           <div style="padding-top: 20px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 570px;">
                                            If you do need to change your password, you can use the button below.
@@ -48,7 +48,7 @@
             </div>
             <div style="text-align: center;margin-top: 20px;">
             
-            <div style="font-size: 11px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.28px; text-align: center; color: #8e8c97;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">&copy; 2019 <a href="${url}" style="padding-left: 5px;font-size: 11px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.5px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;text-decoration: none;">${url}</a> | ALL RIGHTS RESERVED</div>
+            <div style="font-size: 11px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.28px; text-align: center; color: #8e8c97;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">&copy; 2019 <a href="${brandUrl}" style="padding-left: 5px;font-size: 11px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.5px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;text-decoration: none;">${brandUrl}</a> | ALL RIGHTS RESERVED</div>
             </div>
       </div>
 </body>
