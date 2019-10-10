@@ -1,16 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import com.facilio.agent.controller.context.Point.SubscribeStatus;
+import com.facilio.agentnew.point.PointEnum;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.util.ControllerAPI;
@@ -19,6 +9,11 @@ import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.timeseries.TimeSeriesAPI;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.*;
 
 public class SubscribeInstanceIoTCommand extends FacilioCommand {
 	
@@ -33,7 +28,7 @@ public class SubscribeInstanceIoTCommand extends FacilioCommand {
 			long id = (long) instance.get("id");
 			ids.add(id);
 			
-			TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", SubscribeStatus.IN_PROGRESS.getIndex()));
+			TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", PointEnum.SubscribeStatus.IN_PROGRESS.getIndex()));
 		}
 		
 		List<Map<String, Object>> instanceList =  TimeSeriesAPI.getUnmodeledInstances(ids);

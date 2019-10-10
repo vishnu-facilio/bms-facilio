@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.apache.logging.log4j.util.Strings;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -16,6 +10,11 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.apache.logging.log4j.util.Strings;
+
+import java.util.List;
+import java.util.Map;
 
 //import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 
@@ -25,7 +24,7 @@ public class AddControllerCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS);
-		
+
 		if(controller != null) {
 			controller.setActive(true);
 			controller.setOrgId(AccountUtil.getCurrentOrg().getOrgId());

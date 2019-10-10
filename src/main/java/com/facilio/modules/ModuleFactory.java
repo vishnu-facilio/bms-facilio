@@ -1,15 +1,16 @@
 package com.facilio.modules;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
+import com.facilio.agentnew.AgentConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.fields.FacilioField;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ModuleFactory {
 
@@ -189,6 +190,14 @@ public class ModuleFactory {
 		agentMessageModule.setDisplayName("agentMessage");
 		agentMessageModule.setTableName(AgentKeys.AGENT_MESSAGE_TABLE);
 		return agentMessageModule;
+	}
+
+	public static FacilioModule getAgentVersionModule(){
+		FacilioModule agentVersionModule = new FacilioModule();
+		agentVersionModule.setDisplayName("agentVersion");
+		agentVersionModule.setDisplayName("agentVersion");
+		agentVersionModule.setTableName(AgentConstants.AGENT_VERSION);
+		return agentVersionModule;
 	}
 
 	public static FacilioModule getFormFieldsModule() {
@@ -1882,9 +1891,9 @@ public class ModuleFactory {
 	
 	public static FacilioModule getPointModule() {
 		FacilioModule pointModule = new FacilioModule();
-		pointModule.setName("point");
+		pointModule.setName(AgentConstants.POINTS);
 		pointModule.setDisplayName("Point");
-		pointModule.setTableName("Point");
+		pointModule.setTableName(AgentConstants.POINTS_TABLE);
 		return pointModule;
 	}
 	
@@ -1904,11 +1913,18 @@ public class ModuleFactory {
 		return bacnetIpPointModule;
 	}
 	
-	public static FacilioModule getModbusPointModule() {
+	public static FacilioModule getModbusTcpPointModule() {
 		FacilioModule modbusPointModule = new FacilioModule();
-		modbusPointModule.setName("modbusPoint");
-		modbusPointModule.setDisplayName("ModbusPoint");
-		modbusPointModule.setTableName("Modbus_Point");
+		modbusPointModule.setName("modbusTcpPoint");
+		modbusPointModule.setDisplayName("ModbusTcpPoint");
+		modbusPointModule.setTableName("Modbus_Tcp_Point");
+		return modbusPointModule;
+	}
+	public static FacilioModule getModbusRtuPointModule() {
+		FacilioModule modbusPointModule = new FacilioModule();
+		modbusPointModule.setName("modbusRtuPoint");
+		modbusPointModule.setDisplayName("ModbusRtuPoint");
+		modbusPointModule.setTableName("Modbus_Rtu_Point");
 		return modbusPointModule;
 	}
 	
@@ -1925,6 +1941,14 @@ public class ModuleFactory {
 		opcXmlDAPointModule.setName("opcXmlDAPoint");
 		opcXmlDAPointModule.setDisplayName("OPCXMLDAPoint");
 		opcXmlDAPointModule.setTableName("OPC_XML_DA_Point");
+		return opcXmlDAPointModule;
+	}
+
+	public static FacilioModule getMiscPointModule() {
+		FacilioModule opcXmlDAPointModule = new FacilioModule();
+		opcXmlDAPointModule.setName("miscPoint");
+		opcXmlDAPointModule.setDisplayName("MiscPoint");
+		opcXmlDAPointModule.setTableName("Misc_Point");
 		return opcXmlDAPointModule;
 	}
 	
@@ -2644,4 +2668,27 @@ public class ModuleFactory {
 	}
 
 
+	public static FacilioModule getAgentControllerModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("agentController");
+		module.setDisplayName("agentController");
+		module.setTableName(AgentConstants.AGENT_CONTROLLER_TABLE);
+		return module;
+	}
+
+    public static FacilioModule getModbusControllerModbus() {
+        FacilioModule module = new FacilioModule();
+        module.setName("modbusController");
+        module.setDisplayName("modbusController");
+        module.setTableName(AgentConstants.MODBUS_CONTROLLER_TABLE);
+        return module;
+    }
+
+	public static FacilioModule getDeviceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setTableName(AgentConstants.DEVICE_TABLE);
+		module.setDisplayName("devices");
+		module.setName("devices");
+		return module;
+	}
 }

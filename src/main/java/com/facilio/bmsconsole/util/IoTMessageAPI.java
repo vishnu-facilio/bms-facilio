@@ -1,34 +1,10 @@
 package com.facilio.bmsconsole.util;
 
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import com.amazonaws.services.iot.client.AWSIotConnectionStatus;
-import com.amazonaws.services.iot.client.AWSIotException;
-import com.amazonaws.services.iot.client.AWSIotMessage;
-import com.amazonaws.services.iot.client.AWSIotMqttClient;
-import com.amazonaws.services.iot.client.AWSIotQos;
+import com.amazonaws.services.iot.client.*;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentKeys;
-import com.facilio.agent.AgentUtil;
-import com.facilio.agent.CommandStatus;
-import com.facilio.agent.FacilioAgent;
-import com.facilio.agent.PublishType;
-import com.facilio.agent.controller.context.Point.ConfigureStatus;
-import com.facilio.agent.controller.context.Point.SubscribeStatus;
+import com.facilio.agent.*;
 import com.facilio.agent.protocol.ProtocolUtil;
+import com.facilio.agentnew.point.PointEnum;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PublishData;
@@ -53,6 +29,15 @@ import com.facilio.wms.message.WmsPublishResponse;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+import java.util.*;
 
 public class IoTMessageAPI {
 	private static final Logger LOGGER = LogManager.getLogger(IoTMessageAPI.class.getName());
@@ -458,19 +443,19 @@ public class IoTMessageAPI {
 		
 		switch(command) {
 			case CONFIGURE:
-				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", ConfigureStatus.CONFIGURED.getIndex()));
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", PointEnum.ConfigureStatus.CONFIGURED.getIndex()));
 				break;
 				
 			case UNCONFIGURE:
-				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", ConfigureStatus.UNCONFIGURED.getIndex()));
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", PointEnum.ConfigureStatus.UNCONFIGURED.getIndex()));
 				break;
 				
 			case SUBSCRIBE:
-				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", SubscribeStatus.SUBSCRIBED.getIndex()));
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", PointEnum.SubscribeStatus.SUBSCRIBED.getIndex()));
 				break;
 				
 			case UNSUBSCRIBE:
-				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", SubscribeStatus.UNSUBSCRIBED.getIndex()));
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex()));
 				break;
 		}
 	}
@@ -494,19 +479,19 @@ public class IoTMessageAPI {
 		
 		switch(command) {
 			case CONFIGURE:
-				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", ConfigureStatus.UNCONFIGURED.getIndex()));
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", PointEnum.ConfigureStatus.UNCONFIGURED.getIndex()));
 				break;
 				
 			case UNCONFIGURE:
-				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", ConfigureStatus.CONFIGURED.getIndex()));
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("configureStatus", PointEnum.ConfigureStatus.CONFIGURED.getIndex()));
 				break;
 				
 			case SUBSCRIBE:
-				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", SubscribeStatus.UNSUBSCRIBED.getIndex()));
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex()));
 				break;
 				
 			case UNSUBSCRIBE:
-				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", SubscribeStatus.SUBSCRIBED.getIndex()));
+				TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("subscribeStatus", PointEnum.SubscribeStatus.SUBSCRIBED.getIndex()));
 				break;
 		}
 	}

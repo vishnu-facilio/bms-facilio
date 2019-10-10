@@ -16,9 +16,22 @@
 			<id>facilio-framework-s3-snapshot-repo</id>
 			<url>s3://repo.facilio/facilio-framework/snapshot</url>
 		</repository>
+		<repository>
+			<id>facilio-agent-framework-java-release</id>
+			<url>s3://repo.facilio/facilio-agent-framework-java/release/</url>
+		</repository>
+		<repository>
+			<id>facilio-agent-framework-java-snapshot</id>
+			<url>s3://repo.facilio/facilio-agent-framework-java/snapshot/</url>
+		</repository>
 	</repositories>
 	
 	<dependencies>
+		<dependency>
+			<groupId>com.facilio</groupId>
+			<artifactId>agent-framework</artifactId>
+			<version>0.0.3</version>
+		</dependency>
 		<dependency>
 			<groupId>com.facilio.framework</groupId>
 			<artifactId>facilio-framework</artifactId>
