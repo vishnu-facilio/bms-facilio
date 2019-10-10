@@ -84,7 +84,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 										case NUMBER:
 										case DECIMAL:
 											
-											taskContextId = currentTask.getId();
+											taskContextId = taskContext.getId();
 											ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
 											NumberField numberField = (NumberField) taskContext.getReadingField();
 											
