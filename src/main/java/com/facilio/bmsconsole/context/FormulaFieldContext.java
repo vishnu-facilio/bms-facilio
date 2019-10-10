@@ -301,7 +301,7 @@ public class FormulaFieldContext implements Serializable {
 		this.target = target;
 	}
 	
-	private Object currentValue = -1;
+	private Object currentValue = null;	// Only if single matched resource and target is there
 	public Object getCurrentValue() {
 		return currentValue;
 	}
