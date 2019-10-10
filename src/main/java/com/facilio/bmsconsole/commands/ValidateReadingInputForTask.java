@@ -102,9 +102,9 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 											Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 											
 											Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
-											Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
 											if(currentInputUnit != null) 
-											{												
+											{
+												Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
 												if((numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata")))) 
 												{
 													List<TaskErrorContext> taskErrors = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
