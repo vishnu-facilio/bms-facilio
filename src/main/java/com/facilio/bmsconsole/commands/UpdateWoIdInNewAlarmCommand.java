@@ -1,11 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -14,6 +11,9 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+
+import java.util.Collections;
 
 public class UpdateWoIdInNewAlarmCommand extends FacilioCommand {
 
@@ -33,6 +33,16 @@ public class UpdateWoIdInNewAlarmCommand extends FacilioCommand {
 					.fields(Collections.singletonList(woField))
 					.andCondition(CriteriaAPI.getIdCondition(alarmOccurrence.getId(), module));
 			builder.update(alarmOccurrence);
+
+			BaseAlarmContext baseAlarm = alarmOccurrence.getAlarm();
+			if (baseAlarm.getLastOccurrenceId() == alarmOccurrence.getId()) {
+				UpdateRecordBuilder<BaseAlarmContext> alarmUpdateBuilder = new UpdateRecordBuilder<BaseAlarmContext>()
+						.module(modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM))
+						.fields(Collections.singletonList(modBean.getField("lastWoId", FacilioConstants.ContextNames.BASE_ALARM)))
+						.andCondition(CriteriaAPI.getIdCondition(baseAlarm.getId(), modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM)));
+				baseAlarm.setLastWoId(alarmOccurrence.getWoId());
+				alarmUpdateBuilder.update(baseAlarm);
+			}
 		}
 		return false;
 	}

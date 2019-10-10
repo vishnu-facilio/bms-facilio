@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.facilio.bmsconsole.commands.UpdateWoIdInNewAlarmCommand;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -593,10 +594,29 @@ public enum ActionType {
 			// TODO Auto-generated method stub
 			try {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-					AlarmOccurrenceContext lastOccurrence = getAlarmOccurrenceFromAlarm((BaseAlarmContext) currentRecord);
+					BaseAlarmContext baseAlarm = (BaseAlarmContext) currentRecord;
+					long lastWoId = baseAlarm.getLastWoId();
+					AlarmOccurrenceContext lastOccurrence = getAlarmOccurrenceFromAlarm(baseAlarm);
 					if (lastOccurrence != null) {
-						WorkOrderContext workOrder = WorkOrderAPI.getWorkOrder(lastOccurrence.getWoId());
-						if (workOrder == null) {
+						boolean createNewWO = false;
+						WorkOrderContext workOrder = null;
+						if (lastWoId == -1) {
+							createNewWO = true;
+						}
+						else {
+							workOrder = WorkOrderAPI.getWorkOrder(lastWoId);
+							if (workOrder == null) {
+								createNewWO = true;
+							} else {
+								FacilioStatus moduleState = workOrder.getModuleState();
+								FacilioStatus status = TicketAPI.getStatus(moduleState.getId());
+								if (status.getType() == FacilioStatus.StatusType.CLOSED) {
+									createNewWO = true;
+								}
+							}
+						}
+
+						if (createNewWO) {
 							FacilioChain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
 							Context woContext = c.getContext();
 							if (obj != null) {
@@ -608,17 +628,21 @@ public enum ActionType {
 						}
 						else {
 							NoteContext note = new NoteContext();
-							note.setBody(getNewV2AlarmCommentForUnClosedWO((BaseAlarmContext) currentRecord));
+							note.setBody(getNewV2AlarmCommentForUnClosedWO(baseAlarm));
 							note.setParentId(workOrder.getId());
 							note.setCreatedTime(lastOccurrence.getLastOccurredTime());
 
-							FacilioContext noteContext = new FacilioContext();
+							FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
+							FacilioContext noteContext = addNote.getContext();
 							noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
 							noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
 							noteContext.put(FacilioConstants.ContextNames.NOTE, note);
 
-							FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
-							addNote.execute(noteContext);
+							noteContext.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
+							noteContext.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE, lastOccurrence);
+
+							addNote.addCommand(new UpdateWoIdInNewAlarmCommand());
+							addNote.execute();
 						}
 					}
 				}
@@ -667,9 +691,10 @@ public enum ActionType {
 			try {
 				WorkOrderContext wo = null;
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-					AlarmOccurrenceContext lastOccurrence = getAlarmOccurrenceFromAlarm((BaseAlarmContext) currentRecord);
-					if (lastOccurrence != null) {
-						wo = WorkOrderAPI.getWorkOrder(lastOccurrence.getWoId());
+					long lastWOID = ((BaseAlarmContext) currentRecord).getLastWoId();
+//					AlarmOccurrenceContext lastOccurrence = getAlarmOccurrenceFromAlarm((BaseAlarmContext) currentRecord);
+					if (lastWOID > 0) {
+						wo = WorkOrderAPI.getWorkOrder(lastWOID);
 					}
 				}
 				else {
@@ -1306,13 +1331,15 @@ public enum ActionType {
 		alarm.setSeverity(severityMap.get(alarm.getSeverity().getId()));
 	}
 
-	private static String getNewV2AlarmCommentForUnClosedWO (BaseAlarmContext alarm) {
+	private static String getNewV2AlarmCommentForUnClosedWO (BaseAlarmContext alarm) throws Exception {
 		AlarmOccurrenceContext lastOccurrence = alarm.getLastOccurrence();
+		AlarmSeverityContext alarmSeverity = AlarmAPI.getAlarmSeverity(lastOccurrence.getSeverity().getId());
 		if (lastOccurrence.getPreviousSeverity() == null) {
-			return "Alarm associated with this work order has been raised to "+lastOccurrence.getSeverity().getSeverity()+" at "+ DateTimeUtil.getFormattedTime(lastOccurrence.getLastOccurredTime());
+			return "Alarm associated with this work order has been raised to "+alarmSeverity.getSeverity()+" at "+ DateTimeUtil.getFormattedTime(lastOccurrence.getLastOccurredTime());
 		}
 		else {
-			return "Alarm associated with this work order updated from "+lastOccurrence.getPreviousSeverity().getSeverity()+" to "+lastOccurrence.getSeverity().getSeverity()+" at "+ DateTimeUtil.getFormattedTime(lastOccurrence.getLastOccurredTime());
+			AlarmSeverityContext previousSeverity = AlarmAPI.getAlarmSeverity(lastOccurrence.getPreviousSeverity().getId());
+			return "Alarm associated with this work order updated from "+ previousSeverity.getSeverity() +" to "+alarmSeverity.getSeverity()+" at "+ DateTimeUtil.getFormattedTime(lastOccurrence.getLastOccurredTime());
 		}
 	}
 
