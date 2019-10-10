@@ -68,11 +68,16 @@ public class TimeSeriesAPI {
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
 		LOGGER.debug(payLoad);
-		String stream = AccountUtil.getCurrentOrg().getDomain();
-		PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(stream, ByteBuffer.wrap(payLoad.toJSONString().getBytes(Charset.defaultCharset())), macAddr);
-		int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
-		if (status != 200) {
-			LOGGER.info("Couldn't add data to " + stream);
+		if(AccountUtil.getCurrentOrg() != null && FacilioProperties.isProduction()) {
+			String stream = AccountUtil.getCurrentOrg().getDomain();
+			if (macAddr == null) {
+				macAddr = stream;
+			}
+			PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(stream, ByteBuffer.wrap(payLoad.toJSONString().getBytes(Charset.defaultCharset())), macAddr);
+			int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
+			if (status != 200) {
+				LOGGER.info("Couldn't add data to " + stream);
+			}
 		}
 		// processPayLoad(ttime, payLoad, null, null, macAddr, true);
 	}
