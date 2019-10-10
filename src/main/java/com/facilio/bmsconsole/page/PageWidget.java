@@ -289,6 +289,7 @@ public class PageWidget {
  		KPI_METERS_ASSOCIATED("metersAssociated"),
  		KPI_VIOLATIONS("kpiViolations"),
  		KPI_TARGET("kpiTarget"),
+ 		KPI_LATEST_VALUE("kpiLatestValue"),
  		KPI_TREND("kpiTrend"),
  		KPI_TABULAR("kpiTabular")
  		;
