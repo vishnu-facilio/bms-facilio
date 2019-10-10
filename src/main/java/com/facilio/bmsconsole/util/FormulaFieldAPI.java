@@ -426,7 +426,7 @@ public class FormulaFieldAPI {
 	
 	public static void recalculateHistoricalData(long formulaId, DateRange range) throws Exception {
 		BmsJobUtil.deleteJobWithProps(formulaId, "HistoricalFormulaFieldCalculator");
-		BmsJobUtil.scheduleOneTimeJobWithProps(formulaId, "HistoricalFormulaFieldCalculator", 30, "priority", FieldUtil.getAsJSON(range));
+		BmsJobUtil.scheduleOneTimeJobWithProps(formulaId, "HistoricalFormulaFieldCalculator", 30, "history", FieldUtil.getAsJSON(range));
 	}
 	
 	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range, boolean isSystem, boolean historicalAlarm) throws Exception {
@@ -453,7 +453,7 @@ public class FormulaFieldAPI {
 			updateFormulaFieldResourceJob(id, range.getStartTime(), range.getEndTime(), historicalAlarm);
 			FacilioTimer.deleteJob(id, "SingleResourceHistoricalFormulaFieldCalculator");
 		}
-		FacilioTimer.scheduleOneTimeJobWithDelay(id, "SingleResourceHistoricalFormulaFieldCalculator", 30, "priority");
+		FacilioTimer.scheduleOneTimeJobWithDelay(id, "SingleResourceHistoricalFormulaFieldCalculator", 30, "history");
 	}
 	
 	private static long addFormulaFieldResourceJob(Map<String, Object> prop) throws Exception {
