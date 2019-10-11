@@ -1390,7 +1390,10 @@ public enum ActionType {
 
 		if (!isHistorical) {
 			FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
-			addEvent.execute(context);
+			FacilioContext eventContext = addEvent.getContext();
+			eventContext.put(EventConstants.EventContextNames.EVENT_LIST, context.get(EventConstants.EventContextNames.EVENT_LIST));
+			eventContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
+			addEvent.execute();
 			if(currentRule.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) {
 				Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = (Map<String, PointedList<AlarmOccurrenceContext>>)context.get("alarmOccurrenceMap");
 				AlarmOccurrenceContext alarmOccuranceContext = alarmOccurrenceMap.entrySet().iterator().next().getValue().get(0);
