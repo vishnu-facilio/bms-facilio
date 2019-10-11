@@ -27,7 +27,7 @@ public class ImportReadingCommand extends FacilioCommand implements PostTransact
 		importProcessContext = null;
 		jobId = (Long) commandContext.get(ImportAPI.ImportProcessConstants.JOB_ID);
 
-		LOGGER.severe("IMPORT READING JOB CALLED -- " + jobId);
+		LOGGER.info("IMPORT READING JOB CALLED -- " + jobId);
 		try {
 			importProcessContext = ImportAPI.getImportProcessContext(jobId);
 			FacilioChain importReadingChain = TransactionChainFactory.getImportReadingChain();
@@ -59,7 +59,7 @@ public class ImportReadingCommand extends FacilioCommand implements PostTransact
 		} else {
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
 			ImportAPI.updateImportProcess(importProcessContext);
-			LOGGER.severe("READING IMPORT COMPLETE -- " + jobId);
+			LOGGER.info("READING IMPORT COMPLETE -- " + jobId);
 		}
 		return false;
 	}
