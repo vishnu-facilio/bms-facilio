@@ -61,11 +61,26 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			
 			Boolean skipValidation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_VALIDATION);
 			
+			TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
+			List<Long> recordIdsTemp = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+			
+			if(currentTask != null)
+			{
+			LOGGER.log(Level.INFO, "skipValidation: "+skipValidation+" Currenttask ID: "+ currentTask.getId() + " Current Input Value: " +  currentTask.getInputValue() + 
+					" Current Input Time: " + currentTask.getInputTime());
+			}
+			
+			if(recordIdsTemp!= null && !recordIdsTemp.isEmpty() && currentTask != null)
+			{
+				LOGGER.log(Level.INFO, "skipValRecord: "+skipValidation+" Task record ID: "+ recordIdsTemp.get(0) + " Current Input Value: " +  currentTask.getInputValue() + 
+						" Current Input Time: " + currentTask.getInputTime());
+			}
+			
 			skipValidation = skipValidation == null ? Boolean.FALSE : skipValidation;  
 			
 			if(skipValidation)
 			{
-				TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
+				
 				List<TaskErrorContext> errors = new ArrayList<TaskErrorContext>();
 				boolean hasErrors = false;
 				if(currentTask != null && currentTask.getInputValue() != null) {
@@ -199,7 +214,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			}	
 			error.setPreviousValue(previousValueString);
 			
-			error.setMessage("The reading you have entered is less than the previous reading of " + error.getPreviousValue() +".");
+			error.setMessage("The reading you have entered ("+ error.getCurrentValue() +") is less than the previous reading of " + error.getPreviousValue() +".");
 			taskErrors.add(error);
 		}
 		
@@ -216,7 +231,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			} 
 			error.setNextValue(nextValueString);
 	        
-			error.setMessage("The reading you have entered is greater than the next reading of " + error.getNextValue() + ", in this series.");
+			error.setMessage("The reading you have entered ("+ error.getCurrentValue() +") is greater than the next reading of " + error.getNextValue() + ", in this series.");
 			taskErrors.add(error);
 		}
 		
