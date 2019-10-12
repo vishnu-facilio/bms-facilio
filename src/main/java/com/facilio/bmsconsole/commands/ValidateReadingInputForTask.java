@@ -50,6 +50,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	String currentInputValue;
 	
 	private static final Logger LOGGER = Logger.getLogger(ValidateReadingInputForTask.class.getName());
+	
+	private boolean isNextReading = false;
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
@@ -64,16 +66,11 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 			List<Long> recordIdsTemp = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 			
-			if(currentTask != null)
-			{
-			LOGGER.log(Level.INFO, "skipValidation: "+skipValidation+" Currenttask ID: "+ currentTask.getId() + " Current Input Value: " +  currentTask.getInputValue() + 
-					" Current Input Time: " + currentTask.getInputTime());
-			}
 			
 			if(recordIdsTemp!= null && !recordIdsTemp.isEmpty() && currentTask != null)
 			{
-				LOGGER.log(Level.INFO, "skipValRecord: "+skipValidation+" Task record ID: "+ recordIdsTemp.get(0) + " Current Input Value: " +  currentTask.getInputValue() + 
-						" Current Input Time: " + currentTask.getInputTime());
+				LOGGER.log(Level.INFO, "skipValidation: "+skipValidation+" Task record ID: "+ recordIdsTemp.get(0) + " Current Input Value: " +  currentTask.getInputValue() + 
+						" Current Input Time: " + currentTask.getInputTime() +""+ " Reading Field Unit: " + currentTask.getReadingFieldUnitEnum());
 			}
 			
 			skipValidation = skipValidation == null ? Boolean.FALSE : skipValidation;  
@@ -95,7 +92,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 								case READING:
 									if (taskContext.getReadingField() != null && taskContext.getResource() != null) {
 										
-										switch(taskContext.getReadingField().getDataTypeEnum()) {
+										switch(taskContext.getReadingField().getDataTypeEnum()) {   
 										case NUMBER:
 										case DECIMAL:
 											
@@ -175,7 +172,6 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 
 		List<TaskErrorContext> taskErrors = new ArrayList<TaskErrorContext>();
 		double previousValue = -1, nextValue = -1;
-		boolean futureCase = false;
 		
 		if(currentTask.getInputTime() > rdm.getTtime() && taskContext.getReadingDataId() != rdm.getReadingDataId()) 
 		{
@@ -188,7 +184,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		}
 		else 
 		{
-			futureCase = true;
+			isNextReading = true;
 			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
 			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", (currentTask.getInputTime()+1000), NumberOperators.GREATER_THAN);
 		}
@@ -218,7 +214,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			taskErrors.add(error);
 		}
 		
-		if(futureCase && nextValue > 0 && currentValueInSiUnit > nextValue) 
+		if(isNextReading && nextValue > 0 && currentValueInSiUnit > nextValue) 
 		{		
 			TaskErrorContext error = setIncrementalErrorMode(currentTask, numberField, rdm);
 			String nextValueString = nextValue+"";
@@ -243,7 +239,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");		
 		
 		double previousValue = getLatestPreviousReading (numberField, rdm, currentTask, taskContext);	
-		if(previousValue < 0)
+		if(previousValue < 0 || isNextReading)
 		{
 			return null;
 		}
