@@ -103,7 +103,7 @@ public class DataFetcherJob extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
 
-       if (!FacilioProperties.isProduction()){
+
            ZonedDateTime now = ZonedDateTime.now(ZoneId.of( "UTC" ));
            JSONObject data;
            try {
@@ -120,7 +120,7 @@ public class DataFetcherJob extends FacilioJob {
                LOGGER.error("Error while getting/Processing Data from "+getUrl());
                LOGGER.error(ex.getMessage());
            }
-       }
+
 
 
     }
