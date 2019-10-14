@@ -291,7 +291,8 @@ public class PageWidget {
  		KPI_TARGET("kpiTarget"),
  		KPI_LATEST_VALUE("kpiLatestValue"),
  		KPI_TREND("kpiTrend"),
- 		KPI_TABULAR("kpiTabular")
+ 		KPI_TABULAR("kpiTabular"),
+		ALARM_DUARTION("alarmDuration")
  		;
 		private String name;
 		

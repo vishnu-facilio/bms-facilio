@@ -224,6 +224,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		selectFields.add(ruleField);
 		selectFields.add(durationField);
 		selectFields.add(resourceFieldColumn);
+		selectFields.addAll(FieldFactory.getCountField(occurrenceModule));
 		FacilioField alarmField = fieldMap.get("alarmId");
 
 		SelectRecordsBuilder<AlarmOccurrenceContext> builder = NewAlarmAPI.getAlarmBuilder(dateRange.getStartTime(), dateRange.getEndTime(), selectFields, fieldMap);
