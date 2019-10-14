@@ -67,6 +67,7 @@ public class FormFactory {
 		forms.put("warrantyContractForm", getWarrantyContractForm());
 		forms.put("termsAndConditionForm", getTermsAndConditionForm());
 		forms.put("reservationForm", getReservationForm());
+		forms.put("devicesForm",getDevicesForm());
 		
 			
 		return forms;
@@ -1144,5 +1145,27 @@ public class FormFactory {
 
 		return fields;
 	}
+	
+	
+	public static FacilioForm getDevicesForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("DEVICES");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ModuleNames.DEVICES));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getDevicesFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	private static List<FormField> getDevicesFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 2));		
+		fields.add(new FormField("associatedResource", FieldDisplayType.WOASSETSPACECHOOSER, "Space", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("deviceType", FieldDisplayType.SELECTBOX, "Device Type", Required.REQUIRED,5, 1));		
+		return fields;
+	}
+	
 	
 }

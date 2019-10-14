@@ -578,7 +578,7 @@ public class LoginAction extends FacilioAction {
 
 		int license = AccountUtil.getFeatureLicense();
 		account.put("License", license);
-
+		setResult("account", this.account);
 		return SUCCESS;
 
 	}

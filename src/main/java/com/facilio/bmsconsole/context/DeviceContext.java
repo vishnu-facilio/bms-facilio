@@ -119,7 +119,8 @@ public class DeviceContext extends AssetContext {
     }
     
     public static enum KioskType implements FacilioEnum {
-        VISITOR("Visitor"),          
+        VISITOR("Visitor"),
+        SERVICE_KIOSK("Service")
         ;
 
         private String name;

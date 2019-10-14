@@ -5,6 +5,7 @@ import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentnew.AgentConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.constants.FacilioConstants.ModuleNames;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.fields.FacilioField;
 
@@ -98,6 +99,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, getReadingAlarmModule());
 		moduleMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationModule());
 		moduleMap.put(FacilioConstants.ContextNames.BMS_ALARM, getBmsAlarmModule());
+		moduleMap.put(FacilioConstants.ModuleNames.DEVICES,getDevicesModule());
 		return moduleMap;
 	}
 	
@@ -2704,6 +2706,14 @@ public class ModuleFactory {
 		module.setTableName(AgentConstants.DEVICE_TABLE);
 		module.setDisplayName("devices");
 		module.setName("devices");
+		return module;
+	}
+	//devices as in TV,KIOSK etc
+	public static FacilioModule getDevicesModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ModuleNames.DEVICES);
+		module.setDisplayName("Devices");
+		module.setTableName("Devices");
 		return module;
 	}
 }
