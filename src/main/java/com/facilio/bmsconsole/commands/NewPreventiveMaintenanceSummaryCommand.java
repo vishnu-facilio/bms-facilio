@@ -35,11 +35,11 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileInfo;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -89,7 +89,7 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		if(workorder.getAttachments() != null && !workorder.getAttachments().isEmpty()) {
 			List<Long> fileIds = workorder.getAttachments().stream().map(file -> file.getFileId()).collect(Collectors.toList());
 			FileStore fs = FacilioFactory.getFileStore();
-			Map<Long, FileInfo> fileMap = fs.getFileInfoAsMap(fileIds);
+			Map<Long, FileInfo> fileMap = fs.getFileInfoAsMap(fileIds, null);
 			for(AttachmentContext attachment: workorder.getAttachments()) {
 				FileInfo file = fileMap.get(attachment.getFileId());
 				attachment.setFileName(file.getFileName());

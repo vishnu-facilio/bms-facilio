@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.db;
 
 import java.io.File;
+import java.sql.Connection;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -198,7 +199,7 @@ public class BmsDBConf extends DBConf {
      * @throws Exception
      */
     @Override
-    public void fetchFileUrls(Collection<FacilioField> selectFields, List<Map<String,Object>> records, List<Long> fileIds) throws Exception {
+    public void fetchFileUrls(Collection<FacilioField> selectFields, List<Map<String,Object>> records, List<Long> fileIds, Connection conn) throws Exception {
         FileStore fs = FacilioFactory.getFileStore();
 
         // TODO get filePrivateUrl in bulk
@@ -206,20 +207,15 @@ public class BmsDBConf extends DBConf {
         for(Long fileId: fileIds) {
             fileUrls.put(fileId, fs.getPrivateUrl(fileId));
         }
-        Map<Long, FileInfo> files = fs.getFileInfoAsMap(fileIds);
+        Map<Long, FileInfo> files = fs.getFileInfoAsMap(fileIds, conn);
 
         for(Map<String, Object> record: records) {
             for(FacilioField field : selectFields) {
                 if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.containsKey(field.getName()+"Id")) {
                 		Long id = (Long) record.get(field.getName()+"Id");
-                		try {
-	                    record.put(field.getName()+"Url", fileUrls.get(id));
-	                    record.put(field.getName()+"FileName", files.get(id).getFileName());
-	                    record.put(field.getName()+"ContentType", files.get(id).getContentType());
-                		}
-                		catch (Exception e) {
-                			LOGGER.error("Error in fetching file for id - " + id, e);
-					}
+                		record.put(field.getName()+"Url", fileUrls.get(id));
+                		record.put(field.getName()+"FileName", files.get(id).getFileName());
+                		record.put(field.getName()+"ContentType", files.get(id).getContentType());
                 }
             }
         }

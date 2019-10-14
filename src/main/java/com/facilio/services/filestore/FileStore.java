@@ -350,14 +350,16 @@ public abstract class FileStore {
 		}	
 	}
 	
-	public Map<Long, FileInfo> getFileInfoAsMap(List<Long> fileId) throws Exception {
+	public Map<Long, FileInfo> getFileInfoAsMap(List<Long> fileId, Connection conn) throws Exception {
 		Map<Long, FileInfo> fileMap = new HashMap<Long, FileInfo>();
-		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+		boolean isExternalConnection = true;
 		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			if (conn == null) {
+				isExternalConnection = false;
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+			}
 			
 			String sql = "SELECT * FROM FacilioFile WHERE FILE_ID IN (";
 			for (int i=0; i< fileId.size(); i++) {
@@ -381,7 +383,12 @@ public abstract class FileStore {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			if (isExternalConnection) {
+				DBUtil.closeAll(pstmt, rs);
+			}
+			else {
+				DBUtil.closeAll(conn, pstmt, rs);
+			}
 		}
 
 		return fileMap;

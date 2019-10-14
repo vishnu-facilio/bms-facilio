@@ -51,14 +51,15 @@ public class AddFormCommand extends FacilioCommand {
 					FormsAPI.setFieldDetails(modBean, section.getFields(), moduleName);
 				}
 			}
-			FormsAPI.createForm(form, module);
 		}
 		if (module.getTypeEnum() == ModuleType.CUSTOM) {
 			List<FacilioField> fields = new ArrayList();
 			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
 			context.put(FacilioConstants.ContextNames.MODULE, module);
 		}
-		
+		else {
+			FormsAPI.createForm(form, module);
+		}
 		
 		return false;
 	}
