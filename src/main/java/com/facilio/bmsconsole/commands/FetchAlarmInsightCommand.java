@@ -213,8 +213,14 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		 *
 		 */
 
-		StringBuilder durationAggrColumn = new StringBuilder("SUM(COALESCE(")
-				.append(clearedTimeFieldColumn).append(",").append(System.currentTimeMillis()).append(") - ")
+		StringBuilder durationAggrColumn = new StringBuilder("SUM(")
+				.append("( CASE WHEN " + clearedTimeFieldColumn + " IS NULL THEN ")
+				.append(" ( CASE WHEN "  + System.currentTimeMillis() + " < " + dateRange.getEndTime())
+				.append(" THEN " + System.currentTimeMillis() + " ELSE " + dateRange.getEndTime() + " END )")
+				.append(" WHEN " + clearedTimeFieldColumn + " < " + dateRange.getEndTime())
+				.append(" THEN " + clearedTimeFieldColumn + " ELSE " + dateRange.getEndTime() + " END )")
+				// .append(",").append(System.currentTimeMillis())
+				.append(" - ")
 				.append("( CASE WHEN " + createdTimeFieldColumn + " > " + dateRange.getStartTime())
 				.append(" THEN " + createdTimeFieldColumn + " ELSE " + dateRange.getStartTime() + " END )")
 				.append(")")
