@@ -186,6 +186,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		else 
 		{
 			isNextReading = true;
+			
 			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
 			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", (currentTask.getInputTime()+1000), NumberOperators.GREATER_THAN);
 		}
@@ -372,15 +373,18 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			{
 				endTaskTime = currentTask.getInputTime();
 			}
+					
+			long lastNdaysEndTime = DateTimeUtil.getDayStartTimeOf(endTaskTime);
+			long lastNdaysStartTime = DateTimeUtil.getDayStartTimeOf(lastNdaysEndTime - (Integer.valueOf(noOfDaysDeltaToBeFetched) * 24 * 3600 * 1000));		
 			
-			DateRange lastNdays = DateOperators.LAST_N_DAYS.getRange(noOfDaysDeltaToBeFetched+"");
+			DateRange lastNdays = new DateRange(lastNdaysStartTime, lastNdaysEndTime);
 					
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 					.table(module.getTableName())
 					.module(module)
 					.select(Collections.singletonList(numberField))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), rdm.getResourceId()+"", NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), lastNdays.getStartTime()+","+(endTaskTime-1), DateOperators.BETWEEN))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), lastNdays.getStartTime()+","+(endTaskTime-1000), DateOperators.BETWEEN))
 					.skipUnitConversion();
 							
 			List<Map<String, Object>> res = selectBuilder.getAsProps();
