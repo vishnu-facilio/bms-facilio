@@ -207,16 +207,23 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		String createdTimeFieldColumn = fieldMap.get("createdTime").getColumnName();
 		FacilioField resourceFieldColumn = fieldMap.get("resource");
 
+		/*
+		 *  Duration fields to get duration only for current ranges
+		 * even if it alarm is active beyonds range
+		 *
+		 */
+
 		StringBuilder durationAggrColumn = new StringBuilder("SUM(COALESCE(")
 				.append(clearedTimeFieldColumn).append(",").append(System.currentTimeMillis()).append(") - ")
-				.append(createdTimeFieldColumn).append(")")
+				.append("( CASE WHEN " + createdTimeFieldColumn + " > " + dateRange.getStartTime())
+				.append(" THEN " + createdTimeFieldColumn + " ELSE " + dateRange.getStartTime() + " END )")
+				.append(")")
 				;
 		FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
 
 		selectFields.add(ruleField);
 		selectFields.add(durationField);
 		selectFields.add(resourceFieldColumn);
-		selectFields.addAll(FieldFactory.getCountField(occurrenceModule));
 		FacilioField alarmField = fieldMap.get("alarmId");
 
 		SelectRecordsBuilder<AlarmOccurrenceContext> builder = NewAlarmAPI.getAlarmBuilder(dateRange.getStartTime(), dateRange.getEndTime(), selectFields, fieldMap);
