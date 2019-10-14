@@ -26,24 +26,20 @@ import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 
 public class AssetPageFactory extends PageFactory {
 	
 	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class.getName());
 	
-	public static Page getAssetPage(AssetContext asset,String costType) throws Exception {
+	public static Page getAssetPage(AssetContext asset) throws Exception {
 		Page page = new Page();
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -124,31 +120,11 @@ public class AssetPageFactory extends PageFactory {
 		Section tab7Sec1 = page.new Section();
 		tab7.addSection(tab7Sec1);
 //		addAssetCostDetailsWidget(tab7Sec1);
-		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.TICKET));
-		
-		LookupField parentIdField = new LookupField();
-		parentIdField.setName("workorderCost.parentId");
-		parentIdField.setColumnName("PARENT_ID");
-		parentIdField.setDataType(FieldType.LOOKUP);
-		parentIdField.setModule(modBean.getModule("workorderCost"));
-		parentIdField.setLookupModule(modBean.getModule(ContextNames.TICKET));
-
-		Criteria resourceCriteria = new Criteria();
-		resourceCriteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
-		
-		Condition currentAssetCondition = new Condition();
-		currentAssetCondition.setField(parentIdField);
-		currentAssetCondition.setOperator(LookupOperator.LOOKUP);
-		
-		if(costType.equalsIgnoreCase("plannedmaintenance")){
-			resourceCriteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("sourceType"), "5", NumberOperators.EQUALS));
-		}else if(costType.equalsIgnoreCase("unplannedmaintenance")){
-			resourceCriteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("sourceType"), "5", NumberOperators.NOT_EQUALS));
-		}
-		currentAssetCondition.setCriteriaValue(resourceCriteria);
+		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
+		Map<String, FacilioField> woCostFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORKORDER_COST));
+	
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(currentAssetCondition);
-		
+		criteria.addAndCondition(CriteriaAPI.getCondition(woCostFieldMap.get("parentId"), String.valueOf("1,2,3"), NumberOperators.EQUALS));
 		addCostBreakupWidget(tab7Sec1,criteria);
 		
 		criteria = new Criteria();

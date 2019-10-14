@@ -18,11 +18,11 @@ public class GetPageCommand extends FacilioCommand {
 		FacilioModule module = modBean.getModule(moduleName);
 		
 		Object record = context.get(FacilioConstants.ContextNames.RECORD);
-		Page page = PageFactory.getPage(module, record,(String) context.get(FacilioConstants.ContextNames.COST_TYPE));
+		Page page = PageFactory.getPage(module, record);
 		if (page == null) {
 			
 			if (module.getExtendModule() != null) {
-				page = PageFactory.getPage(module.getExtendModule(), record,(String) context.get(FacilioConstants.ContextNames.COST_TYPE));
+				page = PageFactory.getPage(module.getExtendModule(), record);
 			}
 		}
 		context.put(FacilioConstants.ContextNames.PAGE, page);

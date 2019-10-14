@@ -15,7 +15,6 @@ public class PageAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.ID, id);
-		context.put(FacilioConstants.ContextNames.COST_TYPE, costType);
 		FacilioChain chain = ReadOnlyChainFactory.getPageChain();
 		chain.execute(context);
 		
@@ -53,15 +52,4 @@ public class PageAction extends FacilioAction {
 	public void setId(long id) {
 		this.id = id;
 	}
-	public String costType = "";
-
-	public String getCostType() {
-		return costType;
-	}
-
-	public void setCostType(String costType) {
-		this.costType = costType;
-	}
-	
-
 }
