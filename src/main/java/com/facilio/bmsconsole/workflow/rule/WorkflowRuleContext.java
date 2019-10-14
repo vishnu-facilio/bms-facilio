@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -564,6 +565,7 @@ public class WorkflowRuleContext implements Serializable {
 		
 		READING_VIOLATION_RULE, // 39
 		CUSTOM_BUTTON,	// 40
+		ALARM_WORKFLOW_RULE,
 		;
 		//Always add at the end
 		

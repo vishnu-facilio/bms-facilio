@@ -33,7 +33,7 @@ public class LocalFileStore extends FileStore {
 				localFileStorePath = fcDataFolder.getFile();
 			}
 			rootPath = localFileStorePath + File.separator + "facilio-data" + File.separator + getOrgId() + File.separator + "files";
-			
+
 			File rootDir = new File(rootPath);
 			if (!(rootDir.exists() && rootDir.isDirectory())) {
 				rootDir.mkdirs();

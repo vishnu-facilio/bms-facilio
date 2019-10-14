@@ -15,21 +15,11 @@ public class AlarmRuleContext {
 	private ReadingRuleContext preRequsite;
 	private WorkflowRuleContext reportDowntimeRule;
 	private List<ReadingRuleContext> alarmTriggerRuleVersionHistory;
-//	private Map<Long,List<ReadingRuleContext>> alarmRCARulesVersionHistory;
 	private ReadingRuleContext alarmTriggerRule;
 	private List<Long> alarmRCARules;
-//	private List<ReadingRuleContext> deletedAlarmRCARules;
 
 	private ReadingRuleContext alarmClearRule;
 	private ReadingRuleContext alarmClearRuleDuplicate;
-
-//	private boolean isClearAlarmOnPreRequsiteFail = true;
-//	public boolean isClearAlarmOnPreRequsiteFail() {
-//		return isClearAlarmOnPreRequsiteFail;
-//	}
-//	public void setClearAlarmOnPreRequsiteFail(boolean isClearAlarmOnPreRequsiteFail) {
-//		this.isClearAlarmOnPreRequsiteFail = isClearAlarmOnPreRequsiteFail;
-//	}
 
 	public AlarmRuleContext() {
 	}
@@ -37,26 +27,10 @@ public class AlarmRuleContext {
 	public List<ReadingRuleContext> getAlarmTriggerRuleVersionHistory() {
 		return alarmTriggerRuleVersionHistory;
 	}
-//	public List<ReadingRuleContext> getDeletedAlarmRCARules() {
-//		return deletedAlarmRCARules;
-//	}
-//	public void setDeletedAlarmRCARules(List<ReadingRuleContext> deletedAlarmRCARules) {
-//		this.deletedAlarmRCARules = deletedAlarmRCARules;
-//	}
 	public void addAlarmTriggerRuleVersionHistory(ReadingRuleContext alarmTriggerRule) {
 		this.alarmTriggerRuleVersionHistory = this.alarmTriggerRuleVersionHistory == null ? new ArrayList<>() : this.alarmTriggerRuleVersionHistory;
 		this.alarmTriggerRuleVersionHistory.add(alarmTriggerRule);
 	}
-//	public Map<Long, List<ReadingRuleContext>> getAlarmRCARulesVersionHistory() {
-//		return alarmRCARulesVersionHistory;
-//	}
-//	public void addAlarmRCARulesVersionHistory(Long parentRuleId, ReadingRuleContext alarmRCARule) {
-//		this.alarmRCARulesVersionHistory = this.alarmRCARulesVersionHistory == null ? new HashMap<>() : this.alarmRCARulesVersionHistory;
-//		List<ReadingRuleContext> list = alarmRCARulesVersionHistory.containsKey(parentRuleId) ? alarmRCARulesVersionHistory.get(parentRuleId) : new ArrayList<>();
-//		list.add(alarmRCARule);
-//		this.alarmRCARulesVersionHistory.put(parentRuleId, list);
-//	}
-
 
 	public AlarmRuleContext(List<ReadingRuleContext> rules) {
 		for(ReadingRuleContext rule :rules) {
@@ -65,7 +39,12 @@ public class AlarmRuleContext {
 				preRequsite = rule;
 			}
 			else if(rule.getRuleTypeEnum().equals(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE) && !rule.isOnSuccess()) {
-				alarmClearRule = rule;
+				if (alarmClearRule == null) {
+					alarmClearRule = rule;
+				}
+				else {
+					alarmClearRuleDuplicate = rule;
+				}
 			}
 			else if(rule.getRuleTypeEnum().equals(WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE)) {
 				if(rule.isActive()) {
@@ -189,17 +168,11 @@ public class AlarmRuleContext {
 		return alarmTriggerRule.getId();
 	}
 
-//	public Map<String,Long> getNameVsIdMap() {
-//		Map<String,Long> ruleNameVsIdMap = new HashMap<>();
-//
-//		if(alarmTriggerRule != null) {
-//			ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
-//		}
-////        if(alarmRCARules != null) {
-////            for(ReadingRuleContext alarmRCARule :alarmRCARules) {
-////                ruleNameVsIdMap.put(alarmRCARule.getName(), alarmRCARule.getId());
-////            }
-////        }
-//		return ruleNameVsIdMap;
-//	}
+	private List<AlarmWorkflowRuleContext> workflowRulesForAlarms;
+	public List<AlarmWorkflowRuleContext> getWorkflowRulesForAlarms() {
+		return workflowRulesForAlarms;
+	}
+	public void setWorkflowRulesForAlarms(List<AlarmWorkflowRuleContext> workflowRulesForAlarms) {
+		this.workflowRulesForAlarms = workflowRulesForAlarms;
+	}
 }
