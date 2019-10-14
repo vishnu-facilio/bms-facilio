@@ -911,15 +911,20 @@
 				  pmOverAllDuration = 0;
 				  if (alarmMonthOccurenceList != null) {
 				    previousClearedTime = 0;
+				    previousCreatedTime = 0;
 				     sumMtbt = 0;
 				    sumMttc = 0;
 				    countOfClearedOccurence = 0;
 				    mttcCount = 0;
 				    	 for each index,occurrence in alarmMonthOccurenceList {
 				    	 		if (previousClearedTime != 0) {
+					    	 		if (previousClearedTime > occurrence.createdTime) {
+	                                 previousClearedTime = previousCreatedTime;
+	                             }
 				    	 			sumMtbt = sumMtbt + (occurrence.createdTime - previousClearedTime);
 				    	 			mttcCount = mttcCount + 1;
 				    	 		}
+				    	 		previousCreatedTime = occurrence.createdTime;
 				           if (occurrence.clearedTime != null) {
 				           	 previousClearedTime = occurrence.clearedTime ;
 				             countOfClearedOccurence = countOfClearedOccurence + 1;
@@ -936,15 +941,20 @@
 				  }	
 				  if (alarmOccurenceTillLMonthList != null) {
 				    previousClearedTime = 0;
+				    previousCreatedTime = 0;
 				      sumPmtbt = 0;
 				    sumPmttc = 0;
 				    countOfClearedOccurence = 0;
 				    pttcCount = 0;
 				    	 for each index,occurrence in alarmOccurenceTillLMonthList {
 				           if (previousClearedTime != 0) {
+				           		if (previousClearedTime > occurrence.createdTime) {
+	                                 previousClearedTime = previousCreatedTime;
+	                             }
 				    	 			sumPmtbt = sumPmtbt + (occurrence.createdTime - previousClearedTime);
 				    	 			pttcCount = pttcCount + 1;
 				    	 		}
+				    	 		previousCreatedTime = occurrence.createdTime;
 							if (occurrence.clearedTime != null) {
 							 previousClearedTime = occurrence.clearedTime ;
 				             countOfClearedOccurence = countOfClearedOccurence + 1;
