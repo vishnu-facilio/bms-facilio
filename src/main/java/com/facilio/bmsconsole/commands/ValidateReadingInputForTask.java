@@ -34,6 +34,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
@@ -44,7 +45,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	
 	public static final int noOfDaysDeltaToBeFetched = 10;
 	
-	public final static int averageboundPercentage = 50; 
+	public final static int averageboundPercentage = 100; 
 	
 	long taskContextId, currentInputTime;
 	String currentInputValue;
@@ -362,9 +363,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			FacilioModule module = numberField.getModule();			
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 			
-			DateRange lastNdays = DateOperators.LAST_N_DAYS.getRange(noOfDaysDeltaToBeFetched+"");
-			long endTaskTime;
-			
+			long endTaskTime;			
 			if(currentTask.getInputTime() > rdm.getTtime() && taskContext.getReadingDataId() == rdm.getReadingDataId())
 			{
 				endTaskTime = rdm.getTtime();
@@ -374,6 +373,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				endTaskTime = currentTask.getInputTime();
 			}
 			
+			DateRange lastNdays = DateOperators.LAST_N_DAYS.getRange(noOfDaysDeltaToBeFetched+"");
+					
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 					.table(module.getTableName())
 					.module(module)
