@@ -5,12 +5,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 
 public enum WorkflowFieldType {
 
 	VOID(0, "void"),
 	STRING(1, "String",String.class),
-	NUMBER(2, "Number",Integer.class,Long.class,Double.class),
+	NUMBER(2, "Number",Integer.class,Long.class,Double.class,BigDecimal.class),
 	BOOLEAN(3, "Boolean",Boolean.class),
 	MAP(4,"Map",HashMap.class,Map.class),
 	LIST(5,"List",ArrayList.class,List.class),
