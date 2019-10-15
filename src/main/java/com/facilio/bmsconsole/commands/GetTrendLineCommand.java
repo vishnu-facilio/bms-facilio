@@ -6,33 +6,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Condition;
-import com.facilio.executor.CommandExecutor;
-import com.facilio.fs.LocalFileStore;
 import com.facilio.fs.FileInfo.FileFormat;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportFieldContext;
 
 public class GetTrendLineCommand extends FacilioCommand {
 
@@ -42,32 +32,44 @@ public class GetTrendLineCommand extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		JSONObject reportData =   (JSONObject)context.get(FacilioConstants.ContextNames.REPORT_DATA);
-		Map<String, List<String>> trendLineMap = getTrendLinePoints(reportData);
-		setTrendLinePoints(reportData, trendLineMap);
-		
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		setDataPoints(report.getDataPoints(), trendLineMap);
-		reportData.put("trendLineProp", trendLinePropObj);
+		String chartState = report.getChartState();
+		if(chartState != null){
+			JSONObject chartObj = (JSONObject)new JSONParser().parse(chartState);
+			JSONObject trendLineObj = (JSONObject)chartObj.get("trendLine");
+			if((boolean) trendLineObj.get("enable")){
+				JSONObject reportData = (JSONObject)context.get(FacilioConstants.ContextNames.REPORT_DATA);
+				Map<String, List<String>> trendLineMap = getTrendLinePoints(reportData, String.valueOf(trendLineObj.get("degree")));
+				
+				if(trendLineMap != null && trendLineMap.size() != 0){
+					setTrendLinePoints(reportData, trendLineMap);
+					setDataPoints(report.getDataPoints(), trendLineMap);
+					reportData.put("trendLineProp", trendLinePropObj);
+				}
+			}
+		}
 		return false;
 	}
 	
-	private Map<String, List<String>> getTrendLinePoints(JSONObject reportData) throws Exception{
+	private Map<String, List<String>> getTrendLinePoints(JSONObject reportData, String degree) throws Exception{
 		ArrayList<Object> dataPoints = (ArrayList<Object>) reportData.get("data");
 		
-		Map<String, List<String>> trendLineMap =  new HashMap<>();
-		String xAxis = "X", yAxis = null;
+		if(dataPoints != null && dataPoints.size() != 0){
+			Map<String, List<String>> trendLineMap =  new HashMap<>();
+			String xAxis = "X", yAxis = null;
 		
-		Map<String, Long> data = (Map<String, Long>) dataPoints.get(0);
-		for(Object key : data.keySet())
-	    {
-			if(!key.equals(xAxis)){
-				yAxis = (String) key;
-		    	String filePath = createTempCSV(dataPoints, xAxis, yAxis);
-				runOnCommandLine(filePath, trendLineMap, yAxis);
-			}
-		};
-		return trendLineMap;
+			Map<String, Long> data = (Map<String, Long>) dataPoints.get(0);
+			for(Object key : data.keySet())
+		    {
+				if(!key.equals(xAxis)){
+					yAxis = (String) key;
+			    	String filePath = createTempCSV(dataPoints, xAxis, yAxis);
+					runOnCommandLine(filePath, trendLineMap, yAxis, degree);
+				}
+			};
+			return trendLineMap;
+		}
+		return null;
 	}
 	
 	private String createTempCSV(ArrayList<Object> dataPoints, String xAxis, String yAxis) {
@@ -109,11 +111,11 @@ public class GetTrendLineCommand extends FacilioCommand {
           
     }
 	
-	private void runOnCommandLine(String filePath, Map<String, List<String>> trendLineMap, String trendLine) throws Exception{
+	private void runOnCommandLine(String filePath, Map<String, List<String>> trendLineMap, String trendLine, String degree) throws Exception{
 		ClassLoader classLoader = GetTrendLineCommand.class.getClassLoader();
 		String ransacFilePath = classLoader.getResource("conf/AI/ransac.py").getPath();
 		
-		String[] command = new String[]{"/usr/local/bin/python3", ransacFilePath, filePath, "2"};
+		String[] command = new String[]{"/usr/local/bin/python3", ransacFilePath, filePath, degree};
 		
         ProcessBuilder builder = new ProcessBuilder(command);
         Process process = builder.start();
@@ -124,24 +126,27 @@ public class GetTrendLineCommand extends FacilioCommand {
 
         List<String> trendLineList = new ArrayList<String>();
         String line = reader.readLine();
-        boolean first = true;
-        while (line != null) {
-        	String points = line;
-        	line = reader.readLine();
-        	if(first){
-        		first = false;
-        	}
-        	else if(line == null){
-        		prepareTrendLineProperties(trendLine, points);
+        if(line.equals("Error")){
+        	LOGGER.info("Error occurred while execute python Script");
+        }else{
+        	boolean first = true;
+            while (line != null) {
+            	String points = line;
+            	line = reader.readLine();
+            	if(first){
+            		first = false;
+            	}
+            	else if(line == null){
+            		prepareTrendLineProperties(trendLine, points);
+                }
+            	else{
+                	trendLineList.add(points.trim().split("\\s+")[2]);
+                }
             }
-        	else{
-            	trendLineList.add(points.trim().split("\\s+")[2]);
+            if(trendLineList != null){
+            	trendLineMap.put(trendLine, trendLineList);
             }
         }
-        if(trendLineList != null){
-        	trendLineMap.put(trendLine, trendLineList);
-        }
-		
 	}
 	
 	private void prepareTrendLineProperties(String trendLine, String points){
@@ -185,6 +190,7 @@ public class GetTrendLineCommand extends FacilioCommand {
 				
 				trendLinePoint.setAliases(aliases);
 				trendLinePoint.setName(alias);
+				trendLinePoint.setType(ReportDataPointContext.DataPointType.TRENDLINE);
 				trendLinePoint.setxAxis(dataPoint.getxAxis());
 				trendLinePoint.setyAxis(dataPoint.getyAxis());
 				trendLinePoint.setCriteria(dataPoint.getCriteria());
@@ -194,5 +200,9 @@ public class GetTrendLineCommand extends FacilioCommand {
 			}
 		}
 		dataPoints.addAll(trendLinePoints);
+	}
+	
+	private String prepareCoeff(String[] coeffArray){
+		return null;
 	}
 }
