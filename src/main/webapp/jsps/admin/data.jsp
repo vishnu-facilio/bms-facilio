@@ -24,7 +24,7 @@ List<Organization> org = null;
 OrgBean orgBean =  AccountUtil.getOrgBean();
 org = orgBean.getOrgs();
 
-
+System.out.println("time relative "+DateTimeUtil.relativeDuration(1571108002000l));
 %>
 
 <!DOCTYPE html>
@@ -68,22 +68,32 @@ function changeThePage(){
 										
 <body>									
 	<form action="">
-		<br> <br> <br> <label for="orgDomain">
-			<h4>Org:</h4>
-		</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<select
-			name="orgDomain" id="orgDomain" onChange="changeThePage()">
-			<option value="" disabled selected>Select</option>
-			<%
-						for (Organization domain : org) {
-							
-					%>
-			<option value="<%= domain.getDomain()%>"><%=domain.getId()%>
-				-
-				<%=domain.getDomain()%></option>
-			<%
-						}
-					%>
-		</select> <br> <br> <br>
+			<div class="admin-data-container">
+				<div class="">
+				<label for="orgDomain">
+			<div class="admin-data-grey">Org:</div>
+				</label>
+				<select class="admin-data-select"
+					name="orgDomain" id="orgDomain" onChange="changeThePage()">
+					<option value="" disabled selected>Select</option>
+					<%
+								for (Organization domain : org) {
+									
+							%>
+					<option value="<%= domain.getDomain()%>"><%=domain.getId()%>
+						-
+						<%=domain.getDomain()%></option>
+					<%
+								}
+							%>
+				</select>
+				</div>
+				<div class="">
+				  <label><div class="admin-data-grey">Last Received Time :</div></label><span class="admin-data-date"><%=receiveddate %></span>
+				</div>
+			</div>
+	
+		
 		<!-- <div align="center">
 
 			<input id="submit" type="submit" style="margin-left: -600px"
@@ -125,8 +135,8 @@ function changeThePage(){
   {
   %> --%>
   
-  <label><h5>Last Received Time :</h5></label><%=receiveddate %>
-	<table style="margin-top: 40px;" class="table table-bordered  a">
+
+	<table class="table admin-data-border table-bordered  a">
 		<tr>
 			<th>S.No</th>
 			<th>Time</th>
@@ -151,7 +161,7 @@ function changeThePage(){
 
 		<tr>
 			<td align="center"><%=i+1 %></td>
-			<td align="center"><%=date %></td>
+			<td align="center"><%=date %> <br> <%=DateTimeUtil.relativeDuration(time) %></td>
 			<td align="center"><%= jsonObj.get("device")%></td>
 
 			<td align="left">
@@ -224,16 +234,80 @@ input[type=submit]:hover {
 	
 }
 
-select {
-	width: 15%;
-	padding: 12px 20px;
+.admin-data-select {
+	font-size: 14px;
+	color: #333;
+	background: #fff;
+	padding: 12px 15px;
 	margin: 8px 16px;
 	margin-top: 5px;
 	display: inline-block;
 	border: 1px solid #ccc;
 	border-radius: 4px;
-	box-sizing: border-box;
-	font-size: 13px;
 }
+
+.admin-data-container{
+    width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-top: 20px;
+}
+.admin-data-grey{
+	color: #333;
+	font-size: 13px;
+	letter-spacing: 0.5px;
+	font-weight: 400;
+}
+.admin-data-date{
+	font-size: 13px;
+	font-weight: 500;
+	letter-spacing: 0.5px;
+	color: #333;
+}
+
+.admin-data-border{
+    min-width: 100%;
+    border-collapse: collapse;
+    display: table;
+    border: solid 1px #e6ecf3;
+}
+.admin-data-border thead{
+	display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+.admin-data-border th{
+	color: #324056;
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-weight: bold;
+	white-space: nowrap;
+    padding: 23px 30px;
+    text-align: left;
+    display: table-cell;	
+    text-transform: uppercase;
+}
+.admin-data-border tbody{
+	display: table-row-group;
+    vertical-align: middle;
+}
+
+.admin-data-border td{
+    color: #333333;
+    font-size: 14px;
+    border-collapse: separate;
+    padding: 15px 30px;
+    letter-spacing: 0.6px;
+    font-weight: normal;
+}
+
+.admin-data-border th, admin-data-border td{
+    font-size: 12px;
+    color: #333;
+    padding: 10px 15px;
+    line-height: 20px;
+}
+
 </style>
 </html>
