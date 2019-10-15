@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.context;
 
-public class ConnectedDeviceContext {
+import java.io.Serializable;
 
+public class ConnectedDeviceContext implements Serializable{
+	private static final long serialVersionUID = 1L;
 	long id;
 	long deviceId;
 	long orgId;
