@@ -98,7 +98,7 @@ function handleShowMore(target)
 			
 			 String arrival=  jsonObj.get("arrivalTime").toString() ;
 			 long time =Long.parseLong(arrival);
-			 ZonedDateTime date = DateTimeUtil.getDateTime(time, true);	
+			 String date = DateTimeUtil.getFormattedTime(time);	
 			 
 	         
 	       
