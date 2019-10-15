@@ -107,30 +107,32 @@ public class DataFetcherJob extends FacilioJob {
            ZonedDateTime now = ZonedDateTime.now(ZoneId.of( "UTC" ));
            JSONObject data;
            try {
-               LOGGER.info("execute called");
+               LOGGER.debug("execute called");
                data = getData(getUrl(),getProbeId(), getFromTime(now,15), getToTime(now,15));
-               LOGGER.info(data);
-               System.out.println(data);
+               LOGGER.debug(data);
                JSONObject timeSeriesData= toTimeSeriesData(data);
-               LOGGER.info(timeSeriesData);
-               System.out.println(timeSeriesData);
+               LOGGER.debug(timeSeriesData);
                TimeSeriesAPI.processPayLoad(0,timeSeriesData,null);
 
            }catch(Exception ex){
                LOGGER.error("Error while getting/Processing Data from "+getUrl());
                LOGGER.error(ex.getMessage());
            }
-
-
-
     }
 
     private JSONObject toTimeSeriesData(JSONObject data) {
+        String probeId = data.get("ProbeID").toString();
+        String timestamp = ""+toMillis(data.get("Timestamp").toString());
+        data.remove("Timestamp");
+        data.remove("UTC_Offset");
+        data.remove("ProbeID");
+        data.remove("Sample_Id");
+        data.remove("Group");
         JSONObject timeSeriesData= new JSONObject();
         timeSeriesData.put("agent", getAgent());
         timeSeriesData.put("PUBLISH_TYPE","timeseries");
-        timeSeriesData.put("timestamp",""+toMillis(data.get("Timestamp").toString()));
-        timeSeriesData.put(getController(),data);
+        timeSeriesData.put("timestamp",timestamp);
+        timeSeriesData.put("ProbeID-"+probeId,data);
         return timeSeriesData;
     }
 
