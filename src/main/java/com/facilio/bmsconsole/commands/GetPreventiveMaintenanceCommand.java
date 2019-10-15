@@ -1,7 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -64,7 +70,20 @@ public class GetPreventiveMaintenanceCommand extends FacilioCommand {
 		List<Long> idsToSelect = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-		
+
+		Boolean isUserTrigger = (Boolean) context.get(FacilioConstants.ContextNames.IS_USER_TRIGGER);
+		if (isUserTrigger != null && isUserTrigger) {
+			Criteria userTriggerCriteria = PreventiveMaintenanceAPI.getUserTriggerCriteria();
+			if (userTriggerCriteria != null) {
+				criteria.andCriteria(userTriggerCriteria);
+			} else {
+				List<PreventiveMaintenance> pms = Collections.emptyList();
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT, 0);
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
+				return false;
+			}
+		}
+
 		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMs(idsToSelect, criteria, query, pagination, null,true);
 		if (pms != null) {
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);

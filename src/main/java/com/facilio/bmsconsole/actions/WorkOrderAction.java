@@ -1006,6 +1006,15 @@ public class WorkOrderAction extends FacilioAction {
 		this.pmJobList = pmJobList;
 	}
 
+	private boolean userTrigger = false;
+	public void setUserTrigger(boolean userTrigger) {
+		this.userTrigger = userTrigger;
+	}
+
+	public boolean getUserTrigger() {
+		return this.userTrigger;
+	}
+
 	public String getPMJobs() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME, getStartTime());
@@ -1062,6 +1071,8 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
+
+		context.put(FacilioConstants.ContextNames.IS_USER_TRIGGER, getUserTrigger());
 
 		FacilioChain getPmchain = FacilioChainFactory.getGetPreventiveMaintenanceListChain();
 		getPmchain.execute(context);

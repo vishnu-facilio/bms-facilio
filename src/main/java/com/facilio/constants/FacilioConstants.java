@@ -87,6 +87,7 @@ public class FacilioConstants {
         public static final String OLD_TASKS = "oldTasks";
 		public static final String TASKS = "tasks";
         public static final String TASK_READINGS = "taskReadings";
+		public static final String IS_USER_TRIGGER = "userTrigger";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";

@@ -3,6 +3,7 @@ package com.facilio.modules;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentnew.AgentConstants;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.constants.FacilioConstants.ModuleNames;
@@ -1549,6 +1550,14 @@ public class ModuleFactory {
 		viewSharing.setDisplayName("Report Sharing");
 		viewSharing.setTableName("Report_Folder_Sharing");
 		return viewSharing;
+	}
+
+	public static FacilioModule getPMExecSharingModule() {
+		FacilioModule pmExecSharing = new FacilioModule();
+		pmExecSharing.setName("pmExecSharing");
+		pmExecSharing.setDisplayName("PM Exec Sharing");
+		pmExecSharing.setTableName("Pm_Exec_Sharing");
+		return pmExecSharing;
 	}
 
 	public static FacilioModule getWidgetVsWorkflowModule() {
