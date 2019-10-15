@@ -6471,7 +6471,7 @@ INSERT INTO LookupFields (FIELDID, ORGID, LOOKUP_MODULE_ID) VALUES ((SELECT LAST
 
 -- Devices ,kiosk for visitor,booking etc
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME,EXTENDS_ID, MODULE_TYPE, IS_TRASH_ENABLED)
-VALUES (${orgId}, 'devices', 'Devices', 'Devices',@ASSETS_MODULE_ID, @BASE_ENTITY_MODULE_TYPE, false);
+VALUES (${orgId}, 'devices', 'Devices', 'Devices',@ASSETS_MODULE_ID, @BASE_ENTITY_MODULE_TYPE, true);
 SET @Devices_MODULE_ID := (SELECT LAST_INSERT_ID());
 
         --Add device as an asset category

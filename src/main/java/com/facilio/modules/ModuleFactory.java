@@ -2725,4 +2725,11 @@ public class ModuleFactory {
 		module.setTableName("Devices");
 		return module;
 	}
+	public static FacilioModule getLogBookModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.DIGITAL_LOG_BOOK);
+		module.setDisplayName("Digital Log book");
+		module.setTableName("Digital_Log_Book");
+		return module;
+	}
 }
