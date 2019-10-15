@@ -14,13 +14,11 @@
 				class="com.facilio.bmsconsole.interceptors.CacheResult" />
 		</result-types>
 		<global-results>
-			<result name="login" type="redirect">
-				<param name="location">/app/login</param>
-				<param name="parse">false</param>
+			<result name="login" type="httpheader">
+				<param name="status">401</param>
 			</result>
-			<result name="unauthorized" type="redirect">
-				<param name="location">/jsps/unauthorized.jsp</param>
-				<param name="parse">false</param>
+			<result name="unauthorized" type="httpheader">
+				<param name="status">403</param>
 			</result>
 			<result name="error" type="json">
 				<param name="ignoreHierarchy">false</param>
