@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
@@ -57,12 +56,6 @@ public class GetResourceListForMultiplePM extends FacilioCommand {
 			resourceId = preventivemaintenance.getSiteId();
 		}
 		List<Long> resIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(preventivemaintenance.getAssignmentTypeEnum(), resourceId, preventivemaintenance.getSpaceCategoryId(), preventivemaintenance.getAssetCategoryId(), null, preventivemaintenance.getPmIncludeExcludeResourceContexts());
-
-		if (AccountUtil.getCurrentOrg().getOrgId() != 263L) {
-			context.put(FacilioConstants.ContextNames.MULTI_PM_RESOURCE_IDS, resIds);
-			context.put(FacilioConstants.ContextNames.MULTI_PM_RESOURCES, ResourceAPI.getResources(resIds, false));
-			return false;
-		}
 
 		Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(preventivemaintenance.getId());
 
