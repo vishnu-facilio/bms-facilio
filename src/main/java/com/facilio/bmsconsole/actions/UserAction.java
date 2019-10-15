@@ -148,7 +148,7 @@ public class UserAction extends FacilioAction {
 			}
 			return ERROR;
 		} catch (Exception e) {
-			return ERROR;
+			throw e;
 		}
 	}
 	
@@ -168,7 +168,7 @@ public class UserAction extends FacilioAction {
 												.beanClass(TenantContext.class)
 												;								
         List<TenantContext> records = selectBuilder.get();
-		if(selectBuilder.get().size() > 0) {
+		if(records.size() > 0) {
 			throw new IllegalArgumentException("Deletion not permitted as the requester is a primary contact for the tenant "+records.get(0).getName());
 		}
 	}
