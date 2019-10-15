@@ -841,6 +841,14 @@ public class V2ReportAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private boolean needCriteriaData = false;
+	public boolean getNeedCriteriaData() {
+		return needCriteriaData;
+	}
+	public void setNeedCriteriaData(boolean needCriteriaData) {
+		this.needCriteriaData = needCriteriaData;
+	}
+	
 	public String executeReport() throws Exception {
 		FacilioChain chain = FacilioChain.getNonTransactionChain();
 		FacilioContext context = new FacilioContext();
@@ -855,7 +863,9 @@ public class V2ReportAction extends FacilioAction {
 		
 		chain.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
 		chain.addCommand(new GetModuleFromReportContextCommand());
-		chain.addCommand(new GetCriteriaDataCommand());
+		if(needCriteriaData){
+			chain.addCommand(new GetCriteriaDataCommand());
+		}
 		chain.execute(context);
 
 		return setReportResult(context);

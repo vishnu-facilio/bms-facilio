@@ -231,7 +231,7 @@ public class LookupSpecialTypeUtil {
 			return EventAPI.getEvent(criteria);
 		}
         else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
-            return WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.READING_RULE, true ,criteria, null, null);
+        	return ReadingRuleAPI.getReadingRules(criteria);
         }
         else if (FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)) {
             return WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.READING_RULE, true ,criteria, null, null);

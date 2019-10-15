@@ -87,6 +87,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new HandleGroupByDataCommand());
 		c.addCommand(new AddRegressionPointsCommand());
 		c.addCommand(new FormatHeatMapDataCommand());
+//		c.addCommand(new GetTrendLineCommand());
 		return c;
 	}
 	
@@ -99,7 +100,7 @@ public class ReadOnlyChainFactory {
 	
 	public static FacilioChain newFetchReadingReportChain() {
 		FacilioChain c = getDefaultChain();
-		//c.addCommand(new SetLatestDateRange());
+//		c.addCommand(new SetLatestDateRange());
 		c.addCommand(new CreateReadingAnalyticsReportCommand());
 		c.addCommand(newFetchReportDataChain());
 		return c;

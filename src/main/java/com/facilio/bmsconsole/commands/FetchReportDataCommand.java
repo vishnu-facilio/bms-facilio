@@ -305,14 +305,13 @@ public class FetchReportDataCommand extends FacilioCommand {
 				if (dp.getAllCriteria() != null) {
 					newSelectBuilder.andCriteria(dp.getAllCriteria());
 				}
-
-				boolean noMatch = applyFilters(report, dp, newSelectBuilder);
-				if (noMatch) {
-					return Collections.EMPTY_LIST;
-				}
 			}
 			else {
 				newSelectBuilder.andCondition(CriteriaAPI.getEqualsCondition(xAggrField, xValues));
+			}
+			boolean noMatch = applyFilters(report, dp, newSelectBuilder);
+			if (noMatch) {
+				return Collections.EMPTY_LIST;
 			}
 		}
 

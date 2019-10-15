@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -27,20 +28,31 @@ import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 
 public class AddEnergyPredictionCommand extends FacilioCommand {
+	
+	private static final Logger LOGGER = Logger.getLogger(AddEnergyPredictionCommand.class.getName());
 
 	@Override
 	public boolean executeCommand(Context jc) throws Exception {
 		
-		long energyMeterID=(long) jc.get("energyMeterID");
+		try
+		{
+			long energyMeterID=(long) jc.get("energyMeterID");
+			
+			EnergyMeterContext emContext2 = DeviceAPI.getEnergyMeter(energyMeterID);
+			
+			addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLLogReadings",FieldFactory.getMLLogPredictCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
+			addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLReadings",FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
+			
+			
+			checkGamModel(energyMeterID,emContext2,(String) jc.get("weekEnd"),(String) jc.get("meterInterval"), (String) jc.get("modelName"));
+			return false;
+		}
+		catch(Exception e)
+		{
+			LOGGER.fatal("Error while adding Energy Prediction Job", e);
+			throw e;
+		}
 		
-		EnergyMeterContext emContext2 = DeviceAPI.getEnergyMeter(energyMeterID);
-		
-		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLLogReadings",FieldFactory.getMLLogPredictCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
-		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLReadings",FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
-		
-		
-		checkGamModel(energyMeterID,emContext2,(String) jc.get("weekEnd"),(String) jc.get("meterInterval"), (String) jc.get("modelName"));
-		return false;
 	}
 	
 	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context,String weekend,String meterInterval,String modelName) throws Exception
