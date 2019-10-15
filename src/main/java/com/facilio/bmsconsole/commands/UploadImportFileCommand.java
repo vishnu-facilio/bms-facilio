@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.File;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
@@ -16,11 +7,19 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ImportFieldFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
+import org.apache.commons.chain.Context;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.File;
+import java.util.Map;
 
 public class UploadImportFileCommand extends FacilioCommand {
 
@@ -66,17 +65,15 @@ public class UploadImportFileCommand extends FacilioCommand {
 		if(facilioModule ==  null) {
 			throw new IllegalArgumentException("Module cannot be null");
 		}
-        if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) && (assetCategory != -1)) {
-        	Map<String,String> moduleInfo = AssetsAPI.getAssetModuleName(assetCategory);
-        	if(!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
-        		facilioModule = modBean.getModule(moduleName);
-        		importProcessContext.setModuleId(facilioModule.getModuleId());
-        	}
-        	else {
-            	importProcessContext.setModuleId(facilioModule.getModuleId());
-            }
-            
-        }
+		if (facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) && (assetCategory != null && assetCategory != -1)) {
+			Map<String, String> moduleInfo = AssetsAPI.getAssetModuleName(assetCategory);
+			if (!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
+				facilioModule = modBean.getModule(moduleName);
+				importProcessContext.setModuleId(facilioModule.getModuleId());
+			} else {
+				importProcessContext.setModuleId(facilioModule.getModuleId());
+			}
+		}
         else {
         	importProcessContext.setModuleId(facilioModule.getModuleId());
         }

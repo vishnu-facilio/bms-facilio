@@ -44,7 +44,6 @@ public class ImportAPI {
 
 	public static JSONArray getColumnHeadings(Workbook workbook) throws Exception
 	{
-		HashMap<String,String> headingsInFirstSheet = new HashMap<String, String>();
 		JSONArray columnheadings = new JSONArray();
 		ArrayList<String> missingInSheet;
 		HashMap<Integer, ArrayList<String>> missingColumns = new HashMap<Integer, ArrayList<String>>();
@@ -637,7 +636,6 @@ public class ImportAPI {
 						facilioModule.getName().equals(FacilioConstants.ContextNames.FLOOR)
 						|| facilioModule.getName().equals(FacilioConstants.ContextNames.SPACE)
 						) {
-					Long moduleId = facilioModule.getModuleId();
 					List<String> includeFields = ImportFieldFactory.includeFields(facilioModule.getName());
 					
 					Map<String, FacilioField> resourceFields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ContextNames.RESOURCE));

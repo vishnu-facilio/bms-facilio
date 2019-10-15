@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -19,6 +13,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class GetImportHistoryListCommand extends FacilioCommand {
 
@@ -49,7 +48,7 @@ public class GetImportHistoryListCommand extends FacilioCommand {
 		if (moduleId > 0) {
 			selectRecordBuilder.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", moduleId.toString(), NumberOperators.EQUALS));
 		}
-		if (module.getName().equals(FacilioConstants.ContextNames.ASSET) || (module.getExtendModule() != null && module.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) 
+		if (module != null && (module.getName().equals(FacilioConstants.ContextNames.ASSET) || (module.getExtendModule() != null && module.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))))
 		{
 			selectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(), CommonOperators.IS_NOT_EMPTY ));
 		}
