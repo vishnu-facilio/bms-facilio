@@ -44,7 +44,7 @@ public class ValidateAssetBreakdownCommand extends FacilioCommand {
 				.select(fields)
 				.module(module)
 				.beanClass(AssetBreakdownContext.class)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(assetBreakdown.getAssetid()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(assetBreakdown.getAssetid()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromtime"), String.valueOf(assetBreakdown.getTotime()), NumberOperators.LESS_THAN_EQUAL))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("totime"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("totime"), String.valueOf(assetBreakdown.getFromtime()), NumberOperators.GREATER_THAN_EQUAL))

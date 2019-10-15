@@ -109,7 +109,7 @@ public class AssetPageFactory extends PageFactory {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.ASSET_BREAKDOWN));
 		
 		Criteria breakdownCriteria = new Criteria();
-		breakdownCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+		breakdownCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
 		
 		addFailureRateWidget(tab4Sec1, breakdownCriteria);
 		addAvgTtrWidget(tab4Sec1, breakdownCriteria);

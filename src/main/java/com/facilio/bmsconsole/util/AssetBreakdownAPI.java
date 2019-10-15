@@ -66,7 +66,7 @@ public class AssetBreakdownAPI {
 				.select(fields)
 				.module(module)
 				.beanClass(AssetBreakdownContext.class)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(assetId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(assetId), NumberOperators.EQUALS))
 				.orderBy(fieldMap.get("fromtime").getColumnName() + " desc")
 				.limit(1)
 				;

@@ -46,7 +46,7 @@ public class RemoveAssetBreakdownCommand extends FacilioCommand {
 					
 					AssetBreakdownContext assetBreakdown=AssetBreakdownAPI.getAssetBreakdown(assetBreakdownModule, assetBreakdownFields, assetBDSourceDetail.getParentId());
 					List<AssetBDSourceDetailsContext> AssetBDdetailsList = AssetBreakdownAPI.getAssetBDdetails(module,fields, assetBDSourceDetail.getParentId());
-			    	assetBDSourceDetail.setAssetid(assetBreakdown.getParentId());
+			    	assetBDSourceDetail.setAssetid(assetBreakdown.getAsset().getId());
 			    	context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS,assetBDSourceDetail);
 					if (AssetBDdetailsList != null && !AssetBDdetailsList.isEmpty()) {
 						boolean allBreakDownCompleted = AssetBDdetailsList.stream().allMatch(ast -> ast.getTotime() > 0);
@@ -63,7 +63,7 @@ public class RemoveAssetBreakdownCommand extends FacilioCommand {
 								.andCondition(CriteriaAPI.getIdCondition(assetBreakdown.getId(), assetBreakdownModule))
 								.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(),assetBreakdownModule));
 						builder.delete();
-						long lastDowntimeId=AssetBreakdownAPI.getAssetLastBreakdownIdByTime(assetBreakdownModule, assetBreakdownFields, assetBreakdown.getParentId());
+						long lastDowntimeId=AssetBreakdownAPI.getAssetLastBreakdownIdByTime(assetBreakdownModule, assetBreakdownFields, assetBreakdown.getAsset().getId());
 						if(lastDowntimeId>0){
 							context.put(FacilioConstants.ContextNames.ASSET_DOWNTIME_STATUS, false);
 							context.put(FacilioConstants.ContextNames.ASSET_DOWNTIME_ID, lastDowntimeId);

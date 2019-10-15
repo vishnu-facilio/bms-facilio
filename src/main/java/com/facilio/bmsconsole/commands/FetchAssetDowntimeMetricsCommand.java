@@ -90,7 +90,7 @@ public class FetchAssetDowntimeMetricsCommand extends FacilioCommand {
 		SelectRecordsBuilder<AssetBreakdownContext> builder = new SelectRecordsBuilder<AssetBreakdownContext>()
 				.module(module)
 				.beanClass(AssetBreakdownContext.class)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(assetId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("asset"), String.valueOf(assetId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromtime"), operator))
 				;
 		return builder;

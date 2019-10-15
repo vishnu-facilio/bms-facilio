@@ -14,17 +14,17 @@ public class AssetBreakdownContext extends ModuleBaseWithCustomFields{
                this.id = id;
        }
 
-       private long parentId = -1;
+	private AssetContext asset;
 
-       public long getParentId() {
-               return parentId;
-       }
+	public AssetContext getAsset() {
+		return asset;
+	}
 
-       public void setParentId(long parentId) {
-               this.parentId = parentId;
-       }
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
+	}
 
-       private long fromtime = -1;
+	private long fromtime = -1;
 
        public long getFromtime() {
                return fromtime;
