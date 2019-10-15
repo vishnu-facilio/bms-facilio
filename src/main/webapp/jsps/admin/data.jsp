@@ -18,6 +18,8 @@
 <%@page import="java.util.List"%>
 
 <%
+long receivedTime =0l;
+String receiveddate = "";
 List<Organization> org = null;
 OrgBean orgBean =  AccountUtil.getOrgBean();
 org = orgBean.getOrgs();
@@ -32,21 +34,44 @@ org = orgBean.getOrgs();
 <title>Insert title here</title>
 </head>
 <script type="text/javascript">
+function changeThePage(){
+	var selectedOption = "data?orgDomain="+ $("#orgDomain").val();
+	location.href = selectedOption;
 
-function handleShowMore(target)
- {
-	target.parentElement.parentElement.children[0].style.maxHeight='unset'
-  }
+}
+
+</script>
+<script type="text/javascript">
+
+	function handleShowMore(target)
+	 {
+		if(target.classList.contains('expanded'))
+		{
+			//collapse
+			target.parentElement.parentElement.children[0].style.maxHeight='75px'
+			target.classList.remove('expanded')
+			target.innerText='Show more'
+			
+		}
+		else{//expand
+			target.parentElement.parentElement.children[0].style.maxHeight='unset'
+				target.classList.add('expanded')
+				target.innerText='Show less'
+	
+		}
+		
+		
+	  }
  
 
 </script>
 										
 <body>									
-	<form action="data">
+	<form action="">
 		<br> <br> <br> <label for="orgDomain">
-			<h3>Select Org:</h3>
-		</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <select
-			name="orgDomain" id="orgDomain">
+			<h4>Org:</h4>
+		</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<select
+			name="orgDomain" id="orgDomain" onChange="changeThePage()">
 			<option value="" disabled selected>Select</option>
 			<%
 						for (Organization domain : org) {
@@ -59,29 +84,48 @@ function handleShowMore(target)
 						}
 					%>
 		</select> <br> <br> <br>
-		<div align="center">
+		<!-- <div align="center">
 
 			<input id="submit" type="submit" style="margin-left: -600px"
 				name="data" value="Submit" />
 
 
-		</div>
+		</div> -->
+<br> <br> <br>
 
 	</form>
 
 
 	<%
+	if(request.getParameter("orgDomain")!=null){
     String orgDomain =request.getParameter("orgDomain");
 
     JSONArray jsonArray = new JSONArray();
     jsonArray = AdminAction.getAlertsPointsData(orgDomain);
+    
+    for(int j = 0; j <  jsonArray.length();j++) {
+		 org.json.JSONObject jsonObj = jsonArray.getJSONObject(j);
+		 
+		
+		 String arrival=  jsonObj.get("arrivalTime").toString() ;
+		 long time =Long.parseLong(arrival);
+		 long t1 = time;
+		 if(time>t1){
+			 receivedTime = time;
+		 }
+		 if(receivedTime != 0 || j==jsonArray.length()-1 ){
+			 receiveddate= DateTimeUtil.getFormattedTime(time);
+		 }
+		 
+    }
  %>
 
-	<%
+<%-- 	<%
   if(orgDomain != null && !orgDomain.isEmpty())
   {
-  %>
-
+  %> --%>
+  
+  <label><h5>Last Received Time :</h5></label><%=receiveddate %>
 	<table style="margin-top: 40px;" class="table table-bordered  a">
 		<tr>
 			<th>S.No</th>
@@ -98,8 +142,9 @@ function handleShowMore(target)
 			
 			 String arrival=  jsonObj.get("arrivalTime").toString() ;
 			 long time =Long.parseLong(arrival);
-			 String date = DateTimeUtil.getFormattedTime(time);	
-			 
+			 String date = DateTimeUtil.getFormattedTime(time);
+			
+			 System.out.println("Formated time is "+date);
 	         
 	       
 		%>
@@ -128,7 +173,7 @@ function handleShowMore(target)
 		<%} %>
 	</table>
 
-	<%} %>
+	<%} %> 
 </body>
 <style>
 input[type=text] {
@@ -157,7 +202,7 @@ input[type=submit] {
 	border: none;
 	border-radius: 3px;
 	cursor: pointer;
-	font-size: 22px;
+	font-size: 15px;
 }
 
 input[type=submit]:hover {
@@ -180,15 +225,15 @@ input[type=submit]:hover {
 }
 
 select {
-	width: 20%;
+	width: 15%;
 	padding: 12px 20px;
 	margin: 8px 16px;
-	margin-top: 8px;
+	margin-top: 5px;
 	display: inline-block;
 	border: 1px solid #ccc;
 	border-radius: 4px;
 	box-sizing: border-box;
-	font-size: 16px;
+	font-size: 13px;
 }
 </style>
 </html>
