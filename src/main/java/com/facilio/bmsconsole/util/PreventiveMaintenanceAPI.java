@@ -3009,7 +3009,7 @@ public class PreventiveMaintenanceAPI {
 		for (JobContext jc: jcs) {
 			long lastExecutionTime = jc.getJobStartTime();
 			if (lastExecutionTime == 0) {
-				lastExecutionTime = System.currentTimeMillis();
+				lastExecutionTime = DateTimeUtil.getCurrenTime();
 			}
 			lastExecutionTime = lastExecutionTime / 1000;
 
