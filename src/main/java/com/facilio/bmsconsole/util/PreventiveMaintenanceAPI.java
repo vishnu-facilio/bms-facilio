@@ -2982,7 +2982,7 @@ public class PreventiveMaintenanceAPI {
 		return CollectionUtils.isEmpty(workOrderContexts);
 	}
 
-	public static void migrateJobs() throws Exception {
+	public static void migrateJobs(long orgid) throws Exception {
 		Connection conn = null;
 		PreparedStatement getPstmt = null;
 		ResultSet rs = null;
@@ -2991,7 +2991,7 @@ public class PreventiveMaintenanceAPI {
 
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE IS_ACTIVE = 1 AND IS_PERIODIC = 1 AND EXECUTION_ERROR_COUNT < 5");
+			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE IS_ACTIVE = 1 AND IS_PERIODIC = 1 AND EXECUTION_ERROR_COUNT < 5 AND ORGID = "+orgid);
 
 
 			rs = getPstmt.executeQuery();
