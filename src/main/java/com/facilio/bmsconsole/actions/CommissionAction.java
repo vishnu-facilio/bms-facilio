@@ -29,6 +29,7 @@ public class CommissionAction extends FacilioAction{
 		FacilioChain exportModule = TransactionChainFactory.getExportPointsChain();
 		exportModule.execute(context);
 		String fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
+		setResult("fileUrl", fileUrl);
 		return SUCCESS;
 	}
 	

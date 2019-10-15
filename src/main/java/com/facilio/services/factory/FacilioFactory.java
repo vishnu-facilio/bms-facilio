@@ -1,5 +1,6 @@
 package com.facilio.services.factory;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.email.EmailFactory;
 import com.facilio.services.filestore.FileStore;
@@ -18,7 +19,10 @@ public class FacilioFactory {
         return FileStoreFactory.getInstance().getFileStore();
 
     }
-
+    public static FileStore getFileStore(long ouid) {
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        return getFileStoreFromOrg(orgId, ouid);
+    }
 
     public static EmailClient getEmailClient(){
         return EmailFactory.getEmailClient();

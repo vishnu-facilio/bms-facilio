@@ -102,7 +102,8 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 		HVAC(1, "HVAC"),
 		ENERGY(2, "Energy"),
 		FIRE(3, "Fire"),
-		CONTROLLER(4,"Controller")
+		CONTROLLER(4,"Controller"),
+		DEVICE(5,"Device")
 		;
 		
 		private int intVal;

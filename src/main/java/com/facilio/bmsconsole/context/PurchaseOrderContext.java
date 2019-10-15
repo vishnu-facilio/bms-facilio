@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -109,6 +110,9 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 			purchaseOrderContext.setDescription(list.get(0).getDescription());
 			purchaseOrderContext.setShipToAddress(list.get(0).getShipToAddress());
 			purchaseOrderContext.setBillToAddress(list.get(0).getBillToAddress());
+			if(MapUtils.isNotEmpty(list.get(0).getData())) {
+				purchaseOrderContext.setData(list.get(0).getData());
+			}
 		}
 		long vendorId = -1;
 		long storeRoomId = -1;

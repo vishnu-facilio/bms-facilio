@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.commands;
+ package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -68,11 +68,11 @@ public class DemoRollUpCommand extends FacilioCommand {
 					sql.append("WHERE ORGID=").append(orgId);
 					try(PreparedStatement pstmt = conn.prepareStatement(sql.toString());) {
 						int count=  pstmt.executeUpdate();
-						System.out.println("###DemoRoleUp"+" "+count+" "+"of rows updated in"+key+"successfully");
-						LOGGER.info("###DemoRollsUp"+" "+count+" "+"of rows updated in"+key+"successfully");
+						System.out.println("###DemoRoleUp "+" "+count+" "+"  of rows updated in  "+key+"  successfully");
+						LOGGER.info("###DemoRollUpJob "+count+" of rows updated in  "+key+"  successfully");
 					}
 					catch(Exception e) {
-						LOGGER.info("Exception occurred### in  DemoRollUpJob... TableName is.. "+ key+ e);
+						LOGGER.info("###Exception occurred in  DemoRollUpJob... TableName is:  "+ key+ e);
 						throw e;
 //>>>>>>> parent of 850453418... Batch Update added in DemoRollUp
 					}
@@ -108,7 +108,6 @@ public class DemoRollUpCommand extends FacilioCommand {
 //>>>>>>> parent of 850453418... Batch Update added in DemoRollUp
 			}
 			catch(Exception e) {
-				LOGGER.info("Exception occurred### in  DemoRollUpJob  ", e);
 				throw e;
 			}
 			LOGGER.info("####DemoRollUp Job completed time  is####" + (System.currentTimeMillis()-startTime));

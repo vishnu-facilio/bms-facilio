@@ -18,15 +18,19 @@
                               <td>
                                     <div class="td-width-mobile" style="padding-right: 30px;">
                                           <div style="font-size: 22px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.36; letter-spacing: 0.3px; color: #19191c;text-align: left;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;padding-top: 30px;padding-bottom: 30px;">
-                                          <img src="https://facilio.com/assets/images/logo.png" alt="" title="" width="80"/>
+                                          <#if facilioDomain??>
+                                          	<img src="${brandLogo}" alt="" title="" width="80"/>
+                                          <#else>
+	                                         <img src="${brandLogo}" alt="" title="" width="150"/>
+	                                      </#if>
                                           </div>      
                                         <div style="font-size: 16px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 530px;width: 530px;padding-bottom: 10px;">Hello ${toUser.name},</div>
                                         <div style="font-size: 16px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">
-                                          Welcome to Facilio!
+                                          Welcome to ${brandName}!
                                         </div>
                                         <div style="padding-top: 16px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 550px;">
                                           You've now joined the community of change-makers in facilities management. 
-                                          We're glad you're a part of it. You can check us out <a href="www.facilio.com" style="text-decoration: none;padding-left: 5px;font-size: 14px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">here.</a>
+                                          We're glad you're a part of it. You can check us out <a href="${brandUrl}" style="text-decoration: none;padding-left: 5px;font-size: 14px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">here.</a>
                                           </div>
                                           <div style="padding-top: 20px;font-size: 14px; font-weight: 400; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 570px;">
                                            To activate your account, please click the following button.
@@ -57,7 +61,7 @@
             </div>
             <div style="text-align: center;margin-top: 20px;">
             
-            <div style="font-size: 11px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.28px; text-align: center; color: #8e8c97;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">&copy; 2019 <a href="www.facilio.com" style="padding-left: 5px;font-size: 11px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.5px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;text-decoration: none;">www.facilio.com</a> | ALL RIGHTS RESERVED</div>
+            <div style="font-size: 11px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.28px; text-align: center; color: #8e8c97;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">&copy; 2019 <a href="${brandUrl}" style="padding-left: 5px;font-size: 11px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.5px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;text-decoration: none;">${brandUrl}</a> | ALL RIGHTS RESERVED</div>
             </div>
       </div>
 </body>

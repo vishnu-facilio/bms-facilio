@@ -163,9 +163,12 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				
 				FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("loggerGroupId"));
 				countField.setName("count");
+				FacilioField sumField = BmsAggregateOperators.NumberAggregateOperator.SUM.getSelectField(fieldMap.get("alarmCount"));
+				sumField.setName("sum");
 				List<FacilioField> selectFields = new ArrayList<FacilioField>();
 				selectFields.add(countField);
 				selectFields.add(fieldMap.get("loggerGroupId"));
+				selectFields.add(sumField);
 				
 				selectBuilder = new GenericSelectRecordBuilder()
 						.select(selectFields)
@@ -176,11 +179,23 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				
 				List<Map<String, Object>> propsList = selectBuilder.get();
 				
-				for(Map<String, Object> prop :propsList)
+				if(!propsList.isEmpty())
 				{
-					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = workflowRuleHistoricalLoggerContextMap.get((long) prop.get("loggerGroupId"));
-					workflowRuleHistoricalLoggerContext.setResourceLogCount((long) prop.get("count"));
+					for(Map<String, Object> prop :propsList)
+					{
+						WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = workflowRuleHistoricalLoggerContextMap.get((long) prop.get("loggerGroupId"));
+						if(prop.get("count") != null) {
+							workflowRuleHistoricalLoggerContext.setResourceLogCount((long) prop.get("count"));
+							
+						}
+						if(prop.get("sum") != null)
+						{
+							workflowRuleHistoricalLoggerContext.setTotalChildAlarmCount(Integer.valueOf(String.valueOf(prop.get("sum"))));
+						}
+					}
+					
 				}
+				
 				
 				return workflowRuleHistoricalLoggerContextMap.values();
 	}

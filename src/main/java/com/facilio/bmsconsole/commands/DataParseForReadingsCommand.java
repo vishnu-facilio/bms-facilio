@@ -29,8 +29,8 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
@@ -61,7 +61,7 @@ public class DataParseForReadingsCommand extends FacilioCommand {
 		ImportTemplateContext importTemplateContext = importTemplateAction.fetchTemplate(templateID);
 		LOGGER.severe("importTemplateContext getFieldMappingString-- "+importTemplateContext.getFieldMappingString());
 		
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		InputStream is = fs.readFile(importProcessContext.getFileId());
 		HashMap<String,String> fieldMapping = importTemplateContext.getFieldMapping();
 		HashMap<String,String> uniqueMapping = importTemplateContext.getUniqueMapping();

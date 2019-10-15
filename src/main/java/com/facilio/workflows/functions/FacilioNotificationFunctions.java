@@ -1,12 +1,17 @@
 package com.facilio.workflows.functions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.workflows.exceptions.FunctionParamException;
@@ -48,6 +53,29 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			Map<String,Object> sendMailMap =  (Map<String, Object>) objects[0];
 			
 			SMSUtil.sendSMS(WorkflowV2Util.getAsJSONObject(sendMailMap));
+			return null;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	SEND_MOBILE_NOTIFICATION(2,"sendNotification") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			if(objects[0] == null) {
+				return null;
+			}
+			Long userId =  (Long) objects[0];
+			Map<String,Object> sendMailMap =  (Map<String, Object>) objects[1];
+			
+			NotificationAPI.sendPushNotification(Collections.singletonList(userId), WorkflowV2Util.getAsJSONObject(sendMailMap));
+			
 			return null;
 		};
 		

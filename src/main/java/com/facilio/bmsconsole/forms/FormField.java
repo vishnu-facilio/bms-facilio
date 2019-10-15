@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class FormField implements Serializable {
 	private static final long serialVersionUID = 4252438995947509456L;
@@ -39,7 +40,8 @@ public class FormField implements Serializable {
 	}
 	
 	private Boolean required = false;
-	
+
+	@JsonInclude
 	public boolean getRequired() {
 		return isRequired();
 	}
@@ -135,6 +137,9 @@ public class FormField implements Serializable {
 	}
 	
 	public String getDisplayName() {
+		/*if (field != null) {
+			return field.getDisplayName();
+		}*/
 		return this.displayName;
 	}
 	

@@ -1,16 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.agentnew.point.AddPointCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
+import org.apache.commons.chain.Command;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class FacilioChainFactory {
     private static Logger LOGGER = LogManager.getLogger(FacilioChainFactory.class.getName());
@@ -1133,6 +1133,7 @@ public class FacilioChainFactory {
 		c.addCommand(new ValidateNewTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
 		c.addCommand(new CreateWorkorderTemplateCommand());	  // template addition
+		c.addCommand(new SetUserTriggerProps());
 		c.addCommand(new AddPreventiveMaintenanceCommand());  // PM addition
 		c.addCommand(new AddResourceReadingRelCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
@@ -1166,6 +1167,7 @@ public class FacilioChainFactory {
 		c.addCommand(new ValidateNewTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
 		c.addCommand(new CreateWorkorderTemplateCommand());
+		c.addCommand(new SetUserTriggerProps());
 		c.addCommand(new UpdatePreventiveMaintenanceCommand());
 		c.addCommand(new AddResourceReadingRelCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
@@ -1322,6 +1324,12 @@ public class FacilioChainFactory {
 	public static FacilioChain getUpdateFieldChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UpdateFieldCommand());
+		return c;
+	}
+
+	public static FacilioChain changeNameToLocalIdChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new ChangeNameLocalIdCommand());
 		return c;
 	}
 	
@@ -1604,13 +1612,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain updateFormulaChain() {
-		FacilioChain c = FacilioChain.getTransactionChain();
-		c.addCommand(new UpdateFormulaCommand());
-		c.addCommand(new AddValidationRulesCommand());
-		return c;
-	}
-	
 	public static FacilioChain deleteFormulaChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteFormulaCommand());
@@ -1835,6 +1836,7 @@ public class FacilioChainFactory {
 	
 	public static FacilioChain addModuleDataChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new SetLocalIDCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		return c;
@@ -2010,6 +2012,11 @@ public class FacilioChainFactory {
 		c.addCommand(new GetTenantListCommand());
 		return c;
 	}
-	
+
+	public static FacilioChain getAddPointChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AddPointCommand());
+		return c;
+	}
 	
 }

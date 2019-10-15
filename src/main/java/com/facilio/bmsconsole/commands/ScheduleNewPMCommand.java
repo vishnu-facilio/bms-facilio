@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -285,14 +288,20 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
 
         Map<String,PMTriggerContext> triggerMap = new HashMap<>();
         if (pms.get(0).getTriggers() != null && !pms.get(0).getTriggers().isEmpty()) {
-            for (int i = 0; i < pms.get(0).getTriggers().size(); i++) {
-                PMTriggerContext triggerContext = pms.get(0).getTriggers().get(i);
-                triggerMap.put(triggerContext.getName(), triggerContext);
-            }
-            pms.get(0).setTriggerMap(triggerMap);
+            List<PMTriggerContext> pmTriggerContexts = pms.get(0).getTriggers().stream().filter(i -> i.getTriggerExecutionSourceEnum() == PMTriggerContext.TriggerExectionSource.SCHEDULE).collect(Collectors.toList());
 
-            context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pms.get(0));
-            execute(context);
+            if (CollectionUtils.isEmpty(pmTriggerContexts)) {
+                PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(recordIds, 0);
+            } else {
+                for (int i = 0; i < pmTriggerContexts.size(); i++) {
+                    PMTriggerContext triggerContext = pmTriggerContexts.get(i);
+                    triggerMap.put(triggerContext.getName(), triggerContext);
+                }
+                pms.get(0).setTriggerMap(triggerMap);
+
+                context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pms.get(0));
+                execute(context);
+            }
         } else {
             PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(recordIds, 0);
         }

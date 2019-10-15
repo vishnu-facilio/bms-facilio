@@ -642,6 +642,8 @@ public class ReadingsAPI {
 				if(orderBy!=null){
 					selectBuilder.orderBy(orderBy);
 				}
+				selectBuilder.skipUnitConversion();
+				
 		return selectBuilder.fetchFirst();
 	}
 	
@@ -688,9 +690,10 @@ public class ReadingsAPI {
 								if (timeStamp > currentTime
 										|| (lastReading != null
 										&& lastTimeStamp != -1
+										&& StringUtils.isNotEmpty(meta.getActualValue())
 										&& !"-1".equals(meta.getActualValue())
 										&& timeStamp < lastTimeStamp)) {
-									if (AccountUtil.getCurrentOrg().getId() == 154l) {
+									if (AccountUtil.getCurrentOrg().getId() == 169) {
 										LOGGER.info("Not updating: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId);
 									}
 									continue;
@@ -1237,8 +1240,10 @@ public class ReadingsAPI {
 				Condition condition = CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(reading.getTtime()), NumberOperators.LESS_THAN);
 				String orderBy = fieldMap.get("ttime").getColumnName() + " desc";
 				lastReading = getSingleReading(module, fields, reading, fieldName, condition, orderBy);
+				
 				condition = CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(reading.getTtime()),NumberOperators.GREATER_THAN);
 				orderBy = fieldMap.get("ttime").getColumnName() + " asc";
+				
 				nextReading = getSingleReading(module, fields, reading, fieldName, condition, orderBy);
 				
 				if (!currentReadingUpdate && ((lastReading!=null&&lastReading.getTtime() > curReadingTime) || (nextReading!=null&&nextReading.getTtime() < curReadingTime))) {

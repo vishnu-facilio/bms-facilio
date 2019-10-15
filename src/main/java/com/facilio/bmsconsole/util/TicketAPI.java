@@ -617,6 +617,21 @@ public class TicketAPI {
 		return null;
 	}
 	
+	public static List<TaskSectionContext> getTaskSections(Criteria criteria) throws Exception {
+		if(criteria != null) {
+			FacilioModule module = ModuleFactory.getTaskSectionModule();
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+															.select(FieldFactory.getTaskSectionFields())
+															.table(module.getTableName())
+															.andCriteria(criteria);
+			List<Map<String, Object>> sectionProps = selectBuilder.get();
+			if(sectionProps != null && !sectionProps.isEmpty()) {
+				return FieldUtil.getAsBeanListFromMapList(sectionProps, TaskSectionContext.class);
+			}
+		}
+		return null;
+	}
+	
 	public static Map<Long, TaskSectionContext> getTaskSections(List<Long> sectionIds) throws Exception {
 		if (sectionIds != null && !sectionIds.isEmpty()) {
 			FacilioModule module = ModuleFactory.getTaskSectionModule();

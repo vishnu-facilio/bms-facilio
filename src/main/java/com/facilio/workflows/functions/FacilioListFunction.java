@@ -251,6 +251,24 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	CONTAINS(13,"contains") {										
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			List<Object> list = (List<Object>) objects[0];
+			Object object= (Object)objects[1];
+			return list.contains(object);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;

@@ -567,11 +567,11 @@ public class ColumnFactory {
 		columns.add(new ViewField("severity", "Severity"));
 		columns.add(new ViewField("subject", "Message"));
 		columns.add(new ViewField("resource", "Space / Asset"));
-		columns.add(new ViewField("lastOccurredTime", "Last Created Time"));
+		columns.add(new ViewField("lastOccurredTime", "Last Reported Before"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
 		columns.add(new ViewField("acknowledged", "Acknowledged"));
 		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
-		columns.add(new ViewField("lastCreatedTime", "Last Reported Time"));
+		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
 		columns.add(new ViewField("readingalarmcategory", "Category" ));
 		columns.add(new ViewField("rule", "Rule"));
 		return columns;

@@ -30,4 +30,8 @@ public enum CommandStatus
         this.status = status;
         this.key = key;
     }
+    
+    public boolean equals (String status) {
+		return this.status.equals(status);
+	}
 }

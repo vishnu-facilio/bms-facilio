@@ -30,13 +30,6 @@
 		</interceptors>
 
 		<default-interceptor-ref name="defaultInterceptor" />
-		<global-results>
-			<result name="login">/service/login.jsp</result>
-			<result name="unauthorized" type="redirect">
-				<param name="location">/jsps/serviceportal/unauthorized.jsp</param>
-				<param name="parse">false</param>
-			</result>
-		</global-results>
 		
 		<action name="workorders" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
 			<param name="viewName">myrequests</param>
@@ -226,13 +219,6 @@
 		</interceptors>
 
 		<default-interceptor-ref name="defaultInterceptor" />
-		<global-results>
-			<result name="login">/service/login.jsp</result>
-			<result name="unauthorized" type="redirect">
-				<param name="location">/jsps/serviceportal/unauthorized.jsp</param>
-				<param name="parse">false</param>
-			</result>
-		</global-results>
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
 			<param name="auth">false</param>

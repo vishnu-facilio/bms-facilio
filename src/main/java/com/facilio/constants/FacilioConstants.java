@@ -1,14 +1,12 @@
 package com.facilio.constants;
 
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.activity.ActivityContext;
+import com.facilio.agentnew.bacnet.BacnetIpController;
+import com.facilio.agentnew.modbusrtu.ModbusRtuController;
+import com.facilio.agentnew.modbustcp.ModbusTcpController;
+import com.facilio.agentnew.niagara.NiagaraController;
+import com.facilio.agentnew.opcua.OpcUaController;
+import com.facilio.agentnew.opcxmlda.OpcXmlDaController;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
@@ -21,6 +19,13 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
+import org.json.simple.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FacilioConstants {
 	
@@ -70,6 +75,10 @@ public class FacilioConstants {
 		public static final String TOOL_TYPES="tooltypes";
 		public static final String ITEM_TYPES="itemtypes";
 		public static final String STORE_ROOM="storeroom";
+		public static final String DEVICES="devices";
+		public static final String ASSET_BREAKDOWN = "assetbreakdown";
+		public static final String ITEM_TRANSCTIONS ="itemtransactions";
+		public static final String TOOL_TRANSCTIONS ="tooltransactions";
 	}
 
 	public static class ContextNames {
@@ -78,6 +87,7 @@ public class FacilioConstants {
         public static final String OLD_TASKS = "oldTasks";
 		public static final String TASKS = "tasks";
         public static final String TASK_READINGS = "taskReadings";
+		public static final String IS_USER_TRIGGER = "userTrigger";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
@@ -95,6 +105,8 @@ public class FacilioConstants {
         public static final String TO_INSERT_MAP = "toInsertMap";
         public static final String BULK_DATA = "BULK_DATA";
         public static final String FEDGE_ZIP = "/fedge.zip";
+		public static final String INNER_JOIN = "innerJoin";
+		public static final String ON_CONDITION = "onCondition";
 
 		public static final String FACILIO_RECORD = "facilioRecord";
 		public static final String FACILIO_CONSUMER = "facilioConsumer";
@@ -133,6 +145,8 @@ public class FacilioConstants {
 		public static final String REGRESSION_RESULT = "regressionResult";
 		public static final String REGRESSION_REPORT = "regressionReport";
 		public static final String REPORT_TEMPLATE = "reportTemplate";
+
+		public static final String TIMEOUT = "timeout";
 
 		public static final String TENANT_STATUS = "tenantStatus";
 		public static final String USER_ID = "userId";
@@ -241,6 +255,7 @@ public class FacilioConstants {
 		public static final String ALARM_OCCURRENCE = "alarmoccurrence";
 		public static final String ANOMALY_ALARM_OCCURRENCE = "anomalyalarmoccurrence";
 		public static final String READING_ALARM_OCCURRENCE = "readingalarmoccurrence";
+		public static final String VIOLATION_ALARM_OCCURRENCE = "violationalarmoccurrence";
 		public static final String LATEST_ALARM_OCCURRENCE = "latestAlarmOccurrence";
 		public static final String BASE_ALARM = "basealarm";
 		public static final String BASE_EVENT = "baseevent";
@@ -250,6 +265,8 @@ public class FacilioConstants {
 		public static final String READING_ALARM_CATEGORY = "readingalarmcategory";
 		public static final String BMS_EVENT = "bmsevent";
 		public static final String BMS_ALARM ="bmsalarm";
+		public static final String VIOLATION_EVENT = "violationevent";
+		public static final String VIOLATION_ALARM ="violationalarm";
 		public static final String IS_INCLUDE = "isInclude";
 		public static final String ALARM_COUNT = "alarmCount";
 		
@@ -274,6 +291,7 @@ public class FacilioConstants {
 		public static final String TASK_SECTION_TEMPLATES = "taskSectionTemplates";
 		public static final String PREREQUISITE_APPROVER_TEMPLATES = "prerequisiteApproverTemplates";
 		public static final String TASK_SECTION = "taskSection";
+		public static final String TASK_SECTION_MODULE = "tasksection";
 		public static final String DEFAULT_TASK_SECTION = "default";
 		
 		public static final String PRE_REQUEST_STATUS="prerequestStatus";
@@ -320,6 +338,7 @@ public class FacilioConstants {
 		public static final String READING_NAME = "readingName";
 		public static final String IS_SPECIAL_MODULE = "isSpecialModule";
 		public static final String TOTAL_CURRENT_OCCUPANCY = "currentOccupancy";
+		public static final String MODULE_CHANGE_TO = "moduleChangeTo";
 		
 		public static final String OVER_RIDE_READING_SPLIT = "overRideReadingSplit";
 		public static final String MODULE = "module";
@@ -350,6 +369,7 @@ public class FacilioConstants {
 		public static final String ONLY_READING = "onylyReading";
 		public static final String ADJUST_READING_TTIME = "adjustReadingTtime";
 		public static final String KPI = "kpi";
+		public static final String KPI_CATEGORY = "kpiCategory";
 		
 		public static final String DASHBOARD = "dashboard";
 		public static final String DASHBOARD_TAB = "dashboardTab";
@@ -404,6 +424,7 @@ public class FacilioConstants {
 		public static final String REPORT_FROM_ALARM = "reportFromAlarm";
 		public static final String ALARM_RESOURCE = "alarmResource";
 		public static final String FETCH_EVENT_BAR = "fetchEventBar";
+		public static final String FETCH_ALARM_INFO = "fetchAlarmInfo";
 		public static final String CALCULATE_REPORT_AGGR_DATA = "calculateReportData";
 		public static final String REPORT_CARD_DATA = "reportCardData";
 		public static final String REPORT_VARIANCE_DATA = "reportVarianceData";
@@ -514,7 +535,15 @@ public class FacilioConstants {
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		public static final String RO_MODULE_SPI_CINEMAS = "rowaterenpinew";
 		
-		public static final String ASSET_BREAKDOWN = "assetBreakdown";
+		public static final String ASSET_BREAKDOWN = "assetbreakdown";
+		public static final String BACNET_IP_CONTROLLER_MODULE_NAME = "bacnetipcontroller";
+		public static final String NIAGARA_CONTROLLER_MODULE_NAME = "niagaracontroller";
+		public static final String LON_WORKS_CONTROLLER_MODULE_NAME = "lonworkscontroller";
+		public static final String OPC_XML_DA_CONTROLLER_MODULE_NAME = "opcxmldacontroller";
+		public static final String OPC_UA_CONTROLLER_MODULE_NAME = "opcuacontroller";
+		public static final String MODBUS_TCP_CONTROLLER_MODULE_NAME = "modbustcpcontroller";
+        public static final String MODBUS_RTU_CONTROLLER_MODULE_NAME = "modbusrtucontroller";
+
 		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";
 		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";
 		
@@ -773,6 +802,7 @@ public class FacilioConstants {
 		public static final String TABULAR_STATE = "tabularState";
 		
 		public static final String COST = "cost";
+		public static final String COST_TYPE = "costType";
 		public static final String COST_ASSET = "costAsset";
 		public static final String COST_FIRST_BILL_TIME = "costFirstBillTime";
 		public static final String COST_READINGS = "costReadings";
@@ -1120,6 +1150,14 @@ public class FacilioConstants {
 
 
 		public static final String PM_PLANNER_SETTINGS="pm_planner_settings";
+		public static final String DEVICE_CODE="device_code";
+		public static final String DEVICE_INFO="device_info";
+		public static final String DEVICES_LIST="deviceList";
+		public static final String DEVICE_DETAILS="deviceDetails";
+		public static final String CONNECTED_DEVICE_ID="connectedDeviceId";
+		
+		
+		
 		
 		public static final String ATTENDANCE = "attendance";
 		public static final String ATTENDANCE_TRANSACTIONS = "attendanceTransaction";
@@ -1216,7 +1254,12 @@ public class FacilioConstants {
 		public static final String POINTS_PROCESS_CONTEXT = "pointsProcessContext";
 		
 		public static final String NEXT_PAYMENT_DATE = "nextPaymentDate";
-		
+		public static final String DATA = "data";
+		public static final String CONDITIONAL_FORMATTING_RESULT = "conditionalFormattingResult";
+		public static final String CONDITIONAL_FORMATTINGS = "conditionalFormattings";
+		public static final String IMPORT_PROCESS_CONTEXT_LIST = "importProcessContextList";
+		public static final String DIGITAL_LOG_BOOK = "digitalLogBook";
+
 
 
 
@@ -1270,6 +1313,14 @@ public class FacilioConstants {
 			classMap.put(FCU, FCUContext.class);
 			classMap.put(HEAT_PUMP, HeatPumpContext.class);
 			classMap.put(UTILITY_METER, UtilityMeterContext.class);
+
+			classMap.put(MODBUS_TCP_CONTROLLER_MODULE_NAME, ModbusTcpController.class);
+			classMap.put(MODBUS_RTU_CONTROLLER_MODULE_NAME, ModbusRtuController .class);
+			classMap.put(BACNET_IP_CONTROLLER_MODULE_NAME, BacnetIpController.class);
+			classMap.put(OPC_UA_CONTROLLER_MODULE_NAME, OpcUaController.class);
+			classMap.put(OPC_XML_DA_CONTROLLER_MODULE_NAME, OpcXmlDaController.class);
+			classMap.put(NIAGARA_CONTROLLER_MODULE_NAME, NiagaraController.class);
+
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);
 			classMap.put(WEATHER_READING, ReadingContext.class);
@@ -1368,6 +1419,7 @@ public class FacilioConstants {
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
 
 			classMap.put(Reservation.RESERVATION, ReservationContext.class);
+			classMap.put(ModuleNames.DEVICES, DeviceContext.class);
 			classMap.put(Reservation.RESERVATIONS_INTERNAL_ATTENDEE, InternalAttendeeContext.class);
 			classMap.put(Reservation.RESERVATIONS_EXTERNAL_ATTENDEE, ExternalAttendeeContext.class);
 

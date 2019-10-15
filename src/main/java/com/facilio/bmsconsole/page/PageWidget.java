@@ -217,7 +217,8 @@ public class PageWidget {
  		ANOMALY_METRICS("anomalyMetrics"),
  		FORMULA_LOG("formulaLog"),
 		ALARM_DETAILS("alarmDetails"),
- 		ALARM_REPORT("alarmReport");
+ 		ALARM_REPORT("alarmReport"),
+ 		KPI_DETAILS_WIDGET("kpiDetailsWidget"),
  		;
 		
 		private String name;
@@ -288,8 +289,10 @@ public class PageWidget {
  		KPI_METERS_ASSOCIATED("metersAssociated"),
  		KPI_VIOLATIONS("kpiViolations"),
  		KPI_TARGET("kpiTarget"),
+ 		KPI_LATEST_VALUE("kpiLatestValue"),
  		KPI_TREND("kpiTrend"),
- 		KPI_TABULAR("kpiTabular")
+ 		KPI_TABULAR("kpiTabular"),
+		ALARM_DUARTION("alarmDuration")
  		;
 		private String name;
 		

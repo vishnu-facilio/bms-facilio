@@ -13,7 +13,7 @@ function_name_declare: VAR ;
 function_param: data_type VAR ;
 
 data_type
- : op=(VOID | DATA_TYPE_STRING | DATA_TYPE_NUMBER | DATA_TYPE_DECIMAL | DATA_TYPE_BOOLEAN | DATA_TYPE_MAP | DATA_TYPE_LIST)
+ : op=(VOID | DATA_TYPE_STRING | DATA_TYPE_NUMBER | DATA_TYPE_BOOLEAN | DATA_TYPE_MAP | DATA_TYPE_LIST)
  ;
  
  block
@@ -31,7 +31,13 @@ statement
  ;
 
 assignment
- : VAR (OPEN_BRACKET expr CLOSE_BRACKET)* ASSIGN expr SEMICOLON
+ : assignment_var ASSIGN expr SEMICOLON
+ ;
+
+assignment_var
+ : VAR																			#assignSingleVar
+ | VAR (OPEN_BRACKET expr CLOSE_BRACKET)										#assignSingleBracketVar
+ | VAR(DOT VAR)+																#assignMultiDotVar
  ;
 
 if_statement
@@ -64,8 +70,8 @@ function_return
  ;
  
 boolean_expr_atom																				
- : expr																												#exprForBoolean									
- | boolean_expr_atom op=(AND | OR) boolean_expr_atom																#booleanExprCalculation
+ : expr																												#exprForBoolean		
+ | boolean_expr_atom op=(AND | OR) boolean_expr_atom																#booleanExprCalculation							
  | OPEN_PARANTHESIS boolean_expr_atom CLOSE_PARANTHESIS																#boolExprParanthesis
  ;
  
@@ -75,6 +81,7 @@ expr
  | expr op=(MULT | DIV | MOD) expr  	    																		#arithmeticFirstPrecedenceExpr
  | expr op=(PLUS | MINUS) expr  	    																			#arithmeticSecondPrecedenceExpr
  | expr op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr     			    												#relationalExpr
+ | expr op=(SINGLE_AND | SINGLE_OR) expr																			#booleanExpr
  | atom                                				    															#atomExpr
  | stand_alone_expr																									#standAloneStatements
  | db_param																											#dbParamInitialization
@@ -173,15 +180,16 @@ condition_atom
 VOID : 'void';
 DATA_TYPE_STRING : 'String';
 DATA_TYPE_NUMBER : 'Number';
-DATA_TYPE_DECIMAL : 'Decimal';
 DATA_TYPE_BOOLEAN : 'Boolean';
 DATA_TYPE_MAP : 'Map';
 DATA_TYPE_LIST : 'List';
 RETURN : 'return';
   
 OR : '||';
+SINGLE_OR : '|';
 DOT : '.';
 AND : '&&';
+SINGLE_AND : '&';
 EQ : '==';
 NEQ : '!=';
 GT : '>';

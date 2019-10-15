@@ -14,13 +14,11 @@
 				class="com.facilio.bmsconsole.interceptors.CacheResult" />
 		</result-types>
 		<global-results>
-			<result name="login" type="redirect">
-				<param name="location">/app/login</param>
-				<param name="parse">false</param>
+			<result name="login" type="httpheader">
+				<param name="status">401</param>
 			</result>
-			<result name="unauthorized" type="redirect">
-				<param name="location">/jsps/unauthorized.jsp</param>
-				<param name="parse">false</param>
+			<result name="unauthorized" type="httpheader">
+				<param name="status">403</param>
 			</result>
 			<result name="error" type="json">
 				<param name="ignoreHierarchy">false</param>
@@ -268,7 +266,14 @@
 			method="fetchMetrics">
 			</action>
 	</package>
-	
+
+	<package name="mapsApi" namespace="/api/v2/maps" extends="v2Api">
+		<action name="siteAlarm"
+				class="com.facilio.bmsconsole.actions.MapAction" method="siteAlarmList" />
+		<action name="assetAlarm"
+				class="com.facilio.bmsconsole.actions.MapAction" method="assetAlarmList" />
+	</package>
+
 	<package name="state" namespace="/api/v2/state" extends="v2Api">
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList" />
@@ -391,6 +396,9 @@
 		<action name="updateTemplate"
 			class="com.facilio.bmsconsole.actions.ImportTemplateAction"
 			method="updateTemplate"></action>
+		<action name="fetchTemplateForId"
+			class="com.facilio.bmsconsole.actions.ImportTemplateAction"
+			method="fetchTemplateforId"></action>
 	</package>
 
 	<package name="mvModule" namespace="/api/v2/mv" extends="v2Api">
@@ -420,6 +428,12 @@
 		<action name="getMVProjectWidgetResult"
 			class="com.facilio.mv.action.MVAction" method="getMVProjectWidgetResult">
 		</action>
+	</package>
+	
+	<package name="conditionalFormatting" namespace="/api/v2/conditionalFormatting" extends="v2Api">
+
+		<action name="getConditionalFormattingResult"
+			class="com.facilio.conditionalformatting.action.ConditionalFormattingAction" method="getConditionalFormattingResult"></action>
 	</package>
 	
 	<package name="controlActionModule" namespace="/api/v2/controlAction" extends="v2Api">
@@ -478,6 +492,32 @@
 	</package>
 	
 	<package name="KPIModule" namespace="/api/v2/kpi" extends="v2Api">
+	
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getFormulaField">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+			<param name="id">{1}</param>
+		</action>
+		
+		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="addFormulaField">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="editFormula">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="deleteFormula">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+		</action>
 
 		<action name="addKPICategory"
 			class="com.facilio.bmsconsole.actions.KPIAction" method="addKPICategory"></action>
@@ -491,6 +531,20 @@
 		<action name="getAllKPICategories"
 			class="com.facilio.bmsconsole.actions.KPIAction" method="getAllKPICategories"></action>
 		
+	</package>
+	
+	<package name="KPICategoryModule" namespace="/api/v2/kpi/category" extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.KPIAction" method="addKPICategory"></action>
+
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.KPIAction" method="updateKPICategory"></action>
+
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.KPIAction" method="deleteKPICategory"></action>
+			
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.KPIAction" method="getAllKPICategories"></action>
 	</package>
 
 	<package name="viewApiV2" namespace="/api/v2/views"
@@ -1396,6 +1450,25 @@
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<param name="id">{1}</param>
 		</action>
+		
+		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="addFormulaField">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="editFormula">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="deleteFormula">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+		</action>
+		
 	</package>
 	<package name="formulaFieldApiv2"
 		namespace="/api/v2/reading/formula/field" extends="v2Api">
@@ -3459,6 +3532,8 @@
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2updateField">
 		</action>
+		<action name="changeFieldTo" class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="changeNameToLocalID" />
 	</package>
 	<package name="moduleMetaApiV2" namespace="/api/v2/modules/meta" extends="v2Api">
 		<action name="*"
@@ -4256,6 +4331,15 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="v2getPhotosList">
 			<param name="module">{1}</param>
+			</action>
+	</package>
+		
+	<package name="import" namespace="/api/v2/import" extends="v2Api">
+		<action name ="importHistoryList" class="com.facilio.bmsconsole.actions.ImportDataAction" method="fetchImportHistoryList">
+		</action>
+		<action name ="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
+		</action>
+		<action name ="updateImportProcessContext" class="com.facilio.bmsconsole.actions.ImportDataAction" method="updateImportProcessContext">
 		</action>
 	</package>
 
@@ -4280,5 +4364,36 @@
 			class="com.facilio.bmsconsole.actions.AssetMovementAction" method="updateAssetMovement" />
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.AssetMovementAction" method="listAssetMovement" />
+	</package>
+	
+	<package name="deviceClientApi" namespace="/api/v2/deviceclient" extends="v2Api">
+		<action name="connect" class="com.facilio.bmsconsole.actions.LoginAction" method="deviceAccount">
+			
+		</action>
+		
+		<action name="generatecode" class="com.facilio.bmsconsole.actions.DeviceClientAction" method="generateCode">
+			<param name="auth">false</param>
+		</action>
+		
+		<action name="validatecode" class="com.facilio.bmsconsole.actions.DeviceClientAction" method="validateCode">
+			<param name="auth">false</param>					
+		</action>
+	</package>
+	
+	<package name="deviceApi" namespace="/api/v2/devices" extends="v2Api">
+			<action name="add" class="com.facilio.bmsconsole.actions.DevicesAction" method="addDevice">							
+			</action>
+			<action name="connect" class="com.facilio.bmsconsole.actions.DevicesAction" method="connectDevice">							
+			</action>
+			<action name="update" class="com.facilio.bmsconsole.actions.DevicesAction" method="updateDevice">							
+			</action>
+			<action name="list" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceList">							
+			</action>
+			<action name="getdetails" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceDetails">							
+			</action>
+			<action name="delete" class="com.facilio.bmsconsole.actions.DevicesAction" method="deleteDevice">							
+			</action>
+			<action name="disconnect" class="com.facilio.bmsconsole.actions.DevicesAction" method="disconnectDevice">							
+			</action>
 	</package>
 </struts>

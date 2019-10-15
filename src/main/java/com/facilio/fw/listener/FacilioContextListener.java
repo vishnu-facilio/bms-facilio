@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 
+import javax.management.*;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
@@ -23,6 +25,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.jmx.FacilioQueryCounter;
+import com.facilio.jmx.FacilioQueryCounterMBean;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -98,6 +102,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 		initDBConnectionPool();
 		Operator.getOperator(1);
+		registerMBeans();
 		TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
 		ActivityType.getActivityType(1);
 		FieldUtil.inti();
@@ -167,6 +172,17 @@ public class FacilioContextListener implements ServletContextListener {
 			LOGGER.info("Exception occurred ", e);
 		}
 		
+	}
+
+	private void registerMBeans() {
+		try {
+			MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+			ObjectName name = new ObjectName("com.facilio.db:type=Query");
+			FacilioQueryCounterMBean mbean = new FacilioQueryCounter();
+			mbs.registerMBean(mbean, name);
+		} catch (Exception e) {
+			LOGGER.info("Exception while registering Facilio MBeans");
+		}
 	}
 
 	private void initializeDB() {

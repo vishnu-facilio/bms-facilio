@@ -196,6 +196,8 @@ public class UpdateTaskCommand extends FacilioCommand {
 				prerequestStatus = WorkOrderAPI.getWorkOrder(parentId).getPreRequestStatus();
 			}
 			context.put(FacilioConstants.ContextNames.PRE_REQUEST_STATUS, prerequestStatus);
+			context.put(FacilioConstants.ContextNames.RECORD, task);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		}
 		return false;
 	}

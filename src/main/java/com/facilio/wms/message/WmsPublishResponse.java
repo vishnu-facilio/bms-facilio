@@ -23,7 +23,7 @@ public class WmsPublishResponse extends Message {
 	}
 	
 	public WmsPublishResponse publish(PublishData data, JSONObject info) throws Exception {
-		addData("data", FieldUtil.getAsJSON(data));
+		addJsonData(data);
 		addData("info", info);
 		setAction("publish");
 		send();
@@ -31,10 +31,25 @@ public class WmsPublishResponse extends Message {
 	}
 	
 	public WmsPublishResponse publishFailure(PublishData data) throws Exception {
-		addData("data", FieldUtil.getAsJSON(data));
+		addJsonData(data);
 		setAction("publishFailure");
 		send();
 		return this;
+	}
+	
+	private void addJsonData(PublishData data) throws Exception {
+		if (data != null) {
+			int count = 0;
+			if (data.getMessages() != null) {
+				count = data.getMessages().size();
+				if (count > 1) {
+					data.setMessages(null);
+				}
+			}
+			JSONObject jsonData = FieldUtil.getAsJSON(data);
+			jsonData.put("count", count);
+			addData("data", jsonData);
+		}
 	}
 	
 	public void send() throws Exception {

@@ -1,5 +1,6 @@
 package com.facilio.kinesis;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -37,6 +38,7 @@ public class KinesisProcessor {
             AmazonKinesis kinesis = AwsUtil.getKinesisClient();
             ListStreamsResult streamList = kinesis.listStreams();
             List<String> streamNames = streamList.getStreamNames();
+//            List<String> streamNames = Collections.singletonList("cofelybesix");
             if (streamNames != null && STREAMS.isEmpty()) {
                 STREAMS.addAll(streamNames);
             } else {
@@ -52,7 +54,9 @@ public class KinesisProcessor {
             log.info("Exception occurred ", e);
         }
     }
-
+    static {
+        EXISTING_ORGS.add("spinfo");
+    }
     private static void startProcessor() {
 
 //        PropertyConfigurator.configure(getLoggingProps());

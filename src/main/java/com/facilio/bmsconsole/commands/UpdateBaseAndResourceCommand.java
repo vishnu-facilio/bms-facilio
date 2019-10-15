@@ -91,7 +91,7 @@ public class UpdateBaseAndResourceCommand extends FacilioCommand implements Seri
 					}
 					}
 			}
-			LOGGER.severe("UPDATED BASE and RESOURCE");
+			LOGGER.info("UPDATED BASE and RESOURCE");
 		}
 		catch(Exception e) {
 			LOGGER.severe(e.toString());

@@ -17,8 +17,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fs.FileInfo;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 
 public class PhotosAction extends FacilioAction {
 
@@ -229,7 +229,7 @@ public class PhotosAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		context.put(FacilioConstants.ContextNames.CURRENT_WO_ACTIVITY ,WorkOrderActivityType.REMOVE_PREERQUISITE_PHOTO);
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		FileInfo file = fs.getFileInfo(photoId);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, Collections.singletonList(file.getFileName()));
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, Collections.singletonList(file.getContentType()));

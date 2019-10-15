@@ -13,7 +13,8 @@ public enum PublishType {
     cov("cov",3),
     ack("ack",4),
     event("event",5),
-    devicepoints("devicepoints",6);
+    devicepoints("devicepoints",6),
+    controllers("controllers",7);
 
     private int key;
 

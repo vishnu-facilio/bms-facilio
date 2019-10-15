@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -41,8 +42,8 @@ import com.facilio.cards.util.CardType;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -55,13 +56,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BaseLineContext.AdjustType;
 import com.facilio.modules.BaseLineContext.RangeType;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
-import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -126,21 +125,24 @@ public class FetchCardDataCommand extends FacilioCommand {
 				
 				Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.CRITERIA);
 				
-				if(startTime != null && endTime != null && startTime >0 && endTime > 0) {
-					if(widgetStaticContext.getParamsJson().get("moduleName") != null) {
-						FacilioModule module =  modBean.getModule((String) widgetStaticContext.getParamsJson().get("moduleName"));
-						boolean isReadingModule = FacilioUtil.isReadingModule(module);
-						
-						if(isReadingModule) {
-							
-							Condition dateCondition = CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN);
-							if(criteria == null) {
-								criteria = new Criteria();
-							}
-							criteria.addAndCondition(dateCondition);
-						}
+				if(startTime != null && endTime != null && startTime > 0 && endTime > 0) {
+//					if(widgetStaticContext.getParamsJson().get("moduleName") != null) {
+//						FacilioModule module =  modBean.getModule((String) widgetStaticContext.getParamsJson().get("moduleName"));
+//						boolean isReadingModule = FacilioUtil.isReadingModule(module);
+//						
+//						if(isReadingModule) {
+//							
+//							Condition dateCondition = CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN);
+//							if(criteria == null) {
+//								criteria = new Criteria();
+//							}
+//							criteria.addAndCondition(dateCondition);
+//						}
+//					}
+					if(widgetStaticContext.getParamsJson() != null) {
+						widgetStaticContext.getParamsJson().put("startTime", startTime);
+						widgetStaticContext.getParamsJson().put("endTime", endTime);
 					}
-					
 				}
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
@@ -273,7 +275,8 @@ public class FetchCardDataCommand extends FacilioCommand {
 					Long parentAlarmId = (Long) paramsJson.get("parentAlarmId");
 					
 					DateOperators operator = (DateOperators)Operator.getOperator(dateOperator);
-					result = getResourceAlarmBar(parentId, ruleId, operator.getRange(dateValue), isRca, alarmId, parentAlarmId);
+					boolean fetchAlarmInfo = (boolean) context.getOrDefault(ContextNames.FETCH_ALARM_INFO, true);
+					result = getResourceAlarmBar(parentId, ruleId, operator.getRange(dateValue), isRca, alarmId, parentAlarmId, fetchAlarmInfo);
 					context.put(FacilioConstants.ContextNames.RESULT, result);
 					return false;
 				}
@@ -433,7 +436,7 @@ public class FetchCardDataCommand extends FacilioCommand {
 		}
 		return false;
 	}
-	private Map<String,Object> getResourceAlarmBar(Long resourceId,Long ruleId, DateRange dateRange, Boolean isRCA, Long alarmId , Long parentAlarmId) throws Exception {
+	private Map<String,Object> getResourceAlarmBar(Long resourceId,Long ruleId, DateRange dateRange, Boolean isRCA, Long alarmId , Long parentAlarmId, boolean fetchAlarmInfo) throws Exception {
 		
 		Map<String,Object> result = new HashMap<>();
 		List<Long> resourceIds = resourceId != null && resourceId != -1 ? Collections.singletonList(resourceId) : null;
@@ -443,7 +446,35 @@ public class FetchCardDataCommand extends FacilioCommand {
 			Map<Long, AlarmOccurrenceContext> alarmMap = new HashMap<>();
 			JSONArray json = FetchReportAdditionalInfoCommand.splitAlarmOccurrence(readingAlarmOccurrences, dateRange, alarmMap);
 			result.put("alarms", json);
-			result.put("alarmInfo", alarmMap);
+			if (!fetchAlarmInfo && MapUtils.isNotEmpty(alarmMap)) {
+				// Getting minimal info only
+				Map<Long, JSONObject> alarmInfo = new HashMap<>();
+				for(Map.Entry<Long, AlarmOccurrenceContext> entry: alarmMap.entrySet()) {
+					AlarmOccurrenceContext occurrence = entry.getValue(); 
+					JSONObject obj = new JSONObject();
+					if (occurrence.getAlarm() != null) {
+						JSONObject alarm = new JSONObject();
+						alarm.put("subject", occurrence.getAlarm().getSubject());
+						alarm.put("description", occurrence.getAlarm().getDescription());
+						obj.put("alarm", alarm);
+					}
+					if (occurrence.getSeverity() != null) {
+						JSONObject severity = new JSONObject();
+						severity.put("id", occurrence.getSeverity().getId());
+						obj.put("severity", severity);
+					}
+					if (occurrence.getPreviousSeverity() != null) {
+						JSONObject severity = new JSONObject();
+						severity.put("id", occurrence.getPreviousSeverity().getId());
+						obj.put("previousSeverity", severity);
+					}
+					alarmInfo.put(entry.getKey(), obj);
+				}
+				result.put("alarmInfo", alarmInfo);
+			}
+			else {
+				result.put("alarmInfo", alarmMap);
+			}
 		}
 
 		else {

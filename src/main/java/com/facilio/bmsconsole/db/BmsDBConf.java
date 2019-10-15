@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.db;
 
 import java.io.File;
+import java.sql.Connection;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +25,6 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.util.DBConf;
 import com.facilio.fs.FileInfo;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
@@ -33,6 +32,8 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 
@@ -198,23 +199,23 @@ public class BmsDBConf extends DBConf {
      * @throws Exception
      */
     @Override
-    public void fetchFileUrls(Collection<FacilioField> selectFields, List<Map<String,Object>> records, List<Long> fileIds) throws Exception {
-        FileStore fs = FileStoreFactory.getInstance().getFileStore();
+    public void fetchFileUrls(Collection<FacilioField> selectFields, List<Map<String,Object>> records, List<Long> fileIds, Connection conn) throws Exception {
+        FileStore fs = FacilioFactory.getFileStore();
 
         // TODO get filePrivateUrl in bulk
         Map<Long, String> fileUrls = new HashMap<>();
         for(Long fileId: fileIds) {
             fileUrls.put(fileId, fs.getPrivateUrl(fileId));
         }
-        Map<Long, FileInfo> files = fs.getFileInfoAsMap(fileIds);
+        Map<Long, FileInfo> files = fs.getFileInfoAsMap(fileIds, conn);
 
         for(Map<String, Object> record: records) {
             for(FacilioField field : selectFields) {
                 if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.containsKey(field.getName()+"Id")) {
-                    Long id = (Long) record.get(field.getName()+"Id");
-                    record.put(field.getName()+"Url", fileUrls.get(id));
-                    record.put(field.getName()+"FileName", files.get(id).getFileName());
-                    record.put(field.getName()+"ContentType", files.get(id).getContentType());
+                		Long id = (Long) record.get(field.getName()+"Id");
+                		record.put(field.getName()+"Url", fileUrls.get(id));
+                		record.put(field.getName()+"FileName", files.get(id).getFileName());
+                		record.put(field.getName()+"ContentType", files.get(id).getContentType());
                 }
             }
         }
@@ -225,7 +226,7 @@ public class BmsDBConf extends DBConf {
         if (fileFields == null || fileFields.isEmpty()) {
             return;
         }
-        FileStore fs = FileStoreFactory.getInstance().getFileStore();
+        FileStore fs = FacilioFactory.getFileStore();
         for(Map<String, Object> value : values) {
             for(FacilioField field : fileFields) {
                 if (value.containsKey(field.getName())) {
@@ -270,7 +271,7 @@ public class BmsDBConf extends DBConf {
 
     @Override
     public void markFilesAsDeleted(List<Long> fileIds) throws Exception {
-        FileStore fs = FileStoreFactory.getInstance().getFileStore();
+        FileStore fs = FacilioFactory.getFileStore();
         fs.markAsDeleted(fileIds);
     }
 

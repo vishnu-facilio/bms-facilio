@@ -1,38 +1,9 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.log4j.LogManager;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.supercsv.io.CsvListReader;
-import org.supercsv.io.ICsvListReader;
-import org.supercsv.prefs.CsvPreference;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.ImportBuildingAction;
-import com.facilio.bmsconsole.actions.ImportFloorAction;
-import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.actions.*;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
-import com.facilio.bmsconsole.actions.ImportSiteAction;
-import com.facilio.bmsconsole.actions.ImportSpaceAction;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -44,14 +15,27 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.log4j.LogManager;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.supercsv.io.CsvListReader;
+import org.supercsv.io.ICsvListReader;
+import org.supercsv.prefs.CsvPreference;
+
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class ImportAPI {
 
@@ -64,7 +48,6 @@ public class ImportAPI {
 		JSONArray columnheadings = new JSONArray();
 		ArrayList<String> missingInSheet;
 		HashMap<Integer, ArrayList<String>> missingColumns = new HashMap<Integer, ArrayList<String>>();
-//        Workbook workbook = WorkbookFactory.create(excelfile);
         if(workbook.getNumberOfSheets() > 1) {
         	for(int i =0; i< workbook.getNumberOfSheets();i++) {
         		Sheet dataSheet =workbook.getSheetAt(i);
@@ -117,7 +100,6 @@ public class ImportAPI {
             	break;
             }
         }
-//        workbook.close();
         return columnheadings;
 	}
 	
@@ -220,9 +202,11 @@ public class ImportAPI {
 	}
 	
 	public static List<Map<String,Object>> getValidatedRows(Long importProcessId) throws Exception{
+		String validConditions = ImportProcessContext.ImportLogErrorStatus.RESOLVED.getStringValue() + "," + ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getStringValue() + "," + ImportProcessContext.ImportLogErrorStatus.OTHER_ERRORS.getStringValue();
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getImportProcessLogModule().getTableName())
 				.select(FieldFactory.getImportProcessLogFields())
+				.andCondition(CriteriaAPI.getCondition("ERROR_RESOLVED", "error_resolved", validConditions, NumberOperators.EQUALS))
 				.andCustomWhere("IMPORTID = ?", importProcessId);
 		List<Map<String,Object>> result = selectRecordBuilder.get();
 		return result;
@@ -310,55 +294,70 @@ public class ImportAPI {
 		}
 		ProcessXLS.populateData(importProcessContext, readingsList);
 	}
-	public static JSONObject getFirstRow (Workbook workbook)throws Exception {
+	public static JSONObject getFirstRow (Workbook workbook) throws Exception {
 		JSONObject firstRow = new JSONObject();
 		JSONArray columnHeadings = getColumnHeadings(workbook);
-//		Workbook workbook = WorkbookFactory.create(excelfile);
 		Sheet datatypeSheet = workbook.getSheetAt(0);
 		Row row = datatypeSheet.getRow(1);
 		int lastCellNum = row.getLastCellNum();
-		
-		
-		for(int i =0; i< lastCellNum; i++) {
+		FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+
+		for (int i = 0; i < lastCellNum; i++) {
 			Cell cell = row.getCell(i);
-			if(columnHeadings.get(i) == null || columnHeadings.get(i) == "null") {
+			if (columnHeadings.get(i) == null || columnHeadings.get(i) == "null") {
 				continue;
-			}
-			else {
-				if(cell == null || (cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
+			} else {
+				if (cell == null) {
 					firstRow.put(columnHeadings.get(i), null);
 				}
-				else {
-					CellType type = cell.getCellTypeEnum();
-					if(type == CellType.NUMERIC || type == CellType.FORMULA) {
-	        			if(cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
-	        				DataFormatter df = new DataFormatter();
-	        				String cellValueString = df.formatCellValue(cell);
-	        				firstRow.put(columnHeadings.get(i),cellValueString);
-	        			}
-	        			else if(type== CellType.FORMULA) {
-	        				Double cellValue = cell.getNumericCellValue();
-	        				firstRow.put(columnHeadings.get(i), cellValue);
-	        			}
-	        			else {
-	        				Double cellValue = cell.getNumericCellValue();
-	        				firstRow.put(columnHeadings.get(i),cellValue);
-	        			}
-	        		}
-	        		else if(type== CellType.BOOLEAN) {
-	        			Boolean cellValue = cell.getBooleanCellValue();
-	        			firstRow.put(columnHeadings.get(i), cellValue);
-	        		}
-	        		else if(type == CellType.STRING)
-	        		{
-	        			String cellValue = cell.getStringCellValue();
-	        			firstRow.put(columnHeadings.get(i), cellValue);
-	        		}
+				else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+					throw new IllegalArgumentException("Unsupported Date/Time Formatted Field under column "
+							+ columnHeadings.get(i) + " Kindly Use Plain text");
+				} else {
+					Object obj = 0.0;
+					try {
+						CellValue cellValue = evaluator.evaluate(cell);
+						obj = getValueFromCell(cell, cellValue);
+						firstRow.put(columnHeadings.get(i), obj);
+					} catch (Exception e) {
+						throw new IllegalArgumentException("Unable To Read Value under column " + columnHeadings.get(i));
+					}
 				}
 			}
 		}
 //		workbook.close();
 		return firstRow;
+	}
+	
+	public static Object getValueFromCell(Cell cell, CellValue cellValue) throws Exception {
+		
+		Object val = 0.0;
+		
+		// Here we get CellValue after evaluating the formula So CellType FORMULA will never occur
+		// todo add Date Time Format Handling 
+		if (cell.getCellType() == Cell.CELL_TYPE_BLANK || cellValue.getCellTypeEnum() == CellType.BLANK) {
+			val = null;
+		}
+		else if (cellValue.getCellTypeEnum() == CellType.STRING) {
+			if (cellValue.getStringValue().trim().length() == 0) {
+				val = null;
+			} else {
+				val = cellValue.getStringValue().trim();
+			}
+
+		} else if (cellValue.getCellTypeEnum() == CellType.NUMERIC) {
+			val = cellValue.getNumberValue();
+			
+		} else if (cellValue.getCellTypeEnum() == CellType.BOOLEAN) {
+			val = cellValue.getBooleanValue();
+		} else if (cell.getCellType() == Cell.CELL_TYPE_ERROR || cellValue.getCellTypeEnum() == CellType.ERROR) {
+			throw new Exception("Error Evaulating Cell");
+		} else {
+			val = null;
+		}
+		
+			
+		return val;
 	}
 	
 	public static Long getSpaceID(ImportProcessContext importProcessContext, HashMap<String, Object> colVal, HashMap<String,String> fieldMapping) throws Exception {
@@ -607,9 +606,6 @@ public class ImportAPI {
 				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
 			}
 			else {
-//				if(customFields != null && !customFields.isEmpty()) {
-//					fieldsList.addAll(customFields);
-//				}
 
 				if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
 						(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
@@ -622,14 +618,12 @@ public class ImportAPI {
 					}
 					
 					fields.remove("space");
-					fields.remove("localId");
 					fields.remove("resourceType");
-					if(importMode == 1 || importMode == null) {
+					fields.remove("localId");
+					if(importMode == null || importMode == 1) {
 					if(module.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
 						fields.remove("purposeSpace");
 					}
-					
-					fields.add("site");
 					fields.add("building");
 					fields.add("floor");
 					fields.add("spaceName");
@@ -661,11 +655,6 @@ public class ImportAPI {
 					}					
 				}
 				else {
-					
-//					if(customFields != null && !customFields.isEmpty()) {
-//						fieldsList.addAll(customFields);
-//					}
-					
 					for(FacilioField field : fieldsList)
 					{
 						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
@@ -675,7 +664,11 @@ public class ImportAPI {
 					}
 				}
 		}
-			if (!fields.contains("site") && FieldUtil.isSiteIdFieldPresent(facilioModule) && AccountUtil.getCurrentSiteId() == -1) {
+			if (!(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET)
+					|| (facilioModule.getExtendModule() != null
+							&& facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET)))
+					&& !fields.contains("site") && FieldUtil.isSiteIdFieldPresent(facilioModule)
+					&& AccountUtil.getCurrentSiteId() == -1) {
 				fields.add("site");
 			}
 		}
@@ -684,6 +677,41 @@ public class ImportAPI {
 			log.info("Exception occurred ", e);
 		}
 		return fields;
+	}
+	
+	public static JSONArray getIgnoreFields(String module, Integer importMode) throws Exception
+	{
+		JSONArray fields = new JSONArray();
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule facilioModule =  bean.getModule(module);
+		
+		if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
+				(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+			if(importMode == null || importMode == 1) {
+				fields.add("category");
+			}
+		}
+		return fields;
+		
+	}
+	
+	public static ImportProcessContext updateTotalRows (ImportProcessContext importProcessContext) throws Exception {
+		
+		FacilioField idField = FieldFactory.getField("id", "ID", FieldType.NUMBER);
+		String validConditions = ImportProcessContext.ImportLogErrorStatus.RESOLVED.getStringValue() + "," + ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getStringValue();
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getImportProcessLogModule().getTableName())
+				.select(new HashSet<>())
+				.andCondition(CriteriaAPI.getCondition("IMPORTID", "importId", importProcessContext.getId().toString() ,NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ERROR_RESOLVED", "error_resolved", validConditions, NumberOperators.EQUALS))
+				.aggregate(CommonAggregateOperator.COUNT, idField);
+		List<Map<String,Object>> result = selectRecordBuilder.get();
+		if (!result.isEmpty()) {
+			importProcessContext.setTotalRows((Long) result.get(0).get("id"));
+		}
+		return importProcessContext;
+		
 	}
 	
 	public static boolean isRemovableFieldOnImport(String name) {
@@ -715,6 +743,26 @@ public class ImportAPI {
 			fieldMap.put(key, values);
 		}
 		return fieldMap;
+	}
+
+	public static boolean canUpdateAssetBaseSpace(ImportProcessContext importProcessContext) throws Exception {
+		JSONObject fieldMapping = importProcessContext.getFieldMappingJSON();
+		if (fieldMapping != null) {
+			if (isAssetBaseModule(importProcessContext) && importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.UPDATE.getValue()) {
+				if (!(fieldMapping.containsKey("asset__floor") || fieldMapping.containsKey("asset__building") || fieldMapping.containsKey("asset__spaceName") || fieldMapping.containsKey("asset__space") || fieldMapping.containsKey("asset__space1") || fieldMapping.containsKey("asset__space2") || fieldMapping.containsKey("asset__space3"))) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public static boolean isAssetBaseModule(ImportProcessContext importProcessContext) throws Exception {
+		if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	
@@ -763,6 +811,9 @@ public class ImportAPI {
 		public static final String PARSING_ERROR_MESSAGE="parsingErrorMessage";
 		public static final String MODULE_STATIC_FIELDS = "moduleStaticFields";
 		public static final String JOB_ID = "jobId";
+		public static final String MODULE_META = "moduleMeta";
+		public static final String CHOOSEN_MODULE = "choosenModule";
+		
 	}
 	
 	

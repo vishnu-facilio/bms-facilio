@@ -120,7 +120,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 					jobprop.put("resourceId", resourceId);
 
 					BmsJobUtil.deleteJobWithProps(loggerId, "HistoricalRunForReadingRule");
-					BmsJobUtil.scheduleOneTimeJobWithProps(loggerId, "HistoricalRunForReadingRule", 30, "priority", jobprop);
+					BmsJobUtil.scheduleOneTimeJobWithProps(loggerId, "HistoricalRunForReadingRule", 30, "history", jobprop);
 					
 				}
 			}

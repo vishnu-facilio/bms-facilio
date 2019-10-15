@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -27,8 +28,8 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -60,17 +61,16 @@ public class ImportDataAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.IMPORT_MODE, importMode);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		context.put(FacilioConstants.ContextNames.TEMPLATE_ID, templateId);
+		context.put(ImportAPI.ImportProcessConstants.MODULE_META, moduleMeta);
+		context.put(FacilioConstants.ContextNames.SITE_ID, siteId);
 		
 		FacilioChain uploadFile = TransactionChainFactory.uploadImportFileChain();
 		uploadFile.execute(context);
-		
+
 		ImportProcessContext imp = (ImportProcessContext) context.get(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT);
 		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT ,imp);
         
-		return SUCCESS;
-	}
-	public String displayColumnFieldMapping()
-	{
 		return SUCCESS;
 	}
 	
@@ -80,10 +80,13 @@ public class ImportDataAction extends FacilioAction {
 		JSONObject moduleInfo = new JSONObject();
 		if(module != null) {
 			moduleInfo.put("moduleExists", true);
+	        importProcessContext.setModuleId(module.getModuleId());
 		}
 		else {
 			moduleInfo.put("moduleExists", false);
 		}
+		importProcessContext.setImportMode(1);
+
 		
 		setModuleExists(moduleInfo);
 		
@@ -91,11 +94,19 @@ public class ImportDataAction extends FacilioAction {
 	}
 	
 	public String deleteFile() throws Exception{
-		FileStore fs  = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs  = FacilioFactory.getFileStore();
 		if(fs.deleteFile(fileId)) {
 			System.out.println("File " + fileId + " has been deleted");
 		}
 		return SUCCESS;
+	}
+	
+	public String updateImportProcessContext() throws Exception {
+		ImportAPI.updateImportProcess(importProcessContext);
+		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT ,importProcessContext);
+		
+		return SUCCESS;
+		
 	}
 	public String getAssets() throws Exception
 	{
@@ -216,6 +227,7 @@ public class ImportDataAction extends FacilioAction {
 		}
 		
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.VALIDATION_COMPLETE.getValue());
+		importProcessContext = ImportAPI.updateTotalRows(importProcessContext);
 		ImportAPI.updateImportProcess(importProcessContext);
 		return SUCCESS;
 	}
@@ -227,7 +239,6 @@ public class ImportDataAction extends FacilioAction {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getImportProcessModule().getTableName())
 				.select(FieldFactory.getImportProcessFields())
-				.andCustomWhere("ORGID = ?", orgId)
 				.orderBy("IMPORT_TIME desc")
 				.limit(10);
 		
@@ -236,13 +247,30 @@ public class ImportDataAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String fetchImportHistoryList() throws Exception{
+		
+		FacilioChain chain = ReadOnlyChainFactory.getImportHistoryListChain();
+
+		chain.getContext().put(FacilioConstants.ContextNames.COUNT, count);
+		chain.getContext().put(FacilioConstants.ContextNames.IMPORT_MODE, importMode);
+		chain.getContext().put(ImportAPI.ImportProcessConstants.CHOOSEN_MODULE, moduleName);
+		
+		chain.execute();
+		List<ImportProcessContext> historyDetailsList;
+		historyDetailsList = (List<ImportProcessContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
+		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT_LIST, historyDetailsList);
+
+		return SUCCESS;
+	}
+	
 	public String fetchDataForValidation() throws Exception{
 		List<FacilioField> fields = FieldFactory.getImportProcessLogFields();
+		String errorConditions = ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getStringValue() + "," + ImportProcessContext.ImportLogErrorStatus.FOUND_IN_DB.getStringValue();
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getImportProcessLogFields())
 				.table(ModuleFactory.getImportProcessLogModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("IMPORTID","importId", importProcessContext.getId().toString(), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("ERROR_RESOLVED", "error_resolved", ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getStringValue(), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("ERROR_RESOLVED", "error_resolved", errorConditions, NumberOperators.EQUALS));
 		
 		records = selectRecordBuilder.get();
 		if(importProcessContext.importMode == ImportProcessContext.ImportMode.NORMAL.getValue()) {
@@ -294,7 +322,7 @@ public class ImportDataAction extends FacilioAction {
 		JSONObject meta = im.getImportJobMetaJson();
 		Integer setting = importProcessContext.getImportSetting();
 		
-		if(status == 8 && mail ==null) {
+		if(status == 8 && (mail == null || mail < 0)) {
 			if(setting == ImportProcessContext.ImportSetting.INSERT.getValue()) {
 				String inserted = meta.get("Inserted").toString();
 				im.setnewEntries(Integer.parseInt(inserted));
@@ -330,8 +358,7 @@ public class ImportDataAction extends FacilioAction {
 				im.setnewEntries(Integer.parseInt(inserted));
 				im.setupdateEntries(Integer.parseInt(updated));				
 			}
-		}
-		else if(status == 7 && mail!=null) {
+		} else if (status == 7 && (mail != null && mail > 0)) {
 			ImportAPI.updateImportProcess(getImportProcessContext());
 		}
 		importProcessContext = im;
@@ -454,7 +481,6 @@ public class ImportDataAction extends FacilioAction {
 	}
 	public void setModuleName(String module)
 	{
-		LOGGER.severe("Setting module : " + module);
 		this.moduleName=module;
 	}
 	
@@ -475,7 +501,25 @@ public class ImportDataAction extends FacilioAction {
 	private Long fileId;
 	private long orgId;
 	private JSONObject moduleExists;
+	private long templateId;
+	private long siteId;
 	
+	public long getSiteId() {
+		return siteId;
+	}
+
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+
+	public long getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(long templateId) {
+		this.templateId = templateId;
+	}
+
 	public JSONObject getModuleExists() {
 		return moduleExists;
 	}
@@ -500,5 +544,20 @@ public class ImportDataAction extends FacilioAction {
 	public List<AssetContext> getChillerAssets() {
 		return chillerAssets;
 	}
+	private int count;
+	public int getCount() {
+		return count;
+	}
+	public void setCount(int count) {
+		this.count = count;
+	}
+	private String moduleMeta;
+	public String getModuleMeta() {
+		return moduleMeta;
+	}
+	public void setModuleMeta(String moduleMeta) {
+		this.moduleMeta = moduleMeta;
+	}
+
 	
 }

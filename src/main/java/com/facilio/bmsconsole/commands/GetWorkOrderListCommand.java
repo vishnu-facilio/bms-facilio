@@ -157,7 +157,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 			selectBuilder.andCustomWhere("Tickets.DUE_DATE BETWEEN ? AND ?", (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) * 1000, (Long) context.get(FacilioConstants.ContextNames.WO_DUE_ENDTIME) * 1000);
 		}
 		Boolean fetchAllTypes = (Boolean) context.get(ContextNames.WO_FETCH_ALL);
-		if (!isApproval && !isUpcomingGroup(view) && (fetchAllTypes == null || !fetchAllTypes)) {
+		if (!isApproval && !isUpcomingView(view) && (fetchAllTypes == null || !fetchAllTypes)) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("STATUS_ID", "status", TicketAPI.getStatus("preopen").getId()+"", NumberOperators.NOT_EQUALS));
 
 		}
@@ -209,19 +209,12 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 		return false;
 	}
 
-	private static boolean isUpcomingGroup(FacilioView view) {
+	private static boolean isUpcomingView(FacilioView view) {
 
 		if (view == null) {
 			return false;
 		}
-		Map<String, List<String>> woGroup = ViewFactory.getGroupViews(FacilioConstants.ContextNames.WORK_ORDER);
-		List<String> viewList = woGroup.get("upcomingWorkorder");
-		for (String v: viewList) {
-			if (view.getName().equals(v)) {
-				return true;
-			}
-		}
-		return false;
+		return view.getName().startsWith("upcoming");
 	}
 	
 	private List<Map<String, Object>> setSubViewCount(FacilioView view) throws Exception {

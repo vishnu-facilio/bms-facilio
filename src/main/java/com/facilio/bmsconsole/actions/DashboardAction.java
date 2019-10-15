@@ -7078,10 +7078,26 @@ public class DashboardAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
 		context.put(FacilioConstants.ContextNames.WIDGET_REPORT_SPACE_FILTER_CONTEXT, reportSpaceFilterContext);
 		context.put(FacilioConstants.ContextNames.IS_RCA, getIsRca());
+		context.put(FacilioConstants.ContextNames.FETCH_ALARM_INFO, isFetchAlarmInfo());
 		fetchCardData.execute(context);
 		
 		setCardResult(context.get(FacilioConstants.ContextNames.RESULT));
 		return SUCCESS;
+	}
+	
+	private Boolean fetchAlarmInfo;
+	public boolean isFetchAlarmInfo() {
+		if(fetchAlarmInfo != null) {
+			return fetchAlarmInfo.booleanValue();
+		}
+		return true;
+	}
+	
+	public void setFetchAlarmInfo(Boolean fetchAlarmInfo) {
+		this.fetchAlarmInfo = fetchAlarmInfo;
+	}
+	public void setFetchAlarmInfo(boolean fetchAlarmInfo) {
+		this.fetchAlarmInfo = fetchAlarmInfo;
 	}
 	
 	// data part ends

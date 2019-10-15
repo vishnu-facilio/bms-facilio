@@ -1,30 +1,18 @@
 package com.facilio.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
+import com.facilio.agentnew.AgentConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.*;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -268,13 +256,17 @@ public class FieldFactory {
 		fields.add(getField(AgentKeys.MESSAGE_ID,"MSG_ID",module,FieldType.NUMBER));
 		fields.add(getField(AgentKeys.COMMAND,"COMMAND",module,FieldType.NUMBER));
 		fields.add(getField(AgentKeys.COMMAND_STATUS,"COMMAND_STATUS",module,FieldType.NUMBER));
-
+		fields.add(getCreatedTime(module));
 		return fields;
 	}
 
 	public static FacilioField getAgentIdField(FacilioModule module){
 		return getField(AgentKeys.AGENT_ID,"AGENT_ID",FieldType.NUMBER);
 	}
+
+    public static FacilioField getNewAgentIdField(FacilioModule module){
+        return getField(AgentConstants.AGENT_ID,"AGENT_ID",FieldType.NUMBER);
+    }
 
 	public  static FacilioField getAgentLogTimeField(FacilioModule module){
 		return getField(AgentKeys.TIMESTAMP,"TIME",FieldType.NUMBER);
@@ -340,6 +332,17 @@ public class FieldFactory {
 		return getField(AgentKeys.NAME,"NAME",module,FieldType.STRING);
 	}
 
+	public static List<FacilioField> getAgentVersionFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getAgentVersionModule();
+		fields.add(getIdField(module));
+		fields.add(getField(AgentConstants.AGENT_VERSION,"VERSION",FieldType.STRING));
+		fields.add(getField(AgentConstants.DESCRIPTION,"DESCRIPTION",FieldType.STRING));
+		fields.add(getCreatedTime(module));
+		fields.add(getField(AgentConstants.CREATED_BY,"CREATED_BY",FieldType.STRING));
+		return fields;
+	}
+
 	public static FacilioField getWritableField(FacilioModule module) {
 		return getField(AgentKeys.WRITABLE,"WRITABLE",module,FieldType.BOOLEAN);
 	}
@@ -347,6 +350,38 @@ public class FieldFactory {
 	public static FacilioField  getDeletedTimeField(FacilioModule module) {
       	return getField(AgentKeys.DELETED_TIME,"DELETED_TIME",module,FieldType.NUMBER);
     }
+
+
+	public static List<FacilioField> getAgentControllerFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getAgentControllerModule();
+		fields.add(getIdField(module));
+		fields.add(getField(AgentKeys.AGENT_ID,"AGENT_ID",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.NAME,"NAME",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.DATA_INTERVAL,"DATA_INTERVAL",module,FieldType.NUMBER));
+		fields.add(getField(AgentConstants.WRITABLE,"WRITABLE",module,FieldType.BOOLEAN));
+		fields.add(getField(AgentConstants.ACTIVE,"ACTIVE",module,FieldType.BOOLEAN));
+		fields.add(getField(AgentConstants.CONTROLLER_TYPE,"CONTROLLER_TYPE",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.CONTROLLER_PROPS,"CONTROLLER_PROPS",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.AVAILABLE_POINTS,"AVAILABLE_POINTS",module,FieldType.NUMBER));
+		fields.add(getField(AgentConstants.PORT_NUMBER,"PORT_NUMBER",module,FieldType.NUMBER));
+		fields.add(getField(AgentConstants.CREATED_TIME,"CREATED_TIME",module,FieldType.NUMBER));
+		fields.add(getField(AgentConstants.LAST_MODIFIED_TIME,"LAST_MODIFIED_TIME",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.LAST_DATA_SENT_TIME,"LAST_DATA_SENT_TIME",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.DELETED_TIME,"DELETED_TIME",module,FieldType.STRING));
+		return fields;
+	}
+
+	public static List<FacilioField> getModbusControllerFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getModbusControllerModbus();
+		fields.add(getField(AgentKeys.ID,"ID",module,FieldType.NUMBER));
+		fields.add(getSiteIdField(module));
+		fields.add(getField(AgentConstants.SLAVE_ID,"SLAVE_ID",module,FieldType.NUMBER));
+		fields.add(getField(AgentConstants.IP_ADDRESS,"IP_ADDRESS",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.NETWORK_ID,"NETWORK_ID",module,FieldType.NUMBER));
+		return fields;
+	}
 
 	public static FacilioField getControllerIdCount(FacilioModule module) {
 		FacilioField field = new FacilioField();
@@ -876,15 +911,15 @@ public class FieldFactory {
 	public static FacilioField getSystemField (String fieldName, FacilioModule module) {
 		switch (fieldName) {
 			case "sysCreatedTime":
-				return getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.DATE_TIME);
+				return getField("sysCreatedTime", "System Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME);
 			case "sysModifiedTime":
-				return getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME);
+				return getField("sysModifiedTime", "System Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME);
 			case "sysCreatedBy":
-				LookupField createdBy = (LookupField) getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.LOOKUP);
+				LookupField createdBy = (LookupField) getField("sysCreatedBy","System Created By", "SYS_CREATED_BY", module, FieldType.LOOKUP);
 				createdBy.setSpecialType(FacilioConstants.ContextNames.USERS);
 				return createdBy;
 			case "sysModifiedBy":
-				LookupField modifiedBy = (LookupField) getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
+				LookupField modifiedBy = (LookupField) getField("sysModifiedBy","System Modified By", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
 				modifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
 				return modifiedBy;
 		}
@@ -2420,7 +2455,7 @@ public class FieldFactory {
 		fields.add(getField("pmCreationType", "PM_CREARTION_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("woGenerationStatus", "WO_GENERATION_STATUS", module, FieldType.BOOLEAN));
 		fields.add(getField("woGeneratedUpto","WO_GENERATED_UPTO", module, FieldType.NUMBER));
-
+		fields.add(getField("isUserTriggerPresent", "IS_USER_TRIGGER_PRESENT", FieldType.BOOLEAN));
 		return fields;
 	}
 
@@ -2855,7 +2890,7 @@ public class FieldFactory {
 		
 		fields.add(getField("connectionId", "CONNECTION_ID", module, FieldType.LOOKUP));
 		fields.add(getField("key", "KEY_STRING", module, FieldType.STRING));
-		fields.add(getField("value", "VALUE_STRING", module, FieldType.NUMBER));
+		fields.add(getField("value", "VALUE_STRING", module, FieldType.STRING));
 		
 		return fields;
 	}
@@ -3208,6 +3243,7 @@ public class FieldFactory {
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("acknowledgeTime", "ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("responseAckTime", "RESPONSE_ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("pingAckTime", "PING_ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("responseJson", "RESPONSE_JSON", module, FieldType.STRING));
 		fields.add(getField("command", "COMMAND", module, FieldType.NUMBER));
 		return fields;
@@ -4967,6 +5003,7 @@ public class FieldFactory {
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("formulaFieldType", "FORMULA_FIELD_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("kpiCategory", "KPI_CATEGORY", module, FieldType.LOOKUP));
+		fields.add(getField("violationRuleId", "VIOLATION_RULE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
 		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("frequency", "FREQUENCY_TYPE", module, FieldType.NUMBER));
@@ -4980,6 +5017,8 @@ public class FieldFactory {
 		fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
 		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
 		
 		return fields;
 	}
@@ -5124,21 +5163,30 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getIdField(module));
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
-		fields.add(getField("categoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+		fields.add(getField(AgentConstants.ASSET_CATEGORY_ID, "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
 		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("mappedTime", "MAPPED_TIME", module, FieldType.NUMBER));
 		fields.add(getDeviceField(module));
 		fields.add(getInstanceField(module));
-        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
-        fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField(AgentConstants.CONTROLLER_ID, "CONTROLLER_ID", module, FieldType.NUMBER));
         fields.add(getField("objectInstanceNumber", "OBJECT_INSTANCE_NUMBER", module, FieldType.NUMBER));
         fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("instanceType", "INSTANCE_TYPE", module, FieldType.NUMBER));
         fields.add(getField("dataType", "DATA_TYPE", module, FieldType.NUMBER));
         fields.add(getField("pointPath", "POINT_PATH", module, FieldType.STRING));
         fields.add(getField("isWritable", "IS_WRITABLE", module, FieldType.BOOLEAN));
+        
         fields.add(getField("inUse", "IN_USE", module, FieldType.BOOLEAN));
+        SystemEnumField configureStatusfield = (SystemEnumField) getField("configureStatus", "CONFIGURE_STATUS", module, FieldType.SYSTEM_ENUM);
+        configureStatusfield.setEnumName("ConfigureStatus");
+        fields.add(configureStatusfield);
+        
         fields.add(getField("subscribed", "IS_SUBSCRIBED", module, FieldType.BOOLEAN));
+        SystemEnumField subscribeStatusfield = (SystemEnumField) getField("subscribeStatus", "SUBSCRIBE_STATUS", module, FieldType.SYSTEM_ENUM);
+        subscribeStatusfield.setEnumName("SubscribeStatus");
+        fields.add(subscribeStatusfield);
+        
         fields.add(getField("thresholdJson", "THRESHOLD_JSON", module, FieldType.STRING));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
@@ -5160,75 +5208,112 @@ public class FieldFactory {
 
 		return fields;
 	}
-	
-	
+
+	public static List<FacilioField> getDeviceFields(){
+		FacilioModule module = ModuleFactory.getDeviceModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField(AgentConstants.SITE_ID,"SITE_ID",module,FieldType.NUMBER));
+		fields.add(getNameField(module));
+		fields.add(getNewAgentIdField(module));
+		fields.add(getField(AgentConstants.CONTROLLER_PROPS,"CONTROLLER_PROPS",module,FieldType.STRING));
+		fields.add(getCreatedTime(module));
+		return fields;
+	}
+	// using this
 	public static List<FacilioField>  getPointFields() {
 		FacilioModule module = ModuleFactory.getPointModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getIdField(module));
-        fields.add(getField("name", "NAME", module, FieldType.STRING));
-        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
-        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
-        fields.add(getField("dataType", "DATA_TYPE", module, FieldType.NUMBER));
-        fields.add(getField("pointType", "POINT_TYPE", module, FieldType.NUMBER));
-		fields.add(getDeviceField(module));
-        fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.NUMBER));
-		fields.add(getField("categoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
-		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
-		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
-        fields.add(getField("writable", "WRITABLE", module, FieldType.BOOLEAN));
-        fields.add(getField("inUse", "IN_USE", module, FieldType.BOOLEAN));
-        fields.add(getField("subscribed", "SUBSCRIBED", module, FieldType.BOOLEAN));
-        fields.add(getField("thresholdJson", "THRESHOLD_JSON", module, FieldType.STRING));
-        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("mappedTime", "MAPPED_TIME", module, FieldType.NUMBER));
-        fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));        
+        fields.add(getField(AgentConstants.NAME, "NAME", module, FieldType.STRING));
+        fields.add(getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField(AgentConstants.DESCRIPTION, "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField(AgentConstants.DATA_TYPE, "DATA_TYPE", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.POINT_TYPE, "POINT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField(AgentConstants.DEVICE_NAME,"DEVICE_NAME",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.PSEUDO,"PSEUDO",module,FieldType.BOOLEAN));
+        //fields.add(getField(AgentConstants.CONTROLLER_ID, "CONTROLLER_ID", module, FieldType.NUMBER));
+		fields.add(getControllerIdField(module));
+		fields.add(getField(AgentConstants.ASSET_CATEGORY_ID, "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+		fields.add(getField(AgentConstants.RESOURCE_ID, "RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField(AgentConstants.FIELD_ID, "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.WRITABLE, "WRITABLE", module, FieldType.BOOLEAN));
+        fields.add(getField(AgentConstants.IN_USE, "IN_USE", module, FieldType.BOOLEAN));
+        fields.add(getField(AgentConstants.SUBSCRIBED, "SUBSCRIBED", module, FieldType.BOOLEAN));
+        fields.add(getField(AgentConstants.THRESHOLD_JSON, "THRESHOLD_JSON", module, FieldType.STRING));
+        fields.add(getField(AgentConstants.CREATED_TIME, "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.MAPPED_TIME, "MAPPED_TIME", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.UNIT, "UNIT", module, FieldType.NUMBER));
 		return fields;
 	}
 	
 	public static List<FacilioField>  getNiagaraPointFields() {
-		FacilioModule module = ModuleFactory.getPointModule();
+		FacilioModule module = ModuleFactory.getNiagaraPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getIdField(module));
-        fields.add(getField("path", "PATH", module, FieldType.STRING));
+		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
+		fields.add(getControllerIdField(module));
+        fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 		return fields;
 	}
 
 	public static List<FacilioField>  getOPCXmlDAPointFields() {
-		FacilioModule module = ModuleFactory.getPointModule();
+		FacilioModule module = ModuleFactory.getOPCXmlDAPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getIdField(module));
-        fields.add(getField("path", "PATH", module, FieldType.STRING));
+		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
+		fields.add(getControllerIdField(module));
+        fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
+		return fields;
+	}
+
+	public static List<FacilioField>  getMiscPointFields() {
+		FacilioModule module = ModuleFactory.getMiscPointModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
+		fields.add(getControllerIdField(module));
+		fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 		return fields;
 	}
 	
 	
 	public static List<FacilioField>  getOPCUAPointFields() {
-		FacilioModule module = ModuleFactory.getPointModule();
+		FacilioModule module = ModuleFactory.getOPCUAPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getIdField(module));
-        fields.add(getField("nameSpace", "NAME_SPACE", module, FieldType.NUMBER));
-        fields.add(getField("identifier", "IDENTIFIER", module, FieldType.STRING));
+		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
+		fields.add(getControllerIdField(module));
+        fields.add(getField(AgentConstants.NAMESPACE, "NAME_SPACE", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.IDENTIFIER, "IDENTIFIER", module, FieldType.STRING));
 		return fields;
 	}
 	
-	public static List<FacilioField>  getModbusPointFields() {
-		FacilioModule module = ModuleFactory.getPointModule();
+	public static List<FacilioField>  getModbusTcpPointFields() {
+		FacilioModule module = ModuleFactory.getModbusTcpPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getIdField(module));
-        fields.add(getField("registerNumber", "REGISTER_NUMBER", module, FieldType.NUMBER));
-        fields.add(getField("functionCode", "FUNCTION_CODE", module, FieldType.NUMBER));
-        fields.add(getField("modbusDataType", "MODBUS_DATA_TYPE", module, FieldType.NUMBER));
+		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
+		fields.add(getControllerIdField(module));
+        fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.FUNCTION_CODE, "FUNCTION_CODE", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.MODBUS_DATA_TYPE, "MODBUS_DATA_TYPE", module, FieldType.NUMBER));
+		return fields;
+	}
+	public static List<FacilioField>  getModbusRtuPointFields() {
+		FacilioModule module = ModuleFactory.getModbusRtuPointModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
+		fields.add(getControllerIdField(module));
+        fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.FUNCTION_CODE, "FUNCTION_CODE", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.MODBUS_DATA_TYPE, "MODBUS_DATA_TYPE", module, FieldType.NUMBER));
 
 		return fields;
 	}
 	
 	public static List<FacilioField>  getBACnetIPPointFields() {
-		FacilioModule module = ModuleFactory.getPointModule();
+		FacilioModule module = ModuleFactory.getBACnetIPPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getIdField(module));
-        fields.add(getField("instanceNumber", "INSTANCE_NUMBER", module, FieldType.NUMBER));
-        fields.add(getField("instanceType", "INSTANCE_TYPE", module, FieldType.NUMBER));
+		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
+		fields.add(getControllerIdField(module));
+        fields.add(getField(AgentConstants.INSTANCE_NUMBER, "INSTANCE_NUMBER", module, FieldType.NUMBER));
+        fields.add(getField(AgentConstants.INSTANCE_TYPE, "INSTANCE_TYPE", module, FieldType.NUMBER));
 		return fields;
 	}
 	
@@ -5431,6 +5516,8 @@ public class FieldFactory {
 		fields.add(getField("id", "ID", module, FieldType.NUMBER));
 		//fields.add(getOrgIdField(module));
 		fields.add(getModuleIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("uploadedBy", "UPLOADED_BY", module, FieldType.NUMBER));
 		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
 		fields.add(getField("columnHeadingString", "COLUMN_HEADING", module, FieldType.STRING));
 		fields.add(getField("filePath", "FILE_PATH", module, FieldType.STRING));
@@ -5444,6 +5531,8 @@ public class FieldFactory {
 		fields.add(getField("mailSetting","MAIL_SETTING",module,FieldType.STRING));
 		fields.add(getField("importMode","IMPORT_MODE",module,FieldType.NUMBER));
 		fields.add(getField("templateId","TEMPLATE_ID",module,FieldType.NUMBER));
+		fields.add(getField("totalRows", "ROW_TOTAL", module, FieldType.NUMBER));
+		fields.add(getField("firstRowString","FIRST_ROW_STRING",module,FieldType.STRING));
 
 		return fields;
 	}
@@ -5493,7 +5582,7 @@ public class FieldFactory {
 		fields.add(getField("ttime","TTIME", module, FieldType.NUMBER));
 		fields.add(getField("importId" , "IMPORTID", module, FieldType.NUMBER));
 		fields.add(getField("templateId" , "TEMPLATEID", module, FieldType.NUMBER));
-		fields.add(getField("total_rows" , "ROW_TOTAL", module, FieldType.NUMBER));
+//		fields.add(getField("total_rows" , "ROW_TOTAL", module, FieldType.NUMBER));
 		fields.add(getField("rowContextString" , "GROUPED_ROWS", module, FieldType.STRING));
 		fields.add(getField("error_resolved" , "ERROR_RESOLVED", module, FieldType.NUMBER));
 		fields.add(getField("correctedRowString","CORRECTED_ROW", module, FieldType.STRING));
@@ -6625,7 +6714,42 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getDevicePasscodesFields() {
+		FacilioModule module = ModuleFactory.getDevicePasscodesModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("code", "CODE", module, FieldType.STRING));
+		fields.add(getField("generatedTime", "GENERATED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));
+		fields.add(getField("connectedDeviceId", "CONNECTED_DEVICE_ID", module, FieldType.NUMBER));
+		fields.add(getField("info", "INFO", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getConnectedDeviceFields() {
+		FacilioModule module = ModuleFactory.getConnectedDevicesModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField("deviceId", "DEVICE_ID",module,FieldType.NUMBER));
+		fields.add(getField("orgId", "ORGID",module,FieldType.NUMBER));
+		fields.add(getField("sessionStartTime", "SESSION_START_TIME",module,FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getLogBookFields() {
+		FacilioModule module = ModuleFactory.getLogBookModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));		
+		fields.add(getSiteIdField(module));
+		fields.add(getField("orgId", "ORGID",module,FieldType.NUMBER));
+		fields.add(getField("logFor", "LOG_FOR",module,FieldType.LOOKUP));				
+		return fields;
+	}
 
+	
 
 	
 }

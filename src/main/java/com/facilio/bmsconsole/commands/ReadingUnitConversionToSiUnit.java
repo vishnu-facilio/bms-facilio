@@ -26,7 +26,7 @@ public class ReadingUnitConversionToSiUnit extends FacilioCommand {
 		if(recordIds != null && !recordIds.isEmpty() && currentTask != null && currentTask.getReadingFieldUnitEnum() != null) 
 		{
 			Map<Long, TaskContext> tasks = TicketAPI.getTaskMap(recordIds);		
-			if(tasks != null && currentTask != null && reading != null) 
+			if(tasks != null && reading != null) 
 			{
 				TaskContext taskContext= tasks.get(recordIds.get(0));
 				if(taskContext.getInputTypeEnum() != null)
@@ -36,13 +36,16 @@ public class ReadingUnitConversionToSiUnit extends FacilioCommand {
 						if (taskContext.getReadingField() != null && taskContext.getResource() != null && taskContext.getReadingField() instanceof NumberField) 
 						{			
 							NumberField readingNumberField = (NumberField) taskContext.getReadingField();
-							if(readingNumberField.getMetricEnum() != null && reading!= null)
+							if(readingNumberField.getMetricEnum() != null)
 							{								
 								Unit displayUnit = UnitsUtil.getDisplayUnit(readingNumberField);
-								reading.addReading(readingNumberField.getName(), UnitsUtil.convertToSiUnit(reading.getReading(readingNumberField.getName()), displayUnit));
+								
+								Object value = UnitsUtil.convertToSiUnit(reading.getReading(readingNumberField.getName()), displayUnit);
+								
+								reading.addReading(readingNumberField.getName(), value);
 								context.put(FacilioConstants.ContextNames.READING, reading);
 								
-								currentTask.setInputValue(String.valueOf(UnitsUtil.convertToSiUnit(reading.getReading(readingNumberField.getName()), displayUnit)));
+								currentTask.setInputValue(String.valueOf(value));
 								context.put(FacilioConstants.ContextNames.TASK, currentTask);									
 							}
 						}

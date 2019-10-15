@@ -37,8 +37,7 @@ public class DemoRollUpJob extends FacilioJob{
 				demoRollupChain.execute(context);
 		}		
 		catch(Exception e) {
-			LOGGER.info("Exception occurred### in  DemoRollUpJob  ", e);
-			CommonCommandUtil.emailException("DemoRolUp", "DemoRoleUp Failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
+			CommonCommandUtil.emailException("DemoRollUp", "DemoRollUp Failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
 			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
 		}
 	

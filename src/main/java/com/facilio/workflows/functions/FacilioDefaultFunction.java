@@ -15,8 +15,10 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -26,8 +28,8 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -156,7 +158,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			// TODO Auto-generated method stub
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			
 			Long fileId = null;
 			if(objects[0] != null) {
@@ -400,8 +402,15 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			dateJson.put("operatorId", Long.valueOf(objects[4].toString()));
 			
 			Long siteId = Long.valueOf(objects[7].toString());
+			
 					
 			String permalLinkURL = objects[0].toString()+"/app/maintenanceReport?token="+token+"&id="+dashboard.getId()+"&linkName="+dashboard.getLinkName()+"&siteId="+siteId+"&moduleName=workorder"+"&name="+URLEncoder.encode(dashboard.getDashboardName())+"&daterange="+URLEncoder.encode(dateJson.toString());
+			if(siteId > 0) {
+				SiteContext site = SpaceAPI.getSiteSpace(siteId);
+				if(site != null) {
+					permalLinkURL = permalLinkURL + "&siteName=" + URLEncoder.encode(site.getName());
+				}
+			}
 			return permalLinkURL;
 		}
 		

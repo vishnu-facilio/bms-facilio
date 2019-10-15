@@ -128,7 +128,15 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	public void setLastClearedTime(long lastClearedTime) {
 		this.lastClearedTime = lastClearedTime;
 	}
-	
+
+	private long lastWoId = -1;
+	public long getLastWoId() {
+		return lastWoId;
+	}
+	public void setLastWoId(long lastWoId) {
+		this.lastWoId = lastWoId;
+	}
+
 	private AlarmOccurrenceContext lastOccurrence;
 	@JsonIgnore
 	public AlarmOccurrenceContext getLastOccurrence() {
@@ -158,6 +166,7 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		RCA_ALARM,
 		READING_RCA_ALARM,
 		BMS_ALARM,
+		VIOLATION_ALARM
 		;
 		
 		public int getIndex() {

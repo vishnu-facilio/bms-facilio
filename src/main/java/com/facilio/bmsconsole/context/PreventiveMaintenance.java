@@ -67,6 +67,39 @@ public class PreventiveMaintenance extends ResourceContext {
 		return false;
 	}
 
+	private Boolean isUserTriggerPresent;
+	public boolean isUserTriggerPresent() {
+		if (this.isUserTriggerPresent != null) {
+			return this.isUserTriggerPresent;
+		}
+		return false;
+	}
+
+	public Boolean getIsUserTriggerPresent() {
+		return this.isUserTriggerPresent;
+	}
+
+	public void setIsUserTriggerPresent(Boolean isUserTriggerPresent) {
+		this.isUserTriggerPresent = isUserTriggerPresent;
+	}
+
+
+	private Boolean isAllowedToExecute;
+	public boolean isAllowedToExecute() {
+		if (this.isAllowedToExecute != null) {
+			return this.isAllowedToExecute;
+		}
+		return false;
+	}
+
+	public Boolean getIsAllowedToExecute() {
+		return this.isAllowedToExecute;
+	}
+
+	public void setIsAllowedToExecute(Boolean isAllowedToExecute) {
+		this.isAllowedToExecute = isAllowedToExecute;
+	}
+
 
 	private Boolean woGenerationStatus;
 	public Boolean getwoGenerationStatus() {
@@ -495,4 +528,6 @@ public class PreventiveMaintenance extends ResourceContext {
 											.append("]")
 											.toString();
 	}
+
+
 }

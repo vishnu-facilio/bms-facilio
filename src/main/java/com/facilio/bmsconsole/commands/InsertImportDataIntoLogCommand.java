@@ -46,29 +46,31 @@ public class InsertImportDataIntoLogCommand extends FacilioCommand {
 			
 			logContext.setImportId(importProcessContext.getId());
 			logContext.setOrgId(importProcessContext.getOrgId());
-			logContext.setTotal_rows(row_count);
+			importProcessContext.setTotalRows(row_count.longValue());
 			
 			
-			if(importProcessContext.getImportMode() == ImportProcessContext.ImportMode.NORMAL.getValue()) {
-				if(groupedContext.get(uniqueString).size() > 1) {
+			if (importProcessContext.getImportMode() == ImportProcessContext.ImportMode.NORMAL.getValue()) {
+				if (groupedContext.get(uniqueString).get(0).getError_resolved() != null && groupedContext
+						.get(uniqueString).get(0)
+						.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.FOUND_IN_DB.getValue()) {
+					logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.FOUND_IN_DB.getValue());
+				} else if (groupedContext.get(uniqueString).size() > 1) {
 					logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getValue());
+				} else {
+					logContext.setError_resolved(
+							ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue());
 				}
-				else {
-					logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue());
-				}
-			}
-			else {
-				if(logContext.getParentId() == null || logContext.getParentId() < 0) {
+			} else {
+				if (logContext.getParentId() == null || logContext.getParentId() < 0) {
 					logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.OTHER_ERRORS.getValue());
-				}
-				else if(groupedContext.get(uniqueString).size() == 1) {
-					logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue());
-				}
-				else {
+				} else if (groupedContext.get(uniqueString).size() == 1) {
+					logContext.setError_resolved(
+							ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue());
+				} else {
 					logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getValue());
 				}
 			}
-			
+
 			logContext.setRowContexts(groupedContext.get(uniqueString));
 			if(hasDuplicates == false) {
 				hasDuplicates = hasDuplicate(logContext, importProcessContext);
@@ -90,25 +92,23 @@ public class InsertImportDataIntoLogCommand extends FacilioCommand {
 	
 	private boolean hasDuplicate(ImportProcessLogContext logContext, ImportProcessContext importProcessContext) throws Exception {
 		// TODO Auto-generated method stub
-		if(logContext.getRowContexts().size() > 1) {
-			if(importProcessContext.getImportMode() == ImportProcessContext.ImportMode.NORMAL.getValue()) {
-				if(logContext.getRowContexts().size() > 1) {
-					return true;
-				}
-				else {
-					return false;
-				}
+		if (importProcessContext.getImportMode() == ImportProcessContext.ImportMode.NORMAL.getValue()) {
+			if (logContext.getRowContexts().size() > 1) {
+				return true;
+			} else if (logContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.FOUND_IN_DB
+					.getValue()) {
+				return true;
+			} else {
+				return false;
 			}
-			else {
-				if(logContext.getParentId() < 0 || logContext.getParentId() == null) {
-					return false;
-				}
-				else {
-					return true;
-				}
+		} else if (logContext.getRowContexts().size() > 1) {
+			if (logContext.getParentId() < 0 || logContext.getParentId() == null) {
+				return false;
+			} else {
+				return true;
 			}
-			
 		}
+			
 		return false;
 	}
 

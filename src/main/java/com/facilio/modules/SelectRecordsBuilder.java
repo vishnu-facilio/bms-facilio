@@ -260,6 +260,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		this.builder.forUpdate();
 		return this;
 	}
+
+	@Override
+	public SelectRecordsBuilder<E> skipUnitConversion() {
+		this.builder.skipUnitConversion();
+		return this;
+	}
 	
 	public SelectRecordsBuilder<E> fetchLookup(LookupField field) {
 		if (fetchLookup == null) {

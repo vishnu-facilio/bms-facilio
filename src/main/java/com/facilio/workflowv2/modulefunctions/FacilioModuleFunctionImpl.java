@@ -332,8 +332,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			}
 		}
 		
-		LOGGER.severe("selectBuilder -- "+selectBuilder);
-		LOGGER.severe("selectBuilder result -- "+props);
+		LOGGER.fine("selectBuilder -- "+selectBuilder);
+		LOGGER.fine("selectBuilder result -- "+props);
 		
 		if(props != null && !props.isEmpty()) {
 			

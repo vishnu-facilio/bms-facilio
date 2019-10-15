@@ -29,13 +29,11 @@
 
 		<default-interceptor-ref name="defaultInterceptor" />
 		<global-results>
-			<result name="login" type="redirect">
-				<param name="location">/app/login</param>
-				<param name="parse">false</param>
+			<result name="login" type="httpheader">
+				<param name="status">401</param>
 			</result>
-			<result name="unauthorized" type="redirect">
-				<param name="location">/jsps/unauthorized.jsp</param>
-				<param name="parse">false</param>
+			<result name="unauthorized" type="httpheader">
+				<param name="status">403</param>
 			</result>
 		</global-results>
 
@@ -74,13 +72,11 @@
 
 		<default-interceptor-ref name="defaultInterceptor" />
 		<global-results>
-			<result name="login" type="redirect">
-				<param name="location">/app/login</param>
-				<param name="parse">false</param>
+			<result name="login" type="httpheader">
+				<param name="status">401</param>
 			</result>
-			<result name="unauthorized" type="redirect">
-				<param name="location">/jsps/unauthorized.jsp</param>
-				<param name="parse">false</param>
+			<result name="unauthorized" type="httpheader">
+				<param name="status">403</param>
 			</result>
 		</global-results>
 		<action name="tracklead" class="com.facilio.bmsconsole.actions.LeadTracker">
@@ -1133,9 +1129,10 @@
 			</action>					
 			<action name="getAlertsPointsData" class="com.facilio.bmsconsole.actions.AdminAction" method ="getAlertsPointsData">
 			<result   type="tiles">adminpage/data.jsp</result>
-			</action>							
-			
-			</package>
+			</action>
+			<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method ="addAgentVersion">
+			</action>
+	</package>
 
 	<package name="viewApi" namespace="/api/view" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.ViewAction"
@@ -3212,7 +3209,6 @@
 		<action name="checkModule" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="checkModule">
 				<result name="success" type="json">
-				<param name="includeProperties">moduleExists.*</param>
 			</result>
 		</action>
 		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction"

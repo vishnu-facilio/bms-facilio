@@ -142,7 +142,63 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
-	}
+	},
+	GET_TOP_N_BUILDING_PLANNED_UNPLANNED_CLOSED_VS_TOTAL_WO_COUNT(10,"getTopNBuildingsPlannedClosedTotalWoCount") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> closedVsTotalWoCountMap = WorkOrderAPI.getTopNBuildingsWithUnPlannedPlannedClosedCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
+			return closedVsTotalWoCountMap;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_TOP_N_BUILDING_RECURRING_WO_FOR_RESOURCE_COUNT(11,"getTopNBuildingsWithRecurringUnPlannedCountForResource") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> closedVsTotalWoCountMap = WorkOrderAPI.getTopNBuildingsWithRecurringUnPlannedCountForResource(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()));
+			return closedVsTotalWoCountMap;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_TOP_N_BUILDING_UNPLANNED_COUNT_CATEGORIES(12,"getTopNBuildingsWithUnPlannedCountForCategories") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> assetAndSpaceCount = WorkOrderAPI.getTopNBuildingsWithUnPlannedCountForCategories(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
+			return assetAndSpaceCount;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_TOP_N_BUILDING_ONTIME_CLOSED_COUNT(13,"getTopNBuildingsWithRecurringUnPlannedCountForResource") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> assetAndSpaceCount = WorkOrderAPI.getTopNBuildingsWithRecurringUnPlannedCountForResource(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()));
+			return assetAndSpaceCount;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	;
 	

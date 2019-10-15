@@ -20,6 +20,7 @@ public class AddFormRuleActionCommand extends FacilioCommand {
 				long id = CriteriaAPI.addCriteria(action.getCriteria(), AccountUtil.getCurrentOrg().getId());
 				action.setCriteriaId(id);
 			}
+			action.setFormRuleId(formRule.getId());
 			FormRuleAPI.addFormRuleActionContext(action);
 		}
 		return false;

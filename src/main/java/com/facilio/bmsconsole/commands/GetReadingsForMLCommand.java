@@ -66,11 +66,19 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 																	.orderBy("TTIME ASC")
 																	.andCustomWhere("TTIME >= ? AND TTIME < ? AND "+parentField.getColumnName()+"=? ",
 																			startTime, currentTime,variables.getParentID());
-			
+			if(mlContext.getOrgId()==232 && mlContext.getId()==83)
+			{
+				LOGGER.info("JAVEED"+selectBuilder.toString()+"::"+startTime+"::"+currentTime);
+			}
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
 			for(Map<String,Object> prop : props)
 			{
 				data.put((long)prop.get(ttimeField.getName()), prop.get(variableField.getName()));
+			}
+			if(mlContext.getOrgId()==232 && mlContext.getId()==83)
+			{
+				
+				LOGGER.info("Javeed"+data+"::"+selectBuilder.toString());
 			}
 			mlContext.setMlVariablesDataMap(variables.getParentID(), variableField.getName(), data);
 		}

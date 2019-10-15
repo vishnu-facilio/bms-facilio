@@ -554,6 +554,97 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
+	GET_PREVIOUS_QUARTER_START_DATE(27,"getPreviousQuarterStartDate") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			return DateTimeUtil.getMonthStartTime(-3,false);
+			
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	GET_PREVIOUS_QUARTER_END_DATE(28,"getPreviousQuarterEndDate") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			 Long previousStart = DateTimeUtil.getMonthStartTime(-1,false);
+			 return DateTimeUtil.getMonthEndTimeOf(previousStart,false);
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	PREVIOUS_QUARTER_NAME(29,"getPreviousQuarterName") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			ZonedDateTime zdt = null;
+			if(objects == null || objects.length == 0) {
+			     zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getMonthStartTime(-3,false));
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				zdt = DateTimeUtil.getZonedDateTime(startTime);
+			}
+			int quarter = (zdt.getMonth().getValue() / 3) + 1;
+			return "Q"+quarter+" "+zdt.getYear();
+		
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	PREVIOUS_LAST_QUARTER_NAME(30,"getPreviousLastQuarterName") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			ZonedDateTime zdt = null;
+			if(objects == null || objects.length == 0) {
+			     zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getMonthStartTime(-6,false));
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				zdt = DateTimeUtil.getZonedDateTime(startTime);
+			}
+			int quarter = (zdt.getMonth().getValue() / 3) + 1;
+			return "Q"+quarter+" "+zdt.getYear();
+		
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	GET_FROMATTED_TIME(31,"getFormattedTime") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			Long ttime = (long) Double.parseDouble(objects[0].toString());
+			
+			if(objects == null || objects.length > 1) {
+			     String formatter = objects[1].toString();
+			     return DateTimeUtil.getFormattedTime(ttime,formatter);
+			}
+			else {
+				return DateTimeUtil.getFormattedTime(ttime);
+			}
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;

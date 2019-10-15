@@ -16,7 +16,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
+import com.facilio.bmsconsole.context.PMPlannerSettingsContext.PlannerType;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.PMPlannerAPI;
 import com.facilio.constants.FacilioConstants;
@@ -47,12 +49,12 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 	private List<String> selectedMetrics;
 	private Map<String, String> metricFieldNameMap;
 	
-	Map<Long, String> assetIdVsName;
+	Map<Long, String> resourceIdVsName;//in this case its either assets.ID or basespaces.ID
 	
-	boolean showAssetCategory = false;
+	boolean showCategory = false;
 	boolean showFrequency = false;
 	boolean showTimeMetric = false;
-	
+	PlannerType plannerType;
 	int rowDefaultSpan;
 	
 	@SuppressWarnings("unchecked")
@@ -73,6 +75,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 
 		long siteId = (long) context.get(ContextNames.SITE_ID);
 		long buildingId = (long) context.get(ContextNames.BUILDING_ID);
+		long floorId = (long) context.get(ContextNames.FLOOR_ID);
 		long categoryId = (long) context.get(ContextNames.CATEGORY_ID);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		
@@ -97,13 +100,60 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		woFields.addAll(ticketFields);
 		
 		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(woFields);
+		
+		//can be asset or basespace module
+		FacilioModule plannerResourceModule=null;
+		List<FacilioField> plannerResourceFields;
+		FacilioField plannerResourceIdField;
+		Map<String, FacilioField> plannerResourceFieldMap;
+		String plannerResourceTable;
+		
+		//can be asset_category or space_category
+		FacilioModule plannerResourceCategoryModule=null;
+		List<FacilioField> plannerResourceCategoryFields ;
+		Map<String, FacilioField> plannerResourceCategoryFieldMap;
+		FacilioField categoryNameField;
+		String plannerResourceCategoryTable;
+		
+				
+		FacilioModule spaceModule=modBean.getModule(ContextNames.SPACE);
+		List<FacilioField> spaceFields=modBean.getAllFields(spaceModule.getName());
+		Map<String,FacilioField> spaceFieldMap=FieldFactory.getAsMap(spaceFields);
+		FacilioField spaceCategoryField=spaceFieldMap.get("spaceCategory");
+		FacilioField spaceTypeField=spaceFieldMap.get("spaceType");
+		String spaceTableName=spaceModule.getTableName();
+		FacilioField spaceIdField=FieldFactory.getIdField(spaceModule);
+		
+		
+		if(plannerType.equals(PMPlannerSettingsContext.PlannerType.ASSET_PLANNER))
+		{
+			
+			plannerResourceModule = modBean.getModule(ContextNames.ASSET);
+			
+			plannerResourceCategoryModule=modBean.getModule(ContextNames.ASSET_CATEGORY);
 
-		FacilioModule assetModule = modBean.getModule(ContextNames.ASSET);
-		List<FacilioField> assetFields = modBean.getAllFields(assetModule.getName());
-		FacilioField assetIdField = FieldFactory.getIdField(assetModule);
-		Map<String, FacilioField> assetFieldMap = FieldFactory.getAsMap(assetFields);
-		String assetTable = assetModule.getTableName();
+		}
+		else if(plannerType.equals(PMPlannerSettingsContext.PlannerType.SPACE_PLANNER)){//type = space planner
+			plannerResourceModule = modBean.getModule(ContextNames.BASE_SPACE);
+			plannerResourceCategoryModule=modBean.getModule(ContextNames.SPACE_CATEGORY);
+		}
+			
+			plannerResourceFields = modBean.getAllFields(plannerResourceModule.getName());
+			plannerResourceIdField = FieldFactory.getIdField(plannerResourceModule);
+			plannerResourceFieldMap= FieldFactory.getAsMap(plannerResourceFields);
+			plannerResourceTable= plannerResourceModule.getTableName();
+		
+			
+			
+			plannerResourceCategoryFields = modBean.getAllFields(plannerResourceCategoryModule.getName());
+			plannerResourceCategoryFieldMap = FieldFactory.getAsMap(plannerResourceCategoryFields);
+			plannerResourceCategoryTable=plannerResourceCategoryModule.getTableName();
+			categoryNameField = plannerResourceCategoryFieldMap.get("name").clone();
+			
+			
+			categoryNameField.setName(PMPlannerAPI.CATEGORY_NAME);
 
+		
 		FacilioModule resourceModule = modBean.getModule(ContextNames.RESOURCE);
 		List<FacilioField> resourceFields = modBean.getAllFields(resourceModule.getName());
 		Map<String, FacilioField> resourceFieldMap = FieldFactory.getAsMap(resourceFields);
@@ -111,14 +161,9 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		FacilioField resourceNameField = resourceFieldMap.get("name").clone();
 		resourceNameField.setName(PMPlannerAPI.RESOURCE_NAME);
 
-		FacilioModule assetCategoryModule = modBean.getModule(ContextNames.ASSET_CATEGORY);
-		List<FacilioField> assetCategoryFields = modBean.getAllFields(assetCategoryModule.getName());
-		Map<String, FacilioField> assetCategoryFieldMap = FieldFactory.getAsMap(assetCategoryFields);
-		FacilioField categoryNameField = assetCategoryFieldMap.get("name").clone();
-		categoryNameField.setName(PMPlannerAPI.CATEGORY_NAME);
 		
-		String assetCategoryTable = assetCategoryModule.getTableName();
-
+		
+		
 		FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();
 		List<FacilioField> pmTriggerFields = FieldFactory.getPMTriggerFields();
 		Map<String, FacilioField> pmTriggerFieldMap = FieldFactory.getAsMap(pmTriggerFields);
@@ -130,7 +175,6 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		FacilioField triggerField = woFieldMap.get("trigger");
 		FacilioField resourceField = woFieldMap.get("resource");
 
-		// To get the title part bases on asset (left side of the calendar)
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> commonBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 				.module(woModule)
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), CommonOperators.IS_NOT_EMPTY))
@@ -155,18 +199,30 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		
 		List<FacilioField> selectFields = new ArrayList<>();
 		selectFields.add(resourceNameField);
-		selectFields.add(assetIdField);
+		selectFields.add(plannerResourceIdField);
 		selectFields.add(countField);
-		if (showAssetCategory) {
+		if (showCategory) {
 			selectFields.add(categoryNameField);
+			//need basespace type also for space planner
+			if(plannerType.equals(PlannerType.SPACE_PLANNER))
+			{
+			selectFields.add(spaceTypeField);
+			}
 		}
 		if (showFrequency) {
 			selectFields.add(frequencyField);
 		}
 		
 		StringBuilder orderBy = new StringBuilder();
-		if (showAssetCategory) {
-			orderBy.append(assetCategoryFieldMap.get("name").getCompleteColumnName()).append(",");
+		if (showCategory) {//need to change settings variable names to refer to both space and asset
+			//for space planner order by space_type from basespaces =>site/building/space
+			if(plannerType.equals(PlannerType.SPACE_PLANNER))
+			{
+				orderBy.append(plannerResourceFieldMap.get("spaceType").getCompleteColumnName()).append(",");
+			}
+			orderBy.append(categoryNameField.getCompleteColumnName()).append(",");
+			
+			
 		}
 		orderBy.append(resourceNameField.getCompleteColumnName());
 		if (showFrequency) {
@@ -174,22 +230,32 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		}
 
 		StringBuilder groupBy = new StringBuilder();
-		groupBy.append(assetIdField.getCompleteColumnName());
+		groupBy.append(plannerResourceIdField.getCompleteColumnName());
 		if (showFrequency) {
 			groupBy.append(",").append(frequencyField.getColumnName());
 		}
 		
-		// To get the jobs data
+		// To get the title part bases on asset (left side of the calendar)
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> groupBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(commonBuilder)
 				.select(selectFields)
-				.innerJoin(assetTable).on(resourceField.getCompleteColumnName() + "=" + assetTable + ".ID")
-				.innerJoin(resourceTable).on(assetIdField.getCompleteColumnName() + "=" + resourceTable + ".ID")
+				.innerJoin(plannerResourceTable).on(resourceField.getCompleteColumnName() + "=" + plannerResourceTable + ".ID")
+				.innerJoin(resourceTable).on(plannerResourceIdField.getCompleteColumnName() + "=" + resourceTable + ".ID")
 				.groupBy(groupBy.toString())
 				.orderBy(orderBy.toString())
 				;
 		
-		if (showAssetCategory) {
-			groupBuilder.innerJoin(assetCategoryTable).on(assetFieldMap.get("category").getCompleteColumnName() + "=" + assetCategoryTable + ".ID");
+		if (showCategory) {
+			if(plannerType.equals(PlannerType.ASSET_PLANNER))
+			{
+				groupBuilder.innerJoin(plannerResourceCategoryTable).on(plannerResourceFieldMap.get("category").getCompleteColumnName() + "=" + plannerResourceCategoryTable + ".ID");
+			}
+			else if(plannerType.equals(PlannerType.SPACE_PLANNER)){
+				//get space category for all basespaces with type=4/space by joining basespace with space and spacecategory tables,order by spacetype and then spacecategory
+				groupBuilder.leftJoin(spaceTableName).on(plannerResourceIdField.getCompleteColumnName() + "=" +spaceIdField.getCompleteColumnName());
+				
+				groupBuilder.leftJoin(plannerResourceCategoryTable).on(spaceCategoryField.getCompleteColumnName() + "=" + plannerResourceCategoryTable + ".ID");
+			}
+			
 		}
 		if (showFrequency) {
 			groupBuilder.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID");
@@ -200,27 +266,49 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		if (buildingId > 0) {
 			groupBuilder.andCondition(CriteriaAPI.getCondition(resourceFieldMap.get("space"), String.valueOf(buildingId), BuildingOperator.BUILDING_IS));
 		}
+		if (floorId > 0) {
+			groupBuilder.andCondition(CriteriaAPI.getCondition(resourceFieldMap.get("space"), String.valueOf(floorId), BuildingOperator.BUILDING_IS));
+		}
+
+		//for space this filter is never sent 
 		if (categoryId > 0) {
-			groupBuilder.andCondition(CriteriaAPI.getCondition(assetFieldMap.get("category"), String.valueOf(categoryId), NumberOperators.EQUALS));
+			groupBuilder.andCondition(CriteriaAPI.getCondition(plannerResourceFieldMap.get("category"), String.valueOf(categoryId), NumberOperators.EQUALS));
 		}
 		
 		List<Map<String, Object>> props = groupBuilder.getAsProps();
 		
+		//for space planner with category enabled, for basespace type other than 4(space) , and space(type 4) without category just put category as basespace type itself 
+		if(plannerType.equals(PlannerType.SPACE_PLANNER)&&showCategory)
+			
+		props.forEach((prop)->{
+//			System.out.println("Space Type="+prop.get("spaceType"));
+//			System.out.println("Space Category="+prop.get("categoryName"));
+			Integer spaceTypeNumVal=(Integer)prop.get("spaceType");
+			//for basesspaces other than space and for type space without category
+			if(spaceTypeNumVal!=SpaceType.SPACE.getIntVal()||prop.get("categoryName")==null)
+			{
+				String spaceTypeString=SpaceType.getType(spaceTypeNumVal).getStringVal();
+				 
+				prop.put("categoryName", spaceTypeString);
+			}
+			
+		});
+		
 		LOGGER.debug("Group by builder: " + groupBuilder.toString());
 		
-		List<Long> assetIds = null;
+		List<Long> resourceIds = null;
 		if (CollectionUtils.isNotEmpty(props)) {
-			assetIds = new ArrayList<>();
-			assetIdVsName = new HashMap<>();
+			resourceIds = new ArrayList<>();
+			resourceIdVsName = new HashMap<>();
 			
 			List<Map<String, Object>> prevHeaderValues = new ArrayList<>();
 			
 			long prevAssetId = -1;
 			for(Map<String, Object> prop: props) {
 				
-				long assetId = (Long) prop.get(assetIdField.getName());
-				assetIds.add(assetId);
-				assetIdVsName.put(assetId, (String) prop.get(resourceNameField.getName()));
+				long assetId = (Long) prop.get(plannerResourceIdField.getName());
+				resourceIds.add(assetId);
+				resourceIdVsName.put(assetId, (String) prop.get(resourceNameField.getName()));
 				
 				addTitles(titles, assetId, prevAssetId, headers, prop, prevHeaderValues, countField);
 				
@@ -250,7 +338,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			
 			
 			orderBy = new StringBuilder("FIELD(").append(resourceField.getCompleteColumnName()).append(", ")
-					.append(StringUtils.join(assetIds, ",")).append(")");
+					.append(StringUtils.join(resourceIds, ",")).append(")");
 			
 			if (showFrequency) {
 				orderBy.append(",").append(frequencyField.getCompleteColumnName());
@@ -258,10 +346,11 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 //				.append(StringUtils.join(triggerIds, ",")).append(")");
 			}
 			
+			// To get the jobs data
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> dataBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(commonBuilder)
 					.select(selectFields)
 					.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID")
-					.andCondition(CriteriaAPI.getCondition(resourceField, assetIds, NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(resourceField, resourceIds, NumberOperators.EQUALS))
 					.orderBy(orderBy.toString())
 					;
 			
@@ -327,7 +416,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		List<Map<String, Object>> rowData = new ArrayList<>();
 		row.put("data", rowData);
 		row.put("id", assetId);
-		if (showAssetCategory) {
+		if (showCategory) {
 			row.put("resourceGroup", prop.get(PMPlannerAPI.CATEGORY_NAME));
 		}
 		titles.add(row);
@@ -372,7 +461,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 						if (enabled) {
 							row.put("editable", true);
 						}
-						if (showAssetCategory) {
+						if (showCategory) {
 							row.put("resourceGroup", prop.get(PMPlannerAPI.CATEGORY_NAME));
 						}
 						titles.add(row);
@@ -416,7 +505,14 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			Map<String, Object> prop = props.get(j);
 			if (!isClone) {
 				Map<String, Object> resource = (Map<String, Object>) prop.get("resource");
-				prop.put("asset", assetIdVsName.get(resource.get("id")));
+				if(plannerType.equals(plannerType.ASSET_PLANNER))
+				{
+				prop.put("asset", resourceIdVsName.get(resource.get("id")));
+				}
+				else if(plannerType.equals(plannerType.SPACE_PLANNER))
+				{
+				prop.put("space", resourceIdVsName.get(resource.get("id")));
+				}
 			}
 			prop.put("time", metricField);
 			
@@ -444,7 +540,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 	
 	private void handleSettings(Context context) {
 		PMPlannerSettingsContext plannerSettings = (PMPlannerSettingsContext) context.get(ContextNames.PM_PLANNER_SETTINGS);
-		
+		plannerType=plannerSettings.getPlannerTypeEnum();
 		JSONArray columnSettings = plannerSettings.getColumnSettings();
 		for(int i=0; i < columnSettings.size(); i++) {
 			JSONObject columnObj = (JSONObject) columnSettings.get(i);
@@ -456,7 +552,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			String name = (String) columnObj.get("name");
 			switch (name) {
 				case PMPlannerAPI.CATEGORY_NAME:
-					showAssetCategory = true;
+					showCategory = true;
 					break;
 					
 				case PMPlannerAPI.FREQUENCY:

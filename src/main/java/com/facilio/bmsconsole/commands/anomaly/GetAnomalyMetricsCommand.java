@@ -62,16 +62,16 @@ public class GetAnomalyMetricsCommand extends FacilioCommand {
 		String durationColumn = "("+clearedTimeFieldColumn + "-" + createdTimeFieldColumn+")/1000";
 		FacilioField durationField = FieldFactory.getField("duration", durationColumn, FieldType.NUMBER);
 		
-		
+		FacilioField alarmField = fieldMap.get("alarm");
 //		List<FacilioField> selectFields = new ArrayList<>();
 //		selectFields.add(FieldFactory.getField("createdTime", clearedTimeFieldColumn, FieldType.NUMBER));
 		
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.moduleName(moduleName)
 //				.select(selectFields)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(alarmId), NumberOperators.EQUALS))
+//				.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(alarmId), NumberOperators.EQUALS))
 				.aggregate(NumberAggregateOperator.AVERAGE, durationField)
-				.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField())
+				.aggregate(CommonAggregateOperator.COUNT, alarmField)
 				.aggregate(NumberAggregateOperator.MIN, createdTimeField)
 				.groupBy(DateAggregateOperator.MONTH.getSelectField(createdTimeField).getCompleteColumnName())
 				.orderBy("createdTime")
@@ -80,7 +80,7 @@ public class GetAnomalyMetricsCommand extends FacilioCommand {
 		if (dateRange != null) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(createdTimeField, dateRange.toString(), DateOperators.BETWEEN));
 		}
-		
+
 		if (isRCA) {
 			FacilioModule anomalyOccurrence = modBean.getModule(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE);
 			Map<String, FacilioField> anomalyOccurrenceFields = FieldFactory.getAsMap(modBean.getAllFields(anomalyOccurrence.getName()));
@@ -91,7 +91,9 @@ public class GetAnomalyMetricsCommand extends FacilioCommand {
 						 .andCondition(CriteriaAPI.getCondition(anomalyOccurrenceFields.get("mlanomalyType"),
 									String.valueOf(MLAlarmOccurenceContext.MLAnomalyType.RCA.getIndex()), NumberOperators.EQUALS));
 		}
-		
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(alarmId), NumberOperators.EQUALS));
+		}
 		List<Map<String, Object>> props = selectBuilder.getAsProps();
 		context.put("metrics", props);
 		

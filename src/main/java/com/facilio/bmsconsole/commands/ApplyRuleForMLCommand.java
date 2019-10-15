@@ -22,14 +22,14 @@ public class ApplyRuleForMLCommand extends FacilioCommand {
 		
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		executeAnotherJob(mlContext);
-		
+		/*
 		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(mlContext.getRuleID(),true,true);
 		if (rule != null && rule.isActive()) 
 		{
 			FacilioContext ruleContext = new FacilioContext();
 			WorkflowRuleAPI.executeScheduledRule(rule, mlContext.getPredictionTime() * 1000 , ruleContext);
 		}
-		
+		*/
 		return false;
 		
 	}
@@ -48,7 +48,7 @@ public class ApplyRuleForMLCommand extends FacilioCommand {
 					FacilioTimer.deleteJob(FacilioUtil.parseLong(jobid), "DefaultMLJob");
 				}
 				
-				FacilioTimer.scheduleOneTimeJobWithTimestampInSec(FacilioUtil.parseLong(jobid), "DefaultMLJob", mlContext.getPredictionTime(), "ml");
+				FacilioTimer.scheduleOneTimeJobWithTimestampInSec(FacilioUtil.parseLong(jobid), "DefaultMLJob",(System.currentTimeMillis()/1000)+300, "ml");
 				/*
 				jobContext = new JobContext();
 				jobContext.setJobId(FacilioUtil.parseLong(jobid));

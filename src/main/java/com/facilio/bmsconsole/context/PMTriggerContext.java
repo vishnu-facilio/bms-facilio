@@ -180,6 +180,16 @@ public class PMTriggerContext implements Serializable {
 	public void setAssignedTo(Long assignedTo) {
 		this.assignedTo = assignedTo;
 	}
+
+	private SharingContext<SingleSharingContext> sharingContext = new SharingContext<>();
+
+	public SharingContext<SingleSharingContext> getSharingContext() {
+		return sharingContext;
+	}
+
+	public void setSharingContext(SharingContext<SingleSharingContext> sharingContext) {
+		this.sharingContext = sharingContext;
+	}
 	
 	public enum TriggerType {
 		
@@ -202,7 +212,9 @@ public class PMTriggerContext implements Serializable {
 	public enum TriggerExectionSource {
 		SCHEDULE,
 		READING,
-		ALARMRULE;
+		ALARMRULE,
+		USER
+		;
 		
 		public int getVal() {
 			return ordinal() + 1;

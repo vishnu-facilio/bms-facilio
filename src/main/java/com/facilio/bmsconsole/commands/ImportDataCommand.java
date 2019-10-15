@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -15,6 +9,11 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ImportDataCommand extends FacilioCommand implements PostTransactionCommand {
 
@@ -31,7 +30,7 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 		try {
 			jobId = (Long) commandContext.get(ImportAPI.ImportProcessConstants.JOB_ID);
 
-			LOGGER.severe("IMPORT DATA JOB COMMAND CALLED -- " + jobId);
+			LOGGER.info("IMPORT DATA JOB COMMAND CALLED -- " + jobId);
 
 			importProcessContext = ImportAPI.getImportProcessContext(jobId);
 
@@ -84,7 +83,7 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 				exceptionMessage = exception.getMessage();
 			}
 			stack = exception.getStackTrace();
-			
+			LOGGER.severe("Import Data Error Catch -- " + jobId + " " + exceptionMessage);
 			throw exception;
 		}
 		return false;
@@ -97,9 +96,9 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 			constructErrorMessage();
 		} else {
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.IMPORTED.getValue());
-			LOGGER.severe("importProcessContext -- " + importProcessContext);
+			LOGGER.info("importProcessContext -- " + importProcessContext);
 			ImportAPI.updateImportProcess(importProcessContext);
-			LOGGER.severe("IMPORT DATA JOB COMMAND COMPLETED -- " + jobId);
+			LOGGER.info("IMPORT DATA JOB COMMAND COMPLETED -- " + jobId);
 		}
 		return false;
 	}

@@ -637,19 +637,26 @@ public class WorkflowUtil {
 	
 	private static final Pattern REG_EX = Pattern.compile("([1-9]\\d*)");
 	
-	public static String getExpressionOldToNew(ExpressionContext exp,String code) {
+	public static String getExpressionOldToNew(ExpressionContext exp,String code) throws Exception {
 		
 		String name = exp.getName();
+		
+		if(name.contains(".")) {
+			throw new Exception("Workflow Contains '.'");
+		}
 		
 		if(exp.getDefaultFunctionContext() != null) {
 			String paramString = exp.getDefaultFunctionContext().getParams().replace("'", "\"");
 			code = code + name +" = NameSpace(\""+exp.getDefaultFunctionContext().getNameSpace()+"\")."+exp.getDefaultFunctionContext().getFunctionName()+"("+paramString+");\n";
 		}
 		else if(exp.getConstant() != null) {
-			code = code + name +" = "+exp.getConstant()+";\n";
+			code = code + name +" = "+getValueStringFromValue(exp.getConstant().toString())+";\n";
 		}
 		else if(exp.getExpr() != null) {
-			code = code + name +" = "+exp.getExpr()+";\n";
+			String exprString = exp.getExpr();
+			exprString = exprString.replaceAll("\\&\\&", "&");
+			exprString = exprString.replaceAll("\\|\\|", "|");
+			code = code + name +" = "+exprString+";\n";
 		}
 		else if(exp.getPrintStatement() != null) {
 			String printStatement = exp.getPrintStatement().replace("'", "\"");
@@ -738,7 +745,34 @@ public class WorkflowUtil {
 					if(operatorStringValue.equals("isn't")) {
 						operatorStringValue = "!=";
 					}
-					conditionString = conditionFieldName +" "+ operatorStringValue +" "+ value;
+					if(operatorStringValue.equals("lookup")) {
+						operatorStringValue = "==";
+						if(value.contains("ID =")) {
+							value = value.substring(value.indexOf('=')+1, value.length()).trim();
+						}
+					}
+					
+					if(value.contains(",")) {
+						String[] values = value.split(",");
+						conditionString = "(";
+						int j = 0;
+						for(String value1 : values) {
+							j++;
+							conditionString = conditionString + conditionFieldName +" "+ operatorStringValue +" "+ value1;
+							if(j != values.length) {
+								if(operatorStringValue.equals("==")) {
+									conditionString = conditionString + " || ";
+								}
+								else if (operatorStringValue.equals("!=")) {
+									conditionString = conditionString + " && ";
+								}
+							}
+						}
+						conditionString = conditionString + ")";
+					}
+					else {
+						conditionString = conditionFieldName +" "+ operatorStringValue +" "+ value;
+					}
 				}
 				patternBuilder.append(pattern.substring(i, matcher.start()));
 				patternBuilder.append(conditionString);
@@ -746,8 +780,12 @@ public class WorkflowUtil {
 			}
 			patternBuilder.append(pattern.substring(i, pattern.length()));
 			String db = "criteria : ["+patternBuilder.toString() +"],";
-			db = db + "field : \""+field+"\",";
-			db = db + "aggregation : \""+aggregate+"\",";
+			if(field != null) {
+				db = db + "field : \""+field+"\",";
+				if(aggregate != null) {
+					db = db + "aggregation : \""+aggregate+"\",";
+				}
+			}
 			if(orderBy != null) {
 				String sort = "asc";
 				if(sortBy != null) {
@@ -793,6 +831,9 @@ public class WorkflowUtil {
 		String paramString = "";
 		
 		for(ParameterContext param :params) {
+			if(param.getName().contains(".")) {
+				throw new Exception("Workflow Contains '.'");
+			}
 			paramString = paramString + param.getTypeString() +" "+param.getName()+",";
 		}
 		if(paramString .length() > 0) {
@@ -829,7 +870,12 @@ public class WorkflowUtil {
 				 
 				 IfContext IfContext = conditionContext.getIfContext();
 				 
-				 code = code + "if( "+IfContext.getCriteria()+") { \n";
+				 String criteriaString = IfContext.getCriteria();
+				 
+				 criteriaString = criteriaString.replaceAll("IS NULL", "== null");
+				 criteriaString = criteriaString.replaceAll("IS NOT NULL", "!= null");
+				 
+				 code = code + "if( "+criteriaString+") { \n";
 				 
 				 if(IfContext.getExpressions() != null) {
 					 for(WorkflowExpression itrWorkflowExpression : IfContext.getExpressions()) {
@@ -843,7 +889,12 @@ public class WorkflowUtil {
 				
 				 if(conditionContext.getElseIfContexts() != null) {
 					 for(ElseIfContext elseIfContext : conditionContext.getElseIfContexts()) {
-						 code = code + "else if( "+elseIfContext.getCriteria()+") { \n";
+						 
+						 String elseCriteriaString = elseIfContext.getCriteria();
+						 elseCriteriaString = elseCriteriaString.replaceAll("IS NULL", "== null");
+						 elseCriteriaString = elseCriteriaString.replaceAll("IS NOT NULL", "!= null");
+						 
+						 code = code + "else if( "+elseCriteriaString+") { \n";
 						 if(elseIfContext.getExpressions() != null) {
 							 for(WorkflowExpression itrWorkflowExpression : elseIfContext.getExpressions()) {
 								 
@@ -870,8 +921,16 @@ public class WorkflowUtil {
 			 }
 		}
 		
-		if(workflow.getResultEvaluator() != null) {
-			code = code + "return "+workflow.getResultEvaluator()+";\n";
+		if(workflow.getResultEvaluator() != null && !workflow.getResultEvaluator().isEmpty()) {
+			String resEval = workflow.getResultEvaluator();
+			
+			if(resEval.contains("if")) {
+				
+			}
+			
+			resEval = resEval.replaceAll("\\&\\&", "&");
+			resEval = resEval.replaceAll("\\|\\|", "|");
+			code = code + "return "+resEval+";\n";
 		}
 		
 		code = code + "}";
@@ -2163,7 +2222,7 @@ public class WorkflowUtil {
 	public static String getStringValueFromDouble (Double value) {
 		if(value != null)
 		{
-			DecimalFormat decimalFormat = new DecimalFormat("#");
+			DecimalFormat decimalFormat = new DecimalFormat("#.###");
 			decimalFormat.setMaximumFractionDigits(340);
 		    String convertedString = decimalFormat.format(value);
 		    return convertedString;	

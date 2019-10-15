@@ -140,14 +140,16 @@ public class AddPurchasedItemsForBulkItemAddCommand extends FacilioCommand {
 		ImportProcessContext importProcessContext = (ImportProcessContext) c
 				.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		if (importProcessContext != null) {
-			JSONObject meta = new JSONObject();
-			if (!importProcessContext.getImportJobMetaJson().isEmpty()) {
-				meta = importProcessContext.getFieldMappingJSON();
-				meta.put("Inserted", size + "");
+			JSONObject importMeta = importProcessContext.getImportJobMetaJson();
+			if (importMeta!= null && !importMeta.isEmpty()) {
+				importMeta.put("FieldMapping", importProcessContext.getFieldMappingJSON());
+				importMeta.put("Inserted", size + "");
 			} else {
+				JSONObject meta = new JSONObject();
 				meta.put("Inserted", size + "");
+				importMeta = meta;
 			}
-			importProcessContext.setImportJobMeta(meta.toJSONString());
+			importProcessContext.setImportJobMeta(importMeta.toJSONString());
 		}
 
 	}

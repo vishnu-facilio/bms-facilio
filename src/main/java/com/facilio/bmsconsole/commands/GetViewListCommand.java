@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
@@ -33,8 +34,14 @@ public class GetViewListCommand extends FacilioCommand {
 			dbViews = ViewAPI.getAllViews(moduleName);
 		} else {
 			if (!moduleName.equals("approval")) {
-				moduleObj = modBean.getModule(moduleName);
-				dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
+				// Temp
+				if (moduleName.equals(ContextNames.ALARM_OCCURRENCE)) {
+					dbViews = ViewAPI.getAllViews(modBean.getModule(ContextNames.NEW_READING_ALARM).getModuleId());
+				}
+				else {
+					moduleObj = modBean.getModule(moduleName);
+					dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
+				}
 			}
 		}
 		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
@@ -114,11 +121,16 @@ public class GetViewListCommand extends FacilioCommand {
 						
 					int groupSize = groupViews.size();
 					Map<String, Object> group1 = groupViews.get(groupSize - 1);
-					if (group1.containsKey("type") && group1.get("type").equals("custom") && !customViews.isEmpty()) {
-						Map<String, Object> mutatedDetail = new HashMap<>(group1);
-						mutatedDetail.remove("type");
-						mutatedDetail.put("views", customViews);
-						groupViews.set(groupSize - 1, mutatedDetail);
+					if (group1.containsKey("type") && group1.get("type").equals("custom")) {
+						if (!customViews.isEmpty()) {
+							Map<String, Object> mutatedDetail = new HashMap<>(group1);
+							mutatedDetail.remove("type");
+							mutatedDetail.put("views", customViews);
+							groupViews.set(groupSize - 1, mutatedDetail);
+						}
+						else {
+							groupViews.remove(groupSize - 1);
+						}
 					}
 
 					if (upcomingView.isPresent()) {

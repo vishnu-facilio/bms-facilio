@@ -19,8 +19,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ImportFieldFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
@@ -49,11 +49,36 @@ public class ImportProcessContext implements Serializable
 	Integer importMode;
 	Long templateId;
 	String fileName;
+	Long totalRows;
+	String firstRowString;
+	private long siteId = -1;
+	
+	private long uploadedBy;
+	
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
 	
 	
+	public String getFirstRowString() {
+		return firstRowString;
+	}
+	public void setFirstRowString(String firstRowString) {
+		this.firstRowString = firstRowString;
+	}
+	
+	public Long getTotalRows() {
+		return totalRows;
+	}
+	public void setTotalRows(Long totalRows) {
+		this.totalRows = totalRows;
+	}
 	public String getFileName() throws Exception{
 		if(fileId != null) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			String name = fs.getFileInfo(fileId).getFileName();
 			setFileName(name);
 		}
@@ -284,6 +309,14 @@ public class ImportProcessContext implements Serializable
 		return null;
 	}
 	
+	public JSONArray getIgnoreFields() throws Exception
+	{
+		if(getModule() != null) {
+			return ImportAPI.getIgnoreFields(getModule().getName(), getImportMode());
+		}
+		return null;
+	}
+	
 	private Map<String, FacilioField> facilioFieldMapping = null;
 	
 	public void setFacilioFieldMapping(Map<String, FacilioField> facilioFieldMapping) {
@@ -381,7 +414,12 @@ public class ImportProcessContext implements Serializable
 		return fieldMappingJSON;
 		
 	}
-	
+	public long getUploadedBy() {
+		return uploadedBy;
+	}
+	public void setUploadedBy(long uploadedBy) {
+		this.uploadedBy = uploadedBy;
+	}
 	public enum ImportSetting {
 		INSERT,
 		INSERT_SKIP,
@@ -461,6 +499,7 @@ public class ImportProcessContext implements Serializable
 	public enum ImportLogErrorStatus {
 		NO_VALIDATION_REQUIRED,
 		UNRESOLVED,
+		FOUND_IN_DB,
 		RESOLVED,
 		OTHER_ERRORS;
 		

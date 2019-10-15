@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.MLAnomalyEvent;
 import com.facilio.bmsconsole.context.RCAEvent;
 import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.context.ReadingRCAEvent;
+import com.facilio.bmsconsole.context.ViolationEventContext;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -48,6 +49,9 @@ public class NewEventAPI {
 
 			case BMS_ALARM:
 				return BMSEventContext.class;
+				
+			case VIOLATION_ALARM:
+				return ViolationEventContext.class;
 
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
@@ -74,6 +78,9 @@ public class NewEventAPI {
 
 			case BMS_ALARM:
 				return "bmsevent";
+				
+			case VIOLATION_ALARM:
+				return "violationevent";
 
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");

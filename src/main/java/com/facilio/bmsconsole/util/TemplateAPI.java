@@ -79,8 +79,8 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -657,7 +657,7 @@ public class TemplateAPI {
 	}
 	
 	private static void deleteTemplateFile(Long contentId) throws Exception {
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		fs.deleteFile(contentId);
 	}
 	
@@ -681,7 +681,7 @@ public class TemplateAPI {
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		
 		template.setType(Type.EMAIL);
-		template.setBodyId(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("Email_Template_"+template.getName(), template.getMessage(), "text/plain"));
+		template.setBodyId(FacilioFactory.getFileStore(superAdmin.getId()).addFile("Email_Template_"+template.getName(), template.getMessage(), "text/plain"));
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")
@@ -823,7 +823,7 @@ public class TemplateAPI {
 		
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		
-		try(InputStream body = FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getBodyId())) {
+		try(InputStream body = FacilioFactory.getFileStore(superAdmin.getId()).readFile(template.getBodyId())) {
 			template.setMessage(IOUtils.toString(body));
 		}
 		catch(Exception e) {
@@ -858,7 +858,7 @@ public class TemplateAPI {
 	private static ExcelTemplate getExcelTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		ExcelTemplate template = FieldUtil.getAsBeanFromMap(templateMap, ExcelTemplate.class);
 		AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		//template.setWorkbook(WorkbookFactory.create(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getExcelFileId())));
+		//template.setWorkbook(WorkbookFactory.create(FacilioFactory.getFileStore(superAdmin.getId()).readFile(template.getExcelFileId())));
 		return template;
 	}
 	
@@ -1234,7 +1234,7 @@ public class TemplateAPI {
 	private static JSONTemplate getJSONTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		JSONTemplate template = FieldUtil.getAsBeanFromMap(templateMap, JSONTemplate.class);
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		try(InputStream body = FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getContentId())) {
+		try(InputStream body = FacilioFactory.getFileStore(superAdmin.getId()).readFile(template.getContentId())) {
 			if(body != null) {
 				template.setContent(IOUtils.toString(body));
 			}else {
@@ -1613,7 +1613,7 @@ public class TemplateAPI {
 	private static long addJsonTemplate(long orgId, JSONTemplate template, Template.Type type) throws Exception {
 		addDefaultProps(template);
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		template.setContentId((FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile("JSON_Template_"+template.getName(), template.getContent(), "text/plain")));
+		template.setContentId((FacilioFactory.getFileStore(superAdmin.getId()).addFile("JSON_Template_"+template.getName(), template.getContent(), "text/plain")));
 		template.setType(type);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		
@@ -1635,7 +1635,7 @@ public class TemplateAPI {
 	public static long addExcelTemplate(long orgId, ExcelTemplate template, String fileName) throws Exception {
 		addDefaultProps(template);
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-		template.setExcelFileId(FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).addFile(fileName, template.getExcelFile(), "application/xlsx"));
+		template.setExcelFileId(FacilioFactory.getFileStore(superAdmin.getId()).addFile(fileName, template.getExcelFile(), "application/xlsx"));
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
 															.table("Templates")

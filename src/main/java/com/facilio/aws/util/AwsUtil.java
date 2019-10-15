@@ -400,21 +400,19 @@ public class AwsUtil
         for (byte byt : bytes) result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
         return result.toString();
     }
-	
+	@Deprecated
 	public static void sendEmail(JSONObject mailJson) throws Exception  {
-
-		FacilioFactory.getEmailClient().sendEmail(mailJson);
-
-		/*logEmail(mailJson);
 		if(FacilioProperties.isDevelopment()) {
-//			mailJson.put("subject", "Local - "+mailJson.get("subject"));
+			mailJson.put("subject", "Local - "+mailJson.get("subject"));
+			logEmail(mailJson);
 			return;
 		}
 		if(FacilioProperties.isSmtp()) {
 			EmailUtil.sendEmail(mailJson);
 		} else {
 			sendEmailViaAws(mailJson);
-		}*/
+		}
+		logEmail(mailJson);
 	}
 
 	private static void sendEmailViaAws(JSONObject mailJson) throws Exception  {
@@ -476,8 +474,8 @@ public class AwsUtil
 	}
 
 	private static void logEmail (JSONObject mailJson) throws Exception {
-		FacilioFactory.getEmailClient().logEmail(mailJson);
-		/*try {
+
+		try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				String toAddress = (String) mailJson.get("to");
 				if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
@@ -490,13 +488,13 @@ public class AwsUtil
 		}
 		catch (Exception e) {
 			LOGGER.error("Error occurred while logging email", e);
-		}*/
+		}
 	}
-	
+	@Deprecated
 	public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception  {
 
 		FacilioFactory.getEmailClient().sendEmail(mailJson,files);
-		/*if(files == null || files.isEmpty()) {
+		if(files == null || files.isEmpty()) {
 			sendEmail(mailJson);
 			return;
 		}
@@ -505,7 +503,7 @@ public class AwsUtil
 			EmailUtil.sendEmail(mailJson, files);
 		} else {
 			sendEmailViaAws(mailJson, files);
-		}*/
+		}
 	}
 
 	private static void sendEmailViaAws(JSONObject mailJson, Map<String,String> files) throws Exception  {
@@ -872,7 +870,7 @@ public class AwsUtil
 	public static String getIotKinesisTopic(String orgDomainName){
     	return orgDomainName;
 	}
-	
+	@Deprecated
 	public static void sendErrorMail(long orgid,long ml_id,String error)
 	{
 		try

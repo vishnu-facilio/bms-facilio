@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+
 import org.apache.commons.io.IOUtils;
 
 import com.amazonaws.services.rekognition.model.DetectTextRequest;
@@ -18,8 +19,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.fs.FileInfo;
-import com.facilio.fs.FileStoreFactory;
-import com.facilio.fs.S3FileStore;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
+
 
 public class ImageRecognitionUtil {
 	public static final float MINIMUM_CONFIDENCE = 70;
@@ -36,7 +38,7 @@ public class ImageRecognitionUtil {
 		String environment = FacilioProperties.getConfig("environment");
 		if (!"development".equalsIgnoreCase(environment)) {
 			User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-			S3FileStore fileStore = (S3FileStore) FileStoreFactory.getInstance().getFileStore(superAdmin.getId());
+			FileStore fileStore = FacilioFactory.getFileStore(superAdmin.getId());
 			FileInfo imageInfo = fileStore.getFileInfo(fileId);
 			return getText(new Image()
 							.withS3Object(new S3Object()

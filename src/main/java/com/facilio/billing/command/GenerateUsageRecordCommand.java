@@ -20,15 +20,15 @@ import com.facilio.billing.util.TenantBillingAPI;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.fs.FileInfo;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.time.DateTimeUtil;
 
 public class GenerateUsageRecordCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		FileStoreFactory.getInstance().getFileStore();
+		FacilioFactory.getFileStore();
 		long startTime = (long)context.get(BillContext.ContextNames.STARTTIME);
 		long endTime = (long)context.get(BillContext.ContextNames.ENDTIME);
 		long templateId = (long)context.get(BillContext.ContextNames.TEMPLATEID);
@@ -43,7 +43,7 @@ public class GenerateUsageRecordCommand extends FacilioCommand {
 		AccountUtil.getCurrentOrg().getOrgId();
 		ExcelTemplate excelobject = (ExcelTemplate)TemplateAPI.getTemplate(templateId);
 		excelobject.getName();
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		String fileURL = null;
 		long fileId = excelobject.getExcelFileId();
 		try(InputStream ins = fs.readFile(fileId)) {

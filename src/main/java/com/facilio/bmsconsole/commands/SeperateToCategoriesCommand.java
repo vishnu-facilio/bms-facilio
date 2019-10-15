@@ -19,9 +19,7 @@ public class SeperateToCategoriesCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception{
 		
-		// List<ReadingContext> readingsList = (List<ReadingContext>) context.get(ImportAPI.ImportProcessConstants.READINGS_LIST);
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
-		// Multimap<String, ReadingContext> categoryBasedAsset = ArrayListMultimap.create();
 		HashMap<String, List<ReadingContext>> categoryBasedAsset = new HashMap<String, List<ReadingContext>>();
 		HashMap<String, List<ReadingContext>> groupedContext = (HashMap<String, List<ReadingContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
 		
@@ -31,8 +29,8 @@ public class SeperateToCategoriesCommand extends FacilioCommand{
 			List<ReadingContext> readingsList = groupedContext.get(module);
 			for(int i =0;i< readingsList.size();i++) {
 				try {
-				LOGGER.severe("Resolving Categories for row : " + i);
-				LOGGER.severe(readingsList.get(i).getData().get(ImportAPI.ImportProcessConstants.CATEGORY_FROM_CONTEXT).toString());
+				LOGGER.info("Resolving Categories for row : " + i);
+				LOGGER.info(readingsList.get(i).getData().get(ImportAPI.ImportProcessConstants.CATEGORY_FROM_CONTEXT).toString());
 				category= (Map<String,Object>) readingsList.get(i).getData().get(ImportAPI.ImportProcessConstants.CATEGORY_FROM_CONTEXT);
 				}catch(Exception e) {
 					ImportParseException importException = new ImportParseException(i,importProcessContext.getFieldMapping().get("asset__category"), e);
@@ -41,12 +39,10 @@ public class SeperateToCategoriesCommand extends FacilioCommand{
 				if(category == null) {
 					String categoryName = ImportAPI.ImportProcessConstants.NO_CATEGORY_DEFINED;
 					addCategory(categoryName, readingsList.get(i), categoryBasedAsset);
-					//categoryBasedAsset.put(CategoryName, readingsList.get(i));
 				}
 				else {
 				String categoryName = (String) category.get(ImportAPI.ImportProcessConstants.NAME_FIELD);
 				addCategory(categoryName, readingsList.get(i), categoryBasedAsset);
-				//categoryBasedAsset.put(categoryName, readingsList.get(i));
 				}
 				
 			}

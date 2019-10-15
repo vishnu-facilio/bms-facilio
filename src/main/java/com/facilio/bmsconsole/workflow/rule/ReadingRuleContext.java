@@ -905,7 +905,12 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			readingEvent.setEventMessage(getName());
 		}
 		
-		
+		addDefaultEventProps(event, obj, reading);
+
+		return event;
+	}
+	
+	public void addDefaultEventProps(BaseEventContext event, JSONObject obj, ReadingContext reading) throws Exception {
 		if (obj.containsKey("subject")) {
 			String subject = (String) obj.get("subject");
 			event.setEventMessage(subject);
@@ -915,9 +920,6 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		event.setResource((ResourceContext) reading.getParent());
 		event.setSiteId(((ResourceContext) reading.getParent()).getSiteId());
 		event.setCreatedTime(reading.getTtime());
-
-
-		return event;
 	}
 
 	public ReadingEventContext constructAndAddClearEvent(Context context, ResourceContext resource, long ttime) throws Exception {

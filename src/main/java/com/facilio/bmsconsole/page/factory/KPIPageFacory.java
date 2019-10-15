@@ -19,10 +19,15 @@ public class KPIPageFacory extends PageFactory {
 		tab1.addSection(tab1Sec1);
 		
 		addTimeWidget(tab1Sec1);
-		addDetailsWidget(tab1Sec1);
+		addKpiDetailsWidget(tab1Sec1);
 		addMetersWidget(tab1Sec1);
 		addViolationsWidget(tab1Sec1);
-		addTargetWidget(tab1Sec1);
+		if (formulaField.getMatchedResourcesIds().size() == 1) {
+			addTargetWidget(tab1Sec1);
+		}
+		else {
+			addLatestValueWidget(tab1Sec1);
+		}
 		
 		
 		Tab tab2 = page.new Tab("historicalTrends");
@@ -44,6 +49,12 @@ public class KPIPageFacory extends PageFactory {
 		
 	}
 	
+	private static void addKpiDetailsWidget(Section section) {
+		PageWidget pageWidget = new PageWidget(WidgetType.KPI_DETAILS_WIDGET);
+		pageWidget.addToLayoutParams(section, 24, 6);
+		section.addWidget(pageWidget);
+	}
+	
 	private static void addMetersWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 8, 4);
@@ -60,14 +71,21 @@ public class KPIPageFacory extends PageFactory {
 	
 	private static void addTargetWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 5);
+		cardWidget.addToLayoutParams(section, 24, 10);
 		cardWidget.addCardType(CardType.KPI_TARGET);
+		section.addWidget(cardWidget);
+	}
+	
+	private static void addLatestValueWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 24, 14);
+		cardWidget.addCardType(CardType.KPI_LATEST_VALUE);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addTrendsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
-		cardWidget.addToLayoutParams(section, 12, 14);
+		cardWidget.addToLayoutParams(section, 24, 12);
 		cardWidget.addCardType(CardType.KPI_TREND);
 		
 //		addChartParams(cardWidget, "readingFieldId", null, null);
@@ -77,7 +95,7 @@ public class KPIPageFacory extends PageFactory {
 	
 	private static void addTabularWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 5);
+		cardWidget.addToLayoutParams(section, 24, 10);
 		cardWidget.addCardType(CardType.KPI_TABULAR);
 		section.addWidget(cardWidget);
 	}

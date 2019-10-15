@@ -34,6 +34,8 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		baseEvents = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		if (CollectionUtils.isNotEmpty(baseEvents)) {
+			baseEvents = new ArrayList<>((List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST));
+			context.put(context.get(EventConstants.EventContextNames.EVENT_LIST), baseEvents);
 			for (BaseEventContext baseEvent : baseEvents) {
 				String messageKey = baseEvent.getMessageKey();
 				eventKeys.add(messageKey);

@@ -88,6 +88,42 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitAssignment(WorkflowV2Parser.AssignmentContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code assignSingleVar}
+	 * labeled alternative in {@link WorkflowV2Parser#assignment_var}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignSingleVar(WorkflowV2Parser.AssignSingleVarContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code assignSingleVar}
+	 * labeled alternative in {@link WorkflowV2Parser#assignment_var}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignSingleVar(WorkflowV2Parser.AssignSingleVarContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code assignSingleBracketVar}
+	 * labeled alternative in {@link WorkflowV2Parser#assignment_var}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignSingleBracketVar(WorkflowV2Parser.AssignSingleBracketVarContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code assignSingleBracketVar}
+	 * labeled alternative in {@link WorkflowV2Parser#assignment_var}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignSingleBracketVar(WorkflowV2Parser.AssignSingleBracketVarContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code assignMultiDotVar}
+	 * labeled alternative in {@link WorkflowV2Parser#assignment_var}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignMultiDotVar(WorkflowV2Parser.AssignMultiDotVarContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code assignMultiDotVar}
+	 * labeled alternative in {@link WorkflowV2Parser#assignment_var}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignMultiDotVar(WorkflowV2Parser.AssignMultiDotVarContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link WorkflowV2Parser#if_statement}.
 	 * @param ctx the parse tree
 	 */
@@ -265,6 +301,18 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code booleanExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code booleanExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code atomExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.

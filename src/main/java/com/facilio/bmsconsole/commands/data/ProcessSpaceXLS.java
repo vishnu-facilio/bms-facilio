@@ -36,8 +36,8 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -78,7 +78,7 @@ public class ProcessSpaceXLS extends FacilioCommand {
 		System.out.println("All set for importing "+importProcessContext+" \n" + new Date(System.currentTimeMillis()));
 //		System.out.println("-----------> checking 6----------->");
 		HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();			
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		new ArrayList<ReadingContext>();
 		InputStream ins = fs.readFile(importProcessContext.getFileId());
 		

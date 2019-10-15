@@ -13,7 +13,11 @@ public enum CardType {
 			"	<parameter name=\"parentId\" type=\"Number\"/> 	\n" + 
 			"	<parameter name=\"dateOperator\" type=\"String\"/> 	\n" + 
 			"	<parameter name=\"fieldName\" type=\"String\"/> 	\n" + 
-			"	<parameter name=\"aggregateOpperator\" type=\"String\"/> 	\n" + 
+			"	<parameter name=\"aggregateOpperator\" type=\"String\"/> 	\n" +
+			"	<parameter name=\"startTime\" type=\"Number\"/> 	\n" + 
+			"	<parameter name=\"endTime\" type=\"Number\"/> 	\n" + 
+			"<conditions> "+
+			"<if criteria=\"startTime IS NULL &amp;&amp; endTime IS NULL\">"+
 			"   <expression name=\"a\">\n" + 
 			"      <module name=\"${moduleName}\" />\n" + 
 			"      <criteria pattern=\"1 and 2\">\n" + 
@@ -22,6 +26,16 @@ public enum CardType {
 			"      </criteria>\n" + 
 			"      <field name=\"${fieldName}\" aggregate=\"${aggregateOpperator}\" />\n" + 
 			"   </expression>\n" + 
+			"</if> <else>"+
+			"   <expression name=\"a\">\n" + 
+			"      <module name=\"${moduleName}\" />\n" + 
+			"      <criteria pattern=\"1 and 2\">\n" + 
+			"         <condition sequence=\"1\">parentId`=`${parentId}</condition>\n" + 
+			"         <condition sequence=\"2\">TTIME`between`${startTime},${endTime}</condition>\n" + 
+			"      </criteria>\n" + 
+			"      <field name=\"${fieldName}\" aggregate=\"${aggregateOpperator}\" />\n" + 
+			"   </expression>\n" + 
+			"</else> </conditions>"+
 			"   <result>a</result>\n" + 
 			"</workflow>",true),
 	

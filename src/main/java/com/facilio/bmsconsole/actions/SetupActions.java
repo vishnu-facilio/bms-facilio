@@ -24,8 +24,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.opensymphony.xwork2.ActionContext;
@@ -143,7 +143,7 @@ public String importData() throws Exception {
 		org.getName();
 		
 		if (getOrgPhoto() != null) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			long fileId = fs.addFile(getOrgPhotoFileName(), getOrgPhoto(), getOrgPhotoContentType());
 			org.setLogoId(fileId);
 		}
@@ -175,7 +175,7 @@ public String importData() throws Exception {
 	public String viewOrgPhoto() {
 		
 		try {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			this.org = AccountUtil.getCurrentOrg();
 			fileInfo = fs.getFileInfo(this.org.getLogoId());
 			if (fileInfo != null) {

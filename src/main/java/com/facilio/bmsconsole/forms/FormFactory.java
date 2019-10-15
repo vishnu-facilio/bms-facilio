@@ -67,6 +67,7 @@ public class FormFactory {
 		forms.put("warrantyContractForm", getWarrantyContractForm());
 		forms.put("termsAndConditionForm", getTermsAndConditionForm());
 		forms.put("reservationForm", getReservationForm());
+		forms.put("devicesForm",getDevicesForm());
 		
 			
 		return forms;
@@ -171,6 +172,73 @@ public class FormFactory {
 				FormSection section = new FormSection("Asset", 1, form.getFields(), true);
 				sections.add(section);
 			}
+			else if (moduleName.equals(FacilioConstants.ContextNames.PURCHASE_ORDER)) {
+				List<FormSection> sections = new ArrayList<>();
+				
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> lineItemFields = new ArrayList<>();
+				List<FormField> billingAddressFields = new ArrayList<>();
+				List<FormField> shippingAddressFields = new ArrayList<>();
+				
+				form.setSections(sections);
+				FormSection defaultSection = new FormSection("Purchase Order", 1, defaultFields, true);
+				FormSection billingSection = new FormSection("Billing Address", 2, billingAddressFields, true);
+				FormSection shippingSection = new FormSection("Shipping Address", 3, shippingAddressFields, true);
+				FormSection lineItemSection = new FormSection("Line Items", 4, lineItemFields, true);
+				
+				 form.getFields().forEach(field -> {
+					 if (field.getDisplayTypeEnum() == FieldDisplayType.LINEITEMS) {
+						 lineItemFields.add(field);
+					 }
+					 else if (field.getDisplayTypeEnum() == FieldDisplayType.SADDRESS && field.getDisplayName().equals("BILLING ADDRESS")) {
+						 billingAddressFields.add(field);
+					 }
+					 else if (field.getDisplayTypeEnum() == FieldDisplayType.SADDRESS && field.getDisplayName().equals("SHIPPING ADDRESS")) {
+						 shippingAddressFields.add(field);
+					 }
+					 else {
+						 defaultFields.add(field);
+					 }
+				 });
+				
+				sections.add(defaultSection);
+				sections.add(billingSection);
+				sections.add(shippingSection);
+				sections.add(lineItemSection);
+			}
+			else if (moduleName.equals(FacilioConstants.ContextNames.PURCHASE_REQUEST)) {
+				List<FormSection> sections = new ArrayList<>();
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> lineItemFields = new ArrayList<>();
+				List<FormField> billingAddressFields = new ArrayList<>();
+				List<FormField> shippingAddressFields = new ArrayList<>();
+				
+				form.setSections(sections);
+				FormSection defaultSection = new FormSection("Purchase Request", 1, defaultFields, true);
+				FormSection billingSection = new FormSection("Billing Address", 2, billingAddressFields, true);
+				FormSection shippingSection = new FormSection("Shipping Address", 3, shippingAddressFields, true);
+				FormSection lineItemSection = new FormSection("Line Items", 4, lineItemFields, true);
+				
+				 form.getFields().forEach(field -> {
+					 if (field.getDisplayTypeEnum() == FieldDisplayType.LINEITEMS) {
+						 lineItemFields.add(field);
+					 }
+					 else if (field.getDisplayTypeEnum() == FieldDisplayType.SADDRESS && field.getDisplayName().equals("BILLING ADDRESS")) {
+						 billingAddressFields.add(field);
+					 }
+					 else if (field.getDisplayTypeEnum() == FieldDisplayType.SADDRESS && field.getDisplayName().equals("SHIPPING ADDRESS")) {
+						 shippingAddressFields.add(field);
+					 }
+					 else {
+						 defaultFields.add(field);
+					 }
+				 });
+				
+				sections.add(defaultSection);
+				sections.add(billingSection);
+				sections.add(shippingSection);
+				sections.add(lineItemSection);
+			}
 		}
 		return form;
 	}
@@ -178,10 +246,15 @@ public class FormFactory {
 	private static Map<String, Map<String, FacilioForm>>  initFormsList() {
 		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm());
 		List<FacilioForm> assetForms = Arrays.asList(getAssetForm());
+		List<FacilioForm> poForm = Arrays.asList(getPurchaseOrderForm());
+		List<FacilioForm> prForm = Arrays.asList(getPurchaseRequestForm());
+		
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
+				.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getFormMap(poForm))
+				.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getFormMap(prForm))
 				.build();
 	}
 	
@@ -742,7 +815,7 @@ public class FormFactory {
 	public static FacilioForm getPurchaseRequestForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("PURCHASE REQUEST");
-		form.setName("web_default");
+		form.setName("default_purchaserequest_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getPurchaseRequestFormFields());
@@ -752,7 +825,7 @@ public class FormFactory {
 	public static FacilioForm getPurchaseOrderForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("PURCHASE ORDER");
-		form.setName("web_default");
+		form.setName("default_purchaseorder_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getPurchaseOrderFormFields());
@@ -826,7 +899,7 @@ public class FormFactory {
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.OPTIONAL, "storeRoom", 3, 3));
 		fields.add(new FormField("requestedTime", FieldDisplayType.DATE, "Requested Date", Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("requiredTime", FieldDisplayType.DATE, "Required Date", Required.OPTIONAL, 4, 3));
-		fields.add(new FormField("requestedBy", FieldDisplayType.USER, "Requested By", Required.OPTIONAL, "requester", 5, 1));
+		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "user", 5, 1));
 		fields.add(new FormField("billToAddress", FieldDisplayType.SADDRESS, "BILLING ADDRESS", Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("shipToAddress", FieldDisplayType.SADDRESS, "SHIPPING ADDRESS", Required.OPTIONAL, 7, 1));
 		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 8, 1));
@@ -843,7 +916,7 @@ public class FormFactory {
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.OPTIONAL, "storeRoom", 3, 3));
 		fields.add(new FormField("orderedTime", FieldDisplayType.DATE, "Ordered Date", Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("requiredTime", FieldDisplayType.DATE, "Required Date", Required.OPTIONAL, 4, 3));
-		fields.add(new FormField("requestedBy", FieldDisplayType.USER, "Requested By", Required.OPTIONAL, "requester", 5, 1));
+		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "user", 5, 1));
 		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 8, 1));
 		fields.add(new FormField("billToAddress", FieldDisplayType.SADDRESS, "BILLING ADDRESS", Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("shipToAddress", FieldDisplayType.SADDRESS, "SHIPPING ADDRESS", Required.OPTIONAL, 7, 1));
@@ -1072,5 +1145,27 @@ public class FormFactory {
 
 		return fields;
 	}
+	
+	
+	public static FacilioForm getDevicesForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("DEVICES");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ModuleNames.DEVICES));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getDevicesFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	private static List<FormField> getDevicesFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 2));		
+		fields.add(new FormField("associatedResource", FieldDisplayType.WOASSETSPACECHOOSER, "Space", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("deviceType", FieldDisplayType.SELECTBOX, "Device Type", Required.REQUIRED,5, 1));		
+		return fields;
+	}
+	
 	
 }

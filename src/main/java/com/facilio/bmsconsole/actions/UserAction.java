@@ -44,8 +44,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.modules.FacilioModule;
@@ -148,7 +148,7 @@ public class UserAction extends FacilioAction {
 			}
 			return ERROR;
 		} catch (Exception e) {
-			return ERROR;
+			throw e;
 		}
 	}
 	
@@ -168,7 +168,7 @@ public class UserAction extends FacilioAction {
 												.beanClass(TenantContext.class)
 												;								
         List<TenantContext> records = selectBuilder.get();
-		if(selectBuilder.get().size() > 0) {
+		if(records.size() > 0) {
 			throw new IllegalArgumentException("Deletion not permitted as the requester is a primary contact for the tenant "+records.get(0).getName());
 		}
 	}
@@ -620,22 +620,14 @@ public class UserAction extends FacilioAction {
 	}
 	
 	public String uploadUserAvatar() throws Exception {
-		if(!FacilioProperties.isProduction() || FacilioProperties.isServicesEnabled()){
-			com.facilio.services.filestore.FileStore fs = com.facilio.services.factory.FacilioFactory.getFileStore();
+
+			FileStore fs = FacilioFactory.getFileStore();
 			long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 
 			AccountUtil.getUserBean().updateUserPhoto(userId, fileId);
 
 			setAvatarUrl(fs.getPrivateUrl(fileId));
-		}
-		else{
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 
-			AccountUtil.getUserBean().updateUserPhoto(userId, fileId);
-
-			setAvatarUrl(fs.getPrivateUrl(fileId));
-		}
 
 		
 		return SUCCESS;
@@ -645,7 +637,7 @@ public class UserAction extends FacilioAction {
 		
 		long photoId = AccountUtil.getCurrentUser().getPhotoId();
 		if (photoId > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			FileStore fs = FacilioFactory.getFileStore();
 			fs.deleteFile(photoId);
 		}
 		

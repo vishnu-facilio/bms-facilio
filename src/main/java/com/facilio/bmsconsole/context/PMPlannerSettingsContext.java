@@ -160,7 +160,8 @@ public void setLegendSettingsJson(String legendSettingsJson) {
 
 public enum PlannerType {
 	ASSET_PLANNER,
-	STAFF_PLANNER	
+	STAFF_PLANNER,
+	SPACE_PLANNER,
 	;
 	
 	public int getValue() {

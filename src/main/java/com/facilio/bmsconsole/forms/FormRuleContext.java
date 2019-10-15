@@ -104,7 +104,10 @@ public class FormRuleContext {
 	}
 
 	public int getTriggerType() {
-		return triggerType.getIntVal();
+		if(triggerType != null) {
+			return triggerType.getIntVal();
+		}
+		return -1;
 	}
 	
 	public TriggerType getTriggerTypeEnum() {
@@ -116,7 +119,10 @@ public class FormRuleContext {
 	}
 
 	public int getRuleType() {
-		return ruleType.getIntVal();
+		if(ruleType != null) {
+			return ruleType.getIntVal();
+		}
+		return -1;
 	}
 	
 	public RuleType getRuleTypeEnum() {

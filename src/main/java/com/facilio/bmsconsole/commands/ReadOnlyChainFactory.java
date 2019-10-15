@@ -360,7 +360,7 @@ public class ReadOnlyChainFactory {
 	
 	public static FacilioChain executeWorkflowsForReadingChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES, RuleType.PM_READING_TRIGGER,RuleType.REPORT_DOWNTIME_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES, RuleType.PM_READING_TRIGGER,RuleType.REPORT_DOWNTIME_RULE, RuleType.READING_VIOLATION_RULE));
 		return c;
 	}
 	
@@ -1475,5 +1475,30 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetAssetAssociatedActiveContractsCommand());
 		return c;
+	}
+	
+	public static FacilioChain performConditionalFormattings() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new PerformConditionalFormatting());
+		return c;
+		}
+
+	public static FacilioChain getImportHistoryListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForImportProcess());
+		c.addCommand(new GetImportHistoryListCommand());
+		return c;
+	}
+
+	public static FacilioChain getSiteAlarmList() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSiteLevelAlarmCountCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAssetAlarmList() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAssetAlarmDetailsCommand());
+		return chain;
 	}
 }

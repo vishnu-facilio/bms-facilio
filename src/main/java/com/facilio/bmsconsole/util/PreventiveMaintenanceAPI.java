@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -35,30 +36,12 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.BulkWorkOrderContext;
-import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
-import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
-import com.facilio.bmsconsole.context.PMReminderAction;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
-import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
-import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
@@ -246,7 +229,18 @@ public class PreventiveMaintenanceAPI {
 					}
 				}
 			}
-			 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
+
+			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
+
+			if (CollectionUtils.isEmpty(resourceIds)) {
+				long woRId = woResourceId == null ? -1 : woResourceId;
+				long spaceCategoryId = sectiontemplate.getSpaceCategoryId() == null ? -1 : sectiontemplate.getSpaceCategoryId();
+				long assetCategoryId = sectiontemplate.getAssetCategoryId() == null ? -1 : sectiontemplate.getAssetCategoryId();
+				long rId = sectiontemplate.getResourceId() == null ? -1 : sectiontemplate.getResourceId();
+
+				LOGGER.log(Level.ERROR, "resource Ids in getTaskMapForNewPMExecution is empty " + Arrays.toString(resourceIds.toArray()) + " Assignment type " + sectiontemplate.getAssignmentType() + " woResourceId " + woRId  + " space categoryId " +  spaceCategoryId + " asset categoryId " + assetCategoryId + " resource id " + rId);
+			}
+
 			 Map<String, Integer> dupSectionNameCount = new HashMap<>();
 			 for(Long resourceId :resourceIds) {
 				 if(resourceId == null || resourceId < 0) {
@@ -652,7 +646,7 @@ public class PreventiveMaintenanceAPI {
 			PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
 
 			if (taskMap == null || taskMap.isEmpty()) {
-				LOGGER.log(Level.WARN, "task map is empty " + wo.getPm().getId());
+				LOGGER.log(Level.WARN, "task map is empty pm id " + wo.getPm().getId());
 			}
 
 			bulkWorkOrderContext.addContexts(wo, taskMap, preRequestMap, wo.getAttachments());
@@ -886,7 +880,6 @@ public class PreventiveMaintenanceAPI {
 		workOrderBuilder.module(module)
 				.beanClass(WorkOrderContext.class)
 				.select(Arrays.asList(fieldMap.get("pm"), fieldMap.get("createdTime"), fieldMap.get("resource")))
-				.setAggregation()
 				.andCondition(CriteriaAPI.getIdCondition(workOrderId, module));
 		List<WorkOrderContext> workOrders = workOrderBuilder.get();
 
@@ -911,6 +904,7 @@ public class PreventiveMaintenanceAPI {
 		SelectRecordsBuilder woSelectBuilder = new SelectRecordsBuilder();
 		woSelectBuilder.module(module)
 				.select(Arrays.asList(minCreatedTime))
+				.setAggregation()
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(previousTime), NumberOperators.GREATER_THAN))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceId), NumberOperators.EQUALS));
@@ -1060,6 +1054,25 @@ public class PreventiveMaintenanceAPI {
 				pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
 			}
 			return pm;
+		}
+		return null;
+	}
+	
+	public static List<PreventiveMaintenance> getPM(Criteria criteria) throws Exception {
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
+		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCriteria(criteria)
+														;
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanListFromMapList(props, PreventiveMaintenance.class);
 		}
 		return null;
 	}
@@ -1353,6 +1366,11 @@ public class PreventiveMaintenanceAPI {
 					trigger.setStartReading(rule.getStartValue());
 					trigger.setReadingRule(rule);
 				}
+			}
+
+			if (trigger.getTriggerExecutionSourceEnum() == TriggerExectionSource.USER) {
+				SharingContext<SingleSharingContext> singleSharingContext = SharingAPI.getSharing(trigger.getId(), ModuleFactory.getPMExecSharingModule(), SingleSharingContext.class);
+				trigger.setSharingContext(singleSharingContext);
 			}
 
 			List<PMTriggerContext> triggerList = pmTriggers.get(trigger.getPmId());
@@ -2109,6 +2127,41 @@ public class PreventiveMaintenanceAPI {
 		Map<String, FacilioField> pmFieldMap = FieldFactory.getAsMap(FieldFactory.getPreventiveMaintenanceFields());
 		cr.addAndCondition(CriteriaAPI.getCondition(pmFieldMap.get("status"), "3", NumberOperators.NOT_EQUALS));
 		return cr;
+	}
+
+	public static Criteria getUserTriggerCriteria() throws Exception {
+		Criteria criteria = new Criteria();
+		Map<String, FacilioField> pmFields = FieldFactory.getAsMap(FieldFactory.getPreventiveMaintenanceFields());
+		criteria.addAndCondition(CriteriaAPI.getCondition(pmFields.get("isUserTriggerPresent"), "true" , BooleanOperators.IS));
+		List<PreventiveMaintenance> userTriggerPMs = PreventiveMaintenanceAPI.getPMs(null, criteria, null, null, null, true);
+		if (CollectionUtils.isEmpty(userTriggerPMs)) {
+			return null;
+		}
+
+		List<Long> pmIds = new ArrayList<>();
+
+		for (PreventiveMaintenance pm: userTriggerPMs) {
+			if (CollectionUtils.isEmpty(pm.getTriggers())) {
+				continue;
+			}
+
+			List<SharingContext<SingleSharingContext>> sharingContexts = pm.getTriggers().stream().filter(i -> i.getTriggerExecutionSourceEnum() == TriggerExectionSource.USER).map(PMTriggerContext::getSharingContext).collect(Collectors.toList());
+
+			for (SharingContext sharingContext: sharingContexts) {
+				if (sharingContext.isAllowed()) {
+					pmIds.add(pm.getId());
+					break;
+				}
+			}
+		}
+
+		if (pmIds.isEmpty()) {
+			return null;
+		}
+
+		Criteria pmCriteria = new Criteria();
+		pmCriteria.addAndCondition(CriteriaAPI.getIdCondition(pmIds, ModuleFactory.getPreventiveMaintenanceModule()));
+		return pmCriteria;
 	}
 
 	public static void updateWorkOrderCreationStatus(Connection conn, List<Long> ids, int status) throws Exception {

@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -105,7 +104,7 @@ public class ConstructBaselineFormulaWithAdjustmentCommand extends FacilioComman
 				MVUtil.fillFormulaFieldDetailsForUpdate(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaFieldContext);
 				
-				FacilioChain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
+				FacilioChain updateEnPIChain = TransactionChainFactory.updateFormulaChain();
 				updateEnPIChain.execute(context);
 				
 			}

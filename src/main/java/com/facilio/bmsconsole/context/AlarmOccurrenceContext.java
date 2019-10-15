@@ -258,6 +258,10 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 			baseAlarm.setAcknowledgedTime(getAcknowledgedTime());
 		}
 		baseAlarm.setLastOccurrence(this);
+
+		if (getWoId() > 0) {
+			baseAlarm.setLastWoId(getWoId());
+		}
 	}
 	
 	@Override
@@ -279,6 +283,7 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		NORMAL,
 		ANOMALY,
 		READING,
+		VIOLATION
 		;
 
 		public int getIndex() {

@@ -240,4 +240,15 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 		this.resource = resource;
 	}
 	
+	private double transactionCost;
+
+	public double getTransactionCost() {
+		return transactionCost;
+	}
+
+	public void setTransactionCost(double transactionCost) {
+		this.transactionCost = transactionCost;
+	}
+	
+	
 }

@@ -11,6 +11,7 @@ public class WorkorderToolsContext extends ToolTransactionContext {
 
 	public void setCost(double cost) {
 		this.cost = cost;
+		this.setTransactionCost(cost);
 	}
 
 	private long issueTime = -1;

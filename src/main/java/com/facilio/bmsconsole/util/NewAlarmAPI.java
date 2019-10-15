@@ -33,6 +33,8 @@ import com.facilio.bmsconsole.context.ReadingAlarmCategoryContext;
 import com.facilio.bmsconsole.context.ReadingAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.ReadingRCAAlarm;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ViolationAlarmContext;
+import com.facilio.bmsconsole.context.ViolationAlarmOccurrenceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -131,6 +133,8 @@ public class NewAlarmAPI {
 				return MLAlarmOccurenceContext.class;
 			case READING:
 				return ReadingAlarmOccurrenceContext.class;
+			case VIOLATION:
+				return ViolationAlarmOccurrenceContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -147,6 +151,8 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE;
 			case READING:
 				return FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE;
+			case VIOLATION:
+				return FacilioConstants.ContextNames.VIOLATION_ALARM_OCCURRENCE;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -168,6 +174,8 @@ public class NewAlarmAPI {
 				return ReadingRCAAlarm.class;
 			case BMS_ALARM:
 				return BMSAlarmContext.class;
+			case VIOLATION_ALARM:
+				return ViolationAlarmContext.class;
 
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
@@ -184,6 +192,15 @@ public class NewAlarmAPI {
 				if (rule instanceof LookupField) {
 					lookupFields.add((LookupField) rule);
 				}
+				break;
+			case VIOLATION_ALARM:
+				lookupFields = new ArrayList<>();
+				FacilioField formulaField = modBean.getField("formulaField", FacilioConstants.ContextNames.VIOLATION_ALARM);
+				if (formulaField instanceof LookupField) {
+					lookupFields.add((LookupField) formulaField);
+				}
+				break;
+				
 		}
 		return lookupFields;
 	}
@@ -204,6 +221,8 @@ public class NewAlarmAPI {
 				return "readingrcaalarm";
 			case BMS_ALARM:
 				return "bmsalarm";
+			case VIOLATION_ALARM:
+				return "violationalarm";
 
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
@@ -527,7 +546,7 @@ public class NewAlarmAPI {
 		return builder;
 	}
 
-	private static SelectRecordsBuilder<AlarmOccurrenceContext> getAlarmBuilder(long startTime, long endTime,
+	public static SelectRecordsBuilder<AlarmOccurrenceContext> getAlarmBuilder(long startTime, long endTime,
 																				List<FacilioField> fields, Map<String, FacilioField> fieldMap) {
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.select(fields).moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
@@ -688,6 +707,7 @@ public class NewAlarmAPI {
 						.module(modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE))
 						.beanClass(AlarmOccurrenceContext.class)
 						.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + firstOccurrence.getCreatedTime(), NumberOperators.LESS_THAN))
+						.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" +baseAlarmContext.getId(), NumberOperators.EQUALS))
 						.orderBy("CREATED_TIME DESC").limit(1);
 				AlarmOccurrenceContext newLatestAlarmOccurrence =  selectbuilder.fetchFirst();		
 	

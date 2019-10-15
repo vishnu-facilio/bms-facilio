@@ -1,22 +1,21 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.InstantJob;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GenericImportDataLogJob extends InstantJob{
 
@@ -27,7 +26,7 @@ public class GenericImportDataLogJob extends InstantJob{
 	public void execute(FacilioContext context) throws Exception{
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT); 
 		try {
-			LOGGER.severe("GENERIC IMPORT DATA LOG JOB CALLED -- ");
+			LOGGER.info("GENERIC IMPORT DATA LOG JOB CALLED -- " + importProcessContext.getId());
 			
 			if(importProcessContext.getImportJobMeta() != null) {
 				if(!importProcessContext.getImportJobMetaJson().isEmpty() ) {
@@ -48,12 +47,12 @@ public class GenericImportDataLogJob extends InstantJob{
 				ImportAPI.updateImportProcess(importProcessContext);
 			}
 			else {
-				importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
+				importProcessContext.setStatus(ImportProcessContext.ImportStatus.VALIDATION_COMPLETE.getValue());
+				importProcessContext = ImportAPI.updateTotalRows(importProcessContext);
 				ImportAPI.updateImportProcess(importProcessContext);
-				FacilioTimer.scheduleOneTimeJobWithDelay(importProcessContext.getId(), "importData" , 10, "priority");
 			}
 			
-			LOGGER.severe("GENERIC IMPORT DATA LOG JOB COMPLETED -- ");
+			LOGGER.info("GENERIC IMPORT DATA LOG JOB COMPLETED -- " + importProcessContext.getId());
 			
 		} catch(Exception e) {
 			String message;
@@ -64,6 +63,9 @@ public class GenericImportDataLogJob extends InstantJob{
 			else if(e instanceof ImportFieldValueMissingException) {
 				ImportFieldValueMissingException importFieldException = (ImportFieldValueMissingException) e;
 				message = importFieldException.getClientMessage();
+			} else if (e instanceof ImportParseException) {
+				ImportParseException importParseException = (ImportParseException) e;
+				message = importParseException.getClientMessage();
 			}
 			else {
 				message = e.getMessage();
@@ -84,9 +86,9 @@ public class GenericImportDataLogJob extends InstantJob{
 					LOGGER.severe("Import failed: " + message);
 					}
 			} catch(Exception a) {
-				System.out.println(a);
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			}
-			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
+			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- " + AccountUtil.getCurrentOrg().getId(), e);
 			log.info("Exception occurred ", e);
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}

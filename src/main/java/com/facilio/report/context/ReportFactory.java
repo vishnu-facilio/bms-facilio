@@ -248,6 +248,8 @@ public class ReportFactory {
 				}
 					
 				case WorkOrder.OVERDUE_OPEN:
+				case Alarm.ALARM_DURATION:
+				case Alarm.NEW_ALARM_DURATION:
 				{
 					String arguments = String.valueOf(System.currentTimeMillis());
 					
@@ -263,16 +265,10 @@ public class ReportFactory {
 					setColumnName(getGenericColumnName().replace("?", arguments));
 					break;
 				}
-				case Alarm.ALARM_DURATION:
-				case Alarm.NEW_ALARM_DURATION:
-				{
-					String arguments = String.valueOf(System.currentTimeMillis());
-					setColumnName(getGenericColumnName().replace("?", arguments));
-					break;
-				}
 				
 				default:
 				{
+					conditions = genericConditions;
 					setColumnName(getGenericColumnName());
 				}
 				}

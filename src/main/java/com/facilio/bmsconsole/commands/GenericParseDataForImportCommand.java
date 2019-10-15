@@ -1,22 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.InputStream;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
@@ -26,8 +25,8 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissin
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 
 public class GenericParseDataForImportCommand extends FacilioCommand {
@@ -46,7 +45,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		HashMap<Integer, HashMap<String, Object>> duplicateEntries = new HashMap<>();
 		HashMap<String, List<ImportRowContext>> groupedContext = new HashMap<String, List<ImportRowContext>>();
 		ArrayList<String> requiredFields = getRequiredFields(importProcessContext.getModule().getName());
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 		InputStream is = fs.readFile(importProcessContext.getFileId());
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 		Workbook workbook = WorkbookFactory.create(is);
@@ -54,16 +53,19 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		int row_no = 0;
-	
+		
+		JSONObject importMeta = importProcessContext.getImportJobMetaJson();
+		Long siteId = importProcessContext.getSiteId();
+		
 		if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) ||
 				(importProcessContext.getModule().getExtendModule()!= null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-			if(!fieldMapping.containsKey("resource__name") || !fieldMapping.containsKey(importProcessContext.getModule().getName() + "__site")) {
+			if(!fieldMapping.containsKey("resource__name") || (siteId == null)) {
 				ArrayList<String> columns = new ArrayList<String>();
-				if(!fieldMapping.containsKey("resource__name") &&!fieldMapping.containsKey(importProcessContext.getModule().getName() + "__site") ) {
+				if(!fieldMapping.containsKey("resource__name") && (siteId == null) ) {
 					columns.add("Asset Name");
 					columns.add("Site");	
 				}
-				else if(!fieldMapping.containsKey(importProcessContext.getModule().getName() + "__site")) {
+				else if(siteId == null) {
 					columns.add("Site");
 				}
 				else {
@@ -117,7 +119,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				}
 
 				HashMap<String, Object> colVal = new HashMap<>();
-
+				FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 				Iterator<Cell> cellItr = row.cellIterator();
 				while (cellItr.hasNext()) {
 					Cell cell = cellItr.next();
@@ -126,31 +128,11 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 					if (cellName == null || cellName == "") {
 						continue;
 					}
-
 					Object val = 0.0;
 					try {
-						if (cell.getCellTypeEnum() == CellType.STRING) {
-
-							val = cell.getStringCellValue().trim();
-						} else if (cell.getCellTypeEnum() == CellType.NUMERIC
-								|| cell.getCellTypeEnum() == CellType.FORMULA) {
-							if (cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
-								Date date = cell.getDateCellValue();
-								Instant date1 = date.toInstant();
-								val = date1.getEpochSecond()*1000;
-							} 
-							else if(cell.getCellTypeEnum() == CellType.FORMULA) {
-								val = cell.getStringCellValue();
-							}
-							else {
-								val = cell.getNumericCellValue();
-							}
-						} else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
-							val = cell.getBooleanCellValue();
-						} else {
-							val = null;
-						}
-					}catch(Exception e) {
+						CellValue cellValue = evaluator.evaluate(cell);
+						val = ImportAPI.getValueFromCell(cell, cellValue);
+					} catch(Exception e) {
 						throw new ImportParseException(row_no, cellName, e);
 					}
 					
@@ -182,15 +164,16 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) ||
 						(importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
 					String name = fieldMapping.get("resource__name");
-					String site = fieldMapping.get(importProcessContext.getModule().getName() + "__site");
+//					String site = fieldMapping.get(importProcessContext.getModule().getName() + "__site");
 					
-					if(colVal.get(name) == null || colVal.get(site) == null) {
+					
+					if(colVal.get(name) == null || siteId == null) {
 						ArrayList<String> columns = new ArrayList<String>();
-						if((colVal.get(name) == null || !colVal.containsKey(name)) && (colVal.get(site) == null || !colVal.containsKey(site))) {
+						if((colVal.get(name) == null || !colVal.containsKey(name)) && (siteId == null)) {
 							columns.add("Name");
 							columns.add("Site");	
 						}
-						else if(colVal.get(site) == null || !colVal.containsKey(site)) {
+						else if(siteId == null) {
 							columns.add("Site");
 						}
 						else {
@@ -200,7 +183,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 						throw new ImportAssetMandatoryFieldsException(row_no,columns, new Exception());
 					}
 					else {
-						uniqueString.append(colVal.get(name) + "__" + colVal.get(site));
+						uniqueString.append(colVal.get(name));
 					}
 				}
 				else if(requiredFields.size() != 0) {
@@ -225,7 +208,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 					
 					if(requiredFields.size() == 0) {
 						List<Integer> keys= new ArrayList(groupedContext.keySet());
-						Integer lastKey = new Integer(0);
+						Integer lastKey = 0;
 						if(keys.size() == 0) {
 							lastKey = 1;
 						}

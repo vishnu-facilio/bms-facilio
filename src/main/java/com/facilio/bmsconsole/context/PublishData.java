@@ -61,6 +61,14 @@ public class PublishData implements Serializable {
 	public void setResponseAckTime(long responseAckTime) {
 		this.responseAckTime = responseAckTime;
 	}
+	
+	private long pingAckTime = -1; 
+	public long getPingAckTime() {
+		return pingAckTime;
+	}
+	public void setPingAckTime(long pingAckTime) {
+		this.pingAckTime = pingAckTime;
+	}
 
 	private List<PublishMessage> messages;
 	public List<PublishMessage> getMessages() {

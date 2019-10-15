@@ -29,11 +29,10 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
         addAlarmRankCard(tab2Sec1);
-//        addAssetsNAlarmDetails(tab1Sec1);
-//        addAlarmInsight(tab1Sec1);
-//        addAssociatedWOCount(tab1Sec1);
-//        addAssociatedWO(tab1Sec1);
-
+        addMeanTimeBetweenCard(tab2Sec1);
+        addMeanTimeToClearCard(tab2Sec1);
+        addAlarmDuration(tab2Sec1);
+        
         // History Tab
         Page.Tab tab3 = page.new Tab("occurrenceHistory", "occurrenceHistory");
         page.addTab(tab3);
@@ -86,5 +85,23 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         section.addWidget(cardWidget);
     }
 
+    private static void addMeanTimeBetweenCard(Section section) {
+        PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "mtba");
+        cardWidget.addToLayoutParams(section, 8, 4);
+        cardWidget.addCardType(PageWidget.CardType.ML_MTBA);
+        section.addWidget(cardWidget);
+    }
+    private static void addMeanTimeToClearCard(Section section) {
+        PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "mttc");
+        cardWidget.addToLayoutParams(section, 8, 4);
+        cardWidget.addCardType(PageWidget.CardType.ML_MTTC);
+        section.addWidget(cardWidget);
+    }
+    private  static  void addAlarmDuration (Section section) {
+        PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "duration");
+        cardWidget.addToLayoutParams(section, 8, 4);
+        cardWidget.addCardType(PageWidget.CardType.ALARM_DUARTION);
+        section.addWidget(cardWidget);
+    }
 }
 

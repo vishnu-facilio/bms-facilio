@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -11,9 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -29,8 +28,8 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportTimeColumnParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -53,7 +52,7 @@ public class ParseDataForReadingLogsCommand extends FacilioCommand {
 		ImportTemplateContext importTemplateContext = importTemplateAction.fetchTemplate(templateID);
 		
 		
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileStore fs = FacilioFactory.getFileStore();
 
 		HashMap<String,String> fieldMapping = importTemplateContext.getFieldMapping();
 		HashMap<String,String> uniqueMapping = importTemplateContext.getUniqueMapping();
@@ -102,10 +101,11 @@ public class ParseDataForReadingLogsCommand extends FacilioCommand {
 					}
 
 					HashMap<String, Object> colVal = new HashMap<>();
-
+					FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 					Iterator<Cell> cellItr = row.cellIterator();
 					while (cellItr.hasNext()) {
 						Cell cell = cellItr.next();
+//						CellType type = cellValue.getCellTypeEnum();
 
 						String cellName = headerIndex.get(cell.getColumnIndex());
 						if (cellName == null) {
@@ -115,30 +115,9 @@ public class ParseDataForReadingLogsCommand extends FacilioCommand {
 						Object val = 0.0;
 
 						try {
-							if (cell.getCellType() == Cell.CELL_TYPE_BLANK) {
-								val = null;
-							} else if (cell.getCellTypeEnum() == CellType.STRING) {
-								if (cell.getStringCellValue().trim().length() == 0) {
-									val = null;
-								} else {
-									val = cell.getStringCellValue().trim();
-								}
-
-							} else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
-								if (HSSFDateUtil.isCellDateFormatted(cell) && cell.getCellTypeEnum() == CellType.NUMERIC) {
-									Date date = cell.getDateCellValue();
-									Instant date1 = date.toInstant();
-									val = date1.getEpochSecond() * 1000;
-								} else if (cell.getCellTypeEnum() == CellType.FORMULA) {
-									val = cell.getNumericCellValue();
-								} else {
-									val = cell.getNumericCellValue();
-								}
-							} else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
-								val = cell.getBooleanCellValue();
-							} else {
-								val = null;
-							}
+							CellValue cellValue = evaluator.evaluate(cell);
+							val = ImportAPI.getValueFromCell(cell, cellValue);
+							
 							colVal.put(cellName, val);
 
 						} catch (Exception e) {

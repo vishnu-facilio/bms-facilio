@@ -5,8 +5,10 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -66,14 +68,14 @@ public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
 
 		List<Long> parentTicketIds = workOrderContextList.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
 
-		List<Long> inputTypes = Arrays.asList(new Long(TaskContext.InputType.READING.getVal()), new Long (TaskContext.InputType.NUMBER.getVal()));
+		// List<Long> inputTypes = Arrays.asList(new Long(TaskContext.InputType.READING.getVal()), new Long (TaskContext.InputType.NUMBER.getVal()));
 
 		SelectRecordsBuilder<TaskContext> taskSelectBuilder = new SelectRecordsBuilder<>();
 		taskSelectBuilder.module(taskModule)
 				.select(taskFields)
 				.beanClass(TaskContext.class)
 				.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), parentTicketIds, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("inputType"), inputTypes, NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("inputType"), CommonOperators.IS_NOT_EMPTY));
 
 		List<TaskContext> taskContextList = taskSelectBuilder.get();
 
@@ -88,16 +90,17 @@ public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
 
 		while (workOrderItr.hasNext()) {
 			WorkOrderContext workOrder = workOrderItr.next();
-			List<TaskContext> taskContexts = taskMap.get(workOrder.getId());
+			List<TaskContext> woTaskContexts = taskMap.get(workOrder.getId());
 
-			if (CollectionUtils.isEmpty(taskContextList)) {
+			if (CollectionUtils.isEmpty(woTaskContexts)) {
 				workOrderItr.remove();
+				continue;
 			}
 
 			Map<Long, List<TaskContext>> woTasksMap = new HashMap<>();
 			workOrder.setTasks(woTasksMap);
 
-			for (TaskContext taskContext: taskContexts) {
+			for (TaskContext taskContext: woTaskContexts) {
 				long sectionId = taskContext.getSectionId();
 
 				if (woTasksMap.get(sectionId) == null) {

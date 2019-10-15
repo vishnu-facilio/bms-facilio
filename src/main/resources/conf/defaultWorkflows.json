@@ -284,6 +284,7 @@
 			"workflow" : "Map assetAlarmDetails(Number resourceId) {
 				date = NameSpace(\"date\");
 				durtaion = 0;
+                durationInMilli = 0;
 				thisCurrentYear = date.getDateRange(\"Current Year\");
 				readingAlarmOccurrence = Module(\"readingalarmoccurrence\");
 				occurenceThisMonthCrit = null;
@@ -317,7 +318,8 @@
 						aggregation: \"sum, duration\"
 					};
 					durationrecord = readingAlarmOccurrence.fetch(ruleDurationCriteria);
-					duration = durationrecord;
+					duration = durationrecord ;
+					durationInMilli = duration * 1000 ;
 					ruleObj = readingRuleModule.fetch(readingRuleCrite);
 					if (ruleObj != null) {
 						firstRes =ruleObj[0];
@@ -325,7 +327,7 @@
 					}
 				}
 				resMap[\"commonRule\"] = commonRule;
-				resMap[\"duration\"] = duration;
+				resMap[\"duration\"] = durationInMilli;
 				resMap[\"durationInSeconds\"] = duration;
 				log resMap;
 				return resMap;
@@ -394,6 +396,31 @@
 				resMap[\"durationInSeconds\"] = durationInSeconds;
 				return resMap;
 				}"
+		},
+		"7": {
+			"description": "KPI Violations",
+			"usage": "KPISummary",
+			"workflow": "Map fetchKpiViolations(Number formulaId) {
+			  violations = {};
+			  date = NameSpace(\"date\");
+			  thisMonthRanges = date.getDateRange(\"Current Month\");
+			  lastMonthRanges = date.getDateRange(\"Last Month\");
+			  violationModule = Module(\"violationalarmoccurrence\");
+			  db = {
+			    criteria: [formulaField == formulaId && createdTime == thisMonthRanges],
+			    field: \"id\",
+			    aggregation: \"count\"
+			  };
+			  violations.violationsThisMonth = violationModule.fetch(db);
+			  
+			  db = {
+			    criteria: [formulaField == formulaId && createdTime == lastMonthRanges],
+			    field: \"id\",
+			    aggregation: \"count\"
+			  };
+			  violations.violationsLastMonth = violationModule.fetch(db);
+			  return violations;
+			}"
 		},
 		"46": {
 			"description" : "ML Deviation",
@@ -808,34 +835,36 @@
          "52": {
         	"description" : "newAlarmRuleRank",
         	"usage" : "ruleRank",
-        	"workflow": " Map newAlrmRankWorkflow(Number ruleId) {
-			date = NameSpace(\"date\");
-			  monthRanges = date.getDateRange(\"Current Year\");
-			    db = {
-			      criteria: [lastOccurredTime == monthRanges],
-			      field:\"rule\",
-			      aggregation:\"count, rule\",
-			      groupBy:\"rule\",
-			      orderBy:\"rule\" desc
-			    }; readingAlarmModule = Module(\"newreadingalarm\");
-			      activeRecord = readingAlarmModule.fetch(db); ranking = 0;
-			      if (activeRecord != null) {
-			        for each index, value in activeRecord {
-			          temp = value.result;
-			          temp = value.result + 0;
-			          if (temp == ruleId) {
-			            ranking = index + 1;
-			          }
-			        }
-			      }
-			      resultMap = {};
-			      if (activeRecord != null) {
-			        resultMap[\"ranks\"] = activeRecord;
-			        resultMap[\"ranking\"] = ranking;
-			        resultMap[\"outOfRule\"] = activeRecord.size();
-			      }
-			    return resultMap;
-			}",
+        	"workflow": "Map newAlrmRankWorkflow(Number ruleId) {
+				date = NameSpace(\"date\");
+				monthRanges = date.getDateRange(\"Current Year\");
+				db = {
+					criteria: [createdTime == monthRanges],
+					field:\"rule\",
+					aggregation:\"count, id\",
+					groupBy:\"rule\",
+					orderBy:\"id\" desc
+				};
+				readingAlarmModule = Module(\"readingalarmoccurrence\");
+				activeRecord = readingAlarmModule.fetch(db);
+				ranking = 0;
+				if (activeRecord != null) {
+					for each index, value in activeRecord {
+						temp = value.result.id;
+						temp = value.result.id + 0;
+						if (temp == ruleId) {
+							ranking = index + 1;
+						}
+					}
+				}
+				resultMap = {};
+				if (activeRecord != null) {
+					resultMap[\"ranks\"] = activeRecord;
+					resultMap[\"ranking\"] = ranking;
+					resultMap[\"outOfRule\"] = activeRecord.size();
+				}
+					return resultMap;
+				}",
         },
          "53": {
         	"description" : "newAlarmMeanTimeBetweenTriggers",
@@ -881,14 +910,23 @@
 				  pmttc = 0;
 				  pmOverAllDuration = 0;
 				  if (alarmMonthOccurenceList != null) {
-				    perivousTriggerTime = 0;
+				    previousClearedTime = 0;
+				    previousCreatedTime = 0;
 				     sumMtbt = 0;
 				    sumMttc = 0;
 				    countOfClearedOccurence = 0;
+				    mttcCount = 0;
 				    	 for each index,occurrence in alarmMonthOccurenceList {
-				           sumMtbt = occurrence.createdTime - perivousTriggerTime;
-				           perivousTriggerTime = occurrence.createdTime ;
+				    	 		if (previousClearedTime != 0) {
+					    	 		if (previousClearedTime > occurrence.createdTime) {
+	                                 previousClearedTime = previousCreatedTime;
+	                             }
+				    	 			sumMtbt = sumMtbt + (occurrence.createdTime - previousClearedTime);
+				    	 			mttcCount = mttcCount + 1;
+				    	 		}
+				    	 		previousCreatedTime = occurrence.createdTime;
 				           if (occurrence.clearedTime != null) {
+				           	 previousClearedTime = occurrence.clearedTime ;
 				             countOfClearedOccurence = countOfClearedOccurence + 1;
 				             sumMttc = sumMttc + (occurrence.clearedTime - occurrence.createdTime);
 				           }
@@ -897,25 +935,38 @@
 				     if (countOfClearedOccurence > 0 ) {
 				       mttc = sumMttc /countOfClearedOccurence;
 				     }
-				    mtbt = sumMtbt / alarmMonthOccurenceList.size();
+				     if (mttcCount > 0) {
+				    		mtbt = sumMtbt / mttcCount;
+				     }
 				  }	
 				  if (alarmOccurenceTillLMonthList != null) {
-				    perivousTriggerTime = 0;
+				    previousClearedTime = 0;
+				    previousCreatedTime = 0;
 				      sumPmtbt = 0;
 				    sumPmttc = 0;
 				    countOfClearedOccurence = 0;
+				    pttcCount = 0;
 				    	 for each index,occurrence in alarmOccurenceTillLMonthList {
-				    	 sumPmtbt = occurrence.createdTime - perivousTriggerTime;
-				           perivousTriggerTime = occurrence.createdTime ;
+				           if (previousClearedTime != 0) {
+				           		if (previousClearedTime > occurrence.createdTime) {
+	                                 previousClearedTime = previousCreatedTime;
+	                             }
+				    	 			sumPmtbt = sumPmtbt + (occurrence.createdTime - previousClearedTime);
+				    	 			pttcCount = pttcCount + 1;
+				    	 		}
+				    	 		previousCreatedTime = occurrence.createdTime;
 							if (occurrence.clearedTime != null) {
+							 previousClearedTime = occurrence.clearedTime ;
 				             countOfClearedOccurence = countOfClearedOccurence + 1;
 				             sumMttc = sumMttc + (occurrence.clearedTime - occurrence.createdTime);
 				           }
 				         }
-				     pmtbt = sumPmtbt / alarmOccurenceTillLMonthList.size();
 				 	mOverAllDuration = sumPmttc;
 				 	 if (countOfClearedOccurence > 0 ) {
 				       pmttc = sumPmttc /countOfClearedOccurence;
+				     }
+				     if (pttcCount > 0) {
+				     	pmtbt = sumPmtbt / pttcCount;
 				     }
 				  }	
 				  resMap = {};
@@ -1361,135 +1412,72 @@
 							 ranges = date.getDateRange(\"Current Year\");
 						     res = woModule.fetch([totalCost !=null && resource == assetId && createdTime == ranges]); 
 						    
-						     maintenanceCost = 0;
-						     plannedMaintenanceCost = 0;
-						     unplannedMaintenanceCost = 0;
+						     maintenanceCostThisYear = 0;
+						     plannedMaintenanceCostThisYear = 0;
+						     unplannedMaintenanceCostThisYear = 0;
 						  if(res !=null) {
 						      for each index,value in res{
 						         if(value.sourceType == 5){
-						           plannedMaintenanceCost = plannedMaintenanceCost + value.totalCost;
+						           plannedMaintenanceCostThisYear = plannedMaintenanceCostThisYear + value.totalCost;
 						         }
 						         else{
-						           unplannedMaintenanceCost = unplannedMaintenanceCost + value.totalCost;
+						           unplannedMaintenanceCostThisYear = unplannedMaintenanceCostThisYear + value.totalCost;
 						         }
 						     } 
 						  }
 						     resMap = {};
-						     resMap[\"plannedMaintenanceCost\"] = plannedMaintenanceCost;
-						     resMap[\"unplannedMaintenanceCost\"] = unplannedMaintenanceCost;
-						     resMap[\"maintenanceCost\"] = plannedMaintenanceCost + unplannedMaintenanceCost;
+						     resMap[\"plannedMaintenanceCostThisYear\"] = plannedMaintenanceCostThisYear;
+						     resMap[\"unplannedMaintenanceCostThisYear\"] = unplannedMaintenanceCostThisYear;
+						     resMap[\"maintenanceCostThisYear\"] = plannedMaintenanceCostThisYear + unplannedMaintenanceCostThisYear;
+						     
+						     maintenanceCostLastYear = 0;
+						     plannedMaintenanceCostLastYear = 0;
+						     unplannedMaintenanceCostLastYear = 0;
+						     
+						     ranges = date.getDateRange(\"Last Year\");
+						     res = woModule.fetch([totalCost !=null && resource == assetId && createdTime == ranges]); 
+						     if(res !=null) {
+							      for each index,value in res{
+							         if(value.sourceType == 5){
+							           plannedMaintenanceCostLastYear = plannedMaintenanceCostLastYear + value.totalCost;
+							         }
+							         else{
+							           unplannedMaintenanceCostLastYear = unplannedMaintenanceCostLastYear + value.totalCost;
+							         }
+							     } 
+							  }
+						 	 resMap[\"plannedMaintenanceCostLastYear\"] = plannedMaintenanceCostLastYear;
+						     resMap[\"unplannedMaintenanceCostLastYear\"] = unplannedMaintenanceCostLastYear;
+						     resMap[\"maintenanceCostLastYear\"] = plannedMaintenanceCostLastYear + unplannedMaintenanceCostLastYear;
+						     
 						     return resMap; 
         			  	}"
         },
     "106": {
-    	"description" : "assetPlannedMaintenanceCost",
+    	"description" : "costWorkorderIds",
         "usage" : "assetSummary",
-        "workflow" : "Map maintenanceCost(Number assetId) 
+        "workflow" : "Map costWorkorderIds(Number assetId,Number costType) 
         			  	{ 
         			  		 woModule = Module(\"workorder\"); 
-						     date = NameSpace(\"date\");
-							 ranges = date.getDateRange(\"Current Year\");
-						     res = woModule.fetch([totalCost !=null && resource == assetId && createdTime == ranges]); 
-						     woCostModule = Module(\"workorderCost\"); 
-						   
-						     pmItemsCost = 0;
-						     pmToolCost = 0;
-						     pmLabourCost = 0;
-						     pmCustomCost = 0;
-						     maintenanceCost = 0;
-						     plannedMaintenanceCost = 0;
-						     unplannedMaintenanceCost = 0;
-						  if(res !=null) {
-						      for each index,value in res{
-						       costResult = woCostModule.fetch([cost !=null && parentId == value.id]);
-						         if(value.sourceType == 5){
-						          if(costResult != null){
-						           for each cosIndex,cosValue in costResult{
-						           
-						             if(cosValue.costType == 1){
-						               pmItemsCost = pmItemsCost + cosValue.cost ;
-						             }else if(cosValue.costType == 2){
-						               pmToolCost = pmToolCost + cosValue.cost ;
-						             }else if(cosValue.costType == 3){
-						               pmLabourCost = pmLabourCost + cosValue.cost ;
-						             }else {
-						               pmCustomCost = pmCustomCost + cosValue.cost ;
-						             }
-						            }
-						           }
-						           
-						           plannedMaintenanceCost = plannedMaintenanceCost + value.totalCost;
-						           
-						         }
-						         else{
-						           unplannedMaintenanceCost = unplannedMaintenanceCost + value.totalCost;
-						           
-						         }
-						     } 
-						  }
-						     resMap = {};
-						     resMap[\"pmItemsCost\"] = pmItemsCost;
-						     resMap[\"pmToolCost\"] = pmToolCost;
-						     resMap[\"pmLabourCost\"] = pmLabourCost;
-						     resMap[\"pmCustomCost\"] = pmCustomCost;
-						     resMap[\"maintenanceCost\"] = plannedMaintenanceCost + unplannedMaintenanceCost;
-						     return resMap; 
-        			  	}"
-        },
-    "107": {
-    	"description" : "assetUnplannedMaintenanceCost",
-        "usage" : "assetSummary",
-        "workflow" : "Map maintenanceCost(Number assetId) 
-        			  	{ 
-        			  		 woModule = Module(\"workorder\"); 
-						     date = NameSpace(\"date\");
-							 ranges = date.getDateRange(\"Current Year\");
-						     res = woModule.fetch([totalCost !=null && resource == assetId && createdTime == ranges]); 
-						     woCostModule = Module(\"workorderCost\"); 
-						     
-						     upmItemsCost = 0;
-						     upmToolCost = 0;
-						     upmLabourCost = 0;
-						     upmCustomCost = 0;
-						     maintenanceCost = 0;
-						     plannedMaintenanceCost = 0;
-						     unplannedMaintenanceCost = 0;
-						  if(res !=null) {
-						      for each index,value in res{
-						       costResult = woCostModule.fetch([cost !=null && parentId == value.id]);
-						         if(value.sourceType == 5){
-						          
-						           plannedMaintenanceCost = plannedMaintenanceCost + value.totalCost;
-						           
-						         }
-						         else{
-						         if(costResult != null){
-						           for each cosIndex,cosValue in costResult{
-						            
-						             if(cosValue.costType == 1){
-						               upmItemsCost = upmItemsCost + cosValue.cost ;
-						             }else if(cosValue.costType == 2){
-						               upmToolCost = upmToolCost + cosValue.cost ;
-						             }else if(cosValue.costType == 3){
-						               upmLabourCost = upmLabourCost + cosValue.cost ;
-						             }else {
-						               upmCustomCost = upmCustomCost + cosValue.cost ;
-						             }
-						            
-						           }
-						          } 
-						           unplannedMaintenanceCost = unplannedMaintenanceCost + value.totalCost;
-						           
-						         }
-						     } 
-						  }
-						     resMap = {};
-						     resMap[\"upmItemsCost\"] = upmItemsCost;
-						     resMap[\"upmToolCost\"] = upmToolCost;
-						     resMap[\"upmLabourCost\"] = upmLabourCost;
-						     resMap[\"upmCustomCost\"] = upmCustomCost;
-						     resMap[\"maintenanceCost\"] = plannedMaintenanceCost + unplannedMaintenanceCost;
-						     return resMap; 
+							 date = NameSpace(\"date\");
+		                     ranges = date.getDateRange(\"Current Year\");
+						    if(costType == 1){
+						      crit= [resource == assetId && createdTime == ranges];
+						    }else if(costType == 2){
+						       crit= [resource == assetId && createdTime == ranges && sourceType == 5];
+						    }else if(costType == 3){
+						       crit= [resource == assetId && createdTime == ranges && sourceType != 5];
+						    }
+                             res = woModule.fetch(crit); 
+                             ids = \"\";
+                            if(res !=null) {
+                            for each index,value in res{
+                                ids = ids + value.id +\",\";
+                                }
+                            }
+                           resMap = {};
+                           resMap[\"workorderIds\"] = ids;
+                           return resMap; 
         			  	}"
         }
         

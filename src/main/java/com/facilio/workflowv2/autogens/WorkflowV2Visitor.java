@@ -59,6 +59,27 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssignment(WorkflowV2Parser.AssignmentContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code assignSingleVar}
+	 * labeled alternative in {@link WorkflowV2Parser#assignment_var}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignSingleVar(WorkflowV2Parser.AssignSingleVarContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code assignSingleBracketVar}
+	 * labeled alternative in {@link WorkflowV2Parser#assignment_var}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignSingleBracketVar(WorkflowV2Parser.AssignSingleBracketVarContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code assignMultiDotVar}
+	 * labeled alternative in {@link WorkflowV2Parser#assignment_var}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignMultiDotVar(WorkflowV2Parser.AssignMultiDotVarContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link WorkflowV2Parser#if_statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -163,6 +184,13 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code booleanExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code atomExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.

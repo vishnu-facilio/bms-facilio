@@ -4,19 +4,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.services.factory.FacilioFactory;
 
 public enum AccountEmailTemplate {
 	WELCOME_EMAIL(1),
@@ -28,42 +29,54 @@ public enum AccountEmailTemplate {
 	
 	private static Logger log = LogManager.getLogger(AccountEmailTemplate.class.getName());
 	private int val;
-	private String templateJson;
+	private JSONObject templateJson;
 	private AccountEmailTemplate(int val) {
 		this.val = val;
-		this.templateJson = getTemplateJson(val).toJSONString();
+		this.templateJson = getTemplateJson(val);
 	}
 	
 	public int getVal() {
 		return val;
 	}
 	
-	public JSONObject getTemplate(Map<String, Object> placeHolders) {
+	public JSONObject getTemplate(boolean isFtl, Map<String, Object> placeHolders) {
 		JSONParser parser = new JSONParser();
 		try {
-			return (JSONObject) parser.parse(StringSubstitutor.replace(templateJson, placeHolders));
-		} catch (ParseException e) {
+			JSONObject parsedJson = new JSONObject();
+			if(isFtl) {
+				for (Object key : templateJson.keySet()) {
+					Object value = templateJson.get(key);
+					if (value instanceof JSONArray) {
+						JSONArray newArray = new JSONArray();
+						for(Object arrayVal: (JSONArray)value) {
+							newArray.add(FreeMarkerAPI.processTemplate(arrayVal.toString(), placeHolders));
+						}
+						parsedJson.put(key, newArray);
+					}
+					else {
+						parsedJson.put(key, FreeMarkerAPI.processTemplate(templateJson.get(key).toString(), placeHolders));
+					}
+				}
+				return parsedJson;
+			}
+			return (JSONObject) parser.parse(StringSubstitutor.replace(templateJson.toJSONString(), placeHolders));
+			
+		}
+		catch (ParseException e) {
+			log.info("Exception occurred ", e);
+		}
+		catch (Exception e) {
 			log.info("Exception occurred ", e);
 		}
 		return null;
 	};
 	
-	public JSONObject getOriginalTemplate() {
-		JSONParser parser = new JSONParser();
-		try {
-			return (JSONObject) parser.parse(templateJson);
-		} catch (ParseException e) {
-			log.info("Exception occurred ", e);
-		}
-		return null;
-	}
-	
-	public void send(Map<String, Object> placeHolders) throws Exception {
+	public void send(Map<String, Object> placeHolders, boolean isFtl) throws Exception {
 		/*if(AwsUtil.getConfig("accessKeyId") == null) {
 			EmailUtil.sendEmail(getTemplate(placeHolders));
 		} else {
 		}*/
-		FacilioFactory.getEmailClient().sendEmail(getTemplate(placeHolders));
+		FacilioFactory.getEmailClient().sendEmail(getTemplate(isFtl, placeHolders));
 	}
 	
 	public static AccountEmailTemplate getEmailTemplate(int val) {
@@ -146,6 +159,7 @@ public enum AccountEmailTemplate {
 			json.put("subject", "Reset your "+BRAND+" password");
 			try {
 				template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
+				template.setFtl(true);
 				json.put("message",template.getOriginalTemplate().get("message"));
 				json.put("mailType", "html");
 				

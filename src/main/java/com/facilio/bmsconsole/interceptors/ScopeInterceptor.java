@@ -24,6 +24,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -67,6 +68,22 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				}
 				else {
 					LOGGER.log(Level.FATAL, "Invalid remote Screen");
+					return Action.LOGIN;
+				}
+			}
+			else if(request.getAttribute("device") != null && request.getAttribute("device") instanceof ConnectedDeviceContext) {
+				ConnectedDeviceContext connectedDevice = (ConnectedDeviceContext) request.getAttribute("device");
+				if(iamAccount.getOrg() != null) {
+					Account tempAccount = new Account(iamAccount.getOrg(), null);
+					AccountUtil.setCurrentAccount(tempAccount);
+					User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(iamAccount.getOrg().getOrgId());
+					Account account = new Account(iamAccount.getOrg(), superAdmin);
+					account.setConnectedDevice(connectedDevice);
+					AccountUtil.cleanCurrentAccount();
+					AccountUtil.setCurrentAccount(account);
+				}
+				else {
+					LOGGER.log(Level.FATAL, "Invalid Device screen");
 					return Action.LOGIN;
 				}
 			}

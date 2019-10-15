@@ -85,13 +85,24 @@ public class ViewFactory {
 					}
 					List<FacilioField> allFields = modBean.getAllFields(moduleName);
 					for (FacilioField field : allFields) {
-						if (module.getTypeEnum() == ModuleType.CUSTOM && (!field.getName().equals("stateFlowId"))) {
-					    ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
-					    viewField.setField(field);
-					    columns.add(viewField);
+							ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+						    viewField.setField(field);
+						    columns.add(viewField);	
+				}
+				}
+				if (columns != null && module.getTypeEnum() == ModuleType.CUSTOM) {
+					List<ViewField> fieldsToRemove = new ArrayList<>();
+					for(ViewField column : columns) {
+						if (column.getName().equals("stateFlowId")) {
+							fieldsToRemove.add(column);
+						}
+						if (module.getStateFlowEnabled() != null && !module.getStateFlowEnabled() && column.getName().equals("moduleState")) {
+							fieldsToRemove.add(column);
 						}
 					}
+					columns.removeAll(fieldsToRemove);
 				}
+
 				view.setFields(columns);
 				view.setDefault(true);
 			}
@@ -471,13 +482,13 @@ public class ViewFactory {
 				.setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, views);
 
-		views.put("bmsAlarm", getBmsAlarm("bmsAlarm" , "All Bms Alarm", true).setOrder(order++));
-		views.put("bmsActive", getBmsAlarmSeverity("bmsActive", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("bmsAlarm", getBmsAlarm("bmsAlarm" , "All Alarms", true).setOrder(order++));
+		views.put("bmsActive", getBmsAlarmSeverity("bmsActive", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("unacknowledgedbmsalarm", getBmsAlarmUnacknowledged().setOrder(order++));
-		views.put("bmsCritical", getBmsAlarmSeverity("bmsCritical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
-		views.put("bmsMajor", getBmsAlarmSeverity("bmsMajor", "Bms Major Alarms", "Major", true).setOrder(order++));
-		views.put("bmsMinor", getBmsAlarmSeverity("bmsMinor", "Bms Minor Alarms", "Minor", true).setOrder(order++));
-		views.put("bmsCleared", getBmsAlarmSeverity("bmsCleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		views.put("bmsCritical", getBmsAlarmSeverity("bmsCritical", "Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("bmsMajor", getBmsAlarmSeverity("bmsMajor", "Major Alarms", "Major", true).setOrder(order++));
+		views.put("bmsMinor", getBmsAlarmSeverity("bmsMinor", "Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("bmsCleared", getBmsAlarmSeverity("bmsCleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.BMS_ALARM, views);
 		
 		
@@ -639,6 +650,18 @@ public class ViewFactory {
 		groupDetails.put("views", all);
 		groupVsViews.add(groupDetails);
 		
+		
+		ArrayList<String> upcoming = new ArrayList<>();
+		upcoming.add("upcomingThisWeek");
+		upcoming.add("upcomingNextWeek");
+		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "upcomingworkorders");
+		groupDetails.put("displayName", "Upcoming Work Orders");
+		groupDetails.put("views", upcoming);
+		groupVsViews.add(groupDetails);
+		
+		
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "customworkorders");
 		groupDetails.put("displayName", "Custom Work Orders");
@@ -680,6 +703,13 @@ public class ViewFactory {
 		groupDetails.put("views", bmsAlarms);
 		groupVsViews.add(groupDetails);
 		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "customalarms");
+		groupDetails.put("displayName", "Custom Views");
+		groupDetails.put("type", "custom");
+		groupDetails.put("views", null);
+		groupVsViews.add(groupDetails);
+		
 		moduleVsGroup.put(FacilioConstants.ContextNames.NEW_READING_ALARM, groupVsViews);
 		
 		groupVsViews = new ArrayList<>();
@@ -701,7 +731,7 @@ public class ViewFactory {
 		return moduleVsGroup;
 
 	}
-
+	
 	private static FacilioView getEvents(String category) {
 
 		FacilioField createdTime = new FacilioField();

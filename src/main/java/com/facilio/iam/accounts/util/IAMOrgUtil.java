@@ -6,8 +6,8 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.service.FacilioService;
 
@@ -48,7 +48,7 @@ public class IAMOrgUtil {
 	public static Organization createOrgFromProps(Map<String, Object> prop) throws Exception {
 		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
 		if (org.getLogoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
+			FileStore fs = FacilioFactory.getFileStoreFromOrg(org.getId());
 			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), false));
 			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
 		}

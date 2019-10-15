@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.util.TransactionState;
@@ -61,12 +62,12 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 		long itemTypeId = -1;
 		ApprovalState approvalState = null;
 		if (itemTransactions != null && !itemTransactions.isEmpty()) {
-				long parentId = itemTransactions.get(0).getParentId();
 			for (ItemTransactionsContext itemTransaction : itemTransactions) {
 				ItemContext item = getItem(itemTransaction.getItem().getId());
 				itemTypeId = item.getItemType().getId();
 				ItemTypesContext itemType = getItemType(itemTypeId);
 				StoreRoomContext storeRoom = item.getStoreRoom();
+				long parentId = itemTransaction.getParentId();
 
 				if (itemTransaction.getId() > 0) {
 					SelectRecordsBuilder<ItemTransactionsContext> selectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
@@ -287,6 +288,9 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 			woItem.setAsset(asset);
 		}
 		woItem.setQuantity(quantity);
+		if(itemTransactions.getResource() != null && itemTransactions.getResource().getResourceType() != ResourceType.USER.getValue()) {
+			woItem.setTransactionCost(quantity* purchasedItem.getUnitcost());
+		}
 		woItem.setItem(item);
 		woItem.setItemType(itemTypes);
 		woItem.setSysModifiedTime(System.currentTimeMillis());
@@ -294,7 +298,13 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 		woItem.setParentTransactionId(itemTransactions.getParentTransactionId());
 		woItem.setApprovedState(approvalState);
 		if (itemTransactions.getTransactionStateEnum() == TransactionState.ISSUE) {
-			woItem.setRemainingQuantity(quantity);
+			if(itemTransactions.getTransactionType() == TransactionType.SHIPMENT_STOCK.getValue() || (itemTransactions.getTransactionType() == TransactionType.MANUAL.getValue() && itemTransactions.getResource() != null && itemTransactions.getResource().getResourceType() == ResourceType.USER.getValue() )) {
+				woItem.setRemainingQuantity(quantity);
+			} 
+			else
+			{
+				woItem.setRemainingQuantity(0);
+			}
 		}
 
 		if (itemTransactions.getTransactionStateEnum() == TransactionState.RETURN) {

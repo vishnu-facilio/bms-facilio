@@ -30,6 +30,7 @@ public class CreateFormulaFieldDependenciesCommand extends FacilioCommand {
 		FormulaFieldContext formulaField = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		String formulaUnit = (String) context.get(FacilioConstants.ContextNames.FORMULA_UNIT_STRING);
 		if (formulaField != null) {
+			formulaField.setInterval(FormulaFieldAPI.getDataInterval(formulaField));
 			FormulaFieldAPI.validateFormula(formulaField, false);
 			
 			FacilioField field = FieldFactory.getField(null, formulaField.getName(), null, null, formulaField.getResultDataTypeEnum() == null? FieldType.DECIMAL : formulaField.getResultDataTypeEnum());
@@ -39,7 +40,6 @@ public class CreateFormulaFieldDependenciesCommand extends FacilioCommand {
 			}
 
 			formulaField.setReadingField(field);
-			formulaField.setInterval(FormulaFieldAPI.getDataInterval(formulaField));
 			
 			if (formulaField.getTriggerTypeEnum() == TriggerType.PRE_LIVE_READING) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

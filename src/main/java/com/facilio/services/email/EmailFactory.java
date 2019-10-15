@@ -9,12 +9,10 @@ public class EmailFactory {
 
         if (emailClient!=null) return emailClient;
         String emailProp = FacilioProperties.getEmailClient();
-        switch (emailProp){
-            case "aws":
-                emailClient= new AWSemail(); break;
-            case "smtp":
-                emailClient = new FacilioEmail(); break;
-            default: emailClient = new FacilioEmail();
+        if ("aws".equals(emailProp)) {
+            emailClient = AwsEmailClient.getClient();
+        } else {
+            emailClient = FacilioEmailClient.getClient();
         }
         return emailClient;
     }

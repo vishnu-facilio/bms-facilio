@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -35,6 +36,7 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.UserUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.actions.FacilioAction;
@@ -47,6 +49,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.modules.FieldUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 public class FacilioAuthAction extends FacilioAction {
@@ -258,21 +261,34 @@ public class FacilioAuthAction extends FacilioAction {
 		FacilioContext signupContext = new FacilioContext();
 		signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
 		Locale locale = request.getLocale();
-
-		IAMAccount iamAccount = IAMOrgUtil.signUpOrg(signupInfo, locale);
-		Account account = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
-		
-		AccountUtil.setCurrentAccount(account);
+		IAMAccount iamAccount = null;
 		try {
+			iamAccount = IAMOrgUtil.signUpOrg(signupInfo, locale);
+			Account account = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
+			
+			AccountUtil.setCurrentAccount(account);
+		
 			if (account != null && account.getOrg().getOrgId() > 0) {
 				signupContext.put("orgId", account.getOrg().getOrgId());
 				FacilioChain c = TransactionChainFactory.getOrgSignupChain();
 				c.execute(signupContext);
 			}
 		}
-		catch(Exception e) {
-			IAMOrgUtil.rollBackSignedUpOrg(iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
-			throw e;
+		catch (Exception e) {
+			LOGGER.log(Level.INFO, "Exception while signing up, ", e);
+			Exception ex = e;
+			while (ex != null) {
+				if (ex instanceof AccountException) {
+					setJsonresponse("message", ex.getMessage());
+					break;
+				}
+				ex = (Exception) ex.getCause();
+			}
+			if(iamAccount != null && iamAccount.getOrg() != null && iamAccount.getOrg().getOrgId() > 0) {
+				IAMOrgUtil.rollBackSignedUpOrg(iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
+			}
+			setJsonresponse("errorcode", "1");
+			return ERROR;
 		}
 		setJsonresponse("message", "success");
 		return SUCCESS;
@@ -612,20 +628,15 @@ public class FacilioAuthAction extends FacilioAction {
 				invitation.put("status", "success");
 			}
 		} else {
-			User user;
+			User user = null;
 			HttpServletRequest request = ServletActionContext.getRequest();
 			String portalDomain = "app";
 			if(request.getAttribute("portalDomain") != null) {
 				portalDomain = (String)request.getAttribute("portalDomain");
 			}
-			if (portalId() > 0) {
-				user = AccountUtil.getUserBean().getUser(getEmailaddress(), portalDomain);
-			} else if(AccountUtil.getCurrentOrg() != null){
-				user = AccountUtil.getUserBean().getUser(getEmailaddress());
-			}
-			else
-			{
-				user = AccountUtil.getUserBean().getUser(getEmailaddress(), portalDomain);
+			Map<String, Object> userMap = UserUtil.getUserFromEmailOrPhone(getEmailaddress(), portalDomain);
+			if(MapUtils.isNotEmpty(userMap)) {
+				user = FieldUtil.getAsBeanFromMap(userMap, User.class);
 			}
 			if (user != null) {
 				AccountUtil.getUserBean().sendResetPasswordLinkv2(user);
@@ -861,6 +872,7 @@ public class FacilioAuthAction extends FacilioAction {
 		FacilioCookie.eraseUserCookie(request, response, portalId() > 0 ? "fc.idToken.facilioportal" : "fc.idToken.facilio", parentdomain);
 		FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
+		FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
 		return SUCCESS;
 	}
 

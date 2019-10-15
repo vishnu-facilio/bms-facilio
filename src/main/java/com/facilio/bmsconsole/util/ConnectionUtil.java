@@ -48,22 +48,14 @@ public class ConnectionUtil {
 	public static final String REDIRECT_URI_STRING = "redirect_uri";	
 	public static final String GRANT_TYPE_STRING = "grant_type";
 	public static final String ACCESS_TYPE_STRING = "access_type";
-	
 	public static final String SCOPE_TYPE_STRING = "scope";
-	
 	public static final String RESPONSE_TYPE_STRING = "response_type";
-	
 	public static final String ACCESS_TYPE_OFFLINE = "offline";
-		
-	
 	public static final String ACCESS_TOKEN_STRING = "access_token";
 	public static final String EXPIRES_IN_STRING = "expires_in";
 	public static final String REFRESH_TOKEN_STRING = "refresh_token";
-	
 	public static final String GRANT_TYPE_AUTH_TOKEN = "authorization_code";
-	
 	public static final String DEFAULT_CHARSET_NAME = "UTF-8";
-	
 	
 	public static final String EQUALS = "=";
 	public static final String QUERY_STRING_SEPERATOR = "?";
@@ -71,16 +63,44 @@ public class ConnectionUtil {
 	
 	public static String getUrlResult(ConnectionContext connectionContext,String urlString,Map<String,String> params,HttpMethod method) throws Exception {
 		
-		validateConnection(connectionContext);
-		
 		params = params == null ? new HashMap<>() : params;
 		
-		params.put(ACCESS_TOKEN_STRING, connectionContext.getAccessToken());
+		Map<String,String> headerParam = new HashMap<>();
 		
-		return getUrlResult(urlString, params, method);
+		switch(connectionContext.getAuthTypeEnum()) {
+		
+			case OAUTH2:
+				validateOauth2Connection(connectionContext);
+				params.put(ACCESS_TOKEN_STRING, connectionContext.getAccessToken());
+				break;
+			case BASIC:
+				
+				switch(connectionContext.getParamTypeEnum()) {
+				
+				case QUERY_STRING:			// for GET Request
+				case FORM_DATA:				// for POST Request
+					
+					if(connectionContext.getConnectionParams() != null) {
+						for(ConnectionParamContext connectionParams : connectionContext.getConnectionParams()) {
+							params.put(connectionParams.getKey(), connectionParams.getValue());
+						}
+					}
+					break;
+				case HEADER:
+					
+					if(connectionContext.getConnectionParams() != null) {
+						for(ConnectionParamContext connectionParams : connectionContext.getConnectionParams()) {
+							headerParam.put(connectionParams.getKey(), connectionParams.getValue());
+						}
+					}
+					break;
+				}
+				break;
+		}
+		return getUrlResult(urlString, params, method,headerParam);
 	}
 	
-	private static void validateConnection(ConnectionContext connectionContext) throws Exception {
+	private static void validateOauth2Connection(ConnectionContext connectionContext) throws Exception {
 		
 		switch(connectionContext.getStateEnum()) {
 		case CREATED:
@@ -117,7 +137,7 @@ public class ConnectionUtil {
 				params.put(REDIRECT_URI_STRING, connectionContext.getCallBackURL());
 				params.put(ACCESS_TYPE_STRING, ACCESS_TYPE_OFFLINE);
 				
-				String res = getUrlResult(url, params, HttpMethod.POST);
+				String res = getUrlResult(url, params, HttpMethod.POST,null);
 				JSONParser parser = new JSONParser();
 				JSONObject resultJson = (JSONObject) parser.parse(res);
 				
@@ -150,7 +170,7 @@ public class ConnectionUtil {
 				params.put(CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
 				params.put(GRANT_TYPE_STRING, REFRESH_TOKEN_STRING);
 				
-				String res = getUrlResult(url, params, HttpMethod.POST);
+				String res = getUrlResult(url, params, HttpMethod.POST,null);
 				JSONParser parser = new JSONParser();
 				JSONObject resultJson = (JSONObject) parser.parse(res);
 				
@@ -177,7 +197,7 @@ public class ConnectionUtil {
 		}
 	}
 
-	private static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method) throws Exception {
+	private static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method,Map<String,String> headerParam) throws Exception {
 		
 		HttpsURLConnection conn = null;
 		if(method == HttpMethod.GET) {
@@ -185,6 +205,12 @@ public class ConnectionUtil {
 		}
 		else if(method == HttpMethod.POST) {
 			conn  = handlePostConnection(urlString,params);
+		}
+		
+		if(headerParam != null && !headerParam.isEmpty()) {
+			for(String key : headerParam.keySet()) {
+				conn.setRequestProperty(key, headerParam.get(key));
+			}
 		}
 		conn.connect();
 		
@@ -329,6 +355,7 @@ public class ConnectionUtil {
 		
 		List<FacilioField> fields = FieldFactory.getConnectionFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getConnectionModule().getTableName())
 				.select(FieldFactory.getConnectionFields())

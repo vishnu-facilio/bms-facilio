@@ -60,25 +60,5 @@ public class AgentKeys
     public static final String START_TIME = "startTime";
     public static final String FINISH_TIME = "finishTime";
 
-
-    public enum AckMessageType {
-    		PROCESSING ("Processing"),
-    		EXECUTED ("Executed")
-    		;
-    	
-    		private String message;
-    		public String getMessage() {
-    			return message;
-    		}
-    		
-    		AckMessageType(String message) {
-    			this.message = message;
-    		}
-    		
-    		public boolean equals (String message) {
-    			return this.message.equals(message);
-    		}
-    }
-
 }
 

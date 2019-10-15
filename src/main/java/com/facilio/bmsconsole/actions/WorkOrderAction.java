@@ -1006,6 +1006,15 @@ public class WorkOrderAction extends FacilioAction {
 		this.pmJobList = pmJobList;
 	}
 
+	private boolean userTrigger = false;
+	public void setUserTrigger(boolean userTrigger) {
+		this.userTrigger = userTrigger;
+	}
+
+	public boolean getUserTrigger() {
+		return this.userTrigger;
+	}
+
 	public String getPMJobs() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME, getStartTime());
@@ -1062,6 +1071,10 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
+
+		if (AccountUtil.getCurrentAccount().isFromMobile() && AccountUtil.getCurrentOrg().getOrgId() == 263L) {
+			context.put(FacilioConstants.ContextNames.IS_USER_TRIGGER, true);
+		}
 
 		FacilioChain getPmchain = FacilioChainFactory.getGetPreventiveMaintenanceListChain();
 		getPmchain.execute(context);
@@ -1503,7 +1516,8 @@ public class WorkOrderAction extends FacilioAction {
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
 		if (e != null && FacilioProperties.isProduction() ) {
 			if (e instanceof IllegalArgumentException && AccountUtil.getCurrentOrg().getOrgId() != 155) {
-				if (e.getMessage().equals("Please close all tasks before closing/resolving the workorder") || e.getMessage().equals("Tasks should be completed before resolve")) {
+				if (e.getMessage().equals("Please close all tasks before closing/resolving the workorder") || e.getMessage().equals("Tasks should be completed before resolve")
+						|| e.getMessage().equals("Record not found")) {
 					return;
 				}
 				errorTrace = ExceptionUtils.getStackTrace(e);

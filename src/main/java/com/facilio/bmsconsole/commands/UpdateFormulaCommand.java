@@ -8,12 +8,17 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.KPIUtil;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -78,12 +83,21 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			newFormula.setWorkflowId(workflowId);
 		}
 		
+		if (newFormula.getTarget() != -1 && oldFormula.getTarget() != -1) {
+			if (oldFormula.getTarget() != newFormula.getTarget()) {
+				updateTarget(newFormula, oldFormula);
+			}
+			newFormula.setTarget(-1);
+		}
+		
 		newFormula.setResourceId(-1);
 		newFormula.setAssetCategoryId(-1);
 		newFormula.setSpaceCategoryId(-1);
 		newFormula.setIncludedResources(null);
 		newFormula.setFrequency(null);
 		newFormula.setInterval(-1);
+		
+		newFormula.setModifiedTime(System.currentTimeMillis());
 		
 		FacilioModule formulaModule = ModuleFactory.getFormulaFieldModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -104,6 +118,7 @@ public class UpdateFormulaCommand extends FacilioCommand {
 				FormulaFieldAPI.recalculateHistoricalData(newFormula.getId(), dateRange);
 			}
 		}
+		
 		context.put(FacilioConstants.ContextNames.RESULT, "success");
 		return false;
 	}
@@ -174,5 +189,19 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			return fields;
 		}
 		return null;
+	}
+	
+	private void updateTarget(FormulaFieldContext newFormula, FormulaFieldContext oldFormula) throws Exception {
+		long oldCriteriaId = oldFormula.getViolationRule().getCriteriaId();
+		
+		Criteria criteria = KPIUtil.getViolationCriteria(newFormula, oldFormula.getReadingField());
+		long newCriteriaId = CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getOrgId());
+		
+		WorkflowRuleContext newRule = new WorkflowRuleContext();
+		newRule.setCriteriaId(newCriteriaId);
+		newRule.setId(oldFormula.getViolationRule().getId());
+		WorkflowRuleAPI.updateWorkflowRule(newRule);
+		
+		CriteriaAPI.deleteCriteria(oldCriteriaId);
 	}
 }

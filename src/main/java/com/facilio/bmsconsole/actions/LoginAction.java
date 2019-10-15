@@ -62,12 +62,16 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
+import com.facilio.bmsconsole.context.DeviceContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.DevicesAPI;
+import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.InventoryApi;
@@ -80,6 +84,7 @@ import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
+import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
@@ -484,7 +489,10 @@ public class LoginAction extends FacilioAction {
 
 		RemoteScreenContext remoteScreen = AccountUtil.getCurrentAccount().getRemoteScreen();
 		if (remoteScreen.getScreenId() != null && remoteScreen.getScreenId() > 0) {
-			remoteScreen.setScreenContext(ScreenUtil.getScreen(remoteScreen.getScreenId()));
+			ScreenContext screenContext = ScreenUtil.getScreen(remoteScreen.getScreenId());
+			screenContext.setScreenDashboards(ScreenUtil.getScreenDashboardRel(screenContext));
+			remoteScreen.setScreenContext(screenContext);
+			
 		}
 		data.put("connectedScreen", remoteScreen);
 
@@ -501,6 +509,62 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String deviceAccount() throws Exception{
+		System.out.println("Device connect successfull");
+		account = new HashMap<>();
+		HashMap<String, Object> appProps = new HashMap<>();
+		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
+		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
+		appProps.put("operators", CommonCommandUtil.getOperators());
+		appProps.put(FacilioConstants.ContextNames.ALL_METRICS, CommonCommandUtil.getAllMetrics());
+		appProps.put(FacilioConstants.ContextNames.ORGUNITS_LIST, CommonCommandUtil.orgUnitsList());
+		appProps.put(FacilioConstants.ContextNames.METRICS_WITH_UNITS, CommonCommandUtil.metricWithUnits());
+		account.put("appProps", appProps);
+		
+
+
+		Map<String, Object> config = new HashMap<>();
+		config.put("payment_endpoint", getPaymentEndpoint());
+		Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
+		config.put("build", buildinfo);
+		account.put("config", config);
+		
+		account.put("org", AccountUtil.getCurrentOrg());
+		account.put("user", AccountUtil.getCurrentUser());
+		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
+		account.put("License", AccountUtil.getFeatureLicense());
+		
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
+		Map<Long, Set<Long>> userSites = new HashMap<>();
+		if (users != null) {
+			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
+		}
+		
+		
+		Map<String, Object> data = new HashMap<>();
+		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
+		data.put("users", users);
+		data.put("userSites", userSites);
+		account.put("data", data);
+		
+		ConnectedDeviceContext connectedDevice = AccountUtil.getCurrentAccount().getConnectedDevice();
+		DeviceContext device=DevicesAPI.getDevice(connectedDevice.getDeviceId());
+		if (connectedDevice!= null && connectedDevice.getDeviceId()> 0) {
+			data.put("device", device);
+			config.put("ws_endpoint", WmsApi.getRemoteWebsocketEndpoint(connectedDevice.getId()));
+		}
+		
+
+		
+		setResult("account", account);
+		
+
+		
+
+	
+		return SUCCESS;
+
+	}
 	private String switchOrgDomain;
 
 	public String getSwitchOrgDomain() {

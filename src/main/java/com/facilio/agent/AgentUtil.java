@@ -1,20 +1,5 @@
 package com.facilio.agent;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -39,6 +24,15 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.sql.SQLException;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * This class writes agent's payload data to a table in DB.
@@ -432,9 +426,7 @@ public  class AgentUtil
                 payLoad.put(AgentKeys.COMMAND_STATUS, CommandStatus.SENT.getKey());
                 toUpdate.put(AgentKeys.COMMAND_STATUS, CommandStatus.SENT.getKey());
                 LOGGER.info(" Sent message logged ");
-                if (payLoad.containsKey(AgentKeys.MESSAGE_ID)) {
-                    LOGGER.info(" sent message logged and messageId - "+payLoad.get(AgentKeys.MESSAGE_ID).toString() );
-                }
+
             } else {
                 if (payLoad.containsKey(AgentKeys.COMMAND_STATUS)) {
                     toUpdate.put(AgentKeys.COMMAND_STATUS, Integer.parseInt(payLoad.get(AgentKeys.COMMAND_STATUS).toString()));
@@ -460,12 +452,12 @@ public  class AgentUtil
                 toUpdate.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.CONTENT));
             }
             try {
+                toUpdate.put(AgentKeys.CREATED_TIME,System.currentTimeMillis());
                 context.put(FacilioConstants.ContextNames.TO_INSERT_MAP,toUpdate);
                 addLogChain.execute(context);
                /* ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
                 bean.addLog(toUpdate);*/
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 LOGGER.info("Exception occured ", e);
             }
         }
@@ -588,6 +580,8 @@ public  class AgentUtil
                         HashMap<String, Object> criteria = new HashMap<>();
                         criteria.put(AgentKeys.AGENT_ID, agentId);
                         criteria.put(EventUtil.DATA_TYPE, publishType);
+                        criteria.put(AgentKeys.CREATED_TIME, createdTime);
+                        criteria.put(AgentKeys.ID, record.get(AgentKeys.ID));
 
                         metrics.put(AgentKeys.SIZE, Integer.parseInt(record.get(AgentKeys.SIZE).toString()) + messageSize);
                         metrics.put(AgentKeys.NO_OF_MESSAGES, Integer.parseInt(record.get(AgentKeys.NO_OF_MESSAGES).toString()) + 1);

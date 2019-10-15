@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -76,7 +76,7 @@ public class DeleteTicketDependenciesCommand extends FacilioCommand {
 		List<AttachmentContext> attachments = attachmentBuilder.get();
 		if (attachments != null && !attachments.isEmpty()) {
 			List<Long> fileIds = attachments.stream().map(AttachmentContext::getFileId).collect(Collectors.toList());
-			FileStoreFactory.getInstance().getFileStore().deleteFiles(fileIds);
+			FacilioFactory.getFileStore().deleteFiles(fileIds);
 		}
 	}
 
