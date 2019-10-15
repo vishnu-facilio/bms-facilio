@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.DeviceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.DevicesAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -73,12 +74,8 @@ public class DevicesAction extends FacilioAction{
 	public String fetchDeviceDetails() throws Exception {
         
         
-        FacilioChain fetchDetail = ReadOnlyChainFactory.fetchModuleDataDetailsChain();
-        FacilioContext context =  fetchDetail.getContext();        
-        context.put(FacilioConstants.ContextNames.ID, device.getId());
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ModuleNames.DEVICES);
-        fetchDetail.execute();
-        DeviceContext deviceDetail = (DeviceContext) context.get(FacilioConstants.ContextNames.RECORD);
+
+        DeviceContext deviceDetail = DevicesAPI.getDevice(device.getId());
         setResult(FacilioConstants.ContextNames.DEVICE_DETAILS, deviceDetail);
         return SUCCESS;
     }
@@ -124,6 +121,27 @@ public class DevicesAction extends FacilioAction{
 		setResult("result",device);		
     	return SUCCESS;
     }
+    
+	public String getDigitalLogBook() throws Exception {
+	    	
+//	    	FacilioChain addDeviceChain=TransactionChainFactory.addDeviceChain();
+//	    	FacilioContext context = addDeviceChain.getContext();
+//	    	context.put(FacilioConstants.ContextNames.DEVICE_CODE,getCode());
+//			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+//			context.put(FacilioConstants.ContextNames.RECORD, getDevice());
+//			context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ModuleNames.DEVICES);
+//			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+//			
+//			device.setCategory(AssetsAPI.getCategory(FacilioConstants.ModuleNames.DEVICES));
+//			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, device.getCategory().getId());
+//			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+//			context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+//			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+//			addDeviceChain.execute();
+//			setResult("result",device);		
+	    	return SUCCESS;
+	    }
+	    
     
     public String connectDevice() throws Exception{
 		

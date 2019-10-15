@@ -41,6 +41,7 @@ public class AccessLogFilter implements Filter {
     private static final String APPENDER_NAME = "graylog3";
     private static final String DEFAULT_ORG_USER_ID = "-1";
     private static final String X_DEVICE_TYPE = "X-Device-Type";
+    private static final String X_APP_VERSION = "X-App-Version";
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
 
@@ -140,6 +141,13 @@ public class AccessLogFilter implements Filter {
             event.setProperty("deviceType", deviceType);
         } else {
             event.setProperty("deviceType", DEFAULT_QUERY_STRING);
+        }
+        
+        String appVersion = request.getHeader(X_APP_VERSION);
+        if(appVersion != null) {
+            event.setProperty("appVersion", appVersion);
+        } else {
+            event.setProperty("appVersion", DEFAULT_QUERY_STRING);
         }
 
         long timeTaken = System.currentTimeMillis()-startTime;

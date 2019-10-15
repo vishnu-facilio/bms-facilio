@@ -3,8 +3,10 @@ package com.facilio.modules;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentnew.AgentConstants;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.constants.FacilioConstants.ModuleNames;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.fields.FacilioField;
 
@@ -98,6 +100,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, getReadingAlarmModule());
 		moduleMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationModule());
 		moduleMap.put(FacilioConstants.ContextNames.BMS_ALARM, getBmsAlarmModule());
+		moduleMap.put(FacilioConstants.ModuleNames.DEVICES,getDevicesModule());
 		return moduleMap;
 	}
 	
@@ -1549,6 +1552,14 @@ public class ModuleFactory {
 		return viewSharing;
 	}
 
+	public static FacilioModule getPMExecSharingModule() {
+		FacilioModule pmExecSharing = new FacilioModule();
+		pmExecSharing.setName("pmExecSharing");
+		pmExecSharing.setDisplayName("PM Exec Sharing");
+		pmExecSharing.setTableName("Pm_Exec_Sharing");
+		return pmExecSharing;
+	}
+
 	public static FacilioModule getWidgetVsWorkflowModule() {
 		FacilioModule dashboardSharing = new FacilioModule();
 		dashboardSharing.setName("widgetVsWorkflow");
@@ -2704,6 +2715,21 @@ public class ModuleFactory {
 		module.setTableName(AgentConstants.DEVICE_TABLE);
 		module.setDisplayName("devices");
 		module.setName("devices");
+		return module;
+	}
+	//devices as in TV,KIOSK etc
+	public static FacilioModule getDevicesModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ModuleNames.DEVICES);
+		module.setDisplayName("Devices");
+		module.setTableName("Devices");
+		return module;
+	}
+	public static FacilioModule getLogBookModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.DIGITAL_LOG_BOOK);
+		module.setDisplayName("Digital Log book");
+		module.setTableName("Digital_Log_Book");
 		return module;
 	}
 }

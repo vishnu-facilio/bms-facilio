@@ -27,10 +27,10 @@ import com.facilio.mv.context.MVProjectWrapper;
 public class PageFactory {
 
 
-	public static Page getPage(FacilioModule module, Object record,String costType) throws Exception {
+	public static Page getPage(FacilioModule module, Object record) throws Exception {
 		switch(module.getName()) {
 			case ContextNames.ASSET:
-				return AssetPageFactory.getAssetPage((AssetContext) record,costType);
+				return AssetPageFactory.getAssetPage((AssetContext) record);
 			case ContextNames.READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
 			case ContextNames.MV_PROJECT_MODULE:

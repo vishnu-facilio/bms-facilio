@@ -1,10 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.util.SharingAPI;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -22,6 +23,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class AddPMTriggerCommand extends FacilioCommand {
 	
@@ -99,6 +101,7 @@ public class AddPMTriggerCommand extends FacilioCommand {
 				break;
 				case SCHEDULE:
 //				trigger.setStartTime(System.currentTimeMillis());
+					break;
 			}
 			insertBuilder.addRecord(FieldUtil.getAsProperties(trigger));
 		}
@@ -114,5 +117,21 @@ public class AddPMTriggerCommand extends FacilioCommand {
 			}
 		}
 		pm.setTriggerMap(triggerMap);
+
+		saveSharingContext(triggerMap);
+	}
+
+	private void saveSharingContext(Map<String,PMTriggerContext> triggerMap) throws Exception {
+		Collection<PMTriggerContext> triggerContexts = triggerMap.values();
+		List<PMTriggerContext> userTriggers = triggerContexts.stream().filter(i -> i.getTriggerExecutionSourceEnum() == PMTriggerContext.TriggerExectionSource.USER).collect(Collectors.toList());
+
+		if (CollectionUtils.isEmpty(userTriggers)) {
+			return;
+		}
+
+		for (PMTriggerContext userTrigger: userTriggers) {
+			SharingContext<SingleSharingContext> sharingContext = userTrigger.getSharingContext();
+			SharingAPI.addSharing(sharingContext, userTrigger.getId(), ModuleFactory.getPMExecSharingModule());
+		}
 	}
 }

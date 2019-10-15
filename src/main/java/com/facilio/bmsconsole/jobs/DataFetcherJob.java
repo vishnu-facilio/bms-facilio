@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.jobs;
 
+import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.timeseries.TimeSeriesAPI;
@@ -29,6 +31,7 @@ public class DataFetcherJob extends FacilioJob {
 
     private static JSONObject getData(String urL,int probeId, String from, String to) throws IOException, ParseException {
 
+        String uRL=urL+"probeId="+probeId+"&startDate="+from+"&endDate="+to;
         URL url = new URL(urL+"probeId="+probeId+"&startDate="+from+"&endDate="+to);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestProperty("Authorization", "Bearer 5ErFG8xJf82ctX2JfIGSwfWQQJczfcilB2pbGMHc4=");
@@ -37,6 +40,9 @@ public class DataFetcherJob extends FacilioJob {
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String output;
         output = in.readLine();
+        LOGGER.info("Data from URL"+uRL);
+        LOGGER.info("Bearer "+"5ErFG8xJf82ctX2JfIGSwfWQQJczfcilB2pbGMHc4=");
+        LOGGER.info(output);
         JSONParser parser = new JSONParser();
         JSONArray jsonArray = (JSONArray) parser.parse(output);
         long maxTimeStamp=0L;
@@ -54,6 +60,7 @@ public class DataFetcherJob extends FacilioJob {
             }
 
         }
+        LOGGER.info("selected json"+selectedJSON);
         return selectedJSON;
     }
     private static long toMillis(String timestamp) {
@@ -96,26 +103,36 @@ public class DataFetcherJob extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
 
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of( "UTC" ));
-        JSONObject data;
-        try {
-            data = getData(getUrl(),getProbeId(), getFromTime(now,15), getToTime(now,15));
-            JSONObject timeSeriesData= toTimeSeriesData(data);
-            TimeSeriesAPI.processPayLoad(0,timeSeriesData,null);
 
-        }catch(Exception ex){
-            LOGGER.error("Error while getting/Processing Data from "+getUrl());
-        }
+           ZonedDateTime now = ZonedDateTime.now(ZoneId.of( "UTC" ));
+           JSONObject data;
+           try {
+               LOGGER.debug("execute called");
+               data = getData(getUrl(),getProbeId(), getFromTime(now,15), getToTime(now,15));
+               LOGGER.debug(data);
+               JSONObject timeSeriesData= toTimeSeriesData(data);
+               LOGGER.debug(timeSeriesData);
+               TimeSeriesAPI.processPayLoad(0,timeSeriesData,null);
 
-
+           }catch(Exception ex){
+               LOGGER.error("Error while getting/Processing Data from "+getUrl());
+               LOGGER.error(ex.getMessage());
+           }
     }
 
     private JSONObject toTimeSeriesData(JSONObject data) {
+        String probeId = data.get("ProbeID").toString();
+        String timestamp = ""+toMillis(data.get("Timestamp").toString());
+        data.remove("Timestamp");
+        data.remove("UTC_Offset");
+        data.remove("ProbeID");
+        data.remove("Sample_Id");
+        data.remove("Group");
         JSONObject timeSeriesData= new JSONObject();
         timeSeriesData.put("agent", getAgent());
         timeSeriesData.put("PUBLISH_TYPE","timeseries");
-        timeSeriesData.put("timestamp",""+toMillis(data.get("Timestamp").toString()));
-        timeSeriesData.put(getController(),data);
+        timeSeriesData.put("timestamp",timestamp);
+        timeSeriesData.put("ProbeID-"+probeId,data);
         return timeSeriesData;
     }
 

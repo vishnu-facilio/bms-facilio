@@ -207,9 +207,23 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		String createdTimeFieldColumn = fieldMap.get("createdTime").getColumnName();
 		FacilioField resourceFieldColumn = fieldMap.get("resource");
 
-		StringBuilder durationAggrColumn = new StringBuilder("SUM(COALESCE(")
-				.append(clearedTimeFieldColumn).append(",").append(System.currentTimeMillis()).append(") - ")
-				.append(createdTimeFieldColumn).append(")")
+		/*
+		 *  Duration fields to get duration only for current ranges
+		 * even if it alarm is active beyonds range
+		 *
+		 */
+
+		StringBuilder durationAggrColumn = new StringBuilder("SUM(")
+				.append("( CASE WHEN " + clearedTimeFieldColumn + " IS NULL THEN ")
+				.append(" ( CASE WHEN "  + System.currentTimeMillis() + " < " + dateRange.getEndTime())
+				.append(" THEN " + System.currentTimeMillis() + " ELSE " + dateRange.getEndTime() + " END )")
+				.append(" WHEN " + clearedTimeFieldColumn + " < " + dateRange.getEndTime())
+				.append(" THEN " + clearedTimeFieldColumn + " ELSE " + dateRange.getEndTime() + " END )")
+				// .append(",").append(System.currentTimeMillis())
+				.append(" - ")
+				.append("( CASE WHEN " + createdTimeFieldColumn + " > " + dateRange.getStartTime())
+				.append(" THEN " + createdTimeFieldColumn + " ELSE " + dateRange.getStartTime() + " END )")
+				.append(")")
 				;
 		FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
 

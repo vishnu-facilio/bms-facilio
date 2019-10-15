@@ -87,6 +87,7 @@ public class FacilioConstants {
         public static final String OLD_TASKS = "oldTasks";
 		public static final String TASKS = "tasks";
         public static final String TASK_READINGS = "taskReadings";
+		public static final String IS_USER_TRIGGER = "userTrigger";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
@@ -1257,6 +1258,7 @@ public class FacilioConstants {
 		public static final String CONDITIONAL_FORMATTING_RESULT = "conditionalFormattingResult";
 		public static final String CONDITIONAL_FORMATTINGS = "conditionalFormattings";
 		public static final String IMPORT_PROCESS_CONTEXT_LIST = "importProcessContextList";
+		public static final String DIGITAL_LOG_BOOK = "digitalLogBook";
 
 
 

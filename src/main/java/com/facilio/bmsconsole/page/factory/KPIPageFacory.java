@@ -78,7 +78,7 @@ public class KPIPageFacory extends PageFactory {
 	
 	private static void addLatestValueWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 12);
+		cardWidget.addToLayoutParams(section, 24, 14);
 		cardWidget.addCardType(CardType.KPI_LATEST_VALUE);
 		section.addWidget(cardWidget);
 	}

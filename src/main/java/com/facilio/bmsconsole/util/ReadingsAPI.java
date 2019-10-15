@@ -690,6 +690,7 @@ public class ReadingsAPI {
 								if (timeStamp > currentTime
 										|| (lastReading != null
 										&& lastTimeStamp != -1
+										&& StringUtils.isNotEmpty(meta.getActualValue())
 										&& !"-1".equals(meta.getActualValue())
 										&& timeStamp < lastTimeStamp)) {
 									if (AccountUtil.getCurrentOrg().getId() == 169) {

@@ -10,23 +10,16 @@ import java.util.Map.Entry;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.*;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AttachmentContext;
-import com.facilio.bmsconsole.context.PMReminder;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
@@ -35,13 +28,14 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileInfo;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 
@@ -68,6 +62,8 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		}
 
 		pm.setTriggers(PreventiveMaintenanceAPI.getPMTriggers(pm));
+
+		pm.setIsAllowedToExecute(isAllowedToExecute(pm.getTriggers()));
 		
 		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 			pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
@@ -89,7 +85,7 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		if(workorder.getAttachments() != null && !workorder.getAttachments().isEmpty()) {
 			List<Long> fileIds = workorder.getAttachments().stream().map(file -> file.getFileId()).collect(Collectors.toList());
 			FileStore fs = FacilioFactory.getFileStore();
-			Map<Long, FileInfo> fileMap = fs.getFileInfoAsMap(fileIds);
+			Map<Long, FileInfo> fileMap = fs.getFileInfoAsMap(fileIds, null);
 			for(AttachmentContext attachment: workorder.getAttachments()) {
 				FileInfo file = fileMap.get(attachment.getFileId());
 				attachment.setFileName(file.getFileName());
@@ -239,5 +235,24 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		    	listOfTasks.stream().forEach(t -> t.setReadingRules(fieldVsRules.get(t.getReadingFieldId())));
 		    }
 		}
+	}
+
+	private boolean isAllowedToExecute(List<PMTriggerContext> pmTriggerContexts) throws Exception {
+		if (CollectionUtils.isEmpty(pmTriggerContexts)) {
+			return false;
+		}
+
+		List<PMTriggerContext> userTriggers = pmTriggerContexts.stream().filter(i -> i.getTriggerExecutionSourceEnum() == PMTriggerContext.TriggerExectionSource.USER).collect(Collectors.toList());
+		if (CollectionUtils.isEmpty(userTriggers)) {
+			return false;
+		}
+
+		for (PMTriggerContext userTrigger: userTriggers) {
+			SharingContext<SingleSharingContext> sharingContext = userTrigger.getSharingContext();
+			if (sharingContext.isAllowed()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

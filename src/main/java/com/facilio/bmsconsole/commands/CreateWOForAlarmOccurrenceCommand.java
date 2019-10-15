@@ -3,6 +3,9 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -39,7 +42,12 @@ public class CreateWOForAlarmOccurrenceCommand extends FacilioCommand {
 			AlarmOccurrenceContext alarmOccurrenceContext = builder.fetchFirst();
 			if (alarmOccurrenceContext != null) {
 				if (alarmOccurrenceContext.getWoId() != -1) {
-					throw new IllegalArgumentException("Workorder is already created for the alarm");
+					WorkOrderContext workOrder = WorkOrderAPI.getWorkOrder(alarmOccurrenceContext.getWoId());
+					FacilioStatus moduleState = workOrder.getModuleState();
+					FacilioStatus status = TicketAPI.getStatus(moduleState.getId());
+					if (status.getType() == FacilioStatus.StatusType.OPEN) {
+						throw new IllegalArgumentException("Workorder is already created for the alarm");
+					}
 				}
 				
 				BaseAlarmContext baseAlarm = alarmOccurrenceContext.getAlarm();

@@ -34,6 +34,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
@@ -44,12 +45,14 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	
 	public static final int noOfDaysDeltaToBeFetched = 10;
 	
-	public final static int averageboundPercentage = 50; 
+	public final static int averageboundPercentage = 100; 
 	
 	long taskContextId, currentInputTime;
 	String currentInputValue;
 	
 	private static final Logger LOGGER = Logger.getLogger(ValidateReadingInputForTask.class.getName());
+	
+	private boolean isNextReading = false;
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
@@ -61,11 +64,21 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			
 			Boolean skipValidation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_VALIDATION);
 			
+			TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
+			List<Long> recordIdsTemp = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+			
+			
+			if(recordIdsTemp!= null && !recordIdsTemp.isEmpty() && currentTask != null)
+			{
+				LOGGER.log(Level.INFO, "skipValidation: "+skipValidation+" Task record ID: "+ recordIdsTemp.get(0) + " Current Input Value: " +  currentTask.getInputValue() + 
+						" Current Input Time: " + currentTask.getInputTime() +""+ " Reading Field Unit: " + currentTask.getReadingFieldUnitEnum());
+			}
+			
 			skipValidation = skipValidation == null ? Boolean.FALSE : skipValidation;  
 			
 			if(skipValidation)
 			{
-				TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
+				
 				List<TaskErrorContext> errors = new ArrayList<TaskErrorContext>();
 				boolean hasErrors = false;
 				if(currentTask != null && currentTask.getInputValue() != null) {
@@ -80,11 +93,11 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 								case READING:
 									if (taskContext.getReadingField() != null && taskContext.getResource() != null) {
 										
-										switch(taskContext.getReadingField().getDataTypeEnum()) {
+										switch(taskContext.getReadingField().getDataTypeEnum()) {   
 										case NUMBER:
 										case DECIMAL:
 											
-											taskContextId = currentTask.getId();
+											taskContextId = taskContext.getId();
 											ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
 											NumberField numberField = (NumberField) taskContext.getReadingField();
 											
@@ -102,9 +115,9 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 											Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 											
 											Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
-											Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
 											if(currentInputUnit != null) 
-											{												
+											{
+												Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
 												if((numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata")))) 
 												{
 													List<TaskErrorContext> taskErrors = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
@@ -160,7 +173,6 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 
 		List<TaskErrorContext> taskErrors = new ArrayList<TaskErrorContext>();
 		double previousValue = -1, nextValue = -1;
-		boolean futureCase = false;
 		
 		if(currentTask.getInputTime() > rdm.getTtime() && taskContext.getReadingDataId() != rdm.getReadingDataId()) 
 		{
@@ -173,7 +185,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		}
 		else 
 		{
-			futureCase = true;
+			isNextReading = true;
+			
 			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
 			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", (currentTask.getInputTime()+1000), NumberOperators.GREATER_THAN);
 		}
@@ -199,11 +212,11 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			}	
 			error.setPreviousValue(previousValueString);
 			
-			error.setMessage("The reading you have entered is less than the previous reading of " + error.getPreviousValue() +".");
+			error.setMessage("The reading you have entered ("+ error.getCurrentValue() +") is less than the previous reading of " + error.getPreviousValue() +".");
 			taskErrors.add(error);
 		}
 		
-		if(futureCase && nextValue > 0 && currentValueInSiUnit > nextValue) 
+		if(isNextReading && nextValue > 0 && currentValueInSiUnit > nextValue) 
 		{		
 			TaskErrorContext error = setIncrementalErrorMode(currentTask, numberField, rdm);
 			String nextValueString = nextValue+"";
@@ -216,7 +229,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			} 
 			error.setNextValue(nextValueString);
 	        
-			error.setMessage("The reading you have entered is greater than the next reading of " + error.getNextValue() + ", in this series.");
+			error.setMessage("The reading you have entered ("+ error.getCurrentValue() +") is greater than the next reading of " + error.getNextValue() + ", in this series.");
 			taskErrors.add(error);
 		}
 		
@@ -228,7 +241,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");		
 		
 		double previousValue = getLatestPreviousReading (numberField, rdm, currentTask, taskContext);	
-		if(previousValue < 0)
+		if(previousValue < 0 || isNextReading)
 		{
 			return null;
 		}
@@ -351,9 +364,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			FacilioModule module = numberField.getModule();			
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 			
-			DateRange lastNdays = DateOperators.LAST_N_DAYS.getRange(noOfDaysDeltaToBeFetched+"");
-			long endTaskTime;
-			
+			long endTaskTime;			
 			if(currentTask.getInputTime() > rdm.getTtime() && taskContext.getReadingDataId() == rdm.getReadingDataId())
 			{
 				endTaskTime = rdm.getTtime();
@@ -362,13 +373,18 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			{
 				endTaskTime = currentTask.getInputTime();
 			}
+					
+			long lastNdaysEndTime = DateTimeUtil.getDayStartTimeOf(endTaskTime);
+			long lastNdaysStartTime = DateTimeUtil.getDayStartTimeOf(lastNdaysEndTime - (Integer.valueOf(noOfDaysDeltaToBeFetched) * 24 * 3600 * 1000));		
 			
+			DateRange lastNdays = new DateRange(lastNdaysStartTime, lastNdaysEndTime);
+					
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 					.table(module.getTableName())
 					.module(module)
 					.select(Collections.singletonList(numberField))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), rdm.getResourceId()+"", NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), lastNdays.getStartTime()+","+(endTaskTime-1), DateOperators.BETWEEN))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), lastNdays.getStartTime()+","+(endTaskTime-1000), DateOperators.BETWEEN))
 					.skipUnitConversion();
 							
 			List<Map<String, Object>> res = selectBuilder.getAsProps();

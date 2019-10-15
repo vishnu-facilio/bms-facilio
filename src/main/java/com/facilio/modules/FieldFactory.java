@@ -2455,7 +2455,7 @@ public class FieldFactory {
 		fields.add(getField("pmCreationType", "PM_CREARTION_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("woGenerationStatus", "WO_GENERATION_STATUS", module, FieldType.BOOLEAN));
 		fields.add(getField("woGeneratedUpto","WO_GENERATED_UPTO", module, FieldType.NUMBER));
-
+		fields.add(getField("isUserTriggerPresent", "IS_USER_TRIGGER_PRESENT", FieldType.BOOLEAN));
 		return fields;
 	}
 
@@ -6738,8 +6738,18 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getLogBookFields() {
+		FacilioModule module = ModuleFactory.getLogBookModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));		
+		fields.add(getSiteIdField(module));
+		fields.add(getField("orgId", "ORGID",module,FieldType.NUMBER));
+		fields.add(getField("logFor", "LOG_FOR",module,FieldType.LOOKUP));				
+		return fields;
+	}
 
-
+	
 
 	
 }
