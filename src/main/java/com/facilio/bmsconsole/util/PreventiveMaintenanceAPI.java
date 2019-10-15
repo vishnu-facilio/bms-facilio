@@ -3007,13 +3007,23 @@ public class PreventiveMaintenanceAPI {
 		}
 
 		for (JobContext jc: jcs) {
-			long nextExecutionTime;
-			if (jc.getJobStartTime() > 0) {
-				nextExecutionTime = jc.getSchedule().nextExecutionTime(jc.getJobStartTime() / 1000);
-			} else {
-				nextExecutionTime = jc.getSchedule().nextExecutionTime(System.currentTimeMillis() / 1000);
+			long lastExecutionTime = jc.getJobStartTime();
+			if (lastExecutionTime == 0) {
+				lastExecutionTime = System.currentTimeMillis();
 			}
-			JobStore.updateNextExecutionTimeAndCount(jc.getJobId(), jc.getJobName(), nextExecutionTime, jc.getCurrentExecutionCount());
+			lastExecutionTime = lastExecutionTime / 1000;
+
+			long nextExecutionTime = -1;
+			if (jc.getSchedule() != null) {
+				nextExecutionTime = jc.getSchedule().nextExecutionTime(jc.getJobStartTime() / 1000);
+			}
+			else if (jc.getPeriod() > 0) {
+				nextExecutionTime = jc.getPeriod() + lastExecutionTime;
+			}
+
+			if (nextExecutionTime > -1) {
+				JobStore.updateNextExecutionTimeAndCount(jc.getJobId(), jc.getJobName(), nextExecutionTime, jc.getCurrentExecutionCount());
+			}
 		}
 
 	}
