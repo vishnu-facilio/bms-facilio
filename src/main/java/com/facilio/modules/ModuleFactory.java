@@ -2732,4 +2732,13 @@ public class ModuleFactory {
 		module.setTableName("Digital_Log_Book");
 		return module;
 	}
+
+	public static FacilioModule getFacilioQueueModule() {
+		FacilioModule module = new FacilioModule();
+		module.setTableName("FacilioQueue");
+		module.setDisplayName("FacilioQueue");
+		module.setName("facilioQueue");
+		return module;
+
+	}
 }

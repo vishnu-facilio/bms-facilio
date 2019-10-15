@@ -6749,7 +6749,20 @@ public class FieldFactory {
 		return fields;
 	}
 
-	
+	public static List<FacilioField> getFacilioQueueFields() {
+		FacilioModule module = ModuleFactory.getFacilioQueueModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField("queueName", "QUEUE_NAME", module, FieldType.STRING));
+		fields.add(getField("addedTime", "ADDED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("visibilityTimeout", "VISIBILITY_TIMEOUT", module, FieldType.NUMBER));
+		fields.add(getField("lastClientReceivedTime", "LAST_CLIENT_RECEIVED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("data", "DATA", module, FieldType.STRING));
+		fields.add(getField("maxClientReceiptCount", "MAX_CLIENT_RECEIPT_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("clientReceiptCount", "CLIENT_RECEIPT_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.NUMBER));
 
+		return fields;
+	}
 	
 }
