@@ -101,6 +101,7 @@ public class FacilioConstants {
         public static final String TABLE_NAME = "tableName";
         public static final String CRITERIA = "criteria";
         public static final String FIELDS = "fields";
+		public static final String FIELD = "field";
         public static final String TO_UPDATE_MAP = "toUpdateMap";
         public static final String TO_INSERT_MAP = "toInsertMap";
         public static final String BULK_DATA = "BULK_DATA";

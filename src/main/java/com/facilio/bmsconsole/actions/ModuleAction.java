@@ -224,10 +224,9 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.MODULE_CHANGE_TO, moduleFieldChangeTo);
-//		setFieldJson(fieldJson);
-//		context.put(FacilioConstants.ContextNames.MODULE_FIELD, field);
-
 		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.FIELD, context.get(FacilioConstants.ContextNames.FIELD));
 		return SUCCESS;
 	}
 	

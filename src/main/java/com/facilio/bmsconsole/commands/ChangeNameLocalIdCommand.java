@@ -126,6 +126,7 @@ public class ChangeNameLocalIdCommand extends FacilioCommand {
                     FormsAPI.updateFormFields(Collections.singletonList(formField), Collections.singletonList("fieldId"));
                 }
             }
+            context.put(FacilioConstants.ContextNames.FIELD, field);
         }
         return false;
     }
