@@ -52,6 +52,12 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FieldUtil;
 import com.opensymphony.xwork2.ActionContext;
 
+import io.sentry.SentryClient;
+import io.sentry.SentryClientFactory;
+import io.sentry.context.Context;
+import io.sentry.event.EventBuilder;
+import io.sentry.event.UserBuilder;
+
 public class FacilioAuthAction extends FacilioAction {
 
 	/**
@@ -76,6 +82,10 @@ public class FacilioAuthAction extends FacilioAction {
 	private String newPassword;
 	private String title;
 	private static MessageDigest md;
+
+	// Sentry instance for logging posts in issue tracking group
+	private static SentryClient sentry = SentryClientFactory.sentryClient("https://2fcce956a9b14116ab7bd8ca7db8591d@hentry.facilio.in/4");
+
 	private String token;
 
 	public String getToken() {
@@ -470,6 +480,27 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public void postToSentry() throws Exception {
+		Map<String, Object> data = (Map<String, Object>) entry.get(0);
+		List changes = (List) data.get("changes");
+		Map<String, Object> change = (Map<String, Object>) changes.get(0);
+		Map<String, Object> value = (Map<String, Object>) change.get("value");
+
+		String message = value.get("message").toString();
+		String permalink = value.get("permalink_url").toString();
+		String postId = value.get("post_id").toString();
+		String from = value.get("from").toString();
+
+		Context context = sentry.getContext();
+		context.clear();
+		context.setUser(new UserBuilder().setEmail("issues@facilio.com").build());
+		context.addTag("url", permalink);
+		context.addTag("postedBy", from);
+		context.addTag("postId", postId);
+
+		sentry.sendMessage(message);
+	}
+
 	public String postIssueResponse() throws Exception {
 
 		HttpServletResponse response2 = ServletActionContext.getResponse();
@@ -484,6 +515,11 @@ public class FacilioAuthAction extends FacilioAction {
 			return NONE;
 		} else {
 			try {
+				try {
+					postToSentry();
+				} catch(Exception e) {
+					LOGGER.log(Level.INFO, "Error while posting issue to sentry", e);
+				}
 
 				JSONParser parser = new JSONParser();
 
@@ -500,9 +536,11 @@ public class FacilioAuthAction extends FacilioAction {
 				String description = link, key = null, blockedReason = null;
 				List<String> tags = new ArrayList<String>();
 				Map<String, Object> customField = new HashMap<>();
+
 				Integer createrId = null, position = null, etaFlag = null, storyPoints = null, issueTypeId = 161,
 						ownerId = null, parentId = null, epicId = null, priorityId = 252, projectId = null,
 						subProjectId = null, reporterId = null, sprintId = null, statusId = null, releaseId = null;
+
 				List<Integer> documentIds = new ArrayList<Integer>();
 				boolean resolved = false, blocked = false, following = false;
 
@@ -545,8 +583,10 @@ public class FacilioAuthAction extends FacilioAction {
 				jget.put("sprint_id", sprintId);
 				jget.put("status_id", statusId);
 				jget.put("release_id", releaseId);
+
 				JSONObject newjget = new JSONObject();
 				newjget.put("issue", jget);
+
 				String body = newjget.toJSONString();
 				Map<String, String> headers = new HashMap<>();
 				headers.put("Authorization", "Token token=93LalYD_wbiIA1qD0sXiOQ");
@@ -559,7 +599,6 @@ public class FacilioAuthAction extends FacilioAction {
 			} catch (Exception e) {
 				setJsonresponse("message", "Error while reading post issue response");
 				LOGGER.log(Level.INFO, "Error while reading post issue response", e);
-
 			}
 		}
 
