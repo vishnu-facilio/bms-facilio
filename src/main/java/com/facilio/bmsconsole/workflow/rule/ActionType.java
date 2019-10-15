@@ -1394,6 +1394,7 @@ public enum ActionType {
 			eventContext.put(EventConstants.EventContextNames.EVENT_LIST, context.get(EventConstants.EventContextNames.EVENT_LIST));
 			eventContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
 			addEvent.execute();
+			context.put("alarmOccurrenceMap", eventContext.get("alarmOccurrenceMap"));
 			if(currentRule.getRuleTypeEnum() == RuleType.ALARM_TRIGGER_RULE) {
 				Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = (Map<String, PointedList<AlarmOccurrenceContext>>)context.get("alarmOccurrenceMap");
 				AlarmOccurrenceContext alarmOccuranceContext = alarmOccurrenceMap.entrySet().iterator().next().getValue().get(0);
