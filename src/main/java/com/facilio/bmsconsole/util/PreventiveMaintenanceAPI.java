@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.util;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -21,6 +23,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.db.builder.*;
+import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.tasker.job.JobContext;
+import com.facilio.tasker.job.JobStore;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -55,10 +61,6 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -87,6 +89,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.json.simple.parser.ParseException;
 
 public class PreventiveMaintenanceAPI {
 	
@@ -2978,5 +2981,112 @@ public class PreventiveMaintenanceAPI {
 
 		return CollectionUtils.isEmpty(workOrderContexts);
 	}
+
+	public static void migrateJobs() throws Exception {
+		Connection conn = null;
+		PreparedStatement getPstmt = null;
+		ResultSet rs = null;
+
+		List<JobContext> jcs = new ArrayList<>();
+
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE IS_ACTIVE = 1 AND IS_PERIODIC = 1 AND EXECUTION_ERROR_COUNT < 5");
+
+
+			rs = getPstmt.executeQuery();
+			while(rs.next()) {
+				jcs.add(getJobFromRS(rs));
+			}
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, getPstmt, rs);
+		}
+
+		for (JobContext jc: jcs) {
+			long nextExecutionTime;
+			if (jc.getJobStartTime() > 0) {
+				nextExecutionTime = jc.getSchedule().nextExecutionTime(jc.getJobStartTime() / 1000);
+			} else {
+				nextExecutionTime = jc.getSchedule().nextExecutionTime(System.currentTimeMillis() / 1000);
+			}
+			JobStore.updateNextExecutionTimeAndCount(jc.getJobId(), jc.getJobName(), nextExecutionTime, jc.getCurrentExecutionCount());
+		}
+
+	}
+
+	private static JobContext getJobFromRS(ResultSet rs) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+		JobContext jc = new JobContext();
+
+		jc.setJobId(rs.getLong("JOBID"));
+
+		if(rs.getObject("ORGID") != null) {
+			jc.setOrgId(rs.getLong("ORGID"));
+		}
+
+		jc.setJobName(rs.getString("JOBNAME"));
+
+		if (rs.getObject("TIMEZONE") != null) {
+			jc.setTimezone(rs.getString("TIMEZONE"));
+		}
+
+		jc.setActive(rs.getBoolean("IS_ACTIVE"));
+
+		if(rs.getObject("TRANSACTION_TIMEOUT") != null) {
+			jc.setTransactionTimeout(rs.getInt("TRANSACTION_TIMEOUT"));
+		}
+
+		jc.setIsPeriodic(rs.getBoolean("IS_PERIODIC"));
+
+		if(rs.getObject("PERIOD") != null) {
+			jc.setPeriod(rs.getInt("PERIOD"));
+		}
+
+		if(rs.getObject("SCHEDULE_INFO") != null) {
+			jc.setScheduleJson(rs.getString("SCHEDULE_INFO"));
+		}
+
+		jc.setExecutionTime(rs.getLong("NEXT_EXECUTION_TIME"));
+
+		jc.setExecutorName(rs.getString("EXECUTOR_NAME"));
+
+		if(rs.getObject("END_EXECUTION_TIME") != null) {
+			jc.setEndExecutionTime(rs.getLong("END_EXECUTION_TIME"));
+		}
+
+		if(rs.getObject("MAX_EXECUTION") != null) {
+			jc.setMaxExecution(rs.getInt("MAX_EXECUTION"));
+		}
+
+		if(rs.getObject("CURRENT_EXECUTION_COUNT") != null) {
+			jc.setCurrentExecutionCount(rs.getInt("CURRENT_EXECUTION_COUNT"));
+		}
+
+		if(rs.getObject("STATUS") != null) {
+			jc.setStatus(rs.getInt("STATUS"));
+		}
+
+		if(rs.getObject("JOB_SERVER_ID") != null) {
+			jc.setJobServerId(rs.getLong("JOB_SERVER_ID"));
+		}
+
+		if(rs.getObject("CURRENT_EXECUTION_TIME") != null) {
+			jc.setJobStartTime(rs.getLong("CURRENT_EXECUTION_TIME"));
+		}
+
+		if(rs.getObject("EXECUTION_ERROR_COUNT") != null) {
+			jc.setJobExecutionCount(rs.getInt("EXECUTION_ERROR_COUNT"));
+		}
+
+		if (rs.getObject("LOGGER_LEVEL") != null) {
+			jc.setLoggerLevel(rs.getInt("LOGGER_LEVEL"));
+		}
+
+		return jc;
+	}
+
 
 }
