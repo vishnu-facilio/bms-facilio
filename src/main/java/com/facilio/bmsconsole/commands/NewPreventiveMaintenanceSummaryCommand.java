@@ -238,6 +238,9 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 	}
 
 	private boolean isAllowedToExecute(List<PMTriggerContext> pmTriggerContexts) throws Exception {
+		if (AccountUtil.getCurrentOrg().getOrgId() != 263L) {
+			return true;
+		}
 		if (CollectionUtils.isEmpty(pmTriggerContexts)) {
 			return false;
 		}
