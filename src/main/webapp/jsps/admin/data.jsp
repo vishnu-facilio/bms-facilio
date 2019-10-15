@@ -6,6 +6,7 @@
 <%@page import="java.net.HttpURLConnection"%>
 <%@page import="java.net.URL"%>
 <%@page import="java.util.Scanner"%>
+<%@page import="com.facilio.fw.TransactionBeanFactory" %>
 <%@page import="java.util.Date"%>
 <%@page import="java.sql.Timestamp"%>
 <%@page import="com.facilio.aws.util.FacilioProperties"%>
@@ -21,8 +22,8 @@
 long receivedTime =0l;
 String receiveddate = "";
 List<Organization> org = null;
-OrgBean orgBean =  AccountUtil.getOrgBean();
-org = orgBean.getOrgs();
+OrgBean bean =  AccountUtil.getOrgBean();
+org = bean.getOrgs();
 
 System.out.println("time relative "+DateTimeUtil.relativeDuration(1571108002000l));
 %>
@@ -80,7 +81,7 @@ function changeThePage(){
 								for (Organization domain : org) {
 									
 							%>
-					<option value="<%= domain.getDomain()%>"><%=domain.getId()%>
+					<option value="<%= domain.getId()%>"><%=domain.getId()%>
 						-
 						<%=domain.getDomain()%></option>
 					<%
@@ -90,9 +91,11 @@ function changeThePage(){
 				<%
 	if(request.getParameter("orgDomain")!=null){
     String orgDomain =request.getParameter("orgDomain");
-
+    long orgId = Long.parseLong(orgDomain);
+    OrgBean orgBean = (OrgBean) TransactionBeanFactory.lookup("OrgBean",orgId);
+    Organization domain = orgBean.getOrg(orgId);
     JSONArray jsonArray = new JSONArray();
-    jsonArray = AdminAction.getAlertsPointsData(orgDomain);
+    jsonArray = AdminAction.getAlertsPointsData(domain.getDomain());
     
     for(int j = 0; j <  jsonArray.length();j++) {
 		 org.json.JSONObject jsonObj = jsonArray.getJSONObject(j);
