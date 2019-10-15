@@ -87,26 +87,7 @@ function changeThePage(){
 								}
 							%>
 				</select>
-				</div>
-				<div class="">
-				  <label><div class="admin-data-grey">Last Received Time :</div></label><span class="admin-data-date"><%=receiveddate %></span>
-				</div>
-			</div>
-	
-		
-		<!-- <div align="center">
-
-			<input id="submit" type="submit" style="margin-left: -600px"
-				name="data" value="Submit" />
-
-
-		</div> -->
-<br> <br> <br>
-
-	</form>
-
-
-	<%
+				<%
 	if(request.getParameter("orgDomain")!=null){
     String orgDomain =request.getParameter("orgDomain");
 
@@ -123,12 +104,24 @@ function changeThePage(){
 		 if(time>t1){
 			 receivedTime = time;
 		 }
-		 if(receivedTime != 0 || j==jsonArray.length()-1 ){
+		 if( j==jsonArray.length()-1 ){
 			 receiveddate= DateTimeUtil.getFormattedTime(time);
 		 }
 		 
     }
  %>
+				</div>
+				<div class="">
+				  <label><div class="admin-data-grey">Last Received Time :</div></label><span class="admin-data-date"><%=receiveddate %></span>
+				</div>
+			</div>
+	
+<br> <br> <br>
+
+	</form>
+
+
+	
 
 <%-- 	<%
   if(orgDomain != null && !orgDomain.isEmpty())
