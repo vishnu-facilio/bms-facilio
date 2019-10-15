@@ -149,6 +149,10 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>
+        <url-pattern>/devices/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>clientapp</servlet-name>
         <url-pattern>/service/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
