@@ -135,7 +135,7 @@ function changeReadingPage() {
 								for (Organization domain : orgs) {
 									
 							%>
-					<option value="<%= domain.getId()%>"><%=domain.getId()%>
+					<option value="<%= domain.getId()%>"<%=(request.getParameter("orgid") != null && request.getParameter("orgid").equals(domain.getId() + "")) ? "selected" : " "%>><%=domain.getId()%>
 						-
 						<%=domain.getDomain()%></option>
 					<%

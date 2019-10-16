@@ -81,7 +81,7 @@ function changeThePage(){
 								for (Organization domain : org) {
 									
 							%>
-					<option value="<%= domain.getId()%>"><%=domain.getId()%>
+					<option value="<%= domain.getId()%>"<%=(request.getParameter("orgDomain") != null && request.getParameter("orgDomain").equals(domain.getId() + "")) ? "selected" : " "%>><%=domain.getId()%>
 						-
 						<%=domain.getDomain()%></option>
 					<%
