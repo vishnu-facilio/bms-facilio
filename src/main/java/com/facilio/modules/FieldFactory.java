@@ -1,5 +1,18 @@
 package com.facilio.modules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
@@ -7,12 +20,12 @@ import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentnew.AgentConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.*;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import com.facilio.modules.fields.BooleanField;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.SystemEnumField;
 
 public class FieldFactory {
 
@@ -90,6 +103,7 @@ public class FieldFactory {
 		static {
 			workOrderFieldsInclude.add("actualWorkDuration");
 			workOrderFieldsInclude.add("subject");
+			workOrderFieldsInclude.add("actualWorkStart");
 			workOrderFieldsInclude.add("actualWorkEnd");
 			workOrderFieldsInclude.add("assignedBy");
 			workOrderFieldsInclude.add("assignedTo");
