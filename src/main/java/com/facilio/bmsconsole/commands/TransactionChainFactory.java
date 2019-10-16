@@ -159,7 +159,7 @@ public class TransactionChainFactory {
 			c.addCommand(new BulkAddTasksCommand());
 			c.addCommand(new BulkAddTaskOptionsCommand());
 			c.addCommand(new UpdateReadingDataMetaCommand());
-			c.addCommand(new BulkAddTaskDefaultValueReadingsCommand());
+			//c.addCommand(new BulkAddTaskDefaultValueReadingsCommand());
 			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
 			c.addCommand(new BulkUpdateTaskReadingInfoCommand());
 			return c;
@@ -252,7 +252,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTasksCommand());
 			c.addCommand(new AddTaskOptionsCommand());
 			c.addCommand(new UpdateReadingDataMetaCommand());
-			c.addCommand(new AddTaskDefaultValueReadingsCommand());
+			// c.addCommand(new AddTaskDefaultValueReadingsCommand());
 			c.addCommand(new UpdateTaskReadingInfoCommand());
 			// c.addCommand(new AddTaskTicketActivityCommand());
 //			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
