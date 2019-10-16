@@ -36,20 +36,22 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		
 		try
 		{
+			LOGGER.info("Inside Execute Command");
 			long energyMeterID=(long) jc.get("energyMeterID");
-			
+			LOGGER.info("Inside Energy Meter Command"+energyMeterID);
 			EnergyMeterContext emContext2 = DeviceAPI.getEnergyMeter(energyMeterID);
 			
 			addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLLogReadings",FieldFactory.getMLLogPredictCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
 			addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLReadings",FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
-			
+			LOGGER.info("After adding Reading");
 			
 			checkGamModel(energyMeterID,emContext2,(String) jc.get("weekEnd"),(String) jc.get("meterInterval"), (String) jc.get("modelName"));
+			LOGGER.info("After check Gam Model");
 			return false;
 		}
 		catch(Exception e)
 		{
-			LOGGER.fatal("Error while adding Energy Prediction Job", e);
+			LOGGER.error("Error while adding Energy Prediction Job", e);
 			throw e;
 		}
 		
