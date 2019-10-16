@@ -34,6 +34,7 @@ public class AddDefaultFormForCustomModuleCommand extends FacilioCommand {
 		
 		List<FormField> formFields = new ArrayList<>();
 		List<FormField> photoFields = new ArrayList<>();
+		List<FormField> siteFields = new ArrayList<>();
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
 		if (fields != null) {
 			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
@@ -47,11 +48,18 @@ public class AddDefaultFormForCustomModuleCommand extends FacilioCommand {
 				FormField formField = new FormField(photoField.getId(), photoField.getName(), photoField.getDisplayType(), photoField.getDisplayName(), Required.OPTIONAL, 0, 1);
 				photoFields.add(formField);
 			}
+			FacilioField siteIdField = fieldsAsMap.get("siteId");
+			if (siteIdField != null) {
+				FormField formField = new FormField(siteIdField.getId(), siteIdField.getName(), siteIdField.getDisplayType(), siteIdField.getDisplayName(), Required.OPTIONAL, 0, 1);
+				siteFields.add(formField);
+			}
 		}
 		List<FormSection> sections = new ArrayList<>();
 		FormSection photoSection = new FormSection("", 0, photoFields, false);
 		sections.add(photoSection);
-		FormSection formSection = new FormSection("Untitled", 1, formFields, true);
+		FormSection siteSection = new FormSection("Untitled", 1, siteFields, true);
+		sections.add(siteSection);
+		FormSection formSection = new FormSection("Untitled", 2, formFields, true);
 		sections.add(formSection);
 		
 		form.setSections((sections));

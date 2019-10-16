@@ -43,7 +43,14 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 			mainField.setRequired(true);
 			mainField.setDefault(true);
 			fields.add(mainField);
-
+			
+			FacilioField siteField = FieldFactory.getSiteIdField(module);
+			siteField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+			siteField.setMainField(true);
+			siteField.setRequired(true);
+			siteField.setDefault(true);
+			fields.add(siteField);
+			
 			FileField photoField = new FileField();
 			photoField.setName("photo");
 			photoField.setDisplayName("Photo");
