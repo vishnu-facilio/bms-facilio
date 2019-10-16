@@ -2920,7 +2920,7 @@ public class PreventiveMaintenanceAPI {
 
 
 	public static void removeDuplicates() throws Exception {
-		AccountUtil.setCurrentAccount(1L);
+		AccountUtil.setCurrentAccount(176L);
 		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
 			LOGGER.log(Level.WARN, "Org is missing");
 			return;
