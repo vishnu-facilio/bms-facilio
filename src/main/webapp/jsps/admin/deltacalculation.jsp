@@ -24,7 +24,7 @@
 <%
 	String orgid = request.getParameter("orgid");
 	Organization org = null;
-
+	OrgBean orgBean = AccountUtil.getOrgBean();
 	ModuleCRUDBean bean = null;
 	List<AssetCategoryContext> assetcategory = null;
 
@@ -32,18 +32,28 @@
 	List<FacilioModule> reading = new ArrayList<>();
 
 	List<AssetContext> AssetListOfCategory = new ArrayList<>();
+	List<Organization> orgs = orgBean.getOrgs();
+	
 	if (orgid != null) {
 		long orgId = Long.parseLong(orgid);
 		bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-		OrgBean orgBean = AccountUtil.getOrgBean();
 		org = orgBean.getOrg(Long.parseLong(orgid));
-
+		
 		assetcategory = bean.getCategoryList();
 	}
+	
+	
 %>
 <!DOCTYPE html>
 <html>
 <head>
+<script type="text/javascript">
+function changeOrgPage() {
+	var selectedOption = "adminreadingtools?orgid=" + $("#orgid").val();
+	location.href = selectedOption;
+
+}
+</script>
 <script type="text/javascript">
 	function changeThePage() {
 		var selectedOption = "adminreadingtools?orgid=" + $("#orgid").val()
@@ -81,11 +91,7 @@ function changeReadingPage() {
 <script type="text/javascript">
 	
 	
-	function changeOrgPage() {
-		var selectedOption = "adminreadingtools?orgid=" + $("#orgid").val();
-		location.href = selectedOption;
 	
-	}
 	
 	function changeEmailPage() {
 		var selectedOption = "adminreadingtools?orgid=" + $("#orgid").val()
@@ -114,17 +120,30 @@ function changeReadingPage() {
 </head>
 <body>
 	<form action="" method="GET">
-		<h3>
+		<h4>
 		Reading Tools
-		</h3>
+		</h4>
 		<div class=" col-lg-8 col-md-8">
 
-			<input id="orgid" type="text"
-					value="<%=org == null ? "" : org.getId()%>" class="form-control" placeholder="OrgId"
-					name="orgid" onChange="changeOrgPage" />
-			
-			<br><br><br>
-				<button id="show" type="submit">Submit</button>
+			<label for="orgid">
+			<div class="admin-data-grey">Org:</div>
+				</label>
+				<select class="admin-data-select"
+					name="orgid" id="orgid" onChange="changeOrgPage()">
+					<option value="" disabled selected>Select</option>
+					<%
+								for (Organization domain : orgs) {
+									
+							%>
+					<option value="<%= domain.getId()%>"><%=domain.getId()%>
+						-
+						<%=domain.getDomain()%></option>
+					<%
+								}
+							%>
+				</select><br><br><br>
+				
+				 
 	</div>
 			
 		
@@ -322,7 +341,12 @@ button[type=submit] {
 	cursor: pointer;
 	font-size: 16px;
 }
-
+.admin-data-grey{
+	color: #333;
+	font-size: 13px;
+	letter-spacing: 0.5px;
+	font-weight: 400;
+}
 input[type=submit]:hover {
 	background-color: #45a049;
 }
