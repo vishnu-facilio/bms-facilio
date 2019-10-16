@@ -124,7 +124,7 @@ public class AssetPageFactory extends PageFactory {
 		Map<String, FacilioField> woCostFieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORKORDER_COST));
 	
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(woCostFieldMap.get("parentId"), String.valueOf("1,2,3"), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(woCostFieldMap.get("parentId"), String.valueOf(""), NumberOperators.EQUALS));
 		addCostBreakupWidget(tab7Sec1,criteria);
 		
 		criteria = new Criteria();
@@ -302,7 +302,7 @@ public class AssetPageFactory extends PageFactory {
 	}
 	private static void addCostBreakupWidget(Section section, Criteria criteria) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 14);
+		cardWidget.addToLayoutParams(section, 24, 11);
 		cardWidget.addCardType(CardType.COST_BREAKUP);
 		addChartParams(cardWidget, "costType", "cost", criteria);
 		section.addWidget(cardWidget);
@@ -317,7 +317,7 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addMaintenanceCostTrendWidget(Section section, Criteria criteria) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "maintenanceCostTrend");
-		cardWidget.addToLayoutParams(section, 24, 14);
+		cardWidget.addToLayoutParams(section, 24, 10);
 		cardWidget.addCardType(CardType.MAINTENANCE_COST_TREND);
 		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
 		section.addWidget(cardWidget);
