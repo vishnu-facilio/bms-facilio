@@ -2949,13 +2949,13 @@ public class PreventiveMaintenanceAPI {
 
 		for (Map<String, Object> wo: props) {
 			LOGGER.log(Level.ERROR, "Vals minCount: " + wo.get("minCount") + " resource " + ((Map) wo.get("resource")).get("id") + " pm " + ((Map) wo.get("pm")).get("id") + " created time " + wo.get("createdTime"));
-			/*DeleteRecordBuilder<WorkOrderContext> deleteRecordBuilder = new DeleteRecordBuilder<>();
+			DeleteRecordBuilder<WorkOrderContext> deleteRecordBuilder = new DeleteRecordBuilder<>();
 			deleteRecordBuilder.module(workorderModule)
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(workorderModule), wo.get("minCount") + "", NumberOperators.NOT_EQUALS))
 					.andCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), ((Map) wo.get("resource")).get("id") + "", NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), ((Map) wo.get("pm")).get("id") + "", NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), wo.get("createdTime") + "", NumberOperators.EQUALS))
-					.markAsDelete();*/
+					.markAsDelete();
 		}
 	}
 
