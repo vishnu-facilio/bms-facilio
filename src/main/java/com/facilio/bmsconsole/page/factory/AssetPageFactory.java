@@ -296,7 +296,7 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addAssetCostDetailsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 6);
+		cardWidget.addToLayoutParams(section, 24, 5);
 		cardWidget.addCardType(CardType.ASSET_COST_DETAILS);
 		section.addWidget(cardWidget);
 	}
