@@ -467,6 +467,8 @@ public class PreventiveMaintenanceAPI {
 			isScheduled = true;
 		}
 
+		LOGGER.log(Level.ERROR, "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId() + " next exec times " + Arrays.toString(nextExecutionTimes.toArray()));
+
 		if (!isScheduled && pmTrigger.getFrequencyEnum() != FacilioFrequency.ANNUALLY) {
 			LOGGER.log(Level.WARN, "No Work orders generated for PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 			CommonCommandUtil.emailAlert("No Work orders generated for pm", "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
