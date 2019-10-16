@@ -104,18 +104,17 @@ function changeThePage(){
 		 String arrival=  jsonObj.get("arrivalTime").toString() ;
 		 long time =Long.parseLong(arrival);
 		 long t1 = time;
-		 if(time>t1){
-			 receivedTime = time;
-		 }
+		
 		 if( j==jsonArray.length()-1 ){
 			 receiveddate= DateTimeUtil.getFormattedTime(time);
+			 receivedTime = time;
 		 }
 		 
     }
  %>
 				</div>
 				<div class="">
-				  <label><div class="admin-data-grey">Last Received Time :</div></label><span class="admin-data-date"><%=receiveddate %></span>
+				  <label><div class="admin-data-grey">Last Received Time :</div></label><span class="admin-data-date"><%=receiveddate %><br><%=DateTimeUtil.relativeDuration(receivedTime) %></span>
 				</div>
 			</div>
 	
