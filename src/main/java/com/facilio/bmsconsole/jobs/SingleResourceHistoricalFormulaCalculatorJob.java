@@ -43,7 +43,7 @@ public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 			
 			switch (formula.getTriggerTypeEnum()) {
 				case POST_LIVE_READING:
-					if(skipOptimisedWorkflow) {
+					if(skipOptimisedWorkflow || formula.getWorkflow().isV2Script()) {
 						FormulaFieldAPI.historicalCalculation(formula, range, resourceId, isSystem, historicalAlarm);
 					}
 					else {
