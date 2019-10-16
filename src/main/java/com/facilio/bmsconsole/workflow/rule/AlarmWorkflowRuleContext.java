@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.chain.FacilioContext;
 
 import java.util.Map;
@@ -15,12 +17,13 @@ public class AlarmWorkflowRuleContext extends WorkflowRuleContext {
     }
 
     @Override
-    public RuleType getRuleTypeEnum() {
-        return RuleType.ALARM_WORKFLOW_RULE;
-    }
-
-    @Override
     public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
-        return super.evaluateMisc(moduleName, record, placeHolders, context);
+        if (record instanceof ReadingAlarm) {
+            ReadingAlarm readingAlarm = (ReadingAlarm) record;
+            if (readingAlarm.getRule() != null) {
+                return readingAlarm.getRule().getId() == getRuleId();
+            }
+        }
+        return false;
     }
 }

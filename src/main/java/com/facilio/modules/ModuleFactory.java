@@ -2426,6 +2426,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getAlarmWorkflowRuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("alarmworkflow_rule");
+		module.setDisplayName("Alarm Workflow Rule");
+		module.setTableName("AlarmWorkflow_Rule");
+		return module;
+	}
+
 	public static FacilioModule getStateFlowScheduleModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("stateflowScheduler");

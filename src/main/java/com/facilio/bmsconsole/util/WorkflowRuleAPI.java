@@ -135,6 +135,9 @@ public class WorkflowRuleAPI {
 			case CUSTOM_BUTTON:
 				addExtendedProps(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(), ruleProps);
 				break;
+			case ALARM_WORKFLOW_RULE:
+				addExtendedProps(ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields(), ruleProps);
+				break;
 			default:
 				break;
 		}
@@ -571,6 +574,9 @@ public class WorkflowRuleAPI {
 				case CUSTOM_BUTTON:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(), entry.getValue()));
 					break;
+				case ALARM_WORKFLOW_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields(), entry.getValue()));
+					break;
 				default:
 					break;
 			}
@@ -697,6 +703,10 @@ public class WorkflowRuleAPI {
 						case CUSTOM_BUTTON:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, CustomButtonRuleContext.class);
+							break;
+						case ALARM_WORKFLOW_RULE:
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+							rule = FieldUtil.getAsBeanFromMap(prop, AlarmWorkflowRuleContext.class);
 							break;
 						default:
 							rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);

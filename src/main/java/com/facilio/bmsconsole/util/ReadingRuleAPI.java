@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.workflow.rule.*;
+import com.twilio.sdk.resource.taskrouter.v1.workspace.Workflow;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,12 +25,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -731,6 +728,18 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			alarmClearRuleDuplicate.setClearAlarm(false);
 			WorkflowRuleAPI.addWorkflowRule(alarmClearRuleDuplicate);
 		}
+
+		if (CollectionUtils.isNotEmpty(alarmRule.getWorkflowRulesForAlarms())) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
+			List<AlarmWorkflowRuleContext> workflowRulesForAlarms = alarmRule.getWorkflowRulesForAlarms();
+			for (AlarmWorkflowRuleContext alarmWorkflowRuleContext : workflowRulesForAlarms) {
+				alarmWorkflowRuleContext.setRuleId(alarmTriggerRule.getId());
+				alarmWorkflowRuleContext.setModule(module);
+				alarmWorkflowRuleContext.setRuleType(WorkflowRuleContext.RuleType.ALARM_WORKFLOW_RULE);
+				WorkflowRuleAPI.addWorkflowRule(alarmWorkflowRuleContext);
+			}
+		}
 	}
 
 	public static void deleteAlarmRCARules(Long groupId) throws Exception {
@@ -773,5 +782,13 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			}
 			mappingInsert.save();
 		}
+	}
+
+	public static WorkflowRuleContext updateAlarmWorkflowRule(AlarmWorkflowRuleContext rule) throws Exception {
+		if (rule.getRuleId() <= 0) {
+			throw new IllegalArgumentException("Rule cannot be empty");
+		}
+		WorkflowRuleAPI.updateExtendedRule(rule, ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields());
+		return null;
 	}
 }

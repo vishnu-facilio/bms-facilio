@@ -6643,6 +6643,15 @@ public class FieldFactory {
 		list.add(getField("scheduleTime", "SCHEDULE_TIME", stageRuleModule, FieldType.NUMBER));
 		return list;
 	}
+
+	public static List<FacilioField> getAlarmWorkflowRuleFields() {
+		FacilioModule module = ModuleFactory.getAlarmWorkflowRuleModule();
+		List<FacilioField> list = new ArrayList<>();
+
+		list.add(getField("id", "ID", module, FieldType.NUMBER));
+		list.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
+		return list;
+	}
 	
 	public static List<FacilioField> getStateFlowFields() {
 		FacilioModule stateFlowModule = ModuleFactory.getStateFlowModule();
