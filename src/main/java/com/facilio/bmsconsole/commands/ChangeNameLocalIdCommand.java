@@ -19,10 +19,8 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +34,7 @@ public class ChangeNameLocalIdCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         String changeTo = (String) context.get(FacilioConstants.ContextNames.MODULE_CHANGE_TO);
-        FacilioField field = (FacilioField) context.get(FacilioConstants.ContextNames.MODULE_FIELD);
+//        FacilioField field = (FacilioField) context.get(FacilioConstants.ContextNames.MODULE_FIELD);
         if (StringUtils.isNotEmpty(moduleName)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(moduleName);
@@ -50,85 +48,106 @@ public class ChangeNameLocalIdCommand extends FacilioCommand {
                 defaultForm = formList.get(0);
             }
 
-            if (field == null) {
-                field = new FacilioField();
+//            if (field == null) {
+//                field = new FacilioField();
+//            }
+//            field.setMainField(true);
+//            field.setDefault(true);
+//            field.setModule(module);
+
+            if (StringUtils.isEmpty(changeTo)) {
+                throw new IllegalArgumentException("Change to value is mandatory");
             }
-            field.setMainField(true);
-            field.setDefault(true);
-            field.setModule(module);
 
-            FacilioField nameField = modBean.getField("name", moduleName);
-            FacilioField localIdField = modBean.getField("localId", moduleName);
-
-            FormField formField = null;
+            FacilioField existingField;
             if (changeTo.equals("name")) {
-                if (nameField == null) {
-                    field.setName("name");
-                    field.setDisplayName("Name");
-                    field.setColumnName("NAME");
-                    field.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
-                    field.setDataType(FieldType.STRING);
-
-                    modBean.addField(field);
-                    if (localIdField != null) {
-                        formField = deleteFormField(defaultForm, localIdField);
-                        modBean.deleteField(localIdField.getFieldId());
-
-                        FacilioModule moduleLocalIdModule = ModuleFactory.getModuleLocalIdModule();
-                        GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-                                .table(moduleLocalIdModule.getTableName())
-                                .andCondition(CriteriaAPI.getCondition("MODULE_NAME", "moduleName", moduleName, StringOperators.IS));
-                        deleteBuilder.delete();
-                    }
-                }
+                existingField = modBean.getField("localId", moduleName);
             }
             else {
-                if (localIdField == null) {
-                    field.setName("localId");
-                    field.setDisplayName("Local ID");
-                    field.setColumnName("LOCAL_ID");
-                    field.setDataType(FieldType.COUNTER);
-                    field.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
-
-                    modBean.addField(field);
-                    if (nameField != null) {
-                        formField = deleteFormField(defaultForm, nameField);
-                        modBean.deleteField(nameField.getFieldId());
-
-                        FacilioModule moduleLocalIdModule = ModuleFactory.getModuleLocalIdModule();
-                        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                                .table(moduleLocalIdModule.getTableName())
-                                .fields(FieldFactory.getModuleLocalIdFields());
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("localId", 0);
-                        map.put("moduleName", moduleName);
-                        insertBuilder.insert(map);
-                    }
-                }
+                existingField = modBean.getField("name", moduleName);
             }
 
-            if (defaultForm != null && formField != null) {
-                formField.setFieldId(field.getFieldId());
-                formField.setField(field);
-                formField.setName(field.getName());
-                formField.setDisplayName(field.getDisplayName());
-
-                FacilioModule formFieldsModule = ModuleFactory.getFormFieldsModule();
-                GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-                        .table(formFieldsModule.getTableName())
-                        .fields(FieldFactory.getFormFieldsFields())
-                        ;
-                Map<String, Object> prop = FieldUtil.getAsProperties(formField);
-                insertRecordBuilder.insert(prop);
-                if (formField != null) {
-                    formField.setField(field);
-                    formField.setFieldId(field.getFieldId());
-                    FormsAPI.updateFormFields(Collections.singletonList(formField), Collections.singletonList("fieldId"));
-                }
+            if (existingField == null) {
+                // don't do anything
+                context.put(FacilioConstants.ContextNames.FIELD, modBean.getField(changeTo, moduleName));
+                return false;
             }
-            context.put(FacilioConstants.ContextNames.FIELD, field);
+
+            changeValue(existingField, changeTo);
+            if (changeTo.equals("name")) {
+                FacilioModule moduleLocalIdModule = ModuleFactory.getModuleLocalIdModule();
+                GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+                        .table(moduleLocalIdModule.getTableName())
+                        .andCondition(CriteriaAPI.getCondition("MODULE_NAME", "moduleName", moduleName, StringOperators.IS));
+                deleteBuilder.delete();
+            }
+            else {
+                FacilioModule moduleLocalIdModule = ModuleFactory.getModuleLocalIdModule();
+                GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                        .table(moduleLocalIdModule.getTableName())
+                        .fields(FieldFactory.getModuleLocalIdFields());
+                Map<String, Object> map = new HashMap<>();
+                map.put("localId", 0);
+                map.put("moduleName", moduleName);
+                insertBuilder.insert(map);
+            }
+
+            updateField(existingField);
+
+            context.put(FacilioConstants.ContextNames.FIELD, existingField);
         }
         return false;
+    }
+
+    private void updateField(FacilioField existingField) throws Exception {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAddFieldFields());
+        List<FacilioField> selectFields = new ArrayList<>();
+        selectFields.add(fieldMap.get("name"));
+        selectFields.add(fieldMap.get("displayName"));
+        selectFields.add(fieldMap.get("columnName"));
+        selectFields.add(fieldMap.get("displayTypeInt"));
+        selectFields.add(fieldMap.get("dataType"));
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getFieldsModule().getTableName())
+                .fields(selectFields)
+                .andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", String.valueOf(existingField.getFieldId()), NumberOperators.EQUALS));
+        Map<String, Object> props = FieldUtil.getAsProperties(existingField);
+        updateRecordBuilder.update(props);
+
+        props.put("fieldId", existingField.getFieldId());
+        if (existingField.getName().equals("localId")) {
+            // add entry in Number Fields
+            GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getNumberFieldModule().getTableName())
+                    .fields(FieldFactory.getNumberFieldFields())
+                    .addRecord(props);
+
+            insertBuilder.save();
+        }
+        else {
+            // remove from Number Fields
+            GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+                    .table(ModuleFactory.getNumberFieldModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", String.valueOf(existingField.getFieldId()), NumberOperators.EQUALS));
+            deleteBuilder.delete();
+        }
+    }
+
+    private void changeValue(FacilioField existingField, String changeTo) {
+        if (changeTo.equals("name")) {
+            existingField.setName("name");
+            existingField.setDisplayName("Name");
+            existingField.setColumnName("NAME");
+            existingField.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
+            existingField.setDataType(FieldType.STRING);
+        }
+        else {
+            existingField.setName("localId");
+            existingField.setDisplayName("Local ID");
+            existingField.setColumnName("LOCAL_ID");
+            existingField.setDataType(FieldType.COUNTER);
+            existingField.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
+        }
     }
 
     private void validateFieldChange(FacilioModule module, List<FacilioForm> formList) throws Exception {
