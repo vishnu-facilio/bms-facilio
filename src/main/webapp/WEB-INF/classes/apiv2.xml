@@ -973,6 +973,9 @@
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
+		<action name="fetchRuleActions"
+				class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
+				method="fetchRuleActions" />
 	</package>
 
 	<package name="alarmListApiv2" namespace="/api/v2/alarms/view"

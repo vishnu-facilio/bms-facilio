@@ -371,7 +371,17 @@ public class WorkflowRuleAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
-	
+
+	public String fetchRuleActions() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getFetchRuleActionChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.RULE_ID, ruleId);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
+		return SUCCESS;
+	}
+
 	public String fetchWorkflowRuleNew() throws Exception {
 		
 		

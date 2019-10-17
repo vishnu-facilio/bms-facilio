@@ -383,7 +383,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 
 		return meta;
 	}
-	
+
 	public static ReadingRuleAlarmMeta addAlarmMeta (long alarmId, long resourceId, ReadingRuleContext rule) throws Exception {
 		ReadingRuleAlarmMeta meta = constructAlarmMeta(alarmId, resourceId, rule);
 		
@@ -790,5 +790,26 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		WorkflowRuleAPI.updateExtendedRule(rule, ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields());
 		return null;
+	}
+
+	public static List<AlarmWorkflowRuleContext> getAlarmWorkflowRules(long ruleId) throws Exception {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", String.valueOf(ruleId), NumberOperators.EQUALS));
+
+		List<FacilioField> fields = FieldFactory.getAlarmWorkflowRuleFields();
+		fields.addAll(FieldFactory.getWorkflowRuleFields());
+		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+
+		FacilioModule alarmWorkflowRuleModule = ModuleFactory.getAlarmWorkflowRuleModule();
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(fields)
+				.innerJoin(alarmWorkflowRuleModule.getTableName()).on("Workflow_Rule.ID = " + alarmWorkflowRuleModule.getTableName() + ".ID")
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", String.valueOf(ruleId), NumberOperators.EQUALS))
+				;
+		List<Map<String, Object>> list = builder.get();
+		List<AlarmWorkflowRuleContext> workflows = (List<AlarmWorkflowRuleContext>) FieldUtil.getAsBeanListFromMapList(list, AlarmWorkflowRuleContext.class);
+		return workflows;
 	}
 }

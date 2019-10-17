@@ -304,6 +304,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchExtraMetaForAlarmRuleCommand());
 		return c;
 	}
+
+	public static FacilioChain getFetchRuleActionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchRuleActionCommand());
+		return c;
+	}
 	
 	public static FacilioChain fetchApprovalRuleWithActionsChain() {
 		FacilioChain c = getDefaultChain();
