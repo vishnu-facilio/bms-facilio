@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
@@ -39,7 +41,8 @@ public class GetResourceListForMultiplePM extends FacilioCommand {
 		}
 
 		List<PMTriggerContext> userTriggers = pmTriggers.stream().filter(i -> i.getTriggerExecutionSourceEnum() == PMTriggerContext.TriggerExectionSource.USER).collect(Collectors.toList());
-		if (CollectionUtils.isEmpty(userTriggers)) {
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		if (CollectionUtils.isEmpty(userTriggers) && superAdmin.getOuid() != AccountUtil.getCurrentUser().getOuid()) {
 			return false;
 		}
 
@@ -56,6 +59,12 @@ public class GetResourceListForMultiplePM extends FacilioCommand {
 			resourceId = preventivemaintenance.getSiteId();
 		}
 		List<Long> resIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(preventivemaintenance.getAssignmentTypeEnum(), resourceId, preventivemaintenance.getSpaceCategoryId(), preventivemaintenance.getAssetCategoryId(), null, preventivemaintenance.getPmIncludeExcludeResourceContexts());
+
+		if (superAdmin.getOuid() == AccountUtil.getCurrentUser().getOuid()) {
+			context.put(FacilioConstants.ContextNames.MULTI_PM_RESOURCE_IDS, resIds);
+			context.put(FacilioConstants.ContextNames.MULTI_PM_RESOURCES, ResourceAPI.getResources(resIds, false));
+			return false;
+		}
 
 		Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(preventivemaintenance.getId());
 

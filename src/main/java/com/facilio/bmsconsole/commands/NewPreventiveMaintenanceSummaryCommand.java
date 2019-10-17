@@ -255,7 +255,7 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 
 		for (PMTriggerContext userTrigger: userTriggers) {
 			SharingContext<SingleSharingContext> sharingContext = userTrigger.getSharingContext();
-			if (sharingContext.isAllowed()) {
+			if (sharingContext == null || sharingContext.isAllowed()) {
 				return true;
 			}
 		}
