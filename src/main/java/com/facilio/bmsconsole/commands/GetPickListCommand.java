@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
@@ -47,6 +48,23 @@ public class GetPickListCommand extends FacilioCommand {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioField primaryField = modBean.getPrimaryField(moduleName);
 					builder.andCondition(CriteriaAPI.getCondition(primaryField, search, StringOperators.CONTAINS));
+
+				}
+				
+				JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+				if (pagination != null) {
+					int page = (int) pagination.get("page");
+					int perPage = (int) pagination.get("perPage");
+
+					if (perPage != -1) {
+						int offset = ((page-1) * perPage);
+						if (offset < 0) {
+							offset = 0;
+						}
+
+						builder.offset(offset);
+						builder.limit(perPage);
+					}
 
 				}
 				
