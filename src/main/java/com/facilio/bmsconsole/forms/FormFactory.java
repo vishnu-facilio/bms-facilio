@@ -689,7 +689,7 @@ public class FormFactory {
 		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 4, 3));
 		fields.add(new FormField("isRotating", FieldDisplayType.DECISION_BOX, "Is Rotating", Required.OPTIONAL, 5, 2));
 		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 5, 3));
-		fields.add(new FormField("isConsumable", FieldDisplayType.DECISION_BOX, "Is Consumable", Required.OPTIONAL, 6, 2));
+		fields.add(new FormField("isConsumable", FieldDisplayType.DECISION_BOX, "To Be Issued", Required.OPTIONAL, 6, 2));
 		return fields;
 	}
 
