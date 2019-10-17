@@ -1,5 +1,23 @@
 package com.facilio.beans;
 
+import java.io.File;
+import java.sql.BatchUpdateException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
@@ -14,12 +32,30 @@ import com.facilio.agentnew.point.Point;
 import com.facilio.bmsconsole.actions.ReadingAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.ControllerAPI;
+import com.facilio.bmsconsole.util.PMStatus;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -39,23 +75,20 @@ import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.io.File;
-import java.sql.BatchUpdateException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -977,9 +1010,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		Map<Long, WorkOrderContext> oldWorkorders = WorkOrderAPI.getWorkOrdersAsMap(workorders.stream().map(WorkOrderContext::getId).collect(Collectors.toList()));
 		List<WorkOrderContext> preopenWorkorders = new ArrayList<>();
 		List<WorkOrderContext> executedWorkorders = new ArrayList<>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioStatus preopenStatus = TicketAPI.getStatus(modBean.getModule(ContextNames.WORK_ORDER), "preopen");
+		
 		for(WorkOrderContext wo: workorders) {
 			WorkOrderContext oldWo = oldWorkorders.get(wo.getId());
-			if (oldWo.getModuleState() == null) {	// Pre open state
+			if (oldWo.getModuleState() == null || oldWo.getModuleState().getId() == preopenStatus.getId()) {	// Pre open state
 				preopenWorkorders.add(wo);
 			}
 			else {
