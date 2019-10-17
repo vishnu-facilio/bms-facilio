@@ -47,6 +47,11 @@ public class AddDefaultFormForCustomModuleCommand extends FacilioCommand {
 				FormField formField = new FormField(photoField.getId(), photoField.getName(), photoField.getDisplayType(), photoField.getDisplayName(), Required.OPTIONAL, 0, 1);
 				photoFields.add(formField);
 			}
+			FacilioField siteIdField = fieldsAsMap.get("siteId");
+			if (siteIdField != null) {
+				FormField formField = new FormField(siteIdField.getId(), siteIdField.getName(), siteIdField.getDisplayType(), siteIdField.getDisplayName(), Required.OPTIONAL, 0, 1);
+				formFields.add(formField);
+			}
 		}
 		List<FormSection> sections = new ArrayList<>();
 		FormSection photoSection = new FormSection("", 0, photoFields, false);
