@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -50,6 +52,18 @@ public class PickListAction extends FacilioAction {
 			if (getSearch() != null) {
 				context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
 			}
+			if (getPage() != 0) {
+				JSONObject pagination = new JSONObject();
+				pagination.put("page", getPage());
+				pagination.put("perPage", getPerPage());
+				context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+			}
+			
+			if (getFilters() != null) {
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(getFilters());
+				context.put(FacilioConstants.ContextNames.FILTERS, json);
+			}
 			//FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 			FacilioChain pickListChain = FacilioChainFactory.getPickListChain();
 			pickListChain.execute(context);
@@ -69,6 +83,36 @@ public class PickListAction extends FacilioAction {
 
 	public String getSearch() {
 		return this.search;
+	}
+	
+	private int page;
+
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	public int getPage() {
+		return this.page;
+	}
+	
+	public int perPage = 40;
+
+	public void setPerPage(int perPage) {
+		this.perPage = perPage;
+	}
+
+	public int getPerPage() {
+		return this.perPage;
+	}
+	
+	private String filters;
+
+	public void setFilters(String filters) {
+		this.filters = filters;
+	}
+
+	public String getFilters() {
+		return this.filters;
 	}
 	
 	private Map<Long, String> pickList;
