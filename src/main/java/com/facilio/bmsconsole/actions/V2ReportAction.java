@@ -317,6 +317,9 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		context.put(FacilioConstants.ContextNames.DEFAULT_DATE, defaultDate);
 		context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
+		if(chartState != null){
+			context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
+		}
 		
 		if(regressionConfig != null && !regressionConfig.isEmpty()) {
 			context.put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);

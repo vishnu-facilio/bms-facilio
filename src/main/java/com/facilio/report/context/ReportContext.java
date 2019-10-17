@@ -300,6 +300,16 @@ public class ReportContext {
 		this.dateRange = FieldUtil.getAsBeanFromJson(json, DateRange.class);
 	}
 
+	private List<ReportDataPointContext> trendLineDataPoints;
+
+	public List<ReportDataPointContext> getTrendLineDataPoints() {
+		return trendLineDataPoints;
+	}
+
+	public void setTrendLineDataPoints(List<ReportDataPointContext> trendLineDataPoints) {
+		this.trendLineDataPoints = trendLineDataPoints;
+	}
+	
 	private List<ReportDataPointContext> dataPoints;
 
 	public List<ReportDataPointContext> getDataPoints() {
