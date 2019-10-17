@@ -149,7 +149,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>
-        <url-pattern>/devices/*</url-pattern>
+        <url-pattern>/device/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>

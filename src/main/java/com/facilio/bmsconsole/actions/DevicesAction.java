@@ -82,7 +82,7 @@ public class DevicesAction extends FacilioAction{
 
     public String fetchDeviceList() throws Exception{
         if (StringUtils.isEmpty(getOrderBy())) {
-            setOrderBy("Devices.CONNECTED_TIME");
+            setOrderBy("Devices.ID");
             setOrderType("DESC");
         }
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
