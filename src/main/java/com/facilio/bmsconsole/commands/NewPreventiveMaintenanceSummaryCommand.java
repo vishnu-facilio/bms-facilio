@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
 import org.apache.commons.chain.Context;
@@ -63,7 +64,12 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 
 		pm.setTriggers(PreventiveMaintenanceAPI.getPMTriggers(pm));
 
-		pm.setIsAllowedToExecute(isAllowedToExecute(pm.getTriggers()));
+		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+		if (superAdmin.getOuid() == AccountUtil.getCurrentUser().getOuid()) {
+			pm.setIsAllowedToExecute(true);
+		} else {
+			pm.setIsAllowedToExecute(isAllowedToExecute(pm.getTriggers()));
+		}
 		
 		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 			pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
