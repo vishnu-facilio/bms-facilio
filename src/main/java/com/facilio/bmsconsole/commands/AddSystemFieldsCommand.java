@@ -47,6 +47,7 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 			FacilioField siteField = FieldFactory.getSiteIdField(module);
 			siteField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
 			siteField.setMainField(true);
+			siteField.setDisplayName("Site");
 			siteField.setRequired(true);
 			siteField.setDefault(true);
 			fields.add(siteField);
