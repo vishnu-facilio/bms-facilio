@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -49,6 +50,12 @@ public class GetPickListCommand extends FacilioCommand {
 					FacilioField primaryField = modBean.getPrimaryField(moduleName);
 					builder.andCondition(CriteriaAPI.getCondition(primaryField, search, StringOperators.CONTAINS));
 
+				}
+				
+				JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
+				Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+				if (filterCriteria != null) {
+					builder.andCriteria(filterCriteria);
 				}
 				
 				JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

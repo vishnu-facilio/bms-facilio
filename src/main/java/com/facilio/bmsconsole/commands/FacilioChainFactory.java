@@ -39,6 +39,7 @@ public class FacilioChainFactory {
 	public static FacilioChain getPickListChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new LoadMainFieldCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GetPickListCommand());
 		return c;
 	}
