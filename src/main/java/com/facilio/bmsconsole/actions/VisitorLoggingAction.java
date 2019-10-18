@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -10,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -95,7 +98,14 @@ private static final long serialVersionUID = 1L;
 	public void setStateTransitionId(Long stateTransitionId) {
 		this.stateTransitionId = stateTransitionId;
 	}
-
+	
+	private String contactNumber;
+	public String getContactNumber() {
+		return contactNumber;
+	}
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
+	}
 	public String addVisitorLogging() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(visitorLoggingRecords)) {
@@ -195,4 +205,21 @@ private static final long serialVersionUID = 1L;
 		
 		return SUCCESS;
 	}
+	
+	public String checkOutVisitorLogging() throws Exception {
+		
+		if(!StringUtils.isEmpty(contactNumber)) {
+			FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
+			VisitorManagementAPI.checkOutVisitorLogging(contactNumber, c.getContext());
+			if(c.getContext().get("visitorLogging") != null) {
+				c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get("nextTransitionId"));
+				VisitorLoggingContext visitorLoggingContext = (VisitorLoggingContext) c.getContext().get("visitorLogging");
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLoggingContext));
+				c.execute();
+			}
+			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+		}
+		return SUCCESS;
+	}
+
 }

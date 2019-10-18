@@ -4453,5 +4453,7 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingDetails" />
 		<action name="preRegister"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="preRegisterVisitor" />
+		<action name="checkOutWithPhone"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkOutVisitorLogging" />
 	</package>
 </struts>

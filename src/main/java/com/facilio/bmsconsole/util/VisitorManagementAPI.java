@@ -1,57 +1,31 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 
-import com.chargebee.internal.StringJoiner;
-import com.facilio.accounts.bean.UserBean;
-import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
-import com.facilio.bmsconsole.context.LabourContractLineItemContext;
-import com.facilio.bmsconsole.context.Preference;
-import com.facilio.bmsconsole.context.PurchaseRequestContext;
+import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
-import com.facilio.bmsconsole.forms.FormField.Required;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ActionType;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.ScheduledRuleType;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.FacilioField.FieldDisplayType;
-import com.facilio.time.DateTimeUtil;
-import com.facilio.workflows.context.ParameterContext;
-import com.facilio.workflows.context.WorkflowContext;
 
 public class VisitorManagementAPI {
 
@@ -93,7 +67,7 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static VisitorLoggingContext  getVisitorLogging(long logId) throws Exception {
+	public static VisitorLoggingContext  getVisitorLogging(long logId, boolean fetchActiveLog) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
@@ -104,9 +78,48 @@ public class VisitorManagementAPI {
 														.select(fields)
 														.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(logId), NumberOperators.EQUALS))
 														;
+		if(fetchActiveLog) {
+			FacilioStatus checkedInStatus = TicketAPI.getStatus(module, "CheckedIn");
+			builder.andCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedInStatus.getId()), NumberOperators.EQUALS));
+		}
+		
+		VisitorLoggingContext records = builder.fetchFirst();
+		return records;
+	
+	}
+	
+	public static VisitorLoggingContext  getActiveVisitorLogging(long visitorId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		SelectRecordsBuilder<VisitorLoggingContext> builder = new SelectRecordsBuilder<VisitorLoggingContext>()
+														.module(module)
+														.beanClass(VisitorLoggingContext.class)
+														.select(fields)
+														.andCondition(CriteriaAPI.getCondition("VISITOR", "visitor", String.valueOf(visitorId), NumberOperators.EQUALS))
+														;
 		
 		
 		VisitorLoggingContext records = builder.fetchFirst();
+		return records;
+	
+	}
+	
+	public static VisitorContext getVisitor(String phoneNumber) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR);
+		SelectRecordsBuilder<VisitorContext> builder = new SelectRecordsBuilder<VisitorContext>()
+														.module(module)
+														.beanClass(VisitorContext.class)
+														.select(fields)
+														.andCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNumber), StringOperators.IS))
+														;
+		
+		
+		VisitorContext records = builder.fetchFirst();
 		return records;
 	
 	}
@@ -133,6 +146,25 @@ public class VisitorManagementAPI {
 			updatedfields.add(statusField);
 		
 			updateBuilder.updateViaMap(updateMap);
+		}
+		
+	}
+	
+	public static void checkOutVisitorLogging(String visitorPhoneNumber, FacilioContext context) throws Exception {
+		
+		if(StringUtils.isNotEmpty(visitorPhoneNumber)) {
+			VisitorContext visitor = getVisitor(visitorPhoneNumber);
+			if(visitor == null) {
+				throw new IllegalArgumentException("Invalid phone number");
+			}
+			VisitorLoggingContext activeLog = getVisitorLogging(visitor.getId(), true);
+			if(activeLog == null) {
+				throw new IllegalArgumentException("No active CheckIn Log found");
+			}
+			List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(activeLog.getStateFlowId(), activeLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOGGING, activeLog, context);
+			long nextTransitionId = nextStateRule.get(0).getId();
+			context.put("nextTransitionId", nextTransitionId);
+			context.put("visitorLogging", activeLog);
 		}
 		
 	}

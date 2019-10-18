@@ -68,6 +68,7 @@ public class FormFactory {
 		forms.put("termsAndConditionForm", getTermsAndConditionForm());
 		forms.put("reservationForm", getReservationForm());
 		forms.put("devicesForm",getDevicesForm());
+		forms.put("kioskForm", getVisitorKioskForm());
 		
 			
 		return forms;
@@ -822,6 +823,8 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
+	
+	
 	public static FacilioForm getPurchaseOrderForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("PURCHASE ORDER");
@@ -1168,4 +1171,23 @@ public class FormFactory {
 	}
 	
 	
+	public static FacilioForm getVisitorKioskForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("VISITOR");
+		form.setName("default_visitor_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getVisitorKioskFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getVisitorKioskFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "E-mail", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("location", FieldDisplayType.SADDRESS, "Location", Required.OPTIONAL, 3, 1));
+		
+		return fields;
+	}
 }
