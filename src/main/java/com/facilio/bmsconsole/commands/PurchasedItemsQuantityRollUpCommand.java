@@ -105,6 +105,7 @@ public class PurchasedItemsQuantityRollUpCommand extends FacilioCommand {
 						.module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
 						.andCondition(CriteriaAPI.getIdCondition(id, itemModule));
 				updateBuilder.update(item);
+				uniqueItemTypeIds.add(item.getItemType().getId());
 			}
 			List<Long> itemTypesIds = new ArrayList<Long>();
 			itemTypesIds.addAll(uniqueItemTypeIds);
