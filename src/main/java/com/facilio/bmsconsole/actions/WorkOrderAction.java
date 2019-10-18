@@ -825,6 +825,17 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	
+	String qrVAL;
+
+	public String getQrVAL() {
+		return qrVAL;
+	}
+
+	public void setQrVAL(String qrVAL) {
+		this.qrVAL = qrVAL;
+	}
+
 	private long resourceId = -1;
 
 	public long getResourceId() {
@@ -834,7 +845,7 @@ public class WorkOrderAction extends FacilioAction {
 	public void setResourceId(long resourceId) {
 		this.resourceId = resourceId;
 	}
-
+	
 	private PMJobsContext pmJob;
 
 	public PMJobsContext getPmJob() {
@@ -1350,6 +1361,9 @@ public class WorkOrderAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+ 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+ 		context.put(FacilioConstants.ContextNames.QR_VALUE, qrVAL);
+ 		context.put(FacilioConstants.ContextNames.SHOULD_VERIFY_QR, true);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
 		context.put(FacilioConstants.ContextNames.COMMENT, comment);

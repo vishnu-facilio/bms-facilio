@@ -1260,6 +1260,8 @@ public class FacilioConstants {
 		public static final String CONDITIONAL_FORMATTINGS = "conditionalFormattings";
 		public static final String IMPORT_PROCESS_CONTEXT_LIST = "importProcessContextList";
 		public static final String DIGITAL_LOG_BOOK = "digitalLogBook";
+		public static final Object SHOULD_VERIFY_QR = "shouldVerifyQr";
+		 
 
 
 
