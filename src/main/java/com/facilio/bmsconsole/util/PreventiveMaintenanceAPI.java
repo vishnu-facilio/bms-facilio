@@ -2941,7 +2941,7 @@ public class PreventiveMaintenanceAPI {
 				.beanClass(WorkOrderContext.class)
 				.module(workorderModule)
 				.select(selectFields)
-				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), System.currentTimeMillis() +"", NumberOperators.GREATER_THAN))
+				//.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), System.currentTimeMillis() +"", NumberOperators.GREATER_THAN))
 				.groupBy("Tickets.RESOURCE_ID, WorkOrders.CREATED_TIME, WorkOrders.PM_ID")
 				.having("woCount > 1");
 
@@ -2949,16 +2949,62 @@ public class PreventiveMaintenanceAPI {
 
 		for (Map<String, Object> wo: props) {
 			LOGGER.log(Level.ERROR, "Vals minCount: " + wo.get("minCount") + " resource " + ((Map) wo.get("resource")).get("id") + " pm " + ((Map) wo.get("pm")).get("id") + " created time " + wo.get("createdTime"));
-			DeleteRecordBuilder<WorkOrderContext> deleteRecordBuilder = new DeleteRecordBuilder<>();
-			deleteRecordBuilder.module(workorderModule)
-					.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(workorderModule), wo.get("minCount") + "", NumberOperators.NOT_EQUALS))
-					.andCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), ((Map) wo.get("resource")).get("id") + "", NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), ((Map) wo.get("pm")).get("id") + "", NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), wo.get("createdTime") + "", NumberOperators.EQUALS))
-					.markAsDelete();
+			List<Map<String, Object>> workOrders = getAffectedWos(wo);
+			if (CollectionUtils.isEmpty(workOrders)) {
+				continue;
+			}
+			List<Long> woIdsToBeDeleted;
+			if (isAllSubmitted(workOrders)) {
+				woIdsToBeDeleted = skipOneSubmittedIds(workOrders);
+			} else {
+				woIdsToBeDeleted = getSubmittedIds(workOrders);
+			}
+
+//			DeleteRecordBuilder<WorkOrderContext> deleteRecordBuilder = new DeleteRecordBuilder<>();
+//			deleteRecordBuilder.module(workorderModule)
+//					.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(workorderModule), woIdsToBeDeleted , NumberOperators.EQUALS))
+//					.markAsDelete();
+
+			LOGGER.log(Level.ERROR, "Ids to be deleted " + Arrays.toString(woIdsToBeDeleted.toArray()));
 		}
 	}
 
+	private static List<Long> getSubmittedIds(List<Map<String, Object>> workOrders) throws Exception {
+		FacilioStatus submitted = TicketAPI.getStatus("Submitted");
+		List<Long> ids = workOrders.stream().filter(i -> ((Map) i.get("status")).get("id").equals(submitted.getId())).map(i -> (Long) i.get("id")).collect(Collectors.toList());
+		return ids;
+	}
+
+	private static List<Long> skipOneSubmittedIds(List<Map<String, Object>> workOrders) {
+		List<Long> ids = workOrders.stream().map(i -> (Long) i.get("id")).collect(Collectors.toList());
+		ids.remove(0);
+		return ids;
+	}
+
+	private static boolean isAllSubmitted(List<Map<String, Object>> workOrders) throws Exception {
+		FacilioStatus submitted = TicketAPI.getStatus("Submitted");
+		for (Map<String, Object> workOrder: workOrders) {
+			if (!((Map) workOrder.get("status")).get("id").equals(submitted.getId())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static List<Map<String, Object>> getAffectedWos(Map<String, Object> wo) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workorderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioField> woFields = modBean.getAllFields(workorderModule.getName());
+		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(woFields);
+
+		SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
+		selectRecordsBuilder.module(workorderModule)
+				.select(Arrays.asList(FieldFactory.getIdField(workorderModule), woFieldMap.get("moduleState")))
+				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("resource"), ((Map) wo.get("resource")).get("id") + "", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), ((Map) wo.get("pm")).get("id") + "", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), wo.get("createdTime") + "", NumberOperators.EQUALS));
+		return selectRecordsBuilder.getAsProps();
+	}
 
 	public static void verifyScheduleGeneration(List<Long> orgs) throws Exception {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPreventiveMaintenanceFields());
