@@ -9,15 +9,15 @@ import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 
 public class KPIPageFacory extends PageFactory {
-	
+
 	public static Page getKpiPage(FormulaFieldContext formulaField) {
 		Page page = new Page();
-		
+
 		Tab tab1 = page.new Tab("summary");
 		page.addTab(tab1);
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
-		
+
 		addTimeWidget(tab1Sec1);
 		addKpiDetailsWidget(tab1Sec1);
 
@@ -25,91 +25,78 @@ public class KPIPageFacory extends PageFactory {
 			addTargetWidget(tab1Sec1);
 			addViolationsWidget(tab1Sec1, false);
 			addTrendsWidget(tab1Sec1);
-		}
-		else {
+		} else {
 			addMetersWidget(tab1Sec1);
 			addViolationsWidget(tab1Sec1, true);
 			addLatestValueWidget(tab1Sec1);
+
+			Tab tab2 = page.new Tab("historicalTrends", "kpiHistoricalTrend");
+			page.addTab(tab2);
 		}
-		
-		
-		Tab tab2 = page.new Tab("historicalTrends");
-		page.addTab(tab2);
-		Section tab2Sec1 = page.new Section();
-		tab2.addSection(tab2Sec1);
-		
-//		addTrendsWidget(tab2Sec1);
-//		addTabularWidget(tab2Sec1);
-		
-		Tab tab3 = page.new Tab("kpiLog");
+
+		Tab tab3 = page.new Tab("kpiViolations", "violationsList");
 		page.addTab(tab3);
-		Section tab3Sec1 = page.new Section();
-		tab3.addSection(tab3Sec1);
-		
-		addLogWidget(tab3Sec1);
-		
+
+		Tab tab4 = page.new Tab("kpiLog", "formulaLog");
+		page.addTab(tab4);
+
 		return page;
-		
+
 	}
-	
+
 	private static void addKpiDetailsWidget(Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.KPI_DETAILS_WIDGET);
 		pageWidget.addToLayoutParams(section, 24, 6);
 		section.addWidget(pageWidget);
 	}
-	
+
 	private static void addMetersWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 8, 4);
 		cardWidget.addCardType(CardType.KPI_METERS_ASSOCIATED);
 		section.addWidget(cardWidget);
 	}
-	
+
 	private static void addViolationsWidget(Section section, Boolean isMultiResource) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		if (isMultiResource) {
-			cardWidget.addToLayoutParams(section, 16, 4);	
+			cardWidget.addToLayoutParams(section, 16, 4);
 		} else {
 			cardWidget.addToLayoutParams(section, 12, 7);
 		}
 		cardWidget.addCardType(CardType.KPI_VIOLATIONS);
 		section.addWidget(cardWidget);
 	}
-	
+
 	private static void addTargetWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 12, 7);
 		cardWidget.addCardType(CardType.KPI_TARGET);
 		section.addWidget(cardWidget);
 	}
-	
+
 	private static void addLatestValueWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 14);
 		cardWidget.addCardType(CardType.KPI_LATEST_VALUE);
 		section.addWidget(cardWidget);
 	}
-	
+
 	private static void addTrendsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
 		cardWidget.addToLayoutParams(section, 24, 12);
 		cardWidget.addCardType(CardType.KPI_TREND);
-		
+
 //		addChartParams(cardWidget, "readingFieldId", null, null);
-		
+
 		section.addWidget(cardWidget);
 	}
-	
+
 	private static void addTabularWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 10);
 		cardWidget.addCardType(CardType.KPI_TABULAR);
 		section.addWidget(cardWidget);
 	}
-	
-	private static void addLogWidget(Section section) {
-		PageWidget widget = new PageWidget(WidgetType.FORMULA_LOG);
-		section.addWidget(widget);
-	}
-	
+
 }
