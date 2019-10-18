@@ -1397,6 +1397,30 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		return props;
 	}
+
+
+	@Override
+	public Organization getOrgv2(String currentOrgDomain, long uid) throws Exception {
+		// TODO Auto-generated method stub
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getOrgFields())
+				.table("Organizations")
+				.innerJoin("Account_ORG_Users")
+				.on("Organizations.ORGID = Account_ORG_Users.ORGID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("FACILIODOMAINNAME", "domainName", currentOrgDomain, StringOperators.IS));
+		
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return IAMOrgUtil.createOrgFromProps(props.get(0));
+		}
+		return null;
+	}
 	
 	
 }
