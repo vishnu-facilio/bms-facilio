@@ -70,7 +70,7 @@ public class KPIPageFacory extends PageFactory {
 		if (isMultiResource) {
 			cardWidget.addToLayoutParams(section, 16, 4);	
 		} else {
-			cardWidget.addToLayoutParams(section, 12, 6);
+			cardWidget.addToLayoutParams(section, 12, 7);
 		}
 		cardWidget.addCardType(CardType.KPI_VIOLATIONS);
 		section.addWidget(cardWidget);
@@ -78,7 +78,7 @@ public class KPIPageFacory extends PageFactory {
 	
 	private static void addTargetWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 12, 6);
+		cardWidget.addToLayoutParams(section, 12, 7);
 		cardWidget.addCardType(CardType.KPI_TARGET);
 		section.addWidget(cardWidget);
 	}
