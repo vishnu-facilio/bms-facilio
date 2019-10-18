@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.db.transaction.FacilioTransactionManager;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -47,7 +48,7 @@ public class PMNewScheduler extends FacilioJob {
 	private static final Logger LOGGER = LogManager.getLogger(PMNewScheduler.class.getName());
 
 	@Override
-	public void execute(JobContext jc) {
+	public void execute(JobContext jc) throws Exception {
 		// TODO Auto-generated method stub
 		try {
 			FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();
@@ -123,7 +124,7 @@ public class PMNewScheduler extends FacilioJob {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
 			LOGGER.error("Exception occurred in PM Scheduler Job ID - "+jc.getJobId(), e);
 			CommonCommandUtil.emailException("PMScheduler", "Exception occurred in PM Scheduler Job - "+jc.getJobId(), e);
 		}
