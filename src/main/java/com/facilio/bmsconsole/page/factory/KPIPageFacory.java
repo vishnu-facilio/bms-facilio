@@ -20,12 +20,15 @@ public class KPIPageFacory extends PageFactory {
 		
 		addTimeWidget(tab1Sec1);
 		addKpiDetailsWidget(tab1Sec1);
-		addMetersWidget(tab1Sec1);
-		addViolationsWidget(tab1Sec1);
+
 		if (formulaField.getMatchedResourcesIds().size() == 1) {
 			addTargetWidget(tab1Sec1);
+			addViolationsWidget(tab1Sec1, false);
+			addTrendsWidget(tab1Sec1);
 		}
 		else {
+			addMetersWidget(tab1Sec1);
+			addViolationsWidget(tab1Sec1, true);
 			addLatestValueWidget(tab1Sec1);
 		}
 		
@@ -35,8 +38,8 @@ public class KPIPageFacory extends PageFactory {
 		Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
 		
-		addTrendsWidget(tab2Sec1);
-		addTabularWidget(tab2Sec1);
+//		addTrendsWidget(tab2Sec1);
+//		addTabularWidget(tab2Sec1);
 		
 		Tab tab3 = page.new Tab("kpiLog");
 		page.addTab(tab3);
@@ -62,16 +65,20 @@ public class KPIPageFacory extends PageFactory {
 		section.addWidget(cardWidget);
 	}
 	
-	private static void addViolationsWidget(Section section) {
+	private static void addViolationsWidget(Section section, Boolean isMultiResource) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 16, 4);
+		if (isMultiResource) {
+			cardWidget.addToLayoutParams(section, 16, 4);	
+		} else {
+			cardWidget.addToLayoutParams(section, 12, 6);
+		}
 		cardWidget.addCardType(CardType.KPI_VIOLATIONS);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addTargetWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 10);
+		cardWidget.addToLayoutParams(section, 12, 6);
 		cardWidget.addCardType(CardType.KPI_TARGET);
 		section.addWidget(cardWidget);
 	}
