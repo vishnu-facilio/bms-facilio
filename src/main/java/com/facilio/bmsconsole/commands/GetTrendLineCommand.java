@@ -41,8 +41,8 @@ public class GetTrendLineCommand extends FacilioCommand {
 		if(chartState != null){
 			JSONObject chartObj = (JSONObject)new JSONParser().parse(chartState);
 			JSONObject trendLineObj = (JSONObject)chartObj.get("trendLine");
-			
-			if((boolean) trendLineObj.get("enable")){
+			Boolean trendLineEnabled = (Boolean) trendLineObj.get("enable");
+			if(trendLineEnabled != null && trendLineEnabled){
 				
 				List<ReportDataPointContext> trendLineDataPoints = getDataPoints(report.getDataPoints(), ((JSONArray)trendLineObj.get("selectedPoints")));
 				
