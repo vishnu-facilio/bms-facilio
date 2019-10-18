@@ -30,12 +30,49 @@ public class DeviceAction extends ActionSupport
 
 	private String url;
 
+	public String getSubscription() {
+		return subscription;
+	}
+
+	public void setSubscription(String subscription) {
+		this.subscription = subscription;
+	}
+
+	private String subscription;
 	public String getUrl() {
 		return url;
 	}
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public JSONObject getMessage() {
+		return message;
+	}
+
+	public void setMessage(JSONObject message) {
+		this.message = message;
+	}
+
+
+
+	private JSONObject message;
+
+
+	public String pubSubListener(){
+		LOGGER.info("PubSub Called");
+		if(getMessage()== null) {
+			return "message is null";
+		}
+		if (getSubscription() == null){
+			return "subscription is null";
+		}
+		LOGGER.info("anand.h@facilio.com ") ;
+		LOGGER.info("message : "+ getMessage() );
+		LOGGER.info("subscription : "+getMessage());
+
+		return SUCCESS;
 	}
 
 	public String downloadCertificate() {

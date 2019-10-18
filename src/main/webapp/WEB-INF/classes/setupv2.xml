@@ -204,6 +204,8 @@
 
 		<action name="getPoints"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getPoints">
 		</action>
+		<action name="pubSubEndpoint"  class="com.facilio.bmsconsole.actions.DeviceAction" method="pubSubListener">
+		</action>
 	</package>
 
 	<package name="vijaySetupApiV2" namespace="/api/v2/setup/vijay/device" extends="setupApiV2">
