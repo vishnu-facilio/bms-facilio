@@ -1483,63 +1483,100 @@
        "107": {
 			"description": "smartmap",
 			"usage": "smart map data",
-			"workflow": "Map smartMap(Map paramsMap){
-						fetchModule = Module(paramsMap.module);
-							if (paramsMap.module == \"asset\") {
-								records = fetchModule.fetch([geoLocation != null
-									]);
-								}
-							else {
-							records = fetchModule.fetch([location != null
-									]);
-								}
-							
-							locations = [];
-							
-							for each index,record in records {
-								locationEntry = {};
-								locationEntry[\"id\"] = record.get(\"id\");
-								locationEntry[\"label\"] = record.get(\"name\");
-								locationEntry[\"name\"] = record.get(\"name\");
-								locationEntry[\"image\"] = \"url\";
-								if (paramsMap.module == \"site\" || paramsMap.module == \"building\"){
-									locationEntry[\"location\"] = Module(\"location\").fetch([id == record.location.id]);
-													}
-								if (paramsMap.module == \"asset\"){
-									locationEntry[\"location\"] = record.geoLocation;
-													}
-								
-								markerActualValue = null;
-								if (paramsMap.markerValue.type == \"noOfAlarms\") {
-												}
-								else if (paramsMap.markerValue.type == \"noOfWorkorders\") {
-									db = {
-									criteria : [resource == record.id
-													],
-									field : \"subject\",
-									aggregation : \"count\"
-												};
-							markerActualValue = Module(\"workorder\").fetch(db);
-											}
-								else if (paramsMap.markerValue.type == \"noOfAssets\") {
-								db = {
-									criteria : [site == record.id
-												],
-									field : \"subject\",
-									aggregation : \"count\"
-											};
-							markerActualValue = Module(\"asset\").fetch(db);
-										}
-								else if (paramsMap.markerValue.type == \"reading\") {
-									}
-								
-								locationEntry[\"markerValue\"] = markerActualValue;
-								locations.add(locationEntry);
-									}
-							
-							resultMap = {};
-							resultMap[\"locations\"] = locations;
-							return resultMap;
-									}"
+			"workflow": "Map smartMap(Map paramsMap) {
+			    ticketCriteria = {
+			        criteria: [typeCode == 2 && parentModuleId == markerValue.id]
+			    };
+			    date = NameSpace(\"date\");
+			    closedStatus = Module(\"ticketstatus\").fetch(ticketCriteria)[0];
+			    fetchModule = Module(paramsMap.module);
+			    if (paramsMap.module == \"asset\") {
+			        records = fetchModule.fetch([geoLocation != null]);
+			    } else {
+			        records = fetchModule.fetch([location != null]);
+			    }
+			
+			    locations = [];
+			    log \"\" + paramsMap.readingObj;
+			
+			    for each index, record in records {
+			        locationEntry = {};
+			        locationEntry[\"id\"] = record.get(\"id\");
+			        locationEntry[\"label\"] = record.get(\"name\");
+			        locationEntry[\"name\"] = record.get(\"name\");
+			        locationEntry[\"image\"] = \"url\";
+			        if (paramsMap.module == \"site\" || paramsMap.module == \"building\") {
+			            locationEntry[\"location\"] = Module(\"location\").fetch([id == record.location.id]);
+			        }
+			        if (paramsMap.module == \"asset\") {
+			            locationEntry[\"location\"] = record.geoLocation;
+			        }
+			
+			        markerActualValue = null;
+			        if (paramsMap.markerValue.type == \"noOfAlarms\") {
+			            count = 0;
+			            if (paramsMap.module == \"asset\") {
+			                occurenceCount = {
+			                    criteria: [resource == record.id]
+			                    field: \"id\",
+			                    aggregation: \"count\"
+			                };
+			                alamcount1 = Module(\"alarm\").fetch(occurenceCount);
+			                if (alamcount1 != null) {
+			                    count = count + alamcount1;
+			                }
+			                markerActualValue = count;
+			
+			            } else {
+			                db1 = {
+			                    criteria: [space == record.id]
+			                };
+			                result = Module(\"asset\").fetch(db1);
+			                if (result != null) {
+			                    for each index, value in result {
+			                        occurenceCount = {
+			                            criteria: [resource == value.id],
+			                            field: \"id\",
+			                            aggregation: \"count\"
+			                        };
+			                        alamcount = Module(\"alarm\").fetch(occurenceCount);
+			                        if (alamcount != null) {
+			                            count = count + alamcount;
+			                        }
+			                    }
+			                }
+			
+			                markerActualValue = count;
+			            }
+			
+			
+			        } else if (paramsMap.markerValue.type == \"noOfWorkorders\") {
+			            db = {
+			                criteria: [resource == record.id && status != closedStatus.id]
+			                field: \"subject\",
+			                aggregation: \"count\"
+			            };
+			            markerActualValue = Module(\"workorder\").fetch(db);
+			        } else if (paramsMap.markerValue.type == \"noOfAssets\") {
+			            db = {
+			                criteria: [space == record.id]
+			                field: \"id\",
+			                aggregation: \"count\"
+			            };
+			            markerActualValue = Module(\"asset\").fetch(db);
+			        } else if (paramsMap.markerValue.type == \"reading\") {
+			
+			        }
+			        if (markerActualValue == null) {
+			            markerActualValue = 0;
+			        }
+			        locationEntry[\"markerValue\"] = markerActualValue;
+			        locations.add(locationEntry);
+			    }
+			
+			    resultMap = {};
+			    resultMap[\"locations\"] = locations;
+			    return resultMap;
+			}"
 }
 }
