@@ -60,7 +60,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 					 newReading.setParentId(parentID);
 					 newUpdatedReading.setParentId(parentID);
 					 
-					 newReading.setTtime((long)readingObj.get("jkn4m,"));
+					 newReading.setTtime((long)readingObj.get("ttime"));
 					 newUpdatedReading.setTtime((long)readingObj.get("ttime"));
 					 
 					 
