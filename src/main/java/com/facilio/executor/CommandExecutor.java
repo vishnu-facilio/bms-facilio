@@ -45,6 +45,7 @@ public class CommandExecutor {
             }
             
             exitStatus = process.exitValue();
+            process.destroy();
         } catch (IOException | InterruptedException e) {
             log.info("Exception occurred ", e);
         }
