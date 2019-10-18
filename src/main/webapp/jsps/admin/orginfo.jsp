@@ -67,6 +67,11 @@ public static boolean isFeatureEnabled(FeatureLicense featureLicense,long orgid)
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 </head>
+<script type="text/javascript">
+function logs(userId){
+	window.location.replace("https://logs.facilio.in/streams/000000000000000000000001/search?saved=5d00ce839b569c766b1f32d7&rangetype=relative&fields=message%2Csource&width=1366&highlightMessage=&relative=86400&q=NOT%20facility%3Astage%20AND%20logger%3A%20com.facilio.filters.AccessLogFilter%20AND%20userId%3A"+userId)
+}
+</script>
 <script>			
 function view(userId){
 	console.log(userId)
@@ -184,7 +189,8 @@ function myLicenseFunction() {
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Name </th>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> Email  </th>
 	<th class="org-th" style="text-align:center;max-width: 350px;width:350px;"> UserVerified</th>
-	<th class="org-th" style="max-width: 350px;width:350px;text-align: center;">Status</th>
+	<th class="org-th" style="max-width: 350px; width:350px;text-align: center;">Status</th>
+	<th class="org-th" style="max-width: 350px;width:350px;text-align: center;">Activity</th>
 	</tr>
 	 <% 
 	 if(users!=null){
@@ -197,6 +203,7 @@ function myLicenseFunction() {
 	<td  style="max-width: 350px;width:350px;"  align="center"><%=b.getEmail() %></td>
 	<td  style="max-width: 350px;width:350px;" align="center" id=<%=b.getId() %>><%=b.getUserVerified() %></td>
 	<td style="max-width: 350px;width:350px;text-align: center;"> <button type="button" onclick="view(<%=b.getUid()%>)">Update</button> </td>
+	<td   style="max-width: 350px;width:350px;"  align="center"><button type ="button" onclick="logs(<%=b.getUid()%>)">Logs </button></td>
 	</tr>
 <%
 }
