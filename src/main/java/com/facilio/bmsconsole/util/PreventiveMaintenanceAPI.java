@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.db.builder.*;
 import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.modules.*;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
 import org.apache.commons.chain.Context;
@@ -70,15 +71,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
@@ -3007,11 +2999,16 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static void populateUniqueId() throws Exception {
-		AccountUtil.setCurrentAccount(263L);
+		AccountUtil.setCurrentAccount(1L);
 		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
 			LOGGER.log(Level.WARN, "Org is missing");
 			return;
 		}
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.TASK);
+		List<FacilioField> taskFields = modBean.getAllFields(taskModule.getName());
+		Map<String, FacilioField> taskFieldMap = FieldFactory.getAsMap(taskFields);
 
 		List<PreventiveMaintenance> allPMs = PreventiveMaintenanceAPI.getAllPMs(1L, false);
 		for (PreventiveMaintenance pm: allPMs) {
@@ -3043,6 +3040,13 @@ public class PreventiveMaintenanceAPI {
 						LOGGER.log(Level.ERROR, "unique id is missing for " + task.getId());
 					} else {
 						LOGGER.log(Level.ERROR, "task id " + task.getId() + " uniqueId " + uniqueId);
+						Map<String, Object> updateMap = new HashMap<>();
+						updateMap.put("uniqueId", uniqueId);
+						UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
+						updateRecordBuilder.moduleName("task")
+								.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
+								.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(taskModule), task.getId()+"", NumberOperators.EQUALS))
+								.updateViaMap(updateMap);
 					}
 				}
 			}
