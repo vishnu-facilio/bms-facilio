@@ -1110,7 +1110,7 @@ public class PreventiveMaintenanceAPI {
 		return getPMs(ids, null, null, null, null,true, true);
 	}
 
-	public static List<PreventiveMaintenance> getAllPMs(Long orgid,boolean onlyActive) throws Exception {
+	public static List<PreventiveMaintenance> getAllPMs(Long orgId, boolean onlyActive) throws Exception {
 		
 		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
@@ -3004,6 +3004,49 @@ public class PreventiveMaintenanceAPI {
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), ((Map) wo.get("pm")).get("id") + "", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), wo.get("createdTime") + "", NumberOperators.EQUALS));
 		return selectRecordsBuilder.getAsProps();
+	}
+
+	public static void populateUniqueId() throws Exception {
+		AccountUtil.setCurrentAccount(263L);
+		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+			LOGGER.log(Level.WARN, "Org is missing");
+			return;
+		}
+
+		List<PreventiveMaintenance> allPMs = PreventiveMaintenanceAPI.getAllPMs(1L, false);
+		for (PreventiveMaintenance pm: allPMs) {
+			LOGGER.log(Level.WARN, "executing for pm " + pm.getId());
+			Map<String, Map<String, Long>> pmLookup = new HashMap<>();
+			WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
+			List<TaskSectionTemplate> sectionTemplates = woTemplate.getSectionTemplates();
+			for (TaskSectionTemplate sectionTemplate: sectionTemplates) {
+				Map<String,Long> taskMap = new HashMap<>();
+				pmLookup.put(sectionTemplate.getName(), taskMap);
+				List<TaskTemplate> taskTemplates = sectionTemplate.getTaskTemplates();
+				for(TaskTemplate taskTemplate: taskTemplates) {
+					taskMap.put(taskTemplate.getName(), (Long) taskTemplate.getAdditionInfo().get("uniqueId"));
+				}
+			}
+			List<WorkOrderContext> workOrders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
+			for (WorkOrderContext workOrderContext: workOrders) {
+				LOGGER.log(Level.WARN, "executing for wo " + workOrderContext.getId());
+				List<TaskContext> tasks = TicketAPI.getRelatedTasks(workOrderContext.getId());
+				for (TaskContext task: tasks) {
+					long sectionId = task.getSectionId();
+					TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
+					ResourceContext resource = ResourceAPI.getResource(task.getResource().getId());
+					String resourceName = resource.getName();
+					String sectionName = taskSection.getName().substring((resourceName + " - ").length());
+					Map<String, Long> taskMap = pmLookup.get(sectionName);
+					Long uniqueId = taskMap.get(task.getSubject());
+					if (uniqueId == null) {
+						LOGGER.log(Level.ERROR, "unique id is missing for " + task.getId());
+					} else {
+						LOGGER.log(Level.ERROR, "task id " + task.getId() + " uniqueId " + uniqueId);
+					}
+				}
+			}
+		}
 	}
 
 	public static void verifyScheduleGeneration(List<Long> orgs) throws Exception {
