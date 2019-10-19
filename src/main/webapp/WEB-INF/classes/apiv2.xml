@@ -1976,15 +1976,6 @@
 		</action>
 	</package>
 
-	<package name="publicfilePreviewApiv2"
-		namespace="/api/v2/public/files/preview" extends="attachmentPreviewApi">
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.FileAction"
-			method="previewPublicFile">
-			<param name="permission">READ</param>
-			<param name="fileID">{1}</param>
-		</action>
-	</package>
 	<package name="filePreviewApiv2"
 		namespace="/api/v2/files/preview" extends="attachmentPreviewApi">
 		<action name="*"

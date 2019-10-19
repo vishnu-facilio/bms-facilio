@@ -140,10 +140,6 @@ public class FileAction extends FacilioAction {
 		throw new IllegalArgumentException("Cannot fetch file");
 	}
 	
-	public String previewPublicFile() throws Exception {
-		return fetchFile(true);
-	}
-	
 	
 	public String addFile() throws Exception {
 		
@@ -191,59 +187,4 @@ public class FileAction extends FacilioAction {
 		this.fileContentContentType = fileContentContentType;
 	}
 	
-	private String fetchFile(boolean isService) throws Exception {
-		
-		HttpServletRequest request = ServletActionContext.getRequest();
-		HttpServletResponse response = ServletActionContext.getResponse();
-	
-	
-		if (request.getHeader("If-Modified-Since") == null) {
-			if (fileID > 0) {
-				FileStore fs = FileStoreFactory.getInstance().getFileStore();
-				fileInfo = getFileInfo(fs);
-				if (fileInfo != null) {
-					downloadStream = fs.readFile(fileInfo);
-					 if (downloadStream != null) {
-						String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
-						response.setHeader("Last-Modified", dateStamp);
-						if (getIsDownload()) {
-							setContentType("application/x-download");
-							setFilename(fileInfo.getFileName());
-						}
-						else {
-							setContentType(fileInfo.getContentType());
-						}
-						return SUCCESS;
-					} 
-					else {
-						throw new Exception("File not Found");
-					}
-				}
-				else {
-					response.setStatus(404);
-				}
-			}
-		} else {
-			response.setStatus(304);
-			return NONE;
-		}
-		throw new IllegalArgumentException("Cannot fetch file");
-	
-	}
-	
-	private FileInfo getFileInfo(FileStore fs) throws Exception {
-		FileInfo fileInfo;
-		if (width > 0 || height > 0) {
-			if (height < 0) {
-				fileInfo = fs.getResizedFileInfo(fileID, width, width);
-			}
-			else {
-				fileInfo = fs.getResizedFileInfo(fileID, width, height);
-			}
-		}
-		else {
-			fileInfo = fs.getFileInfo(fileID);
-		}
-		return fileInfo;
-	}
 }
