@@ -35,7 +35,7 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 							FacilioField field = modBean.getField(changes.getFieldId()) ;
 							if(field != null) {
 								if(field.getName().equals("moduleState")) {
-									VisitorLoggingContext log = VisitorManagementAPI.getVisitorLogging(recordId);
+									VisitorLoggingContext log = VisitorManagementAPI.getVisitorLogging(recordId, false);
 									FacilioStatus status = StateFlowRulesAPI.getStateContext((long)changes.getNewValue());
 									if(status.getStatus().equals("CheckedIn")) {
 										VisitorManagementAPI.updateVisitorInviteStateToArrived(log.getVisitor().getId(), log.getInvite().getId());
