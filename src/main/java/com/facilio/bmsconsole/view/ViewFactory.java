@@ -542,9 +542,17 @@ public class ViewFactory {
 		views.put("completed", getCompletedReservationView().setOrder(order++));
 		views.put("all", getAllReservationView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, views);
-		
-	
-		
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllVisitorsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.VISITOR, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllVisitorLogsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
+
 		return viewsMap;
 	}
 
@@ -4625,6 +4633,23 @@ public class ViewFactory {
 		
 		return status;
 	}
-	
+
+	private static FacilioView getAllVisitorsView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Visitors");
+		return allView;
+	}
+
+	private static FacilioView getAllVisitorLogsView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Visitor Logs");
+		return allView;
+	}
+
+
 
 }

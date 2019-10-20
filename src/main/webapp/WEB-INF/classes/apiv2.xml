@@ -4404,7 +4404,7 @@
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitor" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitors" />
-		<action name="list"
+		<action name="*"
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorsList" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="deleteVisitors" />
@@ -4436,7 +4436,7 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
-		<action name="list"
+		<action name="*"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="deleteVisitorLogging" />

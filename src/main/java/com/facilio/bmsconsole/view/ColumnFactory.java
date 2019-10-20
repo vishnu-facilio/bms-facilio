@@ -78,8 +78,9 @@ public class ColumnFactory {
 		columnMap.put("warrantycontracts-default", getDefaultWarrantyContractColumns());
 		columnMap.put("termsandconditions-default", getDefaultTermsAndConditionColumns());
 		columnMap.put("reservation-default", getDefaultReservationColumns());
-
 		columnMap.put("inventoryrequest-pendingapproval", getDefaultInventoryRequestColumns());
+		columnMap.put("visitor-default", getDefaultVisitorColumns());
+		columnMap.put("visitorlogging-default", getDefaultVisitorLoggingColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -627,6 +628,27 @@ public class ColumnFactory {
 		columns.add(new ViewField("acknowledged", "Acknowledged"));
 		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
 		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
+		return columns;
+	}
+
+	public static List<ViewField> getDefaultVisitorColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("email", "Email"));
+		columns.add(new ViewField("phone", "Phone"));
+		columns.add(new ViewField("location", "Address"));
+		return columns;
+	}
+
+	public static List<ViewField> getDefaultVisitorLoggingColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("invite", "Invite"));
+		columns.add(new ViewField("visitor", "Visitor"));
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("checkInTime", "CheckIn Time"));
+		columns.add(new ViewField("checkOutTime", "CheckOut Time"));
+		columns.add(new ViewField("approvalNeeded", "Is Host Approval Needed"));
+		columns.add(new ViewField("attachmentPreview", "Attachment Preview"));
 		return columns;
 	}
 

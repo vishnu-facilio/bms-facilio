@@ -53,7 +53,9 @@ public class FieldFactory {
 		lookupModuleVsSortFieldName.put("itemTypes",  Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("toolTypes",  Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("storeRoom",  Pair.of("name", true));
-		lookupModuleVsSortFieldName.put("vendor",  Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("invite",  Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("visitor",  Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("host",  Pair.of("name", true));
 
 		return lookupModuleVsSortFieldName;
 	}
