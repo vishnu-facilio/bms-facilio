@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -106,6 +108,13 @@ private static final long serialVersionUID = 1L;
 	public void setContactNumber(String contactNumber) {
 		this.contactNumber = contactNumber;
 	}
+	private Map<String, List<WorkflowRuleContext>> stateFlows;
+	public Map<String, List<WorkflowRuleContext>> getStateFlows() {
+		return stateFlows;
+	}
+	public void setStateFlows(Map<String, List<WorkflowRuleContext>> stateFlows) {
+		this.stateFlows = stateFlows;
+	}
 	public String addVisitorLogging() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(visitorLoggingRecords)) {
@@ -176,6 +185,8 @@ private static final long serialVersionUID = 1L;
 		else {
 		List<VisitorLoggingContext> visitorLoggingRecords = (List<VisitorLoggingContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
 		setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, visitorLoggingRecords);
+			setStateFlows((Map<String, List<WorkflowRuleContext>>) chain.getContext().get("stateFlows"));
+			setResult("stateFlows", getStateFlows());
 		}
 		
 		return SUCCESS;
