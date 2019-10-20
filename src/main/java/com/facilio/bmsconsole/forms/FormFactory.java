@@ -1184,9 +1184,10 @@ public class FormFactory {
 	
 	private static List<FormField> getVisitorKioskFormFields() {
 		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("phone", FieldDisplayType.NUMBER, "Mobile", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "E-mail", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("location", FieldDisplayType.SADDRESS, "Location", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("email", FieldDisplayType.EMAIL, "E-mail", Required.OPTIONAL, 2, 1));
+		//fields.add(new FormField("location", FieldDisplayType.SADDRESS, "Location", Required.OPTIONAL, 3, 1));
 		
 		return fields;
 	}

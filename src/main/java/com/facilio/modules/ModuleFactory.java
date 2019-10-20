@@ -101,6 +101,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationModule());
 		moduleMap.put(FacilioConstants.ContextNames.BMS_ALARM, getBmsAlarmModule());
 		moduleMap.put(FacilioConstants.ModuleNames.DEVICES,getDevicesModule());
+		moduleMap.put(FacilioConstants.ContextNames.VISITOR,getVisitorModule());
 		return moduleMap;
 	}
 	
@@ -2732,7 +2733,16 @@ public class ModuleFactory {
 		module.setTableName("Digital_Log_Book");
 		return module;
 	}
-
+	
+	public static FacilioModule getVisitorModule()
+	{
+		FacilioModule module=new FacilioModule();		
+		module.setName(ContextNames.VISITOR);
+		module.setDisplayName("Visitors");
+		module.setTableName("Visitors");
+		return module;
+	}
+	
 	public static FacilioModule getFacilioQueueModule() {
 		FacilioModule module = new FacilioModule();
 		module.setTableName("FacilioQueue");
