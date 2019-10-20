@@ -37,7 +37,7 @@ import com.facilio.modules.fields.FacilioField;
 public class AddNotesCommand extends FacilioCommand implements PostTransactionCommand {
 
 	private Set<Long> idsToUpdateCount;
-	private String ticketModuleName;
+	private String parentModuleName;
 	private String moduleName;
 
 	@SuppressWarnings("unchecked")
@@ -103,7 +103,7 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				}
 			}
 			idsToUpdateCount = parentIds;
-			this.ticketModuleName = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
+			this.parentModuleName = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
 			this.moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 //			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, parentIds);
 //			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.TICKET_MODULE, context.get(FacilioConstants.ContextNames.TICKET_MODULE));
@@ -115,7 +115,7 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 	
 	@Override
 	public boolean postExecute() throws Exception {
-		NotesAPI.updateNotesCount(idsToUpdateCount, ticketModuleName, moduleName);
+		NotesAPI.updateNotesCount(idsToUpdateCount, parentModuleName, moduleName);
 		return false;
 	}
 	

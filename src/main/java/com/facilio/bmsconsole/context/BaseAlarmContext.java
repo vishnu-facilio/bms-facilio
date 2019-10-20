@@ -136,6 +136,14 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	public void setLastWoId(long lastWoId) {
 		this.lastWoId = lastWoId;
 	}
+	
+	private int noOfNotes = -1;
+	public int getNoOfNotes() {
+		return noOfNotes;
+	}
+	public void setNoOfNotes(int noOfNotes) {
+		this.noOfNotes = noOfNotes;
+	}
 
 	private AlarmOccurrenceContext lastOccurrence;
 	@JsonIgnore

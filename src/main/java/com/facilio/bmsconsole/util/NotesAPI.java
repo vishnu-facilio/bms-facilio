@@ -17,7 +17,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -27,6 +26,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -116,11 +116,11 @@ public class NotesAPI {
 		return getNotes(parentIds, moduleName, props);
 	}
 	
-	public static void updateNotesCount(Collection<Long> parentIds, String ticketModule, String moduleString) throws Exception {
-		if (StringUtils.isNoneEmpty(ticketModule) && CollectionUtils.isNotEmpty(parentIds)) {
+	public static void updateNotesCount(Collection<Long> parentIds, String parentModule, String moduleString) throws Exception {
+		if (StringUtils.isNoneEmpty(parentModule) && CollectionUtils.isNotEmpty(parentIds)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioField noOfNotesField = modBean.getField("noOfNotes", ticketModule);
-			FacilioModule tModule = modBean.getModule(ticketModule);
+			FacilioField noOfNotesField = modBean.getField("noOfNotes", parentModule);
+			FacilioModule pModule = modBean.getModule(parentModule);
 			FacilioModule module = modBean.getModule(moduleString);
 			
 			FacilioField parentIdField = modBean.getField("parentId", moduleString);
@@ -148,11 +148,11 @@ public class NotesAPI {
 				Map<String, Object> updateMap = new HashMap<>();
 				updateMap.put("noOfNotes", noOfNotes);
 				
-				UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-						.module(tModule)
+				UpdateRecordBuilder<ModuleBaseWithCustomFields> updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+						.module(pModule)
 						.fields(Collections.singletonList(noOfNotesField))
 //						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(tModule))
-						.andCondition(CriteriaAPI.getIdCondition(id, tModule))
+						.andCondition(CriteriaAPI.getIdCondition(id, pModule))
 						;
 				
 				updateRecordBuilder.updateViaMap(updateMap);
