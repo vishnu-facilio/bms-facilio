@@ -118,15 +118,19 @@ public class VisitorAction extends FacilioAction
 		if(!CollectionUtils.isEmpty(visitors)) {
 			for(VisitorContext v : visitors) {
 				LocationContext location = v.getLocation();
-				if(location!=null)
-				{	
-					location.setName(v.getName()+"_location");
-					FacilioChain addLocation = FacilioChainFactory.addLocationChain();
-					addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
-					addLocation.execute();
-					long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
-					location.setId(locationId);
+				if(location == null) {
+					location = new LocationContext();
+					location.setLat(1.1);
+					location.setLng(1.1);
 				}
+				location.setName(v.getName()+"_location");
+				FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+				addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+				addLocation.execute();
+				long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
+				location.setId(locationId);
+				v.setLocation(location);
+				
 			}
 			FacilioChain c = TransactionChainFactory.addVisitorChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitors);
@@ -184,15 +188,18 @@ public class VisitorAction extends FacilioAction
 			visitor.setAvatarContentType(avatarContentType);
 		}
 		LocationContext location = visitor.getLocation();
-		if(location!=null)
-		{	
-			location.setName(visitor.getName()+"_location");
-			FacilioChain addLocation = FacilioChainFactory.addLocationChain();
-			addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
-			addLocation.execute();
-			long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
-			location.setId(locationId);
+		if(location == null) {
+			location = new LocationContext();
+			location.setLat(1.1);
+			location.setLng(1.1);
 		}
+		location.setName(visitor.getName()+"_location");
+		FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+		addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+		addLocation.execute();
+		long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
+		location.setId(locationId);
+		visitor.setLocation(location);
 		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitor));
 		c.execute();
 		setResult(FacilioConstants.ContextNames.VISITORS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
