@@ -4893,7 +4893,8 @@ public class FieldFactory {
 		LookupField userField = (LookupField) getField("assignedToId", "ASSIGNED_TO_ID", module, FieldType.LOOKUP);
 		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
 		fields.add(userField);
-
+		
+		fields.add(getField("qrEnabled", "QR_ENABLED", module, FieldType.BOOLEAN));
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.STRING));
 		fields.add(getField("duration", "DURATION", module, FieldType.NUMBER));
 		fields.add(getField("additionalInfoJsonStr", "ADDITIONAL_INFO", module, FieldType.STRING));
