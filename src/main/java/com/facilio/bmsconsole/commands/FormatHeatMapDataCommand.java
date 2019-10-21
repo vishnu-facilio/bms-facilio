@@ -47,9 +47,11 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 
 		String chartType = null; 
-		if (reportContext.getChartState() != null && !"".equals(reportContext.getChartState())) {
+		if (reportContext.getChartState() != null && reportContext.getChartState() != "null" && !"".equals(reportContext.getChartState())) {
 			JSONObject jobj = (JSONObject) new JSONParser().parse(reportContext.getChartState());
+			if(jobj != null) {
 			chartType = (String) jobj.get("type");
+			}
 		}
 		
 		
