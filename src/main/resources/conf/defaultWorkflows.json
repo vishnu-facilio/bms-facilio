@@ -870,114 +870,117 @@
         	"description" : "newAlarmMeanTimeBetweenTriggers",
         	"usage" : "newAlarmrulesSummary",
         	"workflow": "Map getNewAlarmRuleTriggerDetials(Number ruleId)
-				{
-				  date = NameSpace(\"date\");
-				  tillLastMonthranges = date.getDateRange(\"Current year upto last month\");
-				  currentMonthranges = date.getDateRange(\"Current Month\");
-				  tillLastMonthcri = {
-				    criteria : [rule == ruleId && lastOccurredTime == tillLastMonthranges ],
-				        orderBy : \"lastOccurredTime\" asc
-				  };
-				  currentMonthCri = {
-				    criteria : [rule == ruleId && lastOccurredTime == currentMonthranges ],
-				        orderBy : \"lastOccurredTime\" asc
-				  };
-				  currentMonthAlarmId = [];
-				  readingAlarmModule = Module(\"newreadingalarm\");
-				  alarmoccurrenceModule = Module(\"alarmoccurrence\");
-				  currentMonthresult = readingAlarmModule.fetch(currentMonthCri);
-				  tillLastMonthMonthresult = readingAlarmModule.fetch(tillLastMonthcri);
-				
-				  if (currentMonthresult != null) {
-				    for each index,value in currentMonthresult {
-				      currentMonthAlarmId.add(value.id);
-				    }
-				  }
-				  tillLastMonthAlarmId = [];
-				  if (tillLastMonthMonthresult != null) {
-				    
-				    for each index,value in tillLastMonthMonthresult {
-				      tillLastMonthAlarmId.add(value.id);
-				    }
-				  }
-				  alarmMonthOccurenceList = alarmoccurrenceModule.fetch([alarm == currentMonthAlarmId ]);
-				  alarmOccurenceTillLMonthList = alarmoccurrenceModule.fetch([alarm == tillLastMonthAlarmId ]);
-				
-				  mtbt = 0;
-				  pmtbt = 0;
-				  mttc = 0;
-				  mOverAllDuration = 0;
-				  pmttc = 0;
-				  pmOverAllDuration = 0;
-				  if (alarmMonthOccurenceList != null) {
-				    previousClearedTime = 0;
-				    previousCreatedTime = 0;
-				     sumMtbt = 0;
-				    sumMttc = 0;
-				    countOfClearedOccurence = 0;
-				    mttcCount = 0;
-				    	 for each index,occurrence in alarmMonthOccurenceList {
-				    	 		if (previousClearedTime != 0) {
-					    	 		if (previousClearedTime > occurrence.createdTime) {
-	                                 previousClearedTime = previousCreatedTime;
-	                             }
-				    	 			sumMtbt = sumMtbt + (occurrence.createdTime - previousClearedTime);
-				    	 			mttcCount = mttcCount + 1;
-				    	 		}
-				    	 		previousCreatedTime = occurrence.createdTime;
-				           if (occurrence.clearedTime != null) {
-				           	 previousClearedTime = occurrence.clearedTime ;
-				             countOfClearedOccurence = countOfClearedOccurence + 1;
-				             sumMttc = sumMttc + (occurrence.clearedTime - occurrence.createdTime);
-				           }
-				         }
-				    mOverAllDuration = sumMttc;
-				     if (countOfClearedOccurence > 0 ) {
-				       mttc = sumMttc /countOfClearedOccurence;
-				     }
-				     if (mttcCount > 0) {
-				    		mtbt = sumMtbt / mttcCount;
-				     }
-				  }	
-				  if (alarmOccurenceTillLMonthList != null) {
-				    previousClearedTime = 0;
-				    previousCreatedTime = 0;
-				      sumPmtbt = 0;
-				    sumPmttc = 0;
-				    countOfClearedOccurence = 0;
-				    pttcCount = 0;
-				    	 for each index,occurrence in alarmOccurenceTillLMonthList {
-				           if (previousClearedTime != 0) {
-				           		if (previousClearedTime > occurrence.createdTime) {
-	                                 previousClearedTime = previousCreatedTime;
-	                             }
-				    	 			sumPmtbt = sumPmtbt + (occurrence.createdTime - previousClearedTime);
-				    	 			pttcCount = pttcCount + 1;
-				    	 		}
-				    	 		previousCreatedTime = occurrence.createdTime;
-							if (occurrence.clearedTime != null) {
-							 previousClearedTime = occurrence.clearedTime ;
-				             countOfClearedOccurence = countOfClearedOccurence + 1;
-				             sumMttc = sumMttc + (occurrence.clearedTime - occurrence.createdTime);
-				           }
-				         }
-				 	mOverAllDuration = sumPmttc;
-				 	 if (countOfClearedOccurence > 0 ) {
-				       pmttc = sumPmttc /countOfClearedOccurence;
-				     }
-				     if (pttcCount > 0) {
-				     	pmtbt = sumPmtbt / pttcCount;
-				     }
-				  }	
-				  resMap = {};
-					resMap[\"mtbt\"] = mtbt;
-					resMap[\"timeToClear\"] = mOverAllDuration;
-					resMap[\"mttc\"] = mttc;
-					resMap[\"pmtbt\"] = pmtbt;
-					resMap[\"previousMonthTimeToClear\"] = pmOverAllDuration;
-					resMap[\"pmttc\"] = pmttc;
-				  return resMap;
-				}"
+			{
+			date = NameSpace(\"date\");
+			tillLastMonthranges = date.getDateRange(\"Current year upto last month\");
+			currentMonthranges = date.getDateRange(\"Current Month\");
+			tillLastMonthcri = {
+				criteria : [rule == ruleId && createdTime == tillLastMonthranges ],
+				orderBy : \"createdTime\" asc
+			};
+			currentMonthCri = {
+				criteria : [rule == ruleId && createdTime == currentMonthranges ],
+				orderBy : \"createdTime\" asc
+			};
+			alarmoccurrenceModule = Module(\"readingalarmoccurrence\");
+
+			alarmMonthOccurenceList = alarmoccurrenceModule.fetch(currentMonthCri);
+			alarmOccurenceTillLMonthList = alarmoccurrenceModule.fetch(tillLastMonthcri);
+
+
+			mtbt = 0;
+			pmtbt = 0;
+			mttc = 0;
+			mOverAllDuration = 0;
+			pmttc = 0;
+			pmOverAllDuration = 0;
+			noOfOccurrence = 0;
+			acknowledgedDuration = 0;
+			tillLstMntAcknowledgedDuration = 0;
+			if (alarmMonthOccurenceList != null) {
+				noOfOccurrence = alarmMonthOccurenceList.size();
+				previousClearedTime = 0;
+				previousCreatedTime = 0;
+				sumMtbt = 0;
+				sumMttc = 0;
+				countOfClearedOccurence = 0;
+				mttcCount = 0;
+				for each index,occurrence in alarmMonthOccurenceList {
+					if (occurrence.acknowledged != null) {
+						acknowledgedDuration = acknowledgedDuration + ( occurrence.acknowledged - occurrence.createdTime);
+					}
+					if (previousClearedTime != 0) {
+						if (previousClearedTime > occurrence.createdTime) {
+							previousClearedTime = previousCreatedTime;
+						}
+						sumMtbt = sumMtbt + (occurrence.createdTime - previousClearedTime);
+						mttcCount = mttcCount + 1;
+					}
+					previousCreatedTime = occurrence.createdTime;
+					if (occurrence.clearedTime != null) {
+						previousClearedTime = occurrence.clearedTime ;
+						countOfClearedOccurence = countOfClearedOccurence + 1;
+						sumMttc = sumMttc + (occurrence.clearedTime - occurrence.createdTime);
+					}
+				}
+				mOverAllDuration = sumMttc;
+				if (countOfClearedOccurence > 0 ) {
+					mttc = sumMttc /countOfClearedOccurence;
+				}
+				if (mttcCount > 0) {
+					mtbt = sumMtbt / mttcCount;
+				}
+			}
+			noOfOccurrenceTillLstMnt = 0;
+			if (alarmOccurenceTillLMonthList != null) {
+				noOfOccurrenceTillLstMnt = alarmOccurenceTillLMonthList.size();
+				previousClearedTime = 0;
+				previousCreatedTime = 0;
+				sumPmtbt = 0;
+				sumPmttc = 0;
+				countOfClearedOccurence = 0;
+				acknowledgedDuration = 0;
+				pttcCount = 0;
+				for each index,occurrence in alarmOccurenceTillLMonthList {
+					if (occurrence.acknowledged != null) {
+						tillLstMntAcknowledgedDuration = acknowledgedDuration + ( occurrence.acknowledged - occurrence.createdTime);
+					}
+					if (previousClearedTime != 0) {
+						if (previousClearedTime > occurrence.createdTime) {
+							previousClearedTime = previousCreatedTime;
+						}
+						sumPmtbt = sumPmtbt + (occurrence.createdTime - previousClearedTime);
+						pttcCount = pttcCount + 1;
+					}
+					previousCreatedTime = occurrence.createdTime;
+					if (occurrence.clearedTime != null) {
+						previousClearedTime = occurrence.clearedTime ;
+						countOfClearedOccurence = countOfClearedOccurence + 1;
+						sumMttc = sumMttc + (occurrence.clearedTime - occurrence.createdTime);
+					}
+				}
+				mOverAllDuration = sumPmttc;
+				if (countOfClearedOccurence > 0 ) {
+					pmttc = sumPmttc /countOfClearedOccurence;
+				}
+				if (pttcCount > 0) {
+					pmtbt = sumPmtbt / pttcCount;
+				}
+			}
+			resMap = {};
+			resMap[\"mtbt\"] = mtbt;
+			resMap[\"timeToClear\"] = mOverAllDuration;
+			resMap[\"mttc\"] = mttc;
+			resMap[\"pmtbt\"] = pmtbt;
+			resMap[\"previousMonthTimeToClear\"] = pmOverAllDuration;
+			resMap[\"pmttc\"] = pmttc;
+			resMap[\"noOfOccurrence\"] = noOfOccurrence;
+			resMap[\"noOfOccurrenceTillLstMnt\"] = noOfOccurrenceTillLstMnt;
+			resMap[\"tillLstMntAcknowledgedDuration\"] = tillLstMntAcknowledgedDuration;
+			resMap[\"acknowledgedDuration\"] =  acknowledgedDuration;
+			log resMap;
+			return resMap;
+			}"
         },
 		"99":{
 			"description" : "mlpredictedEnergyWastage",
