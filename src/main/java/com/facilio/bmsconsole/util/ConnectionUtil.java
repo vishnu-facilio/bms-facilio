@@ -61,7 +61,7 @@ public class ConnectionUtil {
 	public static final String QUERY_STRING_SEPERATOR = "?";
 	public static final String PARAM_SEPERATOR = "&";
 	
-	public static String getUrlResult(ConnectionContext connectionContext,String urlString,Map<String,String> params,HttpMethod method) throws Exception {
+	public static String getUrlResult(ConnectionContext connectionContext,String urlString,Map<String,String> params,HttpMethod method,String bodyString,String bodyType) throws Exception {
 		
 		params = params == null ? new HashMap<>() : params;
 		
@@ -71,7 +71,13 @@ public class ConnectionUtil {
 		
 			case OAUTH2:
 				validateOauth2Connection(connectionContext);
-				params.put(ACCESS_TOKEN_STRING, connectionContext.getAccessToken());
+				if(urlString.contains(QUERY_STRING_SEPERATOR)) {
+					urlString = urlString + PARAM_SEPERATOR;
+				}
+				else {
+					urlString = urlString + QUERY_STRING_SEPERATOR;
+				}
+				urlString = urlString + ACCESS_TOKEN_STRING + EQUALS + connectionContext.getAccessToken();
 				break;
 			case BASIC:
 				
@@ -97,7 +103,7 @@ public class ConnectionUtil {
 				}
 				break;
 		}
-		return getUrlResult(urlString, params, method,headerParam);
+		return getUrlResult(urlString, params, method,headerParam,bodyString,bodyType);
 	}
 	
 	private static void validateOauth2Connection(ConnectionContext connectionContext) throws Exception {
@@ -137,7 +143,7 @@ public class ConnectionUtil {
 				params.put(REDIRECT_URI_STRING, connectionContext.getCallBackURL());
 				params.put(ACCESS_TYPE_STRING, ACCESS_TYPE_OFFLINE);
 				
-				String res = getUrlResult(url, params, HttpMethod.POST,null);
+				String res = getUrlResult(url, params, HttpMethod.POST,null,null,null);
 				JSONParser parser = new JSONParser();
 				JSONObject resultJson = (JSONObject) parser.parse(res);
 				
@@ -170,7 +176,7 @@ public class ConnectionUtil {
 				params.put(CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
 				params.put(GRANT_TYPE_STRING, REFRESH_TOKEN_STRING);
 				
-				String res = getUrlResult(url, params, HttpMethod.POST,null);
+				String res = getUrlResult(url, params, HttpMethod.POST,null,null,null);
 				JSONParser parser = new JSONParser();
 				JSONObject resultJson = (JSONObject) parser.parse(res);
 				
@@ -197,15 +203,17 @@ public class ConnectionUtil {
 		}
 	}
 
-	private static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method,Map<String,String> headerParam) throws Exception {
+	private static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method,Map<String,String> headerParam,String bodyString,String bodyType) throws Exception {
 		
 		HttpsURLConnection conn = null;
 		if(method == HttpMethod.GET) {
 			conn  = handleGetConnection(urlString,params);
 		}
 		else if(method == HttpMethod.POST) {
-			conn  = handlePostConnection(urlString,params);
+			conn  = handlePostConnection(urlString,params,bodyString,bodyType);
 		}
+		
+		
 		
 		if(headerParam != null && !headerParam.isEmpty()) {
 			for(String key : headerParam.keySet()) {
@@ -233,7 +241,7 @@ public class ConnectionUtil {
   	   	return output.toString();
 	}
 	
-	private static HttpsURLConnection handlePostConnection(String urlString, Map<String, String> params) throws Exception {
+	private static HttpsURLConnection handlePostConnection(String urlString, Map<String, String> params,String bodyString,String bodyType) throws Exception {
 		
 		URL url = new URL(urlString);
 		
@@ -243,6 +251,7 @@ public class ConnectionUtil {
 		conn.setRequestMethod(HttpMethod.POST.name());
 		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
 		
+		String actualBodyString = null;
 		if(params != null && !params.isEmpty()) {
 			
 			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -253,15 +262,24 @@ public class ConnectionUtil {
 				paramsList.add(new BasicNameValuePair(key, params.get(key)));
 			}
 
+			actualBodyString = getQuery(paramsList);
+		}
+		else if(bodyString != null && bodyType != null) {
+			conn.setRequestProperty("Content-Type", bodyType);
+			actualBodyString = bodyString;
+		}
+		if(actualBodyString != null) {
+			
 			OutputStream os	= conn.getOutputStream();
 			
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, DEFAULT_CHARSET_NAME));
 			
-			writer.write(getQuery(paramsList));
+			writer.write(actualBodyString);
 			writer.flush();
 			writer.close();	
 			os.close();
 		}
+		
 		return conn;
 	}
 
@@ -279,8 +297,18 @@ public class ConnectionUtil {
 			}
 			queryString = queryStringBuilder.subSequence(0, queryStringBuilder.length()-1).toString();
 		}	
+		if(queryString != null && !queryString.isEmpty()) {
+			
+			if(urlString.contains(QUERY_STRING_SEPERATOR)) {
+				urlString = urlString + PARAM_SEPERATOR;
+			}
+			else {
+				urlString = urlString + QUERY_STRING_SEPERATOR;
+			}
+			urlString = urlString+queryString;
+		}
 		
-		URL url = new URL(urlString+QUERY_STRING_SEPERATOR+queryString);
+		URL url = new URL(urlString);
 		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 		
 		conn.setDoInput(true);

@@ -30,11 +30,17 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 			String url = (String) objects[1];
 			
 			Map<String,String> params = null;
-			if(objects.length > 2) {
+			String bodyString = null;
+			String bodyType = null;
+			if(objects.length == 3) {
 				params = (Map<String, String>) objects[2];
 			}
+			else if (objects.length == 4) {
+				bodyString = objects[2].toString();
+				bodyType = objects[3].toString();
+			}
 			
-			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.GET);
+			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.GET,bodyString,bodyType);
 			
 			JSONObject resultJson = (JSONObject) new JSONParser().parse(res);
 			
@@ -60,12 +66,18 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 			
 			String url = (String) objects[1];
 			
+			String bodyString = null;
+			String bodyType = null;
 			Map<String,String> params = null;
-			if(objects.length > 2) {
+			if(objects.length == 3) {
 				params = (Map<String, String>) objects[2];
 			}
+			else if (objects.length == 4) {
+				bodyString = objects[2].toString();
+				bodyType = objects[3].toString();
+			}
 			
-			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.POST);
+			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.POST,bodyString,bodyType);
 			
 			JSONObject resultJson = (JSONObject) new JSONParser().parse(res);
 			
