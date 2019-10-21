@@ -69,6 +69,7 @@ public class FormFactory {
 		forms.put("reservationForm", getReservationForm());
 		forms.put("devicesForm",getDevicesForm());
 		forms.put("kioskForm", getVisitorKioskForm());
+		forms.put("visitorForm", getVisitorForm());
 		
 			
 		return forms;
@@ -1190,6 +1191,29 @@ public class FormFactory {
 		fields.add(new FormField("host", FieldDisplayType.USER, "Host", Required.OPTIONAL, 2, 1));
 		//fields.add(new FormField("location", FieldDisplayType.SADDRESS, "Location", Required.OPTIONAL, 3, 1));
 		
+		return fields;
+	}
+
+	public static FacilioForm getVisitorForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("VISITOR");
+		form.setName("default_visitor_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getVisitorFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
+	private static List<FormField> getVisitorFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("phone", FieldDisplayType.NUMBER, "Phone", Required.REQUIRED, 2, 2));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 2, 3));
+		fields.add(new FormField("isBlocked", FieldDisplayType.DECISION_BOX, "Is Blocked", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "Is VIP", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("location", FieldDisplayType.ADDRESS, "Location", Required.OPTIONAL, 5, 1));
+
 		return fields;
 	}
 }
