@@ -1,12 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
@@ -28,6 +26,7 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(recordIds) && changeSet != null && !changeSet.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if(!changeSet.isEmpty()) {
+				long time = System.currentTimeMillis();
 				for(Long recordId : recordIds) {
 					List<UpdateChangeSet> updatedSet = changeSet.get(recordId);
 					if(updatedSet != null && !updatedSet.isEmpty()) {
@@ -38,7 +37,11 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 									VisitorLoggingContext log = VisitorManagementAPI.getVisitorLogging(recordId, false);
 									FacilioStatus status = StateFlowRulesAPI.getStateContext((long)changes.getNewValue());
 									if(status.getStatus().equals("CheckedIn")) {
+										VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(recordId, true, time);
 										VisitorManagementAPI.updateVisitorInviteStateToArrived(log.getVisitor().getId(), log.getInvite().getId());
+									}
+									else if(status.getStatus().equals("CheckedOut")) {
+										VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(recordId, false, time);
 									}
 								}
 							}
