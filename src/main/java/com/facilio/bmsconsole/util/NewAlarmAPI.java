@@ -648,7 +648,7 @@ public class NewAlarmAPI {
 	public static void deleteIntervalBasedAlarmOccurrences(long ruleId, long startTime, long endTime, long resourceId) throws Exception 
 	{	
 		Map<Long, AlarmOccurrenceContext> delAlarmOccurrencesMap = new HashMap<Long, AlarmOccurrenceContext>();
-		AlarmOccurrenceContext initialEdgeCaseAlarmOccurrence = null, finalEdgeCaseAlarmOccurrence = null;
+		AlarmOccurrenceContext initialEdgeCaseAlarmOccurrence = null;
 		
 		List<AlarmOccurrenceContext> alarmOccurrenceList = getAllAlarmOccurrences(ruleId, startTime, endTime, resourceId);
 
@@ -657,17 +657,16 @@ public class NewAlarmAPI {
 			AlarmOccurrenceContext lastAlarmOccurrence = alarmOccurrenceList.get(alarmOccurrenceList.size() - 1);
 			BaseAlarmContext baseAlarm =  lastAlarmOccurrence.getAlarm();
 			BaseAlarmContext baseAlarmContext = getBaseAlarmById(baseAlarm.getId());
+			List<AlarmOccurrenceContext> delAlarmOccurrenceList = new ArrayList<AlarmOccurrenceContext>();
 			
 			if (alarmOccurrenceList.get(0).getCreatedTime() < startTime) 
 			{
 				initialEdgeCaseAlarmOccurrence = (alarmOccurrenceList.get(0));
 				clearInitialEdgeAlarmOccurenceWithEvents(initialEdgeCaseAlarmOccurrence, startTime);  
 			}
-
 			if (lastAlarmOccurrence.getClearedTime() == -1 || lastAlarmOccurrence.getClearedTime() > endTime) 
 			{
-				finalEdgeCaseAlarmOccurrence = (alarmOccurrenceList.get(alarmOccurrenceList.size() - 1));
-				clearFinalEdgeAlarmOccurenceWithEvents(finalEdgeCaseAlarmOccurrence,endTime);
+				clearFinalEdgeAlarmOccurenceWithEvents(lastAlarmOccurrence, endTime);
 			}	
 			
 			for (AlarmOccurrenceContext alarmOccurrence : alarmOccurrenceList) 
@@ -677,15 +676,16 @@ public class NewAlarmAPI {
 					throw new Exception ("Different/No Base Alarms in the historical interval which is rule/resource specific");
 				}
 				
-				if (alarmOccurrence.equals(initialEdgeCaseAlarmOccurrence) || alarmOccurrence.equals(finalEdgeCaseAlarmOccurrence)) {
+				if (alarmOccurrence.equals(initialEdgeCaseAlarmOccurrence) || alarmOccurrence.equals(lastAlarmOccurrence)) {
 					continue;
 				}
 				delAlarmOccurrencesMap.put(alarmOccurrence.getId(), alarmOccurrence);
+				delAlarmOccurrenceList.add(alarmOccurrence);
 			}
 						
 			if(MapUtils.isNotEmpty(delAlarmOccurrencesMap))
 			{
-				changeLatestAlarmOccurrence(new ArrayList<AlarmOccurrenceContext>(delAlarmOccurrencesMap.values()), baseAlarmContext);
+				changeLatestAlarmOccurrence(delAlarmOccurrenceList, baseAlarmContext);
 				deleteAllAlarmOccurences(new ArrayList<Long>(delAlarmOccurrencesMap.keySet()));
 				updateBaseAlarmWithNoOfOccurences(baseAlarm);
 			}			
@@ -716,6 +716,7 @@ public class NewAlarmAPI {
 					baseAlarmContext.setLastOccurrence(newLatestAlarmOccurrence);
 					updateBaseAlarmBuilder(baseAlarmContext);
 				}	
+				break;
 			}
 		}
 	}
@@ -805,7 +806,7 @@ public class NewAlarmAPI {
 		FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
 		LOGGER.info("Initial Alarm Occurance Id --- "+initialEdgeCaseAlarmOccurrence.getId());
 		
-		generateEvent(initialEdgeCaseAlarmOccurrence, AlarmAPI.getAlarmSeverity("Clear"), startTime - 1);
+		generateEvent(initialEdgeCaseAlarmOccurrence, AlarmAPI.getAlarmSeverity("Clear"), startTime - 1000);
 
 		initialEdgeCaseAlarmOccurrence.setClearedTime(startTime - 1);
 		updateAlarmOccurrence(initialEdgeCaseAlarmOccurrence);
@@ -836,7 +837,7 @@ public class NewAlarmAPI {
 		List<BaseEventContext> nextClosestEventList = selectEventbuilder.get();
 		if (nextClosestEventList.isEmpty()) 
 		{
-			BaseEventContext event = generateEvent(finalEdgeCaseAlarmOccurrence, finalEdgeCaseAlarmOccurrence.getSeverity(), endTime + 1);	
+			BaseEventContext event = generateEvent(finalEdgeCaseAlarmOccurrence, finalEdgeCaseAlarmOccurrence.getSeverity(), endTime + 1000);	
 			nextClosestEventList.add(event);		
 		}
 		
