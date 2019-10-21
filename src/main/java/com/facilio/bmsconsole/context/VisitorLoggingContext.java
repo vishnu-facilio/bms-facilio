@@ -73,6 +73,15 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		this.visitor = visitor;
 	}
 	
+	private String purposeOfVisit;
+
+	public String getPurposeOfVisit() {
+		return purposeOfVisit;
+	}
+
+	public void setPurposeOfVisit(String purposeOfVisit) {
+		this.purposeOfVisit = purposeOfVisit;
+	}
 	
 
 }
