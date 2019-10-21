@@ -642,12 +642,12 @@ public class ColumnFactory {
 
 	public static List<ViewField> getDefaultVisitorLoggingColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("invite", "Invite"));
 		columns.add(new ViewField("visitor", "Visitor"));
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("checkInTime", "CheckIn Time"));
 		columns.add(new ViewField("checkOutTime", "CheckOut Time"));
 		columns.add(new ViewField("approvalNeeded", "Is Host Approval Needed"));
+		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
 		columns.add(new ViewField("attachmentPreview", "Attachment Preview"));
 		return columns;
 	}
