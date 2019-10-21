@@ -20,14 +20,15 @@ public class ToVerifyStateFlowTransitionForStart extends FacilioCommand {
 		List<WorkOrderContext> wos = (List<WorkOrderContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
 		
 		Long currentTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
-
-		
-		if (currentTransitionId != null && wos != null && wos.size() == 1 && wos.get(0).getQrEnabled() != null && wos.get(0).getQrEnabled() && wos.get(0).getResource() != null) {
+	
+		if (currentTransitionId != null && wos != null && wos.size() == 1) {
+			if (wos.get(0).getQrEnabled() != null && wos.get(0).getQrEnabled() && wos.get(0).getResource() != null) {
 			StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId);
-			if (stateflowTransition != null && stateflowTransition.getName().contains("Start Work")) {
+			if (stateflowTransition != null && stateflowTransition.getName().equals("Start Work")) {
 				context.put(FacilioConstants.ContextNames.RESOURCE_ID, wos.get(0).getResource().getId());
 				context.put(FacilioConstants.ContextNames.SHOULD_VERIFY_QR, true);
 			}
+		}
 		}
 		
 		return false;
