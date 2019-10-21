@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -37,29 +39,36 @@ public class LookupPrimaryFieldHandlingCommand extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		List<FacilioField> lookupFields = fields.stream().filter(field -> field.getDataTypeEnum() == FieldType.LOOKUP && !field.isDefault()).collect(Collectors.toList());
+		List<FacilioField> lookupFields = fields.stream().filter(field -> field.getDataTypeEnum() == FieldType.LOOKUP && ((LookupField) field).getSpecialType() == null).collect(Collectors.toList());
 		Map<String, FacilioField> primaryFieldMap = new HashMap<>();
 		for (FacilioField field : lookupFields) {
-			String name = ((LookupField) field).getLookupModule().getName();
+			LookupField lookupField = (LookupField) field;
+			String name = lookupField.getLookupModule().getName();
 			FacilioField primaryField = modBean.getPrimaryField(name);
 			if (primaryField != null) {
 				primaryFieldMap.put(field.getName(), primaryField);
 			}
 		}
 
-		if (MapUtils.isNotEmpty(primaryFieldMap)) {
+		if (CollectionUtils.isNotEmpty(lookupFields)) {
 			for (ModuleBaseWithCustomFields record : records) {
-				Map<String, Object> data = record.getData();
-				if (MapUtils.isEmpty(data)) {
-					continue;
-				}
-				for (String key : data.keySet()) {
-					if (primaryFieldMap.containsKey(key)) {
-						FacilioField primaryField = primaryFieldMap.get(key);
-						ModuleBaseWithCustomFields lookupRecord = (ModuleBaseWithCustomFields) data.get(key);
-						Object property = PropertyUtils.getProperty(lookupRecord, primaryField.getName());
-						PropertyUtils.setProperty(lookupRecord, "primaryValue", property);
+				for (FacilioField field : lookupFields) {
+					if (!primaryFieldMap.containsKey(field.getName())) {
+						continue;
 					}
+					LookupField lookupField = (LookupField) field;
+					ModuleBaseWithCustomFields lookupRecord;
+					if (lookupField.isDefault()) {
+						lookupRecord = (ModuleBaseWithCustomFields) PropertyUtils.getProperty(record, lookupField.getName());
+					}
+					else {
+						lookupRecord = (ModuleBaseWithCustomFields) record.getDatum(lookupField.getName());
+					}
+					if (lookupRecord == null) {
+						continue;
+					}
+					Object property = PropertyUtils.getProperty(lookupRecord, primaryFieldMap.get(field.getName()).getName());
+					PropertyUtils.setProperty(lookupRecord, "primaryValue", property);
 				}
 			}
 		}

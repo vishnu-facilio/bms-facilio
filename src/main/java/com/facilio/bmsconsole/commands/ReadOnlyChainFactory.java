@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -14,6 +16,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
+
+import java.util.Collections;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -162,6 +166,14 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetTaskInputDataCommand());
 		c.addCommand(new FetchApprovalRulesCommand());
 		c.addCommand(new FetchSourceTypeDetailsForWorkorderCommand());
+		c.addCommand(new FacilioCommand() {
+			@Override
+			public boolean executeCommand(Context context) throws Exception {
+				context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(context.get(FacilioConstants.ContextNames.WORK_ORDER)));
+				return false;
+			}
+		});
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return c;
 	}
 	
@@ -176,6 +188,14 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetWorkOrderListCommand());
 		c.addCommand(new FetchApprovalRulesCommand());
+		c.addCommand(new FacilioCommand() {
+			@Override
+			public boolean executeCommand(Context context) throws Exception {
+				context.put(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
+				return false;
+			}
+		});
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return c;
 	}
 
