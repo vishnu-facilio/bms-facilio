@@ -1,10 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FieldType;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -55,6 +57,15 @@ public class GetWorkOrderCommand extends FacilioCommand {
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 				builder.fetchLookup((LookupField) fieldMap.get("trigger"));
 			}
+
+			// temp fix
+			List<LookupField> customLookupFields = new ArrayList<>();
+			for (FacilioField field : fields) {
+				if (field.getDataTypeEnum() == FieldType.LOOKUP && (((LookupField) field).getSpecialType() == null) && !field.isDefault()) {
+					customLookupFields.add((LookupField) field);
+				}
+			}
+			builder.fetchLookups(customLookupFields);
 			
 			List<WorkOrderContext> workOrders = builder.get();
 			if(workOrders.size() > 0) {
