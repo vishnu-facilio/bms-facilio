@@ -385,6 +385,9 @@ public class ViewAPI {
 			List<Map<String, Object>> props = new ArrayList<>();
 			for(ViewField field: columns)
 			{
+				if (field.getFieldId() == -1 && StringUtils.isEmpty(field.getFieldName())) {
+					throw new IllegalArgumentException("column field is required");
+				}
 				field.setViewId(viewId);
 				Map<String, Object> prop = FieldUtil.getAsProperties(field);
 				props.add(prop);

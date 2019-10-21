@@ -4735,6 +4735,13 @@ public class FieldFactory {
 		displayName.setColumnName("DISPLAY_NAME");
 		displayName.setModule(module);
 		fields.add(displayName);
+		
+		FacilioField fieldName = new FacilioField();
+		fieldName.setName("fieldName");
+		fieldName.setDataType(FieldType.STRING);
+		fieldName.setColumnName("FIELDNAME");
+		fieldName.setModule(module);
+		fields.add(fieldName);
 
 		FacilioField parentFieldId = new FacilioField();
 		parentFieldId.setName("parentFieldId");
