@@ -150,6 +150,37 @@ public class VisitorManagementAPI {
 		
 	}
 	
+ public static void updateVisitorLogCheckInCheckoutTime(Long logId, boolean isCheckIn, long time) throws Exception {
+		
+		if(logId > 0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+			List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
+			
+			UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()
+					.module(module)
+					.fields(fields)
+					.andCondition(CriteriaAPI.getIdCondition(logId, module))
+				;
+			Map<String, Object> updateMap = new HashMap<>();
+			if(!isCheckIn) {
+				FacilioField checkOutTimeField = modBean.getField("checkOutTime", module.getName());
+				updateMap.put("checkOutTime", time);
+				List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+				updatedfields.add(checkOutTimeField);
+			}
+			else {
+				FacilioField checkInTimeField = modBean.getField("checkInTime", module.getName());
+				updateMap.put("checkInTime", time);
+				List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+				updatedfields.add(checkInTimeField);
+			}
+		
+			updateBuilder.updateViaMap(updateMap);
+		}
+		
+	}
+	
 	public static void checkOutVisitorLogging(String visitorPhoneNumber, FacilioContext context) throws Exception {
 		
 		if(StringUtils.isNotEmpty(visitorPhoneNumber)) {
