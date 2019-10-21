@@ -391,7 +391,42 @@ public class WorkflowRuleAPI {
 		
 		return getWorkFlowsFromMapList(builder.get(), fetchChildren, true);
 	}
-	
+
+	public static List<WorkflowRuleContext> getExtendedWorkflowRules(FacilioModule module, List<FacilioField> fields, Criteria criteria, String searchQuery, JSONObject pagination, Class clazz) throws Exception {
+		fields.addAll(FieldFactory.getWorkflowRuleFields());
+		FacilioModule workflowRuleModule = ModuleFactory.getWorkflowRuleModule();
+		FacilioField ruleNameField = FieldFactory.getAsMap(fields).get("name");
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(workflowRuleModule.getTableName())
+				.select(fields)
+				.innerJoin(module.getTableName()).on("Workflow_Rule.ID = " + module.getTableName() + ".ID")
+				;
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+
+			builder.offset(offset);
+			builder.limit(perPage);
+		}
+		if (searchQuery!= null) {
+			builder.andCondition(CriteriaAPI.getCondition(ruleNameField, searchQuery, StringOperators.CONTAINS));
+		}
+		if(criteria != null && !criteria.isEmpty()) {
+			builder.andCriteria(criteria);
+		}
+
+		List<Map<String, Object>> list = builder.get();
+		if (clazz == null) {
+			clazz = WorkflowRuleContext.class;
+		}
+		return FieldUtil.getAsBeanListFromMapList(list, clazz);
+	}
 	
 	public static List<WorkflowRuleContext> getWorkflowRules(RuleType type, boolean fetchChildren, Criteria criteria, String searchQuery, JSONObject pagination) throws Exception{
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();

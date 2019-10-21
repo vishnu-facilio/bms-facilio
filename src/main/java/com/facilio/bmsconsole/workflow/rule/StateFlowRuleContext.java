@@ -1,9 +1,5 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.UpdateStateCommand;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
@@ -13,6 +9,9 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import org.apache.commons.chain.Context;
+
+import java.util.Map;
 
 public class StateFlowRuleContext extends WorkflowRuleContext {
 	private static final long serialVersionUID = 1L;
@@ -33,22 +32,6 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		this.defaltStateFlow = defaltStateFlow;
 	}
 
-//	private long moduleId = -1;
-//	public long getModuleId() {
-//		return moduleId;
-//	}
-//	public void setModuleId(long moduleId) {
-//		this.moduleId = moduleId;
-//	}
-//
-//	private String moduleName;
-//	public String getModuleName() {
-//		return moduleName;
-//	}
-//	public void setModuleName(String moduleName) {
-//		this.moduleName = moduleName;
-//	}
-	
 	private String diagramJson;
 	public String getDiagramJson() {
 		return diagramJson;
@@ -56,7 +39,38 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 	public void setDiagramJson(String diagramJson) {
 		this.diagramJson = diagramJson;
 	}
-	
+
+	private long draftParentId;
+	public long getDraftParentId() {
+		return draftParentId;
+	}
+	public void setDraftParentId(long draftParentId) {
+		this.draftParentId = draftParentId;
+	}
+
+	private Boolean draft;
+	public Boolean getDraft() {
+		return draft;
+	}
+	public void setDraft(Boolean draft) {
+		this.draft = draft;
+	}
+	public Boolean isDraft() {
+		if (draft != null) {
+			return draft;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		// Don't evaluate draft stateflow in the workflow evaluation.
+		if (isDraft()) {
+			return false;
+		}
+		return super.evaluateMisc(moduleName, record, placeHolders, context);
+	}
+
 	@Override
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		if (!(record instanceof ModuleBaseWithCustomFields)) {

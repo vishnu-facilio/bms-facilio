@@ -79,6 +79,18 @@ public class StateFlowAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, context.get(FacilioConstants.ContextNames.STATE_TRANSITION_LIST));
 		return SUCCESS;
 	}
+
+	public String createDraft() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getCreateStateFlowDraftChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.ID, stateFlowId);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.STATE_FLOW, context.get(FacilioConstants.ContextNames.STATE_FLOW));
+		setResult(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, context.get(FacilioConstants.ContextNames.STATE_TRANSITION_LIST));
+
+		return SUCCESS;
+	}
 	
 	private long stateTransitionId = -1;
 	public long getStateTransitionId() {

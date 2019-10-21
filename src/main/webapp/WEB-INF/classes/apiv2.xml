@@ -301,6 +301,9 @@
 		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="viewStateFlow" />
+		<action name="createDraft"
+				class="com.facilio.bmsconsole.actions.StateFlowAction"
+				method="createDraft" />
 	</package>
 
 	<package name="stateTransition"
