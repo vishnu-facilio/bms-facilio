@@ -3648,6 +3648,7 @@ public class TransactionChainFactory {
 		public static FacilioChain addVisitorLoggingRecordsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
+			c.addCommand(new CheckForblockedVisitorCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));

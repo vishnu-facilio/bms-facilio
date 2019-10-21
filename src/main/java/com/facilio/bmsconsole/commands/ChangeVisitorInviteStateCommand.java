@@ -42,6 +42,7 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 									}
 									else if(status.getStatus().equals("CheckedOut")) {
 										VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(recordId, false, time);
+										VisitorManagementAPI.updateVisitorRollUps(log);
 									}
 								}
 							}

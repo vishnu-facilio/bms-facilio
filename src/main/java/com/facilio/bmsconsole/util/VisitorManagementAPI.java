@@ -22,6 +22,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -106,7 +107,7 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static VisitorContext getVisitor(String phoneNumber) throws Exception {
+	public static VisitorContext getVisitor(long id, String phoneNumber) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
@@ -115,9 +116,14 @@ public class VisitorManagementAPI {
 														.module(module)
 														.beanClass(VisitorContext.class)
 														.select(fields)
-														.andCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNumber), StringOperators.IS))
 														;
 		
+		if(StringUtils.isNotEmpty(phoneNumber)) {
+			builder.andCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNumber), StringOperators.IS));
+		}
+		if(id > 0) {
+			builder.andCondition(CriteriaAPI.getIdCondition(id, module));
+		}
 		
 		VisitorContext records = builder.fetchFirst();
 		return records;
@@ -150,32 +156,31 @@ public class VisitorManagementAPI {
 		
 	}
 	
- public static void updateVisitorLogCheckInCheckoutTime(Long logId, boolean isCheckIn, long time) throws Exception {
+	public static void updateVisitorLogCheckInCheckoutTime(Long logId, boolean isCheckIn, long time) throws Exception {
 		
 		if(logId > 0) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
-			List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
+			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 			
-			UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()
-					.module(module)
-					.fields(fields)
-					.andCondition(CriteriaAPI.getIdCondition(logId, module))
-				;
 			Map<String, Object> updateMap = new HashMap<>();
 			if(!isCheckIn) {
 				FacilioField checkOutTimeField = modBean.getField("checkOutTime", module.getName());
 				updateMap.put("checkOutTime", time);
-				List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 				updatedfields.add(checkOutTimeField);
 			}
 			else {
 				FacilioField checkInTimeField = modBean.getField("checkInTime", module.getName());
 				updateMap.put("checkInTime", time);
-				List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 				updatedfields.add(checkInTimeField);
 			}
 		
+			UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()
+					.module(module)
+					.fields(updatedfields)
+					.andCondition(CriteriaAPI.getIdCondition(logId, module))
+				;
+			
 			updateBuilder.updateViaMap(updateMap);
 		}
 		
@@ -184,7 +189,7 @@ public class VisitorManagementAPI {
 	public static void checkOutVisitorLogging(String visitorPhoneNumber, FacilioContext context) throws Exception {
 		
 		if(StringUtils.isNotEmpty(visitorPhoneNumber)) {
-			VisitorContext visitor = getVisitor(visitorPhoneNumber);
+			VisitorContext visitor = getVisitor(-1, visitorPhoneNumber);
 			if(visitor == null) {
 				throw new IllegalArgumentException("Invalid phone number");
 			}
@@ -200,5 +205,48 @@ public class VisitorManagementAPI {
 		
 	}
 	
+	public static void updateVisitorRollUps(VisitorLoggingContext visitorLog) throws Exception {
+		
+		if(visitorLog != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
+			Map<String, Object> updateMap = new HashMap<>();
+			FacilioField lastVisitedTime = modBean.getField("lastVisitedTime", module.getName());
+			FacilioField lastVisitedSpace = modBean.getField("lastVisitedSpace", module.getName());
+			FacilioField lastVisitedHost = modBean.getField("lastVisitedHost", module.getName());
+			FacilioField lastVisitDuration = modBean.getField("lastVisitDuration", module.getName());
+			
+			long workDuration = visitorLog.getCheckOutTime() - visitorLog.getCheckInTime();
+			updateMap.put("lastVisitedTime", visitorLog.getCheckInTime());
+			updateMap.put("lastVisitedHost", FieldUtil.getAsProperties(visitorLog.getHost()));
+			updateMap.put("lastVisitDuration", workDuration);
+			
+			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+			updatedfields.add(lastVisitedTime);
+			updatedfields.add(lastVisitedHost);
+			updatedfields.add(lastVisitDuration);
+			
+			if(visitorLog.getVisitedSpace() != null) {
+				updateMap.put("lastVisitedSpace", visitorLog.getVisitedSpace());
+				updatedfields.add(lastVisitedSpace);
+			}
+			updatevisitor(visitorLog.getVisitor().getId(),updatedfields, updateMap);
+		}
+			
+		
+	}
+	
+	public static void updatevisitor(long visitorId, List<FacilioField> fields, Map<String, Object> updateMap) throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
+		
+		UpdateRecordBuilder<VisitorContext> updateBuilder = new UpdateRecordBuilder<VisitorContext>()
+				.module(module)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(visitorId, module))
+			;
+		updateBuilder.updateViaMap(updateMap);
+	
+	}
 	
 }
