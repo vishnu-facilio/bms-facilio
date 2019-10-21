@@ -203,7 +203,7 @@ function myLicenseFunction() {
 	<td  style="max-width: 350px;width:350px;"  align="center"><%=b.getEmail() %></td>
 	<td  style="max-width: 350px;width:350px;" align="center" id=<%=b.getId() %>><%=b.getUserVerified() %></td>
 	<td style="max-width: 350px;width:350px;text-align: center;"> <button type="button" onclick="view(<%=b.getUid()%>)">Update</button> </td>
-	<td   style="max-width: 350px;width:350px;"  align="center"><button type ="button" onclick="logs(<%=b.getUid()%>)">Logs </button></td>
+	<td   style="max-width: 350px;width:350px;"  align="center"><button type ="button" onclick="logs(<%=b.getOuid()%>)">Logs </button></td>
 	</tr>
 <%
 }
