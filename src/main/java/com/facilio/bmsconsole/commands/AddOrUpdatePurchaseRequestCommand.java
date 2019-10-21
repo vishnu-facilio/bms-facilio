@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
 import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -50,6 +51,9 @@ public class AddOrUpdatePurchaseRequestCommand extends FacilioCommand {
 			purchaseRequestContext.setShipToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getStoreRoom(), purchaseRequestContext.getShipToAddress(), "SHIP_TO_Location", true));
             purchaseRequestContext.setBillToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getVendor(), purchaseRequestContext.getBillToAddress(), "BILL_TO_Location", false));
             if (purchaseRequestContext.getId() > 0) {
+            	
+            	context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+            	
 				RecordAPI.updateRecord(purchaseRequestContext, module, fields);
 				if(purchaseRequestContext.getLineItems() != null) {
 					DeleteRecordBuilder<PurchaseRequestLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseRequestLineItemContext>()
@@ -61,6 +65,9 @@ public class AddOrUpdatePurchaseRequestCommand extends FacilioCommand {
 				
 				}
 			} else {
+				
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+				
 				if(purchaseRequestContext.getRequestedTime() == -1) {
 					purchaseRequestContext.setRequestedTime(System.currentTimeMillis());
 				}
