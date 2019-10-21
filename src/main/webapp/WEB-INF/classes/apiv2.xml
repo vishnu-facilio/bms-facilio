@@ -4402,6 +4402,8 @@
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitors" />
 		<action name="addVisitor"
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitor" />
+		<action name="updateVisitor"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitor" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitors" />
 		<action name="*"

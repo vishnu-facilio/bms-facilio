@@ -32,10 +32,12 @@ public class LoadVisitorLoggingLookUpCommand extends FacilioCommand{
 		LookupFieldMeta eventField = new LookupFieldMeta((LookupField) fieldsAsMap.get("invite"));
 		LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitor"));
 		LookupFieldMeta hostField = new LookupFieldMeta((LookupField) fieldsAsMap.get("host"));
+		LookupFieldMeta visitedSpaceField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitedSpace"));
 		
 		additionaLookups.add(eventField);
 		additionaLookups.add(visitorField);
 		additionaLookups.add(hostField);
+		additionaLookups.add(visitedSpaceField);
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
 	
 		return false;
