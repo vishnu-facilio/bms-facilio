@@ -19,7 +19,7 @@ public class VerifyQrCommand extends FacilioCommand {
 		String qrVAL = (String) context.get(FacilioConstants.ContextNames.QR_VALUE);
 		if (bool != null && bool) {
 			ResourceContext resource = ResourceAPI.getResource(resourceId);
-			if (resource == null || (resource != null && resource.getQrVal().equals(qrVAL))) {
+			if (resource == null || (resource != null && qrVAL != null && resource.getQrVal().equals(qrVAL))) {
 				return false;
 			}
 			else {

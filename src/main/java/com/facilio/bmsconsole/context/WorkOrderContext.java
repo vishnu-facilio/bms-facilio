@@ -495,6 +495,16 @@ public class WorkOrderContext extends TicketContext {
 		this.syncTime = syncTime;
 	}
 	
+	private Boolean qrEnabled;
+	
+
+	public Boolean getQrEnabled() {
+		return qrEnabled;
+	}
+	public void setQrEnabled(Boolean qrEnabled) {
+		this.qrEnabled = qrEnabled;
+	}
+
 	boolean prerequisiteApprover;
 
 	public boolean isPrerequisiteApprover() throws Exception {
