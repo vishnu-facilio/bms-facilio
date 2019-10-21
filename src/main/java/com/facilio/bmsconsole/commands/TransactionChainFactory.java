@@ -3592,26 +3592,26 @@ public class TransactionChainFactory {
 	    	c.addCommand(getUpdateAssetChain());
 	    	return c;
 	    }
-		
+
 		public static FacilioChain addVisitorChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitor());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
-			
+
 			return c;
 		}
-		
+
 		public static FacilioChain updateVisitorChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitor());
 			c.addCommand(new GenericUpdateListModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
-			
+
 
 			return c;
 		}
-	
+
 		public static FacilioChain addVisitorInvitesChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorInvites());
@@ -3622,7 +3622,7 @@ public class TransactionChainFactory {
 
 			return c;
 		}
-		
+
 		public static FacilioChain updateVisitorInvitesChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorInvites());
@@ -3634,7 +3634,7 @@ public class TransactionChainFactory {
 
 			return c;
 		}
-		
+
 		public static FacilioChain addInviteesChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddNewVisitorsForInviteCommand());
@@ -3646,10 +3646,10 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 
-			
+
 			return c;
 		}
-		
+
 		public static FacilioChain addVisitorLoggingRecordsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
@@ -3665,7 +3665,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			return c;
 		}
-		
+
 		public static FacilioChain updateVisitorLoggingRecordsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
@@ -3675,10 +3675,10 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ChangeVisitorInviteStateCommand());
-			
+
 			return c;
 		}
-		
+
 		public static FacilioChain preRegisterVisitorsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorInvites());
@@ -3692,10 +3692,16 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
-			
+
 			return c;
 		}
-		
+
+
+	public static FacilioChain getCreateStateFlowDraftChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new CreateStateFlowDraftCommand());
+		return chain;
+	}
 }
 
 

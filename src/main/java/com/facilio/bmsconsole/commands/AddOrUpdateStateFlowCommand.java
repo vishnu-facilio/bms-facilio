@@ -60,6 +60,7 @@ public class AddOrUpdateStateFlowCommand extends FacilioCommand {
 			boolean add = false;
 			if (stateFlow.getId() < 0) {
 				add = true;
+				stateFlow.setDraft(true);
 			}
 			
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateFlow);
