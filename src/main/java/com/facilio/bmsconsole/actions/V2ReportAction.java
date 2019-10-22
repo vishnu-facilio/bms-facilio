@@ -317,8 +317,8 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		context.put(FacilioConstants.ContextNames.DEFAULT_DATE, defaultDate);
 		context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
-		if(chartState != null){
-			context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
+		if(trendLine != null){
+			context.put(FacilioConstants.ContextNames.TREND_LINE, trendLine);
 		}
 		
 		if(regressionConfig != null && !regressionConfig.isEmpty()) {
@@ -1746,6 +1746,16 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setTabularState(String tabularState) {
 		this.tabularState = tabularState;
+	}
+	
+	public String trendLine;
+	
+	public String getTrendLine(){
+		return this.trendLine;
+	}
+	
+	public void setTrendLine(String trendLine){
+		this.trendLine = trendLine;
 	}
 
 	private AggregateOperator xAggr;

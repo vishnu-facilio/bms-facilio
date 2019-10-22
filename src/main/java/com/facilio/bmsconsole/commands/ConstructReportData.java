@@ -109,6 +109,7 @@ public class ConstructReportData extends FacilioCommand {
 		if(context.get("chartState")!= null) {
 			reportContext.setChartState((String)context.get("chartState"));
 		}
+		
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
 		return false;

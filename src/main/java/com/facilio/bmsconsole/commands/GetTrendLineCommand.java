@@ -35,30 +35,37 @@ public class GetTrendLineCommand extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-//		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-//		String chartState = report.getChartState();
-//
-//		if(chartState != null){
-//			JSONObject chartObj = (JSONObject)new JSONParser().parse(chartState);
-//			JSONObject trendLineObj = (JSONObject)chartObj.get("trendLine");
-//			if((boolean) trendLineObj.get("enable")){
-//
-//				List<ReportDataPointContext> trendLineDataPoints = getDataPoints(report.getDataPoints(), ((JSONArray)trendLineObj.get("selectedPoints")));
-//
-//				JSONObject reportData = (JSONObject)context.get(FacilioConstants.ContextNames.REPORT_DATA);
-//				String degree = "1";
-//				if(trendLineObj.get("type").equals("2")){
-//					degree = String.valueOf(trendLineObj.get("degree"));
-//				}
-//				Map<String, List<String>> trendLineMap = getTrendLineData(reportData, degree);
-//
-//				if(trendLineMap != null && trendLineMap.size() != 0){
-//					setTrendLineData(reportData, trendLineMap);
-//					report.setTrendLineDataPoints(trendLineDataPoints);
-//					reportData.put("trendLineProp", trendLinePropObj);
-//				}
-//			}
-//		}
+		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		JSONObject trendLineObj = new JSONObject();
+		
+		String trendLine = (String) context.get("trendLine");
+		if(trendLine != null) {
+			trendLineObj = (JSONObject)new JSONParser().parse(trendLine);
+		}else{
+			String chartState = report.getChartState();
+			if(chartState != null){
+				JSONObject chartObj = (JSONObject)new JSONParser().parse(chartState);
+				trendLineObj = (JSONObject)chartObj.get("trendLine");
+			}
+		}
+			
+		if(!trendLineObj.isEmpty() && (boolean) trendLineObj.get("enable")){
+			
+			List<ReportDataPointContext> trendLineDataPoints = getDataPoints(report.getDataPoints(), ((JSONArray)trendLineObj.get("selectedPoints")));
+			
+			JSONObject reportData = (JSONObject)context.get(FacilioConstants.ContextNames.REPORT_DATA);
+			String degree = "1";
+			if(trendLineObj.get("type").equals("2")){
+				degree = String.valueOf(trendLineObj.get("degree"));
+			}
+			Map<String, List<String>> trendLineMap = getTrendLineData(reportData, degree);
+			
+			if(trendLineMap != null && trendLineMap.size() != 0){
+				setTrendLineData(reportData, trendLineMap);
+				report.setTrendLineDataPoints(trendLineDataPoints);
+				reportData.put("trendLineProp", trendLinePropObj);
+			}
+		}
 		return false;
 	}
 	
