@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,7 +33,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityContext;
 import com.facilio.activity.ActivityType;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -77,6 +75,8 @@ import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.queue.FAWSQueue;
+import com.facilio.queue.FacilioQueueException;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
@@ -355,6 +355,10 @@ public class CommonCommandUtil {
 			if(FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
 				FAWSQueue.sendMessage("Exception", message);
 			}
+			// New FacilioException Queue code need to remove condition for Production
+			if(!FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
+				FacilioQueueException.addException("Exception", message);
+				}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			LOGGER.info("Exception occurred ", e1);
