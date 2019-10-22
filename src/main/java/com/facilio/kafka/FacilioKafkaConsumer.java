@@ -43,7 +43,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("max.partition.fetch.bytes", 3145728);
         props.put("auto.offset.reset", "latest");
         props.put("max.poll.interval.ms", 2000);
-        //props.put("client.id", client);
+        props.put("client.id", client);
 
         return props;
     }
@@ -93,6 +93,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         if(topicPartition == null) {
             topicPartition = new TopicPartition(topic, 0);
             consumer.assign(Collections.singletonList(topicPartition));
+            consumer.seekToEnd(topicPartition);
         }
     }
 
