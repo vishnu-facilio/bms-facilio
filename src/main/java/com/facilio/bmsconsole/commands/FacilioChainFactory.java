@@ -1134,7 +1134,6 @@ public class FacilioChainFactory {
 		c.addCommand(new ValidateNewTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
 		c.addCommand(new CreateWorkorderTemplateCommand());	  // template addition
-		c.addCommand(new SetUserTriggerProps());
 		c.addCommand(new AddPreventiveMaintenanceCommand());  // PM addition
 		c.addCommand(new AddResourceReadingRelCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
@@ -1168,7 +1167,6 @@ public class FacilioChainFactory {
 		c.addCommand(new ValidateNewTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
 		c.addCommand(new CreateWorkorderTemplateCommand());
-		c.addCommand(new SetUserTriggerProps());
 		c.addCommand(new UpdatePreventiveMaintenanceCommand());
 		c.addCommand(new AddResourceReadingRelCommand());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());

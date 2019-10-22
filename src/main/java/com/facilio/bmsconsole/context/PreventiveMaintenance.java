@@ -371,7 +371,8 @@ public class PreventiveMaintenance extends ResourceContext {
 		ONLY_SCHEDULE_TRIGGER, 
 		FLOATING, 
 		FIXED,
-		NONE;
+		NONE,
+		MANUAL;
 
 		public int getVal() {
 			return ordinal() + 1;
