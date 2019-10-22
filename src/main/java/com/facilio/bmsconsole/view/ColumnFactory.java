@@ -659,7 +659,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("inviteHost", "Host"));
 		columns.add(new ViewField("expectedStartTime", "Expected Start Time"));
 		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
-		columns.add(new ViewField("expectedDuration", "Expected Duration"));
 		return columns;
 	}
 
