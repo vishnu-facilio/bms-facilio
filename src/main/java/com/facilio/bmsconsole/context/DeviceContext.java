@@ -91,7 +91,7 @@ public class DeviceContext extends AssetContext {
 	private long connectedTime;
     public static enum DeviceType implements FacilioEnum {
         TV("Tv"),
-        VISITOR_KIOSK("Kiosk"),
+        VISITOR_KIOSK("Visitor Kiosk"),
         DIGITAL_LOGBOOK("Digital Log Book")
         ;
 
