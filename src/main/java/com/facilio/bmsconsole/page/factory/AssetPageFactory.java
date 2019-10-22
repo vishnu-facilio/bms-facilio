@@ -13,7 +13,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -55,7 +54,7 @@ public class AssetPageFactory extends PageFactory {
 		addPrimaryDetailsWidget(tab1Sec1);
 		
 		// Temp...needs to move to db
-		if (!FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.getCategory() != null && asset.getCategory().getId() == 5009) {
+		if (AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.getId() == 1145442l) {
 			addSupplyTemperatureChartWidget(tab1Sec1);
 			addSupplyFeedbackChartWidget(tab1Sec1);
 			addSupplyStatusChartWidget(tab1Sec1);
@@ -403,21 +402,21 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addSupplyTemperatureChartWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "supplyTemperature");
-		cardWidget.addToLayoutParams(section, 24, 7);
+		cardWidget.addToLayoutParams(section, 24, 8);
 		cardWidget.addCardType(CardType.ANALYTICS_CHART);
 		
 		section.addWidget(cardWidget);
 	}
 	private static void addSupplyFeedbackChartWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "supplyFeedback");
-		cardWidget.addToLayoutParams(section, 12, 6);
+		cardWidget.addToLayoutParams(section, 12, 7);
 		cardWidget.addCardType(CardType.ANALYTICS_CHART);
 		
 		section.addWidget(cardWidget);
 	}
 	private static void addSupplyStatusChartWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "supplyStatus");
-		cardWidget.addToLayoutParams(section, 12, 6);
+		cardWidget.addToLayoutParams(section, 12, 7);
 		cardWidget.addCardType(CardType.ANALYTICS_CHART);
 		
 		section.addWidget(cardWidget);
