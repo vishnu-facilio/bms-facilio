@@ -168,7 +168,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 				}
 			}
 		}
-		else {
+		else if (!form.getName().equalsIgnoreCase("web_pm")) {
 			List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
 			if (customFields != null && !customFields.isEmpty()) {
 				for (FacilioField f: customFields) {
