@@ -143,7 +143,7 @@ public class AccessLogFilter implements Filter {
         if(origin != null) {
             event.setProperty("origin", origin);
         } else {
-            event.setProperty("origin", request.getRemoteHost());
+            event.setProperty("origin", request.getServerName());
         }
         
         String deviceType = request.getHeader(X_DEVICE_TYPE);
