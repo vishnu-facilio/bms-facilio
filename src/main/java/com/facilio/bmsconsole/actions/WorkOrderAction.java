@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Command;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -1837,6 +1839,18 @@ public class WorkOrderAction extends FacilioAction {
 		JSONParser parser = new JSONParser();
 		JSONObject obj = (JSONObject) parser.parse(workorder_string);
 		this.workorder = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+		Map<String, Object> data = this.workorder.getData();
+		if (this.workorder != null && MapUtils.isNotEmpty(data)) {
+			// temp fix to convert int to long for id
+			for (Object value : data.values()) {
+				if (value instanceof Map) {
+					Object id = ((Map) value).get("id");
+					if (id instanceof Number) {
+						((Map) value).put("id", ((Number) id).longValue());
+					}
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
