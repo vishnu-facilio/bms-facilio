@@ -94,7 +94,16 @@
 										  	  fieldid = fieldObj.id();
 										  	  fieldMapInfo = fieldObj.asMap();
 										  	  
-										  	  lastVal = Reading(fieldid, variableParentId).getLastValue();
+										  	  date = NameSpace(\"date\");
+											  month = date.getDateRange(\"Current Month\");
+											  db = {
+												criteria : [parentId == (variableParentId) && ttime == month],
+												field : variableObj.select,
+												aggregation : \"lastValue\"
+											  };
+											
+											  lastVal = fetchModule.fetch(db);
+											  
 										  	  enumMap = Reading(fieldid, variableParentId).getEnumMap();
 											  
 											  valueMap = {};
@@ -153,6 +162,21 @@
 										  resultMapValues[variableObj.key] = null;
 								          resultMap[variableObj.key] = valueMap;
 								        }
+									  }
+								  }
+								  for each index, variableObj in variables {
+								  	if (variableObj.fetchType == \"function\") {
+									  	res = NameSpace(variableObj.namespace).executeFunc(resultMapValues);
+									  	if (res != null) {
+									  		resultMapValues[variableObj.key] = res.get(\"value\");
+								          	resultMap[variableObj.key] = res;
+									  	}
+									  	else {
+									  		valueMap = {};
+										    valueMap[\"value\"] = null;
+									  		resultMapValues[variableObj.key] = null;
+								          	resultMap[variableObj.key] = valueMap;
+									  	}
 									  }
 								  }
 								if(conditionalFormattings != null) {
