@@ -3659,7 +3659,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
+			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			return c;
@@ -3690,7 +3690,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
+			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			
 			return c;
 		}
