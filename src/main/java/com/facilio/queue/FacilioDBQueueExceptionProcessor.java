@@ -24,7 +24,7 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		if(FacilioProperties.isOnpremise() || !FacilioProperties.isProduction()) {
+		if(FacilioProperties.isOnpremise() || FacilioProperties.isProduction()) {
             return;
         }
 
