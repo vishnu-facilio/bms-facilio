@@ -1839,8 +1839,8 @@ public class WorkOrderAction extends FacilioAction {
 		JSONParser parser = new JSONParser();
 		JSONObject obj = (JSONObject) parser.parse(workorder_string);
 		this.workorder = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
-		Map<String, Object> data = this.workorder.getData();
-		if (this.workorder != null && MapUtils.isNotEmpty(data)) {
+		if (this.workorder != null && MapUtils.isNotEmpty(this.workorder.getData())) {
+			Map<String, Object> data = this.workorder.getData();
 			// temp fix to convert int to long for id
 			for (Object value : data.values()) {
 				if (value instanceof Map) {
