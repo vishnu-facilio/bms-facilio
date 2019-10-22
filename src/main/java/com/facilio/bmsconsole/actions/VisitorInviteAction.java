@@ -259,8 +259,7 @@ public class VisitorInviteAction extends FacilioAction{
 		chain.getContext().put(FacilioConstants.ContextNames.VISITOR_INVITE_ID, inviteId);
 		chain.getContext().put(FacilioConstants.ContextNames.VISITOR_ID, visitorId);
 		chain.execute();
-		setResult(FacilioConstants.ContextNames.VISITOR_INVITE, chain.getContext().get(FacilioConstants.ContextNames.VISITOR_INVITE));
-		setResult(FacilioConstants.ContextNames.VISITOR, chain.getContext().get(FacilioConstants.ContextNames.VISITOR));
+		setResult(FacilioConstants.ContextNames.VISITOR_INVITE_REL, chain.getContext().get(FacilioConstants.ContextNames.VISITOR_INVITE_REL));
 		
 		return SUCCESS;
 		
