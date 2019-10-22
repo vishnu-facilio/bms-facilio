@@ -72,7 +72,7 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static VisitorLoggingContext getVisitorLogging(long logId, boolean fetchActiveLog) throws Exception {
+	public static VisitorLoggingContext getVisitorLogging(long visitorId, boolean fetchActiveLog) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
@@ -81,7 +81,7 @@ public class VisitorManagementAPI {
 														.module(module)
 														.beanClass(VisitorLoggingContext.class)
 														.select(fields)
-														.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(logId), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition("VISITOR", "visitorId", String.valueOf(visitorId), NumberOperators.EQUALS))
 														;
 		if(fetchActiveLog) {
 			FacilioStatus checkedInStatus = TicketAPI.getStatus(module, "CheckedIn");
