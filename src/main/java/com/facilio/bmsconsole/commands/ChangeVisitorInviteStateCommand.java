@@ -22,14 +22,15 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>)context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
+		Map<String, Map<Long, List<UpdateChangeSet>>> changeSet = (Map<String, Map<Long, List<UpdateChangeSet>>>)context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
 		List<VisitorLoggingContext> records = (List<VisitorLoggingContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(records) && changeSet != null && !changeSet.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			if(!changeSet.isEmpty()) {
+			Map<Long, List<UpdateChangeSet>> moduleChangeSet = changeSet.get(FacilioConstants.ContextNames.VISITOR_LOGGING);
+			if(!moduleChangeSet.isEmpty()) {
 				long time = System.currentTimeMillis();
 				for(VisitorLoggingContext record : records) {
-					List<UpdateChangeSet> updatedSet = changeSet.get(record.getId());
+					List<UpdateChangeSet> updatedSet = moduleChangeSet.get(record.getId());
 					if(updatedSet != null && !updatedSet.isEmpty()) {
 						for(UpdateChangeSet changes : updatedSet) {
 							FacilioField field = modBean.getField(changes.getFieldId()) ;
