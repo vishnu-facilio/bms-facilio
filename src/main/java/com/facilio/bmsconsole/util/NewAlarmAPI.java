@@ -648,12 +648,13 @@ public class NewAlarmAPI {
 	public static void deleteIntervalBasedAlarmOccurrences(long ruleId, long startTime, long endTime, long resourceId) throws Exception 
 	{	
 		Map<Long, AlarmOccurrenceContext> delAlarmOccurrencesMap = new HashMap<Long, AlarmOccurrenceContext>();
-		AlarmOccurrenceContext initialEdgeCaseAlarmOccurrence = null;
+		AlarmOccurrenceContext initialEdgeCaseAlarmOccurrence = null, finalEdgeCaseAlarmOccurrence = null;
 		
 		List<AlarmOccurrenceContext> alarmOccurrenceList = getAllAlarmOccurrences(ruleId, startTime, endTime, resourceId);
 
 		if (alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty())
 		{
+			boolean isNextClosestEvent = false;
 			AlarmOccurrenceContext lastAlarmOccurrence = alarmOccurrenceList.get(alarmOccurrenceList.size() - 1);
 			BaseAlarmContext baseAlarm =  lastAlarmOccurrence.getAlarm();
 			BaseAlarmContext baseAlarmContext = getBaseAlarmById(baseAlarm.getId());
@@ -666,7 +667,9 @@ public class NewAlarmAPI {
 			}
 			if (lastAlarmOccurrence.getClearedTime() == -1 || lastAlarmOccurrence.getClearedTime() > endTime) 
 			{
-				clearFinalEdgeAlarmOccurenceWithEvents(lastAlarmOccurrence, endTime);
+				finalEdgeCaseAlarmOccurrence = lastAlarmOccurrence;
+				List<BaseEventContext> nextClosestEventList = clearFinalEdgeAlarmOccurenceWithEvents(lastAlarmOccurrence, endTime);		
+				isNextClosestEvent = (nextClosestEventList == null || nextClosestEventList.isEmpty()) ? false : true;	// to add to the deletion list			
 			}	
 			
 			for (AlarmOccurrenceContext alarmOccurrence : alarmOccurrenceList) 
@@ -676,7 +679,7 @@ public class NewAlarmAPI {
 					throw new Exception ("Different/No Base Alarms in the historical interval which is rule/resource specific");
 				}
 				
-				if (alarmOccurrence.equals(initialEdgeCaseAlarmOccurrence) || alarmOccurrence.equals(lastAlarmOccurrence)) {
+				if (alarmOccurrence.equals(initialEdgeCaseAlarmOccurrence) || (alarmOccurrence.equals(finalEdgeCaseAlarmOccurrence) && isNextClosestEvent)) {
 					continue;
 				}
 				delAlarmOccurrencesMap.put(alarmOccurrence.getId(), alarmOccurrence);
@@ -804,11 +807,11 @@ public class NewAlarmAPI {
 	
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
-		LOGGER.info("Initial Alarm Occurance Id --- "+initialEdgeCaseAlarmOccurrence.getId());
+		LOGGER.info("Initial Alarm Occurrence Id --- "+initialEdgeCaseAlarmOccurrence.getId());
 		
 		generateEvent(initialEdgeCaseAlarmOccurrence, AlarmAPI.getAlarmSeverity("Clear"), startTime - 1000);
 
-		initialEdgeCaseAlarmOccurrence.setClearedTime(startTime - 1);
+		initialEdgeCaseAlarmOccurrence.setClearedTime(startTime - 1000);
 		updateAlarmOccurrence(initialEdgeCaseAlarmOccurrence);
 		
 		DeleteRecordBuilder<BaseEventContext> deletebuilder = new DeleteRecordBuilder<BaseEventContext>()
@@ -820,11 +823,11 @@ public class NewAlarmAPI {
 		updateAlarmOccurrenceWithNoOfEvents(initialEdgeCaseAlarmOccurrence);
 	}
 	
-	public static void clearFinalEdgeAlarmOccurenceWithEvents(AlarmOccurrenceContext finalEdgeCaseAlarmOccurrence, long endTime) throws Exception {
+	public static List<BaseEventContext> clearFinalEdgeAlarmOccurenceWithEvents(AlarmOccurrenceContext finalEdgeCaseAlarmOccurrence, long endTime) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
-		LOGGER.info("Final Alarm Occurance Id --- "+finalEdgeCaseAlarmOccurrence.getId());
+		LOGGER.info("Final Alarm Occurrence Id --- "+finalEdgeCaseAlarmOccurrence.getId());
 		
 		SelectRecordsBuilder<BaseEventContext> selectEventbuilder = new SelectRecordsBuilder<BaseEventContext>()
 				.select(modBean.getAllFields(eventModule.getName()))
@@ -835,25 +838,28 @@ public class NewAlarmAPI {
 				.orderBy("CREATED_TIME").limit(1);
 	
 		List<BaseEventContext> nextClosestEventList = selectEventbuilder.get();
-		if (nextClosestEventList.isEmpty()) 
+		if (nextClosestEventList == null || nextClosestEventList.isEmpty()) 
 		{
-			BaseEventContext event = generateEvent(finalEdgeCaseAlarmOccurrence, finalEdgeCaseAlarmOccurrence.getSeverity(), endTime + 1000);	
-			nextClosestEventList.add(event);		
+			//BaseEventContext event = generateEvent(finalEdgeCaseAlarmOccurrence, finalEdgeCaseAlarmOccurrence.getSeverity(), endTime + 1000);	
+			//nextClosestEventList.add(event);
+			return null;		
 		}
 		
-		if (nextClosestEventList != null)
+		if (nextClosestEventList != null && !nextClosestEventList.isEmpty())
 		{ 	
 			finalEdgeCaseAlarmOccurrence.setCreatedTime(nextClosestEventList.get(0).getCreatedTime());	
 			updateAlarmOccurrence(finalEdgeCaseAlarmOccurrence);
-		}
-	
-		DeleteRecordBuilder<BaseEventContext> deletebuilder = new DeleteRecordBuilder<BaseEventContext>()
-				.module(eventModule)
-				.andCondition(CriteriaAPI.getCondition("ALARM_OCCURRENCE_ID", "alarmOccurrence",""+finalEdgeCaseAlarmOccurrence.getId(), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+endTime, NumberOperators.LESS_THAN_EQUAL));
-		deletebuilder.delete();
 		
-		updateAlarmOccurrenceWithNoOfEvents(finalEdgeCaseAlarmOccurrence);	
+			DeleteRecordBuilder<BaseEventContext> deletebuilder = new DeleteRecordBuilder<BaseEventContext>()
+					.module(eventModule)
+					.andCondition(CriteriaAPI.getCondition("ALARM_OCCURRENCE_ID", "alarmOccurrence",""+finalEdgeCaseAlarmOccurrence.getId(), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+endTime, NumberOperators.LESS_THAN_EQUAL));
+			deletebuilder.delete();
+			
+			updateAlarmOccurrenceWithNoOfEvents(finalEdgeCaseAlarmOccurrence);
+		
+		}
+		return nextClosestEventList;
 	}
 	
 	public static void updateAlarmOccurrenceWithNoOfEvents(AlarmOccurrenceContext edgeCaseAlarmOccurrence) 
