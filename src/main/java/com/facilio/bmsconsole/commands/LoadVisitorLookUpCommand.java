@@ -29,9 +29,9 @@ public class LoadVisitorLookUpCommand extends FacilioCommand{
 		}
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
-		LookupFieldMeta hostField = new LookupFieldMeta((LookupField) fieldsAsMap.get("lastVisitedHost"));
-		LookupFieldMeta spaceField = new LookupFieldMeta((LookupField) fieldsAsMap.get("lastVisitedSpace"));
-		LookupFieldMeta locationField = new LookupFieldMeta((LookupField) fieldsAsMap.get("location"));
+		LookupField hostField = (LookupField) fieldsAsMap.get("lastVisitedHost");
+		LookupField spaceField = (LookupField) fieldsAsMap.get("lastVisitedSpace");
+		LookupField locationField = (LookupField) fieldsAsMap.get("location");
 		
 		additionaLookups.add(hostField);
 		additionaLookups.add(spaceField);
