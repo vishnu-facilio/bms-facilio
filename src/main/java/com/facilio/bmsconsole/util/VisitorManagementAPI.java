@@ -299,6 +299,7 @@ public class VisitorManagementAPI {
 			attachment.setParentId(logId);
 			attachment.setModuleId(module.getModuleId());
 			attachment.setFileId(fileId);
+			attachment.setCreatedTime(System.currentTimeMillis());
 			AttachmentsAPI.addAttachments(Collections.singletonList(attachment), "visitorloggingattachments");
 		}
 		
