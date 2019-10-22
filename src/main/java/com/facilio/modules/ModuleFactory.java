@@ -102,6 +102,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.BMS_ALARM, getBmsAlarmModule());
 		moduleMap.put(FacilioConstants.ModuleNames.DEVICES,getDevicesModule());
 		moduleMap.put(FacilioConstants.ContextNames.VISITOR,getVisitorModule());
+		moduleMap.put(FacilioConstants.ContextNames.VISITOR_INVITE,getVisitorModule());
 		return moduleMap;
 	}
 	
@@ -2740,6 +2741,15 @@ public class ModuleFactory {
 		module.setName(ContextNames.VISITOR);
 		module.setDisplayName("Visitors");
 		module.setTableName("Visitors");
+		return module;
+	}
+
+	public static FacilioModule getVisitorInviteModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.VISITOR_INVITE);
+		module.setDisplayName("Visitor Invites");
+		module.setTableName("Visitor_Invites");
 		return module;
 	}
 	

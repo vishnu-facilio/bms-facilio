@@ -70,7 +70,7 @@ public class FormFactory {
 		forms.put("devicesForm",getDevicesForm());
 		forms.put("kioskForm", getVisitorKioskForm());
 		forms.put("visitorForm", getVisitorForm());
-		
+		forms.put("visitorPreRegisterForm", getVisitorPreRegisterForm());
 			
 		return forms;
 	}
@@ -1216,4 +1216,28 @@ public class FormFactory {
 
 		return fields;
 	}
+
+	public static FacilioForm getVisitorPreRegisterForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("PRE REGISTER VISITOR");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_INVITE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getVisitorPreRegisterFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
+	private static List<FormField> getVisitorPreRegisterFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("inviteName", FieldDisplayType.TEXTBOX, "Invite Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Expected Start Time", Required.OPTIONAL, 2, 2));
+		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Expected End Time", Required.OPTIONAL, 2, 3));
+		fields.add(new FormField("inviteHost", FieldDisplayType.USER, "Host", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("invitees", FieldDisplayType.VISITOR_INVITEES , "VISITORS", Required.OPTIONAL, 4, 1));
+
+		return fields;
+	}
+
+
 }

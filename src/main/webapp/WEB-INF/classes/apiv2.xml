@@ -4420,7 +4420,7 @@
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="addVisitorInvites" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="updateVisitorInvites" />
-		<action name="list"
+		<action name="*"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteVisitorInvites" />
