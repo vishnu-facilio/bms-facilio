@@ -102,6 +102,7 @@
 												aggregation : \"lastValue\"
 											  };
 											
+											  fetchModule = Module(variableObj.module);
 											  lastVal = fetchModule.fetch(db);
 											  
 										  	  enumMap = Reading(fieldid, variableParentId).getEnumMap();
