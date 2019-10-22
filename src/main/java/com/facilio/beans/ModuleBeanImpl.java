@@ -147,7 +147,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(moduleModule.getTableName())
 				.select(FieldFactory.getModuleFields())
-				.andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "moduleType", String.valueOf(moduleType.getValue()), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "moduleType", String.valueOf(moduleType.getValue()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(1), NumberOperators.NOT_EQUALS));
 		List<Map<String, Object>> props = builder.get();
 		for (Map<String, Object> prop : props) {
 			if (prop.containsKey("createdBy")) {

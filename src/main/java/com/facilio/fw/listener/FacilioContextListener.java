@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 
-import javax.management.*;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
@@ -25,9 +26,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.jmx.FacilioQueryCounter;
-import com.facilio.jmx.FacilioQueryCounterMBean;
-import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -39,7 +37,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.facilio.activity.ActivityType;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -52,14 +49,18 @@ import com.facilio.db.util.DBConf;
 import com.facilio.db.util.SQLScriptRunner;
 import com.facilio.filters.HealthCheckFilter;
 import com.facilio.fw.BeanFactory;
+import com.facilio.jmx.FacilioQueryCounter;
+import com.facilio.jmx.FacilioQueryCounterMBean;
 import com.facilio.kafka.KafkaProcessor;
 import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.logging.SysOutLogger;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
+import com.facilio.queue.FacilioDBQueueExceptionProcessor;
 import com.facilio.queue.FacilioExceptionProcessor;
 import com.facilio.service.FacilioService;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.InstantJobExecutor;
 
@@ -98,6 +99,9 @@ public class FacilioContextListener implements ServletContextListener {
 
 		if(FacilioProperties.isScheduleServer() && FacilioProperties.isProduction()) {
 			timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
+		}
+		if(FacilioProperties.isScheduleServer() && !FacilioProperties.isProduction()) {
+			timer.schedule(new FacilioDBQueueExceptionProcessor(), 0L, 900000L); // 30 minutes
 		}
 
 		initDBConnectionPool();

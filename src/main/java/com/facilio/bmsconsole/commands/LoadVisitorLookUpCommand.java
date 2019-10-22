@@ -14,7 +14,7 @@ import com.facilio.modules.LookupFieldMeta;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class LoadVisitorLoggingLookUpCommand extends FacilioCommand{
+public class LoadVisitorLookUpCommand extends FacilioCommand{
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -29,16 +29,13 @@ public class LoadVisitorLoggingLookUpCommand extends FacilioCommand{
 		}
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
-		LookupField eventField = (LookupField) fieldsAsMap.get("invite");
-		LookupField visitorField = (LookupField) fieldsAsMap.get("visitor");
-		LookupField hostField = (LookupField) fieldsAsMap.get("host");
-		LookupField visitedSpaceField = (LookupField) fieldsAsMap.get("visitedSpace");
-		LookupField moduleStateField = (LookupField)fieldsAsMap.get("moduleState");
-		additionaLookups.add(eventField);
-		additionaLookups.add(visitorField);
+		LookupField hostField = (LookupField) fieldsAsMap.get("lastVisitedHost");
+		LookupField spaceField = (LookupField) fieldsAsMap.get("lastVisitedSpace");
+		LookupField locationField = (LookupField) fieldsAsMap.get("location");
+		
 		additionaLookups.add(hostField);
-		additionaLookups.add(visitedSpaceField);
-		additionaLookups.add(moduleStateField);
+		additionaLookups.add(spaceField);
+		additionaLookups.add(locationField);
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
 	
 		return false;

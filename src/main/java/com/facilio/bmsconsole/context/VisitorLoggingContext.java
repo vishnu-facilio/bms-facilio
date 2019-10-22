@@ -15,7 +15,18 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 	private long checkInTime = -1;
 	private long checkOutTime = -1;
 	private VisitorContext visitor;
+	private ResourceContext visitedSpace;
 	
+	
+
+	public ResourceContext getVisitedSpace() {
+		return visitedSpace;
+	}
+
+	public void setVisitedSpace(ResourceContext visitedSpace) {
+		this.visitedSpace = visitedSpace;
+	}
+
 	public VisitorInviteContext getInvite() {
 		return invite;
 	}
@@ -83,5 +94,4 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		this.purposeOfVisit = purposeOfVisit;
 	}
 	
-
 }

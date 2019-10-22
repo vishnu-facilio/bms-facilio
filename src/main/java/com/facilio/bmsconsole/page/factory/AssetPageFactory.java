@@ -52,6 +52,14 @@ public class AssetPageFactory extends PageFactory {
 		tab1.addSection(tab1Sec1);
 		
 		addPrimaryDetailsWidget(tab1Sec1);
+		
+		// Temp...needs to move to db
+		if (AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.getId() == 1145442l) {
+			addSupplyTemperatureChartWidget(tab1Sec1);
+			addSupplyFeedbackChartWidget(tab1Sec1);
+			addSupplyStatusChartWidget(tab1Sec1);
+		}
+		
 		addWoCountWidget(tab1Sec1);
 		addAlarmCountWidget(tab1Sec1);
 		addFailureMetricWidget(tab1Sec1);
@@ -390,6 +398,28 @@ public class AssetPageFactory extends PageFactory {
 		PageWidget contractsWidget = new PageWidget(WidgetType.LIST, "contracts");
 		contractsWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(contractsWidget);
+	}
+	
+	private static void addSupplyTemperatureChartWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "supplyTemperature");
+		cardWidget.addToLayoutParams(section, 24, 8);
+		cardWidget.addCardType(CardType.ANALYTICS_CHART);
+		
+		section.addWidget(cardWidget);
+	}
+	private static void addSupplyFeedbackChartWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "supplyFeedback");
+		cardWidget.addToLayoutParams(section, 12, 7);
+		cardWidget.addCardType(CardType.ANALYTICS_CHART);
+		
+		section.addWidget(cardWidget);
+	}
+	private static void addSupplyStatusChartWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "supplyStatus");
+		cardWidget.addToLayoutParams(section, 12, 7);
+		cardWidget.addCardType(CardType.ANALYTICS_CHART);
+		
+		section.addWidget(cardWidget);
 	}
 	
 }

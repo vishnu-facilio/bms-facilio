@@ -28,6 +28,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
@@ -36,6 +37,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.pdf.PdfUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
@@ -162,7 +164,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			
 			Long fileId = null;
 			if(objects[0] != null) {
-				fileId = Long.parseLong(objects[0].toString());
+				fileId = (long) Double.parseDouble(objects[0].toString());
 			}
 			
 			return fs.getPrivateUrl(fileId);
@@ -493,8 +495,42 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			return null;
 		}
 		
-	}
+	},
+	EXPORT_URL(15, "exportURL") {
 
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			String url = (String) objects[0];
+			String fileName = PdfUtil.exportUrlAsPdf(url.toString(), true, null, FileFormat.PDF);
+			return fileName;
+		}
+		
+	},
+	GET_ORG_FILE_URL(16, "getOrgFileUrl") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			FileStore fs = FacilioFactory.getFileStore();
+			long fileId = (long) Double.parseDouble(objects[0].toString());
+			return fs.getOrgiFileUrl(fileId);
+		}
+		
+	},
+	GET_ORG_DOWNLOAD_URL(17, "getOrgDownloadUrl") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			FileStore fs = FacilioFactory.getFileStore();
+			long fileId = (long) Double.parseDouble(objects[0].toString());
+			return fs.getOrgiDownloadUrl(fileId);
+		}
+		
+	}
 	;
 	private Integer value;
 	private String functionName;

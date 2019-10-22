@@ -91,6 +91,10 @@ public class VisitorAction extends FacilioAction
 		this.id = id;
 	}
 
+	private File signature;
+	private String signatureFileName;
+	private  String signatureContentType;
+	
 	private File avatar;
 	private String avatarFileName;
 	private  String avatarContentType;
@@ -113,20 +117,43 @@ public class VisitorAction extends FacilioAction
 	public void setAvatarContentType(String avatarContentType) {
 		this.avatarContentType = avatarContentType;
 	}
+	
+	public File getSignature() {
+		return signature;
+	}
+	public void setSignature(File signature) {
+		this.signature = signature;
+	}
+	public String getSignatureFileName() {
+		return signatureFileName;
+	}
+	public void setSignatureFileName(String signatureFileName) {
+		this.signatureFileName = signatureFileName;
+	}
+	public String getSignatureContentType() {
+		return signatureContentType;
+	}
+	public void setSignatureContentType(String signatureContentType) {
+		this.signatureContentType = signatureContentType;
+	}
 	public String addVisitors() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(visitors)) {
 			for(VisitorContext v : visitors) {
 				LocationContext location = v.getLocation();
-				if(location!=null)
-				{	
-					location.setName(v.getName()+"_location");
-					FacilioChain addLocation = FacilioChainFactory.addLocationChain();
-					addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
-					addLocation.execute();
-					long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
-					location.setId(locationId);
+				if(location == null) {
+					location = new LocationContext();
+					location.setLat(1.1);
+					location.setLng(1.1);
 				}
+				location.setName(v.getName()+"_location");
+				FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+				addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+				addLocation.execute();
+				long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
+				location.setId(locationId);
+				v.setLocation(location);
+				
 			}
 			FacilioChain c = TransactionChainFactory.addVisitorChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitors);
@@ -175,6 +202,51 @@ public class VisitorAction extends FacilioAction
 		return SUCCESS;
 	}
 	
+		public String updateVisitor() throws Exception {
+	
+			if (avatar != null) {
+				visitor.setAvatar(avatar);
+				visitor.setAvatarFileName(avatarFileName);
+				visitor.setAvatarContentType(avatarContentType);
+			}
+			if(signature != null) {
+				visitor.setSignature(signature);
+				visitor.setSignatureFileName(signatureFileName);
+				visitor.setSignatureContentType(signatureContentType);
+			}
+			//update location
+			LocationContext location = visitor.getLocation();
+			
+			if(location != null && location.getLat() != -1 && location.getLng() != -1)
+			{
+				FacilioChain locationChain = null;
+				location.setName(visitor.getName()+"_Location");
+				locationChain.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+				locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
+				locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
+			
+				if (location.getId() > 0) {
+					locationChain = FacilioChainFactory.updateLocationChain();
+					locationChain.execute();
+					visitor.setLocation(location);
+				}
+				else {
+					locationChain = FacilioChainFactory.addLocationChain();
+					locationChain.execute();
+					long locationId = (long) locationChain.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
+					location.setId(locationId);
+				}
+			}
+			else {
+				visitor.setLocation(null);
+			}
+		FacilioChain c = TransactionChainFactory.updateVisitorChain();
+		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitor));
+		c.execute();
+		setResult(FacilioConstants.ContextNames.VISITORS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+		return SUCCESS;
+	}
+		
 	public String addVisitor() throws Exception {
 		
 		FacilioChain c = TransactionChainFactory.addVisitorChain();
@@ -183,16 +255,25 @@ public class VisitorAction extends FacilioAction
 			visitor.setAvatarFileName(avatarFileName);
 			visitor.setAvatarContentType(avatarContentType);
 		}
-		LocationContext location = visitor.getLocation();
-		if(location!=null)
-		{	
-			location.setName(visitor.getName()+"_location");
-			FacilioChain addLocation = FacilioChainFactory.addLocationChain();
-			addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
-			addLocation.execute();
-			long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
-			location.setId(locationId);
+		if(signature != null) {
+			visitor.setSignature(signature);
+			visitor.setSignatureFileName(signatureFileName);
+			visitor.setSignatureContentType(signatureContentType);
 		}
+		
+		LocationContext location = visitor.getLocation();
+		if(location == null) {
+			location = new LocationContext();
+			location.setLat(1.1);
+			location.setLng(1.1);
+		}
+		location.setName(visitor.getName()+"_location");
+		FacilioChain addLocation = FacilioChainFactory.addLocationChain();
+		addLocation.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+		addLocation.execute();
+		long locationId = (long) addLocation.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
+		location.setId(locationId);
+		visitor.setLocation(location);
 		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitor));
 		c.execute();
 		setResult(FacilioConstants.ContextNames.VISITORS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));

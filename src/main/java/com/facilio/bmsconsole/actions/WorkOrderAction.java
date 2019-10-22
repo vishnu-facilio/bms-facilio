@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Command;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -825,6 +827,17 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	
+	String qrVAL;
+
+	public String getQrVAL() {
+		return qrVAL;
+	}
+
+	public void setQrVAL(String qrVAL) {
+		this.qrVAL = qrVAL;
+	}
+
 	private long resourceId = -1;
 
 	public long getResourceId() {
@@ -834,7 +847,7 @@ public class WorkOrderAction extends FacilioAction {
 	public void setResourceId(long resourceId) {
 		this.resourceId = resourceId;
 	}
-
+	
 	private PMJobsContext pmJob;
 
 	public PMJobsContext getPmJob() {
@@ -1350,6 +1363,7 @@ public class WorkOrderAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+ 		context.put(FacilioConstants.ContextNames.QR_VALUE, qrVAL);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
 		context.put(FacilioConstants.ContextNames.COMMENT, comment);
@@ -1825,6 +1839,18 @@ public class WorkOrderAction extends FacilioAction {
 		JSONParser parser = new JSONParser();
 		JSONObject obj = (JSONObject) parser.parse(workorder_string);
 		this.workorder = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+		if (this.workorder != null && MapUtils.isNotEmpty(this.workorder.getData())) {
+			Map<String, Object> data = this.workorder.getData();
+			// temp fix to convert int to long for id
+			for (Object value : data.values()) {
+				if (value instanceof Map) {
+					Object id = ((Map) value).get("id");
+					if (id instanceof Number) {
+						((Map) value).put("id", ((Number) id).longValue());
+					}
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")

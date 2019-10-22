@@ -81,6 +81,7 @@ public class ColumnFactory {
 		columnMap.put("inventoryrequest-pendingapproval", getDefaultInventoryRequestColumns());
 		columnMap.put("visitor-default", getDefaultVisitorColumns());
 		columnMap.put("visitorlogging-default", getDefaultVisitorLoggingColumns());
+		columnMap.put("visitorinvite-default", getDefaultVisitorInvitesColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -649,6 +650,15 @@ public class ColumnFactory {
 		columns.add(new ViewField("approvalNeeded", "Is Host Approval Needed"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
 		columns.add(new ViewField("attachmentPreview", "Attachment Preview"));
+		return columns;
+	}
+
+	public static List<ViewField> getDefaultVisitorInvitesColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("inviteName", "Name"));
+		columns.add(new ViewField("inviteHost", "Host"));
+		columns.add(new ViewField("expectedStartTime", "Expected Start Time"));
+		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
 		return columns;
 	}
 

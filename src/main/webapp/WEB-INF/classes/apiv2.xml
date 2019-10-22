@@ -4402,6 +4402,8 @@
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitors" />
 		<action name="addVisitor"
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitor" />
+		<action name="updateVisitor"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitor" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitors" />
 		<action name="*"
@@ -4418,7 +4420,7 @@
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="addVisitorInvites" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="updateVisitorInvites" />
-		<action name="list"
+		<action name="*"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteVisitorInvites" />
@@ -4427,7 +4429,11 @@
 		<action name="addInvitees"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="addInvitees" />
 		<action name="deleteInvitees"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteInvitees" />			
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteInvitees" />
+		<action name="preRegister"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="preRegisterVisitors" />
+		<action name="qrScanVisitor"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="qrScanVisitor" />				
 	</package>
 	
 		<package name="visitorlogging" namespace="/api/v2/visitorLogging"
@@ -4442,8 +4448,6 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="deleteVisitorLogging" />
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingDetails" />
-		<action name="preRegister"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="preRegisterVisitor" />
 		<action name="checkOutWithPhone"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkOutVisitorLogging" />
 	</package>

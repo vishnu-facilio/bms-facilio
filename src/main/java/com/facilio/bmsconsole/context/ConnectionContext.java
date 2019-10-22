@@ -256,13 +256,13 @@ public class ConnectionContext {
 		this.sysModifiedTime = sysModifiedTime;
 	}
 
-	private User sysCreatedBy;
-	public User getSysCreatedBy() {
-		return sysCreatedBy;
-	}
-	public void setSysCreatedBy(User sysCreatedBy) {
-		this.sysCreatedBy = sysCreatedBy;
-	}
+//	private User sysCreatedBy;
+//	public User getSysCreatedBy() {
+//		return sysCreatedBy;
+//	}
+//	public void setSysCreatedBy(User sysCreatedBy) {
+//		this.sysCreatedBy = sysCreatedBy;
+//	}
 
 	private User sysModifiedBy;
 	public User getSysModifiedBy() {
@@ -333,7 +333,7 @@ public class ConnectionContext {
 				+ accessTokenUrl + ", refreshTokenUrl=" + refreshTokenUrl + ", revokeTokenUrl=" + revokeTokenUrl
 				+ ", accessToken=" + accessToken + ", authCode=" + authCode + ", refreshToken=" + refreshToken
 				+ ", callBackURL=" + getCallBackURL() + ", expiryTime=" + expiryTime + ", sysCreatedTime=" + sysCreatedTime
-				+ ", sysModifiedTime=" + sysModifiedTime + ", sysCreatedBy=" + sysCreatedBy + ", sysModifiedBy="
+				+ ", sysModifiedTime=" + sysModifiedTime + ", sysCreatedBy="  + ", sysModifiedBy="
 				+ sysModifiedBy + "]";
 	}
 }

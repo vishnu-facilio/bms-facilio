@@ -25,8 +25,6 @@ public class AddInviteVisitorRelCommand extends FacilioCommand{
 		VisitorInviteContext visitorEvent = VisitorManagementAPI.getVisitorEvent(eventId);
 		
 		if(CollectionUtils.isNotEmpty(visitors)) {
-			List<VisitorLoggingContext> visitorLoggingList = new ArrayList<VisitorLoggingContext>();
-			
 			for(VisitorContext visitor : visitors) {
 				InviteVisitorRelContext eventVisitorRel = new InviteVisitorRelContext();
 				eventVisitorRel.setInviteId(visitorEvent);
@@ -36,17 +34,20 @@ public class AddInviteVisitorRelCommand extends FacilioCommand{
 					eventVisitorRel.setIsApprovalNeeded(true);
 				}
 				else {
-					VisitorLoggingContext visitorLogging = new VisitorLoggingContext();
-					visitorLogging.setInvite(visitorEvent);
-					visitorLogging.setHost(visitorEvent.getInviteHost());
-					visitorLogging.setVisitor(visitor);
-					visitorLogging.setIsApprovalNeeded(visitorEvent.getIsApprovalNeeded());
-					visitorLoggingList.add(visitorLogging);
+					eventVisitorRel.setIsApprovalNeeded(false);
 				}
+//				else {
+//					VisitorLoggingContext visitorLogging = new VisitorLoggingContext();
+//					visitorLogging.setInvite(visitorEvent);
+//					visitorLogging.setHost(visitorEvent.getInviteHost());
+//					visitorLogging.setVisitor(visitor);
+//					visitorLogging.setIsApprovalNeeded(visitorEvent.getIsApprovalNeeded());
+//					visitorLoggingList.add(visitorLogging);
+//				}
 				
 			}
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, eventVisitorRelList);	
-		context.put(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, visitorLoggingList);	
+	//	context.put(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, visitorLoggingList);	
 		
 		}
 		return false;

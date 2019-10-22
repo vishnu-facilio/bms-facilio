@@ -36,10 +36,11 @@ public class ValidateNewPMTriggersCommand extends FacilioCommand {
 		List<PMTriggerContext> pmTriggers = pm.getTriggers();
 		
 		WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-		
+
 		if(pmTriggers != null && !pmTriggers.isEmpty()) {
 			boolean isScheduleOnly = true;
 			boolean isAlarmRule = false;
+			boolean isManualTrigger = false;
 			for (PMTriggerContext trigger : pmTriggers) {
 				switch(trigger.getTriggerExecutionSourceEnum()) {
 				case READING:
@@ -69,12 +70,14 @@ public class ValidateNewPMTriggersCommand extends FacilioCommand {
 			}
 			if (isScheduleOnly) {
 				pm.setTriggerType(TriggerType.ONLY_SCHEDULE_TRIGGER);
-			}
-			else if (isAlarmRule) {
+			} else if (isAlarmRule) {
 				pm.setTriggerType(TriggerType.FLOATING);
-			}
-			else if(pm.getTriggerTypeEnum() == null) {
+			} else if(pm.getTriggerTypeEnum() == null) {
 				pm.setTriggerType(TriggerType.FIXED);
+			}
+
+			if (pmTriggers.size() == 1 && pmTriggers.get(0).getTriggerExecutionSourceEnum() == PMTriggerContext.TriggerExectionSource.USER) {
+				pm.setTriggerType(TriggerType.MANUAL);
 			}
 		}
 		else {

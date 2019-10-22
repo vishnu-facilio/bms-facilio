@@ -12,6 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.HttpHeaders;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -42,6 +43,7 @@ public class AccessLogFilter implements Filter {
     private static final String DEFAULT_ORG_USER_ID = "-1";
     private static final String X_DEVICE_TYPE = "X-Device-Type";
     private static final String X_APP_VERSION = "X-App-Version";
+    private static final String REFERER = "referer";
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
 
@@ -106,7 +108,15 @@ public class AccessLogFilter implements Filter {
         }
         event.setProperty(REMOTE_IP, remoteIp);
         event.setProperty(REQUEST_METHOD, request.getMethod());
-        event.setProperty(REQUEST_URL, request.getRequestURI());
+        if("".equals(request.getRequestURI())) {
+            event.setProperty(REQUEST_URL, "/jsp/index.jsp");
+        } else {
+            event.setProperty(REQUEST_URL, request.getRequestURI());
+        }
+        String referer = request.getHeader(HttpHeaders.REFERER);
+        if (referer != null && !"".equals(referer.trim())) {
+            event.setProperty(REFERER, referer);
+        }
         String queryString = request.getQueryString();
         if(queryString == null) {
             queryString = DEFAULT_QUERY_STRING;
@@ -133,7 +143,7 @@ public class AccessLogFilter implements Filter {
         if(origin != null) {
             event.setProperty("origin", origin);
         } else {
-            event.setProperty("origin", DEFAULT_QUERY_STRING);
+            event.setProperty("origin", request.getServerName());
         }
         
         String deviceType = request.getHeader(X_DEVICE_TYPE);

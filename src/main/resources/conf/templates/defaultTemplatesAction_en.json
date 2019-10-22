@@ -834,13 +834,13 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"subject": "Thanks for Checking in",
 		"to": "${visitorlogging.visitor.email:-}",
-		"message": "Thanks for visiting ${org.name}\n CheckInTime : \n${visitorlogging.checkInTime:-}\nPerson To Meet : ${visitorlogging.eventHost.name:-} \nAdmin Team."
+		"message": "Thanks for visiting ${org.name}\n CheckInTime : \n${visitorlogging.checkInTime:-}\nPerson To Meet : ${visitorlogging.host.name:-} \nAdmin Team."
 	
 	},
 	"91": {
 		"name": "CHECKING_IN",
 		"to": "${visitorlogging.visitor.phone:-}",
-		"message": "Thanks for visiting ${org.name}\n CheckInTime : \n${visitorlogging.checkInTime:-}\nPerson To Meet : ${visitorlogging.eventHost.name:-} \nAdmin Team."
+		"message": "Thanks for visiting ${org.name}\n CheckInTime : \n${visitorlogging.checkInTime:-}\nPerson To Meet : ${visitorlogging.host.name:-} \nAdmin Team."
 	},
 	"92": {
 		"name": "PREREGISTERATION_INVITATION_EMAIL",

@@ -76,6 +76,15 @@ public class VisitorInviteAction extends FacilioAction{
 		this.id = id;
 	}
 
+	private long visitorId;
+	
+	public long getVisitorId() {
+		return visitorId;
+	}
+	public void setVisitorId(long visitorId) {
+		this.visitorId = visitorId;
+	}
+
 	private long inviteId;
 	
 	private List<Long> inviteeIds;
@@ -110,6 +119,7 @@ public class VisitorInviteAction extends FacilioAction{
 	public void setInviteeIds(List<Long> inviteeIds) {
 		this.inviteeIds = inviteeIds;
 	}
+	
 	public String addVisitorInvites() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(visitorInvites)) {
@@ -229,6 +239,30 @@ public class VisitorInviteAction extends FacilioAction{
 			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		}
 		return SUCCESS;
+	}
+	public String preRegisterVisitors() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.preRegisterVisitorsChain();
+		chain.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+		chain.getContext().put(FacilioConstants.ContextNames.RECORD, visitorInvite);
+		chain.getContext().put(FacilioConstants.ContextNames.INVITEES, invitees);
+		
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.RECORD, visitorInvite);
+		
+		return SUCCESS;
+	}
+
+	public String qrScanVisitor() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.qrScanVisitorChain();
+		chain.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+		chain.getContext().put(FacilioConstants.ContextNames.VISITOR_INVITE_ID, inviteId);
+		chain.getContext().put(FacilioConstants.ContextNames.VISITOR_ID, visitorId);
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.VISITOR_INVITE_REL, chain.getContext().get(FacilioConstants.ContextNames.VISITOR_INVITE_REL));
+		
+		return SUCCESS;
+		
 	}
 
 }

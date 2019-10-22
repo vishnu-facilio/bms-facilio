@@ -553,6 +553,11 @@ public class ViewFactory {
 		views.put("all", getAllVisitorLogsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllVisitorInvitesView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
+
 		return viewsMap;
 	}
 
@@ -4647,6 +4652,14 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Visitor Logs");
+		return allView;
+	}
+
+	private static FacilioView getAllVisitorInvitesView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Visitor Invites");
 		return allView;
 	}
 

@@ -15,6 +15,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.google.common.base.Objects;
 
 public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 
@@ -22,26 +23,29 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>)context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
-		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID);
-		if(CollectionUtils.isNotEmpty(recordIds) && changeSet != null && !changeSet.isEmpty()) {
+		List<VisitorLoggingContext> records = (List<VisitorLoggingContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		if(CollectionUtils.isNotEmpty(records) && changeSet != null && !changeSet.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if(!changeSet.isEmpty()) {
 				long time = System.currentTimeMillis();
-				for(Long recordId : recordIds) {
-					List<UpdateChangeSet> updatedSet = changeSet.get(recordId);
+				for(VisitorLoggingContext record : records) {
+					List<UpdateChangeSet> updatedSet = changeSet.get(record.getId());
 					if(updatedSet != null && !updatedSet.isEmpty()) {
 						for(UpdateChangeSet changes : updatedSet) {
 							FacilioField field = modBean.getField(changes.getFieldId()) ;
 							if(field != null) {
 								if(field.getName().equals("moduleState")) {
-									VisitorLoggingContext log = VisitorManagementAPI.getVisitorLogging(recordId, false);
+									VisitorLoggingContext log = VisitorManagementAPI.getVisitorLogging(record.getId(), false);
 									FacilioStatus status = StateFlowRulesAPI.getStateContext((long)changes.getNewValue());
-									if(status.getStatus().equals("CheckedIn")) {
-										VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(recordId, true, time);
-										VisitorManagementAPI.updateVisitorInviteStateToArrived(log.getVisitor().getId(), log.getInvite().getId());
+									if(status.getStatus().toString().trim().equals("CheckedIn")) {
+										VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record.getId(), true, time);
+										if(log.getInvite() != null) {
+											VisitorManagementAPI.updateVisitorInviteStateToArrived(log.getVisitor().getId(), log.getInvite().getId());
+										}
 									}
-									else if(status.getStatus().equals("CheckedOut")) {
-										VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(recordId, false, time);
+									else if(status.getStatus().toString().trim().equals("CheckedOut")) {
+										VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record.getId(), false, time);
+										VisitorManagementAPI.updateVisitorRollUps(log);
 									}
 								}
 							}

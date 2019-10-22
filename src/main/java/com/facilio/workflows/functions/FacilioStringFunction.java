@@ -131,6 +131,36 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	ADD_DOUBLE_QUOTES(8,"addDoubleQuotes") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			String string = objects[0].toString();
+			string = string + "\"";
+			return string;
+		}
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	ENCLOSE_DOUBLE_QUOTES(9,"encloseDoubleQuotes") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			String string = objects[0].toString();
+			string = "\"" + string + "\"";
+			return string;
+		}
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;

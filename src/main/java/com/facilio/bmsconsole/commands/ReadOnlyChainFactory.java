@@ -1535,6 +1535,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getVisitorDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVisitor());
+		c.addCommand(new LoadVisitorLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
@@ -1576,11 +1577,15 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVisitorLogging());
 		c.addCommand(new LoadVisitorLoggingLookUpCommand());
-		c.addCommand(new AddLookupFetchForModuleStateCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		
 		return c;
 	}
 	
+	public static FacilioChain qrScanVisitorChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetVisitorAndInviteForQrScanCommand());
+		return c;
+	}
 
 }

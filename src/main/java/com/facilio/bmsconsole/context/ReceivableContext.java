@@ -22,6 +22,14 @@ public class ReceivableContext extends ModuleBaseWithCustomFields {
 		this.status = Status.valueOf(status);
 	}
 	
+	private long requiredTime = -1;
+	public long getRequiredTime() {
+		return requiredTime;
+	}
+	public void setRequiredTime(long requiredTime) {
+		this.requiredTime = requiredTime;
+	}
+	
 	private PurchaseOrderContext poId;
 	
 	
@@ -31,7 +39,7 @@ public class ReceivableContext extends ModuleBaseWithCustomFields {
 	public void setPoId(PurchaseOrderContext poId) {
 		this.poId = poId;
 	}
-
+ 
 
 	public static enum Status {
 		YET_TO_RECEIVE,
