@@ -241,7 +241,7 @@ public class VisitorAction extends FacilioAction
 				visitor.setLocation(null);
 			}
 		FacilioChain c = TransactionChainFactory.updateVisitorChain();
-		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitors);
+		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitor));
 		c.execute();
 		setResult(FacilioConstants.ContextNames.VISITORS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		return SUCCESS;

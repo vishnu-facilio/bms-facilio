@@ -1,13 +1,16 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
@@ -284,6 +287,20 @@ public class VisitorManagementAPI {
 			updatevisitor(visitorLog.getVisitor().getId(),updatedfields, updateMap);
 		}
 			
+		
+	}
+	
+	public static void updateVisitorLogNDA(long logId, long fileId) throws Exception {
+		
+		if(logId > 0) {
+			AttachmentContext attachment = new AttachmentContext();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule("visitorloggingattachments");
+			attachment.setParentId(logId);
+			attachment.setModuleId(module.getModuleId());
+			attachment.setFileId(fileId);
+			AttachmentsAPI.addAttachments(Collections.singletonList(attachment), "visitorloggingattachments");
+		}
 		
 	}
 	
