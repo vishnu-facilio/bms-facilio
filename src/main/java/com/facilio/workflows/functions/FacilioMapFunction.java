@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
@@ -154,6 +155,23 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	PARSE(9, "parse") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			String string = (String) objects[0];
+			return FacilioUtil.parseJson(string);
+			
+		}
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	}
 	;
 	private Integer value;
 	private String functionName;
