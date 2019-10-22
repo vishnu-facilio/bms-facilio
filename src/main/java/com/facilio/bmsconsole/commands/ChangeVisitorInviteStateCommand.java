@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
@@ -27,7 +28,7 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(records) && changeSet != null && !changeSet.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			Map<Long, List<UpdateChangeSet>> moduleChangeSet = changeSet.get(FacilioConstants.ContextNames.VISITOR_LOGGING);
-			if(!moduleChangeSet.isEmpty()) {
+			if(MapUtils.isNotEmpty(moduleChangeSet)) {
 				long time = System.currentTimeMillis();
 				for(VisitorLoggingContext record : records) {
 					List<UpdateChangeSet> updatedSet = moduleChangeSet.get(record.getId());
