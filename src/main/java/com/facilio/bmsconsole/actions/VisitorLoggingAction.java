@@ -205,18 +205,6 @@ private static final long serialVersionUID = 1L;
 		return SUCCESS;
 	}
 	
-	public String preRegisterVisitor() throws Exception {
-		
-		FacilioChain chain = TransactionChainFactory.preRegisterVisitorsChain();
-		chain.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
-		chain.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
-		
-		chain.execute();
-		setResult(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
-		
-		return SUCCESS;
-	}
-	
 	public String checkOutVisitorLogging() throws Exception {
 		
 		if(!StringUtils.isEmpty(contactNumber)) {

@@ -4429,7 +4429,11 @@
 		<action name="addInvitees"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="addInvitees" />
 		<action name="deleteInvitees"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteInvitees" />			
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteInvitees" />
+		<action name="preRegister"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="preRegisterVisitors" />
+		<action name="qrScanVisitor"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="qrScanVisitor" />				
 	</package>
 	
 		<package name="visitorlogging" namespace="/api/v2/visitorLogging"
@@ -4444,8 +4448,6 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="deleteVisitorLogging" />
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingDetails" />
-		<action name="preRegister"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="preRegisterVisitor" />
 		<action name="checkOutWithPhone"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkOutVisitorLogging" />
 	</package>

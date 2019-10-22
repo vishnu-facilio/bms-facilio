@@ -68,7 +68,7 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static VisitorLoggingContext  getVisitorLogging(long logId, boolean fetchActiveLog) throws Exception {
+	public static VisitorLoggingContext getVisitorLogging(long logId, boolean fetchActiveLog) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
@@ -89,7 +89,7 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static VisitorLoggingContext  getActiveVisitorLogging(long visitorId) throws Exception {
+	public static VisitorLoggingContext getVisitorLogging(long visitorId, long inviteId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
@@ -101,12 +101,31 @@ public class VisitorManagementAPI {
 														.andCondition(CriteriaAPI.getCondition("VISITOR", "visitor", String.valueOf(visitorId), NumberOperators.EQUALS))
 														;
 		
-		
+		if(inviteId > 0) {
+			builder.andCondition(CriteriaAPI.getCondition("VISITOR_INVITE", "visitorInvite", String.valueOf(inviteId), NumberOperators.EQUALS));
+			
+		}
 		VisitorLoggingContext records = builder.fetchFirst();
 		return records;
 	
 	}
 	
+	public static VisitorInviteContext getVisitorInvite(long inviteId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_INVITE);
+		SelectRecordsBuilder<VisitorInviteContext> builder = new SelectRecordsBuilder<VisitorInviteContext>()
+														.module(module)
+														.beanClass(VisitorInviteContext.class)
+														.select(fields)
+														.andCondition(CriteriaAPI.getIdCondition(inviteId, module))
+														;
+		
+		VisitorInviteContext record = builder.fetchFirst();
+		return record;
+	
+	}
 	public static VisitorContext getVisitor(long id, String phoneNumber) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

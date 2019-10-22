@@ -1264,6 +1264,7 @@ public class FacilioConstants {
 		public static final String VISITOR_INVITE_ID = "visitorInviteId";
 		public static final String INVITEES = "invitees";
 		public static final String VISITOR_LOGGING_RECORDS = "visitorloggingrecords";
+		public static final String VISITOR_ID = "visitorId";
 		
 		
 		public static final int SITE_BOUNDARY_RADIUS = 1000; //meter 
