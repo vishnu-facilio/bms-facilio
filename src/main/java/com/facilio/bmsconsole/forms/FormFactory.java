@@ -1231,10 +1231,10 @@ public class FormFactory {
 	private static List<FormField> getVisitorPreRegisterFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("inviteName", FieldDisplayType.TEXTBOX, "Invite Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Expected Start Time", Required.OPTIONAL, 2, 2));
-		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Expected End Time", Required.OPTIONAL, 2, 3));
-		fields.add(new FormField("inviteHost", FieldDisplayType.USER, "Host", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("invitees", FieldDisplayType.VISITOR_INVITEES , "VISITORS", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Expected Start Time", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Expected End Time", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("inviteHost", FieldDisplayType.USER, "Host", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("invitees", FieldDisplayType.VISITOR_INVITEES , "VISITORS", Required.OPTIONAL, 5, 1));
 
 		return fields;
 	}
