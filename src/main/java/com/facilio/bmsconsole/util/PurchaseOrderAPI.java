@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,10 +10,12 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
+import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.PoAssociatedTermsContext;
 import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.context.TermsAndConditionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -20,6 +24,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -133,6 +138,20 @@ public class PurchaseOrderAPI {
 			List<PurchaseOrderLineItemContext> list = builder.get();
 			return list;
 
+	}
+	
+	public static void updatePoReceivable(long poId,List<FacilioField> updatedFields, Map<String, Object> updateMap) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
+		
+		UpdateRecordBuilder<ReceivableContext> updateBuilder = new UpdateRecordBuilder<ReceivableContext>()
+				.module(module)
+				.fields(updatedFields)
+				.andCondition(CriteriaAPI.getCondition("PO_ID", "poId", String.valueOf(poId), NumberOperators.EQUALS))
+			;
+		updateBuilder.updateViaMap(updateMap);
+	
 	}
 	
 	public static void updateTermsAssociated(Long id, List<PoAssociatedTermsContext> associatedTerms) throws Exception {
