@@ -93,7 +93,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         if(topicPartition == null) {
             topicPartition = new TopicPartition(topic, 0);
             consumer.assign(Collections.singletonList(topicPartition));
-            consumer.seekToEnd(topicPartition);
+            consumer.seekToEnd(Collections.singleton(topicPartition));
         }
     }
 
