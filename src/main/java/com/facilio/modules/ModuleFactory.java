@@ -2761,4 +2761,12 @@ public class ModuleFactory {
 		return module;
 
 	}
+
+    public static FacilioModule getConnectionApiModule() {
+		FacilioModule module = new FacilioModule();
+		module.setTableName("Connection_Api");
+		module.setDisplayName("ConnectionApi");
+		module.setName("connectionApi");
+		return module;
+    }
 }
