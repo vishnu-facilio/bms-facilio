@@ -83,7 +83,12 @@ public class KPIAction extends FacilioAction {
 		context.put("groupBy", getGroupBy());
 		chain.execute();
 		
-		setResult(ContextNames.RESULT, context.get(ContextNames.RESULT));
+		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.RECORD_COUNT));
+		}
+		else {
+			setResult(ContextNames.RESULT, context.get(ContextNames.RESULT));
+		}
 		
 		return SUCCESS;
 	}

@@ -1594,6 +1594,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GetKPIViewListCommand());
 		chain.addCommand(new KPIListGroupingCommand());
+		chain.addCommand(new SetCurrentValueForKPICommand());
 		return chain;
 	}
 }

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -36,6 +38,7 @@ public class GetKPIViewListCommand extends FacilioCommand {
 		String groupBy = (String) context.get("groupBy");
 		FacilioFrequency frequency = (FacilioFrequency) context.get(ContextNames.FREQUENCY);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 		
 		
 		FacilioModule formulaModule = ModuleFactory.getFormulaFieldModule();
@@ -52,24 +55,13 @@ public class GetKPIViewListCommand extends FacilioCommand {
 		FacilioModule rdmModule = ModuleFactory.getReadingDataMetaModule();
 		Map<String, FacilioField> rdmFieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
 		
-		List<FacilioField> selectFields = new ArrayList<>();
-		selectFields.addAll(formulaFields);
-		selectFields.add(resourceNameField);
-		selectFields.add(rdmFieldMap.get("value"));
-		selectFields.add(rdmFieldMap.get("ttime"));
-		selectFields.add(rdmFieldMap.get("resourceId"));
-		
-		String orderBy = groupBy.equals(ContextNames.KPI) ? fieldMap.get("name").getCompleteColumnName() : resourceNameField.getCompleteColumnName();
-		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(formulaTable)
 				.innerJoin(rdmModule.getTableName()).on(fieldMap.get("readingFieldId").getCompleteColumnName()+"="+rdmFieldMap.get("fieldId").getCompleteColumnName())
 				.innerJoin(resourceTable).on(rdmFieldMap.get("resourceId").getCompleteColumnName()+"="+resourceTable+".ID")
-				.select(selectFields)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formulaFieldType"), String.valueOf(FormulaFieldType.ENPI.getValue()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("frequency"), String.valueOf(frequency.getValue()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("siteId"), String.valueOf(siteId), NumberOperators.EQUALS))
-				.orderBy(orderBy)
 				;
 		
 		/*SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
@@ -94,28 +86,46 @@ public class GetKPIViewListCommand extends FacilioCommand {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetCategoryId"), String.valueOf(assetCategoryId), NumberOperators.EQUALS));
 		}
 		
-		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-		if (pagination != null) {
-			int page = (int) pagination.get("page");
-			int perPage = (int) pagination.get("perPage");
-
-			if (perPage != -1) {
-				int offset = ((page-1) * perPage);
-				if (offset < 0) {
-					offset = 0;
+		if (!fetchCount) {
+			List<FacilioField> selectFields = new ArrayList<>();
+			selectFields.addAll(formulaFields);
+			selectFields.add(resourceNameField);
+			selectFields.add(rdmFieldMap.get("value"));
+			selectFields.add(rdmFieldMap.get("ttime"));
+			selectFields.add(rdmFieldMap.get("resourceId"));
+			
+			String orderBy = groupBy.equals(ContextNames.KPI) ? fieldMap.get("name").getCompleteColumnName() : resourceNameField.getCompleteColumnName();
+			builder.select(selectFields).orderBy(orderBy);
+			
+			JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+			if (pagination != null) {
+				int page = (int) pagination.get("page");
+				int perPage = (int) pagination.get("perPage");
+				
+				if (perPage != -1) {
+					int offset = ((page-1) * perPage);
+					if (offset < 0) {
+						offset = 0;
+					}
+					
+					builder.offset(offset);
+					builder.limit(perPage);
 				}
-
-				builder.offset(offset);
-				builder.limit(perPage);
 			}
+		}
+		else {
+			builder.select(new HashSet<>()).aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(formulaModule));
 		}
 		
 		List<Map<String, Object>> kpis = builder.get();
-		if (CollectionUtils.isNotEmpty(kpis)) {
-			
+		if (fetchCount) {
+			if (CollectionUtils.isNotEmpty(kpis)) {
+				context.put(FacilioConstants.ContextNames.RECORD_COUNT, kpis.get(0).get("id"));
+			}
 		}
-		
-		context.put(ContextNames.KPI_LIST, kpis);
+		else {
+			context.put(ContextNames.KPI_LIST, kpis);
+		}
 		
 		return false;
 	}

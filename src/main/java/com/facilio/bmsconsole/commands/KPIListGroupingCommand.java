@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 
 public class KPIListGroupingCommand extends FacilioCommand {
@@ -17,7 +16,6 @@ public class KPIListGroupingCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		List<Map<String, Object>> kpis = (List<Map<String, Object>>) context.get(ContextNames.KPI_LIST);
-		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 		if (CollectionUtils.isEmpty(kpis)) {
 			return false;
 		}
@@ -27,6 +25,7 @@ public class KPIListGroupingCommand extends FacilioCommand {
 		List<Map<String, Object>> records = new ArrayList<>();
 		
 		long prevId = -1;
+		List<Map<String, Object>> data = null;
 		
 		for(Map<String, Object> kpi: kpis) {
 			
@@ -41,7 +40,6 @@ public class KPIListGroupingCommand extends FacilioCommand {
 				id = (long) kpi.get("resourceId");
 			}
 			
-			List<Map<String, Object>> data;
 			if (prevId != id) {
 				Map<String, Object> row = new HashMap<>();
 				row.put("name", name);
@@ -51,9 +49,8 @@ public class KPIListGroupingCommand extends FacilioCommand {
 				row.put("data", data);
 				records.add(row);
 			}
-			else {
-				data = null;
-			}
+			
+			prevId = id;
 			data.add(kpi);
 		}
 		
