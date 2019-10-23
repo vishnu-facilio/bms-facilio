@@ -241,8 +241,13 @@ public class FacilioAction extends ActionSupport {
 		return this.orderType;
 	}
 	
+	@Deprecated
 	protected FacilioContext constructListContext() throws Exception {
 		FacilioContext context = new FacilioContext();
+		return constructListContext(context);
+	}
+	
+	protected FacilioContext constructListContext(FacilioContext context) throws Exception {
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
  		if (getPage() == 0) {
  			setPage(1);

@@ -5016,6 +5016,7 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		/*fields.add(getOrgIdField(module));*/
+		fields.add(getSiteIdField(module));
 		fields.add(getNameField(module));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("formulaFieldType", "FORMULA_FIELD_TYPE", module, FieldType.NUMBER));
