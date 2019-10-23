@@ -24,6 +24,7 @@ public class UpdateVisitorInviteRelArrivedStateCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		List<VisitorLoggingContext> visitorLoggingRecords = (List<VisitorLoggingContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(visitorLoggingRecords)) {
+			Map<String, Map<Long, List<UpdateChangeSet>>> moduleChangeSetMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
 			Map<Long, List<UpdateChangeSet>> changeSet = new HashMap<Long, List<UpdateChangeSet>>();
 			
 			for(VisitorLoggingContext vl : visitorLoggingRecords) {
@@ -49,7 +50,8 @@ public class UpdateVisitorInviteRelArrivedStateCommand extends FacilioCommand{
 					
 				}
 			}
-			context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, changeSet);
+			moduleChangeSetMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, changeSet);
+			context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, moduleChangeSetMap);
 		}
 		return false;
 	}

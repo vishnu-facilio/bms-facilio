@@ -27,27 +27,28 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 		List<VisitorLoggingContext> records = (List<VisitorLoggingContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(records) && changeSet != null && !changeSet.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			Map<Long, List<UpdateChangeSet>> moduleChangeSet = changeSet.get(FacilioConstants.ContextNames.VISITOR_LOGGING);
-			if(MapUtils.isNotEmpty(moduleChangeSet)) {
-				long time = System.currentTimeMillis();
-				for(VisitorLoggingContext record : records) {
-					List<UpdateChangeSet> updatedSet = moduleChangeSet.get(record.getId());
-					if(updatedSet != null && !updatedSet.isEmpty()) {
-						for(UpdateChangeSet changes : updatedSet) {
-							FacilioField field = modBean.getField(changes.getFieldId()) ;
-							if(field != null) {
-								if(field.getName().equals("moduleState")) {
-									VisitorLoggingContext log = VisitorManagementAPI.getVisitorLogging(record.getId(), false);
-									FacilioStatus status = StateFlowRulesAPI.getStateContext((long)changes.getNewValue());
-									if(status.getStatus().toString().trim().equals("CheckedIn")) {
-										VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record.getId(), true, time);
-										if(log.getInvite() != null) {
-											VisitorManagementAPI.updateVisitorInviteStateToArrived(log.getVisitor().getId(), log.getInvite().getId());
+			if(MapUtils.isNotEmpty(changeSet)) {
+				Map<Long, List<UpdateChangeSet>> moduleChangeSet = changeSet.get(FacilioConstants.ContextNames.VISITOR_LOGGING);
+				if(MapUtils.isNotEmpty(moduleChangeSet)) {
+					long time = System.currentTimeMillis();
+					for(VisitorLoggingContext record : records) {
+						List<UpdateChangeSet> updatedSet = moduleChangeSet.get(record.getId());
+						if(updatedSet != null && !updatedSet.isEmpty()) {
+							for(UpdateChangeSet changes : updatedSet) {
+								FacilioField field = modBean.getField(changes.getFieldId()) ;
+								if(field != null) {
+									if(field.getName().equals("moduleState")) {
+										FacilioStatus status = StateFlowRulesAPI.getStateContext((long)changes.getNewValue());
+										if(status.getStatus().toString().trim().equals("CheckedIn")) {
+											VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record.getId(), true, time);
+											if(record.getInvite() != null) {
+												VisitorManagementAPI.updateVisitorInviteStateToArrived(record.getVisitor().getId(), record.getInvite().getId());
+											}
 										}
-									}
-									else if(status.getStatus().toString().trim().equals("CheckedOut")) {
-										VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record.getId(), false, time);
-										VisitorManagementAPI.updateVisitorRollUps(log);
+										else if(status.getStatus().toString().trim().equals("CheckedOut")) {
+											VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record.getId(), false, time);
+											VisitorManagementAPI.updateVisitorRollUps(record);
+										}
 									}
 								}
 							}
