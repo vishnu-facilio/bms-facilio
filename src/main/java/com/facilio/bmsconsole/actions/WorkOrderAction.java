@@ -827,9 +827,6 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	
-	String qrVAL;
-
 	public String getQrVAL() {
 		return qrVAL;
 	}
@@ -837,6 +834,8 @@ public class WorkOrderAction extends FacilioAction {
 	public void setQrVAL(String qrVAL) {
 		this.qrVAL = qrVAL;
 	}
+
+	private String qrVAL;
 
 	private long resourceId = -1;
 
