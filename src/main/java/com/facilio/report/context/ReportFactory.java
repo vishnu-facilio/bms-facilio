@@ -53,12 +53,14 @@ public class ReportFactory {
 		String WO_ID = "al_wo_id";
 		String NEW_FIRST_RESPONSE_TIME_COL = "new_al_firstresponsetime";
 		String NEW_ALARM_DURATION_COL = "new_al_duration";
+		String NEW_ALARM_DISTINCT_RESOURCE_COL = "new_al_distinct_resource";
 		
 		int FIRST_RESPONSE_TIME = 8;
 		int ALARM_DURATION = 7;
 		int WORK_ORDER_ID = 9;
 		int NEW_FIRST_RESPONSE_TIME = 10;
 		int NEW_ALARM_DURATION = 11;
+		int NEW_ALARM_DISTINCT_RESOURCE = 12;
 	}
 
 	// integer between 21-25
@@ -111,6 +113,7 @@ public class ReportFactory {
 
 			// alarm occurrence fields
 			reportFields.add(getField(Alarm.NEW_FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getAlarmOccurenceModule(), " (AlarmOccurrence.ACKNOWLEDGED_TIME - AlarmOccurrence.CREATED_TIME) ", FieldType.NUMBER, Alarm.NEW_FIRST_RESPONSE_TIME));
+			reportFields.add(getField(Alarm.NEW_ALARM_DISTINCT_RESOURCE_COL, "Distinct Assets", ModuleFactory.getAlarmOccurenceModule(), " DISTINCT(RESOURCE_ID) ", FieldType.NUMBER, Alarm.NEW_ALARM_DISTINCT_RESOURCE));
 			reportFields.add(getField(Alarm.NEW_ALARM_DURATION_COL, "Alarm Duration", ModuleFactory.getAlarmOccurenceModule(), "(CASE WHEN AlarmOccurrence.CLEARED_TIME IS NOT NULL THEN AlarmOccurrence.CLEARED_TIME - AlarmOccurrence.CREATED_TIME ELSE ? - AlarmOccurrence.CREATED_TIME END) ", FieldType.NUMBER, Alarm.NEW_ALARM_DURATION));
 
 			// Asset Breakdown fields
