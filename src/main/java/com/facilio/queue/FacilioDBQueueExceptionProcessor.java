@@ -24,18 +24,14 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		if(FacilioProperties.isOnpremise() || FacilioProperties.isProduction()) {
-            return;
-        }
-
+	
         List<QueueMessage> messageList = new ArrayList<>();
 			try {
 				messageList = FacilioQueueException.pull(QUEUE, 20);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-			System.out.println("Queue Message List is "+messageList);
-		
+		LOGGER.info("Queue Message List is "+messageList);
 
         if(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 20) {
             processMessages(messageList);
