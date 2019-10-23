@@ -23,6 +23,9 @@ public class AddNewVisitorsWhilePreRegisteringCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		VisitorInviteContext visitorInviteRecords = (VisitorInviteContext)context.get(FacilioConstants.ContextNames.RECORD);
 		List<VisitorContext> visitors = (List<VisitorContext>)context.get(FacilioConstants.ContextNames.INVITEES);
+		if(visitorInviteRecords.getInviteHost() == null) {
+			throw new IllegalArgumentException("Invite Host cannot be null");
+		}
 		if(CollectionUtils.isNotEmpty(visitors)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
