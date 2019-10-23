@@ -257,6 +257,14 @@ public class Account implements AccountsInterface<User>, Serializable{
 		this.redisDeleteCount = this.redisDeleteCount + redisQueries;
 	}
 
+	public long getTotalQueries() {
+		return getSelectQueries() + getDeleteQueries()+ getInsertQueries()+ getUpdateQueries();
+	}
+
+	public long getTotalQueryTime() {
+		return getSelectQueriesTime() + getDeleteQueriesTime()+ getInsertQueriesTime()+ getUpdateQueriesTime();
+	}
+
 	private String requestUri;
     public void setRequestUri(String requestUri) {
     	this.requestUri = requestUri;

@@ -6412,6 +6412,23 @@ public class FieldFactory {
 		return getField(name, null, colName, module, type);
 	}
 
+	public static FacilioField getIdField(String name, String colName, FacilioModule module) {
+		return getField(name, colName, module, FieldType.ID);
+	}
+
+	public static FacilioField getStringField(String name, String colName, FacilioModule module) {
+		return getField(name, colName, module, FieldType.STRING);
+	}
+
+	public static FacilioField getDateField(String name, String colName, FacilioModule module) {
+		return getField(name, colName, module, FieldType.DATE_TIME);
+	}
+
+	public static FacilioField getNumberField(String name, String colName, FacilioModule module) {
+		return getField(name, colName, module, FieldType.NUMBER);
+	}
+
+
 	public static FacilioField getField(String name, String displayName, String colName, FacilioModule module,
 			FieldType type) {
 		FacilioField columnFld = null;

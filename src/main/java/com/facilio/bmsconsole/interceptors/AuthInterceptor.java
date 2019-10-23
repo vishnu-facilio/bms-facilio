@@ -7,6 +7,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.audit.AuditData;
+import com.facilio.audit.DBAudit;
+import com.facilio.audit.FacilioAudit;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.server.ServerInfo;
+import com.opensymphony.xwork2.ActionProxy;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -62,15 +69,15 @@ public class AuthInterceptor extends AbstractInterceptor {
 				IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urlsToValidate);
 				if(iamAccount == null) {
 					return Action.ERROR;
-				}
-				if (iamAccount != null) {
-						request.setAttribute("iamAccount", iamAccount);
+				} else {
+                    request.setAttribute("iamAccount", iamAccount);
 				}
 			}
 			else if (!isRemoteScreenMode(request)) {
 				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
 				if(authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
 					IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false, "app");
+
 					if (iamAccount != null) {
 						request.setAttribute("iamAccount", iamAccount);
 					}
@@ -91,9 +98,55 @@ public class AuthInterceptor extends AbstractInterceptor {
 			return Action.LOGIN;
 		}
 
-		return arg0.invoke();
+		String result = Action.LOGIN;
+		if(FacilioProperties.isProduction()) {
+			request.getAttribute("iamAccount");
+			result = arg0.invoke();
+		} else if(false){
+			AuditData data = null;
+			FacilioAudit audit = new DBAudit();
+			int status = 200;
+			try {
+				request.getAttribute("iamAccount");
+				data = getAuditData(arg0);
+				if(data != null) {
+					data.setId(audit.add(data));
+				}
+				result = arg0.invoke();
+			} catch (Exception e) {
+				status = 500;
+				LOGGER.info("Exception from action classs " + e.getMessage());
+			} finally {
+				if(data != null) {
+					data.setEndTime(System.currentTimeMillis());
+					data.setStatus(status);
+					data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());
+					audit.update(data);
+				}
+			}
+		}
+		return result;
 	}
-	
+
+	private AuditData getAuditData(ActionInvocation actionInvocation) {
+		if(AccountUtil.getCurrentUser() != null) {
+			AuditData data = new AuditData();
+			ActionProxy proxy = actionInvocation.getProxy();
+			data.setOrgId(AccountUtil.getCurrentUser().getOrgId());
+			data.setUserId(AccountUtil.getCurrentUser().getUid());
+			data.setOrgUserId(AccountUtil.getCurrentUser().getIamOrgUserId());
+			data.setAction(proxy.getActionName());
+			data.setMethod(proxy.getMethod());
+			data.setModule(proxy.getConfig().getPackageName());
+			data.setStartTime(System.currentTimeMillis());
+			data.setServer(ServerInfo.getHostname());
+			data.setSessionId(AccountUtil.getCurrentUser().getId());
+			data.setThread(Long.parseLong(Thread.currentThread().getName()));
+			return data;
+		}
+		return null;
+	}
+
 	private boolean isRemoteScreenMode(HttpServletRequest request) {
 		String remoteScreenHeader = request.getHeader("X-Remote-Screen");
 		String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");

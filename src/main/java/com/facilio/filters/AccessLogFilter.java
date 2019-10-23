@@ -95,8 +95,8 @@ public class AccessLogFilter implements Filter {
             event.setProperty("frgtime", String.valueOf(account.getRedisGetTime()));
             event.setProperty("frptime", String.valueOf(account.getRedisPutTime()));
             event.setProperty("frdtime", String.valueOf(account.getRedisDeleteTime()));
-            event.setProperty("ftqueries", String.valueOf((account.getSelectQueries() + account.getDeleteQueries()+ account.getInsertQueries()+ account.getUpdateQueries())));
-            event.setProperty("ftqtime", String.valueOf(account.getSelectQueriesTime() + account.getDeleteQueriesTime()+ account.getInsertQueriesTime()+ account.getUpdateQueriesTime()));
+            event.setProperty("ftqueries", String.valueOf(account.getTotalQueries()));
+            event.setProperty("ftqtime", String.valueOf(account.getTotalQueryTime()));
         }
 
         String remoteIp = request.getHeader(X_FORWARDED_FOR);
