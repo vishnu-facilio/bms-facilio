@@ -125,6 +125,10 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 		}
+		else {
+			request.getAttribute("iamAccount");
+			result = arg0.invoke();
+		}
 		return result;
 	}
 
