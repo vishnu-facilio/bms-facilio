@@ -19,6 +19,12 @@ public class CreateStateFlowDraftCommand extends FacilioCommand {
         Long stateFlowId = (Long) context.get(FacilioConstants.ContextNames.ID);
         if (stateFlowId != null && stateFlowId > 0) {
             StateFlowRuleContext stateFlowContext = StateFlowRulesAPI.getStateFlowContext(stateFlowId);
+            if (stateFlowContext.isDraft() && stateFlowContext.getDraftParentId() == -1) {
+                // newly created stateflow, and that is not live yet
+                context.put(FacilioConstants.ContextNames.STATE_FLOW, stateFlowContext);
+                context.put(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, StateFlowRulesAPI.getAllStateTransitionList(stateFlowContext));
+            }
+
             long originalStateFlowId = stateFlowContext.getId();
 
             StateFlowRuleContext draftStateFlow = StateFlowRulesAPI.getDraftStateFlowForParent(originalStateFlowId);

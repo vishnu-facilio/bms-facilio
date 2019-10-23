@@ -3702,6 +3702,12 @@ public class TransactionChainFactory {
 		chain.addCommand(new CreateStateFlowDraftCommand());
 		return chain;
 	}
+
+	public static FacilioChain getPublishStateFlowChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new PublishStateFlowCommand());
+		return chain;
+	}
 }
 
 
