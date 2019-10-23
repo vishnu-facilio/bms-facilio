@@ -55,6 +55,14 @@ public class FormulaFieldContext implements Serializable {
 		this.orgId = orgId;
 	}
 	
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+
 	private String name;
 	public String getName() {
 		return name;

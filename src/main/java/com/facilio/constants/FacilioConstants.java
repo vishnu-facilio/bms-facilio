@@ -379,6 +379,7 @@ public class FacilioConstants {
 		public static final String ONLY_READING = "onylyReading";
 		public static final String ADJUST_READING_TTIME = "adjustReadingTtime";
 		public static final String KPI = "kpi";
+		public static final String KPI_LIST = "kpis";
 		public static final String KPI_CATEGORY = "kpiCategory";
 		
 		public static final String DASHBOARD = "dashboard";
@@ -800,6 +801,7 @@ public class FacilioConstants {
 		public static final String END_TIME = "endTime";
 		public static final String MAX_COUNT = "maxCount";
 		public static final String SCHEDULED_ACTION = "scheduledAction";
+		public static final String FREQUENCY = "frequency";
 		
 		public static final String DATE_OPERATOR = "dateOperator";
 		public static final String DATE_OPERATOR_VALUE = "dateOperatorValue";
