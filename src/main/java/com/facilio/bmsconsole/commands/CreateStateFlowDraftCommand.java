@@ -23,6 +23,7 @@ public class CreateStateFlowDraftCommand extends FacilioCommand {
                 // newly created stateflow, and that is not live yet
                 context.put(FacilioConstants.ContextNames.STATE_FLOW, stateFlowContext);
                 context.put(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, StateFlowRulesAPI.getAllStateTransitionList(stateFlowContext));
+                return false;
             }
 
             long originalStateFlowId = stateFlowContext.getId();
