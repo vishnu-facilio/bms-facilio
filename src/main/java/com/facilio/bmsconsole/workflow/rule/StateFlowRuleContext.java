@@ -40,7 +40,7 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		this.diagramJson = diagramJson;
 	}
 
-	private long draftParentId;
+	private long draftParentId = -1;
 	public long getDraftParentId() {
 		return draftParentId;
 	}

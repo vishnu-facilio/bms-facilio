@@ -91,6 +91,14 @@ public class StateFlowAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+
+	public String publishStateFlow() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getPublishStateFlowChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.ID, stateFlowId);
+		chain.execute();
+		return SUCCESS;
+	}
 	
 	private long stateTransitionId = -1;
 	public long getStateTransitionId() {
