@@ -1,11 +1,6 @@
 package com.facilio.workflows.util;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -27,6 +22,9 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.LogManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -1793,7 +1791,8 @@ public class WorkflowUtil {
 		for(int i=0;i<objects.size();i++) {
 			objs[i] = objects.get(i);
 		}
-		return defaultFunctions.execute(objs);
+		JSONParser parser = new JSONParser();
+		return parser.parse((String)defaultFunctions.execute(objs));
 	}
 	
 	public static Object evalSystemFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {
@@ -1826,9 +1825,8 @@ public class WorkflowUtil {
 		else {
 			LOGGER.fine("function params---"+Arrays.toString(objects));
 		}
-		
-		return defaultFunctions.execute(objects);
-		
+		JSONParser parser = new JSONParser();
+		return parser.parse((String)defaultFunctions.execute(objects));
 	}
 	
 	public static FacilioWorkflowFunctionInterface getFacilioFunction(String nameSpace,String functionName) {

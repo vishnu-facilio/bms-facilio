@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.jobs;
 import com.amazonaws.services.dynamodbv2.xspec.L;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.dataFetchers.DataFetcher;
+import com.facilio.dataFetchers.Wateruos;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.timeseries.TimeSeriesAPI;
@@ -13,6 +15,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import javax.xml.crypto.Data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -51,10 +54,10 @@ public class DataFetcherJob extends FacilioJob {
             JSONObject jsonObject=(JSONObject) o;
             String timestamp = jsonObject.get("Timestamp").toString();
             if(timestamp!=null){
-            if(toMillis(timestamp)>maxTimeStamp){
-                maxTimeStamp=toMillis(jsonObject.get("Timestamp").toString());
-                selectedJSON=jsonObject;
-            }
+                if(toMillis(timestamp)>maxTimeStamp){
+                    maxTimeStamp=toMillis(jsonObject.get("Timestamp").toString());
+                    selectedJSON=jsonObject;
+                }
             }else{
                 LOGGER.error("Key Timestamp not found");
             }
@@ -102,22 +105,25 @@ public class DataFetcherJob extends FacilioJob {
 
     @Override
     public void execute(JobContext jc) throws Exception {
+        if(!FacilioProperties.isProduction())
+        {
+            DataFetcher wateruos = new Wateruos();
+            wateruos.process();
+        }
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of( "UTC" ));
+        JSONObject data;
+        try {
+            LOGGER.debug("execute called");
+            data = getData(getUrl(),getProbeId(), getFromTime(now,15), getToTime(now,15));
+            LOGGER.debug(data);
+            JSONObject timeSeriesData= toTimeSeriesData(data);
+            LOGGER.debug(timeSeriesData);
+            TimeSeriesAPI.processPayLoad(0,timeSeriesData,null);
 
-
-           ZonedDateTime now = ZonedDateTime.now(ZoneId.of( "UTC" ));
-           JSONObject data;
-           try {
-               LOGGER.debug("execute called");
-               data = getData(getUrl(),getProbeId(), getFromTime(now,15), getToTime(now,15));
-               LOGGER.debug(data);
-               JSONObject timeSeriesData= toTimeSeriesData(data);
-               LOGGER.debug(timeSeriesData);
-               TimeSeriesAPI.processPayLoad(0,timeSeriesData,null);
-
-           }catch(Exception ex){
-               LOGGER.error("Error while getting/Processing Data from "+getUrl());
-               LOGGER.error(ex.getMessage());
-           }
+        }catch(Exception ex){
+            LOGGER.error("Error while getting/Processing Data from "+getUrl());
+            LOGGER.error(ex.getMessage());
+        }
     }
 
     private JSONObject toTimeSeriesData(JSONObject data) {

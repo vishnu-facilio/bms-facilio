@@ -64,7 +64,20 @@ public class FieldFactory {
 		return lookupModuleVsSortFieldName.get(moduleName);
 	}
 
-	public static class Fields {
+	public static List<FacilioField> getConnectionApiFields() {
+		FacilioModule module = ModuleFactory.getConnectionApiModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		//fields.add(getField("orgId","ORGID",module,FieldType.NUMBER));
+		fields.add(getField("connectionId","CONNECTION_ID",module, FieldType.NUMBER));
+		fields.add(getNameField(module));
+		fields.add(getField("url","URL",module,FieldType.STRING));
+		fields.add(getField("type","TYPE",module,FieldType.NUMBER));
+		return  fields;
+	}
+
+    public static class Fields {
 		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
 		static {
 			alarmsFieldsInclude.add("isAcknowledged");
@@ -2907,6 +2920,7 @@ public class FieldFactory {
 		fields.add(getField("connectionId", "CONNECTION_ID", module, FieldType.LOOKUP));
 		fields.add(getField("key", "KEY_STRING", module, FieldType.STRING));
 		fields.add(getField("value", "VALUE_STRING", module, FieldType.STRING));
+		fields.add(getField("isProperty", "IS_PROPERTY", module, FieldType.BOOLEAN));
 		
 		return fields;
 	}
@@ -3679,7 +3693,6 @@ public class FieldFactory {
 	public static List<FacilioField> getWidgetStaticFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getWidgetStaticModule();
-
 		fields.add(getIdField(module));
 
 		FacilioField staticKey = new FacilioField();

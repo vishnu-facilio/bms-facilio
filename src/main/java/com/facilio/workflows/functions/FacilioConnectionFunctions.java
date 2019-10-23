@@ -35,16 +35,10 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 			if(objects.length == 3) {
 				params = (Map<String, String>) objects[2];
 			}
-			else if (objects.length == 4) {
-				bodyString = objects[2].toString();
-				bodyType = objects[3].toString();
-			}
 			
 			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.GET,bodyString,bodyType);
 			
-			JSONObject resultJson = (JSONObject) new JSONParser().parse(res);
-			
-			return resultJson;
+			return res;
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
@@ -76,7 +70,7 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 				bodyString = objects[2].toString();
 				bodyType = objects[3].toString();
 			}
-			
+
 			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.POST,bodyString,bodyType);
 			
 			JSONObject resultJson = (JSONObject) new JSONParser().parse(res);

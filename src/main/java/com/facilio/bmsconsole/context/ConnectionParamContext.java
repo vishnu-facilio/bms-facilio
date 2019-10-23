@@ -7,7 +7,7 @@ public class ConnectionParamContext {
 	long connectionId = -1l;
 	String key;
 	String value;
-	
+	boolean isProperty;
 	public long getId() {
 		return id;
 	}
@@ -37,5 +37,23 @@ public class ConnectionParamContext {
 	}
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public boolean isProperty() {
+		return isProperty;
+	}
+
+	public void setProperty(boolean property) {
+		isProperty = property;
+	}
+	public String toString(){
+		return "{" +
+				"id:"+id + ","+
+				"orgId:"+orgId + ","+
+				"connectionId:"+connectionId + ","+
+				"key:"+key + ","+
+				"value:"+value + ","+
+				"isProperty:"+isProperty+
+				"}";
 	}
 }
