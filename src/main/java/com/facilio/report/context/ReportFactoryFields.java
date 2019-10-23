@@ -66,7 +66,7 @@ public class ReportFactoryFields {
 		
 		// loading additional module fields
 		JSONObject rearrangedFields = rearrangeFields(selectedFields, moduleName);
-		setAdditionalModulemap(rearrangedFields, moduleName, bean);
+		setDefaultAdditionalModulemap(rearrangedFields, lookUpModuleNames, bean);
 		HashMap<String , List<FacilioField>> additionalModuleFields = getAdditionalModuleFields(moduleName,lookUpModuleNames, bean);
 		
 		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
@@ -396,12 +396,12 @@ public class ReportFactoryFields {
 	
 	public static JSONObject getitemTransactionsReportFields() throws Exception{
 		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ModuleNames.ITEM_TRANSCTIONS));
+		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ModuleNames.ITEM_TRANSACTIONS));
 		
 		
 		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
-		if(bean.getAllCustomFields(FacilioConstants.ModuleNames.ITEM_TRANSCTIONS) != null) {
-			customFields = FieldFactory.getAsMap(bean.getAllCustomFields(FacilioConstants.ModuleNames.ITEM_TRANSCTIONS));
+		if(bean.getAllCustomFields(FacilioConstants.ModuleNames.ITEM_TRANSACTIONS) != null) {
+			customFields = FieldFactory.getAsMap(bean.getAllCustomFields(FacilioConstants.ModuleNames.ITEM_TRANSACTIONS));
 		}
 		
 		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
@@ -426,9 +426,9 @@ public class ReportFactoryFields {
 		}
 		
 		//loading additional module fields
-		JSONObject rearrangedFields = rearrangeFields(selectedFields, FacilioConstants.ModuleNames.ITEM_TRANSCTIONS);
-		setAdditionalModulemap(rearrangedFields, FacilioConstants.ModuleNames.ITEM_TRANSCTIONS, bean);
-		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(FacilioConstants.ModuleNames.ITEM_TRANSCTIONS, bean);
+		JSONObject rearrangedFields = rearrangeFields(selectedFields, FacilioConstants.ModuleNames.ITEM_TRANSACTIONS);
+		setAdditionalModulemap(rearrangedFields, FacilioConstants.ModuleNames.ITEM_TRANSACTIONS, bean);
+		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(FacilioConstants.ModuleNames.ITEM_TRANSACTIONS, bean);
 		
 		List<FacilioField> assetFields = new ArrayList<FacilioField>();
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
@@ -485,7 +485,7 @@ public class ReportFactoryFields {
 		
 		ArrayList<String> dimensionListOrder = new ArrayList<String>();
 		dimensionListOrder.add("time");
-		dimensionListOrder.add(FacilioConstants.ModuleNames.ITEM_TRANSCTIONS);
+		dimensionListOrder.add(FacilioConstants.ModuleNames.ITEM_TRANSACTIONS);
 		dimensionListOrder.add(FacilioConstants.ContextNames.ASSET);
 		dimensionListOrder.add(FacilioConstants.ContextNames.WORK_ORDER);
 		dimensionListOrder.add(FacilioConstants.ModuleNames.GATE_PASS);
@@ -505,12 +505,12 @@ public class ReportFactoryFields {
 	
 	public static JSONObject gettoolTransactionsReportFields() throws Exception{
 		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ModuleNames.TOOL_TRANSCTIONS));
+		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ModuleNames.TOOL_TRANSACTIONS));
 		
 		
 		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
-		if(bean.getAllCustomFields(FacilioConstants.ModuleNames.TOOL_TRANSCTIONS) != null) {
-			customFields = FieldFactory.getAsMap(bean.getAllCustomFields(FacilioConstants.ModuleNames.TOOL_TRANSCTIONS));
+		if(bean.getAllCustomFields(FacilioConstants.ModuleNames.TOOL_TRANSACTIONS) != null) {
+			customFields = FieldFactory.getAsMap(bean.getAllCustomFields(FacilioConstants.ModuleNames.TOOL_TRANSACTIONS));
 		}
 		
 		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
@@ -535,9 +535,9 @@ public class ReportFactoryFields {
 		}
 		
 		//loading additional module fields
-		JSONObject rearrangedFields = rearrangeFields(selectedFields, FacilioConstants.ModuleNames.TOOL_TRANSCTIONS);
-		setAdditionalModulemap(rearrangedFields, FacilioConstants.ModuleNames.TOOL_TRANSCTIONS, bean);
-		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(FacilioConstants.ModuleNames.TOOL_TRANSCTIONS, bean);
+		JSONObject rearrangedFields = rearrangeFields(selectedFields, FacilioConstants.ModuleNames.TOOL_TRANSACTIONS);
+		setAdditionalModulemap(rearrangedFields, FacilioConstants.ModuleNames.TOOL_TRANSACTIONS, bean);
+		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(FacilioConstants.ModuleNames.TOOL_TRANSACTIONS, bean);
 		
 		List<FacilioField> assetFields = new ArrayList<FacilioField>();
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
@@ -598,7 +598,7 @@ public class ReportFactoryFields {
 		
 		ArrayList<String> dimensionListOrder = new ArrayList<String>();
 		dimensionListOrder.add("time");
-		dimensionListOrder.add(FacilioConstants.ModuleNames.TOOL_TRANSCTIONS);
+		dimensionListOrder.add(FacilioConstants.ModuleNames.TOOL_TRANSACTIONS);
 		dimensionListOrder.add(FacilioConstants.ContextNames.ASSET);
 		dimensionListOrder.add(FacilioConstants.ContextNames.WORK_ORDER);
 		dimensionListOrder.add(FacilioConstants.ModuleNames.GATE_PASS);
@@ -895,7 +895,7 @@ public class ReportFactoryFields {
 	private static List<String> getAdditionalModules(String moduleName) {
 		List<String> moduleNames = new ArrayList<String>();
 		
-		switch(moduleName) {
+		switch(moduleName.toLowerCase()) {
 			case "workorder":
 				moduleNames.add(FacilioConstants.ContextNames.ASSET);
 				moduleNames.add(FacilioConstants.ContextNames.SPACE);
@@ -949,6 +949,15 @@ public class ReportFactoryFields {
 	private static void setAdditionalModulemap(JSONObject rearragedFields, String moduleName, ModuleBean bean) throws Exception{
 		
 		List<String> additionalModules = getAdditionalModules(moduleName);
+		HashMap<String, Long> moduleMap = new HashMap<String, Long>();
+		for(String module: additionalModules) {
+			FacilioModule facilioModule = bean.getModule(module);
+			moduleMap.put(module, facilioModule.getModuleId());
+		}
+		rearragedFields.put("moduleMap", moduleMap);
+	}
+	private static void setDefaultAdditionalModulemap(JSONObject rearragedFields, List<String> additionalModules, ModuleBean bean) throws Exception{
+		
 		HashMap<String, Long> moduleMap = new HashMap<String, Long>();
 		for(String module: additionalModules) {
 			FacilioModule facilioModule = bean.getModule(module);
