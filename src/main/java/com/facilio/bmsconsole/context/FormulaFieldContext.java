@@ -301,6 +301,14 @@ public class FormulaFieldContext implements Serializable {
 		return false;
 	}
 	
+	private double minTarget = -1;
+	public double getMinTarget() {
+		return minTarget;
+	}
+	public void setMinTarget(double minTarget) {
+		this.minTarget = minTarget;
+	}
+
 	private double target = -1;
 	public double getTarget() {
 		return target;
@@ -308,7 +316,7 @@ public class FormulaFieldContext implements Serializable {
 	public void setTarget(double target) {
 		this.target = target;
 	}
-	
+
 	private Object currentValue = null;	// Only if single matched resource and target is there
 	public Object getCurrentValue() {
 		return currentValue;

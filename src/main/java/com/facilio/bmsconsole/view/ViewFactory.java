@@ -15,6 +15,8 @@ import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.ContractsContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
+import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewField;
@@ -557,6 +559,13 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVisitorInvitesView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		Map<String, FacilioField> formulaFieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldFields());
+		views.put("asset", getAssetKPIView("asset", formulaFieldMap).setOrder(order++));
+		views.put("space", getSpaceKPIView("space", formulaFieldMap).setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.FORMULA_FIELD, views);
 
 		return viewsMap;
 	}
@@ -4663,6 +4672,37 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioView getAssetKPIView(String name, Map<String, FacilioField> fieldMap) {
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getKPICondition(fieldMap));
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resourceType"), String.valueOf(ResourceType.ASSET_CATEGORY.getValue()), NumberOperators.EQUALS));
 
+		FacilioView assetKpisView = new FacilioView();
+		assetKpisView.setName(name);
+		assetKpisView.setDisplayName("Asset KPIs");
+		assetKpisView.setCriteria(criteria);
+
+		return assetKpisView;
+	}
+	
+	private static FacilioView getSpaceKPIView(String name, Map<String, FacilioField> fieldMap) {
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getKPICondition(fieldMap));
+		// Assuming all the asset kpis will have asset category
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resourceType"), String.valueOf(ResourceType.ASSET_CATEGORY.getValue()), NumberOperators.NOT_EQUALS));
+
+		FacilioView assetKpisView = new FacilioView();
+		assetKpisView.setName(name);
+		assetKpisView.setDisplayName("Space KPIs");
+		assetKpisView.setCriteria(criteria);
+
+		return assetKpisView;
+	}
+	
+	private static Condition getKPICondition(Map<String, FacilioField> fieldMap) {
+		return CriteriaAPI.getCondition(fieldMap.get("formulaFieldType"), String.valueOf(FormulaFieldType.ENPI.getValue()), NumberOperators.EQUALS);
+	}
 
 }

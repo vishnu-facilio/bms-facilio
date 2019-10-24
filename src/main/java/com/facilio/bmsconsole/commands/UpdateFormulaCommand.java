@@ -87,7 +87,7 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			if (oldFormula.getTarget() != newFormula.getTarget()) {
 				updateTarget(newFormula, oldFormula);
 			}
-			newFormula.setTarget(-1);
+			// newFormula.setTarget(-1);
 		}
 		
 		newFormula.setResourceId(-1);

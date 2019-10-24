@@ -1227,8 +1227,8 @@ public class FormulaFieldAPI {
 		if (formula.getViolationRuleId() != -1) {
 			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(formula.getViolationRuleId(), true, false);
 			formula.setViolationRule(rule);
-			Condition condition = rule.getCriteria().getConditions().values().stream().findFirst().get();
-			formula.setTarget(Double.parseDouble(condition.getValue()));
+			/*Condition condition = rule.getCriteria().getConditions().values().stream().findFirst().get();
+			formula.setTarget(Double.parseDouble(condition.getValue()));*/
 			if (formula.getMatchedResourcesIds().size() == 1) {
 				long resourceId = formula.getMatchedResourcesIds().get(0);
 				long fieldId = formula.getReadingFieldId();

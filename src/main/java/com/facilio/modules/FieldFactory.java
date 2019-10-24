@@ -5035,6 +5035,8 @@ public class FieldFactory {
 		fields.add(getField("formulaFieldType", "FORMULA_FIELD_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("kpiCategory", "KPI_CATEGORY", module, FieldType.LOOKUP));
 		fields.add(getField("violationRuleId", "VIOLATION_RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("minTarget", "MIN_TARGET", module, FieldType.DECIMAL));
+		fields.add(getField("target", "TARGET", module, FieldType.DECIMAL));
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
 		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("frequency", "FREQUENCY_TYPE", module, FieldType.NUMBER));
