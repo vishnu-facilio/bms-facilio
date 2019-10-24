@@ -107,6 +107,7 @@ public class DataFetcherJob extends FacilioJob {
     public void execute(JobContext jc) throws Exception {
         if(!FacilioProperties.isProduction())
         {
+            LOGGER.info("Calling wateruos");
             DataFetcher wateruos = new Wateruos();
             wateruos.process();
         }
