@@ -30,6 +30,7 @@ public class SetCurrentValueForKPICommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<Long, FacilioField> fieldMap = new HashMap<>();
 		
+		// TODO mark the current value as null if empty
 		for(Map<String, Object> kpi: kpis) {
 			long fieldId = (long) kpi.get("readingFieldId");
 			FacilioField field;

@@ -78,6 +78,7 @@ public class KPIAction extends FacilioAction {
 		context.put(ContextNames.MODULE_NAME, ContextNames.FORMULA_FIELD);
 		context.put(ContextNames.SITE_ID, siteId);
 		context.put(ContextNames.BUILDING_ID, buildingId);
+		context.put(ContextNames.FLOOR_ID, floorId);
 		context.put(ContextNames.CATEGORY_ID, categoryId);
 		context.put(ContextNames.FREQUENCY, getFrequencyEnum());
 		context.put("groupBy", getGroupBy());
@@ -107,6 +108,14 @@ public class KPIAction extends FacilioAction {
 	}
 	public void setBuildingId(long buildingId) {
 		this.buildingId = buildingId;
+	}
+	
+	private long floorId = -1;
+	public long getFloorId() {
+		return floorId;
+	}
+	public void setFloorId(long floorId) {
+		this.floorId = floorId;
 	}
 	
 	private long categoryId = -1;

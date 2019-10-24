@@ -1593,8 +1593,8 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GetKPIViewListCommand());
-		chain.addCommand(new KPIListGroupingCommand());
 		chain.addCommand(new SetCurrentValueForKPICommand());
+		chain.addCommand(new KPIListGroupingCommand());
 		return chain;
 	}
 }
