@@ -29,8 +29,7 @@ public class Wateruos extends DataFetcher {
         String res;
         if (connectionApiContext!=null){
             res = (String)connectionApiContext.execute(params);
-            LOGGER.debug("Response from "+connectionApiContext.getName()+"\n"+res);
-            System.out.println("anand.h [9000]"+ res);
+            LOGGER.info("anand.h Response from "+connectionApiContext.getName()+"\n"+res);
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(res);
             long maxTimeStamp=0L;
