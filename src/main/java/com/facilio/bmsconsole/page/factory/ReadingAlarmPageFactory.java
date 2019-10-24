@@ -119,7 +119,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     }
     private static  PageWidget  addImpactCard (Section section) {
         PageWidget impactCard = new PageWidget(PageWidget.WidgetType.IMPACTS);
-        impactCard.addToLayoutParams(section, 24, 16);
+        impactCard.addToLayoutParams(section, 24, 8);
         section.addWidget(impactCard);
         return impactCard;
     }
