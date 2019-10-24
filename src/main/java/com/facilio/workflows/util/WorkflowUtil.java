@@ -1791,8 +1791,7 @@ public class WorkflowUtil {
 		for(int i=0;i<objects.size();i++) {
 			objs[i] = objects.get(i);
 		}
-		JSONParser parser = new JSONParser();
-		return parser.parse((String)defaultFunctions.execute(objs));
+		return defaultFunctions.execute(objs);
 	}
 	
 	public static Object evalSystemFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {
@@ -1825,8 +1824,7 @@ public class WorkflowUtil {
 		else {
 			LOGGER.fine("function params---"+Arrays.toString(objects));
 		}
-		JSONParser parser = new JSONParser();
-		return parser.parse((String)defaultFunctions.execute(objects));
+		return defaultFunctions.execute(objects);
 	}
 	
 	public static FacilioWorkflowFunctionInterface getFacilioFunction(String nameSpace,String functionName) {
