@@ -24,6 +24,13 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         addCommonSubModuleGroup(tab1Sec1);
 
 
+        Page.Tab tab4 = page.new Tab("alarmRca", "alarmRca");
+        page.addTab(tab4);
+
+        Section tab4Sec1 = page.new Section();
+        tab4.addSection(tab4Sec1);
+
+
         Page.Tab tab2 = page.new Tab("insight");
         page.addTab(tab2);
         Section tab2Sec1 = page.new Section();
@@ -32,6 +39,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         addMeanTimeBetweenCard(tab2Sec1);
         addMeanTimeToClearCard(tab2Sec1);
         addAlarmDuration(tab2Sec1);
+        addImpactCard(tab2Sec1);
         
         // History Tab
         Page.Tab tab3 = page.new Tab("occurrenceHistory", "occurrenceHistory");
@@ -73,35 +81,47 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         section.addWidget(alarmReport);
         return alarmReport;
     }
-    private static void addOccurrenceHistoryWidget(Section section) {
+    private static PageWidget addOccurrenceHistoryWidget(Section section) {
         PageWidget occurrenceListWidget = new PageWidget(PageWidget.WidgetType.OCCURRENCE_HISTORY);
         section.addWidget(occurrenceListWidget);
+        return occurrenceListWidget;
     }
 
-    private static void addAlarmRankCard(Section section) {
+    private static PageWidget addAlarmRankCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD);
         cardWidget.addToLayoutParams(section, 24, 2);
         cardWidget.addToWidgetParams("type", PageWidget.CardType.RANK_RULE.getName());
         section.addWidget(cardWidget);
+        return cardWidget;
     }
 
-    private static void addMeanTimeBetweenCard(Section section) {
+    private static PageWidget addMeanTimeBetweenCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "mtba");
         cardWidget.addToLayoutParams(section, 8, 4);
         cardWidget.addCardType(PageWidget.CardType.ML_MTBA);
         section.addWidget(cardWidget);
+        return  cardWidget;
+
     }
-    private static void addMeanTimeToClearCard(Section section) {
+    private static PageWidget addMeanTimeToClearCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "mttc");
         cardWidget.addToLayoutParams(section, 8, 4);
         cardWidget.addCardType(PageWidget.CardType.ML_MTTC);
         section.addWidget(cardWidget);
+        return  cardWidget;
     }
-    private  static  void addAlarmDuration (Section section) {
+    private  static  PageWidget addAlarmDuration (Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "duration");
         cardWidget.addToLayoutParams(section, 8, 4);
         cardWidget.addCardType(PageWidget.CardType.ALARM_DUARTION);
         section.addWidget(cardWidget);
+        return  cardWidget;
+    }
+    private static  PageWidget  addImpactCard (Section section) {
+        PageWidget impactCard = new PageWidget(PageWidget.WidgetType.IMPACTS);
+        impactCard.addToLayoutParams(section, 24, 16);
+        section.addWidget(impactCard);
+        return impactCard;
     }
 }
 
