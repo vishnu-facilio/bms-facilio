@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ControllerType {
-	MISC(0, "Misc"),
+	MISC(0, "Misc", true),
 
 	BACNET_IP(1,"BACnet Ip", true),
 
