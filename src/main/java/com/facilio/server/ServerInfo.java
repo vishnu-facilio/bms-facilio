@@ -43,9 +43,10 @@ public class ServerInfo extends TimerTask {
     private static final String PING_TIME = "pingtime";
     private static final String ID = "id";
 
-    /*static {
-        assignConnection();
-    }*/
+    static {
+        //assignConnection();
+        registerServer();
+    }
 
     private static void assignConnection() {
         try {
@@ -60,10 +61,10 @@ public class ServerInfo extends TimerTask {
         try {
             ip = InetAddress.getLocalHost().getHostName();
             hostname = ip;
-            serverId = getServerId(ip);
+            /*serverId = getServerId(ip);
             if(serverId == -1L) {
                 serverId = addServerInfo(ip);
-            }
+            }*/
         } catch (UnknownHostException e) {
             LOGGER.info("Unable to set IP ");
         }
