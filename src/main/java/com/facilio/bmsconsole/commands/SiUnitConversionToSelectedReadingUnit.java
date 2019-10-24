@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.NumberField;
@@ -15,6 +16,10 @@ public class SiUnitConversionToSelectedReadingUnit extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		
+		if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.READING_FIELD_UNITS_VALIDATION)) {
+			return false;
+		}
 		
 		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
 		if(tasks == null) {
