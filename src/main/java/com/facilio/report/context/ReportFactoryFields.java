@@ -952,7 +952,7 @@ public class ReportFactoryFields {
 		HashMap<String, Long> moduleMap = new HashMap<String, Long>();
 		for(String module: additionalModules) {
 			FacilioModule facilioModule = bean.getModule(module);
-			moduleMap.put(module, facilioModule.getModuleId());
+			moduleMap.put(module.toLowerCase(), facilioModule.getModuleId());
 		}
 		rearragedFields.put("moduleMap", moduleMap);
 	}
@@ -961,7 +961,7 @@ public class ReportFactoryFields {
 		HashMap<String, Long> moduleMap = new HashMap<String, Long>();
 		for(String module: additionalModules) {
 			FacilioModule facilioModule = bean.getModule(module);
-			moduleMap.put(module, facilioModule.getModuleId());
+			moduleMap.put(module.toLowerCase(), facilioModule.getModuleId());
 		}
 		rearragedFields.put("moduleMap", moduleMap);
 	}
