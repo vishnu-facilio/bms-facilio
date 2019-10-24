@@ -116,10 +116,10 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 											
 											Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
 											if(currentInputUnit != null) 
-											{
+											{																						
 												Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
 												if((numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata")))) 
-												{
+												{													
 													List<TaskErrorContext> taskErrors = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
 													if(taskErrors!= null && !taskErrors.isEmpty()) {
 														hasErrors = true;
@@ -327,6 +327,11 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			return null;
 		}
 		
+		if(AccountUtil.getCurrentOrg().getId() == 78)
+		{
+			return null;
+		}
+		
 		double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 		double diff = previousValue / currentValueInSiUnit;
 		
@@ -358,13 +363,14 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	public Double getAverageValue(ReadingDataMeta rdm,NumberField numberField, TaskContext currentTask, TaskContext taskContext) 
 			throws Exception {
 		
+		long endTaskTime = -1;	
 		if(rdm.getResourceId() > 0) {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = numberField.getModule();			
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 			
-			long endTaskTime;			
+					
 			if(currentTask.getInputTime() > rdm.getTtime() && taskContext.getReadingDataId() == rdm.getReadingDataId())
 			{
 				endTaskTime = rdm.getTtime();
@@ -407,7 +413,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		}
 		
 		
-		LOGGER.log(Level.INFO,"Avg not calculated, Currenttask ID: "+ taskContextId + " Current Input Value: " + currentInputValue);
+		LOGGER.log(Level.INFO,"Avg not calculated, Currenttask ID: "+ taskContextId + " EndTaskTime: " + endTaskTime + " Current Input Value: " + currentInputValue);
 		return null;
 	}
 	

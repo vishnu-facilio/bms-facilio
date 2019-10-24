@@ -20,6 +20,10 @@ public class SiUnitConversionToEnteredReadingUnit extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
+		if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.READING_FIELD_UNITS_VALIDATION)) {
+			return false;
+		}
+		
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 	
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
