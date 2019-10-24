@@ -23,7 +23,11 @@ public enum ControllerType {
 	
 	LON_WORKS (8,"Lon Works", true),
 	
-	KNX (9, "Knx", true)
+	KNX (9, "Knx", true),
+	
+	CUSTOM(10, "Custom"),
+	
+	REST(11, "Rest")
 	;
 
 	private int key;
