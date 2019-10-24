@@ -356,8 +356,9 @@ public class CommonCommandUtil {
 				FAWSQueue.sendMessage("Exception", message);
 			}
 			// New FacilioException Queue code need to remove condition for Production
+			LOGGER.info("####### Checking exception in FAWS Queue"+message);
 			if(!FacilioProperties.isProduction()) {
-				LOGGER.info("#####Facilio Exception Queue is push Msg is Entered");
+				LOGGER.info("#####Facilio Exception Queue is push Msg is Entered"+message);
 				FacilioQueueException.addException("Exception", message);
 				}
 		} catch (Exception e1) {
