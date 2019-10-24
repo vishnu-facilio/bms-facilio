@@ -98,57 +98,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 			return Action.LOGIN;
 		}
 
-		String result = Action.LOGIN;
-		if(FacilioProperties.isProduction()) {
-			request.getAttribute("iamAccount");
-			result = arg0.invoke();
-		} else if(false){
-			AuditData data = null;
-			FacilioAudit audit = new DBAudit();
-			int status = 200;
-			try {
-				request.getAttribute("iamAccount");
-				data = getAuditData(arg0);
-				if(data != null) {
-					data.setId(audit.add(data));
-				}
-				result = arg0.invoke();
-			} catch (Exception e) {
-				status = 500;
-				LOGGER.info("Exception from action classs " + e.getMessage());
-			} finally {
-				if(data != null) {
-					data.setEndTime(System.currentTimeMillis());
-					data.setStatus(status);
-					data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());
-					audit.update(data);
-				}
-			}
-		}
-		else {
-			request.getAttribute("iamAccount");
-			result = arg0.invoke();
-		}
-		return result;
-	}
-
-	private AuditData getAuditData(ActionInvocation actionInvocation) {
-		if(AccountUtil.getCurrentUser() != null) {
-			AuditData data = new AuditData();
-			ActionProxy proxy = actionInvocation.getProxy();
-			data.setOrgId(AccountUtil.getCurrentUser().getOrgId());
-			data.setUserId(AccountUtil.getCurrentUser().getUid());
-			data.setOrgUserId(AccountUtil.getCurrentUser().getIamOrgUserId());
-			data.setAction(proxy.getActionName());
-			data.setMethod(proxy.getMethod());
-			data.setModule(proxy.getConfig().getPackageName());
-			data.setStartTime(System.currentTimeMillis());
-			data.setServer(ServerInfo.getHostname());
-			data.setSessionId(AccountUtil.getCurrentUser().getId());
-			data.setThread(Long.parseLong(Thread.currentThread().getName()));
-			return data;
-		}
-		return null;
+		request.getAttribute("iamAccount");
+		return arg0.invoke();
 	}
 
 	private boolean isRemoteScreenMode(HttpServletRequest request) {
