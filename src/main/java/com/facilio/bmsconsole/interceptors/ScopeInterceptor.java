@@ -10,6 +10,11 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.audit.AuditData;
+import com.facilio.audit.DBAudit;
+import com.facilio.audit.FacilioAudit;
+import com.facilio.server.ServerInfo;
+import com.opensymphony.xwork2.ActionProxy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -236,17 +241,60 @@ public class ScopeInterceptor extends AbstractInterceptor {
 			return Action.LOGIN;
 		}
 
+		String result = Action.LOGIN;
 		try {
 			AccountUtil.setReqUri(request.getRequestURI());
             AccountUtil.setRequestParams(request.getParameterMap());
-			
-            return arg0.invoke();
+			if(true){
+				result = arg0.invoke();
+			} else {
+				AuditData data = null;
+				FacilioAudit audit = new DBAudit();
+				int status = 200;
+				try {
+					data = getAuditData(arg0);
+					if(data != null) {
+						data.setId(audit.add(data));
+					}
+					result = arg0.invoke();
+				} catch (Exception e) {
+					status = 500;
+					LOGGER.info("Exception from action classs " + e.getMessage());
+				} finally {
+					if(data != null) {
+						data.setEndTime(System.currentTimeMillis());
+						data.setStatus(status);
+						data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());
+						audit.update(data);
+					}
+				}
+			}
+			return result;
 		} catch (Exception e) {
 			System.out.println("exception code 154");
 
 			LOGGER.log(Level.FATAL, "error thrown from action class", e);
 			throw e;
 		}
+	}
+
+	private AuditData getAuditData(ActionInvocation actionInvocation) {
+		if(AccountUtil.getCurrentUser() != null) {
+			AuditData data = new AuditData();
+			ActionProxy proxy = actionInvocation.getProxy();
+			data.setOrgId(AccountUtil.getCurrentUser().getOrgId());
+			data.setUserId(AccountUtil.getCurrentUser().getUid());
+			data.setOrgUserId(AccountUtil.getCurrentUser().getIamOrgUserId());
+			data.setAction(proxy.getActionName());
+			data.setMethod(proxy.getMethod());
+			data.setModule(proxy.getConfig().getPackageName());
+			data.setStartTime(System.currentTimeMillis());
+			data.setServer(ServerInfo.getHostname());
+			data.setSessionId(AccountUtil.getCurrentUser().getId());
+			data.setThread(Long.parseLong(Thread.currentThread().getName()));
+			return data;
+		}
+		return null;
 	}
 
 	private boolean isAuthorizedAccess(String moduleName, String action) throws Exception { 
