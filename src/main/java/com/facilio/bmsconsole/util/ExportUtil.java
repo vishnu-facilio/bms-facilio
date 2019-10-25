@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,9 +22,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewField;
@@ -40,6 +43,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.LookupFieldMeta;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -530,6 +534,31 @@ public class ExportUtil {
 		int limit = 5000;
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
 		String orgLimit = orgInfo.get(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
+		if (moduleName.equals("asset")) {
+			FacilioChain viewDetailsChain = FacilioChainFactory.getViewDetailsChain();
+			viewDetailsChain.execute(context);
+			FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+			List<ViewField> viewFields = new ArrayList<ViewField>();
+			viewFields.addAll(view.getFields());
+			List<LookupField> fetchLookup = new ArrayList<LookupField>();
+			LookupFieldMeta spaceLookupField = null ;
+			for(ViewField vf : viewFields)
+			{
+				if (vf.getParentField() != null && vf.getParentField().getName().equals("space")) {
+					if(spaceLookupField == null) {
+						spaceLookupField = new LookupFieldMeta((LookupField)vf.getParentField());
+					}
+					if (vf.getField() instanceof LookupField) {
+						LookupField field = (LookupField) vf.getField();
+						spaceLookupField.addChildLookupFIeld(field);
+					}
+
+				}
+
+			}
+			fetchLookup.add(spaceLookupField);
+			context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
+		}
 
 		if (orgLimit != null && !orgLimit.isEmpty()) {
 			limit = Integer.parseInt(orgLimit);
@@ -554,7 +583,7 @@ public class ExportUtil {
 		if (criteria != null) {
 			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
 		}
-
+		
 		FacilioChain moduleListChain = ReadOnlyChainFactory.fetchModuleDataListChain();
 		moduleListChain.execute(context);
 
@@ -577,7 +606,7 @@ public class ExportUtil {
 		}
 		viewFields.addAll(view.getFields());
 		if (moduleName.equals("alarm")) {
-			Iterator<ViewField> it = viewFields.iterator();
+			Iterator<ViewField> it = viewFields.iterator();	
 			while (it.hasNext()) {
 				ViewField field = it.next();
 				if (field.getField().getName().equals("modifiedTime")) {
