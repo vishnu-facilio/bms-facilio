@@ -2485,6 +2485,7 @@ public class FieldFactory {
 		fields.add(getField("woGenerationStatus", "WO_GENERATION_STATUS", module, FieldType.BOOLEAN));
 		fields.add(getField("woGeneratedUpto","WO_GENERATED_UPTO", module, FieldType.NUMBER));
 		fields.add(getField("isUserTriggerPresent", "IS_USER_TRIGGER_PRESENT", FieldType.BOOLEAN));
+		fields.add(getField("defaultAllTriggers","IS_DEFAULT_ALL_TRIGGERS", FieldType.BOOLEAN));
 		return fields;
 	}
 

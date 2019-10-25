@@ -160,8 +160,7 @@ public class PMNewScheduler extends FacilioJob {
 				for(Long resourceId :resourceIds) {
 					List<PMTriggerContext> triggers = getResourceTriggers(triggerMap, workorderTemplate, pmResourcePlanner, resourceId);
 					if(triggers == null) {
-						triggers = new ArrayList<>();
-						triggers.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
+						triggers = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers(), pm.getTriggers());
 					}
 
 					if (resourceMap.get(resourceId) != null) {

@@ -244,6 +244,10 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 	}
 
 	private boolean isAllowedToExecute(List<PMTriggerContext> pmTriggerContexts) throws Exception {
+		if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SKIP_TRIGGERS)) {
+			return true;
+		}
+
 		if (CollectionUtils.isEmpty(pmTriggerContexts)) {
 			return false;
 		}

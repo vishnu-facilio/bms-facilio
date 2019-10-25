@@ -496,7 +496,24 @@ public class PreventiveMaintenance extends ResourceContext {
 	public void setPreventOnNoTask(Boolean preventOnNoTask) {
 		this.preventOnNoTask = preventOnNoTask;
 	}
-	
+
+	private Boolean DefaultAllTriggers;
+
+	public boolean isDefaultAllTriggers() {
+		if (this.DefaultAllTriggers == null) {
+			return false;
+		}
+		return this.DefaultAllTriggers;
+	}
+
+	public void setDefaultAllTriggers(Boolean defaultAllTriggers) {
+		this.DefaultAllTriggers = defaultAllTriggers;
+	}
+
+	public Boolean getDefaultAllTriggers() {
+		return this.DefaultAllTriggers;
+	}
+
 	public static enum PMAssignmentType {
 		
 		ALL_FLOORS,

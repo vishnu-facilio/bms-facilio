@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -142,8 +141,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                             }
 
                             if (triggers == null) {
-                                triggers = new ArrayList<>();
-                                triggers.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
+                                triggers = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers(), pm.getTriggers());
                             }
 
                             endTime = PreventiveMaintenanceAPI.getEndTime(-1L, triggers);
@@ -166,8 +164,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                             }
 
                             if (triggers == null) {
-                                triggers = new ArrayList<>();
-                                triggers.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
+                                triggers = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers(), pm.getTriggers());
                             }
 
                             for (PMTriggerContext trigger : triggers) {

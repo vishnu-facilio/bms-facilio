@@ -172,11 +172,14 @@ public class PreventiveMaintenanceAPI {
 		BmsJobUtil.scheduleOneTimeJobWithProps(pmId, "ScheduleNewPM", 1, "priority", jobProp);
 	}
 
-	public static PMTriggerContext getDefaultTrigger(List<PMTriggerContext> triggers) {
-		
-		for(PMTriggerContext trigger :triggers) {
-			if(trigger.getTriggerType() == TriggerType.DEFAULT.getVal()) {
-				return trigger;
+	public static List<PMTriggerContext> getDefaultTrigger(boolean isDefaultAllTriggers, List<PMTriggerContext> triggers) {
+		if (isDefaultAllTriggers) {
+			return triggers;
+		} else {
+			for(PMTriggerContext trigger :triggers) {
+				if(trigger.getTriggerType() == TriggerType.DEFAULT.getVal()) {
+					return Arrays.asList(trigger);
+				}
 			}
 		}
 		return null;
@@ -2022,8 +2025,7 @@ public class PreventiveMaintenanceAPI {
 						for (int i = 0; i < resourcePlannerContexts.size(); i++) {
 							List<PMTriggerContext> triggerContexts = resourcePlannerContexts.get(i).getTriggerContexts();
 							if (triggerContexts == null || triggerContexts.isEmpty()) {
-								triggerContexts = new ArrayList<>();
-								triggerContexts.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
+								triggerContexts = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers(), pm.getTriggers());
 							}
 							resourcePlannerContexts.get(i).setTriggerContexts(triggerContexts);
 							//NO entry in resource planner table
