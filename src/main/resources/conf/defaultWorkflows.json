@@ -447,6 +447,91 @@
 			  return violations;
 			}"
 		},
+		"8": {
+			"description" : "Alarm Details",
+			"usage" : "AlarmInsight",
+			"workflow" : "Map alarmMeanMetrics(Number alarmId){
+				date = NameSpace(\"date\");
+				thisMonthRanges = date.getDateRange(\"Current Month\");
+				lastMonthRanges = date.getDateRange(\"Last Month\");
+				alarmoccurrenceModule = Module(\"alarmoccurrence\");
+				occurenceThisMonthCrit = null;
+				occurenceLastMonthCrit = null;
+				resMap = {};
+				occurenceThisMonthCrit = {
+					criteria: [alarm == alarmId && createdTime == thisMonthRanges],
+					orderBy : \"createdTime\" asc
+				};
+				occurenceLastMonthCrit = {
+					criteria: [alarm == alarmId && createdTime == lastMonthRanges],
+					orderBy : \"createdTime\" asc
+				};
+				mtba = 0;
+				mtbaCount=0;
+				mttc = 0;
+				mttcCount=0;
+				previousClearedTime = 0;
+				noOfOccurrence = 0;
+				lstNoOfOccurrence = 0;
+				thisMonthOccurence =  alarmoccurrenceModule.fetch(occurenceThisMonthCrit);
+				if (thisMonthOccurence != null) {
+					noOfOccurrence = thisMonthOccurence.size();
+					for each index,value in thisMonthOccurence {
+						createdTime = value.createdTime;
+						if (previousClearedTime != 0) {
+							mtba = mtba+(createdTime - previousClearedTime);
+							mtbaCount = mtbaCount+1;
+						}
+						if (value.clearedTime != null) {
+							previousClearedTime = value.clearedTime;
+							mttc = mttc + (previousClearedTime - createdTime);
+							mttcCount = mttcCount+1;
+						}
+					}
+				}
+				if (mtbaCount > 0) {
+				mtba = mtba / (mtbaCount * 1000);
+				}
+				if (mttcCount > 0) {
+				mttc = mttc / (mttcCount * 1000);
+				}
+				resMap[\"mtba\"] = mtba;
+				resMap[\"mttc\"] = mttc;
+				resMap[\"noOfOcc\"] = noOfOccurrence;
+				mtba = 0;
+				mtbaCount=0;
+				mttc = 0;
+				mttcCount=0;
+				previousClearedTime = 0;
+				lastMonthOccurence =  alarmoccurrenceModule.fetch(occurenceLastMonthCrit);
+				if (lastMonthOccurence != null) {
+					lstNoOfOccurrence = lastMonthOccurence.size();
+					for each index,value in lastMonthOccurence {
+						createdTime = value.createdTime;
+						if (previousClearedTime != 0) {
+							mtba = mtba+(createdTime - previousClearedTime);
+							mtbaCount = mtbaCount+1;
+						}
+						if (value.clearedTime != null) {
+							previousClearedTime = value.clearedTime;
+							mttc = mttc + (previousClearedTime - createdTime);
+							mttcCount = mttcCount+1;
+						}
+					}
+				}
+				if (mtbaCount > 0) {
+					mtba = mtba / (mtbaCount * 1000);
+				}
+				if (mttcCount > 0) {
+					mttc = mttc / (mttcCount * 1000);
+				}
+				resMap[\"mtbaLastMonth\"] = mtba;
+				resMap[\"mttcLastMonth\"] = mttc;
+				resMap[\"noOfOccLastMonth\"] = lstNoOfOccurrence;
+				log resMap;
+				return resMap;
+				}"
+		}
 		"46": {
 			"description" : "ML Deviation",
 			"usage" : "AnomalySummary",
@@ -586,7 +671,7 @@
 			  }
 			  resMap[\"mtba\"] = mtba;
 			  resMap[\"mttc\"] = mttc;
-			  
+
 			  mtba = 0;
 			  mtbaCount=0;
 			  mttc = 0;
