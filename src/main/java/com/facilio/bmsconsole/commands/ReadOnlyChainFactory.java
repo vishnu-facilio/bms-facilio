@@ -91,7 +91,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new HandleGroupByDataCommand());
 		c.addCommand(new AddRegressionPointsCommand());
 		c.addCommand(new FormatHeatMapDataCommand());
-		c.addCommand(new GetTrendLineCommand());
+//		c.addCommand(new GetTrendLineCommand());
 		return c;
 	}
 	

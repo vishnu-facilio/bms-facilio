@@ -4467,4 +4467,9 @@
 		<action name="checkOutWithPhone"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkOutVisitorLogging" />
 	</package>
+	<package name="pythonai" namespace="/api/v2/ai" extends="v2Api">
+		<action name="trendline" class="com.facilio.bmsconsole.actions.PythonAIAction" method="getTrendLine">
+			<param name="auth">false</param>
+		</action>
+	</package>
 </struts>
