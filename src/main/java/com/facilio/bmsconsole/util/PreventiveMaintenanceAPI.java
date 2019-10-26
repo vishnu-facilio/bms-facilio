@@ -3035,7 +3035,13 @@ public class PreventiveMaintenanceAPI {
 					TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
 					ResourceContext resource = ResourceAPI.getResource(task.getResource().getId());
 					String resourceName = resource.getName();
-					String sectionName = taskSection.getName().substring((resourceName + " - ").length());
+					String sectionName;
+					try {
+						sectionName = taskSection.getName().substring((resourceName + " - ").length());
+					} catch (Exception e) {
+						LOGGER.log(Level.ERROR, "unusual section name " + taskSection.getName());
+						continue;
+					}
 					Map<String, Long> taskMap = pmLookup.get(sectionName);
 					Long uniqueId = taskMap.get(task.getSubject());
 					if (uniqueId == null) {
