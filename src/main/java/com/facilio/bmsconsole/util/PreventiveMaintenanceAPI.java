@@ -3001,7 +3001,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static void populateUniqueId() throws Exception {
-		AccountUtil.setCurrentAccount(263L);
+		AccountUtil.setCurrentAccount(146L);
 		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
 			LOGGER.log(Level.WARN, "Org is missing");
 			return;
@@ -3042,13 +3042,13 @@ public class PreventiveMaintenanceAPI {
 						LOGGER.log(Level.ERROR, "unique id is missing for " + task.getId());
 					} else {
 						LOGGER.log(Level.ERROR, "task id " + task.getId() + " uniqueId " + uniqueId);
-						Map<String, Object> updateMap = new HashMap<>();
-						updateMap.put("uniqueId", uniqueId);
-						UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
-						updateRecordBuilder.moduleName("task")
-								.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
-								.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(taskModule), task.getId()+"", NumberOperators.EQUALS))
-								.updateViaMap(updateMap);
+//						Map<String, Object> updateMap = new HashMap<>();
+//						updateMap.put("uniqueId", uniqueId);
+//						UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
+//						updateRecordBuilder.moduleName("task")
+//								.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
+//								.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(taskModule), task.getId()+"", NumberOperators.EQUALS))
+//								.updateViaMap(updateMap);
 					}
 				}
 			}
