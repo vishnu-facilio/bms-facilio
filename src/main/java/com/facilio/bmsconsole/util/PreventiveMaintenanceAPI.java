@@ -3036,6 +3036,7 @@ public class PreventiveMaintenanceAPI {
 					ResourceContext resource = ResourceAPI.getResource(task.getResource().getId());
 					if (resource == null) {
 						LOGGER.log(Level.ERROR, "resource is missing " + task.getSubject());
+						continue;
 					}
 					String resourceName = resource.getName();
 					String sectionName;
