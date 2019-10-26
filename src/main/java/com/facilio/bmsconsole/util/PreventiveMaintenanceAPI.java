@@ -3043,6 +3043,12 @@ public class PreventiveMaintenanceAPI {
 						continue;
 					}
 					Map<String, Long> taskMap = pmLookup.get(sectionName);
+
+					if (taskMap == null) {
+						LOGGER.log(Level.ERROR, "task map is empty for section name " + sectionName);
+						continue;
+					}
+
 					Long uniqueId = taskMap.get(task.getSubject());
 					if (uniqueId == null) {
 						LOGGER.log(Level.ERROR, "unique id is missing for " + task.getId());
