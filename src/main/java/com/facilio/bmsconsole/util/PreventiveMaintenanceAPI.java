@@ -3013,6 +3013,12 @@ public class PreventiveMaintenanceAPI {
 		Map<String, FacilioField> taskFieldMap = FieldFactory.getAsMap(taskFields);
 
 		List<PreventiveMaintenance> allPMs = PreventiveMaintenanceAPI.getAllPMs(1L, false);
+		Set<Long> resourceIsMissing = new HashSet<>();
+		Set<Long> invalidResource = new HashSet<>();
+		Set<Long> unusualSectionName = new HashSet<>();
+		Set<Long> taskMapIsEmpty = new HashSet<>();
+		Set<Long> uniqueIdIsMissing = new HashSet<>();
+
 		for (PreventiveMaintenance pm: allPMs) {
 			LOGGER.log(Level.WARN, "executing for pm " + pm.getId());
 			Map<String, Map<String, Long>> pmLookup = new HashMap<>();
@@ -3034,33 +3040,38 @@ public class PreventiveMaintenanceAPI {
 					long sectionId = task.getSectionId();
 					TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
 					if (task.getResource() == null) {
+						resourceIsMissing.add(pm.getId());
 						LOGGER.log(Level.ERROR, "resource is missing " + task.getSubject());
 						continue;
 					}
 
 					ResourceContext resource = ResourceAPI.getResource(task.getResource().getId());
 					if (resource == null) {
+						invalidResource.add(pm.getId());
 						LOGGER.log(Level.ERROR, "invalid resource " + task.getResource().getId());
 						continue;
 					}
-					
+
 					String resourceName = resource.getName();
 					String sectionName;
 					try {
 						sectionName = taskSection.getName().substring((resourceName + " - ").length());
 					} catch (Exception e) {
+						unusualSectionName.add(pm.getId());
 						LOGGER.log(Level.ERROR, "unusual section name " + taskSection.getName());
 						continue;
 					}
 					Map<String, Long> taskMap = pmLookup.get(sectionName);
 
 					if (taskMap == null) {
+						taskMapIsEmpty.add(pm.getId());
 						LOGGER.log(Level.ERROR, "task map is empty for section name " + sectionName);
 						continue;
 					}
 
 					Long uniqueId = taskMap.get(task.getSubject());
 					if (uniqueId == null) {
+						uniqueIdIsMissing.add(pm.getId());
 						LOGGER.log(Level.ERROR, "unique id is missing for " + task.getId());
 					} else {
 						LOGGER.log(Level.ERROR, "task id " + task.getId() + " uniqueId " + uniqueId);
@@ -3075,6 +3086,11 @@ public class PreventiveMaintenanceAPI {
 				}
 			}
 		}
+		LOGGER.log(Level.WARN, "resourceIsMissing " + Arrays.toString(resourceIsMissing.toArray()));
+		LOGGER.log(Level.WARN, "invalidResource " + Arrays.toString(invalidResource.toArray()));
+		LOGGER.log(Level.WARN, "unusualSectionName " + Arrays.toString(unusualSectionName.toArray()));
+		LOGGER.log(Level.WARN, "taskMapIsEmpty " + Arrays.toString(taskMapIsEmpty.toArray()));
+		LOGGER.log(Level.WARN, "uniqueIdIsMissing " + Arrays.toString(uniqueIdIsMissing.toArray()));
 	}
 
 	public static void verifyScheduleGeneration(List<Long> orgs) throws Exception {
