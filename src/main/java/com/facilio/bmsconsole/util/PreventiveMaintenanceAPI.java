@@ -3033,11 +3033,17 @@ public class PreventiveMaintenanceAPI {
 				for (TaskContext task: tasks) {
 					long sectionId = task.getSectionId();
 					TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
-					ResourceContext resource = ResourceAPI.getResource(task.getResource().getId());
-					if (resource == null) {
+					if (task.getResource() == null) {
 						LOGGER.log(Level.ERROR, "resource is missing " + task.getSubject());
 						continue;
 					}
+
+					ResourceContext resource = ResourceAPI.getResource(task.getResource().getId());
+					if (resource == null) {
+						LOGGER.log(Level.ERROR, "invalid resource " + task.getResource().getId());
+						continue;
+					}
+					
 					String resourceName = resource.getName();
 					String sectionName;
 					try {
