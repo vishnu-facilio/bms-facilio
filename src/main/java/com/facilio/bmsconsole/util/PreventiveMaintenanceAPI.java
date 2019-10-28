@@ -3000,6 +3000,54 @@ public class PreventiveMaintenanceAPI {
 		return selectRecordsBuilder.getAsProps();
 	}
 
+//	public static void updateResource() throws Exception {
+//		AccountUtil.setCurrentAccount(146L);
+//		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+//			LOGGER.log(Level.WARN, "Org is missing");
+//			return;
+//		}
+//
+//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//		FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.TASK);
+//		List<FacilioField> taskFields = modBean.getAllFields(taskModule.getName());
+//		Map<String, FacilioField> taskFieldMap = FieldFactory.getAsMap(taskFields);
+//
+//		List<PreventiveMaintenance> allPMs = PreventiveMaintenanceAPI.getAllPMs(1L, false);
+//		Set<Long> resourceIsMissing = new HashSet<>();
+//		Set<Long> invalidResource = new HashSet<>();
+//		Set<Long> unusualSectionName = new HashSet<>();
+//		Set<Long> taskMapIsEmpty = new HashSet<>();
+//		Set<Long> uniqueIdIsMissing = new HashSet<>();
+//
+//		for (PreventiveMaintenance pm: allPMs) {
+//			LOGGER.log(Level.WARN, "executing for pm " + pm.getId());
+//			Map<String, Map<String, Long>> pmLookup = new HashMap<>();
+//			WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
+//			List<TaskSectionTemplate> sectionTemplates = woTemplate.getSectionTemplates();
+//			for (TaskSectionTemplate sectionTemplate: sectionTemplates) {
+//				Map<String,Long> taskMap = new HashMap<>();
+//				pmLookup.put(sectionTemplate.getName(), taskMap);
+//				List<TaskTemplate> taskTemplates = sectionTemplate.getTaskTemplates();
+//				for(TaskTemplate taskTemplate: taskTemplates) {
+//					taskMap.put(taskTemplate.getName(), (Long) taskTemplate.getAdditionInfo().get("uniqueId"));
+//				}
+//			}
+//			List<WorkOrderContext> workOrders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
+//			for (WorkOrderContext workOrderContext: workOrders) {
+//				LOGGER.log(Level.WARN, "executing for wo " + workOrderContext.getId());
+//				List<TaskContext> tasks = TicketAPI.getRelatedTasks(workOrderContext.getId());
+//				for (TaskContext task : tasks) {
+//					long sectionId = task.getSectionId();
+//					TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
+//					if (task.getResource() == null) {
+//						resourceIsMissing.add(pm.getId());
+//						LOGGER.log(Level.ERROR, "resource is missing " + task.getSubject());
+//						continue;
+//					}
+//				}
+//			}
+//	}
+
 	public static void populateUniqueId() throws Exception {
 		AccountUtil.setCurrentAccount(146L);
 		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
@@ -3054,18 +3102,32 @@ public class PreventiveMaintenanceAPI {
 
 					String resourceName = resource.getName();
 					String sectionName;
+					Map<String, Long> taskMap = null;
 					try {
 						sectionName = taskSection.getName().substring((resourceName + " - ").length());
+						taskMap = pmLookup.get(sectionName);
 					} catch (Exception e) {
-						unusualSectionName.add(pm.getId());
-						LOGGER.log(Level.ERROR, "unusual section name " + taskSection.getName());
-						continue;
+						try {
+							Set<Map.Entry<String, Map<String, Long>>> entries = pmLookup.entrySet();
+							if (entries.size() == 1) {
+								for (Map.Entry<String, Map<String, Long>> entry: entries) {
+									taskMap = entry.getValue();
+								}
+							} else {
+								unusualSectionName.add(pm.getId());
+								LOGGER.log(Level.ERROR, "unusual section name " + taskSection.getName());
+								continue;
+							}
+						} catch (Exception e2) {
+							unusualSectionName.add(pm.getId());
+							LOGGER.log(Level.ERROR, "unusual section name " + taskSection.getName());
+							continue;
+						}
 					}
-					Map<String, Long> taskMap = pmLookup.get(sectionName);
 
 					if (taskMap == null) {
 						taskMapIsEmpty.add(pm.getId());
-						LOGGER.log(Level.ERROR, "task map is empty for section name " + sectionName);
+						LOGGER.log(Level.ERROR, "task map is empty for section name " + taskSection.getName());
 						continue;
 					}
 
