@@ -3066,7 +3066,7 @@ public class PreventiveMaintenanceAPI {
 		Set<Long> unusualSectionName = new HashSet<>();
 		Set<Long> taskMapIsEmpty = new HashSet<>();
 		Set<Long> uniqueIdIsMissing = new HashSet<>();
-		List<Long> skipList = Arrays.asList(1144097L, 1140369L, 1072016L, 1140370L, 1072118L, 1137117L, 1072142L);
+		List<Long> skipList = Arrays.asList(1144097L, 1140369L, 1072016L, 1140370L, 1072118L, 1137117L, 1072142L, 1108665L, 1070706L, 1144098L, 1072118L, 1145125L);
 		Set<Long> skip = new HashSet<>(skipList);
 		for (PreventiveMaintenance pm: allPMs) {
 			if (skip.contains(pm.getId())) {
@@ -3089,13 +3089,13 @@ public class PreventiveMaintenanceAPI {
 			for (WorkOrderContext workOrderContext: workOrders) {
 				LOGGER.log(Level.WARN, "executing for wo " + workOrderContext.getId());
 				List<TaskContext> tasks = TicketAPI.getRelatedTasks(workOrderContext.getId());
-				Map<String, Object> nullMap = new HashMap<>();
-				nullMap.put("uniqueId", -99L);
-				UpdateRecordBuilder<TaskContext> nullUpdateRecordBuilder = new UpdateRecordBuilder<>();
-				nullUpdateRecordBuilder.moduleName("task")
-						.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
-						.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), workOrderContext.getId()+"", NumberOperators.EQUALS))
-						.updateViaMap(nullMap);
+//				Map<String, Object> nullMap = new HashMap<>();
+//				nullMap.put("uniqueId", -99L);
+//				UpdateRecordBuilder<TaskContext> nullUpdateRecordBuilder = new UpdateRecordBuilder<>();
+//				nullUpdateRecordBuilder.moduleName("task")
+//						.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
+//						.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), workOrderContext.getId()+"", NumberOperators.EQUALS))
+//						.updateViaMap(nullMap);
 				for (TaskContext task: tasks) {
 					long sectionId = task.getSectionId();
 					TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
