@@ -556,8 +556,10 @@ public class ExportUtil {
 				}
 
 			}
-			fetchLookup.add(spaceLookupField);
-			context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
+			if (spaceLookupField != null) {
+				fetchLookup.add(spaceLookupField);
+				context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
+			}
 		}
 
 		if (orgLimit != null && !orgLimit.isEmpty()) {
