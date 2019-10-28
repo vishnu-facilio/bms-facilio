@@ -353,11 +353,6 @@ public class CommonCommandUtil {
 			json.put("message", message);
 			//FacilioFactory.getEmailClient().sendEmail(json);
 			if(FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
-				FAWSQueue.sendMessage("Exception", message);
-			}
-			// New FacilioException Queue code need to remove condition for Production
-			if(!FacilioProperties.isProduction()) {
-				LOGGER.debug("#####Facilio Exception Queue is push Msg is Entered"+message);
 				FacilioQueueException.addException("Exception", message);
 				}
 		} catch (Exception e1) {

@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>com.facilio.framework</groupId>
 			<artifactId>facilio-framework</artifactId>
-			<version>1.0.93</version>
+			<version>1.0.94</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
