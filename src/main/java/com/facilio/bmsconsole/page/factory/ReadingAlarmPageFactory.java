@@ -96,7 +96,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
 
     protected static PageWidget addAlarmReport(Section section) {
         PageWidget alarmReport = new PageWidget(PageWidget.WidgetType.ALARM_REPORT);
-        alarmReport.addToLayoutParams(section, 24, 16);
+        alarmReport.addToLayoutParams(section, 24, 13);
         section.addWidget(alarmReport);
         return alarmReport;
     }
