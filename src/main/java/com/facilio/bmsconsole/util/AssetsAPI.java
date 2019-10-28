@@ -475,7 +475,11 @@ public class AssetsAPI {
 		return getAssetListOfCategory(category, buildingIds);
 	}
 	
-	public static List<AssetContext> getAssetListOfCategory(long category,List<Long> buildingIds) throws Exception
+	public static List<AssetContext> getAssetListOfCategory(long category,List<Long> buildingIds) throws Exception {
+		return getAssetListOfCategory(category, buildingIds, -1);
+	}
+	
+	public static List<AssetContext> getAssetListOfCategory(long category,List<Long> buildingIds, long siteId) throws Exception
 	{
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -491,6 +495,9 @@ public class AssetsAPI {
 		
 		if(buildingIds != null && !buildingIds.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
+		}
+		if (siteId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(siteId), PickListOperators.IS));
 		}
 		List<AssetContext> assets = selectBuilder.get();
 		return assets;

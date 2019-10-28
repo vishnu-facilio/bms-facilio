@@ -582,16 +582,16 @@ public class FormulaFieldAPI {
 						matchedResources = SpaceAPI.getAllSites();
 						break;
 					case ALL_BUILDINGS:
-						matchedResources = SpaceAPI.getAllBuildings();
+						matchedResources = SpaceAPI.getAllBuildings(field.getSiteId());
 						break;
 					case ALL_FLOORS:
-						matchedResources = SpaceAPI.getAllFloors();
+						matchedResources = SpaceAPI.getAllFloors(field.getSiteId());
 						break;
 					case SPACE_CATEGORY:
-						matchedResources = SpaceAPI.getSpaceListOfCategory(field.getSpaceCategoryId());
+						matchedResources = SpaceAPI.getSpaceListOfCategory(null, field.getSpaceCategoryId(), field.getSiteId());
 						break;
 					case ASSET_CATEGORY:
-						matchedResources = AssetsAPI.getAssetListOfCategory(field.getAssetCategoryId());
+						matchedResources = AssetsAPI.getAssetListOfCategory(field.getAssetCategoryId(), null, field.getSiteId());
 						break;	
 					default:
 						break;

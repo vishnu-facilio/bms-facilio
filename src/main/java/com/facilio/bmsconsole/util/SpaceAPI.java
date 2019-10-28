@@ -803,19 +803,28 @@ public class SpaceAPI {
 		return buildings;
 	}
 	
-	
 	public static List<BuildingContext> getAllBuildings() throws Exception {
+		return getAllBuildings(-1);
+	}
+	
+	
+	public static List<BuildingContext> getAllBuildings(long siteId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BUILDING);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BUILDING);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		SelectRecordsBuilder<BuildingContext> selectBuilder = new SelectRecordsBuilder<BuildingContext>()
 																	.select(fields)
 																	.module(module)
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
-//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("spaceType"), String.valueOf(BaseSpaceContext.SpaceType.BUILDING.getIntVal()), NumberOperators.EQUALS))
+																	;
+		
+		if (siteId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("site"), String.valueOf(siteId), PickListOperators.IS));
+		}
 		
 		if (AccountUtil.getCurrentUser() != null) {
 			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
@@ -837,17 +846,27 @@ public class SpaceAPI {
 	}
 	
 	public static List<FloorContext> getAllFloors() throws Exception {
+		return getAllFloors(-1);
+	}
+	
+	public static List<FloorContext> getAllFloors(long siteId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.FLOOR);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.FLOOR);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		SelectRecordsBuilder<FloorContext> selectBuilder = new SelectRecordsBuilder<FloorContext>()
 																	.select(fields)
 																	.module(module)
 																	.maxLevel(0)
 																	.beanClass(FloorContext.class)
-//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.FLOOR.getIntVal());
+																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("spaceType"), String.valueOf(BaseSpaceContext.SpaceType.FLOOR.getIntVal()), NumberOperators.EQUALS))
+																	;
+		
+		if (siteId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("site"), String.valueOf(siteId), PickListOperators.IS));
+		}
+		
 		List<FloorContext> floors = selectBuilder.get();
 		return floors;
 	}
@@ -1122,13 +1141,18 @@ public static long getSitesCount() throws Exception {
 		return getSpaceListOfCategory(Collections.singletonList(baseSpaceId),category);
 	}
 	
-	public static List<SpaceContext> getSpaceListOfCategory(List<Long> baseSpaceIds,long category) throws Exception
+	public static List<SpaceContext> getSpaceListOfCategory(List<Long> baseSpaceIds,long category) throws Exception {
+		return getSpaceListOfCategory(baseSpaceIds, category, -1);
+	}
+	
+	public static List<SpaceContext> getSpaceListOfCategory(List<Long> baseSpaceIds,long category, long siteId) throws Exception
 	{
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
-		FacilioField categoryField= FieldFactory.getAsMap(fields).get("spaceCategory");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField categoryField= fieldMap.get("spaceCategory");
 		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
 				.select(fields)
 				.table(module.getTableName())
@@ -1153,6 +1177,11 @@ public static long getSitesCount() throws Exception {
 				selectBuilder.andCustomWhere("BaseSpace."+basespace.getSpaceTypeEnum().getStringVal().toUpperCase()+"_ID in( ? )", StringUtils.join(baseSpaceIds, ","));
 			}
 		}
+		
+		if (siteId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("site"), String.valueOf(siteId), PickListOperators.IS));
+		}
+		
 		List<SpaceContext> spaces = selectBuilder.get();
 		return spaces;
 	}
