@@ -3066,8 +3066,13 @@ public class PreventiveMaintenanceAPI {
 		Set<Long> unusualSectionName = new HashSet<>();
 		Set<Long> taskMapIsEmpty = new HashSet<>();
 		Set<Long> uniqueIdIsMissing = new HashSet<>();
-
+		List<Long> skipList = Arrays.asList(1144097L, 1140369L, 1072016L, 1140370L, 1072118L, 1137117L, 1072142L);
+		Set<Long> skip = new HashSet<>(skipList);
 		for (PreventiveMaintenance pm: allPMs) {
+			if (skip.contains(pm.getId())) {
+				LOGGER.log(Level.WARN, "skipping " + pm.getId());
+				continue;
+			}
 			LOGGER.log(Level.WARN, "executing for pm " + pm.getId());
 			Map<String, Map<String, Long>> pmLookup = new HashMap<>();
 			WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
@@ -3157,13 +3162,13 @@ public class PreventiveMaintenanceAPI {
 						LOGGER.log(Level.ERROR, "unique id is missing for " + task.getId());
 					} else {
 						LOGGER.log(Level.ERROR, "task id " + task.getId() + " uniqueId " + uniqueId);
-//						Map<String, Object> updateMap = new HashMap<>();
-//						updateMap.put("uniqueId", uniqueId);
-//						UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
-//						updateRecordBuilder.moduleName("task")
-//								.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
-//								.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(taskModule), task.getId()+"", NumberOperators.EQUALS))
-//								.updateViaMap(updateMap);
+						Map<String, Object> updateMap = new HashMap<>();
+						updateMap.put("uniqueId", uniqueId);
+						UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
+						updateRecordBuilder.moduleName("task")
+								.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
+								.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(taskModule), task.getId()+"", NumberOperators.EQUALS))
+								.updateViaMap(updateMap);
 					}
 				}
 			}
