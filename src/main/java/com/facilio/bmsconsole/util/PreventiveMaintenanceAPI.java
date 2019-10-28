@@ -3093,35 +3093,44 @@ public class PreventiveMaintenanceAPI {
 						continue;
 					}
 
+					Map<String, Long> taskMap = null;
 					ResourceContext resource = ResourceAPI.getResource(task.getResource().getId());
 					if (resource == null) {
-						invalidResource.add(pm.getId());
-						LOGGER.log(Level.ERROR, "invalid resource " + task.getResource().getId());
-						continue;
+						Set<Map.Entry<String, Map<String, Long>>> entries = pmLookup.entrySet();
+						if (entries.size() == 1) {
+							for (Map.Entry<String, Map<String, Long>> entry: entries) {
+								taskMap = entry.getValue();
+							}
+						} else {
+							invalidResource.add(pm.getId());
+							LOGGER.log(Level.ERROR, "invalid resource " + task.getResource().getId());
+							continue;
+						}
 					}
 
-					String resourceName = resource.getName();
-					String sectionName;
-					Map<String, Long> taskMap = null;
-					try {
-						sectionName = taskSection.getName().substring((resourceName + " - ").length());
-						taskMap = pmLookup.get(sectionName);
-					} catch (Exception e) {
+					if (taskMap == null) {
+						String resourceName = resource.getName();
+						String sectionName;
 						try {
-							Set<Map.Entry<String, Map<String, Long>>> entries = pmLookup.entrySet();
-							if (entries.size() == 1) {
-								for (Map.Entry<String, Map<String, Long>> entry: entries) {
-									taskMap = entry.getValue();
+							sectionName = taskSection.getName().substring((resourceName + " - ").length());
+							taskMap = pmLookup.get(sectionName);
+						} catch (Exception e) {
+							try {
+								Set<Map.Entry<String, Map<String, Long>>> entries = pmLookup.entrySet();
+								if (entries.size() == 1) {
+									for (Map.Entry<String, Map<String, Long>> entry: entries) {
+										taskMap = entry.getValue();
+									}
+								} else {
+									unusualSectionName.add(pm.getId());
+									LOGGER.log(Level.ERROR, "unusual section name " + taskSection.getName());
+									continue;
 								}
-							} else {
+							} catch (Exception e2) {
 								unusualSectionName.add(pm.getId());
 								LOGGER.log(Level.ERROR, "unusual section name " + taskSection.getName());
 								continue;
 							}
-						} catch (Exception e2) {
-							unusualSectionName.add(pm.getId());
-							LOGGER.log(Level.ERROR, "unusual section name " + taskSection.getName());
-							continue;
 						}
 					}
 
