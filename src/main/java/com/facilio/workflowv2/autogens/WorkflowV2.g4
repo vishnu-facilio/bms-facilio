@@ -229,7 +229,8 @@ INT : [0-9]+;
 
 FLOAT : [0-9]+ '.' [0-9]* | '.' [0-9]+;
 
-STRING : '"' (~["\r\n] | '""')* '"' ;
+fragment ESCAPED_QUOTE : '\\"';
+STRING :   '"' ( ESCAPED_QUOTE | ~('\n'|'\r') )*? '"';
 
 COMMENT : '//' ~[\r\n]* -> skip ;
 

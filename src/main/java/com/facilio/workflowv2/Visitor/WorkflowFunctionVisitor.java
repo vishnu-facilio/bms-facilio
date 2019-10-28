@@ -401,6 +401,9 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
         String str = ctx.getText();
         // strip quotes
         str = str.substring(1, str.length() - 1).replace("\"\"", "\"");
+        str = str.replace("\\\"","\"");
+        str = str.replace("\\n","\n");
+        str = str.replace("\\r","\r");
         return new Value(str);
     }
 
