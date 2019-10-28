@@ -3089,13 +3089,13 @@ public class PreventiveMaintenanceAPI {
 			for (WorkOrderContext workOrderContext: workOrders) {
 				LOGGER.log(Level.WARN, "executing for wo " + workOrderContext.getId());
 				List<TaskContext> tasks = TicketAPI.getRelatedTasks(workOrderContext.getId());
-//				Map<String, Object> nullMap = new HashMap<>();
-//				nullMap.put("uniqueId", -99L);
-//				UpdateRecordBuilder<TaskContext> nullUpdateRecordBuilder = new UpdateRecordBuilder<>();
-//				nullUpdateRecordBuilder.moduleName("task")
-//						.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
-//						.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), workOrderContext.getId()+"", NumberOperators.EQUALS))
-//						.updateViaMap(nullMap);
+				Map<String, Object> nullMap = new HashMap<>();
+				nullMap.put("uniqueId", -99L);
+				UpdateRecordBuilder<TaskContext> nullUpdateRecordBuilder = new UpdateRecordBuilder<>();
+				nullUpdateRecordBuilder.moduleName("task")
+						.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
+						.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), workOrderContext.getId()+"", NumberOperators.EQUALS))
+						.updateViaMap(nullMap);
 				for (TaskContext task: tasks) {
 					long sectionId = task.getSectionId();
 					TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
