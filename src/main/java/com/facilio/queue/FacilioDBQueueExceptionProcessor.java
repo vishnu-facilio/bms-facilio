@@ -23,8 +23,10 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-	
+		
+		 if(FacilioProperties.isOnpremise() || !FacilioProperties.isProduction()) {
+	            return;
+	        }
         List<QueueMessage> messageList = new ArrayList<>();
 			try {
 				messageList = FacilioQueueException.pull(QUEUE, 20);
