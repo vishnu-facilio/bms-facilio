@@ -2,22 +2,28 @@ package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
+import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.WidgetGroup;
 
 public class ReadingAlarmPageFactory extends PageFactory  {
-    public static Page getReadingAlarmPage(ReadingAlarm alarms) {
+    public static Page getReadingAlarmPage(ReadingAlarm alarms) throws Exception {
         return getDefaultReadingAlarmSummaryPage(alarms);
     }
-    private static Page getDefaultReadingAlarmSummaryPage(ReadingAlarm alarms) {
+    private static Page getDefaultReadingAlarmSummaryPage(ReadingAlarm alarms) throws Exception {
         Page page = new Page();
         // Summary Tab
         Page.Tab tab1 = page.new Tab("summary");
         page.addTab(tab1);
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
+        if (alarms.getLastOccurrence().getWoId() > 0) {
+            addTimeLineWidget(tab1Sec1, alarms);
+        }
         addAlarmDetailsWidget(tab1Sec1);
         addAssetAlarmDetailsWidget(tab1Sec1);
         addAlarmReport(tab1Sec1);
@@ -50,6 +56,19 @@ public class ReadingAlarmPageFactory extends PageFactory  {
 
         addOccurrenceHistoryWidget(tab3Sec1);
         return  page;
+    }
+    protected  static  void  addTimeLineWidget(Page.Section section, ReadingAlarm alarms) throws Exception {
+        JSONObject activities = new JSONObject();
+        if (alarms.getLastOccurrence() != null) {
+            if (alarms.getLastOccurrence().getWoId() > 0) {
+                WorkOrderContext wo = WorkOrderAPI.getWorkOrder(alarms.getLastOccurrence().getWoId());
+                activities.put("workOrder", wo);
+            }
+        }
+        PageWidget pageWidget = new PageWidget(PageWidget.WidgetType.ALARM_TIME_LINE);
+        pageWidget.addToLayoutParams(section, 24, 2);
+        pageWidget.setRelatedList(activities);
+        section.addWidget(pageWidget);
     }
     protected static void addAssetAlarmDetailsWidget (Page.Section section) {
         PageWidget pageWidget = new PageWidget(PageWidget.WidgetType.ANOMALY_DETAILS_WIDGET);

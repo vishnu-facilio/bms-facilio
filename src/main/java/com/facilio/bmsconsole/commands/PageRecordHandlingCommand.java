@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -34,8 +38,15 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 				FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(recordId);
 				context.put(ContextNames.RECORD, formula);
 				break;
+			case ContextNames.READING_ALARM:
+				BaseAlarmContext readingAlarm = NewAlarmAPI.getAlarm(recordId);
+				AlarmOccurrenceContext latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(readingAlarm);
+
+				readingAlarm.setLastOccurrence(latestAlarmOccurance);
+				context.put(ContextNames.RECORD, readingAlarm);
+				break;
 		}
-		
+
 		if (context.containsKey(ContextNames.RECORD)) {
 			context.put(ContextNames.ID, -1l);
 		}
