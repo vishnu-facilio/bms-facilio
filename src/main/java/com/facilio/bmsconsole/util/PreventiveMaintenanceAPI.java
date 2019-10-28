@@ -3087,24 +3087,35 @@ public class PreventiveMaintenanceAPI {
 				for (TaskContext task: tasks) {
 					long sectionId = task.getSectionId();
 					TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
-					if (task.getResource() == null) {
-						resourceIsMissing.add(pm.getId());
-						LOGGER.log(Level.ERROR, "resource is missing " + task.getSubject());
-						continue;
-					}
-
 					Map<String, Long> taskMap = null;
-					ResourceContext resource = ResourceAPI.getResource(task.getResource().getId());
-					if (resource == null) {
+					ResourceContext resource = null;
+					if (task.getResource() == null) {
 						Set<Map.Entry<String, Map<String, Long>>> entries = pmLookup.entrySet();
 						if (entries.size() == 1) {
 							for (Map.Entry<String, Map<String, Long>> entry: entries) {
 								taskMap = entry.getValue();
 							}
 						} else {
-							invalidResource.add(pm.getId());
-							LOGGER.log(Level.ERROR, "invalid resource " + task.getResource().getId());
+							resourceIsMissing.add(pm.getId());
+							LOGGER.log(Level.ERROR, "resource is missing " + task.getSubject());
 							continue;
+						}
+					} else {
+						resource = ResourceAPI.getResource(task.getResource().getId());
+					}
+
+					if (taskMap == null) {
+						if (resource == null) {
+							Set<Map.Entry<String, Map<String, Long>>> entries = pmLookup.entrySet();
+							if (entries.size() == 1) {
+								for (Map.Entry<String, Map<String, Long>> entry: entries) {
+									taskMap = entry.getValue();
+								}
+							} else {
+								invalidResource.add(pm.getId());
+								LOGGER.log(Level.ERROR, "invalid resource " + task.getResource().getId());
+								continue;
+							}
 						}
 					}
 
