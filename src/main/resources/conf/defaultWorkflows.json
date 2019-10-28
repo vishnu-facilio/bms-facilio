@@ -531,7 +531,42 @@
 				log resMap;
 				return resMap;
 				}"
-		}
+		},
+		"9": {
+		"description" : "Alarm Overview",
+		"usage" : "Alarm Rank widget",
+		"workflow" : "Map newAlrmRankWorkflow(Number alarmId) {
+				date = NameSpace(\"date\");
+				monthRanges = date.getDateRange(\"Current Year\");
+				db = {
+					criteria: [lastCreatedTime == monthRanges],
+					field:\"id\",
+					aggregation:\"sum, noOfOccurrences\",
+					groupBy: \"id\",
+					orderBy:\"noOfOccurrences\" desc
+				};
+				readingAlarmModule = Module(\"baseAlarm\");
+				activeRecord = readingAlarmModule.fetch(db);
+				ranking = 0;
+				if (activeRecord != null) {
+					for each index, value in activeRecord {
+						temp = value.result;
+						temp = value.result + 0;
+						if (temp == alarmId) {
+							ranking = index + 1;
+						}
+					}
+				}
+				resultMap = {};
+				if (activeRecord != null) {
+					resultMap[\"ranks\"] = activeRecord;
+					resultMap[\"ranking\"] = ranking;
+					resultMap[\"outOfRule\"] = activeRecord.size();
+				}
+				log resultMap;
+				return resultMap;
+			}"
+		},
 		"46": {
 			"description" : "ML Deviation",
 			"usage" : "AnomalySummary",
