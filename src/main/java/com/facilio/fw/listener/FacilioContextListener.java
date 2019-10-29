@@ -95,9 +95,11 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 
 		timer.schedule(new TransactionMonitor(), 0L, 3000L);
-
-
+		
 		if(FacilioProperties.isScheduleServer() && FacilioProperties.isProduction()) {
+			timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
+		}
+		if(!FacilioProperties.isProduction()) {
 			LOGGER.info("##Facilio exception queue Pull method calling");
 			timer.schedule(new FacilioDBQueueExceptionProcessor(), 0L, 900000L); // 30 minutes
 		}
