@@ -261,6 +261,7 @@ public enum ActionType {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
 					
 					BaseEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord,context);
+
 					addAlarm(event, obj, context, currentRule, currentRecord);
 					
 				} else {

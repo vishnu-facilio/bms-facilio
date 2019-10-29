@@ -12,6 +12,7 @@ import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.workflow.rule.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -19,15 +20,6 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -130,11 +122,10 @@ public class WorkflowRuleAPI {
 				ApprovalRulesAPI.validateApprovalRule((ApprovalRuleContext) rule);
 				ApprovalRulesAPI.updateChildRuleIds((ApprovalRuleContext) rule);
 				addExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), FieldUtil.getAsProperties(rule));
-				ApprovalRulesAPI.addApprovers(rule.getId(), ((ApprovalRuleContext) rule).getApprovers());
+				ApprovalRulesAPI.addApprover(rule.getId(), ((ApprovalRuleContext) rule).getApprovers());
 				break;
 			case STATE_RULE:
-				ApprovalRulesAPI.addApprovers(rule.getId(), ((StateflowTransitionContext) rule).getApprovers());
-				ApprovalRulesAPI.addValidations(rule.getId(), ((StateflowTransitionContext) rule).getValidations());
+				ApprovalRulesAPI.addApproverRuleChildren((ApproverWorkflowRuleContext) rule);
 				StateFlowRulesAPI.addStateFlowTransitionChildren((StateflowTransitionContext) rule);
 				addExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), ruleProps);
 				break;
@@ -776,7 +767,7 @@ public class WorkflowRuleAPI {
 							ApprovalRulesAPI.deleteApprovalRuleChildIds((ApprovalRuleContext) rule);
 							break;
 						case STATE_RULE:
-							ApprovalRulesAPI.deleteStateTransitionChildren((StateflowTransitionContext) rule);
+							ApprovalRulesAPI.deleteApproverRuleChildren((StateflowTransitionContext) rule);
 							StateFlowRulesAPI.deleteStateFlowTransitionChildren((StateflowTransitionContext) rule);
 							break;
 						default:

@@ -2378,6 +2378,15 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getCustomButtonRuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("customButtonRule");
+		module.setDisplayName("Custom Button Workflow");
+		module.setTableName("CustomButton");
+		module.setExtendModule(getWorkflowRuleModule());
+		return module;
+	}
+
 	public static FacilioModule getStateRuleTransitionModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("stateruleTransitionWorkflow");

@@ -270,40 +270,41 @@ public class ConnectionUtil {
 
 	private static HttpsURLConnection handleGetConnection(String urlString, Map<String, String> params) throws Exception {
 
-		String queryString = "";
-		if(params != null && !params.isEmpty()) {
-
-			StringBuilder queryStringBuilder = new StringBuilder();
-			for(String key :params.keySet()) {
-				queryStringBuilder.append(key);
-				queryStringBuilder.append(EQUALS);
-				queryStringBuilder.append(params.get(key));
-				queryStringBuilder.append(PARAM_SEPERATOR);
-			}
-			queryString = queryStringBuilder.subSequence(0, queryStringBuilder.length()-1).toString();
-		}
-		if(queryString != null && !queryString.isEmpty()) {
-
-			if(urlString.contains(QUERY_STRING_SEPERATOR)) {
-				urlString = urlString + PARAM_SEPERATOR;
-			}
-			else {
-				urlString = urlString + QUERY_STRING_SEPERATOR;
-			}
-			urlString = urlString+queryString;
-		}
-
-		URL url = new URL(null,urlString,new sun.net.www.protocol.https.Handler());
-		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-
-		conn.setDoInput(true);
-		conn.setDoOutput(true);
-		conn.setRequestMethod(HttpMethod.GET.name());
-		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
-		conn.setDoInput(true);
-		conn.setDoOutput(true);
-
-		return conn;
+//		String queryString = "";
+//		if(params != null && !params.isEmpty()) {
+//
+//			StringBuilder queryStringBuilder = new StringBuilder();
+//			for(String key :params.keySet()) {
+//				queryStringBuilder.append(key);
+//				queryStringBuilder.append(EQUALS);
+//				queryStringBuilder.append(params.get(key));
+//				queryStringBuilder.append(PARAM_SEPERATOR);
+//			}
+//			queryString = queryStringBuilder.subSequence(0, queryStringBuilder.length()-1).toString();
+//		}
+//		if(queryString != null && !queryString.isEmpty()) {
+//
+//			if(urlString.contains(QUERY_STRING_SEPERATOR)) {
+//				urlString = urlString + PARAM_SEPERATOR;
+//			}
+//			else {
+//				urlString = urlString + QUERY_STRING_SEPERATOR;
+//			}
+//			urlString = urlString+queryString;
+//		}
+//
+//		URL url = new URL(null,urlString,new sun.net.www.protocol.https.Handler());
+//		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+//
+//		conn.setDoInput(true);
+//		conn.setDoOutput(true);
+//		conn.setRequestMethod(HttpMethod.GET.name());
+//		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
+//		conn.setDoInput(true);
+//		conn.setDoOutput(true);
+//
+//		return conn;
+		return null;
 	}
 
 	private static String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException

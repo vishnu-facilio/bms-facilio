@@ -562,7 +562,8 @@ public class WorkflowRuleContext implements Serializable {
 		MODULE_RULE, // 37
 		MODULE_RULE_NOTIFICATION,
 		
-		READING_VIOLATION_RULE // 39
+		READING_VIOLATION_RULE, // 39
+		CUSTOM_BUTTON,	// 40
 		;
 		//Always add at the end
 		

@@ -1,33 +1,18 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.SharingContext;
-import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext.ApprovalOrder;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
 
-public class StateflowTransitionContext extends WorkflowRuleContext {
+import java.util.Map;
+
+public class StateflowTransitionContext extends ApproverWorkflowRuleContext {
 	private static final long serialVersionUID = 1L;
 	
 	private long fromStateId = -1;
@@ -70,73 +55,6 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 		this.formId = formId;
 	}
 	
-//	private long moduleId = -1;
-//	public long getModuleId() {
-//		return moduleId;
-//	}
-//	public void setModuleId(long moduleId) {
-//		this.moduleId = moduleId;
-//	}
-	
-	private SharingContext<ApproverContext> approvers;
-	public List<ApproverContext> getApprovers() {
-		return approvers;
-	}
-	public void setApprovers(List<ApproverContext> approvers) {
-		if (approvers != null) {
-			this.approvers = new SharingContext<>(approvers);
-		}
-	}
-	public void addApprover (ApproverContext approver) {
-		if (this.approvers == null) {
-			this.approvers = new SharingContext<>(approvers);
-		}
-		approvers.add(approver);
-	}
-	
-	public boolean hasApprovalPermission(Object object) throws Exception {
-		if (approvers == null) {
-			return true;
-		}
-		else {
-			return approvers.isAllowed(object);
-		}
-	}
-	
-	private Boolean allApprovalRequired = false;
-	public Boolean getAllApprovalRequired() {
-		return allApprovalRequired;
-	}
-	public void setAllApprovalRequired(Boolean allApprovalRequired) {
-		this.allApprovalRequired = allApprovalRequired;
-	}
-	public void setAllApprovalRequired(boolean allApprovalRequired) {
-		this.allApprovalRequired = allApprovalRequired;
-	}
-	public boolean isAllApprovalRequired() {
-		if (allApprovalRequired != null) {
-			return allApprovalRequired.booleanValue();
-		}
-		return false;
-	}
-	
-	private ApprovalOrder approvalOrder;
-	public ApprovalOrder getApprovalOrderEnum() {
-		return approvalOrder;
-	}
-	public void setApprovalOrder(ApprovalOrder approvalOrder) {
-		this.approvalOrder = approvalOrder;
-	}
-	public int getApprovalOrder() {
-		if (approvalOrder != null) {
-			return approvalOrder.getValue();
-		}
-		return -1;
-	}
-	public void setApprovalOrder(int approvalOrder) {
-		this.approvalOrder = ApprovalOrder.valueOf(approvalOrder);
-	}
-	
 	private int buttonType = -1;
 	public int getButtonType() {
 		return buttonType;
@@ -170,18 +88,10 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 		this.scheduleTime = scheduleTime;
 	}
 	
-	private List<ValidationContext> validations;
-	public List<ValidationContext> getValidations() {
-		return validations;
-	}
-	public void setValidations(List<ValidationContext> validations) {
-		this.validations = validations;
-	}
-	
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,
 			FacilioContext context) throws Exception {
-		boolean result = true;
+		boolean result;
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 		
 		Boolean shouldCheckOnlyConditioned = (Boolean) context.get(FacilioConstants.ContextNames.STATE_TRANSITION_ONLY_CONDITIONED_CHECK);
@@ -210,48 +120,18 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 			}
 		}
 		
-		if (CollectionUtils.isNotEmpty(approvers)) {
-			List<SingleSharingContext> matching = approvers.getMatching(record);
-		
-			List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(moduleRecord, matching);
-			List<SingleSharingContext> matchingAgain = new SharingContext<>(checkAnyPendingApprovers).getMatching(record);
-			result = CollectionUtils.isNotEmpty(matchingAgain);
-		}
+		result = super.evaluateMisc(moduleName, record, placeHolders, context);
 		return result;
-	}
-	
-	private List<SingleSharingContext> checkAnyPendingApprovers(ModuleBaseWithCustomFields moduleRecord, List<SingleSharingContext> matching) throws Exception {
-		if (isAllApprovalRequired()) {
-			List<Long> previousApprovers = fetchPreviousApprovers(moduleRecord.getId(), getId());
-			Map<Long, SingleSharingContext> approverMap = approvers.stream().collect(Collectors.toMap(SingleSharingContext::getId, Function.identity()));
-			if (previousApprovers != null && !previousApprovers.isEmpty()) {
-				for (Long id : previousApprovers) {
-					approverMap.remove(id);
-				}
-			}
-			return new ArrayList<>(approverMap.values());
-		}
-		else {
-			return matching;	// there is not pending approvers
-		}
 	}
 	
 	@Override
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 		boolean shouldExecuteTrueActions = true;
-		if (CollectionUtils.isNotEmpty(approvers)) {
-			List<SingleSharingContext> matching = approvers.getMatching(record);
-			ApprovalRuleContext.addApprovalStep(moduleRecord.getId(), null, matching, this);
-			
-			List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(moduleRecord, matching);
-			if (isAllApprovalRequired()) {
-				shouldExecuteTrueActions = CollectionUtils.isEmpty(checkAnyPendingApprovers);
-			}
-		}
+		shouldExecuteTrueActions = super.validateApproversForTrueAction(record);
 		
 		if (shouldExecuteTrueActions) {
-			boolean isValid = validationCheck(moduleRecord);
+			boolean isValid = super.validationCheck(moduleRecord);
 			
 			if (isValid) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -261,39 +141,6 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 				super.executeTrueActions(record, context, placeHolders);
 			}
 		}
-	}
-	
-	private boolean validationCheck(ModuleBaseWithCustomFields moduleRecord) throws Exception {
-		if (CollectionUtils.isNotEmpty(validations)) {
-			for (ValidationContext validation : validations) {
-				if (!validation.validate(moduleRecord)) {
-					throw new IllegalArgumentException(validation.getErrorMessage());
-				}
-			}
-		}
-		return true;
-	}
-	
-	private static List<Long> fetchPreviousApprovers(long recordId, long ruleId) throws Exception {
-		FacilioModule module = ModuleFactory.getApprovalStepsModule();
-		List<FacilioField> fields = FieldFactory.getApprovalStepsFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		FacilioField recordIdField = fieldMap.get("recordId");
-		FacilioField ruleIdField = fieldMap.get("ruleId");
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.table(module.getTableName())
-														.select(fields)
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(ruleId), PickListOperators.IS))
-														.andCondition(CriteriaAPI.getCondition(recordIdField, String.valueOf(recordId), PickListOperators.IS))
-														;
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			return props.stream().map(p -> (Long) p.get("approverGroup")).collect(Collectors.toList());
-		}
-		return null;
 	}
 	
 	public enum TransitionType {

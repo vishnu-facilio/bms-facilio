@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.workflow.rule.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -16,15 +17,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ApprovalState;
-import com.facilio.bmsconsole.workflow.rule.ApproverContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
-import com.facilio.bmsconsole.workflow.rule.ValidationContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -95,8 +87,13 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 			}
 		}
 	}
+
+	public static void addApproverRuleChildren(ApproverWorkflowRuleContext rule) throws Exception {
+		addApprover(rule.getId(), rule.getApprovers());
+		addValidations(rule.getId(), rule.getValidations());
+	}
 	
-	protected static void addApprovers(long parentId, List<ApproverContext> sharing) throws Exception {
+	protected static void addApprover(long parentId, List<ApproverContext> sharing) throws Exception {
 		if (CollectionUtils.isNotEmpty(sharing) && parentId > 0) {
 			SharingAPI.addSharing((SharingContext<? extends SingleSharingContext>) sharing, parentId, ModuleFactory.getApproversModule());
 		}
@@ -197,14 +194,21 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		rule.setCriteria(criteria);
 	}
 
-	public static WorkflowRuleContext updateStateflowTransitionRuleWithChildren(StateflowTransitionContext rule) throws Exception {
-		StateflowTransitionContext oldRule = (StateflowTransitionContext) getWorkflowRule(rule.getId());
+	public static WorkflowRuleContext updateApproverRule(ApproverWorkflowRuleContext oldRule, ApproverWorkflowRuleContext rule) throws Exception {
 		deleteApprovers(oldRule.getApprovers());
-		updateWorkflowRuleWithChildren(rule);
-		addApprovers(rule.getId(), rule.getApprovers());
+		addApprover(rule.getId(), rule.getApprovers());
 		deleteValidations(oldRule.getValidations());
 		addValidations(rule.getId(), rule.getValidations());
-		
+
+		return rule;
+	}
+
+	public static WorkflowRuleContext updateStateflowTransitionRuleWithChildren(StateflowTransitionContext rule) throws Exception {
+		StateflowTransitionContext oldRule = (StateflowTransitionContext) getWorkflowRule(rule.getId());
+		updateWorkflowRuleWithChildren(rule);
+
+		updateApproverRule(oldRule, rule);
+
 		StateFlowRulesAPI.addStateFlowTransitionChildren(rule);
 		updateExtendedRule(rule, ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields());
 
@@ -218,7 +222,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		updateWorkflowRuleChildIds(rule);
 		updateChildRuleIds(rule);
 		updateExtendedRule(rule, ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields());
-		addApprovers(rule.getId(), rule.getApprovers());
+		addApprover(rule.getId(), rule.getApprovers());
 		deleteChildIdsForWorkflow(oldRule, rule);
 		deleteChildRuleIds(oldRule);
 		
@@ -326,7 +330,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		return null;
 	}
 
-	public static void addValidations(long parentId, List<ValidationContext> validations) throws Exception {
+	private static void addValidations(long parentId, List<ValidationContext> validations) throws Exception {
 		if (CollectionUtils.isNotEmpty(validations)) {
 			FacilioModule validationModule = ModuleFactory.getValidationModule();
 			List<FacilioField> fields = FieldFactory.getValidationFields(validationModule);
@@ -400,7 +404,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		return validations;
 	}
 
-	public static void deleteStateTransitionChildren(StateflowTransitionContext rule) throws Exception {
+	public static void deleteApproverRuleChildren(StateflowTransitionContext rule) throws Exception {
 		deleteApprovers(rule.getApprovers());
 		deleteValidations(rule.getValidations());;
 	}

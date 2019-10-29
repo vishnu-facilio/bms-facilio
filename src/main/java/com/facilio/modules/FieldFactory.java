@@ -6505,6 +6505,18 @@ public class FieldFactory {
 				}));
 	}
 
+	public static List<FacilioField> getCustomButtonRuleFields() {
+		FacilioModule module = ModuleFactory.getCustomButtonRuleModule();
+		List<FacilioField> list = new ArrayList<>();
+
+		list.add(getIdField(module));
+		list.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
+		list.add(getField("buttonType", "BUTTON_TYPE", module, FieldType.NUMBER));
+		list.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", module, FieldType.BOOLEAN));
+
+		return list;
+	}
+
 	public static List<FacilioField> getStateRuleTransitionFields() {
 		FacilioModule stageRuleModule = ModuleFactory.getStateRuleTransitionModule();
 		List<FacilioField> list = new ArrayList<>();
@@ -6515,6 +6527,7 @@ public class FieldFactory {
 		list.add(getField("stateFlowId", "STATE_FLOW_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("formId", "FORM_ID", stageRuleModule, FieldType.NUMBER));
 //		list.add(getField("moduleId", "MODULE_ID", stageRuleModule, FieldType.NUMBER));
+		list.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", stageRuleModule, FieldType.BOOLEAN));
 		list.add(getField("buttonType", "BUTTON_TYPE", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("type", "TYPE", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("scheduleTime", "SCHEDULE_TIME", stageRuleModule, FieldType.NUMBER));

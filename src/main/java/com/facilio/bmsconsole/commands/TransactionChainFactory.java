@@ -3715,6 +3715,12 @@ public class TransactionChainFactory {
 		chain.addCommand(new PublishStateFlowCommand());
 		return chain;
 	}
+
+	public static FacilioChain getAddOrUpdateCustomButtonChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateCustomButtomCommand());
+		return chain;
+	}
 }
 
 

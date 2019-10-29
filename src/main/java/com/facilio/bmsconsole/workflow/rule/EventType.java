@@ -217,6 +217,12 @@ public enum EventType {
 			// TODO Auto-generated method stub
 			return null;
 		}
+	},
+	CUSTOM_BUTTON (1 << 24) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
 	}
 	;
 
