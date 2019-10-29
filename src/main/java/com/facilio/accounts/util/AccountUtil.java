@@ -96,6 +96,13 @@ public class AccountUtil {
 		return -1;
 	}
 	
+	public static long getCurrentUserSessionId() {
+		if (currentAccount.get() != null) {
+			return currentAccount.get().getUserSessionId();
+		}
+		return -1;
+	}
+	
 	public static UserBean getUserBean() throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
 		return userBean;

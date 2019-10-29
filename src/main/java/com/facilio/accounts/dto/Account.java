@@ -42,6 +42,7 @@ public class Account implements AccountsInterface<User>, Serializable{
 	private long redisGetTime = 0L;
 	private long redisPutTime = 0L;
 	private long redisDeleteTime = 0L;
+	private long userSessionId = 0L;
 	
 
 	private RemoteScreenContext remoteScreen;
@@ -357,6 +358,16 @@ public class Account implements AccountsInterface<User>, Serializable{
 		if (level != null) {
 			setLevel(level);
 		}
+	}
+
+	@Override
+	public Long getUserSessionId() {
+		// TODO Auto-generated method stub
+		return this.userSessionId;
+	}
+	
+	public void setUserSessionId(long userSessionId) {
+		this.userSessionId = userSessionId;
 	}
 }
 

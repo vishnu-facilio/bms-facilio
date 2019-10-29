@@ -669,7 +669,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		for (Map<String, Object> session : sessions) {
 			String sessionToken = (String) session.get("token");
 			if (Objects.equals(sessionToken, token)) {
-				return getAccount((long) session.get("uid"), orgDomain);
+				IAMAccount account = getAccount((long) session.get("uid"), orgDomain);
+				if(account != null) {
+					account.setUserSessionId((long) session.get("id"));
+				}
+				return account;
 			}
 		}
 		
@@ -688,7 +692,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (MapUtils.isNotEmpty(props)) {
 			sessions.add(props);
 			LRUCache.getUserSessionCache().put(uId, sessions);
-			return getAccount((long) props.get("uid"), orgDomain);
+			IAMAccount account = getAccount((long) props.get("uid"), orgDomain);
+			if(account != null && account.getUser() != null) {
+				account.setUserSessionId((long)props.get("id"));
+			}
+			return account;
 		}
 		return null;
 		
@@ -1057,7 +1065,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		for (Map<String, Object> session : sessions) {
 			String sessionToken = (String) session.get("token");
 			if (Objects.equals(sessionToken, token)) {
-				return getAccount(email, portalDomain);
+				IAMAccount account = getAccount(email, portalDomain);
+				if(account != null) {
+					account.setUserSessionId((long)session.get("id"));
+				}
+				return account;
 			}
 		}
 		if(org.apache.commons.lang3.StringUtils.isEmpty(portalDomain)) {
@@ -1080,7 +1092,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (MapUtils.isNotEmpty(props)) {
 			sessions.add(props);
 			LRUCache.getUserSessionCache().put(cacheKey, sessions);
-			return getAccount(email, portalDomain);
+			IAMAccount account = getAccount(email, portalDomain);
+			if(account != null && account.getUser() != null) {
+				account.setUserSessionId((long)props.get("id"));
+			}
 		}
 		return null;
 	}

@@ -64,10 +64,13 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				RemoteScreenContext remoteScreenContext = (RemoteScreenContext) request.getAttribute("remoteScreen");
 				if(iamAccount.getOrg() != null) {
 					Account tempAccount = new Account(iamAccount.getOrg(), null);
+					tempAccount.setUserSessionId(iamAccount.getUserSessionId());
 					AccountUtil.setCurrentAccount(tempAccount);
 					User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(iamAccount.getOrg().getOrgId());
 					Account account = new Account(iamAccount.getOrg(), superAdmin);
 					account.setRemoteScreen(remoteScreenContext);
+					account.setUserSessionId(iamAccount.getUserSessionId());
+					
 					AccountUtil.cleanCurrentAccount();
 					AccountUtil.setCurrentAccount(account);
 				}
@@ -84,6 +87,8 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(iamAccount.getOrg().getOrgId());
 					Account account = new Account(iamAccount.getOrg(), superAdmin);
 					account.setConnectedDevice(connectedDevice);
+					account.setUserSessionId(iamAccount.getUserSessionId());
+					
 					AccountUtil.cleanCurrentAccount();
 					AccountUtil.setCurrentAccount(account);
 				}
@@ -119,6 +124,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					}
 				}
 				Account account = new Account(iamAccount.getOrg(), user);
+				account.setUserSessionId(iamAccount.getUserSessionId());
 				AccountUtil.cleanCurrentAccount();
 				AccountUtil.setCurrentAccount(account);
 			}

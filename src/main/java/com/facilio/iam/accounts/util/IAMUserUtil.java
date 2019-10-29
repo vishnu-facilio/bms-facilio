@@ -129,8 +129,8 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyFacilioToken(idToken, overrideSessionCheck, orgDomain, portalDomain));
 	}
 	
-		public static String generateAuthToken(String emailaddress, String password, String domain) throws Exception {
-		return validateLoginv2(emailaddress, password, null, null, null, domain, true);
+	public static String generateAuthToken(String emailaddress, String password, String domain) throws Exception {
+			return validateLoginv2(emailaddress, password, null, null, null, domain, true);
 	}
 
 	public static boolean verifyPasswordv2(String emailAddress, String domain, String password) throws Exception {
@@ -158,7 +158,11 @@ public class IAMUserUtil {
 	public static String getEncodedToken(IAMUser user) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getEncodedTokenv2(user));
 	}
-	
+
+	public static long startUserSession(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().startUserSessionv2(uid, email, token, ipAddress, userAgent, userType));
+	}
+
 	public static List<Map<String, Object>> getUserSessions(long uId, Boolean isActive) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserSessionsv2(uId, isActive));
 	}

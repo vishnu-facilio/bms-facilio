@@ -131,14 +131,16 @@ public class ContractsAPI {
 		}
 	}
 	public static void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
-		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
-				.module(module)
-				.fields(fields);
-		if(isLocalIdNeeded) {
-			insertRecordBuilder.withLocalId();
+		if(CollectionUtils.isNotEmpty(list)) {
+			InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
+					.module(module)
+					.fields(fields);
+			if(isLocalIdNeeded) {
+				insertRecordBuilder.withLocalId();
+			}
+			insertRecordBuilder.addRecords(list);
+			insertRecordBuilder.save();
 		}
-		insertRecordBuilder.addRecords(list);
-		insertRecordBuilder.save();
 	}
 	
 	public static ContractsContext getContractDetails(long contractId) throws Exception {
@@ -228,19 +230,19 @@ public class ContractsAPI {
 	}
 	
 	public static void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields, boolean isChangeSetNeeded, FacilioContext context) throws Exception {
-		
-		UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-				.module(module)
-				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
-		
-		if (isChangeSetNeeded) {
-			updateRecordBuilder.withChangeSet(ContractsContext.class);
+		if(data != null) {
+			UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+					.module(module)
+					.fields(fields)
+					.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
+			
+			if (isChangeSetNeeded) {
+				updateRecordBuilder.withChangeSet(ContractsContext.class);
+			}
+			
+			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateRecordBuilder.update(data));
+			context.put(FacilioConstants.ContextNames.CHANGE_SET, updateRecordBuilder.getChangeSet());
 		}
-		
-		
-		context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateRecordBuilder.update(data));
-		context.put(FacilioConstants.ContextNames.CHANGE_SET, updateRecordBuilder.getChangeSet());
 		
 	}
 	
