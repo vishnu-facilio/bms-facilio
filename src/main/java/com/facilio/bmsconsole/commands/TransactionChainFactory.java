@@ -351,6 +351,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+
+		public static FacilioChain openUnOpenedPMs() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new OpenUnOpenedWos());
+			return c;
+		}
+
 		public static FacilioChain deltaCalculationChain () {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AdminDeltaCalculationCommand());

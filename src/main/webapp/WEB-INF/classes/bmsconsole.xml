@@ -1703,6 +1703,14 @@
 				<param name="includeProperties">^nextExecutionTimes.*</param>
 			</result>
 		</action>
+
+
+		<action name="openUnOpenedWOs" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+				method="openUnOpenedWOs">
+			<result name="success" type="json">
+				<param name="includeProperties">startTime</param>
+			</result>
+		</action>
 		
 		<action name="addNewPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addNewPreventiveMaintenance">

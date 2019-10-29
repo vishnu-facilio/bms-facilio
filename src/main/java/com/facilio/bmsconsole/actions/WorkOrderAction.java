@@ -259,6 +259,14 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
+
+	public String openUnOpenedWOs() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
+		FacilioChain chain = TransactionChainFactory.openUnOpenedPMs();
+		chain.execute(context);
+		return SUCCESS;
+	}
 	
 	public String addNewPreventiveMaintenance() throws Exception {
 		FacilioContext context = new FacilioContext();
