@@ -124,6 +124,16 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		}
 		return -1;
 	}
+	
+	private long timeBetweeenOccurrence = -1;
+
+	public long getTimeBetweeenOccurrence() {
+		return timeBetweeenOccurrence;
+	}
+
+	public void setTimeBetweeenOccurrence(long timeBetweeenOccurrence) {
+		this.timeBetweeenOccurrence = timeBetweeenOccurrence;
+	}
 
 	private long woId = -1;
 	public long getWoId() {

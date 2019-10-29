@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.bmsconsole.context.BaseAlarmContext;
+import java.util.Map;
+
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
@@ -8,13 +10,24 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup;
+import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
+import com.facilio.modules.fields.FacilioField;
 
 public class ReadingAlarmPageFactory extends PageFactory  {
     public static Page getReadingAlarmPage(ReadingAlarm alarms) throws Exception {
         return getDefaultReadingAlarmSummaryPage(alarms);
     }
     private static Page getDefaultReadingAlarmSummaryPage(ReadingAlarm alarms) throws Exception {
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Page page = new Page();
         // Summary Tab
         Page.Tab tab1 = page.new Tab("summary");
@@ -28,7 +41,6 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         addAssetAlarmDetailsWidget(tab1Sec1);
         addAlarmReport(tab1Sec1);
         addCommonSubModuleGroup(tab1Sec1);
-
 
         Page.Tab tab4 = page.new Tab("alarmRca", "alarmRca");
         page.addTab(tab4);
@@ -45,7 +57,10 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         addMeanTimeBetweenCard(tab2Sec1);
         addMeanTimeToClearCard(tab2Sec1);
         addAlarmDuration(tab2Sec1);
-        addImpactCard(tab2Sec1);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.BASE_EVENT));
+        Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("baseAlarm"), String.valueOf(alarms.getId()), NumberOperators.EQUALS));
+        addImpactDetails(tab2Sec1,criteria);
         
         // History Tab
         Page.Tab tab3 = page.new Tab("occurrenceHistory", "occurrenceHistory");
@@ -100,6 +115,14 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         section.addWidget(alarmReport);
         return alarmReport;
     }
+    protected static PageWidget addImpactDetails(Section section,Criteria criteria) {
+        PageWidget alarmDetails = new PageWidget(WidgetType.CHART, "impactDetails");
+        alarmDetails.addToLayoutParams(section, 24, 13);
+        alarmDetails.addCardType(PageWidget.CardType.IMPACT_DETAILS);
+        addChartParams(alarmDetails, "createdTime",DateAggregateOperator.MONTHANDYEAR, "cost",NumberAggregateOperator.SUM, criteria);
+        section.addWidget(alarmDetails);
+        return alarmDetails;
+    }
     private static PageWidget addOccurrenceHistoryWidget(Section section) {
         PageWidget occurrenceListWidget = new PageWidget(PageWidget.WidgetType.OCCURRENCE_HISTORY);
         section.addWidget(occurrenceListWidget);
@@ -109,7 +132,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     private static PageWidget addAlarmRankCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD);
         cardWidget.addToLayoutParams(section, 24, 2);
-        cardWidget.addToWidgetParams("type", PageWidget.CardType.RANK_RULE.getName());
+        cardWidget.addToWidgetParams("type", PageWidget.CardType.RANK_ALARM.getName());
         section.addWidget(cardWidget);
         return cardWidget;
     }
@@ -117,7 +140,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     private static PageWidget addMeanTimeBetweenCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "mtba");
         cardWidget.addToLayoutParams(section, 8, 4);
-        cardWidget.addCardType(PageWidget.CardType.ML_MTBA);
+        cardWidget.addCardType(PageWidget.CardType.MTBA);
         section.addWidget(cardWidget);
         return  cardWidget;
 
@@ -125,7 +148,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     private static PageWidget addMeanTimeToClearCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "mttc");
         cardWidget.addToLayoutParams(section, 8, 4);
-        cardWidget.addCardType(PageWidget.CardType.ML_MTTC);
+        cardWidget.addCardType(PageWidget.CardType.MTTC);
         section.addWidget(cardWidget);
         return  cardWidget;
     }

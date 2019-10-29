@@ -47,6 +47,7 @@ public class UpdateAlarmOccurrenceCommand extends FacilioCommand {
 			updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("acknowledgedBy"));
 			updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("acknowledgedTime"));
 			updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("clearedTime"));
+			updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("duration"));
 			
 			long currentTimeMillis = System.currentTimeMillis();
 			if (alarmOccurrence.isAcknowledged()) {
