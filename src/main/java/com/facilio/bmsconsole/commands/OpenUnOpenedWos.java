@@ -40,6 +40,10 @@ public class OpenUnOpenedWos extends FacilioCommand {
         long maxTime = System.currentTimeMillis();
         long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
 
+        if (startTime < 0) {
+            throw new IllegalArgumentException("Missing startTime");
+        }
+
         SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
         selectRecordsBuilder.select(fields)
                 .module(module)
