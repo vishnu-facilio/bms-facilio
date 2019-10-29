@@ -9,7 +9,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.queue.service.QueueMessage;
 import com.facilio.services.factory.FacilioFactory;
@@ -24,16 +23,13 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
 	@Override
 	public void run() {
 		
-		 if(FacilioProperties.isOnpremise() || !FacilioProperties.isProduction()) {
-	            return;
-	        }
         List<QueueMessage> messageList = new ArrayList<>();
 			try {
 				messageList = FacilioQueueException.pull(QUEUE, 20);
 			} catch (Exception e1) {
-				e1.printStackTrace();
+				LOGGER.info("Exception Occurred in  FacilioQueue  : "+e1);
 			}
-		LOGGER.info("Queue Message List is "+messageList);
+		
 
         if(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 20) {
             processMessages(messageList);
@@ -56,7 +52,6 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
                 try {
                     FacilioFactory.getEmailClient().sendEmail(json);
                     LOGGER.info("calling delete msg with "+ RECEIPT_HANDLE_LIST.size());
-                    System.out.println("calling delete msg with "+ RECEIPT_HANDLE_LIST.size());
                     for(String deleteMsgId : RECEIPT_HANDLE_LIST) {
                     	 FacilioQueueException.deleteQueue(QUEUE, deleteMsgId);
                     }
@@ -89,7 +84,6 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
 					EXCEPTION_MESSAGES.put(orgWithClassName, body);
 				}
 			}
-			System.out.println(" Msg List size  of Queue's are " + EXCEPTION_MESSAGES.size());
 		}
 	}
 
