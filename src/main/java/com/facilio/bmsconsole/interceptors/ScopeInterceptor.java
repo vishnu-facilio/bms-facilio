@@ -290,6 +290,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 			ActionProxy proxy = actionInvocation.getProxy();
 			data.setOrgId(AccountUtil.getCurrentUser().getOrgId());
 			data.setUserId(AccountUtil.getCurrentUser().getUid());
+			data.setSessionId(AccountUtil.getCurrentUserSessionId());
 			data.setOrgUserId(AccountUtil.getCurrentUser().getIamOrgUserId());
 			data.setAction(proxy.getActionName());
 			data.setMethod(proxy.getMethod());
