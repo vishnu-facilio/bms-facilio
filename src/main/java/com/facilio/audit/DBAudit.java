@@ -88,8 +88,7 @@ public class DBAudit implements FacilioAudit {
 
     public long add(AuditData data) {
         long id = 0L;
-        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder().fields(FIELDS)
-                .table(TABLE_NAME);
+        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder().table(TABLE_NAME).fields(FIELDS);
         try {
             id = insertBuilder.insert(getValueMap(data));
         } catch (Exception e) {
@@ -100,7 +99,7 @@ public class DBAudit implements FacilioAudit {
 
     public long update(AuditData data) {
         long rowsUpdated = 0L;
-        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder().fields(FIELDS)
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder().table(TABLE_NAME).fields(FIELDS)
 						.andCondition(CriteriaAPI.getEqualsCondition(ID_FIELD, String.valueOf(data.getId())));
         try {
             rowsUpdated = updateRecordBuilder.update(getValueMap(data));
