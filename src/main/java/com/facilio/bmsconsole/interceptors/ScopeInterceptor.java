@@ -297,7 +297,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
 			data.setModule(proxy.getConfig().getPackageName());
 			data.setStartTime(System.currentTimeMillis());
 			data.setServer(ServerInfo.getHostname());
-			data.setSessionId(AccountUtil.getCurrentUser().getId());
 			data.setThread(Long.parseLong(Thread.currentThread().getName()));
 			return data;
 		}
