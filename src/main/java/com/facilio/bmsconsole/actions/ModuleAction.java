@@ -534,6 +534,14 @@ public class ModuleAction extends FacilioAction {
 		this.withLocalId = withLocalId;
 	}
 	
+	private Long stateTransitionId;
+	public Long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(Long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+	
 	public String updateModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
@@ -543,6 +551,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, moduleData);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		
 		FacilioChain updateModuleDataChain = FacilioChainFactory.updateModuleDataChain();
 		updateModuleDataChain.execute(context);
