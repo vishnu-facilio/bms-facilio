@@ -62,6 +62,12 @@ public class OpenUnOpenedWos extends FacilioCommand {
 
         List<Long> workOrderIds = wos.stream().map(WorkOrderContext::getId).collect(Collectors.toList());
 
+        context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrderIds);
+        Boolean doNotExecute = (Boolean) context.get(FacilioConstants.ContextNames.DO_NOT_EXECUTE);
+        if (doNotExecute != null && doNotExecute) {
+            return false;
+        }
+
         for (long woId: workOrderIds) {
             OpenScheduledWO openScheduledWO = new OpenScheduledWO();
             JobContext jc = new JobContext();

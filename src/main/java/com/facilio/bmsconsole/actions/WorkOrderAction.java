@@ -260,11 +260,18 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	private List<Long> workOrderIds;
+
+	private Boolean doNotExecute;
+
 	public String openUnOpenedWOs() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.DO_NOT_EXECUTE, getDoNotExecute());
 		FacilioChain chain = TransactionChainFactory.openUnOpenedPMs();
 		chain.execute(context);
+		List<Long> workOrders = (List<Long>) context.get(ContextNames.WORK_ORDER_LIST);
+		setWorkOrderIds(workOrders);
 		return SUCCESS;
 	}
 	
@@ -2703,5 +2710,20 @@ public class WorkOrderAction extends FacilioAction {
 		setResult("preRequestStatus", preRequestStatus);
 		return SUCCESS;
 	}
-	
+
+	public List<Long> getWorkOrderIds() {
+		return workOrderIds;
+	}
+
+	public void setWorkOrderIds(List<Long> workOrderIds) {
+		this.workOrderIds = workOrderIds;
+	}
+
+	public Boolean getDoNotExecute() {
+		return doNotExecute;
+	}
+
+	public void setDoNotExecute(Boolean doNotExecute) {
+		this.doNotExecute = doNotExecute;
+	}
 }
