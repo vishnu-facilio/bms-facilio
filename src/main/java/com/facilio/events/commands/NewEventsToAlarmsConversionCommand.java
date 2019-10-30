@@ -128,9 +128,8 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			if (alarmOccurrence.getCreatedTime() < baseEvent.getCreatedTime()) {
 				oldObjectIndex ++;
 			}
-			AlarmOccurrenceContext lastAlarmOccurrence = pointedList.getLastRecord();
 			alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent, mostRecent, context);
-			updateTimeBetweenOccurrence(lastAlarmOccurrence,alarmOccurrence.getCreatedTime());
+			pointedList.getLastRecord().setTimeBetweeenOccurrence((alarmOccurrence.getCreatedTime() - pointedList.getLastRecord().getClearedTime())/1000);
 			if (mostRecent) {
 				pointedList.add(alarmOccurrence);
 				pointedList.moveNext();
@@ -170,10 +169,6 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 		
 		alarmMap.put(baseEvent.getMessageKey(), alarmOccurrence.getAlarm());
 		baseEvent.setAlarmOccurrence(alarmOccurrence);
-	}
-	public static void updateTimeBetweenOccurrence(AlarmOccurrenceContext lastAlarm,long currentAlarmCreatedTime) throws Exception{
-		lastAlarm.setTimeBetweeenOccurrence((currentAlarmCreatedTime - lastAlarm.getClearedTime())/1000);
-		NewAlarmAPI.updateAlarmOccurrence(lastAlarm);
 	}
 	public static class PointedList<E> extends ArrayList<E> {
 		private static final long serialVersionUID = 1L;
