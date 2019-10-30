@@ -113,7 +113,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
 
     protected static PageWidget addAlarmReport(Section section,AlarmOccurrenceContext lastOccurrence) {
         PageWidget alarmReport = new PageWidget(PageWidget.WidgetType.ALARM_REPORT);
-        int widgetHeight = 10 + (lastOccurrence.getPossibleCauses() != null ? 2 : 0) + (lastOccurrence.getRecommendation() != null ? 2 : 0);
+        int widgetHeight = 12 + (lastOccurrence.getPossibleCauses() != null ? 3 : 0) + (lastOccurrence.getRecommendation() != null ? 1 : 0);
         alarmReport.addToLayoutParams(section, 24, widgetHeight);
         section.addWidget(alarmReport);
         return alarmReport;
@@ -135,7 +135,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     private static PageWidget addAlarmRankCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD);
         cardWidget.addToLayoutParams(section, 24, 2);
-        cardWidget.addToWidgetParams("type", PageWidget.CardType.RANK_ALARM.getName());
+        cardWidget.addToWidgetParams("type", PageWidget.CardType.RANK_RULE.getName());
         section.addWidget(cardWidget);
         return cardWidget;
     }
@@ -143,7 +143,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     private static PageWidget addMeanTimeBetweenCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "mtba");
         cardWidget.addToLayoutParams(section, 8, 4);
-        cardWidget.addCardType(PageWidget.CardType.MTBA);
+        cardWidget.addCardType(PageWidget.CardType.ML_MTBA);
         section.addWidget(cardWidget);
         return  cardWidget;
 
@@ -151,7 +151,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     private static PageWidget addMeanTimeToClearCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "mttc");
         cardWidget.addToLayoutParams(section, 8, 4);
-        cardWidget.addCardType(PageWidget.CardType.MTTC);
+        cardWidget.addCardType(PageWidget.CardType.ML_MTTC);
         section.addWidget(cardWidget);
         return  cardWidget;
     }

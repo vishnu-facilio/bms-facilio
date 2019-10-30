@@ -1738,93 +1738,66 @@
 						     date = NameSpace(\"date\");
 							 thisMonthRange = date.getDateRange(\"Current Month\");
 						     lastMonthRange = date.getDateRange(\"Last Month\");
-        			  	    if(cardId == 1){
-        			  		 
-							 db = {
-							    criteria : [alarm == alarmId && createdTime == thisMonthRange],
-							    field : \"duration\",
-							    aggregation : \"sum\"
-							  };
-							  
-						     res = module.fetch(db); 
-						     thisMonth = res;
-						     db = {
-							    criteria : [alarm == alarmId && createdTime == lastMonthRange],
-							    field : \"duration\",
-							    aggregation : \"sum\"
-							  };
-							  res = module.fetch(db); 
-						      LastMonth = res;
-						     }else if(cardId == 2){
-						      db = {
-							    criteria : [alarm == alarmId && createdTime == thisMonthRange],
-							    field : \"duration\",
-							    aggregation : \"avg\"
-							  };
-							  
-						     res = module.fetch(db); 
-						     thisMonth = res;
-						     db = {
-							    criteria : [alarm == alarmId && createdTime == lastMonthRange],
-							    field : \"duration\",
-							    aggregation : \"avg\"
-							  };
-							  res = module.fetch(db); 
-						      LastMonth = res;
-						     }else if(cardId == 3){
-						     db = {
-									criteria: [alarm == alarmId && createdTime == thisMonthRange],
-									field:\"timeBetweeenOccurrence\",
-							        aggregation : \"avg\"
-								};
-								res = module.fetch(db); 
-						        thisMonth = res;
-								db = {
-									criteria: [alarm == alarmId && createdTime == lastMonthRange],
-									field:\"timeBetweeenOccurrence\",
-									aggregation : \"avg\"
-								};
-								res = module.fetch(db); 
-						        LastMonth = res;
-						     }
-					          resMap = {};
-					       	  resMap[\"thisMonth\"] = thisMonth;
-							  resMap[\"lastMonth\"] = LastMonth;
+						     
+        			  	     resMap = {};
+						     if(cardId == 1){
+	        			  	  	db = {
+								    criteria : [alarm == alarmId && createdTime == thisMonthRange],
+								    field : \"alarm\",
+								    aggregation : \"count\"
+								  };
+								  
+							     res = module.fetch(db); 
+							     thisMonth = res;
+							     db = {
+								    criteria : [alarm == alarmId && createdTime == lastMonthRange],
+								    field : \"alarm\",
+								    aggregation : \"count\"
+								  };
+								  res = module.fetch(db); 
+							      LastMonth = res;
+							      
+						       	  resMap[\"noOfOcc\"] = thisMonth;
+								  resMap[\"noOfOccLastMonth\"] = LastMonth;
+							  }else if(cardId == 2) {
+							      db = {
+								    criteria : [alarm == alarmId && createdTime == thisMonthRange],
+								    field : \"duration\",
+								    aggregation : \"avg\"
+								  };
+								  
+							     res = module.fetch(db); 
+							     thisMonth = res;
+							     db = {
+								    criteria : [alarm == alarmId && createdTime == lastMonthRange],
+								    field : \"duration\",
+								    aggregation : \"avg\"
+								  };
+								  res = module.fetch(db); 
+							      LastMonth = res;
+	
+						       	  resMap[\"mttc\"] = thisMonth;
+								  resMap[\"mttcLastMonth\"] = LastMonth;
+							  }else if(cardId == 3) {
+							     db = {
+										criteria: [alarm == alarmId && createdTime == thisMonthRange],
+										field:\"timeBetweeenOccurrence\",
+								        aggregation : \"avg\"
+									};
+									res = module.fetch(db); 
+							        thisMonth = res;
+									db = {
+										criteria: [alarm == alarmId && createdTime == lastMonthRange],
+										field:\"timeBetweeenOccurrence\",
+										aggregation : \"avg\"
+									};
+									res = module.fetch(db); 
+							        LastMonth = res;
+						       	  resMap[\"mtba\"] = thisMonth;
+								  resMap[\"mtbaLastMonth\"] = LastMonth;
+							  }
 						     return resMap; 
         			  	}"
-        },
-         "109": {
-        	"description" : "newAlarmRank",
-        	"usage" : "alarmSummary",
-        	"workflow": "Map newAlarmRank(Number alarmId) {
-				date = NameSpace(\"date\");
-				thisYearRange = date.getDateRange(\"Current Year\");
-				db = {
-					criteria: [createdTime == thisYearRange],
-					field:\"alarm\",
-					aggregation:\"count, alarm\",
-					groupBy:\"alarm\",
-					orderBy:\"count(ALARM_ID)\" desc
-				};
-				module = Module(\"alarmoccurrence\");
-				activeRecord = module.fetch(db);
-				ranking = 0;
-				
-				if (activeRecord != null) {
-					for each index, value in activeRecord {
-						temp = value.result.id + 0;
-						if (temp == alarmId) {
-							ranking = index + 1;
-						}
-					}
-				}
-				resultMap = {};
-				if (activeRecord != null) {
-					resultMap[\"ranking\"] = ranking;
-					resultMap[\"outOf\"] = activeRecord.size();
-				}
-				return resultMap;
-				}",
         }
         
 }

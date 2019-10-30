@@ -300,9 +300,6 @@ public class PageWidget {
  		KPI_TABULAR("kpiTabular"),
 		ALARM_DUARTION("alarmDuration"),
 		ANALYTICS_CHART("analyticsChart"),
-		MTBA("mtba"),
- 		MTTC("mttc"),
- 		RANK_ALARM("rankAlarm"),
  		IMPACT_DETAILS("impactDetails")
  		;
 		private String name;
