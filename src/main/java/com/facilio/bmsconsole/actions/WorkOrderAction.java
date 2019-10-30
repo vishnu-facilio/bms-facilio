@@ -842,7 +842,15 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	
+	private String qrVAL;
+
+	public String getQrVAL() {
+		return qrVAL;
+	}
+
+	public void setQrVAL(String qrVAL) {
+		this.qrVAL = qrVAL;
+	}
 
 	private String qrVal;
 
@@ -1379,7 +1387,11 @@ public class WorkOrderAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
- 		context.put(FacilioConstants.ContextNames.QR_VALUE, qrVal);
+ 		if (qrVal != null) {
+ 			context.put(FacilioConstants.ContextNames.QR_VALUE, qrVal);
+ 		}else {
+ 			context.put(FacilioConstants.ContextNames.QR_VALUE, qrVAL);
+ 		}
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
 		context.put(FacilioConstants.ContextNames.COMMENT, comment);

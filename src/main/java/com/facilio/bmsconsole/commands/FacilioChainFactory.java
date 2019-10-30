@@ -1844,6 +1844,7 @@ public class FacilioChainFactory {
 	public static FacilioChain updateModuleDataChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GenericUpdateModuleDataCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		return c;
