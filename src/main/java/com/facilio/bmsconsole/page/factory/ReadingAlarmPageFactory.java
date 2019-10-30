@@ -93,7 +93,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     }
     protected static void addAlarmDetailsWidget (Page.Section section) {
         PageWidget pageWidget = new PageWidget(PageWidget.WidgetType.ALARM_DETAILS);
-        pageWidget.addToLayoutParams(section, 24, 5);
+        pageWidget.addToLayoutParams(section, 24, 4);
         section.addWidget(pageWidget);
     }
     protected static PageWidget addCommonSubModuleGroup(Section section) {
@@ -104,6 +104,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         section.addWidget(subModuleGroup);
 
         PageWidget notesWidget = new PageWidget();
+        notesWidget.setTitle("Comment");
         notesWidget.setWidgetType(PageWidget.WidgetType.COMMENT);
         subModuleGroup.addToWidget(notesWidget);
 
@@ -119,7 +120,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     }
     protected static PageWidget addImpactDetails(Section section,Criteria criteria) {
         PageWidget alarmDetails = new PageWidget(WidgetType.CHART, "impactDetails");
-        alarmDetails.addToLayoutParams(section, 24, 13);
+        alarmDetails.addToLayoutParams(section, 24, 8);
         alarmDetails.addCardType(PageWidget.CardType.IMPACT_DETAILS);
         addChartParams(alarmDetails, "createdTime",DateAggregateOperator.MONTHANDYEAR, "cost",NumberAggregateOperator.SUM, criteria);
         section.addWidget(alarmDetails);

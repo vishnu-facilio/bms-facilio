@@ -256,6 +256,12 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 		if (StringUtils.isNotEmpty(getEventMessage())) {
 			baseAlarm.setSubject(getEventMessage());
 		}
+		else {
+			AlarmSeverityContext clearSeverity = AlarmAPI.getAlarmSeverity("Clear");
+			if (getSeverity().equals(clearSeverity)) {
+				setEventMessage("Clear Event");
+			}
+		}
 		baseAlarm.setDescription(getDescription());
 
 		if (add) {
@@ -311,25 +317,18 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 		}
 		
 		if (StringUtils.isNotEmpty(getPossibleCause())) {
-			String possibleCauses = alarmOccurrence.getPossibleCauses();
-			if (StringUtils.isNotEmpty(possibleCauses)) {
-				possibleCauses += "\n" + getPossibleCause();
-			} else {
-				possibleCauses = getPossibleCause();
+			if (StringUtils.isNotEmpty(getPossibleCause())) {
+				alarmOccurrence.setPossibleCauses(getPossibleCause());
 			}
-			alarmOccurrence.setPossibleCauses(possibleCauses);
 		}
-		
+
+
 		if (StringUtils.isNotEmpty(getRecommendation())) {
-			String recommendations = alarmOccurrence.getRecommendation();
-			if (StringUtils.isNotEmpty(recommendations)) {
-				recommendations += "\n" + getRecommendation();
-			} 
-			else {
-				recommendations = getRecommendation();
+			if (StringUtils.isNotEmpty(getRecommendation())) {
+				alarmOccurrence.setRecommendation(getRecommendation());
 			}
-			alarmOccurrence.setRecommendation(recommendations);
 		}
+
 		return alarmOccurrence;
 	}
 	
