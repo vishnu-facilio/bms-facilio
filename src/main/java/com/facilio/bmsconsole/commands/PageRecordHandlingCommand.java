@@ -39,6 +39,7 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 				context.put(ContextNames.RECORD, formula);
 				break;
 			case ContextNames.READING_ALARM:
+			case ContextNames.NEW_READING_ALARM:	
 				BaseAlarmContext readingAlarm = NewAlarmAPI.getAlarm(recordId);
 				AlarmOccurrenceContext latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(readingAlarm);
 

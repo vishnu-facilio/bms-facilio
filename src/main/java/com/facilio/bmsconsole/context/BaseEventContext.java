@@ -21,6 +21,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class BaseEventContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
+	
+	private long cost;
+
+	public long getCost() {
+		return cost;
+	}
+
+	public void setCost(long cost) {
+		this.cost = cost;
+	}
 
 	private String description;
 	private boolean superCalled = false;

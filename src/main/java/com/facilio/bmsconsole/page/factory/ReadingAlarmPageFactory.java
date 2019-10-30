@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.page.factory;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
@@ -39,7 +40,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         }
         addAlarmDetailsWidget(tab1Sec1);
         addAssetAlarmDetailsWidget(tab1Sec1);
-        addAlarmReport(tab1Sec1);
+        addAlarmReport(tab1Sec1,alarms.getLastOccurrence());
         addCommonSubModuleGroup(tab1Sec1);
 
         Page.Tab tab4 = page.new Tab("alarmRca", "alarmRca");
@@ -109,9 +110,10 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         return subModuleGroup;
     }
 
-    protected static PageWidget addAlarmReport(Section section) {
+    protected static PageWidget addAlarmReport(Section section,AlarmOccurrenceContext lastOccurrence) {
         PageWidget alarmReport = new PageWidget(PageWidget.WidgetType.ALARM_REPORT);
-        alarmReport.addToLayoutParams(section, 24, 13);
+        int widgetHeight = 10 + (lastOccurrence.getPossibleCauses() != null ? 2 : 0) + (lastOccurrence.getRecommendation() != null ? 2 : 0);
+        alarmReport.addToLayoutParams(section, 24, widgetHeight);
         section.addWidget(alarmReport);
         return alarmReport;
     }
