@@ -27,45 +27,51 @@ public class GetTrendLineCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		LOGGER.severe("Start ------ "+System.currentTimeMillis());
-		String pythonAI = FacilioProperties.getPythonAI();
-		String trendLineAIUrl = pythonAI+"/trendline";
-		
-		Map<String, String> headers = new HashMap<>();
-		headers.put("Content-Type", "application/json");
-		
-		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		JSONObject trendLineObj = new JSONObject();
-		
-		String trendLine = (String) context.get("trendLine");
-		if(trendLine != null) {
-			trendLineObj = (JSONObject)new JSONParser().parse(trendLine);
-		}else{
-			String chartState = report.getChartState();
-			if(chartState != null){
-				JSONObject chartObj = (JSONObject)new JSONParser().parse(chartState);
-				trendLineObj = (JSONObject)chartObj.get("trendLine");
+		Long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		if(orgId == 155) {
+			String pythonAI = FacilioProperties.getPythonAI();
+			String trendLineAIUrl = pythonAI+"/trendline";
+			
+			Map<String, String> headers = new HashMap<>();
+			headers.put("Content-Type", "application/json");
+			
+			ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+			JSONObject trendLineObj = new JSONObject();
+			
+			String trendLine = (String) context.get("trendLine");
+			if(trendLine != null) {
+				trendLineObj = (JSONObject)new JSONParser().parse(trendLine);
+			}else{
+				String chartState = report.getChartState();
+				if(chartState != null){
+					JSONObject chartObj = (JSONObject)new JSONParser().parse(chartState);
+					trendLineObj = (JSONObject)chartObj.get("trendLine");
+				}
 			}
-		}
-		
-		if(!trendLineObj.isEmpty() && (boolean) trendLineObj.get("enable")){
 			
-			List<ReportDataPointContext> trendLineDataPoints = getDataPoints(report.getDataPoints(), ((JSONArray)trendLineObj.get("selectedPoints")));
-			
-			JSONObject reportData = (JSONObject)context.get(FacilioConstants.ContextNames.REPORT_DATA);
-			Long orgId = AccountUtil.getCurrentOrg().getOrgId();
-			JSONObject body = new JSONObject();
-			body.put("trendLineObj", trendLineObj);
-			body.put("reportData", reportData);
-			body.put("xaxis", xAxis);
-			body.put("yaxis", dataPointAlias);
-			body.put("orgId", orgId.toString());
-			String response = AwsUtil.doHttpPost(trendLineAIUrl, headers, null, body.toJSONString());
-			
-			JSONObject responseObj = (JSONObject) new JSONParser().parse(response);
-			if(responseObj != null){
-				JSONObject resultObj = (JSONObject) responseObj.get("result");
-				context.put(FacilioConstants.ContextNames.REPORT_DATA, (JSONObject) resultObj.get("reportData"));
-				report.setTrendLineDataPoints(trendLineDataPoints);
+			if(!trendLineObj.isEmpty() && (boolean) trendLineObj.get("enable")){
+				
+				List<ReportDataPointContext> trendLineDataPoints = getDataPoints(report.getDataPoints(), ((JSONArray)trendLineObj.get("selectedPoints")));
+				
+				JSONObject reportData = (JSONObject)context.get(FacilioConstants.ContextNames.REPORT_DATA);
+				JSONObject body = new JSONObject();
+				body.put("trendLineObj", trendLineObj);
+				body.put("reportData", reportData);
+				body.put("xaxis", xAxis);
+				body.put("yaxis", dataPointAlias);
+				body.put("orgId", orgId.toString());
+				String response = AwsUtil.doHttpPost(trendLineAIUrl, headers, null, body.toJSONString());
+				
+				if(!response.isEmpty()){
+					JSONObject responseObj = (JSONObject) new JSONParser().parse(response);
+					if(responseObj != null && !responseObj.isEmpty()){
+						JSONObject resultObj = (JSONObject) responseObj.get("result");
+						if(resultObj != null && !resultObj.isEmpty()){
+							context.put(FacilioConstants.ContextNames.REPORT_DATA, (JSONObject) resultObj.get("reportData"));
+							report.setTrendLineDataPoints(trendLineDataPoints);
+						}
+					}
+				}
 			}
 		}
 		LOGGER.info("End ------ "+System.currentTimeMillis());
