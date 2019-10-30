@@ -534,7 +534,15 @@ public class ModuleAction extends FacilioAction {
 	public void setWithLocalId(boolean withLocalId) {
 		this.withLocalId = withLocalId;
 	}
-	
+
+	private long stateTransitionId = -1;
+	public long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+
 	public String updateModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
