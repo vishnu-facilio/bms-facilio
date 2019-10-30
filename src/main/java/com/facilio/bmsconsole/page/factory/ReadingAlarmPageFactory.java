@@ -113,8 +113,8 @@ public class ReadingAlarmPageFactory extends PageFactory  {
 
     protected static PageWidget addAlarmReport(Section section,AlarmOccurrenceContext lastOccurrence) {
         PageWidget alarmReport = new PageWidget(PageWidget.WidgetType.ALARM_REPORT);
-       //  int widgetHeight = 12 + (lastOccurrence.getPossibleCauses() != null ? 3 : 0) + (lastOccurrence.getRecommendation() != null ? 1 : 0);
-        alarmReport.addToLayoutParams(section, 24, 13);
+//        int widgetHeight = 12 + (lastOccurrence.getPossibleCauses() != null ? 3 : 0) + (lastOccurrence.getRecommendation() != null ? 1 : 0);
+        alarmReport.addToLayoutParams(section, 24, 15);
         section.addWidget(alarmReport);
         return alarmReport;
     }
