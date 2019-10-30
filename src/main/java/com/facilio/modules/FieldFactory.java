@@ -5601,7 +5601,7 @@ public class FieldFactory {
 		fields.add(getField("ttime","TTIME", module, FieldType.NUMBER));
 		fields.add(getField("importId" , "IMPORTID", module, FieldType.NUMBER));
 		fields.add(getField("templateId" , "TEMPLATEID", module, FieldType.NUMBER));
-		fields.add(getField("total_rows" , "ROW_TOTAL", module, FieldType.NUMBER));
+//		fields.add(getField("total_rows" , "ROW_TOTAL", module, FieldType.NUMBER));
 		fields.add(getField("rowContextString" , "GROUPED_ROWS", module, FieldType.STRING));
 		fields.add(getField("error_resolved" , "ERROR_RESOLVED", module, FieldType.NUMBER));
 		fields.add(getField("correctedRowString","CORRECTED_ROW", module, FieldType.STRING));
@@ -5953,6 +5953,14 @@ public class FieldFactory {
 		fields.add(getField("moduleType", "MODULE_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("userFiltersJson", "USER_FILTER_JSON", module, FieldType.STRING));
 		fields.add(getField("template", "REPORT_TEMPLATE", module, FieldType.STRING));
+		return fields;
+	}
+	
+	public static List<FacilioField> getModulesFields(){
+		FacilioModule module = ModuleFactory.getModuleModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getModuleIdField(module));
+		fields.add(getField("moduleType", "MODULE_TYPE", module, FieldType.NUMBER));
 		return fields;
 	}
 	

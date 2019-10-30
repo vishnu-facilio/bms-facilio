@@ -673,4 +673,80 @@ public class ReportUtil {
 			}
 		}
 	}
+	
+	public static List<ReportFolderContext> getAllCustomModuleReportFolder(boolean isWithReports, String searchText) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<Long> moduleIds = new ArrayList<Long>();
+		
+		FacilioModule reportFoldermodule = ModuleFactory.getReportFolderModule();
+		FacilioModule modulesmodule = ModuleFactory.getModuleModule();
+		List<FacilioField> fields = FieldFactory.getReport1FolderFields();
+		List<FacilioField> moduleFields = FieldFactory.getModulesFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		Map<String,FacilioField> moduleFieldMap = FieldFactory.getAsMap(moduleFields);
+		
+		GenericSelectRecordBuilder selectModules = new GenericSelectRecordBuilder()
+															.select(moduleFields)
+															.table(modulesmodule.getTableName())
+															.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("moduleType"),String.valueOf(FacilioModule.ModuleType.CUSTOM.getValue()), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> moduleprops = selectModules.get();
+		
+		LOGGER.info("MODULEBUILDER" + selectModules);
+		LOGGER.info("MODULEPROPS" + moduleprops);
+		
+		if(moduleprops != null && !moduleprops.isEmpty()) {
+			for(Map<String, Object> moduleprop :moduleprops) {
+				moduleIds.add((Long) moduleprop.get("moduleId"));
+			}
+			
+		}
+		
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+													.select(fields)
+													.table(reportFoldermodule.getTableName())
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportFoldermodule))
+													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), moduleIds,NumberOperators.EQUALS));
+													;
+		
+		if (searchText != null) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
+		}
+		
+		List<Map<String, Object>> props = select.get();
+		List<ReportFolderContext> reportFolders = new ArrayList<>();
+		if(props != null && !props.isEmpty()) {
+			
+			for(Map<String, Object> prop :props) {
+				
+				ReportFolderContext folder = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
+				if(isWithReports) {
+					List<ReportContext> reports = getReportsFromFolderId(folder.getId());
+					folder.setReports(reports);
+				}
+				reportFolders.add(folder);
+			}
+			
+		}
+		SharingContext<SingleSharingContext> sharing = SharingAPI.getSharingList(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
+		Map<Long, SharingContext<SingleSharingContext>> map = new HashMap<>();
+		for (int j = 0; j < sharing.size(); j++) {
+			if (map.containsKey(sharing.get(j).getParentId())){
+				map.get(sharing.get(j).getParentId()).add(sharing.get(j));
+			}
+			else {
+				SharingContext<SingleSharingContext> temp = new SharingContext<SingleSharingContext>();
+				temp.add(sharing.get(j));
+				map.put(sharing.get(j).getParentId(), temp);
+			}
+		}
+		for (int i = 0; i < reportFolders.size(); i++) {
+			
+			if (map.containsKey(reportFolders.get(i).getId())) {
+				
+				reportFolders.get(i).setReportSharing(map.get(reportFolders.get(i).getId()));;	
+			}
+		}
+		return getFilteredReport(reportFolders);
+	}
 }

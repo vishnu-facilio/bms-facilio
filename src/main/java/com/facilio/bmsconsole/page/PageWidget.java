@@ -50,6 +50,10 @@ public class PageWidget {
 		this.name = name;
 	}
 
+	private String title;
+	public String getTitle() { return  title; }
+	public void setTitle (String title) { this.title = title; }
+
 	private WidgetType widgetType;
 	public WidgetType getWidgetTypeEnum() {
 		return widgetType;
@@ -295,7 +299,8 @@ public class PageWidget {
  		KPI_TREND("kpiTrend"),
  		KPI_TABULAR("kpiTabular"),
 		ALARM_DUARTION("alarmDuration"),
-		ANALYTICS_CHART("analyticsChart")
+		ANALYTICS_CHART("analyticsChart"),
+ 		IMPACT_DETAILS("impactDetails")
  		;
 		private String name;
 		

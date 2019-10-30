@@ -27,21 +27,21 @@ public class ReportFactoryFields {
 	
 	public static JSONObject getDefaultReportFields(String moduleName) throws Exception{
 		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
+		FacilioModule facilioModule = bean.getModule(moduleName);
 		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(moduleName));
-		List<FacilioModule> submodules = bean.getAllSubModules(moduleName);
 		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
 		if(bean.getAllCustomFields(moduleName) != null) {
 			customFields = FieldFactory.getAsMap(bean.getAllCustomFields(moduleName));
 		}
 		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
-		List<String> lookUpModuleNames = new ArrayList<String>();
+		HashMap<String,String> lookUpModuleNames = new HashMap<String,String>();
 		
 		for(String fieldName: fields.keySet()) {
 			FacilioField field = fields.get(fieldName);
 			if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 				LookupField lookupField = (LookupField) field;
-				if(!lookUpModuleNames.contains(lookupField.getLookupModule().getName())) {
-					lookUpModuleNames.add(lookupField.getLookupModule().getName());
+				if(!lookUpModuleNames.containsKey(lookupField.getName())) {
+					lookUpModuleNames.put(lookupField.getName(),lookupField.getLookupModule().getName());
 				}
 			}
 			else {
@@ -49,13 +49,13 @@ public class ReportFactoryFields {
 			}
 	}
 		
-		if(customFields.size() != 0) {
+		if(customFields.size() != 0 && facilioModule.getType() != FacilioModule.ModuleType.CUSTOM.getValue()) {
 			for(String customFieldName: customFields.keySet()) {
 				FacilioField customField = fields.get(customFieldName);
 				if(customField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 					LookupField lookupField = (LookupField) customField;
-					if(!lookUpModuleNames.contains(lookupField.getLookupModule().getName())) {
-						lookUpModuleNames.add(lookupField.getLookupModule().getName());
+					if(!lookUpModuleNames.containsKey(lookupField.getName())) {
+						lookUpModuleNames.put(lookupField.getName(),lookupField.getLookupModule().getName());
 					}
 				}
 				else {
@@ -65,23 +65,27 @@ public class ReportFactoryFields {
 		}
 		
 		// loading additional module fields
-		JSONObject rearrangedFields = rearrangeFields(selectedFields, moduleName);
+		JSONObject rearrangedFields = rearrangeFields(selectedFields, facilioModule);
 		setDefaultAdditionalModulemap(rearrangedFields, lookUpModuleNames, bean);
 		HashMap<String , List<FacilioField>> additionalModuleFields = getAdditionalModuleFields(moduleName,lookUpModuleNames, bean);
 		
 		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
 		
 		ArrayList<String> dimensionListOrder = new ArrayList<String>();
+		if(dimensionFieldMap.get("time") != null) {
 		dimensionListOrder.add("time");
-		dimensionListOrder.add(moduleName);
+		}
+		dimensionListOrder.add(facilioModule.getDisplayName().toLowerCase());
 		
-		for(String module:lookUpModuleNames) {
-			dimensionFieldMap.put(module, getDimensionLookupFields((List<FacilioField>) additionalModuleFields.get(module)));
+		for(String module:lookUpModuleNames.keySet()) {
+			dimensionFieldMap.put(module, getDimensionLookupFields((List<FacilioField>) additionalModuleFields.get(lookUpModuleNames.get(module))));
 			dimensionListOrder.add(module);
 		}
 		
 		
 		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
+		
+		rearrangedFields.put("displayName",facilioModule.getDisplayName());
 		
 		return rearrangedFields;
 	}
@@ -440,6 +444,7 @@ public class ReportFactoryFields {
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("purchasedDate"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("serialNumber"));
 		
 		List <FacilioField> workorderfields = new ArrayList<FacilioField>();
 		for(String fieldName: additionalModuleFields.get(FacilioConstants.ContextNames.WORK_ORDER).keySet()) {
@@ -684,7 +689,7 @@ public class ReportFactoryFields {
 	
 	public static JSONObject getReportFields(String moduleName) throws Exception {
 		JSONObject fields = new JSONObject();
-		switch (moduleName){
+		switch (moduleName.toLowerCase()){
 		case "workorder":{
 			fields = getworkorderReportFields();
 			break;
@@ -752,6 +757,41 @@ public class ReportFactoryFields {
 		fieldsObject.put("moduleType", addModuleTypes(module));
 		
 		fieldsObject =  addFormulaFields(fieldsObject, module);
+		
+		return fieldsObject;
+	}
+	
+	private static JSONObject rearrangeFields(List<FacilioField> fields, FacilioModule module) throws Exception{
+		JSONObject fieldsObject = new JSONObject();
+		Map<String, List<FacilioField>> dimensionFieldMap = new HashMap<>();
+		List<FacilioField> metricFields = new ArrayList<>();
+		FacilioModule resourceModule = ModuleFactory.getResourceModule();
+		
+		for (FacilioField field : fields) {
+			if(field != null) {
+				if (field instanceof NumberField) {
+					if("siteId".equalsIgnoreCase(field.getName())) {
+						addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
+					}
+					else if((!"stateFlowId".equalsIgnoreCase(field.getName()))) {
+						metricFields.add(field);
+					}
+				} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
+					addFieldInList(dimensionFieldMap, "time", field);
+				} else {
+					addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
+				}
+			}
+		}
+		FacilioField resourceField = getModuleResourceField(module.getName());
+		if(resourceField != null) {
+			addFieldInList(dimensionFieldMap, "resource_fields", resourceField);
+		}		
+		fieldsObject.put("dimension", dimensionFieldMap);
+		fieldsObject.put("metrics", metricFields);
+		fieldsObject.put("moduleType", addModuleTypes(module.getName()));
+		
+		fieldsObject =  addFormulaFields(fieldsObject, module.getName());
 		
 		return fieldsObject;
 	}
@@ -874,18 +914,18 @@ public class ReportFactoryFields {
 		
 	}
 	
-	private static HashMap<String, List<FacilioField>> getAdditionalModuleFields(String moduleName,List<String> additonalModules, ModuleBean bean) throws Exception {
+	private static HashMap<String, List<FacilioField>> getAdditionalModuleFields(String moduleName,Map<String,String> additonalModules, ModuleBean bean) throws Exception {
 		HashMap<String, List<FacilioField>> additionalModuleFields = new HashMap<String, List<FacilioField>>();
 		
-		for(String module: additonalModules) {
-			List<FacilioField> moduleFields = bean.getAllFields(module);
+		for(String module: additonalModules.keySet()) {
+			List<FacilioField> moduleFields = bean.getAllFields(additonalModules.get(module));
 
-			List<FacilioField> customModuleFields = bean.getAllCustomFields(module);
+			List<FacilioField> customModuleFields = bean.getAllCustomFields(additonalModules.get(module));
 			if(customModuleFields != null) {
 				moduleFields.addAll(customModuleFields);
 			}
 			
-			additionalModuleFields.put(module, moduleFields);
+			additionalModuleFields.put(additonalModules.get(module), moduleFields);
 		}
 		
 		return additionalModuleFields;
@@ -956,12 +996,12 @@ public class ReportFactoryFields {
 		}
 		rearragedFields.put("moduleMap", moduleMap);
 	}
-	private static void setDefaultAdditionalModulemap(JSONObject rearragedFields, List<String> additionalModules, ModuleBean bean) throws Exception{
+	private static void setDefaultAdditionalModulemap(JSONObject rearragedFields, Map<String,String> additionalModules, ModuleBean bean) throws Exception{
 		
 		HashMap<String, Long> moduleMap = new HashMap<String, Long>();
-		for(String module: additionalModules) {
-			FacilioModule facilioModule = bean.getModule(module);
-			moduleMap.put(module.toLowerCase(), facilioModule.getModuleId());
+		for(String module: additionalModules.keySet()) {
+			FacilioModule facilioModule = bean.getModule(additionalModules.get(module));
+			moduleMap.put(module, facilioModule.getModuleId());
 		}
 		rearragedFields.put("moduleMap", moduleMap);
 	}

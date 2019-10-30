@@ -40,6 +40,7 @@ public class PageFactory {
 			case ContextNames.FORMULA_FIELD:
 				return KPIPageFacory.getKpiPage((FormulaFieldContext) record);
 			case ContextNames.READING_ALARM:
+			case ContextNames.NEW_READING_ALARM:
 				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record);
 		}
 		if (module.getTypeEnum() == ModuleType.CUSTOM) {
@@ -131,6 +132,10 @@ public class PageFactory {
 	
 	protected static void addChartParams(PageWidget widget, String xFieldName, String yFieldName, Criteria criteria) {
 		addChartParams(widget, xFieldName, yFieldName, null, criteria);
+	}
+	
+	protected static void addChartParams(PageWidget widget, String xFieldName,AggregateOperator xAggr, String yFieldName,AggregateOperator yAggr, Criteria criteria) {
+		addChartParams(widget, "line", xAggr, xFieldName, yAggr, yFieldName, null , DateOperators.CURRENT_YEAR, null, criteria);
 	}
 	
 	protected static void addChartParams(PageWidget widget, String xFieldName, String yFieldName,String groupByFieldName, Criteria criteria) {

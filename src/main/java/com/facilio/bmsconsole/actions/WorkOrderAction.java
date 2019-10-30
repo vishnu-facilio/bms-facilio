@@ -260,11 +260,18 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	private List<Long> workOrderIds;
+
+	private Boolean doNotExecute;
+
 	public String openUnOpenedWOs() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.DO_NOT_EXECUTE, getDoNotExecute());
 		FacilioChain chain = TransactionChainFactory.openUnOpenedPMs();
 		chain.execute(context);
+		List<Long> workOrders = (List<Long>) context.get(ContextNames.WORK_ORDER_LIST);
+		setWorkOrderIds(workOrders);
 		return SUCCESS;
 	}
 	
@@ -835,6 +842,8 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	private String qrVAL;
+
 	public String getQrVAL() {
 		return qrVAL;
 	}
@@ -843,7 +852,15 @@ public class WorkOrderAction extends FacilioAction {
 		this.qrVAL = qrVAL;
 	}
 
-	private String qrVAL;
+	private String qrVal;
+
+	public String getQrVal() {
+		return qrVal;
+	}
+
+	public void setQrVal(String qrVal) {
+		this.qrVal = qrVal;
+	}
 
 	private long resourceId = -1;
 
@@ -1370,7 +1387,11 @@ public class WorkOrderAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
- 		context.put(FacilioConstants.ContextNames.QR_VALUE, qrVAL);
+ 		if (qrVal != null) {
+ 			context.put(FacilioConstants.ContextNames.QR_VALUE, qrVal);
+ 		}else {
+ 			context.put(FacilioConstants.ContextNames.QR_VALUE, qrVAL);
+ 		}
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
 		context.put(FacilioConstants.ContextNames.COMMENT, comment);
@@ -2703,5 +2724,20 @@ public class WorkOrderAction extends FacilioAction {
 		setResult("preRequestStatus", preRequestStatus);
 		return SUCCESS;
 	}
-	
+
+	public List<Long> getWorkOrderIds() {
+		return workOrderIds;
+	}
+
+	public void setWorkOrderIds(List<Long> workOrderIds) {
+		this.workOrderIds = workOrderIds;
+	}
+
+	public Boolean getDoNotExecute() {
+		return doNotExecute;
+	}
+
+	public void setDoNotExecute(Boolean doNotExecute) {
+		this.doNotExecute = doNotExecute;
+	}
 }

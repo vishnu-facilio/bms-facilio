@@ -107,6 +107,22 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		return null;
 	}
 	
+	public static List<WorkflowRuleHistoricalLoggerContext> getGroupedInProgressWorkflowRuleHistoricalLoggers(long loggerGroupId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
+				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", ""+loggerGroupId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleHistoricalLoggerContext.class);
+			return workflowRuleHistoricalLoggerContextList;
+		}
+		return null;
+	}
+	
 	public static WorkflowRuleHistoricalLoggerContext getWorkflowRuleHistoricalLogger(long id) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -192,10 +208,18 @@ public class WorkflowRuleHistoricalLoggerUtil {
 						{
 							workflowRuleHistoricalLoggerContext.setTotalChildAlarmCount(Integer.valueOf(String.valueOf(prop.get("sum"))));
 						}
-					}
-					
+						
+						workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
+						
+						long loggerGroupId = (long) prop.get("loggerGroupId");
+						List<WorkflowRuleHistoricalLoggerContext> activeChildLoggers = getGroupedInProgressWorkflowRuleHistoricalLoggers(loggerGroupId);
+						if(activeChildLoggers == null || activeChildLoggers.isEmpty())
+						{
+							workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
+						}
+						
+					}		
 				}
-				
 				
 				return workflowRuleHistoricalLoggerContextMap.values();
 	}

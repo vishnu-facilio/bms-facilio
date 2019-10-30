@@ -1708,7 +1708,7 @@
 		<action name="openUnOpenedWOs" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 				method="openUnOpenedWOs">
 			<result name="success" type="json">
-				<param name="includeProperties">startTime</param>
+				<param name="includeProperties">^workOrderIds.*</param>
 			</result>
 		</action>
 		

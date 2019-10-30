@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.bmsconsole.context.BaseAlarmContext;
+import java.util.Map;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
@@ -8,13 +11,24 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup;
+import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
+import com.facilio.modules.fields.FacilioField;
 
 public class ReadingAlarmPageFactory extends PageFactory  {
     public static Page getReadingAlarmPage(ReadingAlarm alarms) throws Exception {
         return getDefaultReadingAlarmSummaryPage(alarms);
     }
     private static Page getDefaultReadingAlarmSummaryPage(ReadingAlarm alarms) throws Exception {
+    	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Page page = new Page();
         // Summary Tab
         Page.Tab tab1 = page.new Tab("summary");
@@ -26,9 +40,8 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         }
         addAlarmDetailsWidget(tab1Sec1);
         addAssetAlarmDetailsWidget(tab1Sec1);
-        addAlarmReport(tab1Sec1);
+        addAlarmReport(tab1Sec1,alarms.getLastOccurrence());
         addCommonSubModuleGroup(tab1Sec1);
-
 
         Page.Tab tab4 = page.new Tab("alarmRca", "alarmRca");
         page.addTab(tab4);
@@ -45,7 +58,10 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         addMeanTimeBetweenCard(tab2Sec1);
         addMeanTimeToClearCard(tab2Sec1);
         addAlarmDuration(tab2Sec1);
-        addImpactCard(tab2Sec1);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.BASE_EVENT));
+        Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("baseAlarm"), String.valueOf(alarms.getId()), NumberOperators.EQUALS));
+        addImpactDetails(tab2Sec1,criteria);
         
         // History Tab
         Page.Tab tab3 = page.new Tab("occurrenceHistory", "occurrenceHistory");
@@ -77,7 +93,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     }
     protected static void addAlarmDetailsWidget (Page.Section section) {
         PageWidget pageWidget = new PageWidget(PageWidget.WidgetType.ALARM_DETAILS);
-        pageWidget.addToLayoutParams(section, 24, 5);
+        pageWidget.addToLayoutParams(section, 24, 4);
         section.addWidget(pageWidget);
     }
     protected static PageWidget addCommonSubModuleGroup(Section section) {
@@ -88,17 +104,27 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         section.addWidget(subModuleGroup);
 
         PageWidget notesWidget = new PageWidget();
+        notesWidget.setTitle("Comment");
         notesWidget.setWidgetType(PageWidget.WidgetType.COMMENT);
         subModuleGroup.addToWidget(notesWidget);
 
         return subModuleGroup;
     }
 
-    protected static PageWidget addAlarmReport(Section section) {
+    protected static PageWidget addAlarmReport(Section section,AlarmOccurrenceContext lastOccurrence) {
         PageWidget alarmReport = new PageWidget(PageWidget.WidgetType.ALARM_REPORT);
-        alarmReport.addToLayoutParams(section, 24, 13);
+//        int widgetHeight = 12 + (lastOccurrence.getPossibleCauses() != null ? 3 : 0) + (lastOccurrence.getRecommendation() != null ? 1 : 0);
+        alarmReport.addToLayoutParams(section, 24, 15);
         section.addWidget(alarmReport);
         return alarmReport;
+    }
+    protected static PageWidget addImpactDetails(Section section,Criteria criteria) {
+        PageWidget alarmDetails = new PageWidget(WidgetType.CHART, "impactDetails");
+        alarmDetails.addToLayoutParams(section, 24, 8);
+        alarmDetails.addCardType(PageWidget.CardType.IMPACT_DETAILS);
+        addChartParams(alarmDetails, "createdTime",DateAggregateOperator.MONTHANDYEAR, "cost",NumberAggregateOperator.SUM, criteria);
+        section.addWidget(alarmDetails);
+        return alarmDetails;
     }
     private static PageWidget addOccurrenceHistoryWidget(Section section) {
         PageWidget occurrenceListWidget = new PageWidget(PageWidget.WidgetType.OCCURRENCE_HISTORY);

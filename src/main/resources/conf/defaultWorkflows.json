@@ -1729,4 +1729,75 @@
     return resultMap;
 }"
 }
+    "108": {
+    	"description" : "overallAlarmDuration",
+        "usage" : "alarmSummary",
+        "workflow" : "Map overallAlarmDuration(Number alarmId,Number cardId) 
+        			  	{ 
+        			  	module = Module(\"alarmoccurrence\"); 
+						     date = NameSpace(\"date\");
+							 thisMonthRange = date.getDateRange(\"Current Month\");
+						     lastMonthRange = date.getDateRange(\"Last Month\");
+						     
+        			  	     resMap = {};
+						     if(cardId == 1){
+	        			  	  	db = {
+								    criteria : [alarm == alarmId && createdTime == thisMonthRange],
+								    field : \"alarm\",
+								    aggregation : \"count\"
+								  };
+								  
+							     res = module.fetch(db); 
+							     thisMonth = res;
+							     db = {
+								    criteria : [alarm == alarmId && createdTime == lastMonthRange],
+								    field : \"alarm\",
+								    aggregation : \"count\"
+								  };
+								  res = module.fetch(db); 
+							      LastMonth = res;
+							      
+						       	  resMap[\"noOfOcc\"] = thisMonth;
+								  resMap[\"noOfOccLastMonth\"] = LastMonth;
+							  }else if(cardId == 2) {
+							      db = {
+								    criteria : [alarm == alarmId && createdTime == thisMonthRange],
+								    field : \"duration\",
+								    aggregation : \"avg\"
+								  };
+								  
+							     res = module.fetch(db); 
+							     thisMonth = res;
+							     db = {
+								    criteria : [alarm == alarmId && createdTime == lastMonthRange],
+								    field : \"duration\",
+								    aggregation : \"avg\"
+								  };
+								  res = module.fetch(db); 
+							      LastMonth = res;
+	
+						       	  resMap[\"mttc\"] = thisMonth;
+								  resMap[\"mttcLastMonth\"] = LastMonth;
+							  }else if(cardId == 3) {
+							     db = {
+										criteria: [alarm == alarmId && createdTime == thisMonthRange],
+										field:\"timeBetweeenOccurrence\",
+								        aggregation : \"avg\"
+									};
+									res = module.fetch(db); 
+							        thisMonth = res;
+									db = {
+										criteria: [alarm == alarmId && createdTime == lastMonthRange],
+										field:\"timeBetweeenOccurrence\",
+										aggregation : \"avg\"
+									};
+									res = module.fetch(db); 
+							        LastMonth = res;
+						       	  resMap[\"mtba\"] = thisMonth;
+								  resMap[\"mtbaLastMonth\"] = LastMonth;
+							  }
+						     return resMap; 
+        			  	}"
+        }
+        
 }

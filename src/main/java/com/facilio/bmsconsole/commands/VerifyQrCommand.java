@@ -16,10 +16,10 @@ public class VerifyQrCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		Long resourceId = (Long) context.get(FacilioConstants.ContextNames.RESOURCE_ID);
 		Boolean bool = (Boolean) context.get(FacilioConstants.ContextNames.SHOULD_VERIFY_QR);
-		String qrVAL = (String) context.get(FacilioConstants.ContextNames.QR_VALUE);
+		String qrVal = (String) context.get(FacilioConstants.ContextNames.QR_VALUE);
 		if (bool != null && bool) {
 			ResourceContext resource = ResourceAPI.getResource(resourceId);
-			if (resource == null || (resource != null && qrVAL != null && resource.getQrVal().equals(qrVAL))) {
+			if (resource == null || (resource != null && qrVal != null && resource.getQrVal().equals(qrVal))) {
 				return false;
 			}
 			else {

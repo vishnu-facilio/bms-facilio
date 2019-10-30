@@ -122,8 +122,8 @@ public class AssetPageFactory extends PageFactory {
 		addFailureRateWidget(tab4Sec1, breakdownCriteria);
 		addAvgTtrWidget(tab4Sec1, breakdownCriteria);
 		
-		if (AccountUtil.getCurrentOrg().getOrgId() == 155){
-		Tab tab7 = page.new Tab("cost");
+		if (AccountUtil.getCurrentOrg().getOrgId() == 155 || AccountUtil.getCurrentOrg().getOrgId() == 210){
+		Tab tab7 = page.new Tab("financial");
 		page.addTab(tab7);
 		Section tab7Sec1 = page.new Section();
 		tab7.addSection(tab7Sec1);
