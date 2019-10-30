@@ -114,7 +114,7 @@ function changeThePage(){
  %>
 				</div>
 				<div class="">
-				  <label><div class="admin-data-grey">Last Received Time :</div></label><span class="admin-data-date"><%=receiveddate %><br><%=DateTimeUtil.relativeDuration(receivedTime) %></span>
+				  <label><div class="admin-data-grey">Last Received Time :</div></label><span class="admin-data-date"><%=receiveddate %><br><%=receivedTime !=0 ? DateTimeUtil.relativeDuration(receivedTime):" " %></span>
 				</div>
 			</div>
 	
