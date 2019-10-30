@@ -31,6 +31,12 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 	public void setDefaltStateFlow(Boolean defaltStateFlow) {
 		this.defaltStateFlow = defaltStateFlow;
 	}
+	public Boolean isDefaltStateFlow() {
+		if (defaltStateFlow == null) {
+			return false;
+		}
+		return defaltStateFlow;
+	}
 
 	private String diagramJson;
 	public String getDiagramJson() {

@@ -73,8 +73,9 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		int row =  super.updateModule(module);
 		if (row > 0) {
 			FacilioModule newModule = super.getModule(module.getModuleId());
-			CacheUtil.delete(CacheUtil.MODULE_KEY(getOrgId(), newModule.getModuleId()));
-			CacheUtil.delete(CacheUtil.MODULE_KEY(getOrgId(), newModule.getName()));
+			LRUCache moduleCache = LRUCache.getModuleCache();
+			moduleCache.remove(CacheUtil.MODULE_KEY(getOrgId(), newModule.getModuleId()));
+			moduleCache.remove(CacheUtil.MODULE_KEY(getOrgId(), newModule.getName()));
 		}
 		return row;
 	}
