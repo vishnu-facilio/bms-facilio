@@ -5956,6 +5956,14 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getModulesFields(){
+		FacilioModule module = ModuleFactory.getModuleModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getModuleIdField(module));
+		fields.add(getField("moduleType", "MODULE_TYPE", module, FieldType.NUMBER));
+		return fields;
+	}
+	
 	public static List<FacilioField> getReportFieldsFields() {
 		FacilioModule module = ModuleFactory.getReportFieldsModule();
 		List<FacilioField> fields = new ArrayList<>();

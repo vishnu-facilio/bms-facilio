@@ -6289,7 +6289,7 @@ public class DashboardAction extends FacilioAction {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		String[] mods = new String[]{"workorder", "alarm", "energydata"};
+		String[] mods = new String[]{"workorder", "alarm", "energydata","asset"};
 		
 		for (String mod : mods) {
 			supportedModules.add(modBean.getModule(mod));

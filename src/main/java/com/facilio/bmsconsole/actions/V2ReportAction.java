@@ -138,6 +138,13 @@ public class V2ReportAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String fetchAllCustomModuleReportFolders() throws Exception {
+		
+		List<ReportFolderContext> reportFolders = ReportUtil.getAllCustomModuleReportFolder(getIsWithReport(), null);
+		setResult("reportFolders", reportFolders);
+		return SUCCESS;
+	}
+	
 	public String fetchReportsOfFolder() throws Exception {
 		
 		List<ReportContext> reports = ReportUtil.getReportsFromFolderId(folderId);

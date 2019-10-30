@@ -1676,6 +1676,10 @@
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReportFolders">
 		</action>
+		<action name="fetchAllCustomModuleReportFolders"
+			class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="fetchAllCustomModuleReportFolders">
+		</action>
 		<action name="addReportFolder"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="addReportFolder">
