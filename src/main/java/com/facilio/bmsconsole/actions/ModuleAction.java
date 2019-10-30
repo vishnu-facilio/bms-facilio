@@ -55,7 +55,8 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, getModuleDisplayName());
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
-		
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_ENABLED, stateFlowEnabled);
+
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
 		addModulesChain.execute();
@@ -533,25 +534,25 @@ public class ModuleAction extends FacilioAction {
 	public void setWithLocalId(boolean withLocalId) {
 		this.withLocalId = withLocalId;
 	}
-	
-	private Long stateTransitionId;
-	public Long getStateTransitionId() {
+
+	private long stateTransitionId = -1;
+	public long getStateTransitionId() {
 		return stateTransitionId;
 	}
-	public void setStateTransitionId(Long stateTransitionId) {
+	public void setStateTransitionId(long stateTransitionId) {
 		this.stateTransitionId = stateTransitionId;
 	}
-	
+
 	public String updateModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+
 		setModuleData();
 		context.put(FacilioConstants.ContextNames.RECORD, moduleData);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));
-		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		
 		FacilioChain updateModuleDataChain = FacilioChainFactory.updateModuleDataChain();
 		updateModuleDataChain.execute(context);

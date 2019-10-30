@@ -55,12 +55,13 @@ public class AddOrUpdateStateFlowCommand extends FacilioCommand {
 			stateFlow.setActivityType(EventType.CREATE);
 			stateFlow.setModuleId(facilioModule.getModuleId());
 			stateFlow.setRuleType(RuleType.STATE_FLOW);
-			stateFlow.setDefaltStateFlow(false);
 			
 			boolean add = false;
 			if (stateFlow.getId() < 0) {
 				add = true;
-				stateFlow.setDraft(true);
+				if (!stateFlow.isDefaltStateFlow()) {
+					stateFlow.setDraft(true);
+				}
 			}
 			
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateFlow);
