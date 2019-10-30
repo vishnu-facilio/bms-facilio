@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.KPICategoryContext;
@@ -79,6 +81,7 @@ public class KPIAction extends FacilioAction {
 		context.put(ContextNames.SITE_ID, siteId);
 		context.put(ContextNames.BUILDING_ID, buildingId);
 		context.put(ContextNames.FLOOR_ID, floorId);
+		context.put(ContextNames.RESOURCE_LIST, resourceIds);
 		context.put(ContextNames.CATEGORY_ID, categoryId);
 		context.put(ContextNames.FREQUENCY, getFrequencyEnum());
 		context.put("groupBy", getGroupBy());
@@ -88,7 +91,8 @@ public class KPIAction extends FacilioAction {
 			setResult(ContextNames.COUNT, context.get(ContextNames.RECORD_COUNT));
 		}
 		else {
-			setResult(ContextNames.RESULT, context.get(ContextNames.RESULT));
+			setResult(ContextNames.KPI_LIST, context.get(ContextNames.RESULT));
+			setResult("lastUpdatedTime", context.get(ContextNames.MODIFIED_TIME));
 		}
 		
 		return SUCCESS;
@@ -143,5 +147,13 @@ public class KPIAction extends FacilioAction {
 	}
 	public FacilioFrequency getFrequencyEnum() {
 		return frequency;
+	}
+	
+	private List<Long> resourceIds;
+	public List<Long> getResourceIds() {
+		return resourceIds;
+	}
+	public void setResourceIds(List<Long> resourceIds) {
+		this.resourceIds = resourceIds;
 	}
 }

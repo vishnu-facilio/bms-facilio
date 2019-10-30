@@ -1239,4 +1239,34 @@ public class FormulaFieldAPI {
 		}
 	}
 
+	public static boolean isLatestTimeBasedOnFrequency(FacilioFrequency frequency, long ttime) {
+		long latestTime = -1;
+		switch (frequency) {
+			case DAILY:
+				latestTime = DateOperators.YESTERDAY.getRange(null).getStartTime();
+				break;
+			case WEEKLY:
+				latestTime = DateOperators.LAST_WEEK.getRange(null).getStartTime();
+				break;
+			case MONTHLY:
+				latestTime = DateOperators.LAST_MONTH.getRange(null).getStartTime();
+				break;
+			case QUARTERTLY:
+				latestTime = DateOperators.LAST_QUARTER.getRange(null).getStartTime();
+				break;
+			case HALF_YEARLY:
+				latestTime = DateOperators.LAST_N_QUARTERS.getRange("3").getStartTime();
+				break;
+			case ANNUALLY:
+				latestTime = DateOperators.LAST_YEAR.getRange(null).getStartTime();
+				break;
+			case HOURLY:
+				latestTime = DateTimeUtil.getHourStartTime() - (3600 * 1000);
+				break;
+			default:
+				break;
+		}
+		
+		return ttime >= latestTime;
+	}
 }

@@ -46,6 +46,7 @@ public class GetKPIViewListCommand extends FacilioCommand {
 		FacilioFrequency frequency = (FacilioFrequency) context.get(ContextNames.FREQUENCY);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		List<Long> resourceIds = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
 		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 		
 		
@@ -73,17 +74,6 @@ public class GetKPIViewListCommand extends FacilioCommand {
 				.andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), CommonOperators.IS_NOT_EMPTY));
 				;
 		
-		/*SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-									.module(resourceModule)
-									.innerJoin(rdmModule.getTableName()).on(resourceTable+".ID="+rdmFieldMap.get("resourceId").getCompleteColumnName())
-									.innerJoin(formulaTable).on(fieldMap.get("readingFieldId").getCompleteColumnName()+"="+rdmFieldMap.get("fieldId").getCompleteColumnName())
-									.select(selectFields)
-									.andCondition(CriteriaAPI.getCondition(fieldMap.get("formulaFieldType"), String.valueOf(FormulaFieldType.ENPI.getValue()), NumberOperators.EQUALS))
-									.andCondition(CriteriaAPI.getCondition(fieldMap.get("frequency"), String.valueOf(frequency.getValue()), NumberOperators.EQUALS))
-									.andCondition(CriteriaAPI.getCondition(fieldMap.get("siteId"), String.valueOf(siteId), NumberOperators.EQUALS))
-									.orderBy(orderBy)
-									;*/
-		
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
 		}
@@ -102,6 +92,9 @@ public class GetKPIViewListCommand extends FacilioCommand {
 		}
 		if (assetCategoryId > 0) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetCategoryId"), String.valueOf(assetCategoryId), NumberOperators.EQUALS));
+		}
+		if (CollectionUtils.isNotEmpty(resourceIds)) {
+			builder.andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("resourceId"), resourceIds, PickListOperators.IS));
 		}
 		
 		if (!fetchCount) {
