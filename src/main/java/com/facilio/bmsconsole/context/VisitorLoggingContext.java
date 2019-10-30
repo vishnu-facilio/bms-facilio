@@ -10,6 +10,16 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private VisitorTypeContext visitorType;
+	
+	public VisitorTypeContext getVisitorType() {
+		return visitorType;
+	}
+
+	public void setVisitorType(VisitorTypeContext visitorType) {
+		this.visitorType = visitorType;
+	}
+
 	private VisitorInviteContext invite;
 	private User host;
 	private long checkInTime = -1;
