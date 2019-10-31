@@ -1,5 +1,7 @@
 package com.facilio.cards.util;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -162,5 +164,44 @@ public class CardUtil {
 			paramsJson.put("autoStatusField", "automanualstatus");
 		}
 		return paramsJson;
+	}
+	
+	public static String appendCardPrefixSuffixScript (String script) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Map cardLayout(Map params) {");
+		sb.append("\n");
+		sb.append("result = {};");
+		sb.append("\n");
+		
+		sb.append(script);
+		
+		sb.append("\n");
+		sb.append("return result;");
+		sb.append("\n");
+		sb.append("}");
+		
+		return sb.toString();
+	}
+	
+	public static String getParamsAsScriptVariables(HashMap<String, Object> valueMap) {
+		StringBuilder sb = new StringBuilder();
+		if (valueMap != null && !valueMap.isEmpty()) {
+			Iterator<String> itr = valueMap.keySet().iterator();
+			while (itr.hasNext()) {
+				String key = itr.next();
+				sb.append("\n");
+				sb.append(key);
+				sb.append(" = ");
+				if (valueMap.containsKey(key)) {
+					sb.append(valueMap.get(key));
+				}
+				else {
+					sb.append("null");
+				}
+				sb.append(";");
+				sb.append("\n");
+			}
+		}
+		return sb.toString();
 	}
 }
