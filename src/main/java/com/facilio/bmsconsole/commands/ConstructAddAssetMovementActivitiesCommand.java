@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioContext;
@@ -25,8 +26,10 @@ public class ConstructAddAssetMovementActivitiesCommand extends FacilioCommand{
 		JSONObject info = new JSONObject();
 		AssetMovementContext assetMovement = AssetsAPI.getAssetMovementContext(assetMovementId);
 		info.put("movementId", assetMovementId);
-		CommonCommandUtil.addActivityToContext(assetMovement.getAssetId(), -1, AssetActivityType.CREATE_MOVEMENT, info, (FacilioContext) context);
-
+		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.ASSET);
+		if (asset != null && asset.getMoveApprovalNeeded() != null && asset.getMoveApprovalNeeded()) {
+			CommonCommandUtil.addActivityToContext(assetMovement.getAssetId(), -1, AssetActivityType.CREATE_MOVEMENT,info, (FacilioContext) context);
+		}
 		return false;
 	}
 

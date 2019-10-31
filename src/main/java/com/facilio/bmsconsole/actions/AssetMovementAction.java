@@ -10,6 +10,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -65,6 +66,8 @@ public class AssetMovementAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		if(assetMovement != null) {
 			if((!StringUtils.isNotEmpty(assetMovement.getFromGeoLocation()) && AssetsAPI.checkIfAssetMovementNecessary(assetMovement.getToGeoLocation(), assetMovement.getFromGeoLocation(), assetMovement.getAssetId())) || StringUtils.isEmpty(assetMovement.getFromGeoLocation())) {
+				AssetContext asset = AssetsAPI.getAssetInfo(assetMovement.getAssetId());
+				context.put(FacilioConstants.ContextNames.ASSET, asset);
 				FacilioChain chain = TransactionChainFactory.getAddAssetMovementChain();
 				chain.execute(context);
 				setResult(FacilioConstants.ContextNames.ASSET_MOVEMENT_RECORDS, context.get(FacilioConstants.ContextNames.RECORD));

@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -66,6 +67,16 @@ public class CompleteAssetMoveCommand extends FacilioCommand {
 								}
 							}
 						}
+					}
+				}else{
+					AssetMovementContext assetMovement = (AssetMovementContext) context.get(FacilioConstants.ContextNames.RECORD);
+					AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.ASSET);
+					if (asset != null && (asset.getMoveApprovalNeeded() == null || !asset.getMoveApprovalNeeded())) {
+						AssetsAPI.updateAssetMovement((Long) context.get(FacilioConstants.ContextNames.RECORD_ID));
+						JSONObject completedInfo = new JSONObject();
+						completedInfo.put("currentSite", SpaceAPI.getBaseSpace(assetMovement.getToSite()).getName());
+						completedInfo.put("currentSpace", SpaceAPI.getBaseSpace(assetMovement.getToSpace()).getName());
+						CommonCommandUtil.addActivityToContext(assetMovement.getAssetId(), -1,AssetActivityType.LOCATION, completedInfo, (FacilioContext) context);
 					}
 				}
 			}
