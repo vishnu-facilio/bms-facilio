@@ -1890,6 +1890,10 @@
 			class="com.facilio.bmsconsole.actions.AssetAction"
 			method="v2updateAsset">
 		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="v2deleteAsset">
+		</action>
 
 		<action name="downtimemetrics"
 			class="com.facilio.bmsconsole.actions.AssetAction"

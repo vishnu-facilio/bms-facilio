@@ -599,6 +599,12 @@ public class AssetAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String v2deleteAsset() throws Exception {
+		deleteAsset();
+		setResult("assetsId", assetsId);
+		return SUCCESS;
+	}
+	
 	public String fetchModuleCards() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
