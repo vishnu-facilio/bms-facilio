@@ -427,10 +427,13 @@ public class AdminAction extends ActionSupport
 	}
 	
 	public static List<Map<String, Object>> getAgentOrgs() throws Exception {
+
+		
+		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(IAMAccountConstants.getOrgFields())
-				.table(IAMAccountConstants.getOrgModule().getTableName())
-				.leftJoin(ModuleFactory.getAgentDataModule().getTableName())
-				.on("Organizations.ORGID = Agent_Data.ORGID").groupBy("Organizations.ORGID");
+				.table(ModuleFactory.getAgentDataModule().getTableName())
+				.leftJoin(IAMAccountConstants.getOrgModule().getTableName())
+				.on("Agent_Data.ORGID=Organizations.ORGID").groupBy("Agent_Data.ORGID");
 
 		List<Map<String, Object>> props = builder.get();
 		return props;

@@ -82,7 +82,7 @@ function changeThePage(){
 								for (Map<String,Object> domain : orgList) {
 									
 							%>
-					<option value="<%= domain.get("orgId")%>"<%=(request.getParameter("orgId") != null && request.getParameter("orgId").equals(domain.get("orgId") + "")) ? "selected" : " "%>><%=domain.get("domain")%>
+					<option value="<%= domain.get("orgId")%>"<%=(request.getParameter("orgId") != null && request.getParameter("orgId").equals(domain.get("orgId") + "")) ? "selected" : " "%>><%=domain.get("orgId")%>
 						-
 						<%=domain.get("domain")%></option>
 					<%
