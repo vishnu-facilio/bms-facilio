@@ -1102,6 +1102,8 @@ public class FacilioConstants {
 		
 		public static final String CONNECTED_APPS = "connectedApps";
 
+		public static final String CUSTOM_BUTTONS = "customButtons";
+
 		public static final String STATE_FLOW = "stateFlow";
 		public static final String STATE_FLOW_LIST = "stateFlows";
 		public static final String STATE_FLOW_ID = "stateFlowId";

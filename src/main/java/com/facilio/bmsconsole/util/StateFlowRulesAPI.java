@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,13 +25,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil.TimerField;
-import com.facilio.bmsconsole.workflow.rule.ApproverContext;
-import com.facilio.bmsconsole.workflow.rule.StateContext;
-import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.TransitionType;
-import com.facilio.bmsconsole.workflow.rule.ValidationContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -646,7 +641,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return null;
 	}
 
-	public static void addStateFlowTransitionChildren(StateflowTransitionContext rule) throws Exception {
+	public static void addOrUpdateFormDetails(FormRuleInterface rule) throws Exception {
 		FacilioForm form = rule.getForm();
 
 		if (form == null || CollectionUtils.isEmpty(form.getSections())) {
@@ -690,7 +685,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 	}
 	
-	public static void deleteStateFlowTransitionChildren(StateflowTransitionContext rule) throws Exception {
+	public static void deleteFormRuleContext(FormRuleInterface rule) throws Exception {
 		if (rule.getFormId() > 0) {
 			FormsAPI.deleteForms(Collections.singletonList(rule.getFormId()));
 		}

@@ -283,6 +283,15 @@
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2UpdateStatus" />
 	</package>
 
+	<package name="customButton" namespace="/api/v2/custombutton" extends="v2Api">
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="addOrUpdateCustomButton" />
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAllCustomButtons" />
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="deleteCustomButton" />
+	</package>
+
 	<package name="stateFlow" namespace="/api/v2/stateflow"
 		extends="v2Api">
 		<action name="addOrUpdate"

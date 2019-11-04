@@ -203,13 +203,25 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		return rule;
 	}
 
+	public static WorkflowRuleContext updateCustomButtonRuleWithChildren(CustomButtonRuleContext rule) throws Exception {
+		CustomButtonRuleContext oldRule = (CustomButtonRuleContext) getWorkflowRule(rule.getId());
+		updateWorkflowRuleWithChildren(rule);
+
+		updateApproverRule(oldRule, rule);
+
+		StateFlowRulesAPI.addOrUpdateFormDetails(rule);
+		updateExtendedRule(rule, ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields());
+
+		return rule;
+	}
+
 	public static WorkflowRuleContext updateStateflowTransitionRuleWithChildren(StateflowTransitionContext rule) throws Exception {
 		StateflowTransitionContext oldRule = (StateflowTransitionContext) getWorkflowRule(rule.getId());
 		updateWorkflowRuleWithChildren(rule);
 
 		updateApproverRule(oldRule, rule);
 
-		StateFlowRulesAPI.addStateFlowTransitionChildren(rule);
+		StateFlowRulesAPI.addOrUpdateFormDetails(rule);
 		updateExtendedRule(rule, ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields());
 
 		return rule;
@@ -404,9 +416,8 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		return validations;
 	}
 
-	public static void deleteApproverRuleChildren(StateflowTransitionContext rule) throws Exception {
+	public static void deleteApproverRuleChildren(ApproverWorkflowRuleContext rule) throws Exception {
 		deleteApprovers(rule.getApprovers());
 		deleteValidations(rule.getValidations());;
 	}
-	
 }

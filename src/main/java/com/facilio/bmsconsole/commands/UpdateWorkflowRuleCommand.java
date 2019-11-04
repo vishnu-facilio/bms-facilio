@@ -62,6 +62,9 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 		else if (rule instanceof StateflowTransitionContext) {
 			rule = ApprovalRulesAPI.updateStateflowTransitionRuleWithChildren((StateflowTransitionContext) rule);
 		}
+		else if (rule instanceof CustomButtonRuleContext) {
+			rule = ApprovalRulesAPI.updateCustomButtonRuleWithChildren((CustomButtonRuleContext) rule);
+		}
 		else {
 			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
 		}

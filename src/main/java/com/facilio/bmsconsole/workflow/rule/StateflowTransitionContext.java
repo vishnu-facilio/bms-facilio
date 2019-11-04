@@ -12,7 +12,8 @@ import org.apache.commons.chain.Context;
 
 import java.util.Map;
 
-public class StateflowTransitionContext extends ApproverWorkflowRuleContext {
+public class StateflowTransitionContext extends ApproverWorkflowRuleContext implements FormRuleInterface {
+
 	private static final long serialVersionUID = 1L;
 	
 	private long fromStateId = -1;

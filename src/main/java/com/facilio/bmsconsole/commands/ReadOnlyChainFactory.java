@@ -1599,4 +1599,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new KPIListGroupingCommand());
 		return chain;
 	}
+
+	public static FacilioChain getAllCustomButtonChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetCustomButtonListCommand());
+		chain.addCommand(new GetActionListForWorkflowRulesCommand());
+		return chain;
+	}
 }

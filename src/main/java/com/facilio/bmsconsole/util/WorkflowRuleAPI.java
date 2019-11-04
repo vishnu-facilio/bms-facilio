@@ -126,11 +126,14 @@ public class WorkflowRuleAPI {
 				break;
 			case STATE_RULE:
 				ApprovalRulesAPI.addApproverRuleChildren((ApproverWorkflowRuleContext) rule);
-				StateFlowRulesAPI.addStateFlowTransitionChildren((StateflowTransitionContext) rule);
+				StateFlowRulesAPI.addOrUpdateFormDetails((StateflowTransitionContext) rule);
 				addExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), ruleProps);
 				break;
 			case STATE_FLOW:
 				addExtendedProps(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(), ruleProps);
+				break;
+			case CUSTOM_BUTTON:
+				addExtendedProps(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(), ruleProps);
 				break;
 			default:
 				break;
@@ -565,6 +568,9 @@ public class WorkflowRuleAPI {
 				case STATE_FLOW:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(), entry.getValue()));
 					break;
+				case CUSTOM_BUTTON:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getCustomButtonRuleModule(), FieldFactory.getCustomButtonRuleFields(), entry.getValue()));
+					break;
 				default:
 					break;
 			}
@@ -688,6 +694,10 @@ public class WorkflowRuleAPI {
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, StateFlowRuleContext.class);
 							break;
+						case CUSTOM_BUTTON:
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+							rule = FieldUtil.getAsBeanFromMap(prop, CustomButtonRuleContext.class);
+							break;
 						default:
 							rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
 							break;
@@ -767,8 +777,9 @@ public class WorkflowRuleAPI {
 							ApprovalRulesAPI.deleteApprovalRuleChildIds((ApprovalRuleContext) rule);
 							break;
 						case STATE_RULE:
-							ApprovalRulesAPI.deleteApproverRuleChildren((StateflowTransitionContext) rule);
-							StateFlowRulesAPI.deleteStateFlowTransitionChildren((StateflowTransitionContext) rule);
+						case CUSTOM_BUTTON:
+							ApprovalRulesAPI.deleteApproverRuleChildren((ApproverWorkflowRuleContext) rule);
+							StateFlowRulesAPI.deleteFormRuleContext((FormRuleInterface) rule);
 							break;
 						default:
 							break;

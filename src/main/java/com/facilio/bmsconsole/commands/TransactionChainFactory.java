@@ -3721,6 +3721,13 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateCustomButtomCommand());
 		return chain;
 	}
+
+	public static FacilioChain getDeleteCustomButtonChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetWorkflowRuleCommand());
+		chain.addCommand(new WorkflowRuleDeleteCommand());
+		return chain;
+	}
 }
 
 
