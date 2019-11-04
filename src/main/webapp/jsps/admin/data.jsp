@@ -17,15 +17,15 @@
 <%@page import="com.facilio.accounts.util.AccountUtil"%>
 <%@page import="com.facilio.accounts.dto.Organization"%>
 <%@page import="java.util.List"%>
-
+<%@page import="java.util.Map"%>
 <%
 long receivedTime =0l;
 String receiveddate = "";
 List<Organization> org = null;
 OrgBean bean =  AccountUtil.getOrgBean();
 org = bean.getOrgs();
+List<Map<String , Object>> orgList = AdminAction.getAgentOrgs();
 
-System.out.println("time relative "+DateTimeUtil.relativeDuration(1571108002000l));
 %>
 
 <!DOCTYPE html>
@@ -36,7 +36,7 @@ System.out.println("time relative "+DateTimeUtil.relativeDuration(1571108002000l
 </head>
 <script type="text/javascript">
 function changeThePage(){
-	var selectedOption = "data?orgDomain="+ $("#orgDomain").val();
+	var selectedOption = "data?orgId="+ $("#orgId").val();
 	location.href = selectedOption;
 
 }
@@ -71,26 +71,26 @@ function changeThePage(){
 	<form action="">
 			<div class="admin-data-container">
 				<div class="">
-				<label for="orgDomain">
+				<label for="orgId">
 			<div class="admin-data-grey">Org:</div>
 				</label>
 				<select class="admin-data-select"
-					name="orgDomain" id="orgDomain" onChange="changeThePage()">
+					name="orgId" id="orgId" onChange="changeThePage()">
 					<option value="" disabled selected>Select</option>
 					<%
-								for (Organization domain : org) {
+								for (Map<String,Object> domain : orgList) {
 									
 							%>
-					<option value="<%= domain.getId()%>"<%=(request.getParameter("orgDomain") != null && request.getParameter("orgDomain").equals(domain.getId() + "")) ? "selected" : " "%>><%=domain.getId()%>
+					<option value="<%=domain.get("orgId")%>"<%=(request.getParameter("orgId") != null && request.getParameter("orgId").equals(domain.get("orgId") + "")) ? "selected" : " "%>><%=domain.get("orgId")%>
 						-
-						<%=domain.getDomain()%></option>
+						<%=domain.get("domain")%></option>
 					<%
 								}
 							%>
 				</select>
 				<%
-	if(request.getParameter("orgDomain")!=null){
-    String orgDomain =request.getParameter("orgDomain");
+	if(request.getParameter("orgId")!=null){
+    String orgDomain =request.getParameter("orgId");
     long orgId = Long.parseLong(orgDomain);
     OrgBean orgBean = (OrgBean) TransactionBeanFactory.lookup("OrgBean",orgId);
     Organization domain = orgBean.getOrg(orgId);

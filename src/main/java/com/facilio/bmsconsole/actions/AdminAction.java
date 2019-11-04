@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentKeys;
 import com.facilio.agentnew.AgentConstants;
 import com.facilio.auth.actions.FacilioAuthAction;
 import com.facilio.aws.util.FacilioProperties;
@@ -41,7 +43,9 @@ import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.license.FreshsalesUtil;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -420,21 +424,21 @@ public class AdminAction extends ActionSupport
 			conn.disconnect();
 		}
 
-
-
 		return jsonArray;
 
 	}
 	
 	public static List<Map<String, Object>> getAgentOrgs() throws Exception {
 
+		List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getField("orgId", "Organizations.ORGID", FieldType.ID));
+        fields.add(FieldFactory.getField("domain", "Organizations.FACILIODOMAINNAME", FieldType.STRING));
 		
-		
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(IAMAccountConstants.getOrgFields())
-				.table(ModuleFactory.getAgentDataModule().getTableName())
-				.leftJoin(IAMAccountConstants.getOrgModule().getTableName())
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(fields)
+				.table(IAMAccountConstants.getOrgModule().getTableName())
+				.innerJoin(ModuleFactory.getAgentDataModule().getTableName())
 				.on("Agent_Data.ORGID=Organizations.ORGID").groupBy("Agent_Data.ORGID");
-
+			System.out.println(builder.constructSelectStatement());
 		List<Map<String, Object>> props = builder.get();
 		return props;
 	}
