@@ -46,6 +46,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -427,7 +428,10 @@ public class AdminAction extends ActionSupport
 		return jsonArray;
 
 	}
-	
+	public static List<Map<String, Object>> getAgentOrgList() throws Exception {
+		return FacilioService.runAsServiceWihReturn(() ->getAgentOrgs());
+		
+	}
 	public static List<Map<String, Object>> getAgentOrgs() throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();

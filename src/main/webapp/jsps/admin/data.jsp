@@ -24,7 +24,7 @@ String receiveddate = "";
 List<Organization> org = null;
 OrgBean bean =  AccountUtil.getOrgBean();
 org = bean.getOrgs();
-List<Map<String , Object>> orgList = AdminAction.getAgentOrgs();
+List<Map<String , Object>> orgList = AdminAction.getAgentOrgList();
 
 %>
 
