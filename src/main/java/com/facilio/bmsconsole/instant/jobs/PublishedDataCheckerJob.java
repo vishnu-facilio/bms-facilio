@@ -49,11 +49,16 @@ public class PublishedDataCheckerJob extends InstantJob {
 		handleSuccessFailure(data, msgMap, context);
 	}
 	
-	private void checkPingStatus(PublishData pingData) throws Exception {
-		PublishData data = IoTMessageAPI.getPublishData(pingData.getId(), true);
-		if (data.getPingAckTime() == -1) {
-			LOGGER.info("Agent not active. Controller Id: " + data.getControllerId());
-			IoTMessageAPI.handlePublishMessageFailure(pingData);
+	private void checkPingStatus(PublishData pingData){
+		try {
+			PublishData data = IoTMessageAPI.getPublishData(pingData.getId(), true);
+			if (data.getPingAckTime() == -1) {
+				LOGGER.info("Agent not active. Controller Id: " + data.getControllerId() + ", Data Id: " + data.getId());
+				IoTMessageAPI.handlePublishMessageFailure(pingData);
+			}
+		}
+		catch (Exception e) {
+			LOGGER.error("Error while handling publish message failure", e);
 		}
 	}
 	

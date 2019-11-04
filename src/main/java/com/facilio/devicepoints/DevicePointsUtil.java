@@ -55,7 +55,7 @@ public  class DevicePointsUtil {
 
 		
 		String deviceName = (String) payLoad.get(DevicePointsKeys.DEVICE_NAME);
-		Integer controllerType = 0;
+		Integer controllerType = 10;
 		if(payLoad.containsKey(DevicePointsKeys.CONTROLLER_TYPE)){
 			controllerType = Integer.parseInt(payLoad.get(DevicePointsKeys.CONTROLLER_TYPE).toString());
 		}

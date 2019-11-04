@@ -6,13 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.FormLayout;
@@ -35,6 +39,7 @@ public class AssetAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static Logger LOGGER = LogManager.getLogger(WorkOrderAction.class.getName());
 
 	public String newAsset() throws Exception {
 		
@@ -90,26 +95,37 @@ public class AssetAction extends FacilioAction {
 	}
 
 	public String addAsset() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-		context.put(FacilioConstants.ContextNames.RECORD, asset);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
-		AssetCategoryContext assetCategory= asset.getCategory();
-		long categoryId=-1;
-		if(assetCategory!=null && assetCategory.getId() != 0) {
-			categoryId=assetCategory.getId();
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.RECORD, asset);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+			AssetCategoryContext assetCategory= asset.getCategory();
+			long categoryId=-1;
+			if(assetCategory!=null && assetCategory.getId() != 0) {
+				categoryId=assetCategory.getId();
+			}
+			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
+			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+			FacilioChain addAssetChain = TransactionChainFactory.getAddAssetChain();
+			addAssetChain.execute(context);
+			setAssetId(asset.getId());
 		}
-		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
-		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
-		FacilioChain addAssetChain = TransactionChainFactory.getAddAssetChain();
-		addAssetChain.execute(context);
-		setAssetId(asset.getId());
+		catch (Exception e) {
+			if (FacilioProperties.isOnpremise() || getFetchStackTrace()) {
+				String assetString = FieldUtil.getAsJSON(asset).toString();
+				CommonCommandUtil.emailException("Asset Add Exception", "Error occurred while adding asset", e, assetString.toString());
+				LOGGER.error("Error occurred while adding asset: "+ assetString, e);
+			}
+			throw e;
+		}
 		
 		return SUCCESS;
 	}
+	
 	
 	private Long stateTransitionId;
 	public Long getStateTransitionId() {

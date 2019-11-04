@@ -425,35 +425,63 @@
 		"7": {
 			"description": "KPI Violations",
 			"usage": "KPISummary",
-			"workflow": "Map fetchKpiViolations(Number formulaId, Number startTime, Number endTime) {
+			"workflow": "Map fetchKpiViolations(List formulaIds, Number startTime, Number endTime) {
 			  violations = {};
 			  violationModule = Module(\"violationalarmoccurrence\");
 			  date = NameSpace(\"date\");
 			  if (startTime != null) {
 			    ttimes = date.dateRange(startTime, endTime);
-				db = {
-			      criteria: [formulaField == formulaId && createdTime == ttimes],
-			      field: \"id\",
-			      aggregation: \"count\"
+			    db = {
+			      criteria: [formulaField == formulaIds && createdTime == ttimes],
+			      field: \"formulaField\",
+			      aggregation: \"count, formulaField\",
+			      groupBy: \"formulaField\"
 			    };
-			    violations.count = violationModule.fetch(db);
+			    violationsCount = violationModule.fetch(db);
+			    if (violationsCount != null) {
+			      for each index, value in violationsCount {
+			        violations[value.result.id] = value.formulaField;
+			      }
+			    }
 			  }
 			  else {
 			    thisMonthRanges = date.getDateRange(\"Current Month\");
-			    lastMonthRanges = date.getDateRange(\"Last Month\");
+			    
 			    db = {
-			      criteria: [formulaField == formulaId && createdTime == thisMonthRanges],
-			      field: \"id\",
-			      aggregation: \"count\"
+			      criteria: [formulaField == formulaIds && createdTime == thisMonthRanges],
+			      field: \"formulaField\",
+			      aggregation: \"count, formulaField\",
+			      groupBy: \"formulaField\"
 			    };
-			    violations.violationsThisMonth = violationModule.fetch(db);
-			
+			    violationsThisMonth = violationModule.fetch(db);
+			    if (violationsThisMonth != null) {
+			      for each index, value in violationsThisMonth {
+			        res = {};
+			        res.thisMonth = value.formulaField;
+			        violations[value.result.id] = res;
+			      }
+			    }
+			    
+				lastMonthRanges = date.getDateRange(\"Last Month\");
 			    db = {
-			      criteria: [formulaField == formulaId && createdTime == lastMonthRanges],
-			      field: \"id\",
-			      aggregation: \"count\"
+			      criteria: [formulaField == formulaIds && createdTime == lastMonthRanges],
+			      field: \"formulaField\",
+			      aggregation: \"count, formulaField\",
+			      groupBy: \"formulaField\"
 			    };
-			    violations.violationsLastMonth = violationModule.fetch(db);
+			    violationsLastMonth = violationModule.fetch(db);
+			    if (violationsLastMonth != null) {
+			      for each index, value in violationsLastMonth {
+			        res = {};
+					if (violations.get(value.result.id) != null) {
+			          res = violations.get(value.result.id);
+			        }
+			        else {
+			          violations[value.result.id] = res;
+			        }
+			        res.lastMonth = value.formulaField;
+			      }
+			    }
 			  }
 			  return violations;
 			}"
