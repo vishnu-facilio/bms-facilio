@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
@@ -20,6 +21,7 @@ public class AddOrUpdateCustomButtomCommand extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         if (rule != null) {
             rule.setRuleType(WorkflowRuleContext.RuleType.CUSTOM_BUTTON);
+            rule.setActivityType(EventType.CUSTOM_BUTTON);
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             if (module == null) {
