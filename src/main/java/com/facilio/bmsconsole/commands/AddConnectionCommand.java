@@ -1,18 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Map;
-
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.context.ConnectionParamContext;
+import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.time.DateTimeUtil;
 
 public class AddConnectionCommand extends FacilioCommand {
 
@@ -23,18 +21,7 @@ public class AddConnectionCommand extends FacilioCommand {
 		
 		connectionContext.setState(ConnectionContext.State.CREATED.getValue());
 		
-		fillDefaultfields(connectionContext);
-		
-		Map<String, Object> prop = FieldUtil.getAsProperties(connectionContext);
-		
-		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getConnectionModule().getTableName())
-				.fields(FieldFactory.getConnectionFields())
-				.addRecord(prop);
-		
-		insert.save();
-		
-		connectionContext.setId((Long) prop.get("id"));
+		ConnectionUtil.addConnection(connectionContext);
 		
 		if(connectionContext.getConnectionParams() != null && !connectionContext.getConnectionParams().isEmpty()) {
 			
@@ -49,15 +36,10 @@ public class AddConnectionCommand extends FacilioCommand {
 				insert1.addRecord(FieldUtil.getAsProperties(connectionContext));
 			}
 			
-			insert.save();
+			insert1.save();
 		}
 		return false;
 	}
 
-	private void fillDefaultfields(ConnectionContext connectionContext) {
-
-//		connectionContext.setSysCreatedBy(AccountUtil.getCurrentUser());
-		connectionContext.setSysCreatedTime(DateTimeUtil.getCurrenTime());
-	}
 
 }

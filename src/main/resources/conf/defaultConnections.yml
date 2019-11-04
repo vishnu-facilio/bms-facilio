@@ -1,0 +1,24 @@
+- 
+   serviceName: "Google Drive"
+   name: "googleDrive"
+   authType: 1
+   state: 2
+   clientId: "462561748861-boknijn1nqsphjt5lbi7nvkd6t92iac0.apps.googleusercontent.com"
+   clientSecretId: "90N0H_NcjD7_tCs1XmHG_sZK"
+   scope: "https://www.googleapis.com/auth/drive.metadata.readonly"
+   authorizeUrl: "https://accounts.google.com/o/oauth2/auth"
+   accessTokenUrl: "https://www.googleapis.com/oauth2/v4/token"
+   refreshTokenUrl: "https://www.googleapis.com/oauth2/v4/token"
+   revokeTokenUrl: null
+- 
+   serviceName: "Google Calender"
+   name: "googleCalender"
+   authType: 1
+   state: 2
+   clientId: "27556013480-5rlh5la1e86qhkjd5a3jro1vl31up24o.apps.googleusercontent.com"
+   clientSecretId: "Hkbh6CUZ0UhOha_J1PCl4-3d"
+   scope: "https://www.googleapis.com/auth/calendar.events"
+   authorizeUrl: "https://accounts.google.com/o/oauth2/auth"
+   accessTokenUrl: "https://www.googleapis.com/oauth2/v4/token"
+   refreshTokenUrl: "https://www.googleapis.com/oauth2/v4/token"
+   revokeTokenUrl: null

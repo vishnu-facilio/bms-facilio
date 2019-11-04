@@ -43,6 +43,7 @@ public class TransactionChainFactory {
 			//add command to insert into product tables
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
+//			c.addCommand(new PopulateDefaultConnectionsCommand());
 			
 			return c;
 		}

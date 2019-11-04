@@ -1,0 +1,64 @@
+package com.facilio.bmsconsole.commands;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.yaml.snakeyaml.Yaml;
+
+import com.facilio.bmsconsole.context.ConnectionContext;
+import com.facilio.bmsconsole.util.ConnectionUtil;
+import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FieldUtil;
+
+public class PopulateDefaultConnectionsCommand extends FacilioCommand{
+	
+	private static final Logger LOGGER = LogManager.getLogger(PopulateDefaultConnectionsCommand.class.getName());
+
+	private static final String DEFAULT_CONNECTIONS = "conf/defaultConnections.yml";
+	
+	@Override
+	public boolean executeCommand(Context context) throws Exception {
+		
+		Yaml yaml = new Yaml();
+        InputStream inputStream = null;
+        List<Object> connections = null;
+        try {
+        	
+        	inputStream = FacilioEnum.class.getClassLoader().getResourceAsStream(DEFAULT_CONNECTIONS);
+        	connections = yaml.load(inputStream);
+        	addConnections(connections);
+        }
+        catch (Exception e) {
+            LOGGER.error("Error occurred while reading default connection conf file. "+e.getMessage(), e);
+        }
+		finally {
+			if(inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (Exception e) {
+					LOGGER.error("Error occurred while clossing stream. "+e.getMessage(), e);
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	private void addConnections(List<Object> connections) throws Exception {
+		
+		if(connections != null) {
+			
+			for (Object connection :connections) {
+				Map connectionMap = (Map) connection;
+				ConnectionContext connectionContext = FieldUtil.getAsBeanFromMap(connectionMap, ConnectionContext.class);
+				ConnectionUtil.addConnection(connectionContext);
+			}
+		}
+	}
+	
+}

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -17,6 +18,8 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.AddConnectionCommand;
 import com.facilio.bmsconsole.context.ConnectionApiContext;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -27,6 +30,7 @@ import com.amazonaws.HttpMethod;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.context.ConnectionContext.State;
 import com.facilio.bmsconsole.context.ConnectionParamContext;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -429,11 +433,31 @@ public class ConnectionUtil {
 			connectionContext.setState(ConnectionContext.State.CLIENT_ID_MAPPED.getValue());
 		}
 	}
+	
+	public static void addConnection(ConnectionContext connectionContext) throws Exception {
+		
+		fillDefaultfields(connectionContext);
+		
+		Map<String, Object> prop = FieldUtil.getAsProperties(connectionContext);
+		
+		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getConnectionModule().getTableName())
+				.fields(FieldFactory.getConnectionFields())
+				.addRecord(prop);
+		
+		insert.save();
+		
+		connectionContext.setId((Long) prop.get("id"));
+	}
 
 	private static void fillDefaultfields(ConnectionContext connectionContext) {
 
 //		connectionContext.setSysModifiedBy(AccountUtil.getCurrentUser());
 		connectionContext.setSysModifiedTime(DateTimeUtil.getCurrenTime());
+		if(connectionContext.getId() < 0) {
+			connectionContext.setSysCreatedTime(DateTimeUtil.getCurrenTime());
+		}
+		connectionContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 	}
 
 	public static ConnectionApiContext getConnectionApi(String name) throws Exception {
