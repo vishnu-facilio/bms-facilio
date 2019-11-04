@@ -13,16 +13,6 @@ public class VisitorContext extends ModuleBaseWithCustomFields{
 	private String email;
 	private String phone;
 	
-	private VisitorTypeContext visitorType;
-	
-	public VisitorTypeContext getVisitorType() {
-		return visitorType;
-	}
-
-	public void setVisitorType(VisitorTypeContext visitorType) {
-		this.visitorType = visitorType;
-	}
-
 	private long lastVisitDuration;
 	
 	public String getName() {

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.File;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -103,5 +105,167 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 	public void setPurposeOfVisit(String purposeOfVisit) {
 		this.purposeOfVisit = purposeOfVisit;
 	}
+	
+	private long ndaId;
+	private String ndaUrl;
+	private File nda;
+	private String ndaFileName;
+	private  String ndaContentType;
+	
+	private long signatureId;
+	private String signatureUrl;
+	private File signature;
+	private String signatureFileName;
+	private  String signatureContentType;
+	
+	public long getSignatureId() {
+		return signatureId;
+	}
+
+	public void setSignatureId(long signatureId) {
+		this.signatureId = signatureId;
+	}
+
+	public String getSignatureUrl() {
+		return signatureUrl;
+	}
+
+	public void setSignatureUrl(String signatureUrl) {
+		this.signatureUrl = signatureUrl;
+	}
+
+	public File getSignature() {
+		return signature;
+	}
+
+	public void setSignature(File signature) {
+		this.signature = signature;
+	}
+
+	public String getSignatureFileName() {
+		return signatureFileName;
+	}
+
+	public void setSignatureFileName(String signatureFileName) {
+		this.signatureFileName = signatureFileName;
+	}
+
+	public String getSignatureContentType() {
+		return signatureContentType;
+	}
+
+	public void setSignatureContentType(String signatureContentType) {
+		this.signatureContentType = signatureContentType;
+	}
+
+	public long getNdaId() {
+		return ndaId;
+	}
+
+	public void setNdaId(long ndaId) {
+		this.ndaId = ndaId;
+	}
+
+	public String getNdaUrl() {
+		return ndaUrl;
+	}
+
+	public void setNdaUrl(String ndaUrl) {
+		this.ndaUrl = ndaUrl;
+	}
+
+	public File getNda() {
+		return nda;
+	}
+
+	public void setNda(File nda) {
+		this.nda = nda;
+	}
+
+	public String getNdaFileName() {
+		return ndaFileName;
+	}
+
+	public void setNdaFileName(String ndaFileName) {
+		this.ndaFileName = ndaFileName;
+	}
+
+	public String getNdaContentType() {
+		return ndaContentType;
+	}
+
+	public void setNdaContentType(String ndaContentType) {
+		this.ndaContentType = ndaContentType;
+	}
+
+	private long avatarId;
+	public long getAvatarId() {
+		return avatarId;
+	}
+
+	public void setAvatarId(long avatarId) {
+		this.avatarId = avatarId;
+	}
+
+	private String avatarUrl;
+	
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
+	}
+
+	private File avatar;
+	public File getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(File avatar) {
+		this.avatar = avatar;
+	}
+
+	private String avatarFileName;
+	public String getAvatarFileName() {
+		return avatarFileName;
+	}
+
+	public void setAvatarFileName(String avatarFileName) {
+		this.avatarFileName = avatarFileName;
+	}
+
+	private  String avatarContentType;
+
+	public String getAvatarContentType() {
+		return avatarContentType;
+	}
+
+	public void setAvatarContentType(String avatarContentType) {
+		this.avatarContentType = avatarContentType;
+	}
+	
+	private long expectedVisitDuration;
+	private long expectedCheckOutTime;
+
+
+
+	public long getExpectedVisitDuration() {
+		return expectedVisitDuration;
+	}
+
+	public void setExpectedVisitDuration(long expectedVisitDuration) {
+		this.expectedVisitDuration = expectedVisitDuration;
+	}
+
+	public long getExpectedCheckOutTime() {
+		return expectedCheckOutTime;
+	}
+
+	public void setExpectedCheckOutTime(long expectedCheckOutTime) {
+		this.expectedCheckOutTime = expectedCheckOutTime;
+	}
+	
+	
 	
 }

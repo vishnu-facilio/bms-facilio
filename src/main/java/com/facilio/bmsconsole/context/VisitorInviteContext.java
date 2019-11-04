@@ -3,6 +3,9 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.ItemContext.CostType;
+import com.facilio.bmsconsole.context.RentalLeaseContractContext.RentalLeaseContractType;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class VisitorInviteContext extends ModuleBaseWithCustomFields{
@@ -101,4 +104,66 @@ public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 		}
 		return false;
 	}
+	
+	private InviteSource inviteSource;
+	public int getInviteSource() {
+		if (inviteSource != null) {
+			return inviteSource.getIndex();
+		}
+		return -1;
+	}
+	public void setInviteSource(int inviteSource) {
+		this.inviteSource = InviteSource.valueOf(inviteSource);
+	}
+	public InviteSource getInviteSourceEnum() {
+		return inviteSource;
+	}
+	public void setInviteSource(InviteSource inviteSource) {
+		this.inviteSource = inviteSource;
+	}
+
+	public static enum InviteSource implements FacilioEnum {
+		WORKORDER, PURCHASE_ORDER, MANUAL;
+
+		@Override
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name();
+		}
+
+		public static InviteSource valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	private long sourceId;
+
+
+	public long getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(long sourceId) {
+		this.sourceId = sourceId;
+	}
+	
+	 
+	
+//	private VisitorType visitorType;
+//
+//	public VisitorType getVisitorType() {
+//		return visitorType;
+//	}
+//
+//	public void setVisitorType(VisitorType visitorType) {
+//		this.visitorType = visitorType;
+//	}
+	
 }

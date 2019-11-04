@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
@@ -31,6 +32,10 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 				}
 				if(vL.getVisitor() != null && vL.getVisitor().getId() <= 0) {
 					RecordAPI.addRecord(true, Collections.singletonList(vL.getVisitor()) , module, fields);
+				}
+				if(vL.getInvite() != null) {
+					VisitorInviteContext visitorInvite = VisitorManagementAPI.getVisitorInvite(vL.getInvite().getId());
+					vL.setExpectedVisitDuration(visitorInvite.getExpectedDuration());
 				}
 			}
 		}

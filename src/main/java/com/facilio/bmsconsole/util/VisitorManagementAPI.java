@@ -210,9 +210,9 @@ public class VisitorManagementAPI {
 		
 	}
 	
-	public static void updateVisitorLogCheckInCheckoutTime(Long logId, boolean isCheckIn, long time) throws Exception {
+	public static void updateVisitorLogCheckInCheckoutTime(VisitorLoggingContext vLog, boolean isCheckIn, long time) throws Exception {
 		
-		if(logId > 0) {
+		if(vLog.getId() > 0) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
 			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
@@ -225,14 +225,19 @@ public class VisitorManagementAPI {
 			}
 			else {
 				FacilioField checkInTimeField = modBean.getField("checkInTime", module.getName());
-				updateMap.put("checkInTime", time);
 				updatedfields.add(checkInTimeField);
+				updateMap.put("checkInTime", time);
+				if(vLog.getExpectedVisitDuration() > 0) {
+					FacilioField expectedCheckOutTimeField = modBean.getField("expectedCheckOutTime", module.getName());
+					updateMap.put("expectedCheckOutTime", time + vLog.getExpectedVisitDuration());
+					updatedfields.add(expectedCheckOutTimeField);
+				}
 			}
 		
 			UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()
 					.module(module)
 					.fields(updatedfields)
-					.andCondition(CriteriaAPI.getIdCondition(logId, module))
+					.andCondition(CriteriaAPI.getIdCondition(vLog.getId(), module))
 				;
 			
 			updateBuilder.updateViaMap(updateMap);
@@ -260,7 +265,7 @@ public class VisitorManagementAPI {
 		
 	}
 	
-	public static void updateVisitorRollUps(VisitorLoggingContext visitorLog) throws Exception {
+	public static void updateVisitorLastVisitRollUps(VisitorLoggingContext visitorLog) throws Exception {
 		
 		if(visitorLog != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -291,17 +296,57 @@ public class VisitorManagementAPI {
 		
 	}
 	
+	public static void updateVisitorRollUps(VisitorLoggingContext visitorLog) throws Exception {
+		
+		if(visitorLog != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
+			Map<String, Object> updateMap = new HashMap<>();
+			FacilioField avatarId = modBean.getField("avatar", module.getName());
+			FacilioField visitorType = modBean.getField("type", module.getName());
+			
+			updateMap.put("avatar", visitorLog.getAvatarId());
+			updateMap.put("type", FieldUtil.getAsProperties(visitorLog.getVisitorType()));
+			
+			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+			updatedfields.add(avatarId);
+			updatedfields.add(visitorType);
+			
+			updatevisitor(visitorLog.getVisitor().getId(),updatedfields, updateMap);
+		}
+			
+		
+	}
+	
 	public static void updateVisitorLogNDA(long logId, long fileId) throws Exception {
 		
 		if(logId > 0) {
-			AttachmentContext attachment = new AttachmentContext();
+//			AttachmentContext attachment = new AttachmentContext();
+//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//			FacilioModule attachmentsModule = modBean.getModule("visitorloggingattachments");
+//			attachment.setParentId(logId);
+//			attachment.setModuleId(attachmentsModule.getModuleId());
+//			attachment.setFileId(fileId);
+//			attachment.setCreatedTime(System.currentTimeMillis());
+//			AttachmentsAPI.addAttachments(Collections.singletonList(attachment), "visitorloggingattachments");
+
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule("visitorloggingattachments");
-			attachment.setParentId(logId);
-			attachment.setModuleId(module.getModuleId());
-			attachment.setFileId(fileId);
-			attachment.setCreatedTime(System.currentTimeMillis());
-			AttachmentsAPI.addAttachments(Collections.singletonList(attachment), "visitorloggingattachments");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+			
+			Map<String, Object> updateMap = new HashMap<>();
+			FacilioField ndaIdField = modBean.getField("nda", module.getName());
+			updateMap.put("nda", fileId);
+			updatedfields.add(ndaIdField);
+			
+			UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()
+					.module(module)
+					.fields(updatedfields)
+					.andCondition(CriteriaAPI.getIdCondition(logId, module))
+				;
+			
+			updateBuilder.updateViaMap(updateMap);
+			
 		}
 		
 	}

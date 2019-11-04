@@ -209,11 +209,12 @@ public class VisitorAction extends FacilioAction
 				visitor.setAvatarFileName(avatarFileName);
 				visitor.setAvatarContentType(avatarContentType);
 			}
-			if(signature != null) {
+			if (signature != null) {
 				visitor.setSignature(signature);
 				visitor.setSignatureFileName(signatureFileName);
 				visitor.setSignatureContentType(signatureContentType);
 			}
+			
 			//update location
 			LocationContext location = visitor.getLocation();
 			
@@ -255,14 +256,13 @@ public class VisitorAction extends FacilioAction
 			visitor.setAvatarFileName(avatarFileName);
 			visitor.setAvatarContentType(avatarContentType);
 		}
-		if(signature != null) {
+		if (signature != null) {
 			visitor.setSignature(signature);
 			visitor.setSignatureFileName(signatureFileName);
 			visitor.setSignatureContentType(signatureContentType);
 		}
-		
 		LocationContext location = visitor.getLocation();
-		if(location == null) {
+		if(location == null) { 
 			location = new LocationContext();
 			location.setLat(1.1);
 			location.setLng(1.1);
