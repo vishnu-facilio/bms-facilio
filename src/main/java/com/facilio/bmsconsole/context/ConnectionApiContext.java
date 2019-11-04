@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.amazonaws.HttpMethod;
+import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.workflows.functions.FacilioConnectionFunctions;
 
 import java.util.Map;
@@ -62,7 +64,9 @@ public class ConnectionApiContext {
     }
     public Object execute(Map<String,String> params) throws Exception {
         if (this.type==1){
-            return FacilioConnectionFunctions.GET.execute(this.connectionContext,this.url,params);
+        	
+        	return ConnectionUtil.getUrlResult(this.connectionContext, this.url, params, HttpMethod.GET,null,null);
+        	
         }
         if (this.type ==2){
             //TODO handle post
