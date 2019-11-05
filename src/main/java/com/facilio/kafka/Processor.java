@@ -116,6 +116,7 @@ public class Processor extends FacilioProcessor {
                 JSONObject payLoad = (JSONObject) parser.parse(data);
                 if(payLoad.containsKey(AgentConstants.VERSION) && ( ("2".equalsIgnoreCase((String)payLoad.get(AgentConstants.VERSION))))){
                     if(newProcessor != null){
+                        LOGGER.info(" newProcessor payload -> "+payLoad);
                         try {
                             newProcessor.processNewAgentData(payLoad);
                         }catch (Exception newProcessorException){

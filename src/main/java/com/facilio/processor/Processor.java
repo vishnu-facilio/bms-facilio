@@ -146,6 +146,7 @@ public class Processor implements IRecordProcessor {
                     JSONObject payLoad = (JSONObject) parser.parse(reader);
                     if(payLoad.containsKey(AgentConstants.VERSION) && ( ("2".equalsIgnoreCase((String)payLoad.get(AgentConstants.VERSION))))){
                         if( newProcessor != null && isStage ) {
+                            LOGGER.info(" newProcessor payload -> "+payLoad);
                             try {
                                 newProcessor.processNewAgentData(payLoad);
                             }catch (Exception newProcessorException){

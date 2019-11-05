@@ -36,13 +36,14 @@ public class NewProcessor
     private static final Logger LOGGER = LogManager.getLogger(NewProcessor.class.getName());
 
     public NewProcessor(long orgId, String orgDomainName) {
+        LOGGER.info(" loading newProcessor ");
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
         try {
             au = new NewAgentUtil(orgId, orgDomainName);
-            au.populateAgentContextMap(null);
             ackUtil = new AckUtil();
             dU = new DeviceUtil();
+            LOGGER.info("done loading newProcessor ");
         }catch (Exception e){
             LOGGER.info("Exception occurred ",e);
         }
@@ -51,7 +52,6 @@ public class NewProcessor
    public void processNewAgentData(JSONObject payload){
         try {
             LOGGER.info(" processing new agent in new processor method " + payload);
-            System.out.println(" pauload " + payload);
             String agentName = orgDomainName.trim();
             if (payload.containsKey(PublishType.agent.getValue())) {
                 agentName = payload.remove(PublishType.agent.getValue()).toString().trim();
@@ -64,12 +64,12 @@ public class NewProcessor
                 long agentId = au.addAgent(agent);
                 if (agentId < 1L) {
                     LOGGER.info(" Error in AgentId generation ");
+                }else {
+                    cU = getControllerUtil(agent.getId());
+                    agent.setId(agentId);
                 }
-                agent.setId(agentId);
             }
             LOGGER.info(" agent ID " + agentName + " - " + agent.getId());
-            cU = getControllerUtil(agent.getId());
-            LOGGER.info(" continuing with processing payload");
             if( ! payload.containsKey(AgentConstants.PUBLISH_TYPE)){
                 LOGGER.info("Exception Occurred, "+AgentConstants.PUBLISH_TYPE+" is mandatory in payload "+payload);
             }
@@ -84,13 +84,13 @@ public class NewProcessor
                         LOGGER.info(" Agent processing failed");
                     }
                 case CONTROLLERS:
-                    LOGGER.info(" iamcvijaylogs payload at case controllers " + payload);
+                    LOGGER.info("payload at case controllers " + payload);
                     dU.processDevices(agent, payload);
                     break;
                 case DEVICE_POINTS:
                         Controller controller = getControllerFromAgentPayload(payload, agent.getId());
                         if (controller != null) {
-                            LOGGER.info(" controller not null an so processing point");
+                            LOGGER.info(" controller not null and so processing point");
                             PointsUtil pU = new PointsUtil(agent.getId(), controller.getId());
                             pU.processPoints(payload, controller);
                         } else {

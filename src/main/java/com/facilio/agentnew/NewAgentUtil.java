@@ -36,25 +36,17 @@ public class NewAgentUtil
     public NewAgentUtil(long orgId, String orgDomainName)  {
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
+        populateAgentContextMap();
     }
 
-    private static StackTraceElement stackStrace(){
-        return Thread.currentThread().getStackTrace()[2];
+    private static StackTraceElement[] stackStrace(){
+        return Thread.currentThread().getStackTrace();
     }
 
     /**
      * This method populates the agents from database and maps them to their name
-     * @param agentName String agent's name to load the particular agent and null to load all agents
      */
-    public void populateAgentContextMap(String agentName) {
-            LOGGER.info(" populating new agent context " + agentName + " " + stackStrace());
-            if( (agentName != null) && ( ! agentName.isEmpty()) ){
-                FacilioAgent agent = NewAgentAPI.getAgent(agentName);
-                if(agent != null){
-                    agentMap.put(agent.getName(),agent);
-                }
-                return;
-            }
+    public void populateAgentContextMap() {
             List<FacilioAgent> agentList = NewAgentAPI.getAgents();
             LOGGER.info(" getting all agents "+agentList);
             agentList.forEach(agent -> agentMap.put(agent.getName(),agent));
@@ -154,7 +146,7 @@ public class NewAgentUtil
                 agent.setNumberOfControllers(0);
             }*/
 
-            if (containsValueCheck(AgentConstants.VERSION,jsonObject)) {
+            /*if (containsValueCheck(AgentConstants.VERSION,jsonObject)) {
                 Object currDeviceDetails = jsonObject.get(AgentConstants.VERSION);
                 String currDeviceDetailsString = currDeviceDetails.toString();
                 String currVersion = getVersion(currDeviceDetails);
@@ -164,7 +156,7 @@ public class NewAgentUtil
                     agent.setDeviceDetails(currDeviceDetailsString);
                     agent.setVersion(currVersion);
                 }
-            }
+            }*/
             if (containsValueCheck(AgentConstants.WRITABLE,jsonObject)) {
                 Boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentConstants.WRITABLE).toString());
                 if (agent.getWritable() != currWriteble) {
@@ -200,8 +192,10 @@ public class NewAgentUtil
         FacilioAgent agent = agentMap.get(agentName);
         if(agent == null){
             LOGGER.info("agent is null when getting  new agent " + stackStrace());
-            populateAgentContextMap(agentName);
-            agent =agentMap.get(agentName);
+            agent = NewAgentAPI.getAgent(agentName);
+            if( agent != null ){
+                agentMap.put(agentName,agent);
+            }
         }
         LOGGER.info(" final new agent return - - " + agent);
         return agent;
@@ -214,7 +208,7 @@ public class NewAgentUtil
         context.put(AgentConstants.AGENT,agent);
         try {
             chain.execute(context);
-            Long agentId = (Long) context.get(AgentConstants.ID);
+            Long agentId = (Long) context.get(FacilioConstants.ContextNames.ID);
             if( (agentId != null) && (agentId > 0)){
                 agent.setId(agentId);
                 return agentId;

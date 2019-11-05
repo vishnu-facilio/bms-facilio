@@ -22,7 +22,7 @@ public class AddAgent extends FacilioCommand {
         context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getNewAgentDataFields());
         context.put(FacilioConstants.ContextNames.TO_INSERT_MAP, FieldUtil.getAsProperties(agent));
         bean.genericInsert(context);
-        if(context.containsKey(AgentConstants.ID) && ( ((Number)context.get(AgentConstants.ID)).intValue() > 0) ){
+        if(context.containsKey(FacilioConstants.ContextNames.ID) && ( ((Number)context.get(FacilioConstants.ContextNames.ID)).intValue() > 0) ){
             return true;
         }
         return false;

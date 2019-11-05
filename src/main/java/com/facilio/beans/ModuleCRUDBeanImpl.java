@@ -878,7 +878,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					selectRecordBuilder.limit(100);
 				}
 				rows.addAll(selectRecordBuilder.get());
-				LOGGER.info(" select query "+selectRecordBuilder.toString());
 			} else {
 				LOGGER.info("Exception occurred table name or criteria are mandatory and can't be null ");
 			}
@@ -1163,6 +1162,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			if (map != null) {
 				try {
 					Long id = builder.insert(map);
+					LOGGER.info(" insertion ID "+id);
+					LOGGER.info("to insert map is "+map);
 					context.put(ContextNames.ID, id);
 					return id;
 				} catch (Exception e) {
