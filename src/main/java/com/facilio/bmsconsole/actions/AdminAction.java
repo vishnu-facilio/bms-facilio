@@ -24,11 +24,8 @@ import org.apache.struts2.ServletActionContext;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.bean.OrgBean;
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentKeys;
 import com.facilio.agentnew.AgentConstants;
 import com.facilio.auth.actions.FacilioAuthAction;
 import com.facilio.aws.util.FacilioProperties;
@@ -39,17 +36,13 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.license.FreshsalesUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
@@ -434,45 +427,25 @@ public class AdminAction extends ActionSupport
 		return jsonArray;
 
 	}
-	public static List<Map<String, Object>> getAgentOrgList() throws Exception {
+
+	public static List<Map<String, Object>> getOrgsList() throws Exception {
+
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(FieldFactory.getField("orgId", "Organizations.ORGID", FieldType.ID));
 		fields.add(FieldFactory.getField("domain", "Organizations.FACILIODOMAINNAME", FieldType.STRING));
 
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
-				.table(IAMAccountConstants.getOrgModule().getTableName());
-        return selectBuilder.get();
-	}
-	public static List<Map<String, Object>> getOrgsList() throws Exception {
-
-		List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getField("orgId", "Organizations.ORGID", FieldType.ID));
-        fields.add(FieldFactory.getField("domain", "Organizations.FACILIODOMAINNAME", FieldType.STRING));
-		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().select(fields)
 				.table(IAMAccountConstants.getOrgModule().getTableName())
-				.innerJoin(ModuleFactory.getAgentDataModule().getTableName())
-				.on("Agent_Data.ORGID=Organizations.ORGID").groupBy("Agent_Data.ORGID");
-			System.out.println(builder.constructSelectStatement());
-		List<Map<String, Object>> props = builder.get();
-		return props;
+				.innerJoin(ModuleFactory.getAgentDataModule().getTableName()).on("Agent_Data.ORGID=Organizations.ORGID")
+				.groupBy("Agent_Data.ORGID");
+		return builder.get();
 	}
+
 	public static List<Map<String, Object>> getAgentOrgs() throws Exception {
 
-		List<Map<String, Object>> prop = new ArrayList<>();
-		if(!FacilioProperties.isProduction()) {
-			 prop = FacilioService.runAsServiceWihReturn(() ->getAgentOrgList());
-		}else {
-			 prop = FacilioService.runAsServiceWihReturn(() ->getOrgsList());
-		}
-		
-		return prop;
+		return FacilioService.runAsServiceWihReturn(() -> getOrgsList());
 	}
 
-	public static void deleteMessageQueue() {
-		
-	}
-	
 	private String orgDomain;
 	public String getOrgDomain() {
 		return orgDomain;
