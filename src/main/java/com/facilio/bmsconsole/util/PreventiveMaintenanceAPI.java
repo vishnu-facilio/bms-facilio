@@ -3066,7 +3066,7 @@ public class PreventiveMaintenanceAPI {
 		Set<Long> unusualSectionName = new HashSet<>();
 		Set<Long> taskMapIsEmpty = new HashSet<>();
 		Set<Long> uniqueIdIsMissing = new HashSet<>();
-		List<Long> skipList = Arrays.asList(1123152L, 1090598L, 1087384L, 1090585L);
+		List<Long> skipList = Arrays.asList(1123152L, 1090598L, 1087384L, 1090585L, 1102395L,1090588L, 1110405L, 1110404L, 1090595L, 1145433L, 1145434L, 1145435L, 1145436L, 1145441L, 1145432L, 1213831L);
 		Set<Long> skip = new HashSet<>(skipList);
 		for (PreventiveMaintenance pm: allPMs) {
 			if (skip.contains(pm.getId())) {
