@@ -48,7 +48,7 @@ public class GetTrendLineCommand extends FacilioCommand {
 				}
 			}
 			
-			if(!trendLineObj.isEmpty() && (boolean) trendLineObj.get("enable")){
+			if(trendLineObj != null && !trendLineObj.isEmpty() && trendLineObj.containsKey("enable") && (boolean) trendLineObj.get("enable")){
 				
 				List<ReportDataPointContext> trendLineDataPoints = getDataPoints(report.getDataPoints(), ((JSONArray)trendLineObj.get("selectedPoints")));
 				
