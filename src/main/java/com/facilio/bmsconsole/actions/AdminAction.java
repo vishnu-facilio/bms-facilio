@@ -24,6 +24,8 @@ import org.apache.struts2.ServletActionContext;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.bean.OrgBean;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
@@ -43,9 +45,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.license.FreshsalesUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
@@ -457,7 +461,7 @@ public class AdminAction extends ActionSupport
 
 		List<Map<String, Object>> prop = new ArrayList<>();
 		if(!FacilioProperties.isProduction()) {
-			 prop =  getAgentOrgList();
+			 prop = FacilioService.runAsServiceWihReturn(() ->getAgentOrgList());
 		}else {
 			 prop = FacilioService.runAsServiceWihReturn(() ->getOrgsList());
 		}
