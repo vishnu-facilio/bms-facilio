@@ -457,9 +457,9 @@ public class AdminAction extends ActionSupport
 
 		List<Map<String, Object>> prop = new ArrayList<>();
 		if(!FacilioProperties.isProduction()) {
-			 prop = FacilioService.runAsServiceWihReturn(() -> getAgentOrgList());
+			 prop =  getAgentOrgList();
 		}else {
-			 prop = getOrgsList();
+			 prop = FacilioService.runAsServiceWihReturn(() ->getOrgsList());
 		}
 		
 		return prop;
