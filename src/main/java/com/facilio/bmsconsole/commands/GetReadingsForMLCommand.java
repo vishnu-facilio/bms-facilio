@@ -73,7 +73,13 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
 			for(Map<String,Object> prop : props)
 			{
-				data.put((long)prop.get(ttimeField.getName()), prop.get(variableField.getName()));
+				long ttime = (long) prop.get(ttimeField.getName());
+				if(data.containsKey(ttime)){
+					Double previousValue = (Double) data.get(ttime);
+					data.put((long) prop.get(ttimeField.getName()) , previousValue + (Double) prop.get(variableField.getName()));
+				}else{
+					data.put(ttime, prop.get(variableField.getName()));
+				}
 			}
 			if(mlContext.getOrgId()==232 && mlContext.getId()==83)
 			{
