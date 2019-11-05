@@ -30,12 +30,15 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 		}
 
 		// there is no transition info
-		if (currentTransitionId == null) {
+		if (currentTransitionId == null || currentTransitionId == -1) {
 			return false;
 		}
 		
 		if (CollectionUtils.isNotEmpty(wos)) {
 			StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId);
+			if (stateflowTransition == null) {
+				return false;
+			}
 			for (ModuleBaseWithCustomFields wo : wos) {
 				Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, wo, WorkflowRuleAPI.getOrgPlaceHolders());
 				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransition, moduleName, wo, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, wo.getId()), recordPlaceHolders, (FacilioContext) context, false);
