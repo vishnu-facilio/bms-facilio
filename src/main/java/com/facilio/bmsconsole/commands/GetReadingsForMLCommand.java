@@ -74,9 +74,9 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			for(Map<String,Object> prop : props)
 			{
 				long ttime = (long) prop.get(ttimeField.getName());
-				if(data.containsKey(ttime)){
+				if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
 					Double previousValue = (Double) data.get(ttime);
-					data.put((long) prop.get(ttimeField.getName()) , previousValue + (Double) prop.get(variableField.getName()));
+					data.put(ttime, previousValue + (Double) prop.get(variableField.getName()));
 				}else{
 					data.put(ttime, prop.get(variableField.getName()));
 				}
