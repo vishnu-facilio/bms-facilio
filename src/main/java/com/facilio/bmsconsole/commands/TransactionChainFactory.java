@@ -9,7 +9,10 @@ import com.facilio.agent.commands.*;
 import com.facilio.agentIntegration.AddIntegrationCommand;
 import com.facilio.agentIntegration.UpdateIntegrationCommand;
 import com.facilio.agentIntegration.wattsense.AgentIntegrationDeleteCommand;
+import com.facilio.agentnew.AddAgent;
 import com.facilio.agentnew.controller.AddDevicesCommand;
+import com.facilio.agentnew.iotmessage.AckMessageCommand;
+import com.facilio.agentnew.timeseries.ProcessTimeSeriesData;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
@@ -44,7 +47,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
 //			c.addCommand(new PopulateDefaultConnectionsCommand());
-			
+
 			return c;
 		}
 
@@ -445,6 +448,12 @@ public class TransactionChainFactory {
 		public static FacilioChain updateAckChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AckUpdateCommand());
+		return c;
+		}
+
+		public static FacilioChain addNewAgent(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddAgent());
 		return c;
 		}
 
@@ -3727,6 +3736,18 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetWorkflowRuleCommand());
 		chain.addCommand(new WorkflowRuleDeleteCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAckMessageChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AckMessageCommand());
+		return chain;
+	}
+
+	public static FacilioChain getNewTimeSeriesProcessChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ProcessTimeSeriesData());
 		return chain;
 	}
 }

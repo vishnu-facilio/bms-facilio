@@ -17,6 +17,8 @@ public abstract class Point extends FacilioPoint{
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOGGER = LogManager.getLogger(Point.class.getName());
+    @Deprecated
+    public Point() { }
 
     public abstract FacilioControllerType getControllerType();
 
@@ -39,8 +41,8 @@ public abstract class Point extends FacilioPoint{
     private Long fieldId;
     private boolean pseudo;
     private long mappedTime;
-    private PointEnum.ConfigureStatus configureStatus;
-    private PointEnum.SubscribeStatus subscribestatus;
+    private PointEnum.ConfigureStatus configureStatus = PointEnum.ConfigureStatus.UNCONFIGURED;
+    private PointEnum.SubscribeStatus subscribestatus = PointEnum.SubscribeStatus.UNSUBSCRIBED;
 
     /**
      * This method is used to get point as map which can be used to insert point to point table,
@@ -71,6 +73,8 @@ public abstract class Point extends FacilioPoint{
         pointJSON.put(AgentConstants.CREATED_TIME,getCreatedTime());
         pointJSON.put(AgentConstants.MAPPED_TIME,getMappedTime());
         pointJSON.put(AgentConstants.UNIT,getUnit());
+        pointJSON.put(AgentConstants.CONFIGURE_STATUS,getConfigureStatus().getIndex());
+        pointJSON.put(AgentConstants.SUBSCRIBE_STATUS,getSubscribestatus().getIndex());
         return pointJSON;
     }
 

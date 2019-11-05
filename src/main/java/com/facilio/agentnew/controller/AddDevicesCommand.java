@@ -9,6 +9,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -28,9 +30,9 @@ public class AddDevicesCommand extends FacilioCommand {
             ModuleCRUDBean bean;
             bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",  AccountUtil.getCurrentOrg().getOrgId());
             for (Device device : devices) {
-                deviceContex.put(FacilioConstants.ContextNames.TO_INSERT_MAP,device.toJSON());
-                deviceContex.put(FacilioConstants.ContextNames.TABLE_NAME,AgentConstants.DEVICE_TABLE);
-                deviceContex.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getDeviceFields());
+                deviceContex.put(FacilioConstants.ContextNames.TO_INSERT_MAP, FieldUtil.getAsJSON(device));
+                deviceContex.put(FacilioConstants.ContextNames.TABLE_NAME, ModuleFactory.getFieldDeviceModule().getTableName());
+                deviceContex.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getFieldDeviceFields());
                 Long deviceId = bean.genericInsert(deviceContex);
                 if( deviceId > 0){
                     LOGGER.info("added device " + deviceId);

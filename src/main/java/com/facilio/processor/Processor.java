@@ -1,33 +1,14 @@
 package com.facilio.processor;
 
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessor;
 import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.agent.AgentContent;
-import com.facilio.agent.AgentKeys;
-import com.facilio.agent.AgentType;
-import com.facilio.agent.AgentUtil;
-import com.facilio.agent.CommandStatus;
-import com.facilio.agent.ControllerCommand;
-import com.facilio.agent.FacilioAgent;
-import com.facilio.agent.MessageStatus;
-import com.facilio.agent.PublishType;
+import com.facilio.agent.*;
 import com.facilio.agentIntegration.wattsense.WattsenseUtil;
+import com.facilio.agentnew.AgentConstants;
+import com.facilio.agentnew.NewProcessor;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -40,6 +21,18 @@ import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.ErrorDataProducer;
 import com.facilio.util.AckUtil;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class Processor implements IRecordProcessor {
@@ -58,6 +51,8 @@ public class Processor implements IRecordProcessor {
         private EventUtil eventUtil;
         private Boolean isStage = !FacilioProperties.isProduction();
         private  boolean isRestarted = true;
+        private NewProcessor newProcessor;
+
 
         public static final String DATA_TYPE = "PUBLISH_TYPE";
         private List<EventRuleContext> eventRules = new ArrayList<>();
@@ -72,6 +67,12 @@ public class Processor implements IRecordProcessor {
             devicePointsUtil = new DevicePointsUtil();
             ackUtil = new AckUtil();
             eventUtil = new EventUtil();
+            try {
+                newProcessor = new NewProcessor(orgId,orgDomainName);
+            }catch (Exception e){
+                newProcessor = null;
+                LOGGER.info("Exception occurred ",e);
+            }
         }
 
         private void sendToKafka(Record record, String data) {
@@ -143,12 +144,15 @@ public class Processor implements IRecordProcessor {
 
                     reader = new StringReader(data);
                     JSONObject payLoad = (JSONObject) parser.parse(reader);
-                    if(payLoad.containsKey(AgentKeys.VERSION)){
-                        String version = String.valueOf(payLoad.get(AgentKeys.VERSION));
-                        if( version.equals("2")){
-                            LOGGER.info("Message from new agent \n "+payLoad);
-                            continue;
+                    if(payLoad.containsKey(AgentConstants.VERSION) && ( ("2".equalsIgnoreCase((String)payLoad.get(AgentConstants.VERSION))))){
+                        if( newProcessor != null && isStage ) {
+                            try {
+                                newProcessor.processNewAgentData(payLoad);
+                            }catch (Exception newProcessorException){
+                                LOGGER.info("Exception occurred ",newProcessorException);
+                            }
                         }
+                        continue;
                     }
                     String dataType = PublishType.event.getValue();
                     if(payLoad.containsKey(EventUtil.DATA_TYPE)) {

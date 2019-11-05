@@ -4,6 +4,7 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentnew.AgentConstants;
 import com.facilio.agentnew.controller.Controller;
 import com.facilio.agentnew.point.Point;
+import com.facilio.modules.FieldUtil;
 import org.json.simple.JSONObject;
 
 import java.util.Map;
@@ -15,6 +16,8 @@ public class NiagaraPoint extends Point {
     public NiagaraPoint(long agentId, long controllerId) {
         super(agentId, controllerId);
     }
+    @Deprecated
+    private NiagaraPoint() { }
 
     public String getPath() { return path; }
     public void setPath(String path) { this.path = path; }
@@ -38,9 +41,12 @@ public class NiagaraPoint extends Point {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
         if(containsValueCheck(AgentConstants.PATH,pointMap)){
-            NiagaraPoint point = new NiagaraPoint(agentId,controllerId);
+           /* NiagaraPoint point = new NiagaraPoint(agentId,controllerId);
             point.setPath(((String)pointMap.get(AgentConstants.PATH)));
-            return (NiagaraPoint) point.getPointFromMap(pointMap);
+            return (NiagaraPoint) point.getPointFromMap(pointMap);*/
+           JSONObject jsonObject = new JSONObject();
+           jsonObject.putAll(pointMap);
+           return FieldUtil.getAsBeanFromJson(jsonObject,NiagaraPoint.class);
         }
         throw new Exception("Mandatory fields like "+AgentConstants.PATH+" might be missing from the input parameter -> "+pointMap);
     }

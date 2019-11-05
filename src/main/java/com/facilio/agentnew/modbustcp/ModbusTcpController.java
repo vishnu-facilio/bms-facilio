@@ -7,10 +7,12 @@ import com.facilio.agentnew.AgentConstants;
 import com.facilio.agentnew.JsonUtil;
 import com.facilio.agentnew.controller.Controller;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 public class ModbusTcpController extends Controller {
@@ -22,12 +24,7 @@ public class ModbusTcpController extends Controller {
     }
 
     public ModbusTcpController(long agentId, long orgId) throws Exception {
-        new ModbusTcpController(agentId,orgId,null);
-    }
-
-    public ModbusTcpController(long agentId, long orgId,String identifier) throws Exception {
         super(agentId, orgId);
-        processIdentifier(identifier);
         setControllerType(FacilioControllerType.MODBUS_IP.asInt());
     }
 
@@ -73,12 +70,16 @@ public class ModbusTcpController extends Controller {
     }
 
     public static ModbusTcpController getModbusTcpControllerFromMap(Map<String, Object> controllerMap) throws Exception {
+        LOGGER.info(" controller map for modbus ip controller "+controllerMap);
         if (controllerMap == null || controllerMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
         }
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
-        if( containsValueCheck(AgentConstants.IDENTIFIER,controllerMap) ){
-            ModbusTcpController controller = new ModbusTcpController(JsonUtil.getLong(controllerMap.get(AgentKeys.AGENT_ID)), orgId, (String) controllerMap.get(AgentConstants.IDENTIFIER));
+        if( containsValueCheck(AgentConstants.IDENTIFIER,controllerMap) && (controllerMap.containsKey(AgentConstants.AGENT_ID)) ){
+            long agentId = ((Number)controllerMap.get(AgentConstants.AGENT_ID)).longValue();
+            String identifier = (String) controllerMap.get(AgentConstants.IDENTIFIER);
+            ModbusTcpController controller = new ModbusTcpController(((Number)controllerMap.get(AgentConstants.AGENT_ID)).longValue(), orgId);
+            controller.processIdentifier( (String) controllerMap.get(AgentConstants.IDENTIFIER) );
             return (ModbusTcpController) controller.getControllerFromJSON(controllerMap);
         }
         if( containsValueCheck(AgentConstants.SLAVE_ID,controllerMap) && containsValueCheck(AgentConstants.IP_ADDRESS,controllerMap) ) {
@@ -97,5 +98,10 @@ public class ModbusTcpController extends Controller {
         jsonObject.put(AgentConstants.IP_ADDRESS,"getIpAddress()");
         jsonObject.put(AgentConstants.NETWORK_ID,0);
         return jsonObject;
+    }
+
+    @Override
+    public List<Condition> getControllerConditions(String identifier) throws Exception {
+        return null;
     }
 }

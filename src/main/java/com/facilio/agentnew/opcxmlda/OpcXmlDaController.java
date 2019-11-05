@@ -5,10 +5,16 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentnew.AgentConstants;
 import com.facilio.agentnew.controller.Controller;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class OpcXmlDaController extends Controller {
@@ -56,7 +62,7 @@ public class OpcXmlDaController extends Controller {
     public String getPassword() { return password; }
 
 
-    public static OpcXmlDaController getPpcXmlDaControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
+    public static OpcXmlDaController getOpcXmlDaControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
         if (controllerMap == null || controllerMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
         }
@@ -113,5 +119,16 @@ public class OpcXmlDaController extends Controller {
         object.put(AgentConstants.USER_NAME,getUserName());
         object.put(AgentConstants.PASSWORD,getPassword());
         return object;
+    }
+
+    @Override
+    public List<Condition> getControllerConditions(String identifier) throws Exception {
+        processIdentifier(identifier);
+        List<Condition> conditions = new ArrayList<>();
+        Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.USER_NAME),getUserName(), StringOperators.IS));
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.URL),getUrl(),StringOperators.IS));
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.PASSWORD),getPassword(),StringOperators.IS));
+        return conditions;
     }
 }

@@ -60,5 +60,6 @@ public class AgentKeys
     public static final String START_TIME = "startTime";
     public static final String FINISH_TIME = "finishTime";
 
+    public static final String STATUS = "status";
 }
 

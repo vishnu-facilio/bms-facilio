@@ -2,9 +2,9 @@ package com.facilio.agentnew.modbustcp;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentnew.AgentConstants;
-import com.facilio.agentnew.JsonUtil;
 import com.facilio.agentnew.controller.Controller;
 import com.facilio.agentnew.point.Point;
+import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -18,6 +18,8 @@ public class ModbusTcpPoint extends Point {
     public ModbusTcpPoint(long agentId, long controllerId) {
         super(agentId, controllerId);
     }
+    @Deprecated
+    private ModbusTcpPoint() { }
 
     private int offset = -1;
     private int functionCode = -1;
@@ -44,11 +46,14 @@ public class ModbusTcpPoint extends Point {
         if(containsValueCheck(AgentConstants.FUNCTION_CODE,pointMap)
                 && containsValueCheck(AgentConstants.MODBUS_DATA_TYPE,pointMap)
                 && containsValueCheck(AgentConstants.REGISTER_NUMBER,pointMap)){
-            ModbusTcpPoint point = new ModbusTcpPoint(agentId,controllerId);
+           /* ModbusTcpPoint point = new ModbusTcpPoint(agentId,controllerId);
             point.setFunctionCode(JsonUtil.getInt(pointMap.get(AgentConstants.FUNCTION_CODE)));
             point.setModbusDatatype(JsonUtil.getInt(pointMap.get(AgentConstants.MODBUS_DATA_TYPE)));
             point.setOffset(JsonUtil.getInt(pointMap.get(AgentConstants.REGISTER_NUMBER)));
-            return point.getPointFromMap(pointMap);
+            return point.getPointFromMap(pointMap);*/
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.putAll(pointMap);
+            return FieldUtil.getAsBeanFromJson(jsonObject,ModbusTcpPoint.class);
         }
         throw new Exception(" Mandatory fields like "+AgentConstants.REGISTER_NUMBER+" , "+AgentConstants.MODBUS_DATA_TYPE+" , "+AgentConstants.FUNCTION_CODE+" might be missing form input params -> "+pointMap);
     }

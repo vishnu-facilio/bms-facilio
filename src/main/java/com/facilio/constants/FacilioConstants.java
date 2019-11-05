@@ -2,6 +2,7 @@ package com.facilio.constants;
 
 import com.facilio.activity.ActivityContext;
 import com.facilio.agentnew.bacnet.BacnetIpController;
+import com.facilio.agentnew.misc.MiscController;
 import com.facilio.agentnew.modbusrtu.ModbusRtuController;
 import com.facilio.agentnew.modbustcp.ModbusTcpController;
 import com.facilio.agentnew.niagara.NiagaraController;
@@ -14,6 +15,7 @@ import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.controlaction.util.ControlActionUtil;
+import com.facilio.custom.CustomController;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
@@ -118,6 +120,7 @@ public class FacilioConstants {
         public static final String FEDGE_ZIP = "/fedge.zip";
 		public static final String INNER_JOIN = "innerJoin";
 		public static final String ON_CONDITION = "onCondition";
+		public static final String AGGREGATOR = "AGGREGATOR";
 
 		public static final String FACILIO_RECORD = "facilioRecord";
 		public static final String FACILIO_CONSUMER = "facilioConsumer";
@@ -555,6 +558,9 @@ public class FacilioConstants {
 		public static final String OPC_UA_CONTROLLER_MODULE_NAME = "opcuacontroller";
 		public static final String MODBUS_TCP_CONTROLLER_MODULE_NAME = "modbustcpcontroller";
         public static final String MODBUS_RTU_CONTROLLER_MODULE_NAME = "modbusrtucontroller";
+        public static final String MISC_CONTROLLER_MODULE_NAME = "misccontroller";
+        public static final String REST_CONTROLLER_MODULE_NAME = "restcontroller";
+        public static final String CUSTOM_CONTROLLER_MODULE_NAME = "customcontroller";
 
 		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";
 		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";
@@ -1350,6 +1356,10 @@ public class FacilioConstants {
 			classMap.put(OPC_UA_CONTROLLER_MODULE_NAME, OpcUaController.class);
 			classMap.put(OPC_XML_DA_CONTROLLER_MODULE_NAME, OpcXmlDaController.class);
 			classMap.put(NIAGARA_CONTROLLER_MODULE_NAME, NiagaraController.class);
+			classMap.put(MISC_CONTROLLER_MODULE_NAME, MiscController.class);
+			classMap.put(REST_CONTROLLER_MODULE_NAME,MiscController.class);
+			classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, CustomController.class);
+
 
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
 			classMap.put(ENERGY_METER_PURPOSE, EnergyMeterPurposeContext.class);

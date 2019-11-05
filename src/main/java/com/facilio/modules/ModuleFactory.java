@@ -3,7 +3,6 @@ package com.facilio.modules;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentnew.AgentConstants;
-import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.constants.FacilioConstants.ModuleNames;
@@ -152,6 +151,14 @@ public class ModuleFactory {
 		agentDataModule.setName("agentData");
 		agentDataModule.setDisplayName("agentData");
 		agentDataModule.setTableName(AgentKeys.AGENT_TABLE);
+		return agentDataModule;
+	}
+
+	public static FacilioModule getNewAgentDataModule() {
+		FacilioModule agentDataModule = new FacilioModule();
+		agentDataModule.setName("agent");
+		agentDataModule.setDisplayName("agent");
+		agentDataModule.setTableName(AgentConstants.AGENT_TABLE);
 		return agentDataModule;
 	}
 
@@ -985,7 +992,7 @@ public class ModuleFactory {
 	public static FacilioModule getPublishDataModule() {
 		return constructModule("publishData", "Publish Data", "Publish_Data");
 	}
-	
+
 	public static FacilioModule getPublishMessageModule() {
 		return constructModule("publishMessage", "Publish Message", "Publish_Message");
 	}
@@ -2721,11 +2728,11 @@ public class ModuleFactory {
         return module;
     }
 
-	public static FacilioModule getDeviceModule() {
+	public static FacilioModule getFieldDeviceModule() {
 		FacilioModule module = new FacilioModule();
-		module.setTableName(AgentConstants.DEVICE_TABLE);
-		module.setDisplayName("devices");
-		module.setName("devices");
+		module.setTableName("Field_Device");
+		module.setDisplayName("field device");
+		module.setName(AgentConstants.FIELD_DEVICE_TABLE);
 		return module;
 	}
 	//devices as in TV,KIOSK etc
@@ -2769,6 +2776,22 @@ public class ModuleFactory {
 		module.setName("facilioQueue");
 		return module;
 
+	}
+
+	public static FacilioModule getIotDataModule() {
+		FacilioModule module = new FacilioModule();
+		module.setTableName("Iot_Data");
+		module.setDisplayName("Iot Data");
+		module.setName(AgentConstants.IOT_DATA);
+		return module;
+	}
+
+	public static FacilioModule getIotMessageModule() {
+		FacilioModule module = new FacilioModule();
+		module.setTableName("Iot_Message");
+		module.setDisplayName("Iot Message");
+		module.setName(AgentConstants.IOT_MESSAGE);
+		return module;
 	}
 
     public static FacilioModule getConnectionApiModule() {

@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentUtil;
@@ -30,6 +19,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.*;
 
 public class ControllerAction extends FacilioAction {
 
@@ -308,8 +303,8 @@ public class ControllerAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_LOG_TABLE);
 			context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getAgentLogFields());
 			context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
-			context.put(FacilioConstants.ContextNames.LIMIT_VALUE,100);
-			context.put(FacilioConstants.ContextNames.OFFSET,0);
+			//context.put(ContextNames.AGGREGATOR,true);
+			//context.put(ContextNames.MODULE,ModuleFactory.getAgentLogModule());
 			setResult("logCount",bean.getRows(context).size());
 			return SUCCESS;
 		} catch (Exception e) {

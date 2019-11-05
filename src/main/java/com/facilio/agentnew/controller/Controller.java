@@ -1,13 +1,22 @@
 package com.facilio.agentnew.controller;
 
-import com.facilio.agent.AgentKeys;
 import com.facilio.agentnew.AgentConstants;
+import com.facilio.agentnew.FacilioAgent;
+import com.facilio.agentnew.JsonUtil;
+import com.facilio.agentnew.NewAgentAPI;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.db.criteria.Condition;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Controller extends AssetContext {
@@ -21,23 +30,25 @@ public abstract class Controller extends AssetContext {
     private long agentId;
     private String name;
     private long dataInterval;
-    private boolean writable;
-    private boolean active;
-    private int controllerType;
+    private Boolean writable;
+    private Boolean active;
+    private int controllerType = -1;
     private Object controllerProps;
     private int availablePoints = 0;
-    //private int portNumber;
     private long createdTime = -1;
     private long lastModifiedTime = -1;
     private long lastDataRecievedTime = -1;
     private long deletedTime =-1;
+    private static Map<String, FacilioField> fieldsMap;
 
-    public Controller() { }
+    public Controller() {}
 
     public Controller(long agentId, long orgId) {
         this.agentId = agentId;
         this.orgId = orgId;
         setAvailablePoints(0);
+        dataInterval = 900000;
+        active = true;
     }
 
     /**
@@ -66,19 +77,18 @@ public abstract class Controller extends AssetContext {
         this.dataInterval = dataInterval;
     }
 
-    public boolean isWritable() {
-        return writable;
-    }
-    public void setWritable(boolean writable) {
+    public Boolean isWritable() { return writable; }
+    public void setWritable(Boolean writable) {
         this.writable = writable;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+    public Boolean getWritable(){ return writable; }
+
+    public Boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
+
+    public Boolean getActive() {return active; }
+
 
     public int getControllerType() {
         return controllerType;
@@ -129,6 +139,24 @@ public abstract class Controller extends AssetContext {
         this.deletedTime = deletedTime;
     }
 
+    @JsonIgnore
+    public static Map<String, FacilioField> getFieldsMap(String moduleName) throws Exception {
+        if(fieldsMap != null){
+            return fieldsMap;
+        }
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        if(moduleName != null){
+            List<FacilioField> fields = modBean.getAllFields(moduleName);
+            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+            setFieldsMap(fieldsMap);
+            return fieldsMap;
+        }else {
+            throw new Exception(" module name cant be null");
+        }
+    }
+    @JsonIgnore
+    public static void setFieldsMap(Map<String, FacilioField> fieldsMap) { Controller.fieldsMap = fieldsMap; }
+
 
     /**
      * Gives Controller as JSON including child controller's details.
@@ -158,11 +186,11 @@ public abstract class Controller extends AssetContext {
     public JSONObject getParentJSON() {
         JSONObject object = new JSONObject();
         object.put(AgentConstants.NAME, getName());
-        object.put(AgentKeys.AGENT_ID, agentId);
+        object.put(AgentConstants.AGENT_ID, agentId);
         object.put(AgentConstants.DATA_INTERVAL, getDataInterval());
         object.put(AgentConstants.WRITABLE, isWritable());
         object.put(AgentConstants.ACTIVE, isActive());
-        object.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
+        object.put(AgentConstants.TYPE, getControllerType());
         object.put(AgentConstants.CONTROLLER_PROPS, "controllerProps");
         object.put(AgentConstants.AVAILABLE_POINTS, getAvailablePoints());
         if (getCreatedTime() < 0) {
@@ -184,7 +212,6 @@ public abstract class Controller extends AssetContext {
      * @return {@link Controller} which will be an instance of corresponding child controller's Class.
      */
     public Controller getControllerFromJSON(Map<String, Object> row){
-        LOGGER.info(this.hashCode()+" get child jsin from bmscontroller " +this.getChildJSON());
         if(containsValueCheck(AgentConstants.ID,row)){
             setId((Long) row.get(AgentConstants.ID));
         }
@@ -192,31 +219,31 @@ public abstract class Controller extends AssetContext {
             setName((String) row.get(AgentConstants.NAME));
         }
         if(containsValueCheck(AgentConstants.DATA_INTERVAL,row)){
-            setDataInterval((Long) row.get(AgentConstants.DATA_INTERVAL));
+            setDataInterval(JsonUtil.getLong(row.get(AgentConstants.DATA_INTERVAL)));
         }
         if(containsValueCheck(AgentConstants.WRITABLE,row)){
-            setWritable((Boolean) row.get(AgentConstants.WRITABLE));
+            setWritable(JsonUtil.getBoolean(row.get(AgentConstants.WRITABLE)));
         }
         if(containsValueCheck(AgentConstants.ACTIVE,row)){
-            setActive((Boolean) row.get(AgentConstants.ACTIVE));
+            setActive(JsonUtil.getBoolean(row.get(AgentConstants.ACTIVE)));
         }
-        if(containsValueCheck(AgentConstants.CONTROLLER_TYPE,row)){
-            setControllerType(Math.toIntExact((Long) row.get(AgentConstants.CONTROLLER_TYPE)));
+        if(containsValueCheck(AgentConstants.TYPE,row)){
+            setControllerType(JsonUtil.getInt(row.get(AgentConstants.TYPE)));
         }
         if(containsValueCheck(AgentConstants.CONTROLLER_PROPS,row)){
             setControllerProps(row.get(AgentConstants.CONTROLLER_PROPS));
         }
         if(containsValueCheck(AgentConstants.AVAILABLE_POINTS,row)){
-            setAvailablePoints(Math.toIntExact((Long) row.get(AgentConstants.AVAILABLE_POINTS)));
+            setAvailablePoints(JsonUtil.getInt(row.get(AgentConstants.AVAILABLE_POINTS)));
         }
         if(containsValueCheck(AgentConstants.CREATED_TIME,row)){
-            setCreatedTime((Long) row.get(AgentConstants.CREATED_TIME));
+            setCreatedTime(JsonUtil.getLong(row.get(AgentConstants.CREATED_TIME)));
         }
         if(containsValueCheck(AgentConstants.LAST_MODIFIED_TIME,row)){
-           setLastModifiedTime((Long) row.get(AgentConstants.LAST_MODIFIED_TIME));
+           setLastModifiedTime(JsonUtil.getLong(row.get(AgentConstants.LAST_MODIFIED_TIME)));
         }
         if(containsValueCheck(AgentConstants.LAST_DATA_SENT_TIME,row)){
-           setLastDataRecievedTime((Long) row.get(AgentConstants.LAST_MODIFIED_TIME));
+           setLastDataRecievedTime(JsonUtil.getLong(row.get(AgentConstants.LAST_MODIFIED_TIME)));
         }
         if(containsValueCheck(AgentConstants.DELETED_TIME,row)){ setDeletedTime((Long) row.get(AgentConstants.DELETED_TIME));
         }
@@ -255,4 +282,20 @@ public abstract class Controller extends AssetContext {
         }
         return (object != null);
     }
+
+    @JsonIgnore
+    public FacilioAgent getAgent() throws Exception {
+        if( getAgentId() > 0 ){
+            FacilioAgent agent = NewAgentAPI.getAgent(getAgentId());
+            if(agent != null){
+                return agent;
+            }else {
+                throw new Exception("agent can't be null");
+            }
+        }else {
+            throw new Exception("agentId can't be less than 0 -> for controllerId "+getControllerId());
+        }
+    }
+
+    public abstract List<Condition> getControllerConditions(String identifier) throws Exception;
 }

@@ -1,18 +1,5 @@
 package com.facilio.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
@@ -20,12 +7,12 @@ import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentnew.AgentConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.*;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -357,6 +344,76 @@ public class FieldFactory {
 		fields.add(getDeletedTimeField(module));
 		return fields;
 	}
+
+	public static List<FacilioField> getNewAgentDataFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getNewAgentDataModule();
+		fields.add(getIdField(module));
+		fields.add(getField(AgentConstants.DEVICE_DETAILS,"DEVICE_DETAILS",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.CONNECTION_STATUS,"CONNECTION_STATUS",module,FieldType.BOOLEAN));
+		fields.add(getAgentNameField(module));
+		fields.add(getField(AgentConstants.DISPLAY_NAME,"DISPLAY_NAME",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.DATA_INTERVAL,"DATA_INTERVAL",module,FieldType.NUMBER));
+		fields.add(getField(AgentConstants.AGENT_TYPE,"TYPE",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.VERSION,"VERSION",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.LAST_MODIFIED_TIME,"LAST_MODIFIED_TIME",module,FieldType.NUMBER));
+		fields.add(getCreatedTime(module));
+		fields.add(getField(AgentConstants.LAST_DATA_RECEIVED_TIME,"LAST_DATA_RECEIVED_TIME",module,FieldType.NUMBER));
+		fields.add(getField(AgentConstants.STATE,"STATE",module,FieldType.NUMBER));
+		fields.add(getField(AgentConstants.SITE_ID,"SITE_ID",module,FieldType.NUMBER));
+		fields.add(getWritableField(module));
+		fields.add(getField(AgentConstants.DELETED_TIME,"DELETED_TIME",FieldType.NUMBER));
+		return fields;
+	}
+
+	/**
+	 * ID
+	 * ORGID
+	 * AGENT_ID
+	 * CONTROLLER_ID
+	 * COMMAND
+	 * CREATED_TIME
+	 * @return
+	 */
+	public static List<FacilioField> getIotDataFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getIotDataModule();
+		fields.add(getIdField(module));
+		fields.add(getNewAgentIdField(module));
+		fields.add(getNewControllerIdField(module));
+		fields.add(getField(AgentConstants.COMMAND,"COMMAND",module,FieldType.NUMBER));
+		fields.add(getCreatedTime(module));
+		return fields;
+	}
+
+	/**
+	 *ID
+	 * ORGID
+	 * PARENT_ID
+	 * STATUS
+	 * SENT_TIME
+	 * ACKNOWLEDGE_TIME
+	 * COMPLETED_TIME
+	 * MSG_DATA
+	 * @return
+	 */
+	public static List<FacilioField> getIotMessageFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = new FacilioModule();
+		fields.add(getIdField(module));
+		fields.add(getField(AgentConstants.PARENT_ID,"PARENT_ID",module,FieldType.NUMBER));
+		fields.add(getField(AgentConstants.SENT_TIME,"SENT_TIME",module,FieldType.DATE_TIME));
+		fields.add(getField(AgentConstants.ACK_TIME,"ACKNOWLEDGE_TIME",module,FieldType.DATE_TIME));
+		fields.add(getField(AgentConstants.STATUS,"STATUS",FieldType.NUMBER));
+		fields.add(getField(AgentConstants.COMPLETED_TIME,"COMPLETED_TIME",module,FieldType.DATE_TIME));
+		fields.add(getField(AgentConstants.MSG_DATA,"MSG_DATA",module,FieldType.STRING));
+		return fields;
+	}
+
+	private static FacilioField getNewControllerIdField(FacilioModule module) {
+		return getField(AgentConstants.CONTROLLER_ID, "CONTROLLER_ID", module, FieldType.NUMBER);
+	}
+
 	public static FacilioField getAgentNameField(FacilioModule module) {
 		return getField(AgentKeys.NAME,"NAME",module,FieldType.STRING);
 	}
@@ -390,7 +447,7 @@ public class FieldFactory {
 		fields.add(getField(AgentConstants.DATA_INTERVAL,"DATA_INTERVAL",module,FieldType.NUMBER));
 		fields.add(getField(AgentConstants.WRITABLE,"WRITABLE",module,FieldType.BOOLEAN));
 		fields.add(getField(AgentConstants.ACTIVE,"ACTIVE",module,FieldType.BOOLEAN));
-		fields.add(getField(AgentConstants.CONTROLLER_TYPE,"CONTROLLER_TYPE",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.TYPE,"CONTROLLER_TYPE",module,FieldType.STRING));
 		fields.add(getField(AgentConstants.CONTROLLER_PROPS,"CONTROLLER_PROPS",module,FieldType.STRING));
 		fields.add(getField(AgentConstants.AVAILABLE_POINTS,"AVAILABLE_POINTS",module,FieldType.NUMBER));
 		fields.add(getField(AgentConstants.PORT_NUMBER,"PORT_NUMBER",module,FieldType.NUMBER));
@@ -3264,13 +3321,17 @@ public class FieldFactory {
 		return fields;
 	}
 	
+
+
 	public static List<FacilioField> getPublishDataFields() {
 		FacilioModule module = ModuleFactory.getPublishDataModule();
 		List<FacilioField> fields = new ArrayList<>();
-		
+
 		fields.add(getIdField(module));
 		/*fields.add(getOrgIdField(module));*/
 		fields.add(getControllerIdField(module));
+		fields.add(getNewAgentIdField(module));
+		fields.add(getField("newControllerId","NEW_CONTROLLER_ID",module,FieldType.NUMBER));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("acknowledgeTime", "ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("responseAckTime", "RESPONSE_ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
@@ -3279,7 +3340,7 @@ public class FieldFactory {
 		fields.add(getField("command", "COMMAND", module, FieldType.NUMBER));
 		return fields;
 	}
-	
+
 	public static List<FacilioField> getPublishMessageFields() {
 		FacilioModule module = ModuleFactory.getPublishMessageModule();
 		List<FacilioField> fields = new ArrayList<>();
@@ -5203,7 +5264,7 @@ public class FieldFactory {
 		fields.add(getDeviceField(module));
 		fields.add(getInstanceField(module));
         fields.add(getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", module, FieldType.STRING));
-        fields.add(getField(AgentConstants.CONTROLLER_ID, "CONTROLLER_ID", module, FieldType.NUMBER));
+        fields.add(getNewControllerIdField(module));
         fields.add(getField("objectInstanceNumber", "OBJECT_INSTANCE_NUMBER", module, FieldType.NUMBER));
         fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("instanceType", "INSTANCE_TYPE", module, FieldType.NUMBER));
@@ -5243,14 +5304,14 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getDeviceFields(){
-		FacilioModule module = ModuleFactory.getDeviceModule();
+	public static List<FacilioField> getFieldDeviceFields(){
+		FacilioModule module = ModuleFactory.getFieldDeviceModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getIdField(module));
 		fields.add(getField(AgentConstants.SITE_ID,"SITE_ID",module,FieldType.NUMBER));
 		fields.add(getNameField(module));
 		fields.add(getNewAgentIdField(module));
-		fields.add(getField(AgentConstants.CONTROLLER_PROPS,"CONTROLLER_PROPS",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.CONTROLLER_PROPS_AS_PROPSSTR,"CONTROLLER_PROPS",module,FieldType.STRING));
 		fields.add(getCreatedTime(module));
 		return fields;
 	}
@@ -5278,6 +5339,13 @@ public class FieldFactory {
         fields.add(getField(AgentConstants.CREATED_TIME, "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.MAPPED_TIME, "MAPPED_TIME", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.UNIT, "UNIT", module, FieldType.NUMBER));
+		SystemEnumField configureStatusfield = (SystemEnumField) getField(AgentConstants.CONFIGURE_STATUS, "CONFIGURE_STATUS", module, FieldType.SYSTEM_ENUM);
+		configureStatusfield.setEnumName("ConfigureStatus");
+		fields.add(configureStatusfield);
+
+		SystemEnumField subscribeStatusfield = (SystemEnumField) getField(AgentConstants.SUBSCRIBE_STATUS, "SUBSCRIBE_STATUS", module, FieldType.SYSTEM_ENUM);
+		subscribeStatusfield.setEnumName("SubscribeStatus");
+		fields.add(subscribeStatusfield);
 		return fields;
 	}
 	

@@ -14,8 +14,9 @@ public class AgentConstants
     public static final String DATA_INTERVAL = "interval";
     public static final String WRITABLE = "writable";
     public static final String ACTIVE = "active";
-    public static final String CONTROLLER_TYPE = "type";
-    public static final String CONTROLLER_PROPS = "props";
+    public static final String TYPE = "type";
+    public static final String CONTROLLER_PROPS_AS_PROPSSTR = "propsStr";
+    public static final String CONTROLLER_PROPS = "controllerProps";
     public static final String AVAILABLE_POINTS = "availablePoints";
     public static final String PORT_NUMBER = "portNumber";
     public static final String CREATED_TIME = "createdTime";
@@ -84,7 +85,7 @@ public class AgentConstants
 
 
 
-    public static final String DEVICE_TABLE = "Device";
+    public static final String FIELD_DEVICE_TABLE = "fieldDevice";
     public static final String SITE_ID = "siteId";
     public static final String POINTS = "points";
     public static final String CONTROLLER = "controller";
@@ -96,4 +97,27 @@ public class AgentConstants
     public static final String CONFIGURE_STATUS = "configureStatus";
     public static final String AGENT_VERSION = "Agent_Version";
     public static final String CREATED_BY = "createdBy";
+    public static final String PUBLISH_TYPE = "publishType";
+    public static final String VALUE = "value";
+    public static final String COMMAND = "command";
+    public static final String PROPERTY = "property";
+    public static final String VERSION = "version";
+    public static final String NEW_CONTROLLER_ID = "newControllerId";
+    public static final String IS_NEW_AGENT = "isNewAgent";
+    public static final String TIMESTAMP = "timestamp";
+    public static final String AGENT_TABLE = "Agent";
+    public static final String CONNECTION_STATUS = "connectionStatus";
+    public static final String DEVICE_DETAILS = "deviceDetails";
+    public static final String AGENT_TYPE = "agentType";
+    public static final String LAST_DATA_RECEIVED_TIME = "lastDataRecievedTime";
+    public static final String STATE = "state";
+    public static final String MESSAGE_ID = "msgid";
+    public static final String STATUS = "status";
+    public static final String IOT_DATA = "iotData";
+    public static final String IOT_MESSAGE = "iotMessage";
+    public static final String PARENT_ID = "parentId";
+    public static final String SENT_TIME = "sentTime";
+    public static final String ACK_TIME = "ackTime";
+    public static final String COMPLETED_TIME = "completedTime";
+    public static final String MSG_DATA = "msgData";
 }

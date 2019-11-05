@@ -5,10 +5,16 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentnew.AgentConstants;
 import com.facilio.agentnew.controller.Controller;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class OpcUaController extends Controller {
@@ -29,12 +35,7 @@ public class OpcUaController extends Controller {
     }
 
     public OpcUaController(long agentId, long orgId) throws Exception {
-        new OpcUaController(agentId,orgId,null);
-    }
-
-    public OpcUaController(long agentId, long orgId, String identifier) throws Exception {
         super(agentId, orgId);
-        processIdentifier(identifier);
         setControllerType(FacilioControllerType.OPC_UA.asInt());
     }
 
@@ -63,7 +64,8 @@ public class OpcUaController extends Controller {
         }
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         if( containsValueCheck(AgentConstants.IDENTIFIER,controllerMap) ){
-            OpcUaController controller = new OpcUaController(agentId, orgId, (String) controllerMap.get(AgentConstants.IDENTIFIER));
+            OpcUaController controller = new OpcUaController(agentId, orgId);
+            controller.processIdentifier(  (String) controllerMap.get(AgentConstants.IDENTIFIER) );
             if(containsValueCheck(AgentConstants.SECURITY_MODE,controllerMap)){
                 controller.setSecurityMode(Math.toIntExact((Long) controllerMap.get(AgentConstants.SECURITY_MODE)));
             }
@@ -124,5 +126,15 @@ public class OpcUaController extends Controller {
         controllerJSON.put(AgentConstants.SECURITY_MODE, securityMode);
         controllerJSON.put(AgentConstants.SECURITY_POLICY, securityPolicy);
         return controllerJSON;
+    }
+
+    @Override
+    public List<Condition> getControllerConditions(String identifier) throws Exception {
+        processIdentifier(identifier);
+        List<Condition> conditions = new ArrayList<>();
+        Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.URL),getUrl(), StringOperators.IS));
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.CERT_PATH),getCertPath(),StringOperators.IS));
+        return conditions;
     }
 }

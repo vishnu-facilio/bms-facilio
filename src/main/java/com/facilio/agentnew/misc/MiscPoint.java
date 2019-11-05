@@ -1,8 +1,9 @@
-package com.facilio.agentnew.point;
+package com.facilio.agentnew.misc;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentnew.AgentConstants;
 import com.facilio.agentnew.JsonUtil;
+import com.facilio.agentnew.point.Point;
 import org.json.simple.JSONObject;
 
 import java.util.Map;
@@ -14,6 +15,8 @@ public class MiscPoint extends Point {
     public MiscPoint(long agentId, long controllerId) {
         super(agentId, controllerId);
     }
+    @Deprecated
+    private MiscPoint() { }
 
     public String getPath() { return path; }
     public void setPath(String path) { this.path = path;}

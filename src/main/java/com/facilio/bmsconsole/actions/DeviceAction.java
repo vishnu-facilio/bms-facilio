@@ -2,15 +2,24 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentIntegration.DownloadCertFile;
-import com.facilio.agentnew.controller.ControllerUtil;
+import com.facilio.agentnew.AgentConstants;
+import com.facilio.agentnew.FacilioAgent;
+import com.facilio.agentnew.NewAgentAPI;
+import com.facilio.agentnew.controller.Controller;
+import com.facilio.agentnew.controller.NewControllerAPI;
+import com.facilio.agentnew.controller.NewControllerUtil;
 import com.facilio.agentnew.device.DeviceUtil;
+import com.facilio.agentnew.iotmessage.AgentMessenger;
 import com.facilio.agentnew.point.Point;
-import com.facilio.agentnew.point.PointsUtil;
+import com.facilio.agentnew.point.PointsAPI;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +36,8 @@ public class DeviceAction extends ActionSupport
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(DeviceAction.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(DeviceAction.class.getName());
+
+	private static final String RESULT = "result";
 
 	private String url;
 
@@ -59,6 +70,37 @@ public class DeviceAction extends ActionSupport
 
 	private JSONObject message;
 
+    public JSONObject getControllerData() {
+        return controllerData;
+    }
+
+    public void setControllerData(JSONObject controllerData) {
+        this.controllerData = controllerData;
+    }
+
+    private JSONObject controllerData;
+
+
+	public String updateController(){
+		System.out.println(" in here ");
+		setControllerDataManually();
+	    if(checkValue(getControllerId()) &&  (getControllerData() != null && ( ! getControllerData().isEmpty()) ) ){
+            setResult(RESULT,NewControllerAPI.editController(getControllerId(),getControllerData()));
+            return SUCCESS;
+        }
+	    return "String";
+    }
+
+	private void setControllerDataManually() {
+		String controllerData = "{\"result\":{\"data\":[{\"agentId\":0,\"lastModifiedTime\":1571738047004,\"networkNumber\":1,\"ipAddress\":\"1\",\"active\":true,\"availablePoints\":11,\"instanceNumber\":1,\"type\":1,\"controllerProps\":\"controllerProps\",\"writable\":true,\"lastDataSentTime\":-1,\"name\":\"vijayBacnetTest\",\"createdTime\":1571739485209,\"interval\":15,\"id\":3,\"deletedTime\":-1}]}}";
+		JSONParser parser = new JSONParser();
+		try {
+			Object controllerJSON = parser.parse(controllerData);
+			setControllerData((JSONObject) controllerJSON);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public String pubSubListener(){
 		LOGGER.info("PubSub Called");
@@ -84,9 +126,64 @@ public class DeviceAction extends ActionSupport
 	public String getDevices(){
 		List<Map<String, Object>> devices = new ArrayList<>();
 		devices = DeviceUtil.getDevices(getAgentId(), getIds());
-		setResult("devices",devices);
+		setResult(RESULT,devices);
 		return SUCCESS;
 	}
+
+	private long assetCategoryId;
+
+    public long getAssetCategoryId() {
+        return assetCategoryId;
+    }
+
+    public void setAssetCategoryId(long assetCategoryId) {
+        this.assetCategoryId = assetCategoryId;
+    }
+
+    public long getFieldId() {
+        return fieldId;
+    }
+
+    public void setFieldId(long fieldId) {
+        this.fieldId = fieldId;
+    }
+
+    public int getControllerType() {
+        return controllerType;
+    }
+
+    public void setControllerType(int controllerType) {
+        this.controllerType = controllerType;
+    }
+
+    private int controllerType;
+
+    private long fieldId;
+	public String getPoint(){
+        JSONArray pointData = new JSONArray();
+        if((checkValue(getAgentId())) && checkValue(getControllerId()) && checkValue(getAssetCategoryId()) && checkValue(getFieldId()) ){
+            Point point = PointsAPI.getPoint(getAssetCategoryId(),getFieldId(), FacilioControllerType.valueOf(getControllerType()),getAgentId(),getControllerId());
+            LOGGER.info(" in device action "+point.toJSON());
+            setResult(RESULT,point.toJSON());
+                return SUCCESS;
+            }
+        return NONE;
+    }
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
+    }
+
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
+    }
+
+    private JSONObject jsonObject;
+
+	public String getJSON(){
+	    LOGGER.info("--------- json ------"+getJsonObject());
+	    return SUCCESS;
+    }
 
 	private List<Long> ids;
 
@@ -108,24 +205,34 @@ public class DeviceAction extends ActionSupport
 
 	private Long agentId;
 	public String discoverPoints(){
-//		LOGGER.info("iamcvijaylogs ids "+getIds()+"  ids size "+getIds().size()+"  agentId "+getAgentId());
 		if( ( getIds() != null  &&  ( ! getIds().isEmpty() ) ) && ( (getAgentId() != null) && (getAgentId() > 0 ) ) ){
-					ControllerUtil util = new ControllerUtil(getAgentId());
+					NewControllerUtil util = new NewControllerUtil(getAgentId());
 			if(util.processController(getAgentId(),getIds())){
+				LOGGER.info(" discover points returned true ");
+				setResult(RESULT,true);
 				return SUCCESS;
+			}else {
+				LOGGER.info(" discover points returned false ");
 			}
+		}else {
+			LOGGER.info(" Exception occurred while discovering points agentId and ids cant be null or empty : agentId -> "+agentId+"  , ids -> "+ids);
 		}
-		return  ERROR;
+		setResult(RESULT,false);
+		return  SUCCESS;
 	}
 
 	public String getControllers(){
 		LOGGER.info(" in getControllers ");
-		JSONArray controllerData = new JSONArray();
+		JSONArray controllerArray = new JSONArray();
 		if( checkValue(getAgentId()) ){
-			ControllerUtil util = new ControllerUtil(getAgentId());
-			controllerData = util.getAllControllerList();
+			Map<String, Controller> controllerData = NewControllerAPI.getAllControllersFromDb(getAgentId());
 			if( (controllerData != null) && ( ! controllerData.isEmpty() ) ){
-				setResult("data",controllerData);
+				LOGGER.info(" controllers restored is "+controllerData.values().size());
+				/*controllerData.values().forEach(controller -> controllerArray.add(controller.toJSON()));*/
+				for (Controller controller : controllerData.values()) {
+					controllerArray.add(controller.toJSON());
+				}
+				setResult("data",controllerArray);
 				return  SUCCESS;
 			}
 		}
@@ -145,8 +252,7 @@ public class DeviceAction extends ActionSupport
 	public String getPoints(){
 		JSONArray pointData = new JSONArray();
 		if((checkValue(getAgentId())) && checkValue(getControllerId())){
-			PointsUtil util = new PointsUtil(getAgentId(),getControllerId());
-			List<Point> points = util.getAllPoints();
+			List<Point> points = PointsAPI.getAllPoints(getAgentId(),getControllerId());
 			LOGGER.info(" in device action "+points);
 			if( ! points.isEmpty() ){
 				for (Point point : points) {
@@ -157,7 +263,55 @@ public class DeviceAction extends ActionSupport
 			return SUCCESS;
 			}
 		}
-		return NONE;
+		setResult(RESULT,new JSONObject());
+		return SUCCESS;
+	}
+
+	public String pingAgent(){
+		if(checkValue(getAgentId())) {
+			if (AgentMessenger.pingAgent(getAgentId())) {
+				return SUCCESS;
+			}
+		}else{
+			LOGGER.info(" Exception occurred, AgentId can't be null or empty -> "+agentId);
+		}
+		return ERROR;
+	}
+
+	public String getAgent(){
+        List<FacilioAgent> agents = NewAgentAPI.getAgents();
+        JSONArray jsonArray = new JSONArray();
+        for (FacilioAgent agent : agents) {
+            jsonArray.add(agent.toJSON());
+        }
+        setResult(AgentConstants.DATA,jsonArray);
+        return SUCCESS;
+    }
+
+    public String getAgentUsingId(){
+	    if(checkValue(getAgentId())){
+            FacilioAgent agent = NewAgentAPI.getAgent(getAgentId());
+            if(agent != null){
+                setResult(AgentConstants.DATA, agent.toJSON());
+				return SUCCESS;
+            }
+
+        }
+	    LOGGER.info("Exception occurred, agentId can't be null ");
+        setResult(AgentConstants.DATA,new JSONObject());
+        return SUCCESS;
+    }
+
+	public String getControllerUsingId(){
+		if(checkValue(getControllerId())){
+			Controller controller = NewControllerAPI.getControllerFromDb(getControllerId());
+			if(controller != null){
+				setResult(AgentConstants.DATA,controller.toJSON());
+				return SUCCESS;
+			}
+		}
+		setResult(AgentConstants.DATA,new JSONObject());
+	return SUCCESS;
 	}
 
 	boolean checkValue(Long value){
@@ -176,6 +330,7 @@ public class DeviceAction extends ActionSupport
 		}
 		this.result.put(key, result);
 	}
+
 
 
 //	public String show()

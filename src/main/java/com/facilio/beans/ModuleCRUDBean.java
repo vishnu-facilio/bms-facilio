@@ -4,6 +4,7 @@ import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorC
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentType;
+import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentnew.controller.Controller;
 import com.facilio.agentnew.point.Point;
 import com.facilio.bmsconsole.context.*;
@@ -61,7 +62,9 @@ public interface ModuleCRUDBean {
 	public ControllerContext addController(ControllerContext controllerContext) throws Exception;
 	
 	public void acknowledgePublishedMessage (long id, String message, JSONObject payLoad) throws Exception;
-	
+
+	public void acknowledgeNewPublishedMessage (long id, Status status, JSONObject payLoad) throws Exception;
+
 	public long addDeviceId (String deviceId) throws Exception;
 	
 	public Map<String, Long> getDeviceMap() throws Exception;
@@ -101,6 +104,8 @@ public interface ModuleCRUDBean {
 	public Long addChildController(Controller controller) throws Exception;
 
 	public Long genericInsert(Context context) throws IllegalAccessException, InstantiationException, Exception;
+
+	public void processNewTimeSeries(JSONObject payload,Controller controller) throws Exception;
 
 	//public List<Map<String, Object>> getIntegration() throws Exception;
 

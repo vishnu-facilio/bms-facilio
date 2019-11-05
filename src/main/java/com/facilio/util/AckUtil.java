@@ -1,12 +1,13 @@
 package com.facilio.util;
 
+import com.facilio.agent.AgentKeys;
+import com.facilio.agent.fw.constants.Status;
+import com.facilio.agentnew.AgentConstants;
+import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-
-import com.facilio.agent.AgentKeys;
-import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.fw.BeanFactory;
 
 public class AckUtil
 {
@@ -29,6 +30,20 @@ public class AckUtil
             bean.acknowledgePublishedMessage(msgId, message, newObj);
         }catch(Exception e){
             LOGGER.info("EXxception occured",e);
+        }
+    }
+
+    public void processNewAgentAck(JSONObject payload,String agent,long orgId) {
+        try {
+            Long msgId = (Long) payload.get(AgentConstants.MESSAGE_ID);
+            int status = ((Number) payload.get(AgentConstants.STATUS)).intValue();
+            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+            JSONObject newObj = new JSONObject();
+            newObj.putAll(payload);
+            newObj.put("agent", agent);
+            bean.acknowledgeNewPublishedMessage(msgId, Status.valueOf(status), newObj);
+        } catch (Exception e) {
+            LOGGER.info("EXxception occured", e);
         }
     }
 

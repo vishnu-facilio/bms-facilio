@@ -192,26 +192,56 @@
 		</action>
 	</package>
 
-	<package name="vijaySetupApiV2" namespace="/api/v2/setup/vijay/device" extends="setupApiV2">
+
+	<package name="newDeviceSetupApiV2" namespace="/api/v2/setup/newAgent/device" extends="setupApiV2">
 		<action name="get"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getDevices">
-			</action>
-
-		<action name="discoverPoints"  class="com.facilio.bmsconsole.actions.DeviceAction" method="discoverPoints">
 		</action>
 
-		<action name="getControllers"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getControllers">
+		<action name="discover"  class="com.facilio.bmsconsole.actions.DeviceAction" method="discoverPoints">
 		</action>
 
-		<action name="getPoints"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getPoints">
+	</package>
+
+	<package name="newPointSetupApiV2" namespace="/api/v2/setup/newAgent/point" extends="setupApiV2">
+		<action name="get"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getPoints">
 		</action>
+
+		<action name="getPoint"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getPoint">
+		</action>
+
+		<action name="set"  class="com.facilio.bmsconsole.actions.DeviceAction" method="setValue">
+		</action>
+
+	</package>
+
+	<package name="newAgentSetupApiV2" namespace="/api/v2/setup/newAgent" extends="setupApiV2">
+
+		<action name="ping"  class="com.facilio.bmsconsole.actions.DeviceAction" method="pingAgent">
+		</action>
+
+		<action name="get"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getAgent">
+		</action>
+
+		<action name="getUsingId"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getAgentUsingId">
+		</action>
+
 		<action name="pubSubEndpoint"  class="com.facilio.bmsconsole.actions.DeviceAction" method="pubSubListener">
 		</action>
 	</package>
 
-	<package name="vijaySetupApiV2" namespace="/api/v2/setup/vijay/device" extends="setupApiV2">
-		<action name="get"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getDevices">
+	<package name="newControllerSetupApiV2" namespace="/api/v2/setup/newAgent/controller" extends="setupApiV2">
+		<action name="get"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getControllers">
 		</action>
+
+		<action name="update"  class="com.facilio.bmsconsole.actions.DeviceAction" method="updateController">
+		</action>
+
+		<action name="getUsingId"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getControllerUsingId">
+		</action>
+
+
 	</package>
+
 
 	<package name="agentApiV2" namespace="/api/v2/setup/agent" extends="setupApiV2">
 		<action name="list"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getAgentDetails">
@@ -231,6 +261,7 @@
 
 		<action name="fetchMessage"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getPublishMessage">
 		</action>
+
 
 		<!--<action name="metrics"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getMetrics">
 		</action>

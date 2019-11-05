@@ -6,10 +6,16 @@ import com.facilio.agentnew.AgentConstants;
 import com.facilio.agentnew.JsonUtil;
 import com.facilio.agentnew.controller.Controller;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class ModbusRtuController extends Controller {
@@ -109,6 +115,16 @@ public class ModbusRtuController extends Controller {
         jsonObject.put(AgentConstants.IP_ADDRESS,0);
         jsonObject.put(AgentConstants.NETWORK_ID, getNetworkId());
         return jsonObject;
+    }
+
+    @Override
+    public List<Condition> getControllerConditions(String identifier) throws Exception {
+        processIdentifier(identifier);
+        List<Condition> conditions = new ArrayList<>();
+        Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SLAVE_ID), String.valueOf(getSlaveId()), NumberOperators.EQUALS));
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_ID), String.valueOf(getNetworkId()),NumberOperators.EQUALS));
+    return conditions;
     }
 
 }

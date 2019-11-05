@@ -1,6 +1,8 @@
 package com.facilio.kafka;
 
 import com.facilio.agent.*;
+import com.facilio.agentnew.AgentConstants;
+import com.facilio.agentnew.NewProcessor;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -29,7 +31,6 @@ import static com.facilio.agent.PublishType.event;
 
 public class Processor extends FacilioProcessor {
     private AgentUtil agentUtil;
-    //private com.facilio.agentnew.AgentUtil au;
     private DevicePointsUtil devicePointsUtil;
     private AckUtil ackUtil;
     private List<EventRuleContext> eventRules = new ArrayList<>();
@@ -37,14 +38,9 @@ public class Processor extends FacilioProcessor {
     private HashMap<String, HashMap<String, Long>> deviceMessageTime = new HashMap<>();
     private long orgId;
     private String orgDomainName;
-    private Boolean isStage = !FacilioProperties.isProduction();
     private JSONParser parser = new JSONParser();
-    //private ControllerUtil cU;
-    //private DeviceUtil dU;
-    //private Map<Long,ControllerUtil> agentIdControllerUtilMap = new HashMap<>();
-
     private static final Logger LOGGER = LogManager.getLogger(Processor.class.getName());
-
+    private NewProcessor newProcessor;
     private boolean isRestarted = true;
 
 
@@ -58,30 +54,20 @@ public class Processor extends FacilioProcessor {
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));
         agentUtil = new AgentUtil(orgId, orgDomainName);
-        //au = new com.facilio.agentnew.AgentUtil(orgId,orgDomainName);
-        //au.populateAgentContextMap(null);
         agentUtil.populateAgentContextMap(null,null);
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
         eventUtil = new EventUtil();
-        //dU = new DeviceUtil();
         setEventType("processor");
+        try {
+            newProcessor = new NewProcessor(orgId, orgDomainName);
+        }catch (Exception e){
+            newProcessor = null;
+            LOGGER.info(" Exception occurred ",e);
+        }
         LOGGER.info("Initializing processor " + orgDomainName);
     }
 
-
-    /*public ControllerUtil getControllerUtil(long agentId){
-        ControllerUtil cU;
-        if(agentIdControllerUtilMap.containsKey(agentId)){
-            LOGGER.info(" returning existing controllerUtil");
-            cU = agentIdControllerUtilMap.get(agentId);
-        }else {
-            LOGGER.info(" creating new controllerUtil");
-            cU = new ControllerUtil(agentId);
-            agentIdControllerUtilMap.put(agentId,cU);
-        }
-        return cU;
-    }*/
 
     @Override
     public void processRecords(List<FacilioRecord> records) {
@@ -128,7 +114,16 @@ public class Processor extends FacilioProcessor {
                 }
 
                 JSONObject payLoad = (JSONObject) parser.parse(data);
-
+                if(payLoad.containsKey(AgentConstants.VERSION) && ( ("2".equalsIgnoreCase((String)payLoad.get(AgentConstants.VERSION))))){
+                    if(newProcessor != null){
+                        try {
+                            newProcessor.processNewAgentData(payLoad);
+                        }catch (Exception newProcessorException){
+                            LOGGER.info("Exception occurred ",newProcessorException);
+                        }
+                    }
+                    continue;
+                }
 
                 String dataType = event.getValue();
                 if (payLoad.containsKey(EventUtil.DATA_TYPE)) {
@@ -138,22 +133,9 @@ public class Processor extends FacilioProcessor {
                 if("agents".equals(dataType)){
                     dataType = PublishType.agent.getValue();
                 }
-                //Temp fix  - bug: Publish_Type wrongly set to "agents"
                 PublishType publishType = PublishType.valueOf(dataType);
                 String wattsenseAgentName = record.getPartitionKey();
-               /* LOGGER.info(" wattsense log partitionKey - "+wattsenseAgentName);
-                if(wattsenseAgentName != null){
-                    FacilioAgent wattAgent = agentUtil.getFacilioAgent(wattsenseAgentName);
-                    if(wattAgent != null) {
-                        LOGGER.info("wattsense log agentId - " + wattAgent.getId());
-                    }else{
-                        LOGGER.info("wattsense log agent null ");
-                    }
-                }*/
                 String agentName = orgDomainName.trim();
-                /*if(  ( record.getPartitionKey() != null ) &&  ! record.getPartitionKey().equals(orgDomainName.trim())){
-                    agentName = record.getPartitionKey();
-                }*/
                 if (payLoad.containsKey(PublishType.agent.getValue())) {
                     agentName = payLoad.remove(PublishType.agent.getValue()).toString().trim();
                 }
@@ -231,10 +213,10 @@ public class Processor extends FacilioProcessor {
                             dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
                             deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
                         }if (numberOfRows == 0) {
-                            FacilioContext context = new FacilioContext();
-                            context.put(AgentKeys.NAME, agentName);
                             FacilioChain updateAgentTable = TransactionChainFactory.updateAgentTable();
-                            updateAgentTable.execute(context);
+                            FacilioContext context = updateAgentTable.getContext();
+                            context.put(AgentKeys.NAME, agentName);
+                            updateAgentTable.execute();
 
                             /*GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
                                   .andCondition()
@@ -250,10 +232,7 @@ public class Processor extends FacilioProcessor {
 
 
                         }
-                        if( agent != null) {
-                            agentUtil.addAgentMetrics(dataLength, agent.getId(), publishType.getKey());
-                        }
-
+                        agentUtil.addAgentMetrics(dataLength, agent.getId(), publishType.getKey());
                         agentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
                     }
 
@@ -341,12 +320,5 @@ public class Processor extends FacilioProcessor {
         return agent;
     }
 
-    /*private com.facilio.agentnew.FacilioAgent getFacilioAgent(JSONObject payload, String agentName) {
-        LOGGER.info(" \n\n ------------------------\n-------------------------\n");
-        if (au.processAgent(payload,agentName)>0) {
-            LOGGER.info("\n-\n-\n process agent postive -\n-\n-\n");
-            return au.getFacilioAgent(agentName);
-        }
-        return null;
-    }*/
+
 }

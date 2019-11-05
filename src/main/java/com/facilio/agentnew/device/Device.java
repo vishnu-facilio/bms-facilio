@@ -2,6 +2,8 @@ package com.facilio.agentnew.device;
 
 import com.facilio.agentnew.AgentConstants;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class Device
 {
@@ -9,6 +11,22 @@ public class Device
     private long agentId;
     private long siteId;
     private String name;
+
+    public JSONObject getControllerProps() { return controllerProps; }
+    public void setControllerProps(JSONObject controllerProps) { this.controllerProps = controllerProps; }
+
+    public String getPropsStr() {
+        if(controllerProps != null){
+            return controllerProps.toString();
+        }
+        return null;
+    }
+
+    public void setPropsStr(String propsStr) throws ParseException {
+        JSONParser parser = new JSONParser();
+        this.controllerProps = (JSONObject) parser.parse(propsStr);
+    }
+
     private JSONObject controllerProps;
     private Long createdTime;
 
@@ -17,6 +35,29 @@ public class Device
         this.orgId = orgId;
         this.agentId = agentId;
     }
+
+    public Device() {
+    }
+
+    public long getOrgId() { return orgId; }
+    public void setOrgId(long orgId) { this.orgId = orgId; }
+
+    public long getAgentId() { return agentId; }
+    public void setAgentId(long agentId) { this.agentId = agentId; }
+
+    public long getSiteId() { return siteId; }
+    public void setSiteId(long siteId) { this.siteId = siteId; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+
+    public Long getCreatedTime() { return createdTime; }
+    public void setCreatedTime(Long createdTime) { this.createdTime = createdTime; }
+
+
+
+
 
     /**
      * device as {@link JSONObject}.
@@ -32,21 +73,5 @@ public class Device
         return deviceJSON;
     }
 
-
-    public Long getCreatedTime() { return createdTime; }
-    public void setCreatedTime(Long createdTime) { this.createdTime = createdTime; }
-
-    public long getSiteId() { return siteId; }
-    public void setSiteId(long siteId) { this.siteId = siteId; }
-
-    public long getOrgId() { return orgId; }
-
-    public long getAgentId() { return agentId; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public JSONObject getControllerProps() { return controllerProps; }
-    public void setControllerProps(JSONObject controllerProps) { this.controllerProps = controllerProps; }
 
 }

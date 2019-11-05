@@ -5,6 +5,8 @@ import org.json.simple.JSONObject;
 
 public class FacilioAgent {
 
+
+
     private  String name;
     private  String deviceDetails;
     private  Boolean connectionStatus;
@@ -19,7 +21,7 @@ public class FacilioAgent {
     private Boolean writable;
     private  Long lastModifiedTime = -1L;
     private  Long lastUpdatedTime = -1L;
-    private Long lastDataRecievedTime = -1L;
+    private Long lastDataReceivedTime = -1L;
     private String displayName;
     private Long createdTime = -1L ;
 
@@ -128,11 +130,11 @@ public class FacilioAgent {
         this.lastUpdatedTime = lastUpdatedTime;
     }
 
-    public Long getLastDataRecievedTime() {
-        return lastDataRecievedTime;
+    public Long getLastDataReceivedTime() {
+        return lastDataReceivedTime;
     }
-    public void setLastDataRecievedTime(Long lastDataRecievedTime) {
-        this.lastDataRecievedTime = lastDataRecievedTime;
+    public void setLastDataReceivedTime(Long lastDataReceivedTime) {
+        this.lastDataReceivedTime = lastDataReceivedTime;
     }
 
     public String getDisplayName() {
@@ -156,6 +158,9 @@ public class FacilioAgent {
     public JSONObject toJSON(){
         JSONObject payload = new JSONObject();
         long currTime = System.currentTimeMillis();
+        if( (getId() != null) && ( getId() > 0 ) ){
+            payload.put(AgentConstants.ID,getId());
+        }
         payload.put(AgentKeys.NAME,  getName());
         payload.put(AgentKeys.DEVICE_DETAILS, getDeviceDetails());
         payload.put(AgentKeys.CONNECTION_STATUS, getConnectionStatus());
@@ -179,8 +184,8 @@ public class FacilioAgent {
         }else {
             payload.put(AgentKeys.LAST_MODIFIED_TIME,currTime);
         }
-        if(getLastDataRecievedTime() > 0){
-            payload.put(AgentKeys.LAST_DATA_RECEIVED_TIME, getLastDataRecievedTime());
+        if(getLastDataReceivedTime() > 0){
+            payload.put(AgentKeys.LAST_DATA_RECEIVED_TIME, getLastDataReceivedTime());
         }else {
             payload.put(AgentKeys.LAST_DATA_RECEIVED_TIME,currTime);
         }

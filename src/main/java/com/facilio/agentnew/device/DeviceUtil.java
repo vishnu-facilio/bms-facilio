@@ -14,6 +14,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -31,6 +32,7 @@ public class DeviceUtil
     private static final Logger LOGGER = LogManager.getLogger(DeviceUtil.class.getName());
 
     public void processDevices(FacilioAgent agent, JSONObject payload){
+        LOGGER.info(" processing devices ");
         List<Device> devices = new ArrayList<>();
         if(containsValueCheck(AgentConstants.DATA,payload)){
             JSONArray devicesArray = (JSONArray) payload.get(AgentConstants.DATA);
@@ -38,11 +40,11 @@ public class DeviceUtil
                 JSONObject deviceJSON = (JSONObject) deviceObject;
                 deviceJSON.put(AgentConstants.AGENT_ID, agent.getId());
                 Device device = new Device(AccountUtil.getCurrentOrg().getOrgId(), agent.getId());
-                device.setSiteId(2L);
+                device.setSiteId(agent.getSiteId());
                 if (deviceJSON.containsKey(AgentConstants.IDENTIFIER)) {
                     device.setName(String.valueOf(deviceJSON.get(AgentConstants.IDENTIFIER)));
                 }else {
-                    LOGGER.info("Exception occurred, not identifier found in device json -> "+payload);
+                    LOGGER.info("Exception occurred, no identifier found in device json -> "+payload);
                     return;
                 }
                 device.setCreatedTime(System.currentTimeMillis());
@@ -59,10 +61,10 @@ public class DeviceUtil
     private boolean addDevices(List<Device> devices) {
         if(devices != null && ! devices.isEmpty()){
             FacilioChain chain = TransactionChainFactory.getAddDevicesChain();
-            FacilioContext context = new FacilioContext();
+            FacilioContext context = chain.getContext();
             context.put(AgentConstants.DATA,devices);
             try {
-                return chain.execute(context);
+                return chain.execute();
             } catch (Exception e) {
                 LOGGER.info("Exception occurred ",e);
             }
@@ -78,12 +80,13 @@ public class DeviceUtil
     }
 
     public static List<Map<String,Object>> getDevices(Long agentId, List<Long> ids){
+        LOGGER.info("getting devices");
         ModuleCRUDBean bean;
         try {
             bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",  AccountUtil.getCurrentOrg().getOrgId());
             FacilioContext context = new FacilioContext();
             Criteria criteria = new Criteria();
-            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getDeviceFields());
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFieldDeviceFields());
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.ID),"0",NumberOperators.GREATER_THAN));
             if(agentId != null){
                 criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
@@ -91,7 +94,7 @@ public class DeviceUtil
             if( ids != null &&  ( ! ids.isEmpty() ) ){
                 criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID),StringUtils.join(ids,","), NumberOperators.EQUALS));
             }
-            context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentConstants.DEVICE_TABLE);
+            context.put(FacilioConstants.ContextNames.TABLE_NAME, ModuleFactory.getFieldDeviceModule().getTableName());
             context.put(FacilioConstants.ContextNames.FIELDS, fieldMap.values());
             context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
             return bean.getRows(context);

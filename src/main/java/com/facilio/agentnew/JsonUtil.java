@@ -62,6 +62,9 @@ public class JsonUtil {
             } else if (value instanceof Integer) {
                 return (Integer) value > 0;
             }
+            else if( value instanceof String){
+                return Boolean.parseBoolean((String) value);
+            }
         }catch (Exception e){
             LOGGER.info("Exception occurred ",e);
         }
