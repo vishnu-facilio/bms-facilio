@@ -28,7 +28,6 @@ public class GetTrendLineCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		LOGGER.severe("Start ------ "+System.currentTimeMillis());
 		Long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		if(orgId == 155) {
 			String pythonAI = FacilioProperties.getPythonAI();
 			String trendLineAIUrl = pythonAI+"/trendline";
 			
@@ -72,7 +71,6 @@ public class GetTrendLineCommand extends FacilioCommand {
 						}
 					}
 				}
-			}
 		}
 		LOGGER.info("End ------ "+System.currentTimeMillis());
 		return false;
