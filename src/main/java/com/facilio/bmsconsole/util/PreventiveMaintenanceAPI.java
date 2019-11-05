@@ -3060,7 +3060,7 @@ public class PreventiveMaintenanceAPI {
 		List<FacilioField> taskFields = modBean.getAllFields(taskModule.getName());
 		Map<String, FacilioField> taskFieldMap = FieldFactory.getAsMap(taskFields);
 
-		List<PreventiveMaintenance> allPMs = PreventiveMaintenanceAPI.getAllPMs(1L, false);
+		List<PreventiveMaintenance> allPMs = PreventiveMaintenanceAPI.getAllPMs(183L, false);
 		Set<Long> resourceIsMissing = new HashSet<>();
 		Set<Long> invalidResource = new HashSet<>();
 		Set<Long> unusualSectionName = new HashSet<>();
