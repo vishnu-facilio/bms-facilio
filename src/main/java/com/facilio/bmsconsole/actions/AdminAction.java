@@ -37,6 +37,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
@@ -429,10 +431,15 @@ public class AdminAction extends ActionSupport
 
 	}
 	public static List<Map<String, Object>> getAgentOrgList() throws Exception {
-		return FacilioService.runAsServiceWihReturn(() ->getAgentOrgs());
-		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getField("orgId", "Organizations.ORGID", FieldType.ID));
+		fields.add(FieldFactory.getField("domain", "Organizations.FACILIODOMAINNAME", FieldType.STRING));
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
+				.table(IAMAccountConstants.getOrgModule().getTableName());
+        return selectBuilder.get();
 	}
-	public static List<Map<String, Object>> getAgentOrgs() throws Exception {
+	public static List<Map<String, Object>> getOrgsList() throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getField("orgId", "Organizations.ORGID", FieldType.ID));
@@ -445,6 +452,21 @@ public class AdminAction extends ActionSupport
 			System.out.println(builder.constructSelectStatement());
 		List<Map<String, Object>> props = builder.get();
 		return props;
+	}
+	public static List<Map<String, Object>> getAgentOrgs() throws Exception {
+
+		List<Map<String, Object>> prop = new ArrayList<>();
+		if(!FacilioProperties.isProduction()) {
+			 prop = FacilioService.runAsServiceWihReturn(() -> getAgentOrgList());
+		}else {
+			 prop = getOrgsList();
+		}
+		
+		return prop;
+	}
+
+	public static void deleteMessageQueue() {
+		
 	}
 	
 	private String orgDomain;
