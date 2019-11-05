@@ -3066,7 +3066,7 @@ public class PreventiveMaintenanceAPI {
 		Set<Long> unusualSectionName = new HashSet<>();
 		Set<Long> taskMapIsEmpty = new HashSet<>();
 		Set<Long> uniqueIdIsMissing = new HashSet<>();
-		List<Long> skipList = Arrays.asList();
+		List<Long> skipList = Arrays.asList(1123152L, 1090598L, 1087384L, 1090585L);
 		Set<Long> skip = new HashSet<>(skipList);
 		for (PreventiveMaintenance pm: allPMs) {
 			if (skip.contains(pm.getId())) {
@@ -3089,13 +3089,13 @@ public class PreventiveMaintenanceAPI {
 			for (WorkOrderContext workOrderContext: workOrders) {
 				LOGGER.log(Level.WARN, "executing for wo " + workOrderContext.getId());
 				List<TaskContext> tasks = TicketAPI.getRelatedTasks(workOrderContext.getId());
-//				Map<String, Object> nullMap = new HashMap<>();
-//				nullMap.put("uniqueId", -99L);
-//				UpdateRecordBuilder<TaskContext> nullUpdateRecordBuilder = new UpdateRecordBuilder<>();
-//				nullUpdateRecordBuilder.moduleName("task")
-//						.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
-//						.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), workOrderContext.getId()+"", NumberOperators.EQUALS))
-//						.updateViaMap(nullMap);
+				Map<String, Object> nullMap = new HashMap<>();
+				nullMap.put("uniqueId", -99L);
+				UpdateRecordBuilder<TaskContext> nullUpdateRecordBuilder = new UpdateRecordBuilder<>();
+				nullUpdateRecordBuilder.moduleName("task")
+						.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
+						.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), workOrderContext.getId()+"", NumberOperators.EQUALS))
+						.updateViaMap(nullMap);
 				for (TaskContext task: tasks) {
 					long sectionId = task.getSectionId();
 					TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
@@ -3169,13 +3169,13 @@ public class PreventiveMaintenanceAPI {
 						LOGGER.log(Level.ERROR, "unique id is missing for " + task.getId());
 					} else {
 						LOGGER.log(Level.ERROR, "task id " + task.getId() + " uniqueId " + uniqueId);
-//						Map<String, Object> updateMap = new HashMap<>();
-//						updateMap.put("uniqueId", uniqueId);
-//						UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
-//						updateRecordBuilder.moduleName("task")
-//								.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
-//								.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(taskModule), task.getId()+"", NumberOperators.EQUALS))
-//								.updateViaMap(updateMap);
+						Map<String, Object> updateMap = new HashMap<>();
+						updateMap.put("uniqueId", uniqueId);
+						UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
+						updateRecordBuilder.moduleName("task")
+								.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
+								.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(taskModule), task.getId()+"", NumberOperators.EQUALS))
+								.updateViaMap(updateMap);
 					}
 				}
 			}
