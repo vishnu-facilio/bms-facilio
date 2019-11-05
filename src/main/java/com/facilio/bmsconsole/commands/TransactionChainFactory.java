@@ -3771,6 +3771,20 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new ProcessTimeSeriesData());
 		return chain;
+	
+	public static FacilioChain addContactsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForContacts());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		return c;
+	}
+	
+	public static FacilioChain updateContactsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForContacts());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		
+		return c;
 	}
 
 	public static FacilioChain getAddOrUpdateServiceCatalogChain() {

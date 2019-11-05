@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -16,6 +18,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 
 
@@ -72,6 +75,13 @@ public class GetTenantListCommand extends FacilioCommand{
 			builder.offset(offset);
 			builder.limit(perPage);
 		}
+		
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		List<LookupField> additionaLookups = new ArrayList<LookupField>();
+		LookupField contactField = (LookupField) fieldsAsMap.get("contact");
+		additionaLookups.add(contactField);
+		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
+	
 		List<TenantContext> records = builder.get();
 		if (getCount != null && getCount) {
 			context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));

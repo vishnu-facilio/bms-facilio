@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -55,15 +56,14 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 		this.description = description;
 	}
 	
-	private User contact;
-	public User getContact() {
+	private ContactsContext contact;
+	public ContactsContext getContact() {
 		return contact;
 	}
-	public void setContact(User contact) {
+	public void setContact(ContactsContext contact) {
 		this.contact = contact;
 	}
 
-	
 	private long logoId = -1;
 	public long getLogoId() {
 		return logoId;
@@ -156,15 +156,16 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 		this.siteId = siteId;
 	}
 	
-	private List<TenantUserContext> tenantUsers;
-	public List<TenantUserContext> getTenantUsers() {
-		return tenantUsers;
-	}
-	public void setTenantUsers(List<TenantUserContext> users) {
-		this.tenantUsers = users;
-	}
+	private List<ContactsContext> tenantContacts;
 	
-    private Status status;
+    public List<ContactsContext> getTenantContacts() {
+		return tenantContacts;
+	}
+	public void setTenantContacts(List<ContactsContext> tenantContacts) {
+		this.tenantContacts = tenantContacts;
+	}
+
+	private Status status;
 	public Status getStatusEnum() {
 		return status;
 	}

@@ -419,6 +419,10 @@ public class SetTableNamesCommand extends FacilioCommand {
 		return new SetTableNamesCommand("visitorType", "VisitorType");
 	}
 	
+	public static SetTableNamesCommand getForContacts() {
+		return new SetTableNamesCommand("contact", "Contacts");
+	}
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

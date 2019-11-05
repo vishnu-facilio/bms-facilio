@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.ZoneContext;
@@ -206,38 +207,22 @@ public class TenantsAPI {
 }
 	
 	
-	public static long updatePortalUserAccess(long ouiId,Object portal_verified) throws Exception {
+	public static void updatePortalUserAccess(ContactsContext contact) throws Exception {
 		
 		
-		FacilioModule modulo = ModuleFactory.getOrgUserModule();
-		GenericSelectRecordBuilder selectBuilde = new GenericSelectRecordBuilder()
-														.select(FieldFactory.getOrgUserFields())
-														.table(modulo.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(modulo))
-														.andCustomWhere("ORG_Users.ORG_USERID = ?", ouiId);
-		List<Map<String, Object>> prop = selectBuilde.get();
-		
-		Map<String, Object> values = prop.get(0);
-		long userId = (long) values.get("userId");
-		
-		
-		User user = AccountUtil.getUserBean().getPortalUser(userId);
-		if (user.getPortal_verified() == false) {
-			(new UserBeanImpl()).resendInvite(user.getOuid());
+		if(contact != null && contact.getRequester() != null && contact.getRequester().getOuid() > 0) {
+			if(!contact.isPortalAccessNeeded()) {
+				AccountUtil.getUserBean().disableUser(contact.getRequester().getOuid());
+			}
+			else {
+				User user = AccountUtil.getUserBean().getPortalUser(contact.getRequester().getOuid());
+				AccountUtil.getUserBean().resendInvite(user.getOuid());
+			}
+		}
+		else {
+			addTenantUserAsRequester(contact);
 		}
 		
-		FacilioModule module = ModuleFactory.getOrgUserModule();
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(module.getTableName())
-				.fields(FieldFactory.getOrgUserFields())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCustomWhere("ORG_Users.USERID = ?", userId);
-		
-		Map<String, Object> value = new HashMap<>();
-		value.put("portal_verified", portal_verified);
-		int count = updateBuilder.update(value);
-		
-		return count;
 	}
 	 
 	public static TenantContext getTenant(long id, Boolean...fetchTenantOnly) throws Exception {
@@ -533,38 +518,23 @@ public class TenantsAPI {
 		}
 
 	
-	private static Map<Long, List<TenantUserContext>> getTenantUserDetails(Collection<Long> ids) throws Exception {
+	private static Map<Long, List<ContactsContext>> getTenantUserDetails(List<Long> ids) throws Exception {
 		if (CollectionUtils.isEmpty(ids)) {
 			return null;
 		}
-		FacilioModule module = ModuleFactory.getTenantsuserModule();
-		FacilioModule orgUserModule = AccountConstants.getAppOrgUserModule();
-			
-		List<FacilioField> fields = FieldFactory.getTenantsUserFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		FacilioField tenantId = fieldMap.get("tenantId");
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-													.table(module.getTableName())
-													.select(fields)
-													.innerJoin(orgUserModule.getTableName())
-													.on(orgUserModule.getTableName()+".ORG_USERID = "+module.getTableName()+".ORG_USERID")
-													.andCondition(CriteriaAPI.getCondition(tenantId, ids, PickListOperators.IS))
 																					;
-		List<Map<String,Object>> props = selectBuilder.get();
-			
+		List<Map<String,Object>> props = ContactsAPI.getTenantContacts(ids);
+		
 		if (props != null && !props.isEmpty()) {
-			Map<Long, List<TenantUserContext>> uMap = new HashMap<>();
+			Map<Long, List<ContactsContext>> uMap = new HashMap<>();
 			for (Map<String, Object> prop : props) {
-				TenantUserContext tenantUser = FieldUtil.getAsBeanFromMap(prop, TenantUserContext.class);
-				User user = AccountUtil.getUserBean().getUser(tenantUser.getOuid(), true);
-				List<TenantUserContext> userList = uMap.get(tenantUser.getTenantId());
+				ContactsContext tenantUser = FieldUtil.getAsBeanFromMap(prop, ContactsContext.class);
+				
+				List<ContactsContext> userList = uMap.get(tenantUser.getTenant().getId());
 				if (userList == null) {
 					userList = new ArrayList<>();
-					uMap.put(tenantUser.getTenantId(), userList);
+					uMap.put(tenantUser.getTenant().getId(), userList);
 				}
-				tenantUser.setOrgUser(user);
-				userList.add(tenantUser);
 			}
 			return uMap;
 		}  
@@ -604,7 +574,7 @@ public class TenantsAPI {
 		
 	}
 
-	public static int updateTenantPrimaryContact(User user, Long tenantId) throws Exception{
+	public static int updateTenantPrimaryContact(ContactsContext contact, Long tenantId) throws Exception{
          
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
@@ -620,7 +590,7 @@ public class TenantsAPI {
 											.andCondition(CriteriaAPI.getIdCondition(tenantId, module));
 									
 		Map<String, Object> value = new HashMap<>();
-		value.put("contact", user.getOuid());
+		value.put("contact", contact.getId());
 		int count = updateBuilder.update(value);
 		return count;
 			
@@ -803,7 +773,7 @@ public class TenantsAPI {
 		return count;
 	}
 	
-	private static void updateContactDetails(User contact,Long tenantId) throws Exception {
+	private static void updateContactDetails(ContactsContext contact,Long tenantId) throws Exception {
 		String email = contact.getEmail();
 		String name = contact.getName();
 		long id = contact.getId();
@@ -816,12 +786,22 @@ public class TenantsAPI {
 			long orgid = AccountUtil.getCurrentOrg().getOrgId();
 			contact.setOrgId(orgid);
 			if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
-				contact.setEmail(contact.getMobile());
+				contact.setEmail(contact.getPhone());
 			}
-			long userId = AccountUtil.getUserBean().inviteRequester(orgid, contact, true, false);
-			addTenantContact(contact, tenantId);
+			addTenantUserAsRequester(contact);
 		}
 	}
+	
+	public static void addTenantUserAsRequester(ContactsContext contact) throws Exception {
+		User user = new User();
+		user.setEmail(contact.getEmail());
+		user.setPhone(contact.getPhone());
+		user.setName(contact.getName());
+		long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false);
+		contact.setId(userId);
+	}
+	
+	
 	private static int deleteUtilityMapping(TenantContext tenant) throws Exception {
 		FacilioModule module = ModuleFactory.getTenantsUtilityMappingModule();
 		List<FacilioField> fields = FieldFactory.getTenantsUtilityMappingFields();
@@ -1077,8 +1057,6 @@ public class TenantsAPI {
 					FileStore fs = FacilioFactory.getFileStore();
 					tenant.setLogoUrl(fs.getPrivateUrl(tenant.getLogoId()));
 				}
-				tenant.setContact(AccountUtil.getUserBean().getUser(tenant.getContact().getId(), true));
-				
 			}
 			Map<Long, List<UtilityAsset>> utilMap = getUtilityAssets(ids);
 			if (utilMap != null && !utilMap.isEmpty()) {
@@ -1086,10 +1064,10 @@ public class TenantsAPI {
 					tenant.setUtilityAssets(utilMap.get(tenant.getId()));
 				}
 			}
-			Map<Long, List<TenantUserContext>> userMap = getTenantUserDetails(ids);
+			Map<Long, List<ContactsContext>> userMap = getTenantUserDetails(ids);
 			if (userMap != null && !userMap.isEmpty()) {
 				for (TenantContext tenant : tenants) {
-					tenant.setTenantUsers(userMap.get(tenant.getId()));
+					tenant.setTenantContacts(userMap.get(tenant.getId()));
 				}
 			}
 		}

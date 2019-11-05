@@ -4510,14 +4510,14 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="deleteVisitorLogging" />
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingDetails" />
 		<action name="checkOutWithPhone"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkOutVisitorLogging" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" />
 	</package>
 	<package name="visitorSettings" namespace="/api/v2/visitorSettings"
 		extends="v2Api">
@@ -4534,5 +4534,18 @@
 		<action name="trendline" class="com.facilio.bmsconsole.actions.PythonAIAction" method="getTrendLine">
 			<param name="auth">false</param>
 		</action>
+	</package>
+	<package name="contacts" namespace="/api/v2/contacts"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="addContacts" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="updateContacts" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="deleteContacts" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactsList" />
 	</package>
 </struts>

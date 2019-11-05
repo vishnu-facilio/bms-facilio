@@ -13,6 +13,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.RateCardContext;
@@ -407,12 +408,13 @@ private Map<String, Double> readingData;
 			return ERROR;
 		}
 	}
-	private User user;
-	public User getUser() {
-		return user;
+	private ContactsContext contact;
+	
+	public ContactsContext getContact() {
+		return contact;
 	}
-	public void setUser(User user) {
-		this.user = user;
+	public void setContact(ContactsContext contact) {
+		this.contact = contact;
 	}
 	public String updateTenant() {
 		try {
@@ -443,7 +445,7 @@ private Map<String, Double> readingData;
 		try {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.RECORD_ID, tenantId);
-			context.put(FacilioConstants.ContextNames.USER, user);
+			context.put(FacilioConstants.ContextNames.CONTACT, contact);
 			FacilioChain updatePrimaryContact = FacilioChainFactory.updateTenantPrimaryContactChain();
 			updatePrimaryContact.execute(context);
 			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
@@ -557,7 +559,7 @@ private Map<String, Double> readingData;
 	}
 	
 	public String updatePortalAccess() throws Exception {
-		userId = TenantsAPI.updatePortalUserAccess(user.getOuid() , user.getPortal_verified());
+		TenantsAPI.updatePortalUserAccess(contact);
 		return SUCCESS;
 	}
 	
@@ -693,7 +695,7 @@ private Map<String, Double> readingData;
 		
 	    FacilioChain addTenantUser = FacilioChainFactory.addTenantUserChain();
 	    FacilioContext context = new FacilioContext();
-	    context.put(FacilioConstants.ContextNames.USER, user);
+	    context.put(FacilioConstants.ContextNames.CONTACT, contact);
 	    context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 	//    tenant = TenantsAPI.getTenant(id, true);
 	//	context.put(TenantsAPI.TENANT_CONTEXT, tenant);

@@ -1643,4 +1643,26 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchVisitorTypeSettingsCommand());
 		return c;
 	}
+	
+	public static FacilioChain getContactsListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForContacts());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new LoadContactsLookUpCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getContactDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForContacts());
+		c.addCommand(new LoadContactsLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		
+		return c;
+	}
+	
 }

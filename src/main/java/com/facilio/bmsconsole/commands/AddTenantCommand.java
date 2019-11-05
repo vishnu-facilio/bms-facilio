@@ -22,22 +22,14 @@ public class AddTenantCommand extends GenericAddModuleDataCommand {
 		TenantContext tenant = (TenantContext) context.get(FacilioConstants.ContextNames.RECORD);
 		List<Long> spaceIds = (ArrayList<Long>)context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		
-		User user = tenant.getContact();
-		long orgid = AccountUtil.getCurrentOrg().getOrgId();
-		user.setOrgId(orgid);
-		if(user.getEmail() == null || user.getEmail().isEmpty()) {
-			user.setEmail(user.getMobile());
-		}
-
-		long userId = AccountUtil.getUserBean().inviteRequester(orgid, user, true, false);
-	    tenant.getContact().setId(userId);
-    	TenantsAPI.addTenantLogo(tenant);
+	    TenantsAPI.addTenantLogo(tenant);
 		super.executeCommand(context);
 		tenant.setId((Long)context.get(FacilioConstants.ContextNames.RECORD_ID));
 		TenantsAPI.addUtilityMapping(tenant,spaceIds);
 		context.put(FacilioConstants.ContextNames.TENANT, tenant);
+		context.put(FacilioConstants.ContextNames.CONTACT, tenant.getContact());
 		
-		context.put(FacilioConstants.ContextNames.USER, tenant.getContact());
+		
 	  }
 		 return false;
 	}

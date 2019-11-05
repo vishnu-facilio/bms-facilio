@@ -7,8 +7,21 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class VisitorContext extends ModuleBaseWithCustomFields{
 	
+	/**
+	 *
+	 */
 	private static final long serialVersionUID = 1L;
+	
+	private VisitorTypeContext visitorType;
+	
+	public VisitorTypeContext getVisitorType() {
+		return visitorType;
+	}
 
+	public void setVisitorType(VisitorTypeContext visitorType) {
+		this.visitorType = visitorType;
+	}
+	
 	private String name;
 	private String email;
 	private String phone;

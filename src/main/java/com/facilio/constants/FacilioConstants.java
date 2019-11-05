@@ -1311,6 +1311,10 @@ public class FacilioConstants {
 
 
 
+		
+		public static final String CONTACT = "contact";
+		public static final String CONTACTS = "contacts";
+		
 
 	
 		
@@ -1481,6 +1485,7 @@ public class FacilioConstants {
 			classMap.put(Reservation.RESERVATIONS_INTERNAL_ATTENDEE, InternalAttendeeContext.class);
 			classMap.put(Reservation.RESERVATIONS_EXTERNAL_ATTENDEE, ExternalAttendeeContext.class);
 			
+			classMap.put(CONTACT, ContactsContext.class);
 
 			return classMap;
 		}
