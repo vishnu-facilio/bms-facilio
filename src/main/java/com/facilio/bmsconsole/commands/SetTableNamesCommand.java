@@ -423,6 +423,14 @@ public class SetTableNamesCommand extends FacilioCommand {
 		return new SetTableNamesCommand("contact", "Contacts");
 	}
 	
+	public static SetTableNamesCommand getForInsurance() {
+		return new SetTableNamesCommand("insurance", "Insurance");
+	}
+	
+	public static SetTableNamesCommand getForWatchList() {
+		return new SetTableNamesCommand("watchlist", "WatchList");
+	}
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

@@ -62,11 +62,11 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.VISITOR);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.VISITOR_INVITE);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.VISITOR_LOGGING);
-		
-		
-		
+		modulesWithLocalId.add(FacilioConstants.ContextNames.CONTACT);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.INSURANCE);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.SHIPMENT);
-
+		modulesWithLocalId.add(FacilioConstants.ContextNames.WATCHLIST);
+		
 		return modulesWithLocalId;
 	}
 	

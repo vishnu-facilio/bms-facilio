@@ -1314,6 +1314,10 @@ public class FacilioConstants {
 		
 		public static final String CONTACT = "contact";
 		public static final String CONTACTS = "contacts";
+		public static final String INSURANCES = "insurances";
+		public static final String INSURANCE = "insurance";
+		public static final String WATCHLIST_RECORDS = "watchListRecords";
+		public static final String WATCHLIST = "watchlist";
 		
 
 	
@@ -1486,6 +1490,8 @@ public class FacilioConstants {
 			classMap.put(Reservation.RESERVATIONS_EXTERNAL_ATTENDEE, ExternalAttendeeContext.class);
 			
 			classMap.put(CONTACT, ContactsContext.class);
+			classMap.put(INSURANCE, InsuranceContext.class);
+			classMap.put(WATCHLIST, WatchListContext.class);
 
 			return classMap;
 		}

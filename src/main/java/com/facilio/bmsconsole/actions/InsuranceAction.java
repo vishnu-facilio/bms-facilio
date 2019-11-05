@@ -9,12 +9,12 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.context.InsuranceContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
-public class ContactsAction extends FacilioAction{
+public class InsuranceAction extends FacilioAction{
 
 private static final long serialVersionUID = 1L;
 	
@@ -37,10 +37,10 @@ private static final long serialVersionUID = 1L;
 		this.fetchCount = fetchCount;
 	}
 
-	private ContactsContext contact;
-	private List<ContactsContext> contacts;
+	private InsuranceContext insurance;
+	private List<InsuranceContext> insurances;
 	
-	private List<Long> contactIds;
+	private List<Long> insuranceIds;
 	
 	private long recordId = -1;
 	public long getRecordId() {
@@ -68,66 +68,66 @@ private static final long serialVersionUID = 1L;
 		this.id = id;
 	}
 
-	public ContactsContext getContact() {
-		return contact;
+	public InsuranceContext getInsurance() {
+		return insurance;
 	}
-	public void setContact(ContactsContext contact) {
-		this.contact = contact;
+	public void setInsurance(InsuranceContext insurance) {
+		this.insurance = insurance;
 	}
-	public List<ContactsContext> getContacts() {
-		return contacts;
+	public List<InsuranceContext> getInsurances() {
+		return insurances;
 	}
-	public void setContacts(List<ContactsContext> contacts) {
-		this.contacts = contacts;
+	public void setInsurances(List<InsuranceContext> insurances) {
+		this.insurances = insurances;
 	}
-	public List<Long> getContactIds() {
-		return contactIds;
+	public List<Long> getInsuranceIds() {
+		return insuranceIds;
 	}
-	public void setContactIds(List<Long> contactIds) {
-		this.contactIds = contactIds;
+	public void setInsuranceIds(List<Long> insuranceIds) {
+		this.insuranceIds = insuranceIds;
 	}
-	public String addContacts() throws Exception {
+	public String addInsurances() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(contacts)) {
-			FacilioChain c = TransactionChainFactory.addContactsChain();
+		if(!CollectionUtils.isEmpty(insurances)) {
+			FacilioChain c = TransactionChainFactory.addInsurancesChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, contacts);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, insurances);
 			c.execute();
-			setResult(FacilioConstants.ContextNames.CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+			setResult(FacilioConstants.ContextNames.INSURANCES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
 		return SUCCESS;
 	}
 	
-	public String updateContacts() throws Exception {
+	public String updateInsurances() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(contacts)) {
-			FacilioChain c = TransactionChainFactory.updateContactsChain();
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, contacts);
+		if(!CollectionUtils.isEmpty(insurances)) {
+			FacilioChain c = TransactionChainFactory.updateInsurancesChain();
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, insurances);
 			c.execute();
-			setResult(FacilioConstants.ContextNames.CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+			setResult(FacilioConstants.ContextNames.INSURANCES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
 		return SUCCESS;
 	}
 
-	public String deleteContacts() throws Exception {
+	public String deleteInsurances() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(contactIds)) {
-			FacilioChain c = FacilioChainFactory.deleteContactsChain();
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, contactIds);
+		if(!CollectionUtils.isEmpty(insuranceIds)) {
+			FacilioChain c = FacilioChainFactory.deleteInsuranceChain();
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, insuranceIds);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		}
 		return SUCCESS;
 	}
 	
-	public String getContactsList() throws Exception {
-		FacilioChain chain = ReadOnlyChainFactory.getContactsListChain();
+	public String getInsuranceList() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getInsuranceListChain();
 		
 		chain.getContext().put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
 		chain.getContext().put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "contact");
+		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "insurance");
  		
-		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Contacts.ID asc");
+		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Insurance.ID asc");
  		if(getFilters() != null)
  		{	
 	 		JSONParser parser = new JSONParser();
@@ -137,7 +137,7 @@ private static final long serialVersionUID = 1L;
 		}
  		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
- 			searchObj.put("fields", "contact.tenant");
+ 			searchObj.put("fields", "insurance.vendor");
  			searchObj.put("query", getSearch());
  			chain.getContext().put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
@@ -153,24 +153,23 @@ private static final long serialVersionUID = 1L;
 			setResult(FacilioConstants.ContextNames.RECORD_COUNT,chain.getContext().get(FacilioConstants.ContextNames.RECORD_COUNT));
 		}
 		else {
-			List<ContactsContext> contacts = (List<ContactsContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
-			setResult(FacilioConstants.ContextNames.CONTACTS, contacts);
+			List<InsuranceContext> insurances = (List<InsuranceContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
+			setResult(FacilioConstants.ContextNames.INSURANCES, insurances);
 		}
 		
 		return SUCCESS;
 	}
 	
-	public String getContactDetails() throws Exception {
+	public String getInsuranceDetails() throws Exception {
 		
-		FacilioChain chain = ReadOnlyChainFactory.getContactDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getInsuranceDetailsChain();
 		chain.getContext().put(FacilioConstants.ContextNames.ID, recordId);
 		
 		chain.execute();
 		
-		ContactsContext contact = (ContactsContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
-		setResult(FacilioConstants.ContextNames.CONTACT, contact);
+		InsuranceContext insurance = (InsuranceContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
+		setResult(FacilioConstants.ContextNames.INSURANCE, insurance);
 		
 		return SUCCESS;
 	}
-	
 }

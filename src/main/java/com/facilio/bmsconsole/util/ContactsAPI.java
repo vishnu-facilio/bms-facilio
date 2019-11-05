@@ -35,6 +35,7 @@ public class ContactsAPI {
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		
 		LookupField requesterField = (LookupField) fieldsAsMap.get("requester");
+		
 		builder.fetchLookup(requesterField);
 		
 		List<Map<String,Object>> records = builder.getAsProps();

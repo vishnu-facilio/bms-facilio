@@ -9,12 +9,12 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.context.WatchListContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
-public class ContactsAction extends FacilioAction{
+public class WatchListAction extends FacilioAction{
 
 private static final long serialVersionUID = 1L;
 	
@@ -37,10 +37,10 @@ private static final long serialVersionUID = 1L;
 		this.fetchCount = fetchCount;
 	}
 
-	private ContactsContext contact;
-	private List<ContactsContext> contacts;
+	private WatchListContext watchList;
+	private List<WatchListContext> watchListRecords;
 	
-	private List<Long> contactIds;
+	private List<Long> watchListIds;
 	
 	private long recordId = -1;
 	public long getRecordId() {
@@ -68,66 +68,66 @@ private static final long serialVersionUID = 1L;
 		this.id = id;
 	}
 
-	public ContactsContext getContact() {
-		return contact;
+	public WatchListContext getWatchList() {
+		return watchList;
 	}
-	public void setContact(ContactsContext contact) {
-		this.contact = contact;
+	public void setWatchList(WatchListContext watchList) {
+		this.watchList = watchList;
 	}
-	public List<ContactsContext> getContacts() {
-		return contacts;
+	public List<WatchListContext> getWatchListRecords() {
+		return watchListRecords;
 	}
-	public void setContacts(List<ContactsContext> contacts) {
-		this.contacts = contacts;
+	public void setWatchListRecords(List<WatchListContext> watchListRecords) {
+		this.watchListRecords = watchListRecords;
 	}
-	public List<Long> getContactIds() {
-		return contactIds;
+	public List<Long> getWatchListIds() {
+		return watchListIds;
 	}
-	public void setContactIds(List<Long> contactIds) {
-		this.contactIds = contactIds;
+	public void setWatchListIds(List<Long> watchListIds) {
+		this.watchListIds = watchListIds;
 	}
-	public String addContacts() throws Exception {
+	public String addWatchLists() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(contacts)) {
-			FacilioChain c = TransactionChainFactory.addContactsChain();
+		if(!CollectionUtils.isEmpty(watchListRecords)) {
+			FacilioChain c = TransactionChainFactory.addWatchListChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, contacts);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, watchListRecords);
 			c.execute();
-			setResult(FacilioConstants.ContextNames.CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+			setResult(FacilioConstants.ContextNames.WATCHLIST_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
 		return SUCCESS;
 	}
 	
-	public String updateContacts() throws Exception {
+	public String updateWatchLists() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(contacts)) {
-			FacilioChain c = TransactionChainFactory.updateContactsChain();
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, contacts);
+		if(!CollectionUtils.isEmpty(watchListRecords)) {
+			FacilioChain c = TransactionChainFactory.updateWatchListChain();
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, watchListRecords);
 			c.execute();
-			setResult(FacilioConstants.ContextNames.CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+			setResult(FacilioConstants.ContextNames.WATCHLIST_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
 		return SUCCESS;
 	}
 
-	public String deleteContacts() throws Exception {
+	public String deleteWatchLists() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(contactIds)) {
-			FacilioChain c = FacilioChainFactory.deleteContactsChain();
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, contactIds);
+		if(!CollectionUtils.isEmpty(watchListIds)) {
+			FacilioChain c = FacilioChainFactory.deleteWatchListChain();
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, watchListIds);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		}
 		return SUCCESS;
 	}
 	
-	public String getContactsList() throws Exception {
-		FacilioChain chain = ReadOnlyChainFactory.getContactsListChain();
+	public String getWatchListRecordList() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getWatchListRecordsChain();
 		
 		chain.getContext().put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
 		chain.getContext().put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "contact");
+		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "watchlist");
  		
-		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Contacts.ID asc");
+		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "WatchList.ID asc");
  		if(getFilters() != null)
  		{	
 	 		JSONParser parser = new JSONParser();
@@ -137,7 +137,7 @@ private static final long serialVersionUID = 1L;
 		}
  		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
- 			searchObj.put("fields", "contact.tenant");
+ 			searchObj.put("fields", "watchlist.phone");
  			searchObj.put("query", getSearch());
  			chain.getContext().put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
@@ -153,24 +153,23 @@ private static final long serialVersionUID = 1L;
 			setResult(FacilioConstants.ContextNames.RECORD_COUNT,chain.getContext().get(FacilioConstants.ContextNames.RECORD_COUNT));
 		}
 		else {
-			List<ContactsContext> contacts = (List<ContactsContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
-			setResult(FacilioConstants.ContextNames.CONTACTS, contacts);
+			List<WatchListContext> watchListRecords = (List<WatchListContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
+			setResult(FacilioConstants.ContextNames.WATCHLIST_RECORDS, watchListRecords);
 		}
 		
 		return SUCCESS;
 	}
 	
-	public String getContactDetails() throws Exception {
+	public String getWatchListRecordDetails() throws Exception {
 		
-		FacilioChain chain = ReadOnlyChainFactory.getContactDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getInsuranceDetailsChain();
 		chain.getContext().put(FacilioConstants.ContextNames.ID, recordId);
 		
 		chain.execute();
 		
-		ContactsContext contact = (ContactsContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
-		setResult(FacilioConstants.ContextNames.CONTACT, contact);
+		WatchListContext watchList = (WatchListContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
+		setResult(FacilioConstants.ContextNames.WATCHLIST, watchList);
 		
 		return SUCCESS;
 	}
-	
 }

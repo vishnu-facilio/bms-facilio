@@ -3854,6 +3854,36 @@ public class TransactionChainFactory {
 		return c;
 	}
 
+	
+	public static FacilioChain addInsurancesChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInsurance());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		return c;
+	}
+	
+	public static FacilioChain updateInsurancesChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInsurance());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain addWatchListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWatchList());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		return c;
+	}
+	
+	public static FacilioChain updateWatchListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWatchList());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		
+		return c;
+	}
 }
 
 

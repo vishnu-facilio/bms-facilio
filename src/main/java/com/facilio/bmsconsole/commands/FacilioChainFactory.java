@@ -2061,5 +2061,19 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain deleteInsuranceChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForInsurance());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteWatchListChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForWatchList());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
 	
 }

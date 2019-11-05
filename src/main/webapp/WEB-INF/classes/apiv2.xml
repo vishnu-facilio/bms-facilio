@@ -4548,4 +4548,32 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactsList" />
 	</package>
+	
+	<package name="insurance" namespace="/api/v2/insurance"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.InsuranceAction" method="addInsurances" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.InsuranceAction" method="updateInsurances" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.InsuranceAction" method="deleteInsurances" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.InsuranceAction" method="getInsuranceDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.InsuranceAction" method="getInsuranceList" />
+	</package>
+	
+	<package name="watchlist" namespace="/api/v2/watchlist"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.WatchListAction" method="addWatchLists" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.WatchListAction" method="updateWatchLists" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.WatchListAction" method="deleteWatchLists" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.WatchListAction" method="getWatchListRecordList" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WatchListAction" method="getWatchListRecordDetails" />
+	</package>
 </struts>
