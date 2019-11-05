@@ -21,6 +21,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 
 public class GetReadingsForMLCommand extends FacilioCommand {
 
@@ -75,8 +76,11 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			{
 				long ttime = (long) prop.get(ttimeField.getName());
 				if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
-					Double previousValue = (Double) data.get(ttime);
-					data.put(ttime, previousValue + (Double) prop.get(variableField.getName()));
+					Double previousValue = (Double) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));
+					data.put(ttime, previousValue + (Double) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
+				}else if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.NUMBER)){
+					Long previousValue = (Long) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));
+					data.put(ttime, previousValue + (Long) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
 				}else{
 					data.put(ttime, prop.get(variableField.getName()));
 				}
