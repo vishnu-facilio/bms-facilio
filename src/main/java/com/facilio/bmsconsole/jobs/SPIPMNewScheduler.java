@@ -326,16 +326,16 @@ public class SPIPMNewScheduler extends FacilioJob {
 					}
 				}
 
-				if (!bulkWorkOrderContexts.isEmpty()) {
-					FacilioContext context = new FacilioContext();
-					BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext(bulkWorkOrderContexts);
-					PreventiveMaintenanceAPI.logIf(92L,"No  of work orders to save " + bulkWorkOrderContext.getWorkOrderContexts().size());
-					context.put(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT, bulkWorkOrderContext);
-					context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+				//if (!bulkWorkOrderContexts.isEmpty()) {
+				//	FacilioContext context = new FacilioContext();
+				//	BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext(bulkWorkOrderContexts);
+				//	PreventiveMaintenanceAPI.logIf(92L,"No  of work orders to save " + bulkWorkOrderContext.getWorkOrderContexts().size());
+				//	context.put(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT, bulkWorkOrderContext);
+				//	context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 
-					FacilioChain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
-					addWOChain.execute(context);
-				}
+				//	FacilioChain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
+				//	addWOChain.execute(context);
+				//}
 
 //				for(PreventiveMaintenance pm : pmList) {
 //					PreventiveMaintenanceAPI.incrementGenerationTime(pm.getId(), getEndTime(pm));
