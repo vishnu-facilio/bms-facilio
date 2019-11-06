@@ -450,8 +450,8 @@ public class SPIPMNewScheduler extends FacilioJob {
 
 	private List<BulkWorkOrderContext> generateBulkWoContext(PreventiveMaintenance pm, FacilioContext context, WorkorderTemplate workorderTemplate, List<PMTriggerContext> triggers) throws Exception {
 		List<BulkWorkOrderContext> bulkWorkOrderContexts = new ArrayList<>();
-		long range = getMax(pm.getId());
-		long endTime = 1573151400L;
+		long range = getMax(pm.getId()) - 300L;
+		long endTime = 1573064940L;
 		if (range != -1) {
 			endTime = range / 1000;
 		}
