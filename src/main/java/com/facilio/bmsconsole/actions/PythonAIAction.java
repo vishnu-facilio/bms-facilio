@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.fs.FileInfo.FileFormat;
 
 public class PythonAIAction extends FacilioAction {
@@ -157,7 +158,8 @@ public class PythonAIAction extends FacilioAction {
 		ClassLoader classLoader = PythonAIAction.class.getClassLoader();
 		String ransacFilePath = classLoader.getResource("conf/AI/ransac.py").getPath();
 		
-		String[] command = new String[]{"/usr/local/bin/python3", ransacFilePath, filePath, degree};
+		String pythonPath = FacilioProperties.getPythonPath();
+		String[] command = new String[]{pythonPath, ransacFilePath, filePath, degree};
         ProcessBuilder builder = new ProcessBuilder(command);
         
         List<String> trendLineList = new ArrayList<String>();

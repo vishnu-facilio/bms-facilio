@@ -70,6 +70,7 @@ public class FacilioProperties {
     private static String iotExchange;
     private static String bridgeUrl;
     private static String pythonAI;
+    private static String pythonPath;
 
     private static String emailClient;
     private static String fileStore;
@@ -129,6 +130,7 @@ public class FacilioProperties {
                 iotExchange = PROPERTIES.getProperty("iot.exchange");
                 bridgeUrl = PROPERTIES.getProperty("bridge.url");
                 pythonAI = PROPERTIES.getProperty("pythonai.url");
+                pythonPath = PROPERTIES.getProperty("pythonPath");
                 if(PROPERTIES.containsKey("iot.endpoint.port")) {
                     try {
                         iotEndPointPort = Integer.parseInt(PROPERTIES.getProperty("iot.endpoint.port"));
@@ -382,6 +384,10 @@ public class FacilioProperties {
     
     public static String getPythonAI() {
         return pythonAI;
+    }
+    
+    public static String getPythonPath() {
+        return pythonPath;
     }
 
     public static String getFileStore() {
