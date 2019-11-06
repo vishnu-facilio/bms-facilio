@@ -3049,142 +3049,145 @@ public class PreventiveMaintenanceAPI {
 //	}
 
 	public static void populateUniqueId() throws Exception {
-		AccountUtil.setCurrentAccount(183L);
-		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-			LOGGER.log(Level.WARN, "Org is missing");
-			return;
-		}
-
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.TASK);
-		List<FacilioField> taskFields = modBean.getAllFields(taskModule.getName());
-		Map<String, FacilioField> taskFieldMap = FieldFactory.getAsMap(taskFields);
-
-		List<PreventiveMaintenance> allPMs = PreventiveMaintenanceAPI.getAllPMs(183L, false);
-		Set<Long> resourceIsMissing = new HashSet<>();
-		Set<Long> invalidResource = new HashSet<>();
-		Set<Long> unusualSectionName = new HashSet<>();
-		Set<Long> taskMapIsEmpty = new HashSet<>();
-		Set<Long> uniqueIdIsMissing = new HashSet<>();
-		List<Long> skipList = Arrays.asList(1123152L, 1090598L, 1087384L, 1090585L, 1102395L,1090588L, 1110405L, 1110404L, 1090595L, 1145433L, 1145434L, 1145435L, 1145436L, 1145441L, 1145432L, 1213831L);
-		Set<Long> skip = new HashSet<>(skipList);
-		for (PreventiveMaintenance pm: allPMs) {
-			if (skip.contains(pm.getId())) {
-				LOGGER.log(Level.WARN, "skipping " + pm.getId());
-				continue;
+		long[] orgs = new long[]{176L, 169L, 151L};
+		for (long org: orgs) {
+			AccountUtil.setCurrentAccount(org);
+			if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+				LOGGER.log(Level.WARN, "Org is missing");
+				return;
 			}
-			LOGGER.log(Level.WARN, "executing for pm " + pm.getId());
-			Map<String, Map<String, Long>> pmLookup = new HashMap<>();
-			WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
-			List<TaskSectionTemplate> sectionTemplates = woTemplate.getSectionTemplates();
-			for (TaskSectionTemplate sectionTemplate: sectionTemplates) {
-				Map<String,Long> taskMap = new HashMap<>();
-				pmLookup.put(sectionTemplate.getName(), taskMap);
-				List<TaskTemplate> taskTemplates = sectionTemplate.getTaskTemplates();
-				for(TaskTemplate taskTemplate: taskTemplates) {
-					taskMap.put(taskTemplate.getName(), (Long) taskTemplate.getAdditionInfo().get("uniqueId"));
+
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.TASK);
+			List<FacilioField> taskFields = modBean.getAllFields(taskModule.getName());
+			Map<String, FacilioField> taskFieldMap = FieldFactory.getAsMap(taskFields);
+
+			List<PreventiveMaintenance> allPMs = PreventiveMaintenanceAPI.getAllPMs(org, false);
+			Set<Long> resourceIsMissing = new HashSet<>();
+			Set<Long> invalidResource = new HashSet<>();
+			Set<Long> unusualSectionName = new HashSet<>();
+			Set<Long> taskMapIsEmpty = new HashSet<>();
+			Set<Long> uniqueIdIsMissing = new HashSet<>();
+			List<Long> skipList = Arrays.asList();
+			Set<Long> skip = new HashSet<>(skipList);
+			for (PreventiveMaintenance pm: allPMs) {
+				if (skip.contains(pm.getId())) {
+					LOGGER.log(Level.WARN, "skipping " + pm.getId());
+					continue;
 				}
-			}
-			List<WorkOrderContext> workOrders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
-			for (WorkOrderContext workOrderContext: workOrders) {
-				LOGGER.log(Level.WARN, "executing for wo " + workOrderContext.getId());
-				List<TaskContext> tasks = TicketAPI.getRelatedTasks(workOrderContext.getId());
-				Map<String, Object> nullMap = new HashMap<>();
-				nullMap.put("uniqueId", -99L);
-				UpdateRecordBuilder<TaskContext> nullUpdateRecordBuilder = new UpdateRecordBuilder<>();
-				nullUpdateRecordBuilder.moduleName("task")
-						.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
-						.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), workOrderContext.getId()+"", NumberOperators.EQUALS))
-						.updateViaMap(nullMap);
-				for (TaskContext task: tasks) {
-					long sectionId = task.getSectionId();
-					TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
-					Map<String, Long> taskMap = null;
-					ResourceContext resource = null;
-					if (task.getResource() == null) {
-						Set<Map.Entry<String, Map<String, Long>>> entries = pmLookup.entrySet();
-						if (entries.size() == 1) {
-							for (Map.Entry<String, Map<String, Long>> entry: entries) {
-								taskMap = entry.getValue();
-							}
-						} else {
-							resourceIsMissing.add(pm.getId());
-							LOGGER.log(Level.ERROR, "resource is missing " + task.getSubject());
-							continue;
-						}
-					} else {
-						resource = ResourceAPI.getResource(task.getResource().getId());
+				LOGGER.log(Level.WARN, "executing for pm " + pm.getId());
+				Map<String, Map<String, Long>> pmLookup = new HashMap<>();
+				WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
+				List<TaskSectionTemplate> sectionTemplates = woTemplate.getSectionTemplates();
+				for (TaskSectionTemplate sectionTemplate: sectionTemplates) {
+					Map<String,Long> taskMap = new HashMap<>();
+					pmLookup.put(sectionTemplate.getName(), taskMap);
+					List<TaskTemplate> taskTemplates = sectionTemplate.getTaskTemplates();
+					for(TaskTemplate taskTemplate: taskTemplates) {
+						taskMap.put(taskTemplate.getName(), (Long) taskTemplate.getAdditionInfo().get("uniqueId"));
 					}
-
-					if (taskMap == null) {
-						if (resource == null) {
+				}
+				List<WorkOrderContext> workOrders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
+				for (WorkOrderContext workOrderContext: workOrders) {
+					LOGGER.log(Level.WARN, "executing for wo " + workOrderContext.getId());
+					List<TaskContext> tasks = TicketAPI.getRelatedTasks(workOrderContext.getId());
+					Map<String, Object> nullMap = new HashMap<>();
+					nullMap.put("uniqueId", -99L);
+//					UpdateRecordBuilder<TaskContext> nullUpdateRecordBuilder = new UpdateRecordBuilder<>();
+//					nullUpdateRecordBuilder.moduleName("task")
+//							.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
+//							.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), workOrderContext.getId()+"", NumberOperators.EQUALS))
+//							.updateViaMap(nullMap);
+					for (TaskContext task: tasks) {
+						long sectionId = task.getSectionId();
+						TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
+						Map<String, Long> taskMap = null;
+						ResourceContext resource = null;
+						if (task.getResource() == null) {
 							Set<Map.Entry<String, Map<String, Long>>> entries = pmLookup.entrySet();
 							if (entries.size() == 1) {
 								for (Map.Entry<String, Map<String, Long>> entry: entries) {
 									taskMap = entry.getValue();
 								}
 							} else {
-								invalidResource.add(pm.getId());
-								LOGGER.log(Level.ERROR, "invalid resource " + task.getResource().getId());
+								resourceIsMissing.add(pm.getId());
+								LOGGER.log(Level.ERROR, "resource is missing " + task.getSubject());
 								continue;
 							}
+						} else {
+							resource = ResourceAPI.getResource(task.getResource().getId());
 						}
-					}
 
-					if (taskMap == null) {
-						String resourceName = resource.getName();
-						String sectionName;
-						try {
-							sectionName = taskSection.getName().substring((resourceName + " - ").length());
-							taskMap = pmLookup.get(sectionName);
-						} catch (Exception e) {
-							try {
+						if (taskMap == null) {
+							if (resource == null) {
 								Set<Map.Entry<String, Map<String, Long>>> entries = pmLookup.entrySet();
 								if (entries.size() == 1) {
 									for (Map.Entry<String, Map<String, Long>> entry: entries) {
 										taskMap = entry.getValue();
 									}
 								} else {
+									invalidResource.add(pm.getId());
+									LOGGER.log(Level.ERROR, "invalid resource " + task.getResource().getId());
+									continue;
+								}
+							}
+						}
+
+						if (taskMap == null) {
+							String resourceName = resource.getName();
+							String sectionName;
+							try {
+								sectionName = taskSection.getName().substring((resourceName + " - ").length());
+								taskMap = pmLookup.get(sectionName);
+							} catch (Exception e) {
+								try {
+									Set<Map.Entry<String, Map<String, Long>>> entries = pmLookup.entrySet();
+									if (entries.size() == 1) {
+										for (Map.Entry<String, Map<String, Long>> entry: entries) {
+											taskMap = entry.getValue();
+										}
+									} else {
+										unusualSectionName.add(pm.getId());
+										LOGGER.log(Level.ERROR, "unusual section name " + taskSection.getName());
+										continue;
+									}
+								} catch (Exception e2) {
 									unusualSectionName.add(pm.getId());
 									LOGGER.log(Level.ERROR, "unusual section name " + taskSection.getName());
 									continue;
 								}
-							} catch (Exception e2) {
-								unusualSectionName.add(pm.getId());
-								LOGGER.log(Level.ERROR, "unusual section name " + taskSection.getName());
-								continue;
 							}
 						}
-					}
 
-					if (taskMap == null) {
-						taskMapIsEmpty.add(pm.getId());
-						LOGGER.log(Level.ERROR, "task map is empty for section name " + taskSection.getName());
-						continue;
-					}
+						if (taskMap == null) {
+							taskMapIsEmpty.add(pm.getId());
+							LOGGER.log(Level.ERROR, "task map is empty for section name " + taskSection.getName());
+							continue;
+						}
 
-					Long uniqueId = taskMap.get(task.getSubject());
-					if (uniqueId == null) {
-						uniqueIdIsMissing.add(pm.getId());
-						LOGGER.log(Level.ERROR, "unique id is missing for " + task.getId());
-					} else {
-						LOGGER.log(Level.ERROR, "task id " + task.getId() + " uniqueId " + uniqueId);
-						Map<String, Object> updateMap = new HashMap<>();
-						updateMap.put("uniqueId", uniqueId);
-						UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
-						updateRecordBuilder.moduleName("task")
-								.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
-								.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(taskModule), task.getId()+"", NumberOperators.EQUALS))
-								.updateViaMap(updateMap);
+						Long uniqueId = taskMap.get(task.getSubject());
+						if (uniqueId == null) {
+							uniqueIdIsMissing.add(pm.getId());
+							LOGGER.log(Level.ERROR, "unique id is missing for " + task.getId());
+						} else {
+							LOGGER.log(Level.ERROR, "task id " + task.getId() + " uniqueId " + uniqueId);
+//							Map<String, Object> updateMap = new HashMap<>();
+//							updateMap.put("uniqueId", uniqueId);
+//							UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
+//							updateRecordBuilder.moduleName("task")
+//									.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
+//									.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(taskModule), task.getId()+"", NumberOperators.EQUALS))
+//									.updateViaMap(updateMap);
+						}
 					}
 				}
 			}
+			LOGGER.log(Level.WARN, "resourceIsMissing " + Arrays.toString(resourceIsMissing.toArray()));
+			LOGGER.log(Level.WARN, "invalidResource " + Arrays.toString(invalidResource.toArray()));
+			LOGGER.log(Level.WARN, "unusualSectionName " + Arrays.toString(unusualSectionName.toArray()));
+			LOGGER.log(Level.WARN, "taskMapIsEmpty " + Arrays.toString(taskMapIsEmpty.toArray()));
+			LOGGER.log(Level.WARN, "uniqueIdIsMissing " + Arrays.toString(uniqueIdIsMissing.toArray()));
 		}
-		LOGGER.log(Level.WARN, "resourceIsMissing " + Arrays.toString(resourceIsMissing.toArray()));
-		LOGGER.log(Level.WARN, "invalidResource " + Arrays.toString(invalidResource.toArray()));
-		LOGGER.log(Level.WARN, "unusualSectionName " + Arrays.toString(unusualSectionName.toArray()));
-		LOGGER.log(Level.WARN, "taskMapIsEmpty " + Arrays.toString(taskMapIsEmpty.toArray()));
-		LOGGER.log(Level.WARN, "uniqueIdIsMissing " + Arrays.toString(uniqueIdIsMissing.toArray()));
 	}
 
 	public static void verifyScheduleGeneration(List<Long> orgs) throws Exception {
