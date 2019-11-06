@@ -3771,6 +3771,7 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new ProcessTimeSeriesData());
 		return chain;
+	}
 	
 	public static FacilioChain addContactsChain() {
 		FacilioChain c = getDefaultChain();
