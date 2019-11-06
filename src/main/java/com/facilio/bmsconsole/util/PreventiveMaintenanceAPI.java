@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.jobs.SPIPMNewScheduler;
 import com.facilio.db.builder.*;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.modules.*;
@@ -443,18 +442,16 @@ public class PreventiveMaintenanceAPI {
 		long currentTime = System.currentTimeMillis();
 		boolean isScheduled = false;
 		List<Long> nextExecutionTimes = new ArrayList<>();
-		Boolean isSpiMig = (Boolean) context.get("spi-mig");
 		LOGGER.log(Level.ERROR, "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId() + " next exec time " + nextExecutionTime.getLeft() + " end time " + endTime);
 		while (nextExecutionTime.getLeft() <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime.getLeft() <= pm.getEndTime())) {
-			if (isSpiMig == null) {
-				if ((nextExecutionTime.getLeft() * 1000) < currentTime) {
-					nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
-					if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
-						break;
-					}
-					continue;
+			if ((nextExecutionTime.getLeft() * 1000) < currentTime) {
+				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
+				if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
+					break;
 				}
+				continue;
 			}
+
 			nextExecutionTimes.add(nextExecutionTime.getLeft());
 
 			nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
@@ -3271,20 +3268,6 @@ public class PreventiveMaintenanceAPI {
 
 		return CollectionUtils.isEmpty(workOrderContexts);
 	}
-
-	public static void generateMissedPMs(long orgId) throws Exception {
-		AccountUtil.setCurrentAccount(orgId);
-		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-			LOGGER.log(Level.WARN, "Org is missing");
-			return;
-		}
-
-		SPIPMNewScheduler spipmNewScheduler = new SPIPMNewScheduler();
-		JobContext jc = new JobContext();
-		jc.setJobId(92L);
-		spipmNewScheduler.execute(jc);
-	}
-
 
 	public static void migrateJobs(long orgid) throws Exception {
 		Connection conn = null;
