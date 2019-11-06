@@ -1,8 +1,8 @@
 package com.facilio.kafka;
 
 import com.facilio.agent.*;
-import com.facilio.agentnew.AgentConstants;
-import com.facilio.agentnew.NewProcessor;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.ProcessorV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -40,7 +40,7 @@ public class Processor extends FacilioProcessor {
     private String orgDomainName;
     private JSONParser parser = new JSONParser();
     private static final Logger LOGGER = LogManager.getLogger(Processor.class.getName());
-    private NewProcessor newProcessor;
+    private ProcessorV2 processorV2;
     private boolean isRestarted = true;
 
 
@@ -60,9 +60,9 @@ public class Processor extends FacilioProcessor {
         eventUtil = new EventUtil();
         setEventType("processor");
         try {
-            newProcessor = new NewProcessor(orgId, orgDomainName);
+            processorV2 = new ProcessorV2(orgId, orgDomainName);
         }catch (Exception e){
-            newProcessor = null;
+            processorV2 = null;
             LOGGER.info(" Exception occurred ",e);
         }
         LOGGER.info("Initializing processor " + orgDomainName);
@@ -115,10 +115,10 @@ public class Processor extends FacilioProcessor {
 
                 JSONObject payLoad = (JSONObject) parser.parse(data);
                 if(payLoad.containsKey(AgentConstants.VERSION) && ( ("2".equalsIgnoreCase((String)payLoad.get(AgentConstants.VERSION))))){
-                    if(newProcessor != null){
+                    if(processorV2 != null){
                         LOGGER.info(" newProcessor payload -> "+payLoad);
                         try {
-                            newProcessor.processNewAgentData(payLoad);
+                            processorV2.processNewAgentData(payLoad);
                         }catch (Exception newProcessorException){
                             LOGGER.info("Exception occurred ",newProcessorException);
                         }

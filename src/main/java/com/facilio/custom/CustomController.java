@@ -2,8 +2,8 @@ package com.facilio.custom;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
-import com.facilio.agentnew.AgentConstants;
-import com.facilio.agentnew.controller.Controller;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;

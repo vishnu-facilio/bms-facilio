@@ -4,16 +4,16 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentIntegration.DownloadCertFile;
-import com.facilio.agentnew.AgentConstants;
-import com.facilio.agentnew.FacilioAgent;
-import com.facilio.agentnew.NewAgentAPI;
-import com.facilio.agentnew.controller.Controller;
-import com.facilio.agentnew.controller.NewControllerAPI;
-import com.facilio.agentnew.controller.NewControllerUtil;
-import com.facilio.agentnew.device.DeviceUtil;
-import com.facilio.agentnew.iotmessage.AgentMessenger;
-import com.facilio.agentnew.point.Point;
-import com.facilio.agentnew.point.PointsAPI;
+import com.facilio.agentv2.AgentApiV2;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.controller.ControllerUtilV2;
+import com.facilio.agentv2.device.DeviceUtil;
+import com.facilio.agentv2.iotmessage.AgentMessenger;
+import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointsAPI;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
@@ -85,7 +85,7 @@ public class DeviceAction extends ActionSupport
 		System.out.println(" in here ");
 		setControllerDataManually();
 	    if(checkValue(getControllerId()) &&  (getControllerData() != null && ( ! getControllerData().isEmpty()) ) ){
-            setResult(RESULT,NewControllerAPI.editController(getControllerId(),getControllerData()));
+            setResult(RESULT, ControllerApiV2.editController(getControllerId(),getControllerData()));
             return SUCCESS;
         }
 	    return "String";
@@ -206,7 +206,7 @@ public class DeviceAction extends ActionSupport
 	private Long agentId;
 	public String discoverPoints(){
 		if( ( getIds() != null  &&  ( ! getIds().isEmpty() ) ) && ( (getAgentId() != null) && (getAgentId() > 0 ) ) ){
-					NewControllerUtil util = new NewControllerUtil(getAgentId());
+					ControllerUtilV2 util = new ControllerUtilV2(getAgentId());
 			if(util.processController(getAgentId(),getIds())){
 				LOGGER.info(" discover points returned true ");
 				setResult(RESULT,true);
@@ -225,7 +225,7 @@ public class DeviceAction extends ActionSupport
 		LOGGER.info(" in getControllers ");
 		JSONArray controllerArray = new JSONArray();
 		if( checkValue(getAgentId()) ){
-			Map<String, Controller> controllerData = NewControllerAPI.getAllControllersFromDb(getAgentId());
+			Map<String, Controller> controllerData = ControllerApiV2.getAllControllersFromDb(getAgentId());
 			if( (controllerData != null) && ( ! controllerData.isEmpty() ) ){
 				LOGGER.info(" controllers restored is "+controllerData.values().size());
 				/*controllerData.values().forEach(controller -> controllerArray.add(controller.toJSON()));*/
@@ -279,7 +279,7 @@ public class DeviceAction extends ActionSupport
 	}
 
 	public String getAgent(){
-        List<FacilioAgent> agents = NewAgentAPI.getAgents();
+        List<FacilioAgent> agents = AgentApiV2.getAgents();
         JSONArray jsonArray = new JSONArray();
         for (FacilioAgent agent : agents) {
             jsonArray.add(agent.toJSON());
@@ -290,7 +290,7 @@ public class DeviceAction extends ActionSupport
 
     public String getAgentUsingId(){
 	    if(checkValue(getAgentId())){
-            FacilioAgent agent = NewAgentAPI.getAgent(getAgentId());
+            FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
             if(agent != null){
                 setResult(AgentConstants.DATA, agent.toJSON());
 				return SUCCESS;
@@ -304,7 +304,7 @@ public class DeviceAction extends ActionSupport
 
 	public String getControllerUsingId(){
 		if(checkValue(getControllerId())){
-			Controller controller = NewControllerAPI.getControllerFromDb(getControllerId());
+			Controller controller = ControllerApiV2.getControllerFromDb(getControllerId());
 			if(controller != null){
 				setResult(AgentConstants.DATA,controller.toJSON());
 				return SUCCESS;

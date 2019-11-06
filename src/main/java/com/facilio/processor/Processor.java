@@ -7,8 +7,8 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.agent.*;
 import com.facilio.agentIntegration.wattsense.WattsenseUtil;
-import com.facilio.agentnew.AgentConstants;
-import com.facilio.agentnew.NewProcessor;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.ProcessorV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -51,7 +51,7 @@ public class Processor implements IRecordProcessor {
         private EventUtil eventUtil;
         private Boolean isStage = !FacilioProperties.isProduction();
         private  boolean isRestarted = true;
-        private NewProcessor newProcessor;
+        private ProcessorV2 processorV2;
 
 
         public static final String DATA_TYPE = "PUBLISH_TYPE";
@@ -68,9 +68,9 @@ public class Processor implements IRecordProcessor {
             ackUtil = new AckUtil();
             eventUtil = new EventUtil();
             try {
-                newProcessor = new NewProcessor(orgId,orgDomainName);
+                processorV2 = new ProcessorV2(orgId,orgDomainName);
             }catch (Exception e){
-                newProcessor = null;
+                processorV2 = null;
                 LOGGER.info("Exception occurred ",e);
             }
         }
@@ -145,10 +145,10 @@ public class Processor implements IRecordProcessor {
                     reader = new StringReader(data);
                     JSONObject payLoad = (JSONObject) parser.parse(reader);
                     if(payLoad.containsKey(AgentConstants.VERSION) && ( ("2".equalsIgnoreCase((String)payLoad.get(AgentConstants.VERSION))))){
-                        if( newProcessor != null && isStage ) {
+                        if( processorV2 != null && isStage ) {
                             LOGGER.info(" newProcessor payload -> "+payLoad);
                             try {
-                                newProcessor.processNewAgentData(payLoad);
+                                processorV2.processNewAgentData(payLoad);
                             }catch (Exception newProcessorException){
                                 LOGGER.info("Exception occurred ",newProcessorException);
                             }

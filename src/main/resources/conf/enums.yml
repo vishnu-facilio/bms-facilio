@@ -14,10 +14,10 @@ enums:
     enumClassName: com.facilio.bmsconsole.context.reservation.ReservationContext$ReservationStatus
 
   - name: SubscribeStatus
-    enumClassName: com.facilio.agentnew.point.PointEnum$SubscribeStatus
+    enumClassName: com.facilio.agentv2.point.PointEnum$SubscribeStatus
 
   - name: ConfigureStatus
-    enumClassName: com.facilio.agentnew.point.PointEnum$ConfigureStatus
+    enumClassName: com.facilio.agentv2.point.PointEnum$ConfigureStatus
     
   - name: DeviceType
     enumClassName: com.facilio.bmsconsole.context.DeviceContext$DeviceType

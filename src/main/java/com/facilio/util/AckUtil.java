@@ -2,7 +2,7 @@ package com.facilio.util;
 
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.fw.constants.Status;
-import com.facilio.agentnew.AgentConstants;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;

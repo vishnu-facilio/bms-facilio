@@ -1,13 +1,13 @@
 package com.facilio.constants;
 
 import com.facilio.activity.ActivityContext;
-import com.facilio.agentnew.bacnet.BacnetIpController;
-import com.facilio.agentnew.misc.MiscController;
-import com.facilio.agentnew.modbusrtu.ModbusRtuController;
-import com.facilio.agentnew.modbustcp.ModbusTcpController;
-import com.facilio.agentnew.niagara.NiagaraController;
-import com.facilio.agentnew.opcua.OpcUaController;
-import com.facilio.agentnew.opcxmlda.OpcXmlDaController;
+import com.facilio.agentv2.bacnet.BacnetIpController;
+import com.facilio.agentv2.misc.MiscController;
+import com.facilio.agentv2.modbusrtu.ModbusRtuController;
+import com.facilio.agentv2.modbustcp.ModbusTcpController;
+import com.facilio.agentv2.niagara.NiagaraController;
+import com.facilio.agentv2.opcua.OpcUaController;
+import com.facilio.agentv2.opcxmlda.OpcXmlDaController;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;

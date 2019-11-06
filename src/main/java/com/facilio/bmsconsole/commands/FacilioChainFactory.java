@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.agentnew.point.AddPointCommand;
+import com.facilio.agentv2.point.AddPointCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.leed.commands.AddConsumptionForLeed;

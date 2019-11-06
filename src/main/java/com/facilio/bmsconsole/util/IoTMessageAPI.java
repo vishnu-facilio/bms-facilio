@@ -4,7 +4,7 @@ import com.amazonaws.services.iot.client.*;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
 import com.facilio.agent.protocol.ProtocolUtil;
-import com.facilio.agentnew.point.PointEnum;
+import com.facilio.agentv2.point.PointEnum;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PublishData;
