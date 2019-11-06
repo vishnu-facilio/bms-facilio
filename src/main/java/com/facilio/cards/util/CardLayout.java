@@ -6,9 +6,6 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.Operator;
-
 public enum CardLayout {
 	
 	READINGCARD_LAYOUT_1 (1, "readingcard_layout_1") {
@@ -25,8 +22,9 @@ public enum CardLayout {
 		
 		public JSONObject getReturnValue () {
 			JSONObject returnValue = new JSONObject();
-			returnValue.put("primaryValue", true);
-			returnValue.put("secondaryValue", true);
+			returnValue.put("title", true);
+			returnValue.put("value", true);
+			returnValue.put("period", true);
 			return returnValue;
 		}
 		
@@ -39,10 +37,13 @@ public enum CardLayout {
 					+ "		fieldMapInfo = fieldObj.asMap();"
 					+ "		date = NameSpace(\"date\");"
 					+ "		dateRangeObj = null;"
+					+ "		period = null;"
 					+ "		if (params.dateRange != null) {"
 					+ "			dateRangeObj = date.getDateRange(params.dateRange);"
+					+ "			period = params.dateRange;"
 					+ "		} else {"
 					+ "			dateRangeObj = date.getDateRange(\"Current Month\");"
+					+ "			period = \"Last Value\";"
 					+ "		}"
 					+ "		db = {"
 					+ "			criteria : [parentId == (params.parentId) && ttime == dateRangeObj],"
@@ -55,7 +56,9 @@ public enum CardLayout {
 					+ "		valueMap = {};"
 					+ "		valueMap[\"value\"] = cardValue;"
 					+ "		if (enumMap != null) {"
-					+ "			valueMap[\"enumMap\"] = enumMap;"
+					+ "			if (cardValue != null) {"
+					+ "				valueMap[\"value\"] = enumMap[cardValue];"
+					+ "			}"
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
@@ -66,7 +69,10 @@ public enum CardLayout {
 					+ "		valueMap = {};"
 					+ "		valueMap[\"value\"] = null;"
 					+ "		result[\"value\"] = valueMap;"
-					+ "}");
+					+ "}"
+					+ "result[\"title\"] = params.title;"
+					+ "result[\"period\"] = period;");
+					
 			
 			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
 		}

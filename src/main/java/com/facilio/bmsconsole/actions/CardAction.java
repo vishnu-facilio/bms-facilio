@@ -66,7 +66,8 @@ public class CardAction extends FacilioAction {
 			
 			chain.execute();
 			
-			setResult("data", workflow);
+			setResult("parameters", getParams());
+			setResult("data", workflow.getReturnValue());
 		}
 		else {
 			setResult("message", "Mandatory params missing...");
