@@ -24,6 +24,13 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 
+import io.sentry.SentryClient; 
+import io.sentry.SentryClientFactory;
+import io.sentry.context.Context;
+import io.sentry.event.EventBuilder; 
+import io.sentry.event.UserBuilder;  
+import com.facilio.aws.util.FacilioProperties;
+
 public class AccessLogFilter implements Filter {
 
     private static final Logger LOGGER = LogManager.getLogger(AccessLogFilter.class.getName());
@@ -52,6 +59,8 @@ public class AccessLogFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         appender = LOGGER.getAppender(APPENDER_NAME);
     }
+    // Sentry instance for logging posts in issue tracking group  
+    private static SentryClient sentry = SentryClientFactory.sentryClient("https://8f4e00d379c343d88fcfd4a8d768c8df@hentry.facilio.in/3"); 
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
@@ -164,6 +173,27 @@ public class AccessLogFilter implements Filter {
         event.setProperty(RESPONSE_CODE, String.valueOf(response.getStatus()));
         event.setProperty(TIME_TAKEN, String.valueOf(timeTaken/1000));
         event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(timeTaken));
+	if (RESPONSE_CODE > 500 && TIME_TAKEN > 20 && !FacilioProperties.isProduction() ) {
+		try {
+			Context context = sentry.getContext(); 
+			context.clear();
+			context.setUser(new UserBuilder().setEmail("issues@facilio.com").build()); 
+			context.addTag("orgid", event.getProperty("orgId") );
+			context.addTag("url",event.getProperty("REQUEST_URL"));
+			context.addTag("remote_ip", event.getProperty("REMOTE_IP") );
+			context.addTag("request_method", event.getProperty("REQUEST_METHOD") );
+			context.addTag("referer", event.getProperty("REFERER") );
+			context.addTag("query", event.getProperty("QUERY") );
+			context.addTag("userid", event.getProperty("userId") );
+			context.addTag("request_params", event.getProperty("REQUEST_PARAMS") );
+			context.addTag("response_code", event.getProperty("RESPONSE_CODE") );
+			context.addTag("time_taken", event.getProperty("TIME_TAKEN") );
+			sentry.sendMessage(event.getProperty("REQUEST_URL");
+
+		}catch (Exception e) {
+			LOGGER.log(Level.INFO, "Error while posting the issue to sentry " , e);
+		}
+	}
         if(appender != null) {
             appender.doAppend(event);
         } else {
