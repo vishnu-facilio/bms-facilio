@@ -30,13 +30,16 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 			LOGGER.info("Energy Meter Id"+energyMeterID);
 			
 			EnergyMeterContext emContext2 = DeviceAPI.getEnergyMeter(energyMeterID);
-			
-			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"LoadPredictionMLLogReadings",FieldFactory.getMLLogLoadPredictFields(),ModuleFactory.getMLLogReadingModule().getTableName());
-			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"LoadPredictionMLReadings",FieldFactory.getMLLoadPredictFields(),ModuleFactory.getMLReadingModule().getTableName());
-			LOGGER.info("After adding Reading");
-			
-			checkGamModel(energyMeterID,emContext2,(String) jc.get("weekEnd"),(String) jc.get("meterInterval"), (String) jc.get("modelName"),(String) jc.get("modelPath"));
-			LOGGER.info("After check Gam Model");
+			if(emContext2 != null){
+				MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"LoadPredictionMLLogReadings",FieldFactory.getMLLogLoadPredictFields(),ModuleFactory.getMLLogReadingModule().getTableName());
+				MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"LoadPredictionMLReadings",FieldFactory.getMLLoadPredictFields(),ModuleFactory.getMLReadingModule().getTableName());
+				LOGGER.info("After adding Reading");
+				
+				checkGamModel(energyMeterID,emContext2,(String) jc.get("weekEnd"),(String) jc.get("meterInterval"), (String) jc.get("modelName"),(String) jc.get("modelPath"));
+				LOGGER.info("After check Gam Model");
+			}else{
+				LOGGER.info("Energy Meter context is Null");
+			}
 			return false;
 		}
 		catch(Exception e)

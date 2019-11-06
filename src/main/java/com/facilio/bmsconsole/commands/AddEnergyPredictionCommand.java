@@ -30,13 +30,21 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 			long energyMeterID=(long) jc.get("energyMeterID");
 			LOGGER.info("Inside Energy Meter Command"+energyMeterID);
 			EnergyMeterContext emContext2 = DeviceAPI.getEnergyMeter(energyMeterID);
-			
-			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLLogReadings",FieldFactory.getMLLogPredictCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
-			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLReadings",FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
-			LOGGER.info("After adding Reading");
-			
-			checkGamModel(energyMeterID,emContext2,(String) jc.get("weekEnd"),(String) jc.get("meterInterval"), (String) jc.get("modelName"),(String) jc.get("modelPath"));
-			LOGGER.info("After check Gam Model");
+			LOGGER.info("Energy meter context :"+emContext2);
+			if(emContext2 != null){
+				LOGGER.info("Checking for null 1:"+FacilioConstants.ContextNames.ASSET_CATEGORY);
+				LOGGER.info("Checking for null 1:"+emContext2.getCategory().getId());
+				LOGGER.info("Checking for null 1:"+FieldFactory.getMLLogPredictCheckGamFields());
+				LOGGER.info("Checking for null 1:"+ModuleFactory.getMLLogReadingModule().getTableName());
+				MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLLogReadings",FieldFactory.getMLLogPredictCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
+				MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLReadings",FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
+				LOGGER.info("After adding Reading");
+				
+				checkGamModel(energyMeterID,emContext2,(String) jc.get("weekEnd"),(String) jc.get("meterInterval"), (String) jc.get("modelName"),(String) jc.get("modelPath"));
+				LOGGER.info("After check Gam Model");
+			}else{
+				LOGGER.info("Energy Meter context is Null");
+			}
 			return false;
 		}
 		catch(Exception e)
