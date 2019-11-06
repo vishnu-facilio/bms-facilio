@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
@@ -21,14 +23,18 @@ public class AddTenantCommand extends GenericAddModuleDataCommand {
 		
 		TenantContext tenant = (TenantContext) context.get(FacilioConstants.ContextNames.RECORD);
 		List<Long> spaceIds = (ArrayList<Long>)context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		List<ContactsContext> tenantContacts = (List<ContactsContext>)context.get(FacilioConstants.ContextNames.CONTACTS);
 		
 	    TenantsAPI.addTenantLogo(tenant);
 		super.executeCommand(context);
 		tenant.setId((Long)context.get(FacilioConstants.ContextNames.RECORD_ID));
 		TenantsAPI.addUtilityMapping(tenant,spaceIds);
 		context.put(FacilioConstants.ContextNames.TENANT, tenant);
-		context.put(FacilioConstants.ContextNames.CONTACT, tenant.getContact());
-		
+		if(CollectionUtils.isNotEmpty(tenantContacts)) {
+			for(ContactsContext contact : tenantContacts) {
+				contact.setTenant(tenant);
+			}
+		}
 		
 	  }
 		 return false;

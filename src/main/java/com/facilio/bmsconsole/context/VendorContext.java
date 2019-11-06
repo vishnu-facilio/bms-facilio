@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class VendorContext extends ModuleBaseWithCustomFields {
@@ -80,4 +82,16 @@ public class VendorContext extends ModuleBaseWithCustomFields {
 		}
 		return -1;
 	}
+	
+	private List<ContactsContext> vendorContacts;
+
+	public List<ContactsContext> getVendorContacts() {
+		return vendorContacts;
+	}
+
+	public void setVendorContacts(List<ContactsContext> vendorContacts) {
+		this.vendorContacts = vendorContacts;
+	}
+	
+		
 }

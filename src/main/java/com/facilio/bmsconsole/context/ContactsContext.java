@@ -97,6 +97,15 @@ public class ContactsContext extends ModuleBaseWithCustomFields{
 		this.tenant = tenant;
 	}
 	
+	private VendorContext vendor;
+
+	public VendorContext getVendor() {
+		return vendor;
+	}
+	public void setVendor(VendorContext vendor) {
+		this.vendor = vendor;
+	}
+	
 	public Boolean isPortalAccessNeeded;
 	public Boolean getIsPortalAccessNeeded() {
 		return isPortalAccessNeeded;
@@ -112,6 +121,20 @@ public class ContactsContext extends ModuleBaseWithCustomFields{
 		return false;
 	}
 
+	public Boolean isPrimaryContact;
+	public Boolean getIsPrimaryContact() {
+		return isPrimaryContact;
+	}
+	public void setIsPrimaryContact(Boolean isPrimaryContact) {
+		this.isPrimaryContact = isPrimaryContact;
+	}
+	
+	public boolean isPrimaryContact() {
+		if(isPrimaryContact != null ) {
+			return isPrimaryContact.booleanValue();
+		}
+		return false;
+	}
 	
 	
 }

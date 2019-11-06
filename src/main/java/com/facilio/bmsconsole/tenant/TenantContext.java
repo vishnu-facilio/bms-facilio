@@ -56,14 +56,6 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 		this.description = description;
 	}
 	
-	private ContactsContext contact;
-	public ContactsContext getContact() {
-		return contact;
-	}
-	public void setContact(ContactsContext contact) {
-		this.contact = contact;
-	}
-
 	private long logoId = -1;
 	public long getLogoId() {
 		return logoId;
@@ -156,15 +148,6 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 		this.siteId = siteId;
 	}
 	
-	private List<ContactsContext> tenantContacts;
-	
-    public List<ContactsContext> getTenantContacts() {
-		return tenantContacts;
-	}
-	public void setTenantContacts(List<ContactsContext> tenantContacts) {
-		this.tenantContacts = tenantContacts;
-	}
-
 	private Status status;
 	public Status getStatusEnum() {
 		return status;
@@ -196,6 +179,14 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 			}
 			return null;
 		}
+	}
+	
+	private List<ContactsContext> tenantContacts;
+	public List<ContactsContext> getTenantContacts() {
+		return tenantContacts;
+	}
+	public void setTenantContacts(List<ContactsContext> tenantContacts) {
+		this.tenantContacts = tenantContacts;
 	}
 	
 	

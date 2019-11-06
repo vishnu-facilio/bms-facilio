@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.constants.FacilioConstants;
 
@@ -23,6 +24,7 @@ public class GetVendorDetailsCommand extends FacilioCommand {
 							.getLocationMap(Collections.singleton(vendor.getAddress().getId()));
 					vendor.setAddress(spaceMap.get(vendor.getAddress().getId()));
 				}
+				vendor.setVendorContacts(ContactsAPI.getVendorContacts(vendor.getId()));
 			}
 			context.put(FacilioConstants.ContextNames.VENDOR, vendor);
 		}

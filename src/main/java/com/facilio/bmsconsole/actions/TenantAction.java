@@ -200,6 +200,14 @@ public class TenantAction extends FacilioAction {
 	}
 
 
+	private List<ContactsContext> tenantContacts;
+	public List<ContactsContext> getTenantContacts() {
+		return tenantContacts;
+	}
+	public void setTenantContacts(List<ContactsContext> tenantContacts) {
+		this.tenantContacts = tenantContacts;
+	}
+
 	private List<String> meterId;
 	public List<String> getMeterId() {
 		return meterId;
@@ -392,7 +400,8 @@ private Map<String, Double> readingData;
 			context.put(FacilioConstants.ContextNames.IS_TENANT_ZONE, tenantZone);
 			context.put(FacilioConstants.ContextNames.ZONE, zone);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
-	
+			context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
+			
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
 			tenant.setZone(zone);
 			
@@ -446,7 +455,7 @@ private Map<String, Double> readingData;
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.RECORD_ID, tenantId);
 			context.put(FacilioConstants.ContextNames.CONTACT, contact);
-			FacilioChain updatePrimaryContact = FacilioChainFactory.updateTenantPrimaryContactChain();
+			FacilioChain updatePrimaryContact = FacilioChainFactory.updatePrimaryContactChain();
 			updatePrimaryContact.execute(context);
 			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
 			return SUCCESS;

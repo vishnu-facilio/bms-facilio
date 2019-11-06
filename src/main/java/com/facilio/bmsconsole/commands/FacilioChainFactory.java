@@ -1916,7 +1916,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain updateTenantPrimaryContactChain() {
+	public static FacilioChain updatePrimaryContactChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UpdatePrimaryContactCommand());
 		return c;

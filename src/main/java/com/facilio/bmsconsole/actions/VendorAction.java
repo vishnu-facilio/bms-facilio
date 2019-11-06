@@ -67,6 +67,7 @@ public class VendorAction extends FacilioAction{
 		return SUCCESS;
 	}
 	
+	
 	public String updateVendor() throws Exception {
 		FacilioContext context = new FacilioContext();
 		LocationContext location = vendor.getAddress();

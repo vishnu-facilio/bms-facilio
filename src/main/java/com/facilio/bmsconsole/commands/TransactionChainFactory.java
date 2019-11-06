@@ -1572,6 +1572,8 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVendors());
 			c.addCommand(new GenericAddModuleDataCommand());
+			//c.addCommand(new AddVendorContactsCommand());
+			
 			return c;
 		}
 		

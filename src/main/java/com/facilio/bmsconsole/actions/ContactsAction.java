@@ -10,8 +10,10 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class ContactsAction extends FacilioAction{
@@ -172,5 +174,26 @@ private static final long serialVersionUID = 1L;
 		
 		return SUCCESS;
 	}
+	
+	public String updatePortalAccess() throws Exception {
+		TenantsAPI.updatePortalUserAccess(contact);
+		return SUCCESS;
+	}
+	
+	public String markAsPrimaryContact() {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.CONTACT, contact);
+			FacilioChain updatePrimaryContact = FacilioChainFactory.updatePrimaryContactChain();
+			updatePrimaryContact.execute(context);
+			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+			return SUCCESS;
+		}
+		catch (Exception e) {
+			setResult("error",e.getMessage());
+			return ERROR;
+		}
+	}
+
 	
 }

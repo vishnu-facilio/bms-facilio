@@ -16,8 +16,6 @@ import org.json.simple.JSONObject;
 
 import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.impl.UserBeanImpl;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
@@ -45,8 +43,6 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -57,6 +53,8 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -265,8 +263,9 @@ public class TenantsAPI {
 		
 		List<TenantContext> records = builder.get();
 		TenantsAPI.loadTenantLookups(records);
-	    if (records != null && !records.isEmpty()) {
-			return records.get(0);
+		if (records != null && !records.isEmpty()) {
+			records.get(0).setTenantContacts(TenantsAPI.getTenantContacts(records.get(0).getId()));
+		    return records.get(0);
 		}
 		return null;
 	}
@@ -574,28 +573,7 @@ public class TenantsAPI {
 		
 	}
 
-	public static int updateTenantPrimaryContact(ContactsContext contact, Long tenantId) throws Exception{
-         
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
-		Map<String, FacilioField> tenantFieldMap = FieldFactory.getAsMap(fields);
-		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-		FacilioField contactField = tenantFieldMap.get("contact");
-		updatedfields.add(contactField);
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-											.table(module.getTableName())
-											.fields(fields)
-//											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-											.andCondition(CriteriaAPI.getIdCondition(tenantId, module));
-									
-		Map<String, Object> value = new HashMap<>();
-		value.put("contact", contact.getId());
-		int count = updateBuilder.update(value);
-		return count;
-			
-	}
-
+	
 	public static int updateTenantStatus(Long tenantId,int status) throws Exception{
         
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -758,7 +736,7 @@ public class TenantsAPI {
 		
 	    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
-	    updateContactDetails(tenant.getContact(),tenant.getId());
+	    //updateContactDetails(tenant.getContact(),tenant.getId());
 		UpdateRecordBuilder<TenantContext> updateBuilder = new UpdateRecordBuilder<TenantContext>()
 														   .module(module)
 														   .fields(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
@@ -1064,18 +1042,17 @@ public class TenantsAPI {
 					tenant.setUtilityAssets(utilMap.get(tenant.getId()));
 				}
 			}
-			Map<Long, List<ContactsContext>> userMap = getTenantUserDetails(ids);
-			if (userMap != null && !userMap.isEmpty()) {
-				for (TenantContext tenant : tenants) {
-					tenant.setTenantContacts(userMap.get(tenant.getId()));
-				}
-			}
 		}
 		catch(Exception e)
 		{
 			LOGGER.error("Exception occurred ", e);
 			throw e;
 		}
+	}
+	
+	public static List<ContactsContext> getTenantContacts(long id) throws Exception {
+		List<Map<String,Object>> contactList = ContactsAPI.getTenantContacts(Collections.singletonList(id));
+		return FieldUtil.getAsBeanListFromMapList(contactList, ContactsContext.class);
 	}
 	
 	public static String getLogoUrl(Long logoId) throws Exception {

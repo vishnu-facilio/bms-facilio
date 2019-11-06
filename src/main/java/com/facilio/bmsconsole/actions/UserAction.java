@@ -137,9 +137,9 @@ public class UserAction extends FacilioAction {
 	public String deletePortalUser() throws Exception {
 		System.out.println("### Delete portal user :"+user.getEmail());
 		try	{
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
-			  checkforTenantPrimaryContact(user.getEmail());
-			}
+//			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
+//			  checkforTenantPrimaryContact(user.getEmail());
+//			}
 			
 			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getEmail(), AccountUtil.getCurrentOrg().getDomain());
 			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOuid())) {

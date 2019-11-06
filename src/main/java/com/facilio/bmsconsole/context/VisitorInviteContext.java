@@ -3,8 +3,6 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.context.ItemContext.CostType;
-import com.facilio.bmsconsole.context.RentalLeaseContractContext.RentalLeaseContractType;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -123,7 +121,7 @@ public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 	}
 
 	public static enum InviteSource implements FacilioEnum {
-		WORKORDER, PURCHASE_ORDER, MANUAL;
+		WORKORDER, PURCHASE_ORDER, TENANT, MANUAL;
 
 		@Override
 		public int getIndex() {
@@ -153,8 +151,6 @@ public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 	public void setSourceId(long sourceId) {
 		this.sourceId = sourceId;
 	}
-	
-	 
 	
 	private VisitorTypeContext visitorType;
 

@@ -4545,6 +4545,10 @@
 			class="com.facilio.bmsconsole.actions.ContactsAction" method="deleteContacts" />
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactDetails" />
+		<action name="updatePortalAccess"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="updatePortalAccess" />
+		<action name="updatePrimaryContact"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="markAsPrimaryContact" />
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactsList" />
 	</package>
