@@ -3778,6 +3778,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addContactsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForContacts());
+		c.addCommand(new AddContactsAsRequesterCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		return c;
 	}

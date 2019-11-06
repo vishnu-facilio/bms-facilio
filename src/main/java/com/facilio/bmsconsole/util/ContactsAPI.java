@@ -95,6 +95,10 @@ public class ContactsAPI {
 		user.setEmail(contact.getEmail());
 		user.setPhone(contact.getPhone());
 		user.setName(contact.getName());
+		user.setUserVerified(false);
+		user.setInviteAcceptStatus(false);
+		user.setInvitedTime(System.currentTimeMillis());
+
 		long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false);
 		contact.setId(userId);
 	}

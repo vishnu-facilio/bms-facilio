@@ -4576,8 +4576,8 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.WatchListAction" method="deleteWatchLists" />
 		<action name="details"
-			class="com.facilio.bmsconsole.actions.WatchListAction" method="getWatchListRecordList" />
-		<action name="*"
 			class="com.facilio.bmsconsole.actions.WatchListAction" method="getWatchListRecordDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WatchListAction" method="getWatchListRecordList" />
 	</package>
 </struts>

@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -176,7 +177,7 @@ private static final long serialVersionUID = 1L;
 	}
 	
 	public String updatePortalAccess() throws Exception {
-		TenantsAPI.updatePortalUserAccess(contact);
+		ContactsAPI.updatePortalUserAccess(contact);
 		return SUCCESS;
 	}
 	
