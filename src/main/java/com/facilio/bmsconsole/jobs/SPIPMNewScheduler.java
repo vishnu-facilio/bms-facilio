@@ -434,6 +434,7 @@ public class SPIPMNewScheduler extends FacilioJob {
 				.beanClass(WorkOrderContext.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), 1+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), 1572546600000L+"", NumberOperators.GREATER_THAN))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), pmId+"", NumberOperators.EQUALS))
 				.orderBy("WorkOrders.CREATED_TIME ASC")
 				.limit(1);
 
