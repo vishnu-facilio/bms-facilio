@@ -11,10 +11,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -23,7 +22,7 @@ import com.facilio.fs.FileInfo.FileFormat;
 public class PythonAIAction extends FacilioAction {
 	
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = LogManager.getLogger(PythonAIAction.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(PythonAIAction.class.getName());
 	
 	private JSONObject trendLinePropObj = new JSONObject();
 	private String[] trendLineProp = new String[] {"rmse", "rSquare", "coef"};
@@ -73,8 +72,12 @@ public class PythonAIAction extends FacilioAction {
 	
 			
 	public String getTrendLine() throws Exception {
+		LOGGER.severe("trendLine AI called and trendlineObj..........."+trendLineObj);
+		LOGGER.severe("trendLine AI called and xaxis..........."+xaxis);
+		LOGGER.severe("trendLine AI called and yaxis..........."+yaxis);
+		LOGGER.severe("trendLine AI called and reportData..........."+reportData);
+		LOGGER.severe("trendLine AI called and orgId..........."+orgId);
 		if(trendLineObj != null && !trendLineObj.isEmpty() && (boolean) trendLineObj.get("enable")){
-			
 			String degree = "1";
 			if(trendLineObj.get("type").equals("2")){
 				degree = String.valueOf(trendLineObj.get("degree"));

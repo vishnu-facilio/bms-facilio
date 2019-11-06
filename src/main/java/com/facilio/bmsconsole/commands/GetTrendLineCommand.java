@@ -38,6 +38,7 @@ public class GetTrendLineCommand extends FacilioCommand {
 			JSONObject trendLineObj = new JSONObject();
 			
 			String trendLine = (String) context.get("trendLine");
+			LOGGER.severe("trendLine"+trendLine);
 			if(trendLine != null) {
 				trendLineObj = (JSONObject)new JSONParser().parse(trendLine);
 			}else{
@@ -48,11 +49,13 @@ public class GetTrendLineCommand extends FacilioCommand {
 				}
 			}
 			
+			LOGGER.severe("trendLineObj"+trendLineObj);
 			if(trendLineObj != null && !trendLineObj.isEmpty() && trendLineObj.containsKey("enable") && (boolean) trendLineObj.get("enable")){
 				
 				List<ReportDataPointContext> trendLineDataPoints = getDataPoints(report.getDataPoints(), ((JSONArray)trendLineObj.get("selectedPoints")));
 				
 				JSONObject reportData = (JSONObject)context.get(FacilioConstants.ContextNames.REPORT_DATA);
+				LOGGER.severe("reportData"+reportData.get("data"));
 				if(!((ArrayList<Object>)reportData.get("data")).isEmpty()){
 					JSONObject body = new JSONObject();
 					body.put("trendLineObj", trendLineObj);
@@ -60,6 +63,7 @@ public class GetTrendLineCommand extends FacilioCommand {
 					body.put("xaxis", xAxis);
 					body.put("yaxis", dataPointAlias);
 					body.put("orgId", orgId.toString());
+					LOGGER.severe("trendLine AI before calling..........."+trendLineAIUrl);
 					String response = AwsUtil.doHttpPost(trendLineAIUrl, headers, null, body.toJSONString());
 					
 					if(!response.isEmpty()){
