@@ -156,14 +156,14 @@ public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 	
 	 
 	
-//	private VisitorType visitorType;
-//
-//	public VisitorType getVisitorType() {
-//		return visitorType;
-//	}
-//
-//	public void setVisitorType(VisitorType visitorType) {
-//		this.visitorType = visitorType;
-//	}
+	private VisitorTypeContext visitorType;
+
+	public VisitorTypeContext getVisitorType() {
+		return visitorType;
+	}
+
+	public void setVisitorType(VisitorTypeContext visitorType) {
+		this.visitorType = visitorType;
+	}
 	
 }
