@@ -3049,7 +3049,7 @@ public class PreventiveMaintenanceAPI {
 //	}
 
 	public static void populateUniqueId() throws Exception {
-		long[] orgs = new long[]{176L, 169L, 151L};
+		long[] orgs = new long[]{151L};
 		for (long org: orgs) {
 			AccountUtil.setCurrentAccount(org);
 			if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
@@ -3068,6 +3068,7 @@ public class PreventiveMaintenanceAPI {
 			Set<Long> unusualSectionName = new HashSet<>();
 			Set<Long> taskMapIsEmpty = new HashSet<>();
 			Set<Long> uniqueIdIsMissing = new HashSet<>();
+			Set<Long> additionInfoMissing = new HashSet<>();
 			List<Long> skipList = Arrays.asList();
 			Set<Long> skip = new HashSet<>(skipList);
 			for (PreventiveMaintenance pm: allPMs) {
@@ -3084,6 +3085,17 @@ public class PreventiveMaintenanceAPI {
 					pmLookup.put(sectionTemplate.getName(), taskMap);
 					List<TaskTemplate> taskTemplates = sectionTemplate.getTaskTemplates();
 					for(TaskTemplate taskTemplate: taskTemplates) {
+						if (taskTemplate.getAdditionInfo() == null || taskTemplate.getAdditionInfo().isEmpty()) {
+							LOGGER.log(Level.WARN, "additioninfo missing for pm " + pm.getId());
+							additionInfoMissing.add(pm.getId());
+							continue;
+						}
+
+						if (taskTemplate.getAdditionInfo().get("uniqueId") == null) {
+							LOGGER.log(Level.WARN, "uniqueId missing for pm " + pm.getId());
+							continue;
+						}
+
 						taskMap.put(taskTemplate.getName(), (Long) taskTemplate.getAdditionInfo().get("uniqueId"));
 					}
 				}
@@ -3187,6 +3199,8 @@ public class PreventiveMaintenanceAPI {
 			LOGGER.log(Level.WARN, "unusualSectionName " + Arrays.toString(unusualSectionName.toArray()));
 			LOGGER.log(Level.WARN, "taskMapIsEmpty " + Arrays.toString(taskMapIsEmpty.toArray()));
 			LOGGER.log(Level.WARN, "uniqueIdIsMissing " + Arrays.toString(uniqueIdIsMissing.toArray()));
+			LOGGER.log(Level.WARN, "additionInfoMissing " + Arrays.toString(additionInfoMissing.toArray()));
+			LOGGER.log(Level.WARN, "uniqueIdMissing " + Arrays.toString(uniqueIdIsMissing.toArray()));
 		}
 	}
 
