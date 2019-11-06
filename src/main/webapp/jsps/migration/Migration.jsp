@@ -15,5 +15,5 @@
 <%@page import="com.facilio.accounts.util.AccountUtil"%>
 <%@page import="com.facilio.bmsconsole.actions.DashboardAction,com.facilio.constants.*"%>
 <%
-	PreventiveMaintenanceAPI.populateUniqueId();
+	PreventiveMaintenanceAPI.generateMissedPMs(92L);
 %>
