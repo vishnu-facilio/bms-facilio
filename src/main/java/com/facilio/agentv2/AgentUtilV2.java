@@ -178,7 +178,11 @@ public class AgentUtilV2
                 toUpdate.put(AgentConstants.LAST_MODIFIED_TIME, System.currentTimeMillis());
                 toUpdate.put(AgentConstants.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
                 context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,toUpdate);
-                return updateAgentChain.execute();
+                boolean isDone = updateAgentChain.execute();
+                if(isDone){
+                    agentMap.replace(agent.getName(),agent);
+                }
+                return isDone;
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
@@ -187,10 +191,10 @@ public class AgentUtilV2
     }
 
     public FacilioAgent getFacilioAgent(String agentName) {
-        LOGGER.info("getting facilioAgent from new agentutil "+stackStrace());
+        LOGGER.info("getting facilioAgent from agentMap "+stackStrace());
         FacilioAgent agent = agentMap.get(agentName);
         if(agent == null){
-            LOGGER.info("agent is null when getting  new agent " + stackStrace());
+            LOGGER.info("agent is null when getting  from AgentMap" + stackStrace());
             agent = AgentApiV2.getAgent(agentName);
             if( agent != null ){
                 agentMap.put(agentName,agent);
@@ -221,6 +225,7 @@ public class AgentUtilV2
     }
 
     public static com.facilio.agentv2.FacilioAgent makeNewFacilioAgent(String agentName) {
+        LOGGER.info(" making new FacilioAgent for name "+agentName);
         com.facilio.agentv2.FacilioAgent agent = new com.facilio.agentv2.FacilioAgent();
         agent.setName(agentName);
         agent.setConnectionStatus(Boolean.TRUE);

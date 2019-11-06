@@ -51,15 +51,15 @@ public class ProcessorV2
 
    public void processNewAgentData(JSONObject payload){
         try {
-            LOGGER.info(" processing new agent in new processor method " + payload);
+            LOGGER.info(" processing in processorV2 " + payload);
             String agentName = orgDomainName.trim();
             if (payload.containsKey(PublishType.agent.getValue())) {
                 agentName = payload.remove(PublishType.agent.getValue()).toString().trim();
             }
             LOGGER.info(" agent name is " + agentName);
             FacilioAgent agent = au.getFacilioAgent(agentName);
-            LOGGER.info(" agent obtained is "+agent);
             if (agent == null) {
+                LOGGER.info(" agent is null ");
                 agent = AgentUtilV2.makeNewFacilioAgent(agentName);
                 long agentId = au.addAgent(agent);
                 if (agentId < 1L) {
