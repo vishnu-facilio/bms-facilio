@@ -6925,5 +6925,29 @@ public class FieldFactory {
 
 		return fields;
 	}
+
+	public static List<FacilioField> getServiceCatalogFields() {
+		FacilioModule module = ModuleFactory.getServiceCatalogModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+		fields.add(getField("photoId", "PHOTO_ID", module, FieldType.FILE));
+		fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
+		fields.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+
+	public static List<FacilioField> getServiceCatalogGroupFields() {
+		FacilioModule module = ModuleFactory.getServiceCatalogGroupModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+
+		return fields;
+	}
 	
 }

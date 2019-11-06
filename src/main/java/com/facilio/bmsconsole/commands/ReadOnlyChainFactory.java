@@ -1606,4 +1606,16 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetActionListForWorkflowRulesCommand());
 		return chain;
 	}
+
+	public static FacilioChain getAllServiceCatalogGroupChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllServiceCatalogGroupCommand());
+		return chain;
+	}
+
+	public static FacilioChain getServiceCatalogListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllServiceCatalogCommand());
+		return chain;
+	}
 }

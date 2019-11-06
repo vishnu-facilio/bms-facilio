@@ -32,7 +32,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -641,7 +640,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return null;
 	}
 
-	public static void addOrUpdateFormDetails(FormRuleInterface rule) throws Exception {
+	public static void addOrUpdateFormDetails(FormInterface rule) throws Exception {
 		FacilioForm form = rule.getForm();
 
 		if (form == null || CollectionUtils.isEmpty(form.getSections())) {
@@ -685,7 +684,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 	}
 	
-	public static void deleteFormRuleContext(FormRuleInterface rule) throws Exception {
+	public static void deleteFormRuleContext(FormInterface rule) throws Exception {
 		if (rule.getFormId() > 0) {
 			FormsAPI.deleteForms(Collections.singletonList(rule.getFormId()));
 		}

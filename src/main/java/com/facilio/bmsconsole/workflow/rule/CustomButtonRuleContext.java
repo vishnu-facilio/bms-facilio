@@ -7,7 +7,7 @@ import org.apache.commons.chain.Context;
 
 import java.util.Map;
 
-public class CustomButtonRuleContext extends ApproverWorkflowRuleContext implements FormRuleInterface {
+public class CustomButtonRuleContext extends ApproverWorkflowRuleContext implements FormInterface {
 
     private static final long serialVersionUID = 1L;
 

@@ -100,6 +100,10 @@ public class FacilioConstants {
         public static final String TASK_READINGS = "taskReadings";
 		public static final String IS_USER_TRIGGER = "userTrigger";
         public static final String DO_NOT_EXECUTE = "donNotExecute";
+		public static final String SERVICE_CATALOG = "serviceCatalog";
+		public static final String SERVICE_CATALOGS = "serviceCatalogs";
+		public static final String SERVICE_CATALOG_GROUP = "serviceCatalogGroup";
+		public static final String SERVICE_CATALOG_GROUPS = "serviceCatalogGroups";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";

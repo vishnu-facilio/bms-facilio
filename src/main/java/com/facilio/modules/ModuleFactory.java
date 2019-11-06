@@ -2801,4 +2801,20 @@ public class ModuleFactory {
 		module.setName("connectionApi");
 		return module;
     }
+
+    public static FacilioModule getServiceCatalogModule() {
+		FacilioModule module = new FacilioModule();
+		module.setTableName("Service_Catalog");
+		module.setDisplayName("Service Catalog");
+		module.setName("serviceCatalog");
+		return module;
+	}
+
+	public static FacilioModule getServiceCatalogGroupModule() {
+		FacilioModule module = new FacilioModule();
+		module.setTableName("Service_Catalog_Group");
+		module.setDisplayName("Service Catalog Group");
+		module.setName("serviceCatalogGroup");
+		return module;
+	}
 }

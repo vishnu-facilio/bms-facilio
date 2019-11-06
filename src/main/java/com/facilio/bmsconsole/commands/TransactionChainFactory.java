@@ -3750,6 +3750,18 @@ public class TransactionChainFactory {
 		chain.addCommand(new ProcessTimeSeriesData());
 		return chain;
 	}
+
+	public static FacilioChain getAddOrUpdateServiceCatalogChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateServiceCatalogCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddOrUpdateServiceCatalogGroupChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateServiceCatalogGroupCommand());
+		return chain;
+	}
 }
 
 

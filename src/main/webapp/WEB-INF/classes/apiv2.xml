@@ -1023,6 +1023,20 @@
 		</action>
 	</package>
 
+	<package name="serviceCatalog" namespace="/api/v2/servicecatalog" extends="v2Api">
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+				method="addOrUpdateServiceCatalog" />
+		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+				method="getServiceCatalogList" />
+	</package>
+
+	<package name="serviceCatalogGroup" namespace="/api/v2/servicecataloggroup" extends="v2Api">
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+				method="addOrUpdateServiceCatalogGroup" />
+		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+				method="getAllServiceCatalogGroup" />
+	</package>
+
 	<package name="alarmEventListApiv2"
 		namespace="/api/v2/events/alarm" extends="v2Api">
 		<action name="*" class="com.facilio.events.actions.EventAction"

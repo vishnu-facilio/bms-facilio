@@ -779,7 +779,7 @@ public class WorkflowRuleAPI {
 						case STATE_RULE:
 						case CUSTOM_BUTTON:
 							ApprovalRulesAPI.deleteApproverRuleChildren((ApproverWorkflowRuleContext) rule);
-							StateFlowRulesAPI.deleteFormRuleContext((FormRuleInterface) rule);
+							StateFlowRulesAPI.deleteFormRuleContext((FormInterface) rule);
 							break;
 						default:
 							break;

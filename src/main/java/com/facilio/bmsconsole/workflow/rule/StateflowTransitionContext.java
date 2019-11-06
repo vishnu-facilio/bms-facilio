@@ -12,7 +12,7 @@ import org.apache.commons.chain.Context;
 
 import java.util.Map;
 
-public class StateflowTransitionContext extends ApproverWorkflowRuleContext implements FormRuleInterface {
+public class StateflowTransitionContext extends ApproverWorkflowRuleContext implements FormInterface {
 
 	private static final long serialVersionUID = 1L;
 	
