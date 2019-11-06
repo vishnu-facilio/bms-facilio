@@ -53,21 +53,23 @@ public class GetTrendLineCommand extends FacilioCommand {
 				List<ReportDataPointContext> trendLineDataPoints = getDataPoints(report.getDataPoints(), ((JSONArray)trendLineObj.get("selectedPoints")));
 				
 				JSONObject reportData = (JSONObject)context.get(FacilioConstants.ContextNames.REPORT_DATA);
-				JSONObject body = new JSONObject();
-				body.put("trendLineObj", trendLineObj);
-				body.put("reportData", reportData);
-				body.put("xaxis", xAxis);
-				body.put("yaxis", dataPointAlias);
-				body.put("orgId", orgId.toString());
-				String response = AwsUtil.doHttpPost(trendLineAIUrl, headers, null, body.toJSONString());
-				
-				if(!response.isEmpty()){
-					JSONObject responseObj = (JSONObject) new JSONParser().parse(response);
-					if(responseObj != null && !responseObj.isEmpty()){
-						JSONObject resultObj = (JSONObject) responseObj.get("result");
-						if(resultObj != null && !resultObj.isEmpty()){
-							context.put(FacilioConstants.ContextNames.REPORT_DATA, (JSONObject) resultObj.get("reportData"));
-							report.setTrendLineDataPoints(trendLineDataPoints);
+				if(!((ArrayList<Object>)reportData.get("data")).isEmpty()){
+					JSONObject body = new JSONObject();
+					body.put("trendLineObj", trendLineObj);
+					body.put("reportData", reportData);
+					body.put("xaxis", xAxis);
+					body.put("yaxis", dataPointAlias);
+					body.put("orgId", orgId.toString());
+					String response = AwsUtil.doHttpPost(trendLineAIUrl, headers, null, body.toJSONString());
+					
+					if(!response.isEmpty()){
+						JSONObject responseObj = (JSONObject) new JSONParser().parse(response);
+						if(responseObj != null && !responseObj.isEmpty()){
+							JSONObject resultObj = (JSONObject) responseObj.get("result");
+							if(resultObj != null && !resultObj.isEmpty()){
+								context.put(FacilioConstants.ContextNames.REPORT_DATA, (JSONObject) resultObj.get("reportData"));
+								report.setTrendLineDataPoints(trendLineDataPoints);
+							}
 						}
 					}
 				}
@@ -99,6 +101,7 @@ public class GetTrendLineCommand extends FacilioCommand {
 				trendLinePoint.setCriteria(dataPoint.getCriteria());
 				trendLinePoint.setGroupByFields(dataPoint.getGroupByFields());
 				trendLinePoint.setDateField(dataPoint.getDateField());
+				trendLinePoint.setMetaData(dataPoint.getMetaData());
 				trendLinePoints.add(trendLinePoint);
 			}
 		}
