@@ -460,7 +460,7 @@ public class SPIPMNewScheduler extends FacilioJob {
 		for (PMTriggerContext trigger: triggers) {
 			if (trigger.getSchedule() != null) {
 				BulkWorkOrderContext bulkWoContextsFromTrigger = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, maxTime, endTime, workorderTemplate);
-				bulkWorkOrderContexts.add(bulkWoContextsFromTrigger);
+				//bulkWorkOrderContexts.add(bulkWoContextsFromTrigger);
 			}
 		}
 		return bulkWorkOrderContexts;
