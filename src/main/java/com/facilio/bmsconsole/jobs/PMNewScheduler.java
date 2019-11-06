@@ -218,7 +218,7 @@ public class PMNewScheduler extends FacilioJob {
 	}
 
 	private long getEndTime(PreventiveMaintenance pm) {
-		return pm.getWoGeneratedUpto() + (24 * 60 * 60 * 8);
+		return pm.getWoGeneratedUpto() + (24 * 60 * 60);
 	}
 
 	private List<PreventiveMaintenance> groupPmAndTriggers(Map<Long, PreventiveMaintenance> pms, List<PMTriggerContext> triggers) throws Exception {
