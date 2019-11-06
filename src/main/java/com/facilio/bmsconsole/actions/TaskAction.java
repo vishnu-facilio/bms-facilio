@@ -255,6 +255,10 @@ public class TaskAction extends FacilioAction {
 //					}
 //				}
 			}
+
+			if(context.get(FacilioConstants.ContextNames.REQUIRES_REMARKS) != null && (boolean) context.get(FacilioConstants.ContextNames.REQUIRES_REMARKS)) {
+				setResult(FacilioConstants.ContextNames.REQUIRES_REMARKS, true);
+			}
 			
 		} catch (ReadingValidationException ex) {
 			Map<String, String> msgMap = new HashMap<>();
@@ -373,6 +377,9 @@ public class TaskAction extends FacilioAction {
 //					}
 //				}
 			}
+			if(context.get(FacilioConstants.ContextNames.REQUIRES_REMARKS) != null && (boolean) context.get(FacilioConstants.ContextNames.REQUIRES_REMARKS)) {
+				setResult(FacilioConstants.ContextNames.REQUIRES_REMARKS, true);
+			}
 			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 			setModifiedTime(defaultClosedTaskObj.getModifiedTime());
 		}
@@ -424,7 +431,7 @@ public class TaskAction extends FacilioAction {
 				if(context.get(FacilioConstants.ContextNames.TASK_ERRORS) != null) {
 					List<TaskErrorContext> errors = (List<TaskErrorContext>) context.get(FacilioConstants.ContextNames.TASK_ERRORS);
 					setResult(FacilioConstants.ContextNames.TASK_ERRORS, errors);
-					
+
 //					if(context.get(FacilioConstants.ContextNames.HAS_TASK_ERRORS) != null) {
 //						Boolean hasTaskErrors = (Boolean) context.get(FacilioConstants.ContextNames.HAS_TASK_ERRORS);
 //						if(hasTaskErrors != null && hasTaskErrors) {
@@ -433,6 +440,10 @@ public class TaskAction extends FacilioAction {
 //						}
 //					}
 				}
+				if(context.get(FacilioConstants.ContextNames.REQUIRES_REMARKS) != null && (boolean) context.get(FacilioConstants.ContextNames.REQUIRES_REMARKS)) {
+					setResult(FacilioConstants.ContextNames.REQUIRES_REMARKS, true);
+				}
+
 			} catch (ReadingValidationException ex) {
 				Map<String, String> msgMap = new HashMap<>();
 				msgMap.put("message", ex.getMessage());

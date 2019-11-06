@@ -1,10 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
@@ -23,6 +18,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.time.DateTimeUtil;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -53,8 +52,16 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 										throw new IllegalArgumentException("Atleast one file has to be attached since attachment is required to close the task");
 									}
 								}
+								if (checkIfRemarksRequired(completeRecord, task)) {
+									throw new IllegalArgumentException("Remarks has to be entered for the selected input to close the task");
+								}
 							}
 						}
+
+						if (checkIfRemarksRequired(completeRecord, task)) {
+							context.put(FacilioConstants.ContextNames.REQUIRES_REMARKS, true);
+						}
+
 						if((task.getInputValue() != null && !task.getInputValue().isEmpty()) || (task.getInputValues() != null && !task.getInputValues().isEmpty())) {
 							if(task.getInputTime() == -1) {
 								task.setInputTime(System.currentTimeMillis());
@@ -155,6 +162,25 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 			return workorders.get(0);
 		}
 		return null;
+	}
+
+	private boolean checkIfRemarksRequired (TaskContext dbRecord, TaskContext task) throws Exception {
+
+		if (dbRecord.isRemarksRequired() && (task.getRemarks() == null || (task.getRemarks() != null && task.getRemarks().isEmpty()))) {
+			if (dbRecord.getRemarks() != null && !dbRecord.getRemarks().isEmpty()) {
+				return false;
+			}
+			else if (dbRecord.getRemarkOptionValues() == null) {
+				return true;
+			} else if (dbRecord.getRemarkOptionValues().size() == 0) {
+				return true;
+			} else if (dbRecord.getRemarkOptionValues().contains(task.getInputValue())) {
+				return true;
+			} else if (task.getStatusNewEnum() == TaskStatus.CLOSED && dbRecord.getRemarkOptionValues().contains(dbRecord.getInputValue())) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 }

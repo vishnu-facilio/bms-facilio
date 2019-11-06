@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import java.text.ParseException;
-import java.util.List;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -17,6 +11,14 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
 	/**
@@ -73,7 +75,7 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	public void setSpace(SpaceContext space) {
 		this.space = space;
 	}
-	
+
 	public enum TaskStatus {
 		OPEN,
 		CLOSED
@@ -484,4 +486,51 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	public void setSyncTime(long syncTime) {
 		this.syncTime = syncTime;
 	}
+
+	private Boolean remarksRequired;
+
+	public Boolean getRemarksRequired() {
+		return remarksRequired;
+	}
+	public void setRemarksRequired(Boolean remarksRequired) {
+		this.remarksRequired = remarksRequired;
+	}
+
+	public boolean isRemarksRequired() {
+		if(remarksRequired != null) {
+			return remarksRequired.booleanValue();
+		}
+		return false;
+	}
+
+	private List<String> remarkOptionValues;
+
+	public List<String> getRemarkOptionValues() throws Exception {
+
+		if (remarkOptionValuesString != null && remarkOptionValuesString.length() > 0) {
+			List<String> valueList = new ArrayList<String>(Arrays.asList(remarkOptionValuesString.split(",")));
+			return valueList;
+		}
+		return remarkOptionValues;
+	}
+	public void setRemarkOptionValues(List<String> remarkOptionValues) {
+		this.remarkOptionValues = remarkOptionValues;
+	}
+
+	private String remarkOptionValuesString;
+
+	public String getRemarkOptionValuesString() {
+		if (remarkOptionValues != null && remarkOptionValues.size() != 0) {
+			String valueString = StringUtils.join(remarkOptionValues, ",");
+			return valueString;
+		}
+		return remarkOptionValuesString;
+	}
+
+	public void setRemarkOptionValuesString(String remarkOptionValuesString) {
+		this.remarkOptionValuesString = remarkOptionValuesString;
+	}
+
+
+
 }
