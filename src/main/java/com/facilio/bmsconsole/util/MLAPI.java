@@ -10,12 +10,19 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
+import com.facilio.bmsconsole.context.MLAssetVariableContext;
 import com.facilio.bmsconsole.context.MLContext;
+import com.facilio.bmsconsole.context.MLModelVariableContext;
+import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -25,8 +32,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.time.DateRange;
 
 public class MLAPI {
@@ -129,4 +140,90 @@ public class MLAPI {
 		return props;
 		
 	}
+	
+	public static long addMLModel(String modelPath,long logReadingModuleID,long readingModuleID) throws Exception
+	{
+		MLContext mlContext = new MLContext();
+		mlContext.setModelPath(modelPath);
+		if(logReadingModuleID!=-1)
+		{
+			mlContext.setPredictionLogModuleID(logReadingModuleID);
+		}
+		if(readingModuleID!=-1)
+		{
+			mlContext.setPredictionModuleID(readingModuleID);
+		}
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                									.table(ModuleFactory.getMLModule().getTableName())
+                									.fields(FieldFactory.getMLFields());
+		return insertBuilder.insert(FieldUtil.getAsProperties(mlContext));
+	}
+	
+	public static void addReading(String parentModule,long parentCategoryID, String readingName,List<FacilioField> fields,String tableName) throws Exception 
+	{
+         FacilioContext context = new FacilioContext();
+         context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModule);
+         context.put(FacilioConstants.ContextNames.READING_NAME,readingName);
+         context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+         context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
+         context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, parentCategoryID);
+         context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, tableName);
+         context.put(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT, true);
+         
+         FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
+         addReadingChain.execute(context);
+	}
+	
+	public static void addMLModelVariables(long mlId,String Key,String value) throws Exception
+	{
+		MLModelVariableContext context = new MLModelVariableContext();
+		context.setMlID(mlId);
+		context.setVariableKey(Key);
+		context.setVariableValue(value);
+		
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+												.table(ModuleFactory.getMLModelVariablesModule().getTableName())
+												.fields(FieldFactory.getMLModelVariablesFields());
+
+		builder.insert(FieldUtil.getAsProperties(context));
+	}
+	
+	public static void addMLVariables(long mlID,long moduleid,long fieldid,long parentFieldid,long parentid,long maxSamplingPeriod,long futureSamplingPeriod,boolean isSource) throws Exception
+	{
+		MLVariableContext variableContext = new MLVariableContext();
+		variableContext.setMlID(mlID);
+		variableContext.setModuleID(moduleid);
+		variableContext.setFieldID(fieldid);
+		variableContext.setParentFieldID(parentFieldid);
+		variableContext.setParentID(parentid);
+		variableContext.setMaxSamplingPeriod(maxSamplingPeriod);
+		variableContext.setFutureSamplingPeriod(futureSamplingPeriod);
+		variableContext.setIsSource(isSource);
+		
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+											.table(ModuleFactory.getMLVariablesModule().getTableName())
+											.fields(FieldFactory.getMLVariablesFields());
+
+		builder.insert(FieldUtil.getAsProperties(variableContext));
+	}
+	
+	public static void addMLAssetVariables(long mlId,long parentid,String key,String value) throws Exception
+	{
+		MLAssetVariableContext context = new MLAssetVariableContext();
+		context.setMlId(mlId);
+		context.setAssetID(parentid);
+		context.setVariableKey(key);
+		context.setVariableValue(value);
+		
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+												.table(ModuleFactory.getMLAssetVariablesModule().getTableName())
+												.fields(FieldFactory.getMLAssetVariablesFields());
+		builder.insert(FieldUtil.getAsProperties(context));
+	}
+	
+	public static void addJobs(long mlID,String jobName,ScheduleInfo info,String executorName) throws Exception
+	{
+		FacilioTimer.scheduleCalendarJob(mlID, jobName, System.currentTimeMillis(), info, executorName);
+	}
+	
 }

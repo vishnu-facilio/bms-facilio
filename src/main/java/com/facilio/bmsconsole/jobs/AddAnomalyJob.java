@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.MLModelVariableContext;
 import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -51,8 +52,8 @@ public class AddAnomalyJob extends FacilioJob {
 		
 		buildGamModel(emContextList);
 		
-		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(0).getCategory().getId(),"AnomalyDetectionMLLogReadings",FieldFactory.getMLLogCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
-		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(0).getCategory().getId(),"AnomalyDetectionMLReadings",FieldFactory.getMLCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
+		MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(0).getCategory().getId(),"AnomalyDetectionMLLogReadings",FieldFactory.getMLLogCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
+		MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(0).getCategory().getId(),"AnomalyDetectionMLReadings",FieldFactory.getMLCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 		
 		long ratioCheckMLid = addRatioCheckModel(emContextList,"5674,5645,5646,5647");
 		checkGamModel(ratioCheckMLid,emContextList);
@@ -74,26 +75,26 @@ public class AddAnomalyJob extends FacilioJob {
 		
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			long mlID = addMLModel("buildGamModel",-1,-1);
+			long mlID = MLAPI.addMLModel("buildGamModel",-1,-1);
 			System.out.println("Module id are "+energyField.getModuleId());
-			addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),777600000);
-			addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),777600000);
-			addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),emContext.getSiteId(),777600000);
+			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),777600000,0,false);
+			MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),777600000,0,false);
+			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),emContext.getSiteId(),777600000,0,false);
 			
-			addMLAssetVariables(mlID,emContext.getId(),"TYPE","Energy Meter");
-			addMLAssetVariables(mlID,emContext.getSiteId(),"TYPE","Site");
+			MLAPI.addMLAssetVariables(mlID,emContext.getId(),"TYPE","Energy Meter");
+			MLAPI.addMLAssetVariables(mlID,emContext.getSiteId(),"TYPE","Site");
 			
-			addMLModelVariables(mlID,"timezone","Asia/Muscat");
-			addMLModelVariables(mlID,"dimension1","WEEKDAY");
-			addMLModelVariables(mlID,"dimension1Value","[1,2,3,4,5],[6,7]");
-			addMLModelVariables(mlID,"tableValue","1.96");
-			addMLModelVariables(mlID,"percentile","5");
-			addMLModelVariables(mlID,"adjustmentPercentage","10");
-			addMLModelVariables(mlID,"orderRange","2");
-			addMLModelVariables(mlID,"meterInterval","10");
+			MLAPI.addMLModelVariables(mlID,"timezone","Asia/Muscat");
+			MLAPI.addMLModelVariables(mlID,"dimension1","WEEKDAY");
+			MLAPI.addMLModelVariables(mlID,"dimension1Value","[1,2,3,4,5],[6,7]");
+			MLAPI.addMLModelVariables(mlID,"tableValue","1.96");
+			MLAPI.addMLModelVariables(mlID,"percentile","5");
+			MLAPI.addMLModelVariables(mlID,"adjustmentPercentage","10");
+			MLAPI.addMLModelVariables(mlID,"orderRange","2");
+			MLAPI.addMLModelVariables(mlID,"meterInterval","10");
 			ScheduleInfo info = new ScheduleInfo();
 			info.setFrequencyType(FrequencyType.DAILY);
-			addJobs(mlID,info);
+			MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
 			
 		}
 	}
@@ -116,28 +117,28 @@ public class AddAnomalyJob extends FacilioJob {
 		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
 		for(EnergyMeterContext context:emContextList)
 		{
-			long mlID = addMLModel("checkGam1",logReadingModule.getModuleId(),readingModule.getModuleId());
-			addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),3600000);
-			addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),3600000);
-			addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),3600000);
+			long mlID = MLAPI.addMLModel("checkGam1",logReadingModule.getModuleId(),readingModule.getModuleId());
+			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),3600000,0,false);
 			
-			addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
-			addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");
+			MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
+			MLAPI.addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");
 			
-			addMLModelVariables(mlID,"timezone","Asia/Muscat");
-			addMLModelVariables(mlID,"dimension1","WEEKDAY");
-			addMLModelVariables(mlID,"dimension1Value","[1,2,3,4,7],[5,6]");
-			addMLModelVariables(mlID,"tableValue","1.96");
-			addMLModelVariables(mlID,"adjustmentPercentage","10");
-			addMLModelVariables(mlID,"orderRange","2");
-			addMLModelVariables(mlID,"meterInterval","10");
+			MLAPI.addMLModelVariables(mlID,"timezone","Asia/Muscat");
+			MLAPI.addMLModelVariables(mlID,"dimension1","WEEKDAY");
+			MLAPI.addMLModelVariables(mlID,"dimension1Value","[1,2,3,4,7],[5,6]");
+			MLAPI.addMLModelVariables(mlID,"tableValue","1.96");
+			MLAPI.addMLModelVariables(mlID,"adjustmentPercentage","10");
+			MLAPI.addMLModelVariables(mlID,"orderRange","2");
+			MLAPI.addMLModelVariables(mlID,"meterInterval","10");
 			ScheduleInfo info = new ScheduleInfo();
 			info.setFrequencyType(FrequencyType.DAILY);
 			
 			mlIDList.put(mlID);
 		}
 		
-		addMLModelVariables((long) mlIDList.get(mlIDList.length()-1),"jobid",""+ratioCheckMLID);
+		MLAPI.addMLModelVariables((long) mlIDList.get(mlIDList.length()-1),"jobid",""+ratioCheckMLID);
 		updateSequenceForMLModel((long)mlIDList.get(0),mlIDList.toString());
 		ScheduleInfo info = new ScheduleInfo();
 		info.setFrequencyType(FrequencyType.DAILY);
@@ -149,8 +150,7 @@ public class AddAnomalyJob extends FacilioJob {
 			hourlyList.add(LocalTime.MIDNIGHT.plusHours(i));
 		}
 		info.setTimeObjects(hourlyList);
-		addJobs((long)mlIDList.get(0),info);
-		
+		MLAPI.addJobs((long)mlIDList.get(0),"DefaultMLJob",info,"ml");
 	}
 	
 	private void updateSequenceForMLModel(long mlID,String mlIDList) throws SQLException
@@ -166,8 +166,8 @@ public class AddAnomalyJob extends FacilioJob {
 	
 	private long addRatioCheckModel(List<EnergyMeterContext> emContextList, String treeHierachy) throws Exception
 	{
-		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(0).getCategory().getId(),"checkRatioMLLogReadings",FieldFactory.getMLLogCheckRatioFields(),ModuleFactory.getMLLogReadingModule().getTableName());
-		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(0).getCategory().getId(),"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
+		MLAPI.addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(0).getCategory().getId(),"checkRatioMLLogReadings",FieldFactory.getMLLogCheckRatioFields(),ModuleFactory.getMLLogReadingModule().getTableName());
+		MLAPI.addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(0).getCategory().getId(),"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -176,195 +176,109 @@ public class AddAnomalyJob extends FacilioJob {
 		
 		FacilioModule checkGamReadingModule = modBean.getModule("AnomalyDetectionMLLogReadings");
 		
-		long mlID = addMLModel("ratioCheck",logReadingModule.getModuleId(),readingModule.getModuleId());
+		long mlID = MLAPI.addMLModel("ratioCheck",logReadingModule.getModuleId(),readingModule.getModuleId());
 	
 		FacilioField parentField = modBean.getField("parentId", checkGamReadingModule.getName());
 		
 		FacilioField actualValueField = modBean.getField("actualValue", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField adjustedLowerBoundField = modBean.getField("adjustedLowerBound", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField adjustedUpperBoundField = modBean.getField("adjustedUpperBound", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField gamAnomalyField = modBean.getField("gamAnomaly", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,gamAnomalyField.getModuleId(),gamAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,gamAnomalyField.getModuleId(),gamAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField lowerARMAField = modBean.getField("lowerARMA", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,lowerARMAField.getModuleId(),lowerARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,lowerARMAField.getModuleId(),lowerARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		
 		FacilioField lowerBoundField = modBean.getField("lowerBound", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,lowerBoundField.getModuleId(),lowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,lowerBoundField.getModuleId(),lowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField lowerGAMField = modBean.getField("lowerGAM", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,lowerGAMField.getModuleId(),lowerGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,lowerGAMField.getModuleId(),lowerGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField predictedField = modBean.getField("predicted", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,predictedField.getModuleId(),predictedField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,predictedField.getModuleId(),predictedField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField predictedResidualFields = modBean.getField("predictedResidual", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,predictedResidualFields.getModuleId(),predictedResidualFields.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,predictedResidualFields.getModuleId(),predictedResidualFields.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField residualField = modBean.getField("residual", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,residualField.getModuleId(),residualField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,residualField.getModuleId(),residualField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField temperatureField = modBean.getField("temperature", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField lowerAnomalyField = modBean.getField("lowerAnomaly", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,lowerAnomalyField.getModuleId(),lowerAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,lowerAnomalyField.getModuleId(),lowerAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField upperARMAField = modBean.getField("upperARMA", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,upperARMAField.getModuleId(),upperARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,upperARMAField.getModuleId(),upperARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField upperAnomalyField = modBean.getField("upperAnomaly",checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,upperAnomalyField.getModuleId(),upperAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,upperAnomalyField.getModuleId(),upperAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField upperBoundField = modBean.getField("upperBound", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,upperBoundField.getModuleId(),upperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,upperBoundField.getModuleId(),upperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
 		FacilioField upperGAMField = modBean.getField("upperGAM", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList)
 		{
-			addMLVariables(mlID,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
+			MLAPI.addMLVariables(mlID,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
 		}
 		
-		addMLModelVariables(mlID,"TreeHierachy",treeHierachy);
+		MLAPI.addMLModelVariables(mlID,"TreeHierachy",treeHierachy);
 		
 		return mlID;
 	}
-	
-	private long addMLModel(String modelPath,long logReadingModuleID,long readingModuleID) throws Exception
-	{
-		MLContext mlContext = new MLContext();
-		mlContext.setModelPath(modelPath);
-		if(logReadingModuleID!=-1)
-		{
-			mlContext.setPredictionLogModuleID(logReadingModuleID);
-		}
-		if(readingModuleID!=-1)
-		{
-			mlContext.setPredictionModuleID(readingModuleID);
-		}
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-                									.table(ModuleFactory.getMLModule().getTableName())
-                									.fields(FieldFactory.getMLFields());
-		return insertBuilder.insert(FieldUtil.getAsProperties(mlContext));
-	}
-	
-	private void addJobs(long mlID,ScheduleInfo info) throws Exception
-	{
-		FacilioTimer.scheduleCalendarJob(mlID, "DefaultMLJob", System.currentTimeMillis(), info, "ml");
-	}
-	
-	private void addMLVariables(long mlID,long moduleid,long fieldid,long parentFieldid,long parentid,long maxSamplingPeriod) throws Exception
-	{
-		MLVariableContext variableContext = new MLVariableContext();
-		variableContext.setMlID(mlID);
-		variableContext.setModuleID(moduleid);
-		variableContext.setFieldID(fieldid);
-		variableContext.setParentFieldID(parentFieldid);
-		variableContext.setParentID(parentid);
-		variableContext.setMaxSamplingPeriod(maxSamplingPeriod);
-		
-		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-											.table(ModuleFactory.getMLVariablesModule().getTableName())
-											.fields(FieldFactory.getMLVariablesFields());
-
-		builder.insert(FieldUtil.getAsProperties(variableContext));
-	}
-	
-	private void addMLAssetVariables(long mlId,long parentid,String key,String value) throws Exception
-	{
-		MLAssetVariableContext context = new MLAssetVariableContext();
-		context.setMlId(mlId);
-		context.setAssetID(parentid);
-		context.setVariableKey(key);
-		context.setVariableValue(value);
-		
-		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-												.table(ModuleFactory.getMLAssetVariablesModule().getTableName())
-												.fields(FieldFactory.getMLAssetVariablesFields());
-		builder.insert(FieldUtil.getAsProperties(context));
-	}
-	
-	private void addMLModelVariables(long mlId,String Key,String value) throws Exception
-	{
-		MLModelVariableContext context = new MLModelVariableContext();
-		context.setMlID(mlId);
-		context.setVariableKey(Key);
-		context.setVariableValue(value);
-		
-		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-												.table(ModuleFactory.getMLModelVariablesModule().getTableName())
-												.fields(FieldFactory.getMLModelVariablesFields());
-
-		builder.insert(FieldUtil.getAsProperties(context));
-	}
-	
-	private void addReading(String parentModule,long parentCategoryID, String readingName,List<FacilioField> fields,String tableName) throws Exception 
-	{
-         FacilioContext context = new FacilioContext();
-         context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModule);
-         context.put(FacilioConstants.ContextNames.READING_NAME,readingName);
-         context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
-         context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
-         context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, parentCategoryID);
-         context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, tableName);
-         context.put(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT, true);
-         
-
-         FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
-         addReadingChain.execute(context);
-	}
-
-
 }

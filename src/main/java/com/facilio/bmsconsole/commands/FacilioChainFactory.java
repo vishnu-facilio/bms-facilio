@@ -1983,6 +1983,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain addLoadPredictionchain(){
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new AddLoadPredictionCommand());
+		return c;
+	}
+	
 	public static FacilioChain enableAnomalyDetectionChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new EnableAnomalyDetectionCommand());

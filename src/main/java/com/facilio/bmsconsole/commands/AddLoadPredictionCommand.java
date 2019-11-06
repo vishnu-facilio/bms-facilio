@@ -17,22 +17,22 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 
-public class AddEnergyPredictionCommand extends FacilioCommand {
+public class AddLoadPredictionCommand extends FacilioCommand {
 	
-	private static final Logger LOGGER = Logger.getLogger(AddEnergyPredictionCommand.class.getName());
-
+	private static final Logger LOGGER = Logger.getLogger(AddLoadPredictionCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context jc) throws Exception {
-		
+		// TODO Auto-generated method stub
 		try
 		{
-			LOGGER.info("Inside Execute Command");
+			LOGGER.info("Inside Load Prediction Command");
 			long energyMeterID=(long) jc.get("energyMeterID");
-			LOGGER.info("Inside Energy Meter Command"+energyMeterID);
+			LOGGER.info("Energy Meter Id"+energyMeterID);
+			
 			EnergyMeterContext emContext2 = DeviceAPI.getEnergyMeter(energyMeterID);
 			
-			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLLogReadings",FieldFactory.getMLLogPredictCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
-			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLReadings",FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
+			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"LoadPredictionMLLogReadings",FieldFactory.getMLLogLoadPredictFields(),ModuleFactory.getMLLogReadingModule().getTableName());
+			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"LoadPredictionMLReadings",FieldFactory.getMLLoadPredictFields(),ModuleFactory.getMLReadingModule().getTableName());
 			LOGGER.info("After adding Reading");
 			
 			checkGamModel(energyMeterID,emContext2,(String) jc.get("weekEnd"),(String) jc.get("meterInterval"), (String) jc.get("modelName"),(String) jc.get("modelPath"));
@@ -41,49 +41,36 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		}
 		catch(Exception e)
 		{
-			LOGGER.error("Error while adding Energy Prediction Job", e);
+			LOGGER.error("Error while adding Load Prediction Job", e);
 			throw e;
 		}
-		
 	}
 	
 	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context,String weekend,String meterInterval,String modelName,String modelPath) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		FacilioModule logReadingModule = modBean.getModule("EnergyPredictionMLLogReadings");
-		FacilioModule readingModule = modBean.getModule("EnergyPredictionMLReadings");
+		FacilioModule logReadingModule = modBean.getModule("LoadPredictionMLLogReadings");
+		FacilioModule readingModule = modBean.getModule("LoadPredictionMLReadings");
 		
-		
-		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		FacilioField markedField = modBean.getField("marked", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		FacilioField energyField = modBean.getField("totalDemand", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		
-		
-		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
-		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
-	
 		long mlID = MLAPI.addMLModel(modelPath,logReadingModule.getModuleId(),readingModule.getModuleId());
 		MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),31536000000l,0,true);
-		MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),31536000000l,0,false);
-		MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),31536000000l,172800000l,false);
 		
 		MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
-		MLAPI.addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");
 		
 		MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
 		MLAPI.addMLModelVariables(mlID,"weekend",weekend);
 		MLAPI.addMLModelVariables(mlID,"meterinterval",meterInterval);
 		MLAPI.addMLModelVariables(mlID,"modelName",modelName);
 		
-		
 		ScheduleInfo info = new ScheduleInfo();
 		info.setFrequencyType(FrequencyType.DAILY);
 
 		MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
-		
+		LOGGER.info("checkGamModel Completed");
 	}
-
-
 	
 }

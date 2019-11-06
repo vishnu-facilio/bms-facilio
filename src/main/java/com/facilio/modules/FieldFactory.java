@@ -6403,6 +6403,25 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getMLLogLoadPredictFields()
+	{
+ 		List<FacilioField> fields = new ArrayList<>();
+ 		FacilioModule module = ModuleFactory.getMLLogReadingModule();
+ 		fields.add(getField("daywiseload","daywiseloadLog","DECIMAL_CF3",module,FieldType.DECIMAL));
+  		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
+
+ 		return fields;
+	}
+
+	public static List<FacilioField> getMLLoadPredictFields()
+	{
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMLReadingModule();
+		fields.add(getField("daywiseload","DECIMAL_CF3",module,FieldType.DECIMAL));
+
+		return fields;
+	}
+	
 	public static List<FacilioField> getMLCheckGamFields()
 	{
 		List<FacilioField> fields = new ArrayList<>();
