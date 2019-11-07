@@ -2057,6 +2057,7 @@ public class FacilioChainFactory {
 	public static FacilioChain deleteContactsChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForContacts());
+		c.addCommand(new DeleteContactUsersCommand());
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		return c;
 	}

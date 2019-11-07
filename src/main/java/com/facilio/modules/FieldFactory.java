@@ -2481,6 +2481,10 @@ public class FieldFactory {
 
 	public static List<FacilioField> getWorkOrderTemplateFields() {
 		List<FacilioField> woTemplateFields = getWOrderTemplateFields();
+		LookupField vendorField = (LookupField) getField("vendor", "VENDOR_ID",ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
+		vendorField.setLookupModule(ModuleFactory.getVendorsModule());
+		woTemplateFields.add(vendorField);
+	
 		try {
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 				LookupField tenantField = (LookupField) getField("tenantId", "TENANT_ID",ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);

@@ -1,10 +1,20 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.tasker.ScheduleInfo;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 	
@@ -160,6 +170,59 @@ public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 
 	public void setVisitorType(VisitorTypeContext visitorType) {
 		this.visitorType = visitorType;
+	}
+	
+	public String getScheduleJson() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		if(schedule != null) {
+			return FieldUtil.getAsJSON(schedule).toJSONString();
+		}
+		return null;
+	}
+	public void setScheduleJson(String jsonString) throws JsonParseException, JsonMappingException, IOException, ParseException {
+		JSONParser parser = new JSONParser();
+		this.schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
+	}
+	
+	private ScheduleInfo schedule;
+	public ScheduleInfo getSchedule() {
+		return schedule;
+	}
+	public void setSchedule(ScheduleInfo schedule) {
+		this.schedule = schedule;
+	}
+
+	private long endExecutionTime = -1;
+	public long getEndExecutionTime() {
+		return endExecutionTime;
+	}
+	public void setEndExecutionTime(long endExecutionTime) {
+		this.endExecutionTime = endExecutionTime;
+	}
+	
+	private long nextExecutionTime = -1;
+	public long getNextExecutionTime() {
+		return nextExecutionTime;
+	}
+	public void setNextExecutionTime(long nextExecutionTime) {
+		this.nextExecutionTime = nextExecutionTime;
+	}
+
+
+	private Boolean isRecurring;
+
+	public Boolean getIsRecurring() {
+		return isRecurring;
+	}
+
+	public void setIsRecurring(Boolean isRecurring) {
+		this.isRecurring = isRecurring;
+	}
+
+	public boolean isRecurring() {
+		if (isRecurring != null) {
+			return isRecurring.booleanValue();
+		}
+		return false;
 	}
 	
 }

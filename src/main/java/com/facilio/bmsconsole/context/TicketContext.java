@@ -57,6 +57,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.tenant = tenant;
 	}
 	
+	private  VendorContext vendor;
+	public VendorContext getVendor() {
+		return vendor;
+	}
+	public void setVendor(VendorContext vendor) {
+		this.vendor = vendor;
+	}
+	
 	
 	private User assignedTo;
 	public User getAssignedTo() {

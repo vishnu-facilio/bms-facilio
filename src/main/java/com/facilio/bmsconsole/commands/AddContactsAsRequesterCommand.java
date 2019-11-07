@@ -24,7 +24,8 @@ public class AddContactsAsRequesterCommand extends FacilioCommand{
 					user.setPhone(contact.getPhone());
 					user.setName(contact.getName());
 					long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false);
-					contact.setId(userId);
+					user.setOuid(userId);
+					contact.setRequester(user);
 				}
 			}
 		}
