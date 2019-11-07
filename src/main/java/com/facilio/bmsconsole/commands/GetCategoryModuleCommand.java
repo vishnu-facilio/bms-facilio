@@ -31,6 +31,7 @@ public class GetCategoryModuleCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		LOGGER.info("Inside GetCategoryModuleCommand");
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
 		if (categoryReadingRelModule != null && categoryReadingRelModule.equals(ModuleFactory.getAssetCategoryReadingRelModule())) {
 			long categoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);

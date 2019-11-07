@@ -8,8 +8,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.AddValidationRulesCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
@@ -41,6 +44,7 @@ import com.facilio.tasker.ScheduleInfo;
 import com.facilio.time.DateRange;
 
 public class MLAPI {
+	private static final Logger LOGGER = LogManager.getLogger(MLAPI.class.getName());
 	public static MLContext getSubMeterDetails (long mlAnomalyAlarmId) throws Exception {
 		
 			return null;
@@ -172,6 +176,7 @@ public class MLAPI {
          
          FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
          addReadingChain.execute(context);
+         LOGGER.info("addReading execution completed");
 	}
 	
 	public static void addMLModelVariables(long mlId,String Key,String value) throws Exception

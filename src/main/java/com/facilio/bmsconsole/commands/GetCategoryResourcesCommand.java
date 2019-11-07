@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -13,11 +15,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
 
 public class GetCategoryResourcesCommand extends FacilioCommand {
-
+	private static final Logger LOGGER = LogManager.getLogger(GetCategoryResourcesCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		
+		LOGGER.info("Inside GetCategoryResourcesCommand");
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
 		if (categoryReadingRelModule != null) {
 			long category=(long)context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);

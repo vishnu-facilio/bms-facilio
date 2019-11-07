@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -14,9 +16,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
 public class SetValidationRulesContextCommand extends FacilioCommand {
-
+	private static final Logger LOGGER = LogManager.getLogger(SetValidationRulesContextCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		LOGGER.info("Inside SetValidationRulesContextCommand");
 		List<List<ReadingRuleContext>> readingRules = (List<List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.VALIDATION_RULES);
 		List<FacilioModule> modules =  (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 

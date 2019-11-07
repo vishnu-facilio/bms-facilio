@@ -24,7 +24,7 @@ public class CreateReadingModulesCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-
+		LOGGER.info("Inside CreateReadingModulesCommand");
 		
 		String readingName = (String) context.get(FacilioConstants.ContextNames.READING_NAME);
 		Boolean overRideSplit = (Boolean) context.get(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT);

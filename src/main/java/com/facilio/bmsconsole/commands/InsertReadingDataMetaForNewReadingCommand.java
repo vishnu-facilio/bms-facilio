@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -21,11 +23,11 @@ import com.facilio.modules.fields.FacilioField;
 ;
 
 public class InsertReadingDataMetaForNewReadingCommand extends FacilioCommand {
-
+	private static final Logger LOGGER = LogManager.getLogger(InsertReadingDataMetaForNewReadingCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+		LOGGER.info("Inside InsertReadingDataMetaForNewReadingCommand");
 		List<Long> parentIds = getParentIds(context);
 		List<FacilioModule> modules = CommonCommandUtil.getModulesWithFields(context);
 

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
@@ -15,10 +17,11 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class AddCategoryReadingRelCommand extends FacilioCommand {
-
+	private static final Logger LOGGER = LogManager.getLogger(AddCategoryReadingRelCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		LOGGER.info("Inside AddCategoryReadingRelCommand");
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
 		if (categoryReadingRelModule != null && !categoryReadingRelModule.equals(ModuleFactory.getAssetCategoryReadingRelModule())) { // Don't execute if its asset category reading module
 			List<FacilioField> fields = FieldFactory.getCategoryReadingsFields(categoryReadingRelModule);
