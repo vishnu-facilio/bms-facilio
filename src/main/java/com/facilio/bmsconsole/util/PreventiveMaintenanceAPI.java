@@ -3386,7 +3386,7 @@ public class PreventiveMaintenanceAPI {
 
 				LOGGER.log(Level.WARN, "mintime pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + minWorkOrder);
 
-				long startTime = pmt.getStartTime();
+				long startTime = pmt.getStartTime() / 1000;
 
 				Pair<Long, Integer> nextExecutionTime = pmt.getSchedule().nextExecutionTime(Pair.of(startTime, 0));
 				LOGGER.log(Level.WARN, "first exec pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + nextExecutionTime.getLeft() + " current time: " + currentTime);
