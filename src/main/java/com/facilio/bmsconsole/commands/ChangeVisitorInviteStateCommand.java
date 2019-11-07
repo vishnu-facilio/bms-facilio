@@ -43,12 +43,15 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 											VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, true, time);
 											VisitorManagementAPI.updateVisitorRollUps(record);
 											if(record.getInvite() != null) {
-												VisitorManagementAPI.updateVisitorInviteStateToArrived(record.getVisitor().getId(), record.getInvite().getId());
+												VisitorManagementAPI.updateVisitorInviteStateToArrived(record.getVisitor().getId(), record.getInvite().getId(), "Arrived");
 											}
 										}
 										else if(status.getStatus().toString().trim().equals("CheckedOut")) {
 											VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, false, time);
 											VisitorManagementAPI.updateVisitorLastVisitRollUps(record);
+											if(record.getInvite() != null && !record.getInvite().isRecurring()) {
+												VisitorManagementAPI.updateVisitorInviteStateToArrived(record.getVisitor().getId(), record.getInvite().getId(), "CheckedOut");
+											}
 										}
 									}
 								}

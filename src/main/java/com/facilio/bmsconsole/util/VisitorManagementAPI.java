@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
@@ -158,6 +159,30 @@ public class VisitorManagementAPI {
 														;
 		
 		VisitorInviteContext record = builder.fetchFirst();
+		if(record != null) {
+			List<BusinessHoursContext> businessHoursList = BusinessHoursAPI.getBusinessHours(Collections.singletonList(record.getVisitingHoursId()));
+			if(CollectionUtils.isNotEmpty(businessHoursList)) {
+				record.setRecurringVisitTime(businessHoursList.get(0));
+			}
+		}
+		return record;
+	
+	}
+	
+	public static InviteVisitorRelContext getVisitorInviteRel(long inviteId, long visitorId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
+		SelectRecordsBuilder<InviteVisitorRelContext> builder = new SelectRecordsBuilder<InviteVisitorRelContext>()
+														.module(module)
+														.beanClass(InviteVisitorRelContext.class)
+														.select(fields)
+														.andCondition(CriteriaAPI.getCondition("INVITE_ID", "inviteId", String.valueOf(inviteId), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition("VISITOR_ID", "visitorId", String.valueOf(visitorId), NumberOperators.EQUALS))
+														;
+		
+		InviteVisitorRelContext record = builder.fetchFirst();
 		return record;
 	
 	}
@@ -184,14 +209,14 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static void updateVisitorInviteStateToArrived(long visitorId, long visitorInviteId) throws Exception {
+	public static void updateVisitorInviteStateToArrived(long visitorId, long visitorInviteId, String status) throws Exception {
 		
 		if(visitorId > 0 && visitorInviteId > 0) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
 			List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
 			
-			FacilioStatus arrivedStatus = TicketAPI.getStatus(module, "Arrived");
+			FacilioStatus requiredStatus = TicketAPI.getStatus(module, status);
 			
 			UpdateRecordBuilder<InviteVisitorRelContext> updateBuilder = new UpdateRecordBuilder<InviteVisitorRelContext>()
 					.module(module)
@@ -201,7 +226,7 @@ public class VisitorManagementAPI {
 				;
 			Map<String, Object> updateMap = new HashMap<>();
 			FacilioField statusField = modBean.getField("moduleState", module.getName());
-			updateMap.put("moduleState", arrivedStatus);
+			updateMap.put("moduleState", FieldUtil.getAsProperties(requiredStatus));
 			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 			updatedfields.add(statusField);
 		
@@ -305,11 +330,14 @@ public class VisitorManagementAPI {
 			FacilioField avatarId = modBean.getField("avatar", module.getName());
 			FacilioField visitorType = modBean.getField("visitorType", module.getName());
 			
-			updateMap.put("avatar", visitorLog.getAvatarId());
 			updateMap.put("visitorType", FieldUtil.getAsProperties(visitorLog.getVisitorType()));
 			
 			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-			updatedfields.add(avatarId);
+			if(visitorLog.getAvatarId() > 0) {
+				updatedfields.add(avatarId);
+				updateMap.put("avatar", visitorLog.getAvatarId());
+			}
+			
 			updatedfields.add(visitorType);
 			
 			updatevisitor(visitorLog.getVisitor().getId(),updatedfields, updateMap);

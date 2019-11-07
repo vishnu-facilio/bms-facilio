@@ -4,6 +4,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.VisitorInviteContext;
+import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.constants.FacilioConstants;
 
 import java.util.List;
@@ -16,8 +17,9 @@ public class ComputeScheduleForVisitorInviteCommand extends FacilioCommand{
 		List<VisitorInviteContext> inviteList = (List<VisitorInviteContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(inviteList)) {
 			for(VisitorInviteContext invite : inviteList) {
-				if(invite.isRecurring() && invite.getSchedule() != null) {
-				
+				if(invite.isRecurring() && invite.getRecurringVisitTime() != null) {
+					long id = BusinessHoursAPI.addBusinessHours(invite.getRecurringVisitTime());
+					invite.setVisitingHoursId(id);
 				}
 			}
 		}

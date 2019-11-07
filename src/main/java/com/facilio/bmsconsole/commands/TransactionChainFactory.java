@@ -3656,6 +3656,7 @@ public class TransactionChainFactory {
 		public static FacilioChain addVisitorInvitesChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorInvites());
+			c.addCommand(new ComputeScheduleForVisitorInviteCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));

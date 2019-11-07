@@ -134,7 +134,7 @@ public class BusinessHoursContext implements Serializable {
 	}
 
 	public static enum BusinessHourType {
-		DAYS_24_7, DAYS_24_5, CUSTOM;
+		DAYS_24_7, DAYS_24_5, CUSTOM, CUSTOM_DATE;
 
 		public int getValue() {
 			return ordinal() + 1;

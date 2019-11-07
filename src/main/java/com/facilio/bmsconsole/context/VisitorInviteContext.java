@@ -171,42 +171,15 @@ public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 	public void setVisitorType(VisitorTypeContext visitorType) {
 		this.visitorType = visitorType;
 	}
+	private BusinessHoursContext recurringVisitTime;
 	
-	public String getScheduleJson() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		if(schedule != null) {
-			return FieldUtil.getAsJSON(schedule).toJSONString();
-		}
-		return null;
-	}
-	public void setScheduleJson(String jsonString) throws JsonParseException, JsonMappingException, IOException, ParseException {
-		JSONParser parser = new JSONParser();
-		this.schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
-	}
-	
-	private ScheduleInfo schedule;
-	public ScheduleInfo getSchedule() {
-		return schedule;
-	}
-	public void setSchedule(ScheduleInfo schedule) {
-		this.schedule = schedule;
+	public BusinessHoursContext getRecurringVisitTime() {
+		return recurringVisitTime;
 	}
 
-	private long endExecutionTime = -1;
-	public long getEndExecutionTime() {
-		return endExecutionTime;
+	public void setRecurringVisitTime(BusinessHoursContext recurringVisitTime) {
+		this.recurringVisitTime = recurringVisitTime;
 	}
-	public void setEndExecutionTime(long endExecutionTime) {
-		this.endExecutionTime = endExecutionTime;
-	}
-	
-	private long nextExecutionTime = -1;
-	public long getNextExecutionTime() {
-		return nextExecutionTime;
-	}
-	public void setNextExecutionTime(long nextExecutionTime) {
-		this.nextExecutionTime = nextExecutionTime;
-	}
-
 
 	private Boolean isRecurring;
 
@@ -224,5 +197,17 @@ public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 		}
 		return false;
 	}
+	
+	private long visitingHoursId;
+
+	public long getVisitingHoursId() {
+		return visitingHoursId;
+	}
+
+	public void setVisitingHoursId(long visitingHoursId) {
+		this.visitingHoursId = visitingHoursId;
+	}
+	
+	
 	
 }
