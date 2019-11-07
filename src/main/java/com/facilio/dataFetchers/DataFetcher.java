@@ -13,13 +13,11 @@ public abstract class DataFetcher {
  public void process(){
   JSONObject data;
   try {
-   LOGGER.info("process called");
    data = (JSONObject) getData();
-   LOGGER.info("Data: "+data);
+   LOGGER.info("Data : "+data);
    JSONObject timeSeriesData= preProcess(data);
-   LOGGER.info("TimeSeriesData" + timeSeriesData);
-   //TimeSeriesAPI.processPayLoad(0,timeSeriesData,null);
-    LOGGER.info("anand.h@facilio.com "+ timeSeriesData);
+   LOGGER.info("TimeSeriesData :" + timeSeriesData);
+   TimeSeriesAPI.processPayLoad(0,timeSeriesData,null);
   }catch(Exception ex){
    LOGGER.error("Error while getting/Processing Data from endpoint");
    LOGGER.error(ex.getMessage());

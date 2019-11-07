@@ -473,7 +473,6 @@ public class ConnectionUtil {
 		if(props != null && !props.isEmpty()) {
 			ConnectionApiContext connectionApiContext = FieldUtil.getAsBeanFromMap(props.get(0), ConnectionApiContext.class);
 			connectionApiContext.setConnectionContext(getConnection(connectionApiContext.getConnectionId()));
-			System.out.println("anand.h [8000]");
 			return connectionApiContext;
 		}
 		return null;
