@@ -652,6 +652,7 @@ public class DashboardUtil {
 		fields.addAll(FieldFactory.getWidgetStaticFields());
 		fields.addAll(FieldFactory.getWidgetWebFields());
 		fields.addAll(FieldFactory.getWidgetGraphicsFields());
+		fields.addAll(FieldFactory.getWidgetCardFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -706,6 +707,7 @@ public class DashboardUtil {
 		fields.addAll(FieldFactory.getWidgetStaticFields());
 		fields.addAll(FieldFactory.getWidgetWebFields());
 		fields.addAll(FieldFactory.getWidgetGraphicsFields());
+		fields.addAll(FieldFactory.getWidgetCardFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
