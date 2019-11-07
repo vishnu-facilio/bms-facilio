@@ -406,4 +406,8 @@ public class FacilioProperties {
     public static boolean isServicesEnabled() {
         return isServicesEnabled;
     }
+
+    public static String getEnvironment() {
+        return environment;
+    }
 }

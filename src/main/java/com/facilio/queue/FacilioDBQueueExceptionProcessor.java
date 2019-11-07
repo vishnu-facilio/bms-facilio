@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimerTask;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -41,13 +42,13 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
         	JSONObject json = new JSONObject();
 
             json.put("sender", "error@facilio.com");
-            json.put("to", "arunkumar@facilio.com");
+            json.put("to", "error@facilio.com");
             for(String orgWithClass : EXCEPTION_COUNT.keySet()) {
             	StringBuilder builder = new StringBuilder();
                 builder.append(orgWithClass).append("  :   ").append(EXCEPTION_COUNT.get(orgWithClass)).append(System.lineSeparator())
                         .append(EXCEPTION_MESSAGES.get(orgWithClass)).append(System.lineSeparator());
                 
-                json.put("subject", orgWithClass+" - Exception Mail");
+                json.put("subject", FacilioProperties.getEnvironment() + orgWithClass+" - Exception Mail");
                 json.put("message", builder.toString());
                 try {
                     FacilioFactory.getEmailClient().sendEmail(json);
