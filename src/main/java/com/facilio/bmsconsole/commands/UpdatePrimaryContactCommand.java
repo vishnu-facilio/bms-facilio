@@ -12,6 +12,7 @@ public class UpdatePrimaryContactCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		ContactsContext contact = (ContactsContext)context.get(FacilioConstants.ContextNames.CONTACT);
+		contact.setIsPrimaryContact(!contact.isPrimaryContact());
 		int rowsUpdated = ContactsAPI.updatePrimaryContact(contact);
 		context.put(FacilioConstants.ContextNames.ROWS_UPDATED,rowsUpdated);
 		return false;

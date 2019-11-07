@@ -118,7 +118,7 @@ public class ContactsAPI {
 											.andCondition(CriteriaAPI.getIdCondition(contact.getId(), module));
 									
 		Map<String, Object> value = new HashMap<>();
-		value.put("isPrimaryContact", true);
+		value.put("isPrimaryContact", contact.getIsPrimaryContact());
 		int count = updateBuilder.update(value);
 		return count;
 			
@@ -126,7 +126,7 @@ public class ContactsAPI {
 
 	public static void deleteContactUser(long contactId) throws Exception {
 		ContactsContext contact = (ContactsContext) RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, contactId);
-		if(contact.getRequester() != null && contact.getRequester().getOuid() > 0) {
+		if(contact != null && contact.getRequester() != null && contact.getRequester().getOuid() > 0) {
 			AccountUtil.getUserBean().deleteUser(contact.getRequester().getOuid());
 		}
 	}
