@@ -105,20 +105,19 @@ public class DataFetcherJob extends FacilioJob {
 
     @Override
     public void execute(JobContext jc) throws Exception {
-        if(!FacilioProperties.isProduction())
-        {
+
             LOGGER.info("Calling wateruos");
             DataFetcher wateruos = new Wateruos();
             wateruos.process();
-        }
+
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of( "UTC" ));
         JSONObject data;
         try {
-            LOGGER.debug("execute called");
+            LOGGER.info("execute called");
             data = getData(getUrl(),getProbeId(), getFromTime(now,15), getToTime(now,15));
-            LOGGER.debug(data);
+            LOGGER.info(data);
             JSONObject timeSeriesData= toTimeSeriesData(data);
-            LOGGER.debug(timeSeriesData);
+            LOGGER.info("timeseriesData"+ timeSeriesData);
             TimeSeriesAPI.processPayLoad(0,timeSeriesData,null);
 
         }catch(Exception ex){
