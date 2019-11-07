@@ -53,7 +53,7 @@ public abstract class EmailClient {
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress(sender));
         message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse((String) mailJson.get("to")));
-        message.setSubject((String) mailJson.get(SENDER));
+        message.setSubject((String) mailJson.get(SUBJECT));
 
         MimeMultipart messageBody = new MimeMultipart(MIME_MULTIPART_SUBTYPE_ALTERNATIVE);
         MimeBodyPart textPart = new MimeBodyPart();
