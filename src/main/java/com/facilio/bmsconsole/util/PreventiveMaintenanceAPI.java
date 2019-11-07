@@ -3430,7 +3430,7 @@ public class PreventiveMaintenanceAPI {
 
 			JobContext jc = new JobContext();
 			jc.setJobId(orgId);
-			long end = DateTimeUtil.getDayEndTimeOf(start);
+			long end = DateTimeUtil.getDayEndTimeOf(start, true);
 			FailedPMNewScheduler.execute(jc, pm.getId(), start, end);
 		}
 	}
