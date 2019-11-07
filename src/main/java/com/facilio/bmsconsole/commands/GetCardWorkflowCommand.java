@@ -42,6 +42,8 @@ public class GetCardWorkflowCommand extends FacilioCommand {
 					.table(ModuleFactory.getWidgetCardModule().getTableName())
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(), cardId + "", NumberOperators.EQUALS));
 			
+			builder.select(FieldFactory.getWidgetCardFields());
+			
 			List<Map<String,Object>> props = builder.get();
 			if (props != null && !props.isEmpty()) {
 				WidgetCardContext widgetCardContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetCardContext.class);
