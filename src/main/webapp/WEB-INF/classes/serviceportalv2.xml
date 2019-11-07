@@ -345,12 +345,12 @@
 		</action>
 	</package>
 
-	<package name="serviceCatalog" namespace="/api/service/v2/servicecatalog" extends="newServicePortalApiV2">
+	<package name="portalServiceCatalog" namespace="/api/service/v2/servicecatalog" extends="newServicePortalApiV2">
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogList" />
 	</package>
 
-	<package name="serviceCatalogGroup" namespace="/api/service/v2/servicecataloggroup" extends="newServicePortalApiV2">
+	<package name="portalServiceCatalogGroup" namespace="/api/service/v2/servicecataloggroup" extends="newServicePortalApiV2">
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getAllServiceCatalogGroup" />
 	</package>
