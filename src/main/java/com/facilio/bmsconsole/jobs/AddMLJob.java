@@ -41,6 +41,7 @@ public class AddMLJob extends FacilioJob {
 				context.put("weekEnd", props.get("weekEnd"));
 				context.put("meterInterval", props.get("meterInterval"));
 				context.put("modelName", props.get("modelName"));
+				context.put("modelPath", props.get("modelPath"));
 				c.execute(context);		
 				break;
 			}

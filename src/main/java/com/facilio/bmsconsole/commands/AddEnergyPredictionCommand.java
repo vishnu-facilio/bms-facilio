@@ -32,10 +32,6 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 			EnergyMeterContext emContext2 = DeviceAPI.getEnergyMeter(energyMeterID);
 			LOGGER.info("Energy meter context :"+emContext2);
 			if(emContext2 != null){
-				LOGGER.info("Checking for null 1:"+FacilioConstants.ContextNames.ASSET_CATEGORY);
-				LOGGER.info("Checking for null 1:"+emContext2.getCategory().getId());
-				LOGGER.info("Checking for null 1:"+FieldFactory.getMLLogPredictCheckGamFields());
-				LOGGER.info("Checking for null 1:"+ModuleFactory.getMLLogReadingModule().getTableName());
 				MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLLogReadings",FieldFactory.getMLLogPredictCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
 				MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLReadings",FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 				LOGGER.info("After adding Reading");
