@@ -16,8 +16,8 @@ public class GetAllServiceCatalogGroupCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getServiceCatalogModule().getTableName())
-                .select(FieldFactory.getServiceCatalogFields());
+                .table(ModuleFactory.getServiceCatalogGroupModule().getTableName())
+                .select(FieldFactory.getServiceCatalogGroupFields());
 
         List<Map<String, Object>> maps = builder.get();
         List<ServiceCatalogGroupContext> serviceCatalogGroups = FieldUtil.getAsBeanListFromMapList(maps, ServiceCatalogGroupContext.class);
