@@ -62,4 +62,12 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
     public void setForm(FacilioForm form) {
         this.form = form;
     }
+
+    private long groupId = -1;
+    public long getGroupId() {
+        return groupId;
+    }
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
+    }
 }

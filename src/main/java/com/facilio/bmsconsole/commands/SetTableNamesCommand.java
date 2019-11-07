@@ -1,8 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Context;
-
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Context;
 
 public class SetTableNamesCommand extends FacilioCommand {
 

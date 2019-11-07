@@ -6968,6 +6968,7 @@ public class FieldFactory {
 		fields.add(getField("photoId", "PHOTO_ID", module, FieldType.FILE));
 		fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
 		fields.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
+		fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
 
 		return fields;
 	}

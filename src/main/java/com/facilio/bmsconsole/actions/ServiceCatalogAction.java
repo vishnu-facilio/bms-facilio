@@ -7,6 +7,8 @@ import com.facilio.bmsconsole.context.ServiceCatalogGroupContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class ServiceCatalogAction extends FacilioAction {
 
@@ -50,6 +52,7 @@ public class ServiceCatalogAction extends FacilioAction {
         FacilioChain chain = ReadOnlyChainFactory.getServiceCatalogListChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);
+        context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
 
         chain.execute();
 
