@@ -3348,7 +3348,7 @@ public class PreventiveMaintenanceAPI {
 		selectRecordsBuilder.select(fields)
 				.module(module)
 				.beanClass(WorkOrderContext.class)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(time), NumberOperators.LESS_THAN))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(time * 1000), NumberOperators.LESS_THAN))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS));
 		List<WorkOrderContext> workOrderContexts = selectRecordsBuilder.get();
 
