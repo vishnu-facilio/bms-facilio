@@ -3315,6 +3315,99 @@ public class PreventiveMaintenanceAPI {
 
 	}
 
+
+	private static long getMinWorkOrder(long pmId, long triggerId) throws Exception {
+		SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		selectRecordsBuilder.select(fields)
+				.module(module)
+				.beanClass(WorkOrderContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(1571702400000L), NumberOperators.LESS_THAN))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("trigger"), String.valueOf(triggerId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
+				.orderBy("WorkOrders.CREATED_TIME DESC")
+				.limit(1);
+		List<WorkOrderContext> workOrderContexts = selectRecordsBuilder.get();
+
+		if (CollectionUtils.isEmpty(workOrderContexts)) {
+			return -1L;
+		}
+
+		return workOrderContexts.get(0).getCreatedTime();
+	}
+
+	private static boolean isWorkorderExists(long pmId, long time) throws Exception {
+		SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		selectRecordsBuilder.select(fields)
+				.module(module)
+				.beanClass(WorkOrderContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(time), NumberOperators.LESS_THAN))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS));
+		List<WorkOrderContext> workOrderContexts = selectRecordsBuilder.get();
+
+		return !CollectionUtils.isEmpty(workOrderContexts);
+	}
+
+	public static void findMissingExecutions(long orgId) throws Exception {
+		AccountUtil.setCurrentAccount(orgId);
+		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+			LOGGER.log(Level.WARN, "Org is missing");
+			return;
+		}
+
+		long currentTime = System.currentTimeMillis();
+
+		List<PreventiveMaintenance> allActivePMs = PreventiveMaintenanceAPI.getAllActivePMs(null);
+		for (PreventiveMaintenance pm: allActivePMs) {
+			Map<Long, List<PMTriggerContext>> pmTriggers = PreventiveMaintenanceAPI.getPMTriggers(Collections.singletonList(pm.getId()));
+			List<PMTriggerContext> pmTriggerContexts = pmTriggers.get(pm.getId());
+			for (PMTriggerContext pmt: pmTriggerContexts) {
+				if (pmt.getTriggerExecutionSourceEnum() != TriggerExectionSource.SCHEDULE) {
+					continue;
+				}
+
+				if (pmt.getSchedule().getFrequencyType() < 1) {
+					continue;
+				}
+
+				long minWorkOrder = PreventiveMaintenanceAPI.getMinWorkOrder(pm.getId(), pmt.getId());
+				if (minWorkOrder == -1) {
+					LOGGER.log(Level.WARN, "missing min pm: "+ pm.getId() + " trigger: " + pmt.getId());
+					continue;
+				}
+
+				long startTime = pmt.getStartTime();
+
+				Pair<Long, Integer> nextExecutionTime = pmt.getSchedule().nextExecutionTime(Pair.of(startTime, 0));
+				int count = 0;
+				while ((nextExecutionTime.getLeft() * 1000) <= currentTime) {
+					if (count > 500) {
+						LOGGER.log(Level.WARN, "exceeded 500 pm: " + pm.getId() + " trigger: " + pmt.getId());
+						break;
+					}
+					if ((nextExecutionTime.getLeft() * 1000) < minWorkOrder) {
+						nextExecutionTime = pmt.getSchedule().nextExecutionTime(nextExecutionTime);
+						continue;
+					}
+
+					boolean workorderExists = PreventiveMaintenanceAPI.isWorkorderExists(pm.getId(), nextExecutionTime.getLeft());
+					if (!workorderExists) {
+						LOGGER.log(Level.WARN, "missing work order pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time " + nextExecutionTime.getLeft());
+					}
+					nextExecutionTime = pmt.getSchedule().nextExecutionTime(nextExecutionTime);
+					count++;
+				}
+			}
+		}
+	}
+
 	private static JobContext getJobFromRS(ResultSet rs) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
 		JobContext jc = new JobContext();
 
