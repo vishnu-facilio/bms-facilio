@@ -77,7 +77,7 @@ public class AddWoViewScheduleCommand extends FacilioCommand {
 			long jobId;
 			if (type != EventType.EDIT) {
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-						.table(module.getTableName())
+						.table(viewInfoModule.getTableName())
 						.fields(fields);
 
 				insertBuilder.addRecord(props);
