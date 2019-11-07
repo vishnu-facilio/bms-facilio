@@ -3395,7 +3395,7 @@ public class PreventiveMaintenanceAPI {
 				//LOGGER.log(Level.WARN, "first exec pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + nextExecutionTime.getLeft() + " current time: " + currentTime);
 				int count = 0;
 				long previous = -1;
-				while ((nextExecutionTime.getLeft() * 1000) <= currentTime) {
+				while (nextExecutionTime.getLeft() <= pm.getWoGeneratedUpto()) {
 					//LOGGER.log(Level.WARN, "next exec pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + nextExecutionTime.getLeft() + " current time: " + currentTime);
 					if (count > 500) {
 						//LOGGER.log(Level.WARN, "exceeded 500 pm: " + pm.getId() + " trigger: " + pmt.getId());
@@ -3430,7 +3430,7 @@ public class PreventiveMaintenanceAPI {
 
 			JobContext jc = new JobContext();
 			jc.setJobId(orgId);
-			long end = DateTimeUtil.getDayEndTimeOf(start, true);
+			long end = start + (24 * 60 * 60);
 			FailedPMNewScheduler.execute(jc, pm.getId(), start, end);
 		}
 	}

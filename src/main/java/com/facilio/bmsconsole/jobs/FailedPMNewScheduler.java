@@ -212,14 +212,6 @@ public class FailedPMNewScheduler {
 		List<Long> nextExecutionTimes = new ArrayList<>();
 		LOGGER.log(Level.ERROR, "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId() + " next exec time " + nextExecutionTime.getLeft() + " end time " + endTime);
 		while (nextExecutionTime.getLeft() <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime.getLeft() <= pm.getEndTime())) {
-			if ((nextExecutionTime.getLeft() * 1000) < currentTime) {
-				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
-				if (pmTrigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
-					break;
-				}
-				continue;
-			}
-
 			nextExecutionTimes.add(nextExecutionTime.getLeft());
 
 			nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
