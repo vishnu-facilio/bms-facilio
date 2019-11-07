@@ -3366,6 +3366,7 @@ public class PreventiveMaintenanceAPI {
 
 		List<PreventiveMaintenance> allActivePMs = PreventiveMaintenanceAPI.getAllActivePMs(null);
 		for (PreventiveMaintenance pm: allActivePMs) {
+			LOGGER.log(Level.WARN, "Executing pm: " + pm.getId());
 			Map<Long, List<PMTriggerContext>> pmTriggers = PreventiveMaintenanceAPI.getPMTriggers(Collections.singletonList(pm.getId()));
 			List<PMTriggerContext> pmTriggerContexts = pmTriggers.get(pm.getId());
 			for (PMTriggerContext pmt: pmTriggerContexts) {
@@ -3383,11 +3384,15 @@ public class PreventiveMaintenanceAPI {
 					continue;
 				}
 
+				LOGGER.log(Level.WARN, "mintime pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + minWorkOrder);
+
 				long startTime = pmt.getStartTime();
 
 				Pair<Long, Integer> nextExecutionTime = pmt.getSchedule().nextExecutionTime(Pair.of(startTime, 0));
+				LOGGER.log(Level.WARN, "first exec pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + nextExecutionTime.getLeft() + " current time: " + currentTime);
 				int count = 0;
 				while ((nextExecutionTime.getLeft() * 1000) <= currentTime) {
+					LOGGER.log(Level.WARN, "next exec pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + nextExecutionTime.getLeft() + " current time: " + currentTime);
 					if (count > 500) {
 						LOGGER.log(Level.WARN, "exceeded 500 pm: " + pm.getId() + " trigger: " + pmt.getId());
 						break;
@@ -3400,6 +3405,8 @@ public class PreventiveMaintenanceAPI {
 					boolean workorderExists = PreventiveMaintenanceAPI.isWorkorderExists(pm.getId(), nextExecutionTime.getLeft());
 					if (!workorderExists) {
 						LOGGER.log(Level.WARN, "missing work order pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time " + nextExecutionTime.getLeft());
+					} else {
+						LOGGER.log(Level.WARN, "work order exist pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time " + nextExecutionTime.getLeft());
 					}
 					nextExecutionTime = pmt.getSchedule().nextExecutionTime(nextExecutionTime);
 					count++;
