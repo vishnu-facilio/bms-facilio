@@ -326,6 +326,9 @@ public class S3FileStore extends FileStore {
 				if(isDownloadable) {
 					s3ObjectKey = s3ObjectKey +"&response-content-disposition="+URLEncoder.encode("attachment; filename="+fileInfo.getFileName(),"UTF-8");
 				}
+				else {
+					s3ObjectKey = s3ObjectKey +"&response-content-disposition="+URLEncoder.encode("inline; filename="+fileInfo.getFileName(),"UTF-8");
+				}
 				String keyPairId = FacilioProperties.getConfig("key.pair.id");
 				return CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, FacilioProperties.getConfig("files.url"), new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+getExpiration()));
 			} catch (IOException | InvalidKeySpecException e) {
