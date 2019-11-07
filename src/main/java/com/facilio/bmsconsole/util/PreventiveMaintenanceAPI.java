@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.jobs.FailedPMNewScheduler;
 import com.facilio.db.builder.*;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.modules.*;
@@ -3369,6 +3370,8 @@ public class PreventiveMaintenanceAPI {
 			LOGGER.log(Level.WARN, "Executing pm: " + pm.getId());
 			Map<Long, List<PMTriggerContext>> pmTriggers = PreventiveMaintenanceAPI.getPMTriggers(Collections.singletonList(pm.getId()));
 			List<PMTriggerContext> pmTriggerContexts = pmTriggers.get(pm.getId());
+			long start = -1;
+			boolean found = false;
 			for (PMTriggerContext pmt: pmTriggerContexts) {
 				if (pmt.getTriggerExecutionSourceEnum() != TriggerExectionSource.SCHEDULE) {
 					continue;
@@ -3380,21 +3383,22 @@ public class PreventiveMaintenanceAPI {
 
 				long minWorkOrder = PreventiveMaintenanceAPI.getMinWorkOrder(pm.getId(), pmt.getId());
 				if (minWorkOrder == -1) {
-					LOGGER.log(Level.WARN, "missing min pm: "+ pm.getId() + " trigger: " + pmt.getId());
+					//LOGGER.log(Level.WARN, "missing min pm: "+ pm.getId() + " trigger: " + pmt.getId());
 					continue;
 				}
 
-				LOGGER.log(Level.WARN, "mintime pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + minWorkOrder);
+				//LOGGER.log(Level.WARN, "mintime pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + minWorkOrder);
 
 				long startTime = pmt.getStartTime() / 1000;
 
 				Pair<Long, Integer> nextExecutionTime = pmt.getSchedule().nextExecutionTime(Pair.of(startTime, 0));
-				LOGGER.log(Level.WARN, "first exec pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + nextExecutionTime.getLeft() + " current time: " + currentTime);
+				//LOGGER.log(Level.WARN, "first exec pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + nextExecutionTime.getLeft() + " current time: " + currentTime);
 				int count = 0;
+				long previous = -1;
 				while ((nextExecutionTime.getLeft() * 1000) <= currentTime) {
-					LOGGER.log(Level.WARN, "next exec pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + nextExecutionTime.getLeft() + " current time: " + currentTime);
+					//LOGGER.log(Level.WARN, "next exec pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time: " + nextExecutionTime.getLeft() + " current time: " + currentTime);
 					if (count > 500) {
-						LOGGER.log(Level.WARN, "exceeded 500 pm: " + pm.getId() + " trigger: " + pmt.getId());
+						//LOGGER.log(Level.WARN, "exceeded 500 pm: " + pm.getId() + " trigger: " + pmt.getId());
 						break;
 					}
 					if ((nextExecutionTime.getLeft() * 1000) < minWorkOrder) {
@@ -3405,13 +3409,29 @@ public class PreventiveMaintenanceAPI {
 					boolean workorderExists = PreventiveMaintenanceAPI.isWorkorderExists(pm.getId(), nextExecutionTime.getLeft());
 					if (!workorderExists) {
 						LOGGER.log(Level.WARN, "missing work order pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time " + nextExecutionTime.getLeft());
+						found = true;
+						break;
 					} else {
-						LOGGER.log(Level.WARN, "work order exist pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time " + nextExecutionTime.getLeft());
+						//LOGGER.log(Level.WARN, "work order exist pm: "+ pm.getId() + " trigger: " + pmt.getId() + " time " + nextExecutionTime.getLeft());
 					}
+					previous = nextExecutionTime.getLeft();
 					nextExecutionTime = pmt.getSchedule().nextExecutionTime(nextExecutionTime);
 					count++;
 				}
+				if(found) {
+					start = previous;
+					break;
+				}
 			}
+
+			if (!(start > 0)) {
+				continue;
+			}
+
+			JobContext jc = new JobContext();
+			jc.setJobId(orgId);
+			long end = DateTimeUtil.getDayEndTimeOf(start);
+			FailedPMNewScheduler.execute(jc, pm.getId(), start, end);
 		}
 	}
 
