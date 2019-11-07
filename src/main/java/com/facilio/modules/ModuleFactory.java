@@ -1106,6 +1106,13 @@ public class ModuleFactory {
 		dashboardWigetModule.setExtendModule(getWidgetModule());
 		return dashboardWigetModule;
 	}
+	
+	public static FacilioModule getWidgetCardModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Widget_Card");
+		dashboardWigetModule.setExtendModule(getWidgetModule());
+		return dashboardWigetModule;
+	}
 
 	public static FacilioModule getFormulaModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();

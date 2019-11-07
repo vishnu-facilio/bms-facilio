@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
@@ -15,6 +16,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class UpdateWidgetsCommand extends FacilioCommand {
 
@@ -77,6 +79,22 @@ public class UpdateWidgetsCommand extends FacilioCommand {
 								.andCondition(CriteriaAPI.getIdCondition(updatewidget.getId(), ModuleFactory.getWidgetGraphicsModule()));
 						Map<String,Object> props = FieldUtil.getAsProperties(updatewidget);
 						updateWidgetGraphics.update(props);
+					}
+					
+					if(updatewidget.getType().equals(DashboardWidgetContext.WidgetType.CARD.getValue())) {
+						WidgetCardContext widgetCardContext = (WidgetCardContext)  updatewidget;
+						
+						if (widgetCardContext.getCustomScript() != null && !widgetCardContext.getCustomScript().trim().isEmpty()) {
+							Long customScriptId = WorkflowUtil.addWorkflow(widgetCardContext.getCustomScript());
+							widgetCardContext.setCustomScriptId(customScriptId);
+						}
+						
+						GenericUpdateRecordBuilder updateWidgetCard = new GenericUpdateRecordBuilder()
+								.table(ModuleFactory.getWidgetCardModule().getTableName())
+								.fields(FieldFactory.getWidgetCardFields())
+								.andCondition(CriteriaAPI.getIdCondition(updatewidget.getId(), ModuleFactory.getWidgetCardModule()));
+						Map<String,Object> props = FieldUtil.getAsProperties(widgetCardContext);
+						updateWidgetCard.update(props);
 					}
 				}
 			}

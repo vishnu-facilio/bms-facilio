@@ -3802,6 +3802,21 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getWidgetCardFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWidgetCardModule();
+
+		fields.add(getIdField(module));
+
+		fields.add(getField("cardLayout", "CARD_LAYOUT", module, FieldType.STRING));
+		fields.add(getField("scriptModeInt", "SCRIPT_MODE", module, FieldType.NUMBER));
+		fields.add(getField("customScriptId", "CUSTOM_SCRIPT_ID", module, FieldType.NUMBER));
+		fields.add(getField("cardParamsJSON", "CARD_PARAMS", module, FieldType.STRING));
+		fields.add(getField("cardStateJSON", "CARD_STATE", module, FieldType.STRING));
+
+		return fields;
+	}
 
 	public static List<FacilioField> getReportFolderFields() {
 

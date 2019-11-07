@@ -2856,6 +2856,13 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteWorkflowCommand());
 			return c;
 		}
+		
+		public static FacilioChain getExecuteCardWorkflowChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetCardWorkflowCommand());
+			c.addCommand(getExecuteWorkflowChain());
+			return c;
+		}
 
 		public static FacilioChain getAddGraphicsChain() {
 			FacilioChain c = getDefaultChain();

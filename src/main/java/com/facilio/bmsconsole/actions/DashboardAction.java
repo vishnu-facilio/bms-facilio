@@ -71,6 +71,7 @@ import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetGraphicsContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
@@ -6828,6 +6829,10 @@ public class DashboardAction extends FacilioAction {
 				else if (widgetType == DashboardWidgetContext.WidgetType.GRAPHICS.getValue()) {
 					widgetContext = new WidgetGraphicsContext();
 					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetGraphicsContext.class);
+				}
+				else if (widgetType == DashboardWidgetContext.WidgetType.CARD.getValue()) {
+					widgetContext = new WidgetCardContext();
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetCardContext.class);
 				}
 				
 				widgetContext.setLayoutPosition(Integer.parseInt(widget.get("order").toString()));

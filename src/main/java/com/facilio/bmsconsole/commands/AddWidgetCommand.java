@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
+import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetGraphicsContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
@@ -242,6 +243,22 @@ public class AddWidgetCommand extends FacilioCommand {
 						.fields(FieldFactory.getWidgetGraphicsFields());
 
 				props = FieldUtil.getAsProperties(widgetGraphicsContext);
+				insertBuilder.addRecord(props);
+				insertBuilder.save();
+			}
+			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.CARD)) {
+				WidgetCardContext widgetCardContext = (WidgetCardContext) widget;
+				
+				if (widgetCardContext.getCustomScript() != null && !widgetCardContext.getCustomScript().trim().isEmpty()) {
+					Long customScriptId = WorkflowUtil.addWorkflow(widgetCardContext.getCustomScript());
+					widgetCardContext.setCustomScriptId(customScriptId);
+				}
+				
+						insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getWidgetCardModule().getTableName())
+						.fields(FieldFactory.getWidgetCardFields());
+
+				props = FieldUtil.getAsProperties(widgetCardContext);
 				insertBuilder.addRecord(props);
 				insertBuilder.save();
 			}

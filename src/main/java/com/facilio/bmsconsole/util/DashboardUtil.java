@@ -666,6 +666,8 @@ public class DashboardUtil {
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetWebModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetGraphicsModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetGraphicsModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetCardModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetCardModule().getTableName()+".ID")
 				;
 				
 		if(dashboardId != null) {
@@ -718,6 +720,8 @@ public class DashboardUtil {
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetWebModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetGraphicsModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetGraphicsModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetCardModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetCardModule().getTableName()+".ID")
 				.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".ID = ?", widgetId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();

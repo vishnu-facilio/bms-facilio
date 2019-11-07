@@ -15,7 +15,7 @@ import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.controlaction.util.ControlActionUtil;
-import com.facilio.custom.CustomController;
+//import com.facilio.custom.CustomController;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
@@ -287,6 +287,9 @@ public class FacilioConstants {
 		public static final String VIOLATION_ALARM ="violationalarm";
 		public static final String IS_INCLUDE = "isInclude";
 		public static final String ALARM_COUNT = "alarmCount";
+		public static final String CARD_CONTEXT = "cardContext";
+		public static final String CARD_ID = "cardId";
+		public static final String CARD_RETURN_VALUE = "cardReturnValue";
 		
 		public static final String ML_ANOMALY_ALARM = "mlAnomalyAlarm";
 	
@@ -1361,9 +1364,9 @@ public class FacilioConstants {
 			classMap.put(OPC_UA_CONTROLLER_MODULE_NAME, OpcUaController.class);
 			classMap.put(OPC_XML_DA_CONTROLLER_MODULE_NAME, OpcXmlDaController.class);
 			classMap.put(NIAGARA_CONTROLLER_MODULE_NAME, NiagaraController.class);
-			classMap.put(MISC_CONTROLLER_MODULE_NAME, MiscController.class);
-			classMap.put(REST_CONTROLLER_MODULE_NAME,MiscController.class);
-			classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, CustomController.class);
+			//classMap.put(MISC_CONTROLLER_MODULE_NAME, MiscController.class);
+			//classMap.put(REST_CONTROLLER_MODULE_NAME,MiscController.class);
+			//classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, CustomController.class);
 
 
 			classMap.put(ENERGY_DATA_READING, ReadingContext.class);
