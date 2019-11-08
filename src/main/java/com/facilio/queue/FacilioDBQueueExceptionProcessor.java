@@ -25,19 +25,14 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
 	public void run() {
 		
         List<QueueMessage> messageList = new ArrayList<>();
-			try {
-				messageList = FacilioQueueException.pull(QUEUE, 20);
-			} catch (Exception e1) {
-				LOGGER.info("Exception Occurred in  FacilioQueue  : "+e1);
-			}
-		
-
+        try {
+            messageList = FacilioQueueException.pull(QUEUE, 20);
+        } catch (Exception e1) {
+            LOGGER.info("Exception Occurred in  FacilioQueue  : "+e1);
+        }
         if(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 20) {
             processMessages(messageList);
- 
         }
-		
-		
         if(EXCEPTION_MESSAGES.size() > 0 ) {
         	JSONObject json = new JSONObject();
 
@@ -48,7 +43,7 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
                 builder.append(orgWithClass).append("  :   ").append(EXCEPTION_COUNT.get(orgWithClass)).append(System.lineSeparator())
                         .append(EXCEPTION_MESSAGES.get(orgWithClass)).append(System.lineSeparator());
                 
-                json.put("subject", FacilioProperties.getEnvironment() + orgWithClass+" - Exception Mail");
+                json.put("subject", orgWithClass+" - Exception Mail");
                 json.put("message", builder.toString());
                 try {
                     FacilioFactory.getEmailClient().sendEmail(json);
