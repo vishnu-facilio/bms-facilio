@@ -60,7 +60,7 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		
 		long mlID = MLAPI.addMLModel(modelPath,logReadingModule.getModuleId(),readingModule.getModuleId());
-		MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),31536000000l,0,true);
+		MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),7776000000l,0,true);
 		
 		MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 		

@@ -95,9 +95,9 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		for(EnergyMeterContext context:emContextList.values())
 		{
 			long mlID = MLAPI.addMLModel("checkGam1",logReadingModule.getModuleId(),readingModule.getModuleId());
-			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),3600000,0,true);
-			MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),3600000,0,false);
-			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),1209600000l,0,true);
+			MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),1209600000l,0,false);
+			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),1209600000l,0,false);
 			
 			MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 			MLAPI.addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");
@@ -197,22 +197,22 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			{
 				Integer id =  (Integer) emObject.get(j);
 				
-				MLAPI.addMLVariables(ml_id,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,gamAnomalyField.getModuleId(),gamAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,lowerARMAField.getModuleId(),lowerARMAField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,lowerBoundField.getModuleId(),lowerBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,lowerGAMField.getModuleId(),lowerGAMField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,predictedField.getModuleId(),predictedField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,predictedResidualFields.getModuleId(),predictedResidualFields.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,residualField.getModuleId(),residualField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,temperatureField.getModuleId(),temperatureField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,lowerAnomalyField.getModuleId(),lowerAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,upperARMAField.getModuleId(),upperARMAField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,upperAnomalyField.getModuleId(),upperAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,upperBoundField.getModuleId(),upperBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
-				MLAPI.addMLVariables(ml_id,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),id.longValue(),3600000,0,false);
+				MLAPI.addMLVariables(ml_id,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,gamAnomalyField.getModuleId(),gamAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,lowerARMAField.getModuleId(),lowerARMAField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,lowerBoundField.getModuleId(),lowerBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,lowerGAMField.getModuleId(),lowerGAMField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,predictedField.getModuleId(),predictedField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,predictedResidualFields.getModuleId(),predictedResidualFields.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,residualField.getModuleId(),residualField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,temperatureField.getModuleId(),temperatureField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,lowerAnomalyField.getModuleId(),lowerAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,upperARMAField.getModuleId(),upperARMAField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,upperAnomalyField.getModuleId(),upperAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,upperBoundField.getModuleId(),upperBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
 			}
 			MLAPI.addMLModelVariables(ml_id,"TreeHierarchy",emObject.toString());
 			FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
@@ -244,98 +244,98 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		FacilioField actualValueField = modBean.getField("actualValue", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField adjustedLowerBoundField = modBean.getField("adjustedLowerBound", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField adjustedUpperBoundField = modBean.getField("adjustedUpperBound", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField gamAnomalyField = modBean.getField("gamAnomaly", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,gamAnomalyField.getModuleId(),gamAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,gamAnomalyField.getModuleId(),gamAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField lowerARMAField = modBean.getField("lowerARMA", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,lowerARMAField.getModuleId(),lowerARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,lowerARMAField.getModuleId(),lowerARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		
 		FacilioField lowerBoundField = modBean.getField("lowerBound", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,lowerBoundField.getModuleId(),lowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,lowerBoundField.getModuleId(),lowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField lowerGAMField = modBean.getField("lowerGAM", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,lowerGAMField.getModuleId(),lowerGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,lowerGAMField.getModuleId(),lowerGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField predictedField = modBean.getField("predicted", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,predictedField.getModuleId(),predictedField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,predictedField.getModuleId(),predictedField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField predictedResidualFields = modBean.getField("predictedResidual", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,predictedResidualFields.getModuleId(),predictedResidualFields.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,predictedResidualFields.getModuleId(),predictedResidualFields.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField residualField = modBean.getField("residual", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,residualField.getModuleId(),residualField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,residualField.getModuleId(),residualField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField temperatureField = modBean.getField("temperature", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField lowerAnomalyField = modBean.getField("lowerAnomaly", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,lowerAnomalyField.getModuleId(),lowerAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,lowerAnomalyField.getModuleId(),lowerAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField upperARMAField = modBean.getField("upperARMA", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,upperARMAField.getModuleId(),upperARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,upperARMAField.getModuleId(),upperARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField upperAnomalyField = modBean.getField("upperAnomaly",checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,upperAnomalyField.getModuleId(),upperAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,upperAnomalyField.getModuleId(),upperAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField upperBoundField = modBean.getField("upperBound", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,upperBoundField.getModuleId(),upperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,upperBoundField.getModuleId(),upperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		FacilioField upperGAMField = modBean.getField("upperGAM", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000,0,false);
+			MLAPI.addMLVariables(mlID,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
 		}
 		
 		MLAPI.addMLModelVariables(mlID,"TreeHierarchy",TreeHierarchy);
