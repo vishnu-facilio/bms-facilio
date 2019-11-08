@@ -2,7 +2,9 @@ package com.facilio.agentv2.controller;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
+import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpController;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.misc.MiscController;
@@ -38,22 +40,39 @@ import java.util.Map;
 public class ControllerApiV2 {
     private static final Logger LOGGER = LogManager.getLogger(ControllerApiV2.class.getName());
 
+    /**
+     * This method adds controller to db verifying if it can be added.
+     * AgentId from controller is used to check if such an agent exists and if yes, it gets the agent and uses its site id for controller(siteId is mandatory).
+     * This method also takes care of createdTime, LastModifiedTime, sets category
+     * @param controller
+     * @return a {@link Controller} if all goes well else returns null
+     **/
     public static long addController(Controller controller) {
         try {
-            FacilioChain addControllerChain = TransactionChainFactory.getAddControllerChain();
-            FacilioContext context = addControllerChain.getContext();
-            String assetCategoryName = ControllerApiV2.getControllerModuleName(FacilioControllerType.valueOf(controller.getControllerType()));
-            AssetCategoryContext asset = AssetsAPI.getCategory(assetCategoryName);
-            controller.setCategory(asset);
-            controller.setSiteId(2);
-            controller.setCreatedTime(System.currentTimeMillis());
-            controller.setId(-1);
-            controller.setLastModifiedTime(System.currentTimeMillis());
-            context.put(FacilioConstants.ContextNames.RECORD,controller);
-            context.put(FacilioConstants.ContextNames.MODULE_NAME,controller.getModuleName());
-            LOGGER.info(" module name is "+controller.getModuleName());
-            addControllerChain.execute();
-            return (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+            long agentId = controller.getAgentId();
+            if( agentId > 0){
+                FacilioAgent agent = AgentApiV2.getAgent(agentId);
+                if(agent != null){
+                    FacilioChain addControllerChain = TransactionChainFactory.getAddControllerChain();
+                    FacilioContext context = addControllerChain.getContext();
+                    String assetCategoryName = ControllerApiV2.getControllerModuleName(FacilioControllerType.valueOf(controller.getControllerType()));
+                    AssetCategoryContext asset = AssetsAPI.getCategory(assetCategoryName);
+                    controller.setCategory(asset);
+                    controller.setCreatedTime(System.currentTimeMillis());
+                    controller.setId(-1);
+                    controller.setLastModifiedTime(System.currentTimeMillis());
+                    controller.setSiteId(agent.getSiteId());
+                    context.put(FacilioConstants.ContextNames.RECORD,controller);
+                    context.put(FacilioConstants.ContextNames.MODULE_NAME,controller.getModuleName());
+                    LOGGER.info(" module name is "+controller.getModuleName());
+                    addControllerChain.execute();
+                    return (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+                }else {
+                    throw new Exception(" No agent for id -> "+agentId);
+                }
+            }else {
+                throw new Exception(" AgentId can't be less than 1 -> "+agentId);
+            }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ",e);
         }
@@ -130,11 +149,11 @@ public class ControllerApiV2 {
 
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            LOGGER.info(" module name is "+moduleName);
             List<FacilioField> fields = modBean.getAllFields(moduleName);
-            LOGGER.info(" fields for the module are "+fields.size());
+            if(fields == null || fields.isEmpty()){
+                return controllerMap;
+            }
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-            LOGGER.info(" fieldsMap for the module are "+fieldsMap.values());
             Criteria criteria = new Criteria();
             if(agentId > 0){
                 criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));

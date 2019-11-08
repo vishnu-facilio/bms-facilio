@@ -203,8 +203,7 @@ public class DeviceAction extends ActionSupport
 	private Long agentId;
 	public String discoverPoints(){
 		if( ( getIds() != null  &&  ( ! getIds().isEmpty() ) ) && ( (getAgentId() != null) && (getAgentId() > 0 ) ) ){
-					ControllerUtilV2 util = new ControllerUtilV2(getAgentId());
-			if(util.processController(getAgentId(),getIds())){
+			if(ControllerUtilV2.processController(getAgentId(),getIds())){
 				LOGGER.info(" discover points returned true ");
 				setResult(RESULT,true);
 				return SUCCESS;

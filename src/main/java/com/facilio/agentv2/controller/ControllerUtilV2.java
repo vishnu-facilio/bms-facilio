@@ -102,7 +102,7 @@ public class ControllerUtilV2
     // pakka
 
 
-    public boolean processController(long agentId, List<Long> ids) {
+    public static boolean processController(long agentId, List<Long> ids) {
         LOGGER.info(" processing devices ");
         FacilioChain chain = TransactionChainFactory.getProcessControllerV2Chain();
         FacilioContext context = chain.getContext();
@@ -130,8 +130,8 @@ public class ControllerUtilV2
                     Controller controllerFromDb = ControllerApiV2.getControllerFromDb(controller.makeIdentifier(),agentId,FacilioControllerType.valueOf(controller.getControllerType()));
                             //getController(agentId, controller.makeIdentifier(), FacilioControllerType.valueOf(controller.getControllerType()));
                     if (controllerFromDb != null) {
-                        controller.setId(controllerFromDb.getId());
-                        ControllerApiV2.updateController(controller);
+                        /*controller.setId(controllerFromDb.getId());
+                        ControllerApiV2.updateController(controller);*/
                         continue;
                     } else {
                         controller.setActive(true);
@@ -152,46 +152,63 @@ public class ControllerUtilV2
 
 
     private static Controller getControllerFromJSON(long agentId, Map<String,Object> controllerJSON)  {
+        Controller controller = null;
         try {
-            if (controllerJSON != null && (!controllerJSON.isEmpty())) {
-                if (containsValueCheck(AgentConstants.TYPE, controllerJSON)) {
-                    FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact((Long) controllerJSON.get(AgentConstants.TYPE)));
-                    switch (controllerType) {
-                        case NIAGARA:
-                            return NiagaraController.getNiagaraControllerFromMap(agentId, controllerJSON);
-                        case BACNET_IP:
-                            return BacnetIpController.getBacnetControllerFromMap(agentId, controllerJSON);
-                        case OPC_XML_DA:
-                            return OpcXmlDaController.getOpcXmlDaControllerFromMap(agentId, controllerJSON);
-                        case BACNET_MSTP:
-                            return null;
-                        case MODBUS_RTU:
-                            return ModbusRtuController.getModbusRtuControllerFromMap(agentId, controllerJSON);
-                        case MODBUS_IP:
-                            return ModbusTcpController.getModbusTcpControllerFromMap(controllerJSON);
-                        case LON_WORKS:
-                            throw new Exception(" No implementation for " + FacilioControllerType.LON_WORKS.asString() + " controller");
-                        case KNX:
-                            throw new Exception(" No implementation for " + FacilioControllerType.KNX.asString() + " controller");
-                        case OPC_UA:
-                            return OpcUaController.getBacnetControllerFromMap(agentId, controllerJSON);
-                        case MISC:
-                            return MiscController.getMiscControllerFromJSON(agentId,controllerJSON);
-                        case CUSTOM:
-                        default:
-                            return CustomController.getCustomControllerFromJSON(agentId,controllerJSON);
+           /* FacilioAgent agent = AgentApiV2.getAgent(agentId);
+            if( (agent != null) ) {*/
+                if (controllerJSON != null && (!controllerJSON.isEmpty())) {
+                    if (containsValueCheck(AgentConstants.TYPE, controllerJSON)) {
+                        FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact((Long) controllerJSON.get(AgentConstants.TYPE)));
+                        switch (controllerType) {
+                            case NIAGARA:
+                                controller = NiagaraController.getNiagaraControllerFromMap(agentId, controllerJSON);
+                                break;
+                            case BACNET_IP:
+                                controller =  BacnetIpController.getBacnetControllerFromMap(agentId, controllerJSON);
+                                break;
+                            case OPC_XML_DA:
+                                controller = OpcXmlDaController.getOpcXmlDaControllerFromMap(agentId, controllerJSON);
+                                break;
+                            case BACNET_MSTP:
+                                throw new Exception(" No implementation for " + FacilioControllerType.BACNET_MSTP.asString() + " controller");
+                            case MODBUS_RTU:
+                                controller = ModbusRtuController.getModbusRtuControllerFromMap(agentId, controllerJSON);
+                                break;
+                            case MODBUS_IP:
+                                controller = ModbusTcpController.getModbusTcpControllerFromMap(controllerJSON);
+                                break;
+                            case LON_WORKS:
+                                throw new Exception(" No implementation for " + FacilioControllerType.LON_WORKS.asString() + " controller");
+                            case KNX:
+                                throw new Exception(" No implementation for " + FacilioControllerType.KNX.asString() + " controller");
+                            case OPC_UA:
+                                controller = OpcUaController.getBacnetControllerFromMap(agentId, controllerJSON);
+                                break;
+                            case MISC:
+                                controller = MiscController.getMiscControllerFromJSON(agentId, controllerJSON);
+                                break;
+                            case CUSTOM:
+                            default:
+                                controller = CustomController.getCustomControllerFromJSON(agentId, controllerJSON);
 
+                        }
+                    } else {
+                        LOGGER.info(" Controller Type missing ");
                     }
                 } else {
-                    LOGGER.info(" Controller Type missing ");
+                    LOGGER.info("Exception occurred, controllerJSON can't be null or empty " + controllerJSON);
                 }
-            } else {
-                LOGGER.info("Exception occurred, controllerJSON can't be null or empty " + controllerJSON);
             }
-        }catch (Exception e){
+        /*else {
+                LOGGER.info(" Exception occurred , no such agent ");
+            }*/
+       /*     if(controller != null){
+                controller.setSiteId(agent.getSiteId());
+            }*/
+        catch (Exception e){
             LOGGER.info("Exception occurred ",e);
         }
-        return null;
+        return controller;
     }
 
 

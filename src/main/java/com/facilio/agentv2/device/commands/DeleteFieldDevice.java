@@ -17,6 +17,9 @@ public class DeleteFieldDevice extends FacilioCommand
         LOGGER.info(" in delete fields command ");
         if(context.containsKey(AgentConstants.ID)){
             Collection<Long> deviceId = (Collection<Long>) context.get(AgentConstants.ID);
+            if( deviceId.isEmpty() ){
+                throw new Exception(" No controllers added ");
+            }
             int rowsUpdated = FieldDeviceApi.deleteDevices(deviceId);
                 if (rowsUpdated>0) {
                     return false;
