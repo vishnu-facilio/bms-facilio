@@ -492,6 +492,7 @@ public class FacilioConstants {
 		public static final String CHECK_FIELD_DISPLAY_NAME_DUPLICATION= "avoidFieldDisplayNameDuplication";
 		public static final String FIELD_ID = "fieldId";
 		public static final String LOOKUP_FIELD_META_LIST = "lookupFieldMetaList";
+		public static final String FETCH_LOOKUPS = "fetchLookups";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
 		public static final String ALLOW_SAME_FIELD_DISPLAY_NAME = "changeFieldDisplayName";
 

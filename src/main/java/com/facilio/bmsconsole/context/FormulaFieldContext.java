@@ -396,7 +396,7 @@ public class FormulaFieldContext implements Serializable {
 	
 	public enum ResourceType {
 		ONE_RESOURCE,
-		ALL_SITES,
+		ALL_SITES, // DO NOT USE
 		ALL_BUILDINGS,
 		ALL_FLOORS,
 		SPACE_CATEGORY,

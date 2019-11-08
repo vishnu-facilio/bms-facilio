@@ -9,7 +9,9 @@ import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.time.DateRange;
 
 public class KPIAction extends FacilioAction {
 
@@ -71,6 +73,32 @@ public class KPIAction extends FacilioAction {
 		setResult(KPIUtil.KPI_CATEGORY_CONTEXT, kpiCategory);
 	
 		return SUCCESS;
+	}
+	
+	public String kpiViolations() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getKPIOccurrencesChain();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.RECORD_ID_LIST, kpiResourceIds);
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
+		chain.execute();
+		setResult("violations", context.get(ContextNames.ALARM_COUNT));
+		return SUCCESS;
+	}
+	
+	private List<String> kpiResourceIds;
+	public List<String> getKpiResourceIds() {
+		return kpiResourceIds;
+	}
+	public void setKpiResourceIds(List<String> kpiResourceIds) {
+		this.kpiResourceIds = kpiResourceIds;
+	}
+
+	private DateRange dateRange;
+	public DateRange getDateRange() {
+		return dateRange;
+	}
+	public void setDateRange(DateRange dateRange) {
+		this.dateRange = dateRange;
 	}
 	
 	public String kpiViewerList() throws Exception {

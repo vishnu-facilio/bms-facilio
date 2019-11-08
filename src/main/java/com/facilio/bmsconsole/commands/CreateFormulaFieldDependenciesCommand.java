@@ -65,17 +65,17 @@ public class CreateFormulaFieldDependenciesCommand extends FacilioCommand {
 			case ONE_RESOURCE:
 				context.put(FacilioConstants.ContextNames.PARENT_ID, formulaField.getResourceId());
 				break;
-			case ALL_SITES:
-				if (formulaField.getIncludedResources() == null || formulaField.getIncludedResources().isEmpty()) {
+			case ALL_SITES: // TODO Will be removed
+				/*if (formulaField.getIncludedResources() == null || formulaField.getIncludedResources().isEmpty()) {
 					setSpaceModuleParentList(FacilioConstants.ContextNames.SITE, SpaceAPI.getAllSites(), context);
 				}
 				else {
 					context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, formulaField.getIncludedResources());
-				}
+				}*/
 				break;
 			case ALL_BUILDINGS:
 				if (formulaField.getIncludedResources() == null || formulaField.getIncludedResources().isEmpty()) {
-					setSpaceModuleParentList(FacilioConstants.ContextNames.BUILDING, SpaceAPI.getAllBuildings(), context);
+					setSpaceModuleParentList(FacilioConstants.ContextNames.BUILDING, SpaceAPI.getAllBuildings(formulaField.getSiteId()), context);
 				}
 				else {
 					context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, formulaField.getIncludedResources());
@@ -83,7 +83,7 @@ public class CreateFormulaFieldDependenciesCommand extends FacilioCommand {
 				break;
 			case ALL_FLOORS:
 				if (formulaField.getIncludedResources() == null || formulaField.getIncludedResources().isEmpty()) {
-					setSpaceModuleParentList(FacilioConstants.ContextNames.FLOOR, SpaceAPI.getAllFloors(), context);
+					setSpaceModuleParentList(FacilioConstants.ContextNames.FLOOR, SpaceAPI.getAllFloors(formulaField.getSiteId()), context);
 				}
 				else {
 					context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, formulaField.getIncludedResources());

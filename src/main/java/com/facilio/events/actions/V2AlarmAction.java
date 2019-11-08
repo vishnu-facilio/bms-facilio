@@ -104,6 +104,7 @@ public class V2AlarmAction extends FacilioAction {
 		FacilioContext context = constructListContext();
  		context.put(ContextNames.MODULE_NAME, occurrenceModule != null ? occurrenceModule : FacilioConstants.ContextNames.ALARM_OCCURRENCE);
  		context.put(ContextNames.RECORD_ID, getId());
+ 		context.put(ContextNames.FETCH_LOOKUPS, occurrenceModule != null);
  		FacilioChain occurrenceListChain = ReadOnlyChainFactory.getV2OccurrenceListChain();
  		occurrenceListChain.execute(context);
 		

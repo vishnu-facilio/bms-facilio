@@ -368,6 +368,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getV2OccurrenceListChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(fetchModuleDataListChain());
+		c.addCommand(new HandleOccurrenceListLookupCommand());
 		return c;
 	}
 	
@@ -1622,6 +1623,12 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getServiceCatalogListChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllServiceCatalogCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getKPIOccurrencesChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetKPIOccurrencesCommand());
 		return chain;
 	}
 }

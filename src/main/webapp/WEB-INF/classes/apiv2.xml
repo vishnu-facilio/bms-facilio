@@ -549,6 +549,11 @@
 	</package>
 	
 	<package name="KPIViewerModule" namespace="/api/v2/kpi/viewer" extends="v2Api">
+		<action name="violations" class="com.facilio.bmsconsole.actions.KPIAction" method="kpiViolations">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+		</action>
+		
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.KPIAction"
 			method="kpiViewerList">

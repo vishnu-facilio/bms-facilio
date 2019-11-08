@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -117,7 +118,7 @@ public class AssetAction extends FacilioAction {
 		catch (Exception e) {
 			if (FacilioProperties.isOnpremise() || getFetchStackTrace()) {
 				String assetString = FieldUtil.getAsJSON(asset).toString();
-				CommonCommandUtil.emailException("Asset Add Exception", "Error occurred while adding asset", e, assetString.toString());
+				CommonCommandUtil.emailAlert("Asset Add Exception",  "Error occurred while adding asset: \n\n\n------" + ExceptionUtils.getStackTrace(e) + "----\n\n\n" + assetString.toString());
 				LOGGER.error("Error occurred while adding asset: "+ assetString, e);
 			}
 			throw e;
@@ -136,6 +137,8 @@ public class AssetAction extends FacilioAction {
 	}
 	
 	public String updateAsset() throws Exception {
+		try {
+			
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
@@ -152,6 +155,15 @@ public class AssetAction extends FacilioAction {
 		FacilioChain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
 		updateAssetChain.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		
+		} catch (Exception e) {
+			if (FacilioProperties.isOnpremise() || getFetchStackTrace()) {
+				String assetString = FieldUtil.getAsJSON(asset).toString();
+				CommonCommandUtil.emailAlert("Asset Update Exception",  "Error occurred while updating asset: \n\n\n------" + ExceptionUtils.getStackTrace(e) + "----\n\n\n" + assetString.toString());
+				LOGGER.error("Error occurred while updating asset: "+ assetString, e);
+			}
+			throw e;
+		}
 		
 		return SUCCESS;
 	}

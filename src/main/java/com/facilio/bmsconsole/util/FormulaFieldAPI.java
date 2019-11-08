@@ -578,8 +578,8 @@ public class FormulaFieldAPI {
 			}
 			else {
 				switch (field.getResourceTypeEnum()) {
-					case ALL_SITES:
-						matchedResources = SpaceAPI.getAllSites();
+					case ALL_SITES: // Will be removed
+						// matchedResources = SpaceAPI.getAllSites();
 						break;
 					case ALL_BUILDINGS:
 						matchedResources = SpaceAPI.getAllBuildings(field.getSiteId());

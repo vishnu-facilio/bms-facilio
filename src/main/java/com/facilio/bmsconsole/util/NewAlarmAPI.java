@@ -393,6 +393,27 @@ public class NewAlarmAPI {
 			}
 		}
 	}
+	
+	public static void loadOccurrenceLookups(List<AlarmOccurrenceContext> occurrences) throws Exception {
+		updateOccurrenceResource(occurrences);
+	}
+
+	private static void updateOccurrenceResource(List<AlarmOccurrenceContext> occurrences) throws Exception {
+		if (CollectionUtils.isNotEmpty(occurrences)) {
+			List<Long> resourceIds = occurrences.stream().filter(occurrence -> occurrence != null && occurrence.getResource() != null)
+					.map(occurrence -> occurrence.getResource().getId()).collect(Collectors.toList());
+			Map<Long, ResourceContext> extendedResources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds,
+					false);
+			for (AlarmOccurrenceContext occurrence : occurrences) {
+				if (occurrence != null) {
+					ResourceContext resource = occurrence.getResource();
+					if (resource != null) {
+						occurrence.setResource(extendedResources.get(resource.getId()));
+					}
+				}
+			}
+		}
+	}
 
 	public static List<AlarmOccurrenceContext> getAlarmOccurrences(List<Long> recordIds) throws Exception {
 		if (CollectionUtils.isEmpty(recordIds)) {
