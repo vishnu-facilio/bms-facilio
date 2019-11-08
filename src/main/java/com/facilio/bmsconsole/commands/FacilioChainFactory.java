@@ -2076,5 +2076,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain deleteWorkPermitChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForWorkPermit());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
 	
 }

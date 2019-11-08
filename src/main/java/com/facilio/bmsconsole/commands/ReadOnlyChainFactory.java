@@ -1705,4 +1705,26 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain getWorkPermitListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForWorkPermit());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new LoadWorkPermitLookUpsCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new GetStateflowsForModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getWorkPermitDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkPermit());
+		c.addCommand(new LoadWorkPermitLookUpsCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		
+		return c;
+	}
+	
 }

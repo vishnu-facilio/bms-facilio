@@ -1319,8 +1319,9 @@ public class FacilioConstants {
 		public static final String WATCHLIST_RECORDS = "watchListRecords";
 		public static final String WATCHLIST = "watchlist";
 		
-
-	
+		public static final String WORKPERMIT_RECORDS = "workPermitRecords";
+		public static final String WORKPERMIT = "workpermit";
+		
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1492,6 +1493,7 @@ public class FacilioConstants {
 			classMap.put(CONTACT, ContactsContext.class);
 			classMap.put(INSURANCE, InsuranceContext.class);
 			classMap.put(WATCHLIST, WatchListContext.class);
+			classMap.put(WORKPERMIT, WorkPermitContext.class);
 
 			return classMap;
 		}

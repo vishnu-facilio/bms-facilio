@@ -143,6 +143,7 @@ private static final long serialVersionUID = 1L;
 		
 		if(!CollectionUtils.isEmpty(visitorLoggingIds)) {
 			FacilioChain c = FacilioChainFactory.deleteVisitorLoggingChain();
+			c.getContext().put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, visitorLoggingIds);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));

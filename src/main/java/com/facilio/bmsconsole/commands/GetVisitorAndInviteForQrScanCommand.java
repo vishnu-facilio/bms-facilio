@@ -45,13 +45,18 @@ public class GetVisitorAndInviteForQrScanCommand extends FacilioCommand{
 					String format = "MM-dd-yyyy";
 					SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
 					String currentDate = simpleDateFormat.format(date);
+					int flag = 0;
 					for(BusinessHourContext eachDayVisit : businessHours.getSingleDaybusinessHoursList()) {
 						if(simpleDateFormat.format(new Date(eachDayVisit.getDateOfTheDay())).equals(currentDate)) {
+							flag = 1;
 							if(currentTime <= eachDayVisit.getDateOfTheDay() + TimeUnit.NANOSECONDS.toMillis(eachDayVisit.getStartTimeAsLocalTime().toNanoOfDay()) || currentTime >= eachDayVisit.getDateOfTheDay() + TimeUnit.NANOSECONDS.toMillis(eachDayVisit.getEndTimeAsLocalTime().toNanoOfDay())) {
-								throw new IllegalArgumentException("This invite is expired for this visitor");
+								throw new IllegalArgumentException("This invite pass is not valid at this time for the visitor");
 							}
 							break;
 						}
+					}
+					if(flag == 0) {
+						throw new IllegalArgumentException("This invite pass is not valid");
 					}
 				}
 				else {

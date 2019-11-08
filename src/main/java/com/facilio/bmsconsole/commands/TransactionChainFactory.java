@@ -3889,6 +3889,30 @@ public class TransactionChainFactory {
 		
 		return c;
 	}
+	
+	public static FacilioChain addWorkPermitRecordsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkPermit());
+		c.addCommand(new GenericAddModuleDataListCommand());
+//		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+//		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+//		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+//		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+		return c;
+	}
+
+	public static FacilioChain updateWorkPermitRecordsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkPermit());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+//		c.addCommand(new UpdateStateForModuleDataCommand());
+//		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+//		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+//		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		
+		return c;
+	}
+
 }
 
 

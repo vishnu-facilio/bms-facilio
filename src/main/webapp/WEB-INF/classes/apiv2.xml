@@ -4580,4 +4580,17 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WatchListAction" method="getWatchListRecordList" />
 	</package>
+	<package name="workpermit" namespace="/api/v2/workpermit"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="addWorkPermit" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="updateWorkPermit" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="deleteWorkPermit" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList" />
+	</package>
 </struts>
