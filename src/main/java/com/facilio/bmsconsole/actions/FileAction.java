@@ -24,6 +24,7 @@ import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.filestore.FileStoreFactory;
 import com.facilio.services.filestore.PublicFileUtil;
+import com.facilio.time.DateTimeUtil;
 
 public class FileAction extends FacilioAction {
 
@@ -115,7 +116,10 @@ public class FileAction extends FacilioAction {
 			
 			PublicFileContext publicFileContext = PublicFileUtil.getPublicFileFromKey(publicFileKey);
 			
-			// validate 
+			if(publicFileContext.getExpiresOn() <= DateTimeUtil.getCurrenTime()) {
+				response.setStatus(404);
+				return ERROR;
+			}
 			
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", publicFileContext.getOrgId());
 			

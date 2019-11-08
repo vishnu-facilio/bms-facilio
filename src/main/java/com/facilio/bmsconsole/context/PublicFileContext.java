@@ -54,9 +54,9 @@ public class PublicFileContext {
 	}
 	public String getPublicUrl() throws UnsupportedEncodingException {
 		if(key != null) {
-			StringBuffer url = ServletActionContext.getRequest().getRequestURL();
-			StringBuilder builder = new StringBuilder(url.substring(0, url.indexOf("/api")))
-					.append("/internal/files?publicFileKey=").append(URLEncoder.encode(key, "UTF-8"));
+			
+			StringBuilder builder = new StringBuilder(FacilioProperties.getAppDomain())
+					.append("/api/public/v2/files/preview?publicFileKey=").append(URLEncoder.encode(key, "UTF-8"));
 			return builder.toString();
 		}
 		return null;

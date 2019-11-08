@@ -2,6 +2,7 @@ package com.facilio.services.filestore;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,6 +26,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
 import com.facilio.services.CryptoUtils;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.time.DateTimeUtil;
@@ -69,6 +71,13 @@ public class PublicFileUtil {
 		
 		publicFileContext.setFileId(fileID);
 		
+		FacilioService.runAsServiceWihReturn(() -> addPublicFileContext(publicFileContext));
+		
+		return publicFileContext;
+			
+	}
+	
+	public static PublicFileContext addPublicFileContext(PublicFileContext publicFileContext) throws Exception {
 		Map<String, Object> props = FieldUtil.getAsProperties(publicFileContext);
 		
 		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
@@ -79,9 +88,7 @@ public class PublicFileUtil {
 		insert.save();
 		
 		publicFileContext.setId((Long)props.get("id"));
-		
 		return publicFileContext;
-			
 	}
 	
 	private static PublicFileContext getPublicFileInfoFromRS(ResultSet rs) throws Exception {
@@ -121,23 +128,5 @@ public class PublicFileUtil {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
 		return null;
-		
-//		
-//		List<FacilioField> fields = FieldFactory.getPublicFileFields();
-//		
-//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-//		
-//		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-//				.select(fields)
-//				.table(ModuleFactory.getPublicFilesModule().getTableName())
-//				.andCondition(CriteriaAPI.getCondition(fieldMap.get("key"), key, StringOperators.IS));
-//		
-//		Map<String, Object> props = selectRecordBuilder.fetchFirst();
-//		
-//		if(props != null) {
-//			PublicFileContext publicFileContext = FieldUtil.getAsBeanFromMap(props, PublicFileContext.class);
-//			return publicFileContext;
-//		}
-//		return null;
 	}
 }

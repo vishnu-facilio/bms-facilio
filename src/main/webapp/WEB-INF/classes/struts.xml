@@ -24,6 +24,7 @@
 	<include file="integrationv2.xml" />
 	<include file="serviceportalv2.xml" />
 	<include file="eventconsole.xml" />
+	<include file="public.xml" />
 	
 	
 	

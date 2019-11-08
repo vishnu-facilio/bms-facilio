@@ -3177,17 +3177,6 @@
 			<result name="success">/jsps/testsoaprequest.jsp</result>
 		</action>
 		
-		<action name="files"
-			class="com.facilio.bmsconsole.actions.FileAction"
-			method="previewPublicFile">
-			<param name="permission">READ</param>
-			<result name="success" type="stream">
-				<param name="contentType">${contentType}</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
-		</action>
-		
 		<action name="migration">
 			<result name="success">/jsps/migration/Migration.jsp</result>
 		</action>
