@@ -3372,6 +3372,9 @@ public class PreventiveMaintenanceAPI {
 			List<PMTriggerContext> pmTriggerContexts = pmTriggers.get(pm.getId());
 			long start = -1;
 			boolean found = false;
+			if (CollectionUtils.isEmpty(pmTriggerContexts)) {
+				continue;
+			}
 			for (PMTriggerContext pmt: pmTriggerContexts) {
 				if (pmt.getTriggerExecutionSourceEnum() != TriggerExectionSource.SCHEDULE) {
 					continue;
