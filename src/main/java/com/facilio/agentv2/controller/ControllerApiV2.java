@@ -130,8 +130,11 @@ public class ControllerApiV2 {
 
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            LOGGER.info(" module name is "+moduleName);
             List<FacilioField> fields = modBean.getAllFields(moduleName);
+            LOGGER.info(" fields for the module are "+fields.size());
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+            LOGGER.info(" fieldsMap for the module are "+fieldsMap.values());
             Criteria criteria = new Criteria();
             if(agentId > 0){
                 criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
