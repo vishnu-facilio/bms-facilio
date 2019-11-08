@@ -536,7 +536,12 @@ public class NewAlarmAPI {
 		}
 
 		if(fieldId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS));
+			FacilioModule readingOccurrence = modBean.getModule(FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE);
+			Map<String, FacilioField> readingOccurrenceFields = FieldFactory.getAsMap(modBean.getAllFields(readingOccurrence.getName()));
+			selectBuilder
+			.innerJoin(readingOccurrence.getTableName())
+			.on("AlarmOccurrence.ID = " + readingOccurrence.getTableName() + ".ID");
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingOccurrenceFields.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS));
 		}
 		List<AlarmOccurrenceContext> occurrenceContexts = selectBuilder.get();
 		occurrenceContexts = getExtendedOccurrence(occurrenceContexts);
