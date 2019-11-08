@@ -74,7 +74,7 @@ public class GetKPIOccurrencesCommand extends FacilioCommand {
 				if (occurrenceMap.containsKey(id)) {
 					count = occurrenceMap.get(id);
 				}
-				countMap.put("noOfViolations", count);
+				countMap.put(id, count);
 			}
 		}
 		context.put(ContextNames.ALARM_COUNT, countMap);
