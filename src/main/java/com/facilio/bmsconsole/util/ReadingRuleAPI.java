@@ -10,7 +10,6 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.*;
-import com.twilio.sdk.resource.taskrouter.v1.workspace.Workflow;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,22 +7,21 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.twilio.sdk.type.PhoneNumber;
+import com.twilio.rest.api.v2010.account.Message;
 
 public class SMSUtil extends TwilioUtil {
 	private static final Logger LOGGER = LogManager.getLogger(SMSUtil.class.getName());
 	public static String sendSMS(JSONObject obj) {
 		
-		if(!FacilioProperties.isProduction())
-		{
-			LOGGER.info("SMS restricted in development/stage  ");
-			return "";
-
-		}
+//		if(!FacilioProperties.isProduction())
+//		{
+//			LOGGER.info("SMS restricted in development/stage  ");
+//			return "";
+//
+//		}
 		
 		String message = (String) obj.get("message");
 		String to = (String) obj.get("to");
@@ -32,20 +30,17 @@ public class SMSUtil extends TwilioUtil {
 		{
 			//TODO send SMS using India vendor
 		}
-		com.twilio.sdk.resource.api.v2010.account.Message tmessage = com.twilio.sdk.resource.api.v2010.account.Message.create(ACCOUNTS_ID,
-		    new com.twilio.sdk.type.PhoneNumber(to),  // To number
-		    new com.twilio.sdk.type.PhoneNumber("+16106248741"),  // From number
-		    message                    // SMS body
-		).execute();
-
 		
-		//com.twilio.sdk.resource.lookups.v1.PhoneNumber
-	//	com.twilio.sdk.resource.api.v2010.account.Message.create(accountSid, to, from, mediaUrl)
+		Message tmessage = Message.creator(
+                new com.twilio.type.PhoneNumber(to),
+                new com.twilio.type.PhoneNumber(FROM_NUMBER),
+                message)
+            .create();
+		
 		LOGGER.info("SMS sent successfully. ID : "+tmessage.getSid());
 		LOGGER.info(to+"=>"+message);
 		return tmessage.getSid();
 		
-		//FacilioFactory.getEmailClient().sendEmail(obj);
 	}
 	
 	
@@ -96,21 +91,21 @@ public class SMSUtil extends TwilioUtil {
 		
 	}
 	
-	public static String sendUserLink(User user, String link) throws Exception
-	{
-		PhoneNumber tophone = new com.twilio.sdk.type.PhoneNumber(user.getMobile());
-		PhoneNumber fromphone = new com.twilio.sdk.type.PhoneNumber("+16106248741");
-		String message = "Your OTP is " +link;
-		System.out.println(message);
-		
-		com.twilio.sdk.resource.api.v2010.account.Message tmessage = com.twilio.sdk.resource.api.v2010.account.Message.create(ACCOUNTS_ID,tophone , 
-				fromphone,message).execute();
-		
-		System.out.println(tmessage.getSid());
-		
-		return "Otp Sent successfully";
-		
-	}
+//	public static String sendUserLink(User user, String link) throws Exception
+//	{
+//		PhoneNumber tophone = new com.twilio.sdk.type.PhoneNumber(user.getMobile());
+//		PhoneNumber fromphone = new com.twilio.sdk.type.PhoneNumber("+16106248741");
+//		String message = "Your OTP is " +link;
+//		System.out.println(message);
+//		
+//		com.twilio.sdk.resource.api.v2010.account.Message tmessage = com.twilio.sdk.resource.api.v2010.account.Message.create(ACCOUNTS_ID,tophone , 
+//				fromphone,message).execute();
+//		
+//		System.out.println(tmessage.getSid());
+//		
+//		return "Otp Sent successfully";
+//		
+//	}
 	
 	
 	public static String verifyOtp(String phonenumber, String otp) throws Exception
@@ -206,21 +201,21 @@ public class SMSUtil extends TwilioUtil {
 	
 	public static void main(String args[])
 	{
-		/*JSONObject obj = new JSONObject();
-		obj.put("to", "919840425388");
+		JSONObject obj = new JSONObject();
+		obj.put("to", "+919965220466");
 		obj.put("message", "Hello world");
-		sendSMS(obj);*/
+		sendSMS(obj);
 		
-		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-		try {
-		    // phone must begin with '+'
-			String phone = "+971565387215";
-		    com.google.i18n.phonenumbers.Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phone, "");
-		    int countryCode = numberProto.getCountryCode();
-		    System.out.println("Hello" + countryCode);
-		} catch (NumberParseException e) {
-		    System.err.println("NumberParseException was thrown: " + e.toString());
-		}
+//		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+//		try {
+//		    // phone must begin with '+'
+//			String phone = "+971565387215";
+//		    com.google.i18n.phonenumbers.Phonenumber.PhoneNumber numberProto = phoneUtil.parse(phone, "");
+//		    int countryCode = numberProto.getCountryCode();
+//		    System.out.println("Hello" + countryCode);
+//		} catch (NumberParseException e) {
+//		    System.err.println("NumberParseException was thrown: " + e.toString());
+//		}
 
 	}
 	
