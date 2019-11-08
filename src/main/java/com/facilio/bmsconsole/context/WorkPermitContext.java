@@ -25,7 +25,7 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	public void setWorkType(int workType) {
 		this.workType = WorkType.valueOf(workType);
 	}
-	public WorkType getInviteSourceEnum() {
+	public WorkType getWorkTypeEnum() {
 		return workType;
 	}
 	public void setWorkType(WorkType workType) {

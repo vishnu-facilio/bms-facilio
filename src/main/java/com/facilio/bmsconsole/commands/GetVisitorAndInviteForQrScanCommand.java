@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +18,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.time.DateTimeUtil;
 
 public class GetVisitorAndInviteForQrScanCommand extends FacilioCommand{
 
@@ -31,7 +32,11 @@ public class GetVisitorAndInviteForQrScanCommand extends FacilioCommand{
 			VisitorInviteContext invite = VisitorManagementAPI.getVisitorInvite(inviteId);
 			if(invite != null) {
 				InviteVisitorRelContext inviteVisitorRel = VisitorManagementAPI.getVisitorInviteRel(inviteId, visitorId);
+				long currentTime = System.currentTimeMillis();
 				
+				if(currentTime < invite.getExpectedStartTime() || currentTime > invite.getExpectedEndTime()) {
+					throw new IllegalArgumentException("Invalid invite date range");
+				}
 				if(invite.isRecurring()) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
@@ -40,23 +45,22 @@ public class GetVisitorAndInviteForQrScanCommand extends FacilioCommand{
 						throw new IllegalArgumentException("This invite is expired for this visitor as he/she has completed work");
 					}
 					BusinessHoursContext businessHours = invite.getRecurringVisitTime();
-					long currentTime = System.currentTimeMillis();
 					Date date=new Date(currentTime);
-					String format = "MM-dd-yyyy";
-					SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-					String currentDate = simpleDateFormat.format(date);
+					Calendar calendar = Calendar.getInstance();
+			        calendar.setTime(date);
+			        int day_of_week = calendar.get(Calendar.DAY_OF_WEEK);
 					int flag = 0;
 					for(BusinessHourContext eachDayVisit : businessHours.getSingleDaybusinessHoursList()) {
-						if(simpleDateFormat.format(new Date(eachDayVisit.getDateOfTheDay())).equals(currentDate)) {
+						if(day_of_week == eachDayVisit.getDayOfWeek()) {
 							flag = 1;
-							if(currentTime <= eachDayVisit.getDateOfTheDay() + TimeUnit.NANOSECONDS.toMillis(eachDayVisit.getStartTimeAsLocalTime().toNanoOfDay()) || currentTime >= eachDayVisit.getDateOfTheDay() + TimeUnit.NANOSECONDS.toMillis(eachDayVisit.getEndTimeAsLocalTime().toNanoOfDay())) {
+							if(currentTime <= DateTimeUtil.getDayStartTime(false) + TimeUnit.NANOSECONDS.toMillis(eachDayVisit.getStartTimeAsLocalTime().toNanoOfDay()) || currentTime >= DateTimeUtil.getDayStartTime(false) + TimeUnit.NANOSECONDS.toMillis(eachDayVisit.getEndTimeAsLocalTime().toNanoOfDay())) {
 								throw new IllegalArgumentException("This invite pass is not valid at this time for the visitor");
 							}
 							break;
 						}
 					}
 					if(flag == 0) {
-						throw new IllegalArgumentException("This invite pass is not valid");
+						throw new IllegalArgumentException("This invite pass is not valid for the day");
 					}
 				}
 				else {

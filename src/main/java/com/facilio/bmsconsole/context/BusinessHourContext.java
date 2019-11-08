@@ -112,18 +112,7 @@ if(dayOfWeek!=-1){
 		this.endTime = LocalTime.parse(value);
 		}
 	}
-	
-	private long dateOfTheDay;
-
-	public long getDateOfTheDay() {
-		return dateOfTheDay;
-	}
-
-	public void setDateOfTheDay(long dateOfTheDay) {
-		this.dateOfTheDay = dateOfTheDay;
-	}
-	
-	
+		
 //	@Override
 //	public String toString() {
 //		// TODO Auto-generated method stub

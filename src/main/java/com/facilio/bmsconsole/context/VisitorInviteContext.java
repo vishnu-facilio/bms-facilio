@@ -1,20 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.tasker.ScheduleInfo;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 	
