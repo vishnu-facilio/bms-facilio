@@ -651,7 +651,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			chain.execute(context);
 			updateParentRuleId(oldRule.getAlarmTriggerRule().getId(),alarmTriggerRule.getId());
 		}
-		else if (alarmRule.isAutoClear()) {
+		else if (!alarmRule.isAutoClear()) {
 			FacilioChain chain = TransactionChainFactory.updateWorkflowRuleChain();
 			FacilioContext updateWorkflowContext = chain.getContext();
 			ReadingRuleContext oldReadingRule = oldRule.getAlarmTriggerRule();
