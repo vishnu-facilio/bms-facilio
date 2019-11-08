@@ -937,6 +937,15 @@ public class ModuleFactory {
 
 		return filesModule;
 	}
+	
+	public static FacilioModule getPublicFilesModule() {
+		FacilioModule filesModule = new FacilioModule();
+		filesModule.setName("publicfiles");
+		filesModule.setDisplayName("Public Files");
+		filesModule.setTableName("Public_Files");
+
+		return filesModule;
+	}
 
 	public static FacilioModule getZoneRelModule() {
 		FacilioModule zoneRelModule = new FacilioModule();

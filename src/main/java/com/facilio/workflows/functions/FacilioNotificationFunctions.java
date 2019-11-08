@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.util.CallUtil;
 import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.services.factory.FacilioFactory;
@@ -62,7 +63,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			}
 		}
 	},
-	SEND_MOBILE_NOTIFICATION(2,"sendNotification") {
+	SEND_MOBILE_NOTIFICATION(3,"sendNotification") {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
@@ -76,6 +77,28 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			
 			NotificationAPI.sendPushNotification(Collections.singletonList(userId), WorkflowV2Util.getAsJSONObject(sendMailMap));
 			
+			return null;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	
+	MAKE_CALL(4,"makeCall") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			if(objects[0] == null) {
+				return null;
+			}
+			Map<String,Object> callMap =  (Map<String, Object>) objects[0];
+			
+			CallUtil.makeCall(WorkflowV2Util.getAsJSONObject(callMap));
 			return null;
 		};
 		

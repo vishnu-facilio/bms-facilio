@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,17 +12,10 @@ import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.twilio.sdk.Twilio;
 import com.twilio.sdk.type.PhoneNumber;
 
-public class SMSUtil {
-	private static final String ACCOUNTS_ID = "AC49fd18185d9f484739aa73b648ba2090"; // Your Account SID from www.twilio.com/user/account
-	private static final String AUTH_TOKEN = "3683aa0033af81877501961dc886a52b"; // Your Auth Token from www.twilio.com/user/account
+public class SMSUtil extends TwilioUtil {
 	private static final Logger LOGGER = LogManager.getLogger(SMSUtil.class.getName());
-	static {
-		Twilio.init(ACCOUNTS_ID, AUTH_TOKEN);
-	}
-	private final static String FROM = "facilio";
 	public static String sendSMS(JSONObject obj) {
 		
 		if(!FacilioProperties.isProduction())

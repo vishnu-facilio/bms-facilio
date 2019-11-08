@@ -3147,6 +3147,21 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getPublicFileFields() {
+		
+		
+		FacilioModule module = ModuleFactory.getPublicFilesModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("fileId", "FILEID", module, FieldType.FILE));
+		fields.add(getField("key", "FILE_KEY", module, FieldType.STRING));
+		fields.add(getField("expiresOn", "EXPIRES_ON", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	
 
 	public static List<FacilioField> getFileFields() {
 		FacilioModule module = ModuleFactory.getFilesModule();
