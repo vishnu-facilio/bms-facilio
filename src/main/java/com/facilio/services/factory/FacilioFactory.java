@@ -5,6 +5,8 @@ import com.facilio.services.email.EmailClient;
 import com.facilio.services.email.EmailFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.filestore.FileStoreFactory;
+import com.facilio.services.messageQueue.MessageQueue;
+import com.facilio.services.messageQueue.MessageQueueFactory;
 
 public class FacilioFactory {
 
@@ -33,9 +35,10 @@ public class FacilioFactory {
         return FileStoreFactory.getInstance().getFileStoreFromOrg(orgId,ouid);
     }
 
- /*   public static MessageQueue getMessageQueue(){
+   public static MessageQueue getMessageQueue(){
        return MessageQueueFactory.getMessageQueue();
     }
+    /*
     public static FacilioQueue getQueue(){
         return QueueFactory.getQueue();
     }

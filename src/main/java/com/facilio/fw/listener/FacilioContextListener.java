@@ -26,6 +26,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.services.kafka.notification.NotificationProcessor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -51,8 +52,6 @@ import com.facilio.filters.HealthCheckFilter;
 import com.facilio.fw.BeanFactory;
 import com.facilio.jmx.FacilioQueryCounter;
 import com.facilio.jmx.FacilioQueryCounterMBean;
-import com.facilio.kafka.KafkaProcessor;
-import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.logging.SysOutLogger;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
@@ -118,7 +117,7 @@ public class FacilioContextListener implements ServletContextListener {
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
 			initializeDB();
 			if( !FacilioProperties.isDevelopment()) {
-				new Thread(new com.facilio.kafka.notification.NotificationProcessor()).start();
+				new Thread(new NotificationProcessor()).start();
 			}
 
 			BeanFactory.initBeans();
@@ -141,16 +140,7 @@ public class FacilioContextListener implements ServletContextListener {
 			}*/
 
 			try {
-
-				if(FacilioProperties.isMessageProcessor()) {
-
-					if("kinesis".equals(FacilioProperties.getMessageQueue())) {
-						new Thread(KinesisProcessor::startKinesis).start();
-					} else {
-						LOGGER.info("Starting kafka processor");
-						new Thread(KafkaProcessor::start).start();
-					}
-				}
+				FacilioFactory.getMessageQueue().start();
 			} catch (Exception e){
 				LOGGER.info("Exception occurred ", e);
 			}

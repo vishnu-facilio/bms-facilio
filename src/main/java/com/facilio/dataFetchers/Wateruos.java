@@ -29,7 +29,7 @@ public class Wateruos extends DataFetcher {
         String res;
         if (connectionApiContext!=null){
             res = (String)connectionApiContext.execute(params);
-            //LOGGER.info("Response from "+connectionApiContext.getName()+"\n"+res);
+            LOGGER.info("anand.h Response from "+connectionApiContext.getName()+"\n"+res);
             JSONParser parser = new JSONParser();
             JSONArray jsonArray = (JSONArray) parser.parse(res);
             long maxTimeStamp=0L;
@@ -47,7 +47,7 @@ public class Wateruos extends DataFetcher {
                 }
 
             }
-            //LOGGER.info("selected json"+selectedJSON);
+            LOGGER.info("selected json"+selectedJSON);
             return selectedJSON;
         }else{
             LOGGER.error("connectionApiContext is null");

@@ -1,20 +1,20 @@
-package com.facilio.processor;
+package com.facilio.services.kinesis;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessor;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
 
-public class ProcessorFactory implements IRecordProcessorFactory {
+public class KinesisIRecordProcessorFactory implements IRecordProcessorFactory {
 
     private long orgId;
     private String orgDomainName;
 
-    public ProcessorFactory(long orgId, String orgDomainName){
+    public KinesisIRecordProcessorFactory(long orgId, String orgDomainName){
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
     }
 
     @Override
     public IRecordProcessor createProcessor() {
-        return new Processor(orgId,orgDomainName);
+        return new KinesisProcessor(orgId,orgDomainName);
     }
 }

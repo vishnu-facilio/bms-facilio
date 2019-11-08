@@ -1,13 +1,4 @@
-package com.facilio.kafka.agent;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
+package com.facilio.services.kafka.agent;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.agent.AgentKeys;
@@ -25,17 +16,25 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.tasker.tasks.EventProcessor;
 import com.facilio.fw.BeanFactory;
-import com.facilio.kafka.FacilioKafkaConsumer;
-import com.facilio.kafka.FacilioKafkaProducer;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.procon.message.FacilioRecord;
-import com.facilio.procon.processor.FacilioProcessor;
+import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.services.procon.processor.FacilioProcessor;
 import com.facilio.server.ServerInfo;
+import com.facilio.services.kafka.FacilioKafkaConsumer;
+import com.facilio.services.kafka.FacilioKafkaProducer;
 import com.facilio.util.AckUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * AgentProcessor is a dedicated processor for processing payloads with PUBLISH_TYPE set to 'agent', 'devicepoints' and 'ack'.
@@ -133,7 +132,7 @@ public class AgentProcessor extends FacilioProcessor
             int numberOfRows = 0;
             partitionKey = record.getPartitionKey();
             String dataType = (String)payLoad.remove(EventProcessor.DATA_TYPE);
-             if(dataType != null ) {
+            if(dataType != null ) {
                 switch (PublishType.valueOf(dataType)) {
                     case agent:
                         // numberOfRows = agentUtil.processAgent(payLoad);
@@ -147,12 +146,12 @@ public class AgentProcessor extends FacilioProcessor
 
 
                 }
-                 if((numberOfRows == 0)){
-                     GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+payLoad.get(PublishType.agent.getValue())+"'");
-                     Map<String,Object> toUpdate = new HashMap<>();
-                     toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME,System.currentTimeMillis());
-                     genericUpdateRecordBuilder.update(toUpdate);
-                 }
+                if((numberOfRows == 0)){
+                    GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+payLoad.get(PublishType.agent.getValue())+"'");
+                    Map<String,Object> toUpdate = new HashMap<>();
+                    toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME,System.currentTimeMillis());
+                    genericUpdateRecordBuilder.update(toUpdate);
+                }
             }
         } catch (Exception e) {
             CommonCommandUtil.emailException("KAgentProcessor", "Error in processing records in TimeSeries ", e, payLoad.toJSONString());

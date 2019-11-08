@@ -7,7 +7,7 @@ import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.kafka.Processor;
+import com.facilio.services.kafka.KafkaProcessor;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class ProcessTimeSeriesData extends FacilioCommand {
 
-    private static final Logger LOGGER = LogManager.getLogger(Processor.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(KafkaProcessor.class.getName());
 
     @Override
     public boolean executeCommand(Context context) throws Exception {

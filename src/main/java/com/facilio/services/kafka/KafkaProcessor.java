@@ -1,4 +1,4 @@
-package com.facilio.kafka;
+package com.facilio.services.kafka;
 
 import com.facilio.agent.*;
 import com.facilio.agentv2.AgentConstants;
@@ -13,10 +13,13 @@ import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
-import com.facilio.procon.message.FacilioRecord;
-import com.facilio.procon.processor.FacilioProcessor;
+import com.facilio.services.kafka.FacilioKafkaConsumer;
+import com.facilio.services.kafka.FacilioKafkaProducer;
+import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.services.procon.processor.FacilioProcessor;
 import com.facilio.server.ServerInfo;
 import com.facilio.util.AckUtil;
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -28,8 +31,8 @@ import java.util.List;
 
 import static com.facilio.agent.PublishType.event;
 
-
-public class Processor extends FacilioProcessor {
+//Renamed from Processor
+public class KafkaProcessor extends FacilioProcessor {
     private AgentUtil agentUtil;
     private DevicePointsUtil devicePointsUtil;
     private AckUtil ackUtil;
@@ -39,12 +42,12 @@ public class Processor extends FacilioProcessor {
     private long orgId;
     private String orgDomainName;
     private JSONParser parser = new JSONParser();
-    private static final Logger LOGGER = LogManager.getLogger(Processor.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(KafkaProcessor.class.getName());
     private ProcessorV2 processorV2;
     private boolean isRestarted = true;
 
 
-    public Processor(long orgId, String orgDomainName) {
+    public KafkaProcessor(long orgId, String orgDomainName) {
         super(orgId, orgDomainName);
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
@@ -72,9 +75,9 @@ public class Processor extends FacilioProcessor {
     @Override
     public void processRecords(List<FacilioRecord> records) {
         for (FacilioRecord record : records) {
-                boolean alarmCreated = false;
-                long numberOfRows = 0;
-                String recordId = record.getId();
+            boolean alarmCreated = false;
+            long numberOfRows = 0;
+            String recordId = record.getId();
             try {
                 try {
                     boolean  isDuplicateMessage = agentUtil.isDuplicate(recordId);
@@ -90,7 +93,7 @@ public class Processor extends FacilioProcessor {
                     }
                     else {
                         boolean originalFlag =false;
-                                originalFlag = agentUtil.addAgentMessage(recordId);
+                        originalFlag = agentUtil.addAgentMessage(recordId);
                         if(!originalFlag){
                             LOGGER.info("tried adding duplicate message "+ recordId);
                             continue;
@@ -163,7 +166,7 @@ public class Processor extends FacilioProcessor {
                     }
                     agent.setId(agentId);
                 }
-               //cU = getControllerUtil(agent.getId());
+                //cU = getControllerUtil(agent.getId());
                 int dataLength = data.length();
                 HashMap<String, Long> dataTypeLastMessageTime = deviceMessageTime.getOrDefault(deviceId, new HashMap<>());
                 long deviceLastMessageTime = dataTypeLastMessageTime.getOrDefault(dataType, 0L);
@@ -288,7 +291,7 @@ public class Processor extends FacilioProcessor {
                     payLoad.put(AgentKeys.COMMAND,ControllerCommand.connect.getCommand());
                 }
                 else{ // avoids any status pther than 0 and 1
-                     LOGGER.info("Exception Occured, wrong status in payload.--"+payLoad);
+                    LOGGER.info("Exception Occured, wrong status in payload.--"+payLoad);
                     return;
                 }
             }

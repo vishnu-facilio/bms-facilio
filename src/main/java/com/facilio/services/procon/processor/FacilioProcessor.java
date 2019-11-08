@@ -1,4 +1,4 @@
-package com.facilio.procon.processor;
+package com.facilio.services.procon.processor;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.procon.consumer.FacilioConsumer;
-import com.facilio.procon.message.FacilioRecord;
-import com.facilio.procon.producer.FacilioProducer;
+import com.facilio.services.procon.consumer.FacilioConsumer;
+import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.services.procon.producer.FacilioProducer;
 
 public abstract class FacilioProcessor implements  Runnable {
 

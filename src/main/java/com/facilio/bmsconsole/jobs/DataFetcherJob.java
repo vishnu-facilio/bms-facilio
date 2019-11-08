@@ -13,6 +13,7 @@ public class DataFetcherJob extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
 
+            LOGGER.info("Calling wateruos");
             DataFetcher wateruos = new Wateruos();
             wateruos.process();
 

@@ -1,11 +1,8 @@
-package com.facilio.kafka;
+package com.facilio.services.kafka;
 
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.services.procon.consumer.FacilioConsumer;
+import com.facilio.services.procon.message.FacilioRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -17,9 +14,11 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.procon.consumer.FacilioConsumer;
-import com.facilio.procon.message.FacilioRecord;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 public class FacilioKafkaConsumer implements FacilioConsumer {
 
@@ -43,7 +42,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("max.partition.fetch.bytes", 3145728);
         props.put("auto.offset.reset", "latest");
         props.put("max.poll.interval.ms", 2000);
-        props.put("client.id", client);
+        //props.put("client.id", client);
 
         return props;
     }
@@ -93,7 +92,6 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         if(topicPartition == null) {
             topicPartition = new TopicPartition(topic, 0);
             consumer.assign(Collections.singletonList(topicPartition));
-            consumer.seekToEnd(Collections.singleton(topicPartition));
         }
     }
 

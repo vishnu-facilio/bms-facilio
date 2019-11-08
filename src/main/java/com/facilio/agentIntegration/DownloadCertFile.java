@@ -29,7 +29,6 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.factory.FacilioFactory;
-import com.facilio.kinesis.KinesisProcessor;
 
 public class DownloadCertFile
 {
@@ -101,7 +100,7 @@ public class DownloadCertFile
                 LOGGER.info("Exception occurred",e);
             }
 
-            KinesisProcessor.startKinesis();
+            FacilioFactory.getMessageQueue().start();
         }
         return url;
     }

@@ -23,7 +23,7 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.fw.BeanFactory;
-import com.facilio.kinesis.ErrorDataProducer;
+import com.facilio.services.kinesis.ErrorDataProducer;
 
 public class EventProcessor implements IRecordProcessor {
 

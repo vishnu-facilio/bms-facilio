@@ -1,8 +1,8 @@
-package com.facilio.procon.consumer;
+package com.facilio.services.procon.consumer;
 
 import java.util.List;
 
-import com.facilio.procon.message.FacilioRecord;
+import com.facilio.services.procon.message.FacilioRecord;
 
 public interface FacilioConsumer {
 

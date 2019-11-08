@@ -1,14 +1,13 @@
-package com.facilio.kafka;
+package com.facilio.services.kafka;
 
-import java.util.Properties;
-
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.services.kinesis.ErrorDataProducer;
+import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.services.procon.producer.FacilioProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.kinesis.ErrorDataProducer;
-import com.facilio.procon.message.FacilioRecord;
-import com.facilio.procon.producer.FacilioProducer;
+import java.util.Properties;
 
 public class FacilioKafkaProducer implements FacilioProducer {
 

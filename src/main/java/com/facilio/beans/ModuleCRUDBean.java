@@ -25,8 +25,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FacilioModule;
-import com.facilio.procon.consumer.FacilioConsumer;
-import com.facilio.procon.message.FacilioRecord;
+import com.facilio.services.procon.consumer.FacilioConsumer;
+import com.facilio.services.procon.message.FacilioRecord;
 
 public interface ModuleCRUDBean {
 	

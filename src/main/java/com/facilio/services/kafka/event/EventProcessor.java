@@ -1,24 +1,23 @@
-package com.facilio.kafka.event;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
+package com.facilio.services.kafka.event;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.fw.BeanFactory;
-import com.facilio.kafka.FacilioKafkaConsumer;
-import com.facilio.kafka.FacilioKafkaProducer;
-import com.facilio.procon.message.FacilioRecord;
-import com.facilio.procon.processor.FacilioProcessor;
+import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.services.procon.processor.FacilioProcessor;
 import com.facilio.server.ServerInfo;
+import com.facilio.services.kafka.FacilioKafkaConsumer;
+import com.facilio.services.kafka.FacilioKafkaProducer;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class EventProcessor extends FacilioProcessor {
 

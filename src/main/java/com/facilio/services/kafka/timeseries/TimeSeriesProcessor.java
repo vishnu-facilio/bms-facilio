@@ -1,13 +1,4 @@
-package com.facilio.kafka.timeseries;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
+package com.facilio.services.kafka.timeseries;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
@@ -20,16 +11,24 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.tasker.tasks.EventProcessor;
 import com.facilio.fw.BeanFactory;
-import com.facilio.kafka.FacilioKafkaConsumer;
-import com.facilio.kafka.FacilioKafkaProducer;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.procon.message.FacilioRecord;
-import com.facilio.procon.processor.FacilioProcessor;
+import com.facilio.services.procon.message.FacilioRecord;
+import com.facilio.services.procon.processor.FacilioProcessor;
 import com.facilio.server.ServerInfo;
+import com.facilio.services.kafka.FacilioKafkaConsumer;
+import com.facilio.services.kafka.FacilioKafkaProducer;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TimeSeriesProcessor extends FacilioProcessor {
 
