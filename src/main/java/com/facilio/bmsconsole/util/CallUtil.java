@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.PublicFileContext;
@@ -32,6 +33,8 @@ public class CallUtil extends TwilioUtil {
 		PublicFileContext publicFileContext = PublicFileUtil.createPublicFile(twilioML, "twilioML", "xml", "text/xml");
 		
 		String url = publicFileContext.getPublicUrl();
+		
+		LOGGER.error("url --- "+url);
 
 		//url = url.replace("http://localhost:8080/", "https://8eb69070.ngrok.io/"); //for local testing
 		
