@@ -254,4 +254,23 @@ public class ControllerApiV2 {
         }
         return false;
     }
+
+    static void updateController(Controller controller) {
+        controller.setLastDataRecievedTime(System.currentTimeMillis());
+        controller.setLastModifiedTime(controller.getLastDataRecievedTime());
+        FacilioChain updateControllerChain = TransactionChainFactory.getUpdateControllerChain();
+        FacilioContext context = updateControllerChain.getContext();
+        context.put(FacilioConstants.ContextNames.RECORD,controller);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,controller.getModuleName());
+        List<Long> ids = new ArrayList<>();
+        ids.add(controller.getId());
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,ids);
+        try {
+            LOGGER.info(" updating controller ");
+            updateControllerChain.execute();
+            LOGGER.info(" \nafter update  - " + context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

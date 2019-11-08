@@ -1944,6 +1944,7 @@ CREATE TABLE IF NOT EXISTS Field_Device (
                                             AGENT_ID BIGINT,
                                             CONTROLLER_PROPS VARCHAR(2000),
                                             CREATED_TIME BIGINT NOT NULL,
+                                            DELETED_TIME BIGINT DEFAULT NULL,
                                             CONSTRAINT FIELD_DEVICE_FK_SITE_ID FOREIGN KEY (SITE_ID) REFERENCES Site(ID),
                                             CONSTRAINT FIELD_DEVICE_FK_AGENT_ID FOREIGN KEY (AGENT_ID) REFERENCES Agent(ID),
                                             CONSTRAINT FIELD_DEVICE_UNIQUE_ORGID_AGENTID_NAME UNIQUE(ORGID, AGENT_ID,NAME)

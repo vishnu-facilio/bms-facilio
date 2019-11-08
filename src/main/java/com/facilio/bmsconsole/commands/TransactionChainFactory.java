@@ -10,7 +10,10 @@ import com.facilio.agentIntegration.AddIntegrationCommand;
 import com.facilio.agentIntegration.UpdateIntegrationCommand;
 import com.facilio.agentIntegration.wattsense.AgentIntegrationDeleteCommand;
 import com.facilio.agentv2.AddAgent;
-import com.facilio.agentv2.controller.AddDevicesCommand;
+import com.facilio.agentv2.controller.commands.AddDevicesCommand;
+import com.facilio.agentv2.controller.commands.FieldDevicesToControllerCommand;
+import com.facilio.agentv2.device.commands.DeleteFieldDevice;
+import com.facilio.agentv2.device.commands.getFieldDevicesCommand;
 import com.facilio.agentv2.iotmessage.AckMessageCommand;
 import com.facilio.agentv2.timeseries.ProcessTimeSeriesData;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
@@ -2856,7 +2859,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteWorkflowCommand());
 			return c;
 		}
-		
+
 		public static FacilioChain getExecuteCardWorkflowChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GetCardWorkflowCommand());
@@ -3769,6 +3772,20 @@ public class TransactionChainFactory {
 	public static FacilioChain getAddOrUpdateServiceCatalogGroupChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateServiceCatalogGroupCommand());
+		return chain;
+	}
+
+	public static FacilioChain getDeleteFieldDeviceChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteFieldDevice());
+		return chain;
+	}
+
+	public static FacilioChain getProcessControllerV2Chain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new getFieldDevicesCommand());
+		chain.addCommand(new FieldDevicesToControllerCommand());
+		chain.addCommand(new DeleteFieldDevice());
 		return chain;
 	}
 }

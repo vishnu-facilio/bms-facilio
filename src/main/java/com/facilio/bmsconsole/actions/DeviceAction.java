@@ -10,7 +10,7 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
-import com.facilio.agentv2.device.DeviceUtil;
+import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
@@ -21,7 +21,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -124,9 +123,7 @@ public class DeviceAction extends ActionSupport
 	}
 
 	public String getDevices(){
-		List<Map<String, Object>> devices = new ArrayList<>();
-		devices = DeviceUtil.getDevices(getAgentId(), getIds());
-		setResult(RESULT,devices);
+		setResult(RESULT,FieldDeviceApi.getDevices(getAgentId(), getIds()));
 		return SUCCESS;
 	}
 

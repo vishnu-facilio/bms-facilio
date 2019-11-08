@@ -19,11 +19,11 @@ public class FacilioAgent {
     private Long siteId;
     private Long deletedTime = -1L ;
     private Boolean writable;
-    private  Long lastModifiedTime ;
-    private  Long lastUpdatedTime ;
-    private Long lastDataReceivedTime ;
+    private  Long lastModifiedTime = -1L;
+    private  Long lastUpdatedTime = -1L;
+    private Long lastDataReceivedTime = -1L ;
     private String displayName;
-    private Long createdTime ;
+    private Long createdTime = -1L;
 
     public Long getCreatedTime() {
         return createdTime;

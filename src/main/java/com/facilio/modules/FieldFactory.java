@@ -5336,8 +5336,14 @@ public class FieldFactory {
 		fields.add(getNewAgentIdField(module));
 		fields.add(getField(AgentConstants.CONTROLLER_PROPS_AS_PROPSSTR,"CONTROLLER_PROPS",module,FieldType.STRING));
 		fields.add(getCreatedTime(module));
+		fields.add(getNewDeletedTimeField(module));
 		return fields;
 	}
+
+	public static FacilioField  getNewDeletedTimeField(FacilioModule module) {
+		return getField(AgentConstants.DELETED_TIME,"DELETED_TIME",module,FieldType.NUMBER);
+	}
+
 	// using this
 	public static List<FacilioField>  getPointFields() {
 		FacilioModule module = ModuleFactory.getPointModule();

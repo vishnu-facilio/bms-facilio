@@ -5,7 +5,6 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.bacnet.BacnetIpController;
 import com.facilio.agentv2.device.Device;
-import com.facilio.agentv2.device.DeviceUtil;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuController;
 import com.facilio.agentv2.modbustcp.ModbusTcpController;
@@ -15,9 +14,7 @@ import com.facilio.agentv2.opcxmlda.OpcXmlDaController;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.custom.CustomController;
-import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -106,70 +103,55 @@ public class ControllerUtilV2
 
 
     public boolean processController(long agentId, List<Long> ids) {
+        LOGGER.info(" processing devices ");
+        FacilioChain chain = TransactionChainFactory.getProcessControllerV2Chain();
+        FacilioContext context = chain.getContext();
+        context.put(AgentConstants.AGENT_ID,agentId);
+        context.put(AgentConstants.ID,ids);
         try {
-            LOGGER.info("processing controller-------");
-            List<Device> devices = FieldUtil.getAsBeanListFromMapList(DeviceUtil.getDevices(agentId, ids), Device.class);
-            LOGGER.info(" devices obtained are " + devices.size());
-            Controller controller = null;
-            for (Device device : devices) {
-                LOGGER.info("device are " + device);
-                JSONObject controllerProps = device.getControllerProps();
-                LOGGER.info(" controller props JSON " + controllerProps);
-                if ((controllerProps != null) && (!controllerProps.isEmpty())) {
-                    controller = getControllerFromJSON(agentId, controllerProps);
-                    if (controller != null) {
-                        Controller controllerFromDb = getController(agentId, controller.makeIdentifier(), FacilioControllerType.valueOf(controller.getControllerType()));
-                        if (controllerFromDb != null) {
-                            controller.setId(controllerFromDb.getId());
-                            updateController(controller);
-                            return true;
-                        } else {
-                            LOGGER.info(" adding controller ");
-                            LOGGER.info(" debus "+controller.isActive());
-                            controller.setActive(true);
-                            LOGGER.info(" controller to active true  ");
-                            LOGGER.info(" controller JSON "+FieldUtil.getAsProperties(controller));
-                            long controllerId = ControllerApiV2.addController(controller);
-                            LOGGER.info(" added controller " + controllerId);
-                            if( controllerId > 0){
-                                return true;
-                            }
-                        }
-                    } else {
-                        LOGGER.info("Exception occurred , controller obtained is null ");
-                    }
-                } else {
-                    LOGGER.info("Exception occurred, controllerProps can't be null or empty -> " + controllerProps);
-                }
-            }
-        }catch (Exception e) {
-                LOGGER.info("Exception occurred ",e);
+            chain.execute();
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return false;
     }
 
-    private void updateController(Controller controller) {
-        controller.setLastDataRecievedTime(System.currentTimeMillis());
-        controller.setLastModifiedTime(controller.getLastDataRecievedTime());
-        FacilioChain updateControllerChain = TransactionChainFactory.getUpdateControllerChain();
-        FacilioContext context = updateControllerChain.getContext();
-        context.put(FacilioConstants.ContextNames.RECORD,controller);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME,controller.getModuleName());
-        List<Long> ids = new ArrayList<>();
-        ids.add(controller.getId());
-        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,ids);
-        try {
-            LOGGER.info(" updating controller ");
-            updateControllerChain.execute();
-            LOGGER.info(" \nafter update  - " + context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static List<Long> fieldDeviceToController(long agentId,List<Device> devices) throws Exception{
+        Controller controller ;
+        List<Long> deviceId = new ArrayList<>();
+        for (Device device : devices) {
+            LOGGER.info("device are " + device);
+            JSONObject controllerProps = device.getControllerProps();
+            LOGGER.info(" controller props JSON " + controllerProps);
+            if ((controllerProps != null) && (!controllerProps.isEmpty())) {
+                controller = getControllerFromJSON(agentId, controllerProps);
+                if (controller != null) {
+                    Controller controllerFromDb = ControllerApiV2.getControllerFromDb(controller.makeIdentifier(),agentId,FacilioControllerType.valueOf(controller.getControllerType()));
+                            //getController(agentId, controller.makeIdentifier(), FacilioControllerType.valueOf(controller.getControllerType()));
+                    if (controllerFromDb != null) {
+                        controller.setId(controllerFromDb.getId());
+                        ControllerApiV2.updateController(controller);
+                        continue;
+                    } else {
+                        controller.setActive(true);
+                        long controllerId = ControllerApiV2.addController(controller);
+                        if( controllerId > 0){
+                            deviceId.add(device.getId());
+                        }
+                    }
+                } else {
+                    throw new Exception("Controller Cont be null ");
+                }
+            } else {
+                throw new Exception("controllerProps can't be null or empty -> " + controllerProps );
+            }
         }
+        return deviceId;
     }
 
 
-
-    private Controller getControllerFromJSON(long agentId, Map<String,Object> controllerJSON)  {
+    private static Controller getControllerFromJSON(long agentId, Map<String,Object> controllerJSON)  {
         try {
             if (controllerJSON != null && (!controllerJSON.isEmpty())) {
                 if (containsValueCheck(AgentConstants.TYPE, controllerJSON)) {
@@ -255,6 +237,18 @@ public static Controller makeCustomController(long orgId, long agentId, String n
          e.printStackTrace();
      }
      return null;
+ }
+
+ public static boolean deleteController(long controllerId){
+        try{
+            FacilioChain chain = TransactionChainFactory.getDeleteControllerChain();
+            FacilioContext context = chain.getContext();
+            context.put(AgentConstants.CONTROLLER_ID,controllerId);
+            return chain.execute();
+        } catch (Exception e) {
+            LOGGER.info("Exception Occurred ",e);
+        }
+        return false;
  }
 
 public static ModbusTcpController makeModbusTcoController(long orgId, long agentId, String identifier){

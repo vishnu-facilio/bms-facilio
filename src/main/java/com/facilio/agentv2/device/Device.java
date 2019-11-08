@@ -7,6 +7,7 @@ import org.json.simple.parser.ParseException;
 
 public class Device
 {
+    private long id;
     private long orgId;
     private long agentId;
     private long siteId;
@@ -38,6 +39,10 @@ public class Device
 
     public Device() {
     }
+
+
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
 
     public long getOrgId() { return orgId; }
     public void setOrgId(long orgId) { this.orgId = orgId; }
