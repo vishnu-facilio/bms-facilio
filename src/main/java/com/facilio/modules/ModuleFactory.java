@@ -103,6 +103,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.VISITOR,getVisitorModule());
 		moduleMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING,getVisitorLoggingModule());
 		moduleMap.put(FacilioConstants.ContextNames.VISITOR_INVITE,getVisitorModule());
+		moduleMap.put(FacilioConstants.ContextNames.INSURANCE, getInsuranceModule());
 		return moduleMap;
 	}
 	
@@ -2825,6 +2826,15 @@ public class ModuleFactory {
 		module.setName(ContextNames.VISITOR_INVITE);
 		module.setDisplayName("Visitor Invites");
 		module.setTableName("Visitor_Invites");
+		return module;
+	}
+	
+	public static FacilioModule getInsuranceModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.INSURANCE);
+		module.setDisplayName("Insurance");
+		module.setTableName("Insurance");
 		return module;
 	}
 	

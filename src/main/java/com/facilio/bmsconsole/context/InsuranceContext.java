@@ -7,15 +7,15 @@ public class InsuranceContext extends ModuleBaseWithCustomFields{
 
 	private static final long serialVersionUID = 1L;
 
-	private String insuranceCompany;
+	private String companyName;
 	private long validFrom;
 	private long validTill;
 	private VendorContext vendor;
-	public String getInsuranceCompany() {
-		return insuranceCompany;
+	public String getCompanyName() {
+		return companyName;
 	}
-	public void setInsuranceCompany(String insuranceCompany) {
-		this.insuranceCompany = insuranceCompany;
+	public void setCompanyName(String insuranceCompany) {
+		this.companyName = insuranceCompany;
 	}
 	public long getValidFrom() {
 		return validFrom;

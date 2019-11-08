@@ -30,7 +30,7 @@
 		</interceptors>
 
 		<default-interceptor-ref name="defaultInterceptor" />
-		
+				
 		<action name="workorders" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
 			<param name="viewName">myrequests</param>
 			<param name="approval">true</param>
@@ -441,5 +441,228 @@
 			<param name="parentId">{1}</param>
 		</action>
 	</package>
+	<!-- Vendor apis -->
+	<package name="vendorInsurance" namespace="/api/service/v2/insurance"
+		extends="newServicePortalApiV2">
+		<action name="details" class="com.facilio.bmsconsole.actions.InsuranceAction"
+			method="getInsuranceDetails" />
+		<action name="*" class="com.facilio.bmsconsole.actions.InsuranceAction"
+			method="getInsuranceList" />
+	</package>
+	<package name="vendorVisitorInvite" namespace="/api/service/v2/visitorInvite"
+		extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
+	</package>
+	<package name="vendorVisitorLog" namespace="/api/service/v2/visitorLogging"
+		extends="newServicePortalApiV2">
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" />
+	</package>
+	<package name="vendorWorkorder" namespace="/api/service/workorder/summary" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2viewWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="workOrderId">{1}</param>
+		</action>
+	</package>
+	<package name="VendorWoStateTransition"
+		namespace="/api/service/v2/statetransition" extends="newServicePortalApiV2">
+		<action name="getAvailableState"
+			class="com.facilio.bmsconsole.actions.StateFlowAction"
+			method="getAvailableState" />
+		</package>
+		
+		<package name="VendorTaskApiv2" namespace="/api/service/v2/tasks"
+		extends="newServicePortalApiV2">
+
+		<action name="updatestatus"
+			class="com.facilio.bmsconsole.actions.TaskAction"
+			method="v2updateStatus">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+
+		<action name="closeAllTask"
+			class="com.facilio.bmsconsole.actions.TaskAction"
+			method="v2closeAllTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+
+		<action name="closeResourceTasks"
+			class="com.facilio.bmsconsole.actions.TaskAction"
+			method="v2closeAllTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+
+		<action name="closeSectionsTasks"
+			class="com.facilio.bmsconsole.actions.TaskAction"
+			method="v2closeAllTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+
+		<action name="updateAllTask"
+			class="com.facilio.bmsconsole.actions.TaskAction"
+			method="v2updateAllTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.TaskAction"
+			method="v2updateTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+
+		<action name="sync"
+			class="com.facilio.bmsconsole.actions.TaskAction"
+			method="syncOfflineTasks">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+
+		<action name="parents"
+			class="com.facilio.bmsconsole.actions.TaskAction"
+			method="v2multipleTaskList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.TaskAction" method="v2viewTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="taskId">{1}</param>
+		</action>
+
+	</package>
+	<package name="VendorTaskApiListv2" namespace="/api/service/v2/tasks/parent"
+		extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.TaskAction" method="v2taskList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="recordId">{1}</param>
+		</action>
+		<action name="closeAllTask"
+			class="com.facilio.bmsconsole.actions.TaskAction"
+			method="v2closeAllTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+	</package>
+
+	<package name="VendorNoteApiv2" namespace="/api/service/v2/notes"
+		extends="newServicePortalApiV2">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.NoteAction" method="v2addNote">
+		</action>
+	</package>
+
+	<package name="VendorNoteApiListv2" namespace="/api/service/v2/notes/parent"
+		extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.NoteAction" method="v2noteList">
+			<param name="parentId">{1}</param>
+		</action>
+		<action name="noteList"
+			class="com.facilio.bmsconsole.actions.NoteAction" method="v2noteList">
+			<param name="module">ticketnotes</param>
+		</action>
+	</package>
+	<package name="VendorPhotosV2Api" namespace="/api/service/v2/photos"
+		extends="newServicePortalApiV2">
+		<action name="upload" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="v2uploadPhotos">
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="v2deletePhotos">
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="v2getPhotosList">
+			<param name="module">{1}</param>
+		</action>
+	</package>
+	<package name="VendorReadingFields" namespace="/api/service/v2"
+		extends="newServicePortalApiV2">
+		<action name="getReadingFieldUnits" class="com.facilio.bmsconsole.actions.UnitAction"
+			method="getReadingFieldUnits">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+	</package>
+	<package name="VendorModuleMetaApiV2" namespace="/api/service/module"
+		extends="newServicePortalApiV2">
+		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="v2metadata">
+		</action>
+	</package>
+	 <package name="VendorModuleDataApiv2" namespace="/api/service/v2/module/data"
+		extends="newServicePortalApiV2">
+		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="getModuleDataList">
+		</action>
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="moduleDataDetails">
+			<param name="id">{1}</param>
+		</action>
+	</package>
+	<package name="VendorWorkorderItemsList"
+		namespace="/api/service/v2/workorderItemsList/parent" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkorderItemsAction"
+			method="workorderItemsList">
+			<param name="parentId">{1}</param>
+		</action>
+	</package>
+	<package name="VendorWorkorderToolsList"
+		namespace="/api/service/v2/workorderToolsList/parent" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkorderToolsAction"
+			method="workorderToolsList">
+			<param name="parentId">{1}</param>
+		</action>
+	</package>
+	<package name="VendorWorkorderCostsList"
+		namespace="/api/service/v2/workorderCostsList/parent" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkorderCostAction"
+			method="workorderCostsList">
+			<param name="parentId">{1}</param>
+		</action>
+	</package>
+	<package name="VendorWorkorderLabourList"
+		namespace="/api/service/v2/workorderLabourList/parent" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkOrderLabourAction"
+			method="workorderLabourList">
+			<param name="parentId">{1}</param>
+		</action>
+	</package>
+	<package name="VendorInventoryRequestListApiv2"
+		namespace="/api/service/v2/inventoryrequest/view" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.InventoryRequestAction"
+			method="getInventoryRequestList">
+			<param name="moduleName">inventory</param>
+			<param name="permission">READ,READ_OWN</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<!-- Vendor apis end -->
 	<!-- end -->
 </struts>

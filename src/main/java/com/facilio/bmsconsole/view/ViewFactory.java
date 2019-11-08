@@ -559,6 +559,11 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVisitorInvitesView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllInsuranceView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.INSURANCE, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -4684,6 +4689,14 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Visitor Invites");
+		return allView;
+	}
+	
+	private static FacilioView getAllInsuranceView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Insurance");
 		return allView;
 	}
 

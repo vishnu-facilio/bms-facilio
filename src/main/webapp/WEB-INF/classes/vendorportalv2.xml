@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+
+	<package name="vendorPortalApiV2" namespace="/api/v2/vendor"
+		extends="v2BaseApi">
+
+		<interceptors>
+			<interceptor name="cacheinterceptor"
+				class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="scopeinterceptor"
+				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+			<interceptor name="datasourceinterceptor"
+				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
+			<interceptor name="portalauthinterceptor"
+				class="com.facilio.serviceportal.actions.PortalAuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="portalauthinterceptor" />
+				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="scopeinterceptor" />
+				<interceptor-ref name="cacheinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="defaultInterceptor" />
+	</package>
+	<!-- <package name="vendorInsurance" namespace="/api/v2/vendor/insurance"
+		extends="vendorPortalApiV2">
+		<action name="details" class="com.facilio.bmsconsole.actions.InsuranceAction"
+			method="getInsuranceDetails" />
+		<action name="*" class="com.facilio.bmsconsole.actions.InsuranceAction"
+			method="getInsuranceList" />
+	</package>
+	<package name="vendorVisitorInvite" namespace="/api/v2/vendor/visitorinvite"
+		extends="vendorPortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
+	</package> -->
+</struts>

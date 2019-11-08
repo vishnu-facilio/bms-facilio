@@ -25,6 +25,7 @@
 	<include file="serviceportalv2.xml" />
 	<include file="eventconsole.xml" />
 	<include file="public.xml" />
+	<include file="vendorportalv2.xml"/>
 	
 	
 	
