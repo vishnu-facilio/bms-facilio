@@ -141,7 +141,6 @@ public class WidgetCardContext extends DashboardWidgetContext {
 		dataOptionsJson.put("refresh_interval", getDataRefreshIntervel());
 		
 		dataOptionsJson.put("cardLayout", cardLayout);
-		dataOptionsJson.put("customScriptId", customScriptId);
 		dataOptionsJson.put("cardParams", cardParams);
 		dataOptionsJson.put("cardState", cardState);
 		

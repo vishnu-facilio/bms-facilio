@@ -78,6 +78,7 @@ public class GetCardWorkflowCommand extends FacilioCommand {
 			}
 			else if (cardContext.getCustomScriptId() != null) {
 				workflow = WorkflowUtil.getWorkflowContext(cardContext.getCustomScriptId());
+				cardContext.setCustomScript(workflow.getWorkflowV2String());
 			}
 		}
 		else {
