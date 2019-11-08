@@ -9,7 +9,7 @@ public class MessageQueueFactory {
         String messageQueueProp = FacilioProperties.getMessageQueue();
         switch (messageQueueProp){
             case "kafka": messageQueue = KafkaMessageQueue.getClient(); break;
-            case "kinesis": messageQueue = KinesisMessageQueue.getClient(); break;
+            default: messageQueue = KinesisMessageQueue.getClient(); break;
         }
         return messageQueue;
     }

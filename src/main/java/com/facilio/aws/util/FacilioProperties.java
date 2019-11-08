@@ -126,7 +126,7 @@ public class FacilioProperties {
                 defaultDataSource = PROPERTIES.getProperty("db.default.ds");
                 defaultDB = PROPERTIES.getProperty("db.default.db");
                 defaultAppDB = PROPERTIES.getProperty("db.default.app.db");
-                messageQueue = PROPERTIES.getProperty("messageQueue");
+                messageQueue = PROPERTIES.getProperty("service.mQueue");
                 domain = PROPERTIES.getProperty("domain");
                 iotUser = PROPERTIES.getProperty("iot.accessKeyId");
                 iotPassword = PROPERTIES.getProperty("iot.secretKeyId");
