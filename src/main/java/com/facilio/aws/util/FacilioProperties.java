@@ -1,5 +1,16 @@
 package com.facilio.aws.util;
 
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.secretsmanager.AWSSecretsManager;
+import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
+import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
+import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
+import com.facilio.agent.AgentKeys;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,18 +19,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.secretsmanager.AWSSecretsManager;
-import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
-import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
-import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
-import com.facilio.agent.AgentKeys;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class FacilioProperties {
 
@@ -60,6 +59,7 @@ public class FacilioProperties {
     private static String messageQueue;
     private static boolean isOnpremise = false;
     private static boolean sysLogEnabled;
+    private static boolean sentryEnabled;
     private static HashSet<String> dbIdentifiers = new HashSet<String>();
     private static Long messageReprocessInterval;
     private static String domain;
@@ -69,6 +69,7 @@ public class FacilioProperties {
     private static int iotEndPointPort;
     private static String iotExchange;
     private static String bridgeUrl;
+    private static String sentrydsn;
     private static String pythonAI;
     private static String pythonPath;
 
@@ -119,6 +120,7 @@ public class FacilioProperties {
                 anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds","3");
                 anomalyPredictAPIURL = PROPERTIES.getProperty("anomalyPredictServiceURL","http://localhost:7444/api");
                 sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
+                sentryEnabled = "true".equals(PROPERTIES.getProperty( "sentry.enabled", "false"));
                 iotEndPoint = (String) PROPERTIES.get("iot.endpoint");
                 messageReprocessInterval = Long.parseLong(PROPERTIES.getProperty(AgentKeys.MESSAGE_REPROCESS_INTERVAL,"300000"));
                 defaultDataSource = PROPERTIES.getProperty("db.default.ds");
@@ -131,6 +133,7 @@ public class FacilioProperties {
                 iotVirtualHost = PROPERTIES.getProperty("iot.virtual.host");
                 iotExchange = PROPERTIES.getProperty("iot.exchange");
                 bridgeUrl = PROPERTIES.getProperty("bridge.url");
+                sentrydsn = PROPERTIES.getProperty("sentry.dsn");
                 pythonAI = PROPERTIES.getProperty("pythonai.url");
                 pythonPath = PROPERTIES.getProperty("pythonPath");
                 if(PROPERTIES.containsKey("iot.endpoint.port")) {
@@ -283,6 +286,8 @@ public class FacilioProperties {
         return defaultDB;
     }
 
+    public static boolean isSentryEnabled() {return sentryEnabled;}
+
     public static String getDefaultAppDB() {
         if (StringUtils.isEmpty(defaultAppDB)) {
             return getDefaultDB();
@@ -390,6 +395,7 @@ public class FacilioProperties {
     public static String getBridgeUrl() {
         return bridgeUrl;
     }
+    public static String getsentrydsn() {return sentrydsn; }
     
     public static String getPythonAI() {
         return pythonAI;

@@ -1,17 +1,11 @@
 package com.facilio.filters;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.util.SentryUtil;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
@@ -19,17 +13,13 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
-
-import io.sentry.SentryClient; 
-import io.sentry.SentryClientFactory;
-import io.sentry.context.Context;
-import io.sentry.event.EventBuilder; 
-import io.sentry.event.UserBuilder;  
-import com.facilio.aws.util.FacilioProperties;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AccessLogFilter implements Filter {
 
@@ -54,14 +44,15 @@ public class AccessLogFilter implements Filter {
     private static final String RESPONSE_SIZE = "res_size";
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
+    private static final long TIME_THRESHOLD = 5000 ;
 
     private static Appender appender;
+
 
     public void init(FilterConfig filterConfig) throws ServletException {
         appender = LOGGER.getAppender(APPENDER_NAME);
     }
-    // Sentry instance for logging posts in issue tracking group  
-    private static SentryClient sentry = SentryClientFactory.sentryClient("https://8f4e00d379c343d88fcfd4a8d768c8df@hentry.facilio.in/3"); 
+
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
@@ -118,10 +109,11 @@ public class AccessLogFilter implements Filter {
         }
         event.setProperty(REMOTE_IP, remoteIp);
         event.setProperty(REQUEST_METHOD, request.getMethod());
-        if("".equals(request.getRequestURI())) {
+        String requestUrl = request.getRequestURI();
+        if("".equals(requestUrl)) {
             event.setProperty(REQUEST_URL, "/jsp/index.jsp");
         } else {
-            event.setProperty(REQUEST_URL, request.getRequestURI());
+            event.setProperty(REQUEST_URL, requestUrl);
         }
         String referer = request.getHeader(HttpHeaders.REFERER);
         if (referer != null && !"".equals(referer.trim())) {
@@ -134,17 +126,19 @@ public class AccessLogFilter implements Filter {
         event.setProperty(QUERY, queryString);
 
         Organization org = AccountUtil.getCurrentOrg();
+        String orgId = DEFAULT_ORG_USER_ID;
         if(org != null) {
-            event.setProperty("orgId", String.valueOf(org.getOrgId()));
-        } else {
-            event.setProperty("orgId", DEFAULT_ORG_USER_ID);
+            orgId = String.valueOf(org.getOrgId());
         }
+        event.setProperty("orgId", orgId);
+
         User user = AccountUtil.getCurrentUser();
+        String userId = DEFAULT_ORG_USER_ID;
         if (user != null) {
-            event.setProperty("userId", String.valueOf(user.getOuid()));
-        } else {
-            event.setProperty("userId", DEFAULT_ORG_USER_ID);
+            userId = String.valueOf(user.getOuid());
         }
+        event.setProperty("userId", userId);
+
         if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().getRequestParams() != null) {
             event.setProperty(REQUEST_PARAMS, AccountUtil.getCurrentAccount().getRequestParams());
         }
@@ -171,36 +165,36 @@ public class AccessLogFilter implements Filter {
         }
 
         long timeTaken = System.currentTimeMillis()-startTime;
+        String responseCode = String.valueOf(response.getStatus());
         event.setProperty(RESPONSE_CODE, String.valueOf(response.getStatus()));
         event.setProperty(TIME_TAKEN, String.valueOf(timeTaken/1000));
         event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(timeTaken));
-//        if(((HttpServletResponse) servletResponse).containsHeader(HttpHeaders.CONTENT_LENGTH)) {
-//            event.setProperty(RESPONSE_SIZE, ((HttpServletResponse) servletResponse).getHeader(HttpHeaders.CONTENT_LENGTH));
-//        } else {
-//            event.setProperty(RESPONSE_SIZE, DEFAULT_ORG_USER_ID);
-//        }
-//	if (Integer.valueOf(RESPONSE_CODE) > 500 && Integer.valueOf(TIME_TAKEN) > 20 && !FacilioProperties.isProduction() ) {
-//		try {
-//			Context context = sentry.getContext(); 
-//			context.clear();
-//			context.setUser(new UserBuilder().setEmail("issues@facilio.com").build()); 
-//			context.addTag("orgid", event.getProperty("orgId") );
-//			context.addTag("url",event.getProperty("REQUEST_URL"));
-//			context.addTag("remote_ip", event.getProperty("REMOTE_IP") );
-//			context.addTag("request_method", event.getProperty("REQUEST_METHOD") );
-//			context.addTag("referer", event.getProperty("REFERER") );
-//			context.addTag("query", event.getProperty("QUERY") );
-//			context.addTag("userid", event.getProperty("userId") );
-//			context.addTag("request_params", event.getProperty("REQUEST_PARAMS") );
-//			context.addTag("response_code", event.getProperty("RESPONSE_CODE") );
-//			context.addTag("time_taken", event.getProperty("TIME_TAKEN") );
-//			sentry.sendMessage(event.getProperty("REQUEST_URL"));
-//
-//		}catch (Exception e) {
-//			LOGGER.log(Level.INFO, "Error while posting the issue to sentry " , e);
-//		}
-//	}
-        if(appender != null) {
+       if(((HttpServletResponse) servletResponse).containsHeader(HttpHeaders.CONTENT_LENGTH)) {
+            event.setProperty(RESPONSE_SIZE, ((HttpServletResponse) servletResponse).getHeader(HttpHeaders.CONTENT_LENGTH));
+        } else {
+            event.setProperty(RESPONSE_SIZE, DEFAULT_ORG_USER_ID);
+        }
+        if (response.getStatus() == HttpServletResponse.SC_INTERNAL_SERVER_ERROR && timeTaken > TIME_THRESHOLD && !FacilioProperties.isProduction() ) {
+            String finalRemoteIp = remoteIp;
+            String finalOrgId = orgId;
+            String finalUserId = userId;
+            String finalQueryString = queryString;
+            Map<String, String> contextMap = new HashMap<String, String>() {
+                {
+                    put("orgId", finalOrgId);
+                    put("url", requestUrl);
+                    put("remoteIp", finalRemoteIp);
+                    put("referer", referer);
+                    put("query", finalQueryString);
+                    put("userId", finalUserId);
+                    put("responseCode", responseCode);
+                    put("timeTaken", String.valueOf(timeTaken));
+                }
+            };
+
+            SentryUtil.sendToSentry(contextMap, requestUrl,finalUserId);
+        }
+  if(appender != null) {
             appender.doAppend(event);
         } else {
             LOGGER.callAppenders(event);
