@@ -36,7 +36,7 @@ public class FailedPMNewScheduler {
 
 	private static final Logger LOGGER = LogManager.getLogger(FailedPMNewScheduler.class.getName());
 
-	public static void execute(JobContext jc, long pmId, long statTime, long endTime) throws Exception {
+	public static void execute(JobContext jc, long pmId, long statTime, long endTime, boolean doMigration) throws Exception {
 		// TODO Auto-generated method stub
 		try {
 			FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();
@@ -97,20 +97,22 @@ public class FailedPMNewScheduler {
 					}
 				}
 
-//				if (!bulkWorkOrderContexts.isEmpty()) {
-//					FacilioContext context = new FacilioContext();
-//					BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext(bulkWorkOrderContexts);
-//					PreventiveMaintenanceAPI.logIf(92L,"No  of work orders to save " + bulkWorkOrderContext.getWorkOrderContexts().size());
-//					context.put(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT, bulkWorkOrderContext);
-//					context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
-//
-//					FacilioChain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
-//					addWOChain.execute(context);
-//				}
+				if (doMigration) {
+					if (!bulkWorkOrderContexts.isEmpty()) {
+						FacilioContext context = new FacilioContext();
+						BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext(bulkWorkOrderContexts);
+						PreventiveMaintenanceAPI.logIf(92L,"No  of work orders to save " + bulkWorkOrderContext.getWorkOrderContexts().size());
+						context.put(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT, bulkWorkOrderContext);
+						context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 
-//				for(PreventiveMaintenance pm : pmList) {
-//					PreventiveMaintenanceAPI.incrementGenerationTime(pm.getId(), getEndTime(pm));
-//				}
+						FacilioChain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
+						addWOChain.execute(context);
+					}
+
+					for(PreventiveMaintenance pm : pmList) {
+						PreventiveMaintenanceAPI.incrementGenerationTime(pm.getId(), getEndTime(pm));
+					}
+				}
 			}
 		} catch (Exception e) {
 			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();

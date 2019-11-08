@@ -3356,7 +3356,7 @@ public class PreventiveMaintenanceAPI {
 		return !CollectionUtils.isEmpty(workOrderContexts);
 	}
 
-	public static void findMissingExecutions(long orgId) throws Exception {
+	public static void findMissingExecutions(long orgId, boolean doMigration) throws Exception {
 		AccountUtil.setCurrentAccount(orgId);
 		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
 			LOGGER.log(Level.WARN, "Org is missing");
@@ -3431,7 +3431,7 @@ public class PreventiveMaintenanceAPI {
 			JobContext jc = new JobContext();
 			jc.setJobId(orgId);
 			long end = start + (24 * 60 * 60);
-			FailedPMNewScheduler.execute(jc, pm.getId(), start, end);
+			FailedPMNewScheduler.execute(jc, pm.getId(), start, end, doMigration);
 		}
 	}
 

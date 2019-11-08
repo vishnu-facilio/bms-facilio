@@ -15,5 +15,7 @@
 <%@page import="com.facilio.accounts.util.AccountUtil"%>
 <%@page import="com.facilio.bmsconsole.actions.DashboardAction,com.facilio.constants.*"%>
 <%
-	PreventiveMaintenanceAPI.findMissingExecutions(146L);
+    long accountId = Long.parseLong(request.getParameter("orgId"));
+    boolean doMigration = Boolean.parseBoolean(request.getParameter("doMig"));
+	PreventiveMaintenanceAPI.findMissingExecutions(accountId, doMigration);
 %>
