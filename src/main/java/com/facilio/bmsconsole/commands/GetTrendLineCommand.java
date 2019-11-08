@@ -85,13 +85,13 @@ public class GetTrendLineCommand extends FacilioCommand {
 	private List<ReportDataPointContext> getDataPoints(List<ReportDataPointContext> dataPoints, JSONArray selectedPoints){
 		List<ReportDataPointContext> trendLinePoints = new ArrayList<>();
 		for(ReportDataPointContext dataPoint : dataPoints){
+			String alias = dataPoint.getAliases().get("actual");
 			if(dataPoint.isxDataPoint()){
-				xAxis = dataPoint.getAliases().get("actual");
+				xAxis = alias;
 			}
-			if((selectedPoints.isEmpty() && !dataPoint.isxDataPoint()) || selectedPoints.contains(dataPoint.getyAxis().getFieldId())){
+			if((selectedPoints.isEmpty() && !dataPoint.isxDataPoint()) || selectedPoints.contains(alias)){
 				ReportDataPointContext trendLinePoint = new ReportDataPointContext();
 				
-				String alias = dataPoint.getAliases().get("actual");
 				this.dataPointAlias.add(alias);
 				alias+="_TrendLine";
 				Map<String, String> aliases = new HashMap<>();
