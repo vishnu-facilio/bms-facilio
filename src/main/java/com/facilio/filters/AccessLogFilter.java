@@ -169,11 +169,7 @@ public class AccessLogFilter implements Filter {
         event.setProperty(RESPONSE_CODE, String.valueOf(response.getStatus()));
         event.setProperty(TIME_TAKEN, String.valueOf(timeTaken/1000));
         event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(timeTaken));
-       if(((HttpServletResponse) servletResponse).containsHeader(HttpHeaders.CONTENT_LENGTH)) {
-            event.setProperty(RESPONSE_SIZE, ((HttpServletResponse) servletResponse).getHeader(HttpHeaders.CONTENT_LENGTH));
-        } else {
-            event.setProperty(RESPONSE_SIZE, DEFAULT_ORG_USER_ID);
-        }
+
         if (response.getStatus() == HttpServletResponse.SC_INTERNAL_SERVER_ERROR && timeTaken > TIME_THRESHOLD && !FacilioProperties.isProduction() ) {
             String finalRemoteIp = remoteIp;
             String finalOrgId = orgId;
