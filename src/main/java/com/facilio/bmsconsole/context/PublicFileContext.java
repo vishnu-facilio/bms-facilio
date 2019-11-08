@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 
 import org.apache.struts2.ServletActionContext;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.fs.FileInfo;
 
@@ -54,8 +55,11 @@ public class PublicFileContext {
 	}
 	public String getPublicUrl() throws UnsupportedEncodingException {
 		if(key != null) {
-			
-			StringBuilder builder = new StringBuilder(FacilioProperties.getAppDomain())
+			String clientAppUrl = FacilioProperties.getClientAppUrl();
+			if(FacilioProperties.isDevelopment()) {
+				clientAppUrl = FacilioProperties.getAppDomain();
+			}
+			StringBuilder builder = new StringBuilder(clientAppUrl)
 					.append("/api/public/v2/files/preview?publicFileKey=").append(URLEncoder.encode(key, "UTF-8"));
 			return builder.toString();
 		}
