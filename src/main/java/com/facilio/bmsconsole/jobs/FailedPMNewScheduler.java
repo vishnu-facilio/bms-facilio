@@ -108,10 +108,6 @@ public class FailedPMNewScheduler {
 						FacilioChain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
 						addWOChain.execute(context);
 					}
-
-					for(PreventiveMaintenance pm : pmList) {
-						PreventiveMaintenanceAPI.incrementGenerationTime(pm.getId(), getEndTime(pm));
-					}
 				}
 			}
 		} catch (Exception e) {
