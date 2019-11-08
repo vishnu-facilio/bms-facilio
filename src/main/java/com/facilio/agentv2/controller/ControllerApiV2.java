@@ -79,6 +79,12 @@ public class ControllerApiV2 {
         return -1;
     }
 
+    /**
+     * This method returs all controllers for an agent.
+     * Iterates all the {@link com.facilio.bmsconsole.context.ControllerType} and gets respective controllers for an agentId.
+     * @param agentId
+     * @return
+     */
     public static Map<String, Controller> getAllControllersFromDb(long agentId) {
         LOGGER.info(" getting all controllers ");
         Map<String, Controller> controllers = new HashMap<>();

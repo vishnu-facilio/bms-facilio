@@ -116,6 +116,16 @@ public class DeviceAction extends ActionSupport
 		return SUCCESS;
 	}
 
+	public String discoverPoints(){
+	    LOGGER.info(" discovering points ");
+	    if(checkValue(getControllerId())){
+            setResult(RESULT,ControllerUtilV2.discoverPoints(getControllerId()));
+            return SUCCESS;
+      }
+	    setResult(RESULT," controllerId not set ");
+	    return SUCCESS;
+    }
+
 	public String downloadCertificate() {
 		String clientIdAndPolicyName = AccountUtil.getCurrentOrg().getDomain();
 		url = DownloadCertFile.downloadCertificate( clientIdAndPolicyName , AgentType.BACnet.getLabel());
@@ -201,7 +211,7 @@ public class DeviceAction extends ActionSupport
 	}
 
 	private Long agentId;
-	public String discoverPoints(){
+	public String configureController(){
 		if( ( getIds() != null  &&  ( ! getIds().isEmpty() ) ) && ( (getAgentId() != null) && (getAgentId() > 0 ) ) ){
 			if(ControllerUtilV2.processController(getAgentId(),getIds())){
 				LOGGER.info(" discover points returned true ");

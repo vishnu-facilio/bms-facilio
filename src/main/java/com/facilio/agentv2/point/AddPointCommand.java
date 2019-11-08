@@ -67,9 +67,6 @@ public class AddPointCommand extends FacilioCommand {
 
     private long addPoint( FacilioModule module, List<FacilioField> fields,Map<String,Object> toInsertMap)throws Exception{
         LOGGER.info("fields used are ");
-        for (FacilioField field : fields) {
-            LOGGER.info(field.getName() + ", " + field.getColumnName());
-        }
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(module.getTableName()).fields(fields);
             return builder.insert(toInsertMap);
         }

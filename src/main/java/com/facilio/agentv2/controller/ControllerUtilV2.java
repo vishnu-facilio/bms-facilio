@@ -5,6 +5,7 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.bacnet.BacnetIpController;
 import com.facilio.agentv2.device.Device;
+import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuController;
 import com.facilio.agentv2.modbustcp.ModbusTcpController;
@@ -40,6 +41,10 @@ public class ControllerUtilV2
         this.ogdId = AccountUtil.getCurrentOrg().getOrgId();
         this.agentId = agentId;
         loadControllerListMap();
+    }
+
+    public static boolean discoverPoints(Long controllerId) {
+        return ControllerMessenger.discoverPoints(controllerId);
     }
 
     /**

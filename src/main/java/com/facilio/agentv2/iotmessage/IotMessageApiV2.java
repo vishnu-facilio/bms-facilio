@@ -76,6 +76,7 @@ public class IotMessageApiV2
                 .table(ModuleFactory.getIotMessageModule().getTableName())
                 .fields(FieldFactory.getIotMessageFields());
         for (IotMessage iotMessage : messages) {
+            LOGGER.info(" adding message "+messages);
             iotMessage.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
             iotMessage.setParentId(parentId);
             iotMessage.setId(builder.insert(FieldUtil.getAsProperties(iotMessage)));
@@ -118,7 +119,7 @@ public class IotMessageApiV2
         }
         LOGGER.info(" Iot Message is "+object);
         if( FacilioProperties.isOnpremise()) {
-            publishToRabbitMQ(client, object);
+            //publishToRabbitMQ(client, object);
         } else {
             //publishToAwsIot(client, object);
         }

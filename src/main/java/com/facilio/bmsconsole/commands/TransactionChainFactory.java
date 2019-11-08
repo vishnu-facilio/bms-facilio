@@ -15,6 +15,7 @@ import com.facilio.agentv2.controller.commands.FieldDevicesToControllerCommand;
 import com.facilio.agentv2.device.commands.DeleteFieldDevice;
 import com.facilio.agentv2.device.commands.getFieldDevicesCommand;
 import com.facilio.agentv2.iotmessage.AckMessageCommand;
+import com.facilio.agentv2.iotmessage.AddAndSendIotMessageCommand;
 import com.facilio.agentv2.timeseries.ProcessTimeSeriesData;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
@@ -3786,6 +3787,12 @@ public class TransactionChainFactory {
 		chain.addCommand(new getFieldDevicesCommand());
 		chain.addCommand(new FieldDevicesToControllerCommand());
 		chain.addCommand(new DeleteFieldDevice());
+		return chain;
+	}
+
+	public static FacilioChain getaddAndPublishIotMessageChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddAndSendIotMessageCommand());
 		return chain;
 	}
 }

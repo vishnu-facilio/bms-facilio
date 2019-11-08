@@ -59,7 +59,7 @@ public class AgentMessenger {
                     break;
             }
             List<IotMessage> messages = new ArrayList<>();
-            messages.add(getMessageObject(object));
+            messages.add(MessengerUtil.getMessageObject(object));
             iotData.setMessages(messages);
             return iotData;
         }else {
@@ -68,20 +68,14 @@ public class AgentMessenger {
     }
 
 
-    private static IotMessage getMessageObject(JSONObject message) {
-       IotMessage msg = new IotMessage();
-        JSONObject data = new JSONObject();
-        data.putAll(message);
-        msg.setMessageData(data);
-        return msg;
-    }
+
 
 
     public static IotData publishNewIotAgentMessage(Controller controller, FacilioCommand command, JSONObject data) throws Exception{
         FacilioContext context = new FacilioContext();
         context.put(AgentConstants.DATA,data);
         IotData iotData = constructNewIotAgentMessage(controller.getAgentId(), command, context, FacilioControllerType.valueOf(controller.getControllerType()));
-        return addAndPublishNewAgentData(iotData);
+        return MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 
 
@@ -90,23 +84,13 @@ public class AgentMessenger {
         try {
             if( (agentId > 0) ){
                     IotData pingData = constructAgentPing(agentId);
-                    addAndPublishNewAgentData(pingData);
+                MessengerUtil.addAndPublishNewAgentData(pingData);
                     return true;
                 }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ",e);
         }
         return false;
-    }
-
-
-
-    static IotData addAndPublishNewAgentData(IotData data) throws Exception {
-
-        IotMessageApiV2.addIotData(data);
-        IotMessageApiV2.addIotMessage(data.getId(),data.getMessages());
-        IotMessageApiV2.publishIotMessage(data);
-        return data;
     }
 
     private static IotData constructAgentPing(long agentId) throws Exception {
