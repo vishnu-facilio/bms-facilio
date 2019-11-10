@@ -845,6 +845,7 @@ public class TransactionChainFactory {
 			);
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
+			// c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 			return c;
 		}
 		
@@ -3004,6 +3005,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
 		);
+		//c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 		return c;
 	}
 
@@ -3341,6 +3343,7 @@ public class TransactionChainFactory {
 			c.addCommand(new CreateWOForAlarmOccurrenceCommand());
 			c.addCommand(getAddWorkOrderChain());
 			c.addCommand(new UpdateWoIdInNewAlarmCommand());
+			// c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 			return c;
 		}
 
@@ -3365,6 +3368,12 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteAlarmOccurrenceCommand());
 			return c;
 		}
+
+		public static FacilioChain getRcaAlarmDetails() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetAlarmRcaDetailCommand());
+			return c;
+	    }
 
 		public static FacilioChain getDeleteAlarmChain() {
 			FacilioChain c = getDefaultChain();
