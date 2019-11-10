@@ -1127,7 +1127,7 @@
 				pttcCount = 0;
 				for each index,occurrence in alarmOccurenceTillLMonthList {
 					if (occurrence.acknowledged != null) {
-						tillLstMntAcknowledgedDuration = acknowledgedDuration + ( occurrence.acknowledged - occurrence.createdTime);
+						tillLstMntAcknowledgedDuration = acknowledgedDuration + ( occurrence.acknowledgedTime - occurrence.createdTime);
 					}
 					if (previousClearedTime != 0) {
 						if (previousClearedTime > occurrence.createdTime) {
