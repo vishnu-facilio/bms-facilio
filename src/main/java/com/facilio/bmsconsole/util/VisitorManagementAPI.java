@@ -303,7 +303,7 @@ public class VisitorManagementAPI {
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
 			Map<String, Object> updateMap = new HashMap<>();
 			FacilioField avatarId = modBean.getField("avatar", module.getName());
-			FacilioField visitorType = modBean.getField("type", module.getName());
+			FacilioField visitorType = modBean.getField("visitorType", module.getName());
 			
 			updateMap.put("avatar", visitorLog.getAvatarId());
 			updateMap.put("type", FieldUtil.getAsProperties(visitorLog.getVisitorType()));
