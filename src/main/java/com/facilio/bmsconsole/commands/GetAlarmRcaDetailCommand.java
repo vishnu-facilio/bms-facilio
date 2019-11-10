@@ -71,39 +71,43 @@ public class GetAlarmRcaDetailCommand extends  FacilioCommand {
 
             List<ReadingAlarmOccurrenceContext> occurrenceList = buildesr.get();
 
-            String clearedTimeFieldColumn = fieldMap.get("clearedTime").getColumnName();
-            String createdTimeFieldColumn = fieldMap.get("createdTime").getColumnName();
-            FacilioField rule = modBean.getField("rule", FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE);
-            LookupField rulelookup =(LookupField) rule;
-            rulelookup.setLookupModule(ModuleFactory.getReadingRuleModule());
-            StringBuilder durationAggrColumn = new StringBuilder("SUM(COALESCE(")
-                    .append(clearedTimeFieldColumn).append(",").append(String.valueOf(System.currentTimeMillis())).append(") - ")
-                    .append(createdTimeFieldColumn).append(")")
-                    ;
-            List<FacilioField> selectFields = new ArrayList<>();
-            FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
-            selectFields.add(durationField);
-            selectFields.addAll(FieldFactory.getCountField(module));
-            selectFields.add(fieldMap.get("alarm"));
-            selectFields.add(fieldMap.get("rule"));
-            SelectRecordsBuilder<ReadingAlarmOccurrenceContext> builder = new SelectRecordsBuilder<ReadingAlarmOccurrenceContext>().module(module)
-                    .beanClass(ReadingAlarmOccurrenceContext.class).select(selectFields)
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), rcaIds, NumberOperators.EQUALS))
+            if (occurrenceList.size() > 0) {
+                String clearedTimeFieldColumn = fieldMap.get("clearedTime").getColumnName();
+                String createdTimeFieldColumn = fieldMap.get("createdTime").getColumnName();
+                FacilioField rule = modBean.getField("rule", FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE);
+                LookupField rulelookup =(LookupField) rule;
+                rulelookup.setLookupModule(ModuleFactory.getReadingRuleModule());
+                StringBuilder durationAggrColumn = new StringBuilder("SUM(COALESCE(")
+                        .append(clearedTimeFieldColumn).append(",").append(String.valueOf(System.currentTimeMillis())).append(") - ")
+                        .append(createdTimeFieldColumn).append(")")
+                        ;
+                List<FacilioField> selectFields = new ArrayList<>();
+                FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
+                selectFields.add(durationField);
+                selectFields.addAll(FieldFactory.getCountField(module));
+                selectFields.add(fieldMap.get("alarm"));
+                selectFields.add(fieldMap.get("rule"));
+                SelectRecordsBuilder<ReadingAlarmOccurrenceContext> builder = new SelectRecordsBuilder<ReadingAlarmOccurrenceContext>().module(module)
+                        .beanClass(ReadingAlarmOccurrenceContext.class).select(selectFields)
+                        .andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), rcaIds, NumberOperators.EQUALS))
 //                    .fetchLookup(rulelookup)
-                    .groupBy(fieldMap.get("rule").getCompleteColumnName());
-            for (ReadingAlarmOccurrenceContext occurrence : occurrenceList) {
-                DateRange range = new DateRange();
-                range.setStartTime(occurrence.getCreatedTime());
-                range.setEndTime(occurrence.getClearedTime() > 0 ? occurrence.getClearedTime() : System.currentTimeMillis());
-                builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN));
+                        .groupBy(fieldMap.get("rule").getCompleteColumnName());
+                for (ReadingAlarmOccurrenceContext occurrence : occurrenceList) {
+                    DateRange range = new DateRange();
+                    range.setStartTime(occurrence.getCreatedTime());
+                    range.setEndTime(occurrence.getClearedTime() > 0 ? occurrence.getClearedTime() : System.currentTimeMillis());
+                    builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN));
+                }
+
+                List<Map<String, Object>> list = builder.getAsProps();
+                for (Map<String, Object> prop : list) {
+                    Object alarmObject = prop.get("alarm");
+                    prop.put(FacilioConstants.ContextNames.LATEST_ALARM_OCCURRENCE, NewAlarmAPI.getLatestAlarmOccurance((Long) ((Map) alarmObject).get("id")));
+                }
+                context.put(FacilioConstants.ContextNames.RCA_ALARMS, list);
+
             }
 
-            List<Map<String, Object>> list = builder.getAsProps();
-            for (Map<String, Object> prop : list) {
-                Object alarmObject = prop.get("alarm");
-                prop.put(FacilioConstants.ContextNames.LATEST_ALARM_OCCURRENCE, NewAlarmAPI.getLatestAlarmOccurance((Long) ((Map) alarmObject).get("id")));
-            }
-            context.put(FacilioConstants.ContextNames.RCA_ALARMS, list);
         }
         return false;
     }
