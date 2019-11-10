@@ -49,6 +49,7 @@ import com.facilio.bmsconsole.context.ViolationEventContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.CallUtil;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
@@ -56,6 +57,7 @@ import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WhatsappUtil;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -1199,7 +1201,47 @@ public enum ActionType {
 			}
 		}
 		
-	}
+	},
+	WHATSAPP_MESSAGE(26) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
+			// TODO Auto-generated method stub
+			if (obj != null) {  //&& FacilioProperties.isProduction() add this on commit
+				try {
+					String to = (String) obj.get("to");
+					if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
+						List<String> sms = new ArrayList<>();
+						
+						WhatsappUtil.sendMessage(obj);
+
+						sms.add(to);
+						if (context != null) {
+							context.put(FacilioConstants.Workflow.NOTIFIED_SMS, sms);
+						}
+					}
+				} catch (Exception e) {
+					LOGGER.error("Exception occurred ", e);
+				}
+			}
+		}
+	},
+	MAKE_CALL(27) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
+			// TODO Auto-generated method stub
+			if (obj != null) { //&& FacilioProperties.isProduction() add this on commit
+				try {
+					String to = (String) obj.get("to");
+					if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
+						
+						CallUtil.makeCall(obj);
+					}
+				} catch (Exception e) {
+					LOGGER.error("Exception occurred ", e);
+				}
+			}
+		}
+	},
 	
 	;
 

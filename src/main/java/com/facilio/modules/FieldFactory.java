@@ -2241,6 +2241,35 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getCallTemplateFields() {
+		FacilioModule module = ModuleFactory.getCallTemplatesModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		
+		fields.add(getField("from", "FROM_NUM", module, FieldType.STRING));
+		fields.add(getField("to", "TO_NUM", module, FieldType.STRING));
+		fields.add(getField("message", "MSG", module, FieldType.STRING));
+		fields.add(getField("voice", "VOICE", module, FieldType.STRING));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getWhatsappMessageTemplateFields() {
+		FacilioModule module = ModuleFactory.getWhatsappMessageTemplatesModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		
+		fields.add(getField("from", "FROM_NUM", module, FieldType.STRING));
+		fields.add(getField("to", "TO_NUM", module, FieldType.STRING));
+		fields.add(getField("message", "MSG", module, FieldType.STRING));
+
+		return fields;
+	}
 
 	public static List<FacilioField> getPushNotificationTemplateFields() {
 		return getPushNotificationTemplateFields(true);
