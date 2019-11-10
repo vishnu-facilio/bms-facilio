@@ -194,6 +194,8 @@
 			class="com.facilio.events.actions.V2AlarmAction" method="updateAlarmOccurrence" />
 		<action name="delete"
 			class="com.facilio.events.actions.V2AlarmAction" method="deleteAlarm" />
+		<action name="rcaAlarms"
+				class="com.facilio.events.actions.V2AlarmAction" method="rcaAlarms" />
 	</package>
 	
 	<package name="alarmOccurrence" namespace="/api/v2/alarmOccurrence" extends="v2Api">

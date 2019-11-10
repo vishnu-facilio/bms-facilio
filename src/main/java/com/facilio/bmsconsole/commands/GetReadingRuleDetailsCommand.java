@@ -68,9 +68,9 @@ public class GetReadingRuleDetailsCommand extends FacilioCommand {
 							
 							JSONArray rcaJSONArray = new JSONArray();
 							
-							List<ReadingRuleContext> allRcaRules = new ArrayList<>();
+							List<Long> allRcaRules = alarmRuleContext.getAlarmRCARules();
 							
-//							for(ReadingRuleContext rcaRule :alarmRuleContext.getAlarmRCARules()) {
+//							for(Long rcaRule :alarmRuleContext.getAlarmRCARules()) {
 //
 //								rcaIds.add(rcaRule.getId());
 //								allRcaRules.add(rcaRule);
@@ -121,8 +121,8 @@ public class GetReadingRuleDetailsCommand extends FacilioCommand {
 								}
 							}
 							
-							for(ReadingRuleContext rcaRule :allRcaRules) {
-								EventContext event = eventMap.get(rcaRule.getId());
+							for(Long rcaRule :allRcaRules) {
+								EventContext event = eventMap.get(rcaRule);
 								
 								if(event != null) {
 									JSONObject rcaJson = new JSONObject();
