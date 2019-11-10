@@ -656,7 +656,6 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain getUpdateAssetChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new FetchOldAssetsCommand());
 			c.addCommand(new AddCategoryOnAssetUpdateCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new GenericUpdateModuleDataCommand());
