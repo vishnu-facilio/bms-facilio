@@ -618,6 +618,24 @@ public class ModuleFactory {
 		smsTemplatesModule.setExtendModule(getTemplatesModule());
 		return smsTemplatesModule;
 	}
+	
+	public static FacilioModule getCallTemplatesModule() {
+		FacilioModule smsTemplatesModule = new FacilioModule();
+		smsTemplatesModule.setName("calltemplates");
+		smsTemplatesModule.setDisplayName("CAll Templates");
+		smsTemplatesModule.setTableName("Call_Template");
+		smsTemplatesModule.setExtendModule(getTemplatesModule());
+		return smsTemplatesModule;
+	}
+	
+	public static FacilioModule getWhatsappMessageTemplatesModule() {
+		FacilioModule smsTemplatesModule = new FacilioModule();
+		smsTemplatesModule.setName("whatsappMessageTemplatesModule");
+		smsTemplatesModule.setDisplayName("WhatsappMessage Templates");
+		smsTemplatesModule.setTableName("Whatsapp_Message_Template");
+		smsTemplatesModule.setExtendModule(getTemplatesModule());
+		return smsTemplatesModule;
+	}
 
 	public static FacilioModule getAssignmentTemplatesModule() {
 		FacilioModule assignmentTemplatesModule = new FacilioModule();

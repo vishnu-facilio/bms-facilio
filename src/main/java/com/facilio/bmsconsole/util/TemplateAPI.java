@@ -49,6 +49,7 @@ import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
+import com.facilio.bmsconsole.templates.CallTemplate;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
@@ -67,6 +68,7 @@ import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
+import com.facilio.bmsconsole.templates.WhatsappMessageTemplate;
 import com.facilio.bmsconsole.templates.WorkflowTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
@@ -214,6 +216,14 @@ public class TemplateAPI {
 			id = TemplateAPI.addSMSTemplate(AccountUtil.getCurrentOrg().getOrgId(), (SMSTemplate) template);
 			template.setId(id);
 		}
+		else if(template instanceof WhatsappMessageTemplate) {
+			id = TemplateAPI.addWhatsappMessageTemplate(AccountUtil.getCurrentOrg().getOrgId(), (WhatsappMessageTemplate) template);
+			template.setId(id);
+		}
+		else if(template instanceof CallTemplate) {
+			id = TemplateAPI.addCallTemplate(AccountUtil.getCurrentOrg().getOrgId(), (CallTemplate) template);
+			template.setId(id);
+		}
 		else if(template instanceof PushNotificationTemplate) {
 			id = TemplateAPI.addPushNotificationTemplate(AccountUtil.getCurrentOrg().getOrgId(), (PushNotificationTemplate) template);
 			template.setId(id);
@@ -309,6 +319,10 @@ public class TemplateAPI {
 				return ControlActionTemplate.class;
 			case FORM:
 				return FormTemplate.class;
+			case WHATSAPP:
+				return WhatsappMessageTemplate.class;
+			case CALL:
+				return CallTemplate.class;
 			default:
 				return null;
 		}
@@ -428,6 +442,20 @@ public class TemplateAPI {
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					template = getSMSTemplateFromMap(templateMap);
+				}
+			}break;
+			case WHATSAPP: {
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getWhatsappMessageTemplatesModule(), FieldFactory.getWhatsappMessageTemplateFields(), id);
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					template = getWhatsappTemplateFromMap(templateMap);
+				}
+			}break;
+			case CALL: {
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getCallTemplatesModule(), FieldFactory.getCallTemplateFields(), id);
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					template = getCallTemplateFromMap(templateMap);
 				}
 			}break;
 			case PUSH_NOTIFICATION: {
@@ -767,6 +795,46 @@ public class TemplateAPI {
 		return (long) templateProps.get("id");
 	}
 	
+	public static long addWhatsappMessageTemplate(long orgId, WhatsappMessageTemplate template) throws Exception {
+		addDefaultProps(template);
+		template.setType(Type.WHATSAPP);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+															.table("Templates")
+															.fields(FieldFactory.getTemplateFields())
+															.addRecord(templateProps);
+		
+		userTemplateBuilder.save();
+		
+		GenericInsertRecordBuilder smsTemplateBuilder = new GenericInsertRecordBuilder()
+																.table(ModuleFactory.getWhatsappMessageTemplatesModule().getTableName())
+																.fields(FieldFactory.getWhatsappMessageTemplateFields())
+																.addRecord(templateProps);
+		smsTemplateBuilder.save();
+		
+		return (long) templateProps.get("id");
+	}
+	
+	public static long addCallTemplate(long orgId, CallTemplate template) throws Exception {
+		addDefaultProps(template);
+		template.setType(Type.CALL);
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		GenericInsertRecordBuilder userTemplateBuilder = new GenericInsertRecordBuilder()
+															.table("Templates")
+															.fields(FieldFactory.getTemplateFields())
+															.addRecord(templateProps);
+		
+		userTemplateBuilder.save();
+		
+		GenericInsertRecordBuilder smsTemplateBuilder = new GenericInsertRecordBuilder()
+																.table(ModuleFactory.getCallTemplatesModule().getTableName())
+																.fields(FieldFactory.getCallTemplateFields())
+																.addRecord(templateProps);
+		smsTemplateBuilder.save();
+		
+		return (long) templateProps.get("id");
+	}
+	
 	public static int updateSMSTemplate(long orgId, SMSTemplate template, long id) throws Exception {
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		
@@ -836,6 +904,14 @@ public class TemplateAPI {
 	
 	private static SMSTemplate getSMSTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		SMSTemplate template = FieldUtil.getAsBeanFromMap(templateMap, SMSTemplate.class);
+		return template;
+	}
+	private static WhatsappMessageTemplate getWhatsappTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		WhatsappMessageTemplate template = FieldUtil.getAsBeanFromMap(templateMap, WhatsappMessageTemplate.class);
+		return template;
+	}
+	private static CallTemplate getCallTemplateFromMap(Map<String, Object> templateMap) throws Exception {
+		CallTemplate template = FieldUtil.getAsBeanFromMap(templateMap, CallTemplate.class);
 		return template;
 	}
 	private static AssignmentTemplate getAssignmentTemplateFromMap(Map<String, Object> templateMap) throws Exception {
