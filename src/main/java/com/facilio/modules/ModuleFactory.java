@@ -2849,4 +2849,14 @@ public class ModuleFactory {
 		module.setName("serviceCatalogGroup");
 		return module;
 	}
+    
+    public static FacilioModule getVisitorSettingsModule()
+    {
+    	FacilioModule module=new FacilioModule();
+    	module.setTableName("VisitorSettings");
+    	module.setDisplayName("Visitor Settings");
+		module.setName("visitorSettings");
+		return module;
+    	
+    }
 }

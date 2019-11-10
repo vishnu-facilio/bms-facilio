@@ -1631,4 +1631,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetKPIOccurrencesCommand());
 		return chain;
 	}
+	public static FacilioChain getFetchVisitorTypeSettingChain()
+	{
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new FetchVisitorTypeSettingsCommand());
+		return c;
+	}
 }

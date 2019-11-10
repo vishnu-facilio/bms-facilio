@@ -415,6 +415,9 @@ public class SetTableNamesCommand extends FacilioCommand {
 	public static SetTableNamesCommand getForVisitorLogging() {
 		return new SetTableNamesCommand("visitorlogging", "Visitor_Logging");
 	}
+	public static SetTableNamesCommand getForVisitorType() {
+		return new SetTableNamesCommand("visitorType", "VisitorType");
+	}
 	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map

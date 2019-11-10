@@ -7004,4 +7004,20 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getVisitorSettingsFields() {
+		FacilioModule module = ModuleFactory.getVisitorSettingsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("visitorTypeId", "VISITOR_TYPE_ID", FieldType.LOOKUP));		
+		fields.add(getField("visitorFormId","VISITOR_FORM_ID",FieldType.LOOKUP));
+		fields.add(getField("isNdaEnabled","IS_NDA_ENABLED",FieldType.BOOLEAN));
+		fields.add(getField("isBadgeEnabled","IS_BADGE_ENABLED",FieldType.BOOLEAN));
+		fields.add(getField("isPhotoEnabled","IS_PHOTO_ENABLED",FieldType.BOOLEAN));
+		fields.add(getField("autoSignoutTime","AUTO_SIGNOUT_TIME",FieldType.NUMBER));
+//		fields.add(getField("isSelfSignoutEnabled","IS_SELF_SIGNOUT_ENABLED",FieldType.BOOLEAN));
+		return fields;
+	}
+
+	
+	
+	
 }

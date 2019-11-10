@@ -71,6 +71,11 @@ public class FormFactory {
 		forms.put("kioskForm", getVisitorKioskForm());
 		forms.put("visitorForm", getVisitorForm());
 		forms.put("visitorPreRegisterForm", getVisitorPreRegisterForm());
+		//visitor type forms
+		forms.put("Guest",getGuestForm());
+		forms.put("Vendor",getVendorForm());
+		forms.put("Employee",getEmployeeForm());
+		
 			
 		return forms;
 	}
@@ -250,6 +255,7 @@ public class FormFactory {
 		List<FacilioForm> assetForms = Arrays.asList(getAssetForm());
 		List<FacilioForm> poForm = Arrays.asList(getPurchaseOrderForm());
 		List<FacilioForm> prForm = Arrays.asList(getPurchaseRequestForm());
+		List<FacilioForm> visitorTypeForms = Arrays.asList(getGuestForm(),getEmployeeForm(),getVendorForm());
 		
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
@@ -257,6 +263,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
 				.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getFormMap(poForm))
 				.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getFormMap(prForm))
+				.put(FacilioConstants.ContextNames.VISITOR,getFormMap(visitorTypeForms))
 				.build();
 	}
 	
@@ -1236,6 +1243,64 @@ public class FormFactory {
 		fields.add(new FormField("inviteHost", FieldDisplayType.USER, "Host", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("invitees", FieldDisplayType.VISITOR_INVITEES , "VISITORS", Required.OPTIONAL, 5, 1));
 
+		return fields;
+	}
+	
+	public static FacilioForm getGuestForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Guest form for Vistor module");
+		form.setName("Guest");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getGuestFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getGuestFormFields()
+	{
+		List<FormField> fields=new ArrayList<>();
+		fields.add(new FormField("name",FieldDisplayType.TEXTBOX,"Hi,What is your full name",Required.REQUIRED,1,1));		
+		fields.add(new FormField("email",FieldDisplayType.EMAIL,"What is your email id",Required.REQUIRED,1,1));
+		fields.add(new FormField("purpose",FieldDisplayType.TEXTBOX,"What is the purpose of visit",Required.REQUIRED,1,1));
+		return fields;
+	}
+	
+	public static FacilioForm getVendorForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Vendor form for Vistor module");
+		form.setName("Vendor");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getVendorFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	private static List<FormField> getVendorFormFields()
+	{
+		List<FormField> fields=new ArrayList<>();
+		fields.add(new FormField("name",FieldDisplayType.TEXTBOX,"Hi,What is your full name",Required.REQUIRED,1,1));		
+		fields.add(new FormField("email",FieldDisplayType.EMAIL,"What is your email id",Required.REQUIRED,1,1));
+		fields.add(new FormField("company",FieldDisplayType.TEXTBOX,"Enter your organization name",Required.REQUIRED,1,1));
+		return fields;
+	}
+	
+	public static FacilioForm getEmployeeForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Employee form for Vistor module");
+		form.setName("Employee");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getEmployeeFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	private static List<FormField> getEmployeeFormFields()
+	{
+		List<FormField> fields=new ArrayList<>();
+		fields.add(new FormField("name",FieldDisplayType.TEXTBOX,"Hi,What is your full name",Required.REQUIRED,1,1));		
+		fields.add(new FormField("email",FieldDisplayType.EMAIL,"What is your email id",Required.REQUIRED,1,1));
+		
 		return fields;
 	}
 

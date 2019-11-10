@@ -3804,6 +3804,42 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddAndSendIotMessageCommand());
 		return chain;
 	}
+	public static FacilioChain getAddVisitorTypePicklistOption() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVisitorType());
+		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		return c;
+	}
+
+	public static FacilioChain getUpdateVisitorTypePicklistOptionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVisitorType());
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		return c;
+	}
+
+	public static FacilioChain getDeleteVisitorTypePicklistOptionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVisitorType());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+
+	
+	public static FacilioChain getAddVisitorTypeSettingChain()
+	{
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new AddVisitorTypeCommand());
+		return c;
+	}
+	public static FacilioChain getUpdateVisitorTypeSettingChain()
+	{
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new UpdateVisitorSettingsCommand());
+		return c;
+	}
+
 }
 
 
