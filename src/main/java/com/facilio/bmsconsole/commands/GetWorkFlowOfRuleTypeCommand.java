@@ -56,7 +56,6 @@ public class GetWorkFlowOfRuleTypeCommand extends FacilioCommand {
 				criteria.andCriteria(viewCriteria);
 			}
 		}
-		
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField ruleTypeField = fieldMap.get("ruleType");
@@ -85,7 +84,10 @@ public class GetWorkFlowOfRuleTypeCommand extends FacilioCommand {
 //				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID");
 //				.innerJoin(readingRuleModule.getTableName())
 //				.on(module.getTableName()+ ".ID =" + readingRuleModule.getTableName() + ".ID")
-		
+		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+		if (orderBy != null && !orderBy.isEmpty()) {
+			builder.orderBy(orderBy);
+		}
 		if (ruleType == RuleType.READING_RULE) {
 			builder.innerJoin(readingRuleModule.getTableName())
 			.on(module.getTableName()+ ".ID =" + readingRuleModule.getTableName() + ".ID");

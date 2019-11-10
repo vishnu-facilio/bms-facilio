@@ -950,7 +950,14 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All");
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkflowRuleModule());
 
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		allView.setSortFields(sortFields);
 		return allView;
 	}
 
@@ -959,11 +966,19 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(statusCondition);
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkflowRuleModule());
 
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 		FacilioView view = new FacilioView();
 		view.setName(name);
 		view.setDisplayName(displayName);
 		view.setCriteria(criteria);
+		view.setSortFields(sortFields);
+
 		return view;
 	}
 
