@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.ReadingAlarmCategoryContext;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
@@ -54,7 +51,7 @@ public class FetchAlarmFromOccurrenceCommand extends FacilioCommand {
         return false;
     }
 
-    private List<AlarmContext> convertToAlarmObject(List<AlarmOccurrenceContext> occurrences) {
+    private List<AlarmContext> convertToAlarmObject(List<AlarmOccurrenceContext> occurrences) throws Exception {
         List<AlarmContext> alarms = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(occurrences)) {
             for (AlarmOccurrenceContext alarmOccurrenceContext : occurrences) {
@@ -76,7 +73,11 @@ public class FetchAlarmFromOccurrenceCommand extends FacilioCommand {
 
                 alarmContext.setDescription(baseAlarm.getDescription());
                 alarmContext.setNoOfEvents(alarmOccurrenceContext.getNoOfEvents());
-                alarmContext.setResource(baseAlarm.getResource());
+                AssetContext asset = AssetsAPI.getAssetInfo(baseAlarm.getResource().getId());
+                if (asset != null) {
+                    alarmContext.setResource(asset);
+                    alarmContext.setSource(asset.getName());
+                }
 
                 if (baseAlarm instanceof ReadingAlarm) {
                     ReadingAlarmCategoryContext readingAlarmCategory = ((ReadingAlarm) baseAlarm).getReadingAlarmCategory();
@@ -86,6 +87,10 @@ public class FetchAlarmFromOccurrenceCommand extends FacilioCommand {
                         category.setDisplayName(readingAlarmCategory.getDisplayName());
                         category.setId(readingAlarmCategory.getId());
                         alarmContext.setCategory(category);
+                    }
+                    ReadingRuleContext rule = ((ReadingAlarm) baseAlarm).getRule();
+                    if (rule != null) {
+                        alarmContext.setCondition(rule.getName());
                     }
                 }
 
