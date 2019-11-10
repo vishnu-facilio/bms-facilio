@@ -306,7 +306,7 @@ public class VisitorManagementAPI {
 			FacilioField visitorType = modBean.getField("visitorType", module.getName());
 			
 			updateMap.put("avatar", visitorLog.getAvatarId());
-			updateMap.put("type", FieldUtil.getAsProperties(visitorLog.getVisitorType()));
+			updateMap.put("visitorType", FieldUtil.getAsProperties(visitorLog.getVisitorType()));
 			
 			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 			updatedfields.add(avatarId);
