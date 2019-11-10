@@ -1287,6 +1287,7 @@ public class FacilioConstants {
 		public static final String INVITEES = "invitees";
 		public static final String VISITOR_LOGGING_RECORDS = "visitorloggingrecords";
 		public static final String VISITOR_ID = "visitorId";
+		public static final String VISITOR_TYPE = "visitorType";
 		
 		
 		public static final int SITE_BOUNDARY_RADIUS = 1000; //meter 
@@ -1473,11 +1474,13 @@ public class FacilioConstants {
 			classMap.put(VISITOR_INVITE, VisitorInviteContext.class);
 			classMap.put(VISITOR_LOGGING, VisitorLoggingContext.class);
 			classMap.put(VISITOR_INVITE_REL, InviteVisitorRelContext.class);
+			classMap.put(VISITOR_TYPE,VisitorTypeContext.class);
 			
 			classMap.put(Reservation.RESERVATION, ReservationContext.class);
 			classMap.put(ModuleNames.DEVICES, DeviceContext.class);
 			classMap.put(Reservation.RESERVATIONS_INTERNAL_ATTENDEE, InternalAttendeeContext.class);
 			classMap.put(Reservation.RESERVATIONS_EXTERNAL_ATTENDEE, ExternalAttendeeContext.class);
+			
 
 			return classMap;
 		}
