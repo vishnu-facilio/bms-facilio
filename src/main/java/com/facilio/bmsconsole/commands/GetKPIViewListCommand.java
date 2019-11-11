@@ -69,7 +69,6 @@ public class GetKPIViewListCommand extends FacilioCommand {
 				.innerJoin(rdmModule.getTableName()).on(fieldMap.get("readingFieldId").getCompleteColumnName()+"="+rdmFieldMap.get("fieldId").getCompleteColumnName())
 				.innerJoin(resourceTable).on(rdmFieldMap.get("resourceId").getCompleteColumnName()+"="+resourceTable+".ID")
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("frequency"), String.valueOf(frequency.getValue()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("siteId"), String.valueOf(siteId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", StringOperators.ISN_T))
 				.andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), CommonOperators.IS_NOT_EMPTY));
 				;
@@ -84,6 +83,9 @@ public class GetKPIViewListCommand extends FacilioCommand {
 			builder.andCriteria(view.getCriteria());
 		}
 		
+		if (siteId > 0) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("siteId"), String.valueOf(siteId), NumberOperators.EQUALS));
+		}
 		if (floorId > 0) {
 			builder.andCondition(CriteriaAPI.getCondition(resourceFieldMap.get("space"), String.valueOf(floorId), BuildingOperator.BUILDING_IS));
 		}

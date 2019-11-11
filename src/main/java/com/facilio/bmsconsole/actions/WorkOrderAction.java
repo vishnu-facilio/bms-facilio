@@ -126,6 +126,9 @@ public class WorkOrderAction extends FacilioAction {
 		if(workOrderString != null) {
 			setWorkordercontex(workOrderString);
 		}
+		else if(workorder != null) {
+			workorder.parseFormData();
+		}
 		if(tasksString != null) {
 			setTaskcontex(tasksString);
 		}
@@ -1334,6 +1337,9 @@ public class WorkOrderAction extends FacilioAction {
 		EventType activityType = EventType.EDIT;
 		if (workorder == null && stateTransitionId != null && stateTransitionId > 0) {
 			workorder = new WorkOrderContext();
+		}
+		else if (workOrderString == null && workorder != null) {
+			workorder.parseFormData();
 		}
 		if (workorder.getStatus() != null) {
 			EventType type = TicketAPI.getActivityTypeForTicketStatus(workorder.getStatus().getId());

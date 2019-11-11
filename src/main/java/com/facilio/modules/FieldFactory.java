@@ -2995,6 +2995,7 @@ public class FieldFactory {
 		fields.add(getField("authCode", "AUTH_CODE", module, FieldType.STRING));
 		fields.add(getField("refreshToken", "REFRESH_TOKEN", module, FieldType.STRING));
 		fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));
+		fields.add(getField("secretStateKey", "SECRET_STATE_KEY", module, FieldType.STRING));
 		
 		fields.add(getSystemField("sysCreatedTime", module));
 		fields.add(getSystemField("sysModifiedTime", module));
@@ -6691,6 +6692,9 @@ public class FieldFactory {
 		list.add(getField("buttonType", "BUTTON_TYPE", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("type", "TYPE", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("scheduleTime", "SCHEDULE_TIME", stageRuleModule, FieldType.NUMBER));
+
+		list.add(getField("showInTenantPortal", "SHOW_IN_TENANT_PORTAL", stageRuleModule, FieldType.BOOLEAN));
+		list.add(getField("showInVendorPortal", "SHOW_IN_VENDOR_PORTAL", stageRuleModule, FieldType.BOOLEAN));
 		return list;
 	}
 

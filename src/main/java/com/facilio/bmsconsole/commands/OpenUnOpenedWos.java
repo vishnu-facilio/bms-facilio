@@ -49,7 +49,7 @@ public class OpenUnOpenedWos extends FacilioCommand {
                 .module(module)
                 .beanClass(WorkOrderContext.class)
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), String.valueOf(PMJobsContext.PMJobsStatus.ACTIVE.getValue()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), PMJobsContext.PMJobsStatus.ACTIVE.getValue() + "," + PMJobsContext.PMJobsStatus.SCHEDULED.getValue(), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(maxTime), NumberOperators.LESS_THAN))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(startTime), NumberOperators.GREATER_THAN))
                 .andCustomWhere("WorkOrders.PM_ID IS NOT NULL");

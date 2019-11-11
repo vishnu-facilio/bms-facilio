@@ -8,6 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -23,6 +27,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FileField;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
 import com.google.common.collect.Maps;
@@ -40,6 +45,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private Map<Long, List<UpdateChangeSet>> changeSet;
 	private List<E> oldValues;
 	private boolean updated = false;
+	private E bean;
 	
 	public UpdateRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -182,6 +188,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
  	
 	@Override
 	public int update(E bean) throws Exception {
+		this.bean = bean;
 		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
 		return updateViaMap(moduleProps);
 	}
@@ -345,6 +352,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		
 		prevModule = module;
 		List<FacilioField> f = new ArrayList<>();
+		List<FileField> fileFields = new ArrayList<>();
 		int updateCount = 0;
 		while (prevModule != null) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder(builder);
@@ -371,10 +379,28 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				updateCount += updateBuilder.update(new HashMap<>(moduleProps));
 			}
 			f.clear();
+			if (CollectionUtils.isNotEmpty(builder.getFileFields())) {
+				fileFields.addAll(builder.getFileFields());
+			}
 		}
 		
+		removeFileCustomFields(fileFields);
 		
 		return updateCount;
+	}
+	
+	private void removeFileCustomFields(List<FileField> fileFields) {
+		if (CollectionUtils.isNotEmpty(fileFields) && bean != null && MapUtils.isNotEmpty(bean.getData())) {
+			Map<String, Object> data = bean.getData();
+			fileFields = fileFields.stream().filter(field -> !field.isDefault()).collect(Collectors.toList());
+			if (!fileFields.isEmpty()) {
+				for(FacilioField field : fileFields) {
+					if (data.containsKey(field.getName())) {
+						data.remove(field.getName());
+					}
+				}
+			}
+		}
 	}
 	
 	private void updateLookupFields(Map<String, Object> moduleProps, List<FacilioField> fields) throws Exception {

@@ -21,14 +21,14 @@ public class ConnectionAction extends FacilioAction {
 	
 	ConnectionContext connectionContext;
 	
-	long connectionId;
+	String state;
 	
-	public long getConnectionId() {
-		return connectionId;
+	public String getState() {
+		return state;
 	}
 
-	public void setConnectionId(long connectionId) {
-		this.connectionId = connectionId;
+	public void setState(String state) {
+		this.state = state;
 	}
 
 	String code;
@@ -66,7 +66,7 @@ public class ConnectionAction extends FacilioAction {
 		if(code == null) {
 			throw new IllegalArgumentException("Auth Code is Empty");
 		}
-		connectionContext = ConnectionUtil.getConnection(connectionId);
+		connectionContext = ConnectionUtil.getConnectionFromSecretStateString(state);
 		connectionContext.setAuthCode(code);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);

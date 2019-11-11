@@ -68,10 +68,23 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		return false;
 	}
 
+	private long formId = -1;
+	public long getFormId() {
+		return formId;
+	}
+	public void setFormId(long formId) {
+		this.formId = formId;
+	}
+
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// Don't evaluate draft stateflow in the workflow evaluation.
 		if (isDraft()) {
+			return false;
+		}
+		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+		if (moduleRecord.getStateFlowId() > 0) {
+			// Already stateflow assigned
 			return false;
 		}
 		return super.evaluateMisc(moduleName, record, placeHolders, context);

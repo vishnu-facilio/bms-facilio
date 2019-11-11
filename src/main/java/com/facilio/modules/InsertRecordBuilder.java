@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -14,6 +18,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.InsertBuilderIfc;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FileField;
 import com.facilio.util.FacilioUtil;
 
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implements InsertBuilderIfc<E> {
@@ -145,6 +150,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 			beanProps.add(getAsProps(bean));
 		}
+		List<FileField> fileFields = new ArrayList<>();
 		
 		int currentLevel = 1;
 		for(FacilioModule currentModule : modules) {
@@ -188,14 +194,25 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				}
 				
 				insertBuilder.save();
+				
+				if (CollectionUtils.isNotEmpty(insertBuilder.getFileFields())) {
+					fileFields.addAll(insertBuilder.getFileFields());
+				}
+				
 			}
 			currentLevel++;
 		}
+		
+		
 		
 		Map<String, FacilioField> fieldNameMap = null;
 		if (withChangeSet) {
 			fieldNameMap = FieldFactory.getAsMap(fields);
 			changeSet = new HashMap<>();
+		}
+		
+		if (CollectionUtils.isNotEmpty(fileFields)) {
+			fileFields = fileFields.stream().filter(field -> !field.isDefault()).collect(Collectors.toList());
 		}
 		
 		for(int itr = 0; itr < records.size(); itr++) {
@@ -208,9 +225,22 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					List<UpdateChangeSet> changeList = FieldUtil.constructChangeSet(id, beanProp, fieldNameMap);
 					changeSet.put(id, changeList);
 				}
+				
+				removeFileCustomFields(fileFields, records.get(itr));
+				
 			}
 		}
 		
+	}
+	
+	private void removeFileCustomFields(List<FileField> fileFields, E bean) {
+		if (CollectionUtils.isNotEmpty(fileFields) && MapUtils.isNotEmpty(bean.getData())) {
+			for(FacilioField field : fileFields) {
+				if (bean.getData().containsKey(field.getName())) {
+					bean.getData().remove(field.getName());
+				}
+			}
+		}
 	}
 
 	private long getLocalId (List<FacilioModule> modules) throws Exception {

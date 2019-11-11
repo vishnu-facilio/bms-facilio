@@ -88,7 +88,36 @@ public class StateflowTransitionContext extends ApproverWorkflowRuleContext impl
 	public void setScheduleTime(int scheduleTime) {
 		this.scheduleTime = scheduleTime;
 	}
-	
+
+	// temporary fix
+	private Boolean showInVendorPortal;
+	public Boolean getShowInVendorPortal() {
+		return showInVendorPortal;
+	}
+	public void setShowInVendorPortal(Boolean showInVendorPortal) {
+		this.showInVendorPortal = showInVendorPortal;
+	}
+	public Boolean isShowInVendorPortal() {
+		if (this.showInVendorPortal == null) {
+			return false;
+		}
+		return showInVendorPortal;
+	}
+
+	private Boolean showInTenantPortal;
+	public Boolean getShowInTenantPortal() {
+		return showInTenantPortal;
+	}
+	public void setShowInTenantPortal(Boolean showInTenantPortal) {
+		this.showInTenantPortal = showInTenantPortal;
+	}
+	public Boolean isShowInTenantPortal() {
+		if (this.showInTenantPortal == null) {
+			return false;
+		}
+		return showInTenantPortal;
+	}
+
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,
 			FacilioContext context) throws Exception {
