@@ -3049,6 +3049,23 @@ public class PreventiveMaintenanceAPI {
 //			}
 //	}
 
+
+	public static boolean isAllTasksAssignmentTypeIs5(List<TaskSectionTemplate> sectionTemplates) {
+
+		for (TaskSectionTemplate sectionTemplate: sectionTemplates) {
+			if (sectionTemplate.getAssignmentType() != 5) {
+				return false;
+			}
+			List<TaskTemplate> taskTemplates = sectionTemplate.getTaskTemplates();
+			for (TaskTemplate taskTemplate: taskTemplates) {
+				if (taskTemplate.getAssignmentType() != 5) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	public static void populateUniqueId(long accountId, boolean doMigration) throws Exception {
 
 			AccountUtil.setCurrentAccount(accountId);
@@ -3077,9 +3094,13 @@ public class PreventiveMaintenanceAPI {
 					continue;
 				}
 				LOGGER.log(Level.WARN, "executing for pm " + pm.getId());
+
 				Map<String, Map<String, Long>> pmLookup = new HashMap<>();
 				WorkorderTemplate woTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
 				List<TaskSectionTemplate> sectionTemplates = woTemplate.getSectionTemplates();
+
+				boolean allTasksAssignmentTypeIs5 = isAllTasksAssignmentTypeIs5(sectionTemplates);
+
 				for (TaskSectionTemplate sectionTemplate: sectionTemplates) {
 					Map<String,Long> taskMap = new HashMap<>();
 					pmLookup.put(sectionTemplate.getName(), taskMap);
@@ -3124,6 +3145,8 @@ public class PreventiveMaintenanceAPI {
 								for (Map.Entry<String, Map<String, Long>> entry: entries) {
 									taskMap = entry.getValue();
 								}
+							} else if (allTasksAssignmentTypeIs5) {
+								resource = ResourceAPI.getResource(workOrderContext.getResource().getId());
 							} else {
 								resourceIsMissing.add(pm.getId());
 								LOGGER.log(Level.ERROR, "resource is missing " + task.getSubject());
