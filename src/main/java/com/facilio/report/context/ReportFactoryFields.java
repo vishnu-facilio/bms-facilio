@@ -40,8 +40,13 @@ public class ReportFactoryFields {
 			FacilioField field = fields.get(fieldName);
 			if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 				LookupField lookupField = (LookupField) field;
-				if(!lookUpModuleNames.containsKey(lookupField.getDisplayName()) && !"moduleState".equalsIgnoreCase(lookupField.getName())) {
+				if(lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && !"users".equalsIgnoreCase(lookupField.getLookupModule().getName())) {
+				if(!lookUpModuleNames.containsKey(lookupField.getDisplayName())) {
 					lookUpModuleNames.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
+				}
+				}
+				else {
+					selectedFields.add(fields.get(fieldName));
 				}
 			}
 			else {
@@ -54,8 +59,13 @@ public class ReportFactoryFields {
 				FacilioField customField = fields.get(customFieldName);
 				if(customField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 					LookupField lookupField = (LookupField) customField;
-					if(!lookUpModuleNames.containsKey(lookupField.getDisplayName()) && !"moduleState".equalsIgnoreCase(lookupField.getName())) {
+					if(lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && !"user".equalsIgnoreCase(lookupField.getLookupModule().getName())) {
+					if(!lookUpModuleNames.containsKey(lookupField.getDisplayName())) {
 						lookUpModuleNames.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
+					}
+					}
+					else {
+						selectedFields.add(customFields.get(customFieldName));
 					}
 				}
 				else {
