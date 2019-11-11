@@ -73,6 +73,8 @@ public class FormFactory {
 		forms.put("visitorPreRegisterForm", getVisitorPreRegisterForm());
 		//visitor type forms
 		
+		forms.put("visitorLogForm", getVisitorLogForm());
+		forms.put("watchListForm", getWatchListForm());
 			
 			
 		return forms;
@@ -1314,6 +1316,48 @@ public class FormFactory {
 
 
 		
+		return fields;
+	}
+
+	public static FacilioForm getVisitorLogForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("VISITOR LOG");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getVisitorLogFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
+	private static List<FormField> getVisitorLogFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("visitor", FieldDisplayType.LOOKUP_SIMPLE, "Visitor", Required.REQUIRED, "visitor", 1, 1).setAllowCreate(true).setCreateFormName("visitor_form"));
+		fields.add(new FormField("host", FieldDisplayType.USER, "Host", Required.OPTIONAL, "host", 2, 2));
+		fields.add(new FormField("approvalNeeded", FieldDisplayType.DECISION_BOX, "Is Host Approval Needed", Required.OPTIONAL, 5, 3));
+		return fields;
+	}
+
+	public static FacilioForm getWatchListForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WATCH LIST");
+		form.setName("default_watch_list_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WATCHLIST));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getWatchListFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
+	private static List<FormField> getWatchListFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("avatarId", FieldDisplayType.IMAGE, "Avatar", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("phone", FieldDisplayType.NUMBER, "Phone", Required.REQUIRED, 3, 2));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("isBlocked", FieldDisplayType.DECISION_BOX, "Visitor Entry", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 5, 3));
+
 		return fields;
 	}
 

@@ -83,6 +83,7 @@ public class ColumnFactory {
 		columnMap.put("visitorlogging-default", getDefaultVisitorLoggingColumns());
 		columnMap.put("visitorinvite-default", getDefaultVisitorInvitesColumns());
 		columnMap.put("insurance-default", getDefaultInsuranceColumns());
+		columnMap.put("watchlist-default", getDefaultWatchListColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -668,6 +669,16 @@ public class ColumnFactory {
 		columns.add(new ViewField("validFrom", "Valid From"));
 		columns.add(new ViewField("validTill", "Valid Till"));
 		columns.add(new ViewField("vendor", "Vendor"));
+		return columns;
+	}
+
+	public static List<ViewField> getDefaultWatchListColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("phone", "PHONE"));
+		columns.add(new ViewField("EMAIL", "Email"));
+		columns.add(new ViewField("isBlocked", "Visitor Entry"));
+		columns.add(new ViewField("isVip", "VIP"));
 		return columns;
 	}
 

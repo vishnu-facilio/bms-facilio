@@ -102,8 +102,10 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ModuleNames.DEVICES,getDevicesModule());
 		moduleMap.put(FacilioConstants.ContextNames.VISITOR,getVisitorModule());
 		moduleMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING,getVisitorLoggingModule());
-		moduleMap.put(FacilioConstants.ContextNames.VISITOR_INVITE,getVisitorModule());
+		moduleMap.put(FacilioConstants.ContextNames.VISITOR_INVITE,getVisitorInviteModule());
 		moduleMap.put(FacilioConstants.ContextNames.INSURANCE, getInsuranceModule());
+		moduleMap.put(ContextNames.VISITOR_LOGGING, getVisitorLogModule());
+		moduleMap.put(ContextNames.WATCHLIST, getWatchListModule());
 		return moduleMap;
 	}
 	
@@ -2820,6 +2822,15 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getVisitorLogModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.VISITOR_LOGGING);
+		module.setDisplayName("Visitor Logging");
+		module.setTableName("Visitor_Logging");
+		return module;
+	}
+
 	public static FacilioModule getVisitorInviteModule()
 	{
 		FacilioModule module=new FacilioModule();
@@ -2896,4 +2907,12 @@ public class ModuleFactory {
 		return module;
     	
     }
+	public static FacilioModule getWatchListModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.WATCHLIST);
+		module.setDisplayName("Watch List");
+		module.setTableName("WatchList");
+		return module;
+	}
 }

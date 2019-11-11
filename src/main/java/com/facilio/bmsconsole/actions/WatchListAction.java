@@ -163,7 +163,7 @@ private static final long serialVersionUID = 1L;
 	
 	public String getWatchListRecordDetails() throws Exception {
 		
-		FacilioChain chain = ReadOnlyChainFactory.getInsuranceDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getWatchListDetailsChain();
 		chain.getContext().put(FacilioConstants.ContextNames.ID, recordId);
 		
 		chain.execute();

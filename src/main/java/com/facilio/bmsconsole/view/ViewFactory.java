@@ -572,6 +572,11 @@ public class ViewFactory {
 		views.put("space", getSpaceKPIView("space", formulaFieldMap).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.FORMULA_FIELD, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWatchListView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WATCHLIST, views);
+
 		return viewsMap;
 	}
 
@@ -4731,6 +4736,14 @@ public class ViewFactory {
 	
 	private static Condition getKPICondition(Map<String, FacilioField> fieldMap) {
 		return CriteriaAPI.getCondition(fieldMap.get("formulaFieldType"), String.valueOf(FormulaFieldType.ENPI.getValue()), NumberOperators.EQUALS);
+	}
+
+	private static FacilioView getAllWatchListView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Watch List");
+		return allView;
 	}
 
 }
