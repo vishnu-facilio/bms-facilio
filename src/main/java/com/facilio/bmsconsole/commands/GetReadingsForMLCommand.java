@@ -89,7 +89,13 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 					Long previousValue = (Long) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));
 					data.put(ttime, previousValue + (Long) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
 				}else{
-					data.put(ttime, prop.get(variableField.getName()));
+					if(variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
+						data.put(ttime,(Double) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
+					}else if(variableField.getDataTypeEnum().equals(FieldType.NUMBER)){
+						data.put(ttime, (Long) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
+					}else{
+						data.put(ttime, prop.get(variableField.getName()));
+					}
 				}
 			}
 			if(mlContext.getOrgId()==232 && mlContext.getId()==83)
