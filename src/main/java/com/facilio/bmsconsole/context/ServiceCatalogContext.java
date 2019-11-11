@@ -1,9 +1,10 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.File;
+import java.io.Serializable;
+
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.workflow.rule.FormInterface;
-
-import java.io.Serializable;
 
 public class ServiceCatalogContext implements Serializable, FormInterface {
 
@@ -38,6 +39,38 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
     public void setPhotoId(long photoId) {
         this.photoId = photoId;
     }
+    
+    private String photoUrl;
+	public String getPhotoUrl() {
+		return photoUrl;
+	}
+	public void setPhotoUrl(String photoUrl) {
+		this.photoUrl = photoUrl;
+	}
+
+	private File photo;
+	public File getPhoto() {
+		return photo;
+	}
+	public void setPhoto(File photo) {
+		this.photo = photo;
+	}
+
+	private String photoFileName;
+	public String getPhotoFileName() {
+		return photoFileName;
+	}
+	public void setPhotoFileName(String photoFileName) {
+		this.photoFileName = photoFileName;
+	}
+
+	private  String photoContentType;
+	public String getPhotoContentType() {
+		return photoContentType;
+	}
+	public void setPhotoContentType(String photoContentType) {
+		this.photoContentType = photoContentType;
+	}
 
     private long moduleId;
     public long getModuleId() {

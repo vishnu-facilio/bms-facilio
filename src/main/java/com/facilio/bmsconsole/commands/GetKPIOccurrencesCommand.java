@@ -40,22 +40,25 @@ public class GetKPIOccurrencesCommand extends FacilioCommand {
 		FacilioModule module = modBean.getModule(ContextNames.VIOLATION_ALARM_OCCURRENCE);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(fieldMap.get("formulaField"));
-		fields.add(fieldMap.get("resource"));
+		FacilioField formulaField = fieldMap.get("formulaField");
+		FacilioField resourceField = fieldMap.get("resource");
+		fields.add(formulaField);
+		fields.add(resourceField);
 		
 		SelectRecordsBuilder<ViolationAlarmContext> selectBuilder = new SelectRecordsBuilder<ViolationAlarmContext>()
 				.module(module).beanClass(ViolationAlarmContext.class)
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN))
 				.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
+				.groupBy(formulaField.getColumnName()+","+resourceField.getColumnName())
 				;
 		
 		Criteria criteriaList = new Criteria();
 		for(String id: ids) {
 			String[] kpi_resource = id.split("_");
 			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("formulaField"), kpi_resource[0], PickListOperators.IS));
-			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), kpi_resource[1], PickListOperators.IS));
+			criteria.addAndCondition(CriteriaAPI.getCondition(formulaField, kpi_resource[0], PickListOperators.IS));
+			criteria.addAndCondition(CriteriaAPI.getCondition(resourceField, kpi_resource[1], PickListOperators.IS));
 			criteriaList.orCriteria(criteria);
 		}
 		selectBuilder.andCriteria(criteriaList);
@@ -65,9 +68,9 @@ public class GetKPIOccurrencesCommand extends FacilioCommand {
 		if (CollectionUtils.isNotEmpty(alarmList)) {
 			Map<String, Long> occurrenceMap = new HashMap<>();
 			for(Map<String, Object> alarm: alarmList) {
-				Map<String, Long> formulaField = (Map<String, Long>) alarm.get("formulaField");
+				Map<String, Long> formula = (Map<String, Long>) alarm.get("formulaField");
 				Map<String, Long> resource = (Map<String, Long>) alarm.get("resource");
-				occurrenceMap.put(formulaField.get("id")+"_"+resource.get("id"), (long) alarm.get("id"));
+				occurrenceMap.put(formula.get("id")+"_"+resource.get("id"), (long) alarm.get("id"));
 			}
 			for(String id: ids) {
 				long count = 0;

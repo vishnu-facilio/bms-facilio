@@ -238,15 +238,13 @@ public class BmsDBConf extends DBConf {
 
                     if (fileObj instanceof File || fileObj instanceof String){
                         file = fileObj instanceof File ? (File) fileObj : new File((String)fileObj);
-                        fileName = (String) value.get(field.getName()+"FileName");
-                        fileType = (String) value.get(field.getName()+"ContentType");
                     }
                     else {
                         Map<String, Object> fileMap = (Map<String, Object>) fileObj;
                         file = new File((String) fileMap.get("content"));
-                        fileName = (String) fileMap.get(field.getName()+"FileName");
-                        fileType = (String) fileMap.get(field.getName()+"ContentType");
                     }
+                    fileName = (String) value.get(field.getName()+"FileName");
+                    fileType = (String) value.get(field.getName()+"ContentType");
 
                     // TODO add file in bulk
 					/*value.put("file", file);
