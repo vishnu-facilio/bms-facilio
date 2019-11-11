@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.File;
+
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -72,6 +74,53 @@ public class InsuranceContext extends ModuleBaseWithCustomFields{
 			}
 			return null;
 		}
+	}
+
+	private long insuranceId;
+	public long getInsuranceId() {
+		return insuranceId;
+	}
+
+	public void setInsuranceId(long insuranceId) {
+		this.insuranceId = insuranceId;
+	}
+
+	private String insuranceUrl;
+	
+	public String getInsuranceUrl() {
+		return insuranceUrl;
+	}
+
+	public void setInsuranceUrl(String insuranceUrl) {
+		this.insuranceUrl = insuranceUrl;
+	}
+
+	private File insurance;
+	public File getInsurance() {
+		return insurance;
+	}
+
+	public void setInsurance(File insurance) {
+		this.insurance = insurance;
+	}
+
+	private String insuranceFileName;
+	public String getInsuranceFileName() {
+		return insuranceFileName;
+	}
+
+	public void setInsuranceFileName(String insuranceFileName) {
+		this.insuranceFileName = insuranceFileName;
+	}
+
+	private  String insuranceContentType;
+
+	public String getInsuranceContentType() {
+		return insuranceContentType;
+	}
+
+	public void setInsuranceContentType(String InsuranceContentType) {
+		this.insuranceContentType = insuranceContentType;
 	}
 
 	
