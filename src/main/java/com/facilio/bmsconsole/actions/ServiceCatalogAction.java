@@ -36,6 +36,14 @@ public class ServiceCatalogAction extends FacilioAction {
         this.groupId = groupId;
     }
 
+    private long id = -1;
+    public long getId() {
+        return id;
+    }
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String addOrUpdateServiceCatalog() throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateServiceCatalogChain();
         FacilioContext context = chain.getContext();
@@ -57,6 +65,17 @@ public class ServiceCatalogAction extends FacilioAction {
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.SERVICE_CATALOGS, context.get(FacilioConstants.ContextNames.SERVICE_CATALOGS));
+        return SUCCESS;
+    }
+
+    public String getServiceCatalogDetails() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getServiceCatalogDetailsChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, id);
+
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SERVICE_CATALOG, context.get(FacilioConstants.ContextNames.SERVICE_CATALOG));
         return SUCCESS;
     }
 

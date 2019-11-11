@@ -1625,7 +1625,13 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAllServiceCatalogCommand());
 		return chain;
 	}
-	
+
+	public static FacilioChain getServiceCatalogDetailsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetServiceCatalogDetailsCommand());
+		return chain;
+	}
+
 	public static FacilioChain getKPIOccurrencesChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetKPIOccurrencesCommand());
