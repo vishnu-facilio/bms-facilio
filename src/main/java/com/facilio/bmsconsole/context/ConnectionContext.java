@@ -42,6 +42,15 @@ public class ConnectionContext {
 		this.connectionParams = connectionParams;
 	}
 	
+	List<ConnectionApiContext> connectionApis;
+	
+	public List<ConnectionApiContext> getConnectionApis() {
+		return connectionApis;
+	}
+	public void setConnectionApis(List<ConnectionApiContext> connectionApis) {
+		this.connectionApis = connectionApis;
+	}
+	
 	public String getScope() {
 		return scope;
 	}
