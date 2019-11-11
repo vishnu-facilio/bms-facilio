@@ -663,6 +663,56 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="VendorWorkpermit" namespace="/api/service/v2/workpermit"
+		extends="newServicePortalApiV2">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="addWorkPermit" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="updateWorkPermit" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="deleteWorkPermit" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList" />
+	</package>
+	<package name="ServicePortalState" namespace="/api/service/v2/state"
+	extends="newServicePortalApiV2">
+	<action name="list" class="com.facilio.bmsconsole.actions.TicketStatusAction"
+		method="v2StatusList" />
+	</package>
+	<package name="ServicePageApiv2" namespace="/api/service/v2/pages" extends="newServicePortalApiV2">
+		<action name="*" class="com.facilio.bmsconsole.actions.PageAction"
+			method="fetchPage">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
+	<package name="ServiceNoteApi" namespace="/api/service/note" extends="newServicePortalApiV2">
+		<action name="add" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="addNote">
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
+			<result name="success" type="json">
+				<param name="includeProperties">^note.*</param>
+			</result>
+		</action>
+		<action name="get" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="getNotesList">
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
+			<result name="success" type="json">
+				<param name="root">notes</param>
+			</result>
+		</action>
+		</package>
+		
+		<package name="ServiceModuleApi" namespace="/api/service/module" extends="newServicePortalApiV2">
+		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="fields">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
+			</result>
+		</action>
+		</package>
 	<!-- Vendor apis end -->
 	<!-- end -->
 </struts>

@@ -567,6 +567,11 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkPermitView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WORKPERMIT, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		Map<String, FacilioField> formulaFieldMap = FieldFactory.getAsMap(FieldFactory.getFormulaFieldFields());
 		views.put("asset", getAssetKPIView("asset", formulaFieldMap).setOrder(order++));
 		views.put("space", getSpaceKPIView("space", formulaFieldMap).setOrder(order++));
@@ -4702,6 +4707,14 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Insurance");
+		return allView;
+	}
+	
+	private static FacilioView getAllWorkPermitView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Work Permit");
 		return allView;
 	}
 
