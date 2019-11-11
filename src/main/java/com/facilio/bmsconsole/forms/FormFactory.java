@@ -75,8 +75,7 @@ public class FormFactory {
 		
 		forms.put("visitorLogForm", getVisitorLogForm());
 		forms.put("watchListForm", getWatchListForm());
-			
-			
+		forms.put("workpermitForm", getWorkPermitForm());
 		return forms;
 	}
     
@@ -258,6 +257,7 @@ public class FormFactory {
 		List<FacilioForm> visitorTypeForms = Arrays.asList(getGuestForm(),getEmployeeForm(),getVendorForm());
 		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm());
 		
+		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -266,6 +266,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getFormMap(prForm))
 				.put(FacilioConstants.ContextNames.VISITOR_LOGGING,getFormMap(visitorTypeForms))
 				.put(FacilioConstants.ContextNames.VISITOR,getFormMap(visitorForms))
+				.put(FacilioConstants.ContextNames.WORKPERMIT, getFormMap(workPermitForm))
 				.build();
 	}
 	
@@ -1358,6 +1359,31 @@ public class FormFactory {
 		fields.add(new FormField("isBlocked", FieldDisplayType.DECISION_BOX, "Visitor Entry", Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 5, 3));
 
+		return fields;
+	}
+	
+	public static FacilioForm getWorkPermitForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WORK PERMIT");
+		form.setName("default_workpermit_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORKPERMIT));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getWorkPermitFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getWorkPermitFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("descritption", FieldDisplayType.TEXTBOX, "Descritption", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("isRecurring", FieldDisplayType.DECISION_BOX, "Is Recurring", Required.OPTIONAL, 3, 2));
+		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
+		ticketField.setShowField(false);
+		fields.add(ticketField);
+		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendor", 3, 2);
+		vendorField.setShowField(false);
+		fields.add(vendorField);
 		return fields;
 	}
 
