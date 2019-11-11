@@ -27,7 +27,14 @@ public class ConnectionContext {
 	String callBackURL;
 	List<ConnectionParamContext> connectionParams;
 	long expiryTime = -1l;
+	String secretStateKey;
 	
+	public String getSecretStateKey() {
+		return secretStateKey;
+	}
+	public void setSecretStateKey(String secretStateKey) {
+		this.secretStateKey = secretStateKey;
+	}
 	public List<ConnectionParamContext> getConnectionParams() {
 		return connectionParams;
 	}
@@ -294,7 +301,7 @@ public class ConnectionContext {
 				protocol = "https://";
 			}
 			String domain = FacilioProperties.getAppDomain();
-			callBackURL = protocol+ domain +"/api/v2/connection/"+id;
+			callBackURL = protocol+ domain +"/api/v2/connection/callBack";
 			return callBackURL;
 		}
 		return null;
@@ -312,6 +319,9 @@ public class ConnectionContext {
 			builder.append(ConnectionUtil.PARAM_SEPERATOR);
 			
 			builder.append(ConnectionUtil.SCOPE_TYPE_STRING+ConnectionUtil.EQUALS+scope);
+			builder.append(ConnectionUtil.PARAM_SEPERATOR);
+			
+			builder.append(ConnectionUtil.SECRET_STATE+ConnectionUtil.EQUALS+getSecretStateKey());
 			builder.append(ConnectionUtil.PARAM_SEPERATOR);
 			
 			builder.append(ConnectionUtil.ACCESS_TYPE_STRING+ConnectionUtil.EQUALS+ConnectionUtil.ACCESS_TYPE_OFFLINE);

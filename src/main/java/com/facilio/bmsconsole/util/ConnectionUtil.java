@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.CryptoUtils;
 import com.facilio.time.DateTimeUtil;
 
 public class ConnectionUtil {
@@ -61,6 +63,7 @@ public class ConnectionUtil {
 	public static final String REFRESH_TOKEN_STRING = "refresh_token";
 	public static final String GRANT_TYPE_AUTH_TOKEN = "authorization_code";
 	public static final String DEFAULT_CHARSET_NAME = "UTF-8";
+	public static final String SECRET_STATE = "state";
 
 	public static final String EQUALS = "=";
 	public static final String QUERY_STRING_SEPERATOR = "?";
@@ -134,6 +137,7 @@ public class ConnectionUtil {
 				params.put(GRANT_TYPE_STRING, GRANT_TYPE_AUTH_TOKEN);
 				params.put(REDIRECT_URI_STRING, connectionContext.getCallBackURL());
 				params.put(ACCESS_TYPE_STRING, ACCESS_TYPE_OFFLINE);
+				params.put(SECRET_STATE, connectionContext.getSecretStateKey());
 
 				String res = getUrlResult(url, params, HttpMethod.POST,null,null,null);
 				JSONParser parser = new JSONParser();
@@ -167,6 +171,7 @@ public class ConnectionUtil {
 				params.put(CLIENT_ID_STRING, connectionContext.getClientId());
 				params.put(CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
 				params.put(GRANT_TYPE_STRING, REFRESH_TOKEN_STRING);
+				params.put(SECRET_STATE, connectionContext.getSecretStateKey());
 
 				String res = getUrlResult(url, params, HttpMethod.POST,null,null,null);
 				JSONParser parser = new JSONParser();
@@ -350,6 +355,25 @@ public class ConnectionUtil {
 		}
 		return null;
 	}
+	
+	public static ConnectionContext getConnectionFromSecretStateString(String secretStateKey) throws Exception {
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getConnectionFields());
+		
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getConnectionModule().getTableName())
+				.select(FieldFactory.getConnectionFields())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("secretStateKey"), secretStateKey, StringOperators.IS));
+
+		List<Map<String, Object>> props = select.get();
+
+		if(props != null && !props.isEmpty()) {
+			ConnectionContext connectionContext = FieldUtil.getAsBeanFromMap(props.get(0), ConnectionContext.class);
+			connectionContext.setConnectionParams(getConnectionParams(connectionContext.getId()));
+			return connectionContext;
+		}
+		return null;
+	}
 
 	public static List<ConnectionParamContext> getConnectionParams(long connectionId) throws Exception {
 
@@ -450,13 +474,18 @@ public class ConnectionUtil {
 		connectionContext.setId((Long) prop.get("id"));
 	}
 
-	private static void fillDefaultfields(ConnectionContext connectionContext) {
+	private static void fillDefaultfields(ConnectionContext connectionContext) throws NoSuchAlgorithmException {
 
 //		connectionContext.setSysModifiedBy(AccountUtil.getCurrentUser());
 		connectionContext.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 		if(connectionContext.getId() < 0) {
 			connectionContext.setSysCreatedTime(DateTimeUtil.getCurrenTime());
 		}
+		
+		String key = CryptoUtils.hash256(""+DateTimeUtil.getCurrenTime()+Math.random());
+		
+		connectionContext.setSecretStateKey(key);
+		
 		connectionContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 	}
 

@@ -2995,6 +2995,7 @@ public class FieldFactory {
 		fields.add(getField("authCode", "AUTH_CODE", module, FieldType.STRING));
 		fields.add(getField("refreshToken", "REFRESH_TOKEN", module, FieldType.STRING));
 		fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));
+		fields.add(getField("secretStateKey", "SECRET_STATE_KEY", module, FieldType.STRING));
 		
 		fields.add(getSystemField("sysCreatedTime", module));
 		fields.add(getSystemField("sysModifiedTime", module));
