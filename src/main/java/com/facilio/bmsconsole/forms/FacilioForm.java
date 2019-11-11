@@ -210,7 +210,9 @@ public class FacilioForm implements Serializable {
 	public enum FormType {
 		WEB(1, "web"),
 		MOBILE(2, "mobile"), // Will be removed
-		PORTAL(3, "portal");
+		PORTAL(3, "portal"),
+		SERVICE_CATALOG(4, "portal"),
+		;
 		
 		private int intVal;
 		private String stringVal;

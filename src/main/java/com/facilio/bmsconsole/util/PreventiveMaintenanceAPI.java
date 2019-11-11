@@ -3049,10 +3049,9 @@ public class PreventiveMaintenanceAPI {
 //			}
 //	}
 
-	public static void populateUniqueId() throws Exception {
-		long[] orgs = new long[]{151L};
-		for (long org: orgs) {
-			AccountUtil.setCurrentAccount(org);
+	public static void populateUniqueId(long accountId, boolean doMigration) throws Exception {
+
+			AccountUtil.setCurrentAccount(accountId);
 			if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
 				LOGGER.log(Level.WARN, "Org is missing");
 				return;
@@ -3063,7 +3062,7 @@ public class PreventiveMaintenanceAPI {
 			List<FacilioField> taskFields = modBean.getAllFields(taskModule.getName());
 			Map<String, FacilioField> taskFieldMap = FieldFactory.getAsMap(taskFields);
 
-			List<PreventiveMaintenance> allPMs = PreventiveMaintenanceAPI.getAllPMs(org, false);
+			List<PreventiveMaintenance> allPMs = PreventiveMaintenanceAPI.getAllPMs(accountId, false);
 			Set<Long> resourceIsMissing = new HashSet<>();
 			Set<Long> invalidResource = new HashSet<>();
 			Set<Long> unusualSectionName = new HashSet<>();
@@ -3106,11 +3105,14 @@ public class PreventiveMaintenanceAPI {
 					List<TaskContext> tasks = TicketAPI.getRelatedTasks(workOrderContext.getId());
 					Map<String, Object> nullMap = new HashMap<>();
 					nullMap.put("uniqueId", -99L);
-//					UpdateRecordBuilder<TaskContext> nullUpdateRecordBuilder = new UpdateRecordBuilder<>();
-//					nullUpdateRecordBuilder.moduleName("task")
-//							.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
-//							.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), workOrderContext.getId()+"", NumberOperators.EQUALS))
-//							.updateViaMap(nullMap);
+					if (doMigration) {
+						UpdateRecordBuilder<TaskContext> nullUpdateRecordBuilder = new UpdateRecordBuilder<>();
+						nullUpdateRecordBuilder.moduleName("task")
+							.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
+							.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), workOrderContext.getId()+"", NumberOperators.EQUALS))
+							.updateViaMap(nullMap);
+					}
+
 					for (TaskContext task: tasks) {
 						long sectionId = task.getSectionId();
 						TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
@@ -3184,13 +3186,15 @@ public class PreventiveMaintenanceAPI {
 							LOGGER.log(Level.ERROR, "unique id is missing for " + task.getId());
 						} else {
 							LOGGER.log(Level.ERROR, "task id " + task.getId() + " uniqueId " + uniqueId);
-//							Map<String, Object> updateMap = new HashMap<>();
-//							updateMap.put("uniqueId", uniqueId);
-//							UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
-//							updateRecordBuilder.moduleName("task")
-//									.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
-//									.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(taskModule), task.getId()+"", NumberOperators.EQUALS))
-//									.updateViaMap(updateMap);
+							if (doMigration) {
+								Map<String, Object> updateMap = new HashMap<>();
+								updateMap.put("uniqueId", uniqueId);
+								UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
+								updateRecordBuilder.moduleName("task")
+										.fields(Collections.singletonList(taskFieldMap.get("uniqueId")))
+										.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(taskModule), task.getId()+"", NumberOperators.EQUALS))
+										.updateViaMap(updateMap);
+							}
 						}
 					}
 				}
@@ -3202,7 +3206,6 @@ public class PreventiveMaintenanceAPI {
 			LOGGER.log(Level.WARN, "uniqueIdIsMissing " + Arrays.toString(uniqueIdIsMissing.toArray()));
 			LOGGER.log(Level.WARN, "additionInfoMissing " + Arrays.toString(additionInfoMissing.toArray()));
 			LOGGER.log(Level.WARN, "uniqueIdMissing " + Arrays.toString(uniqueIdIsMissing.toArray()));
-		}
 	}
 
 	public static void verifyScheduleGeneration(List<Long> orgs) throws Exception {

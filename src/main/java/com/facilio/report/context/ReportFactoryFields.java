@@ -40,8 +40,8 @@ public class ReportFactoryFields {
 			FacilioField field = fields.get(fieldName);
 			if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 				LookupField lookupField = (LookupField) field;
-				if(!lookUpModuleNames.containsKey(lookupField.getName())) {
-					lookUpModuleNames.put(lookupField.getName(),lookupField.getLookupModule().getName());
+				if(!lookUpModuleNames.containsKey(lookupField.getDisplayName()) && !"moduleState".equalsIgnoreCase(lookupField.getName())) {
+					lookUpModuleNames.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
 				}
 			}
 			else {
@@ -54,8 +54,8 @@ public class ReportFactoryFields {
 				FacilioField customField = fields.get(customFieldName);
 				if(customField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 					LookupField lookupField = (LookupField) customField;
-					if(!lookUpModuleNames.containsKey(lookupField.getName())) {
-						lookUpModuleNames.put(lookupField.getName(),lookupField.getLookupModule().getName());
+					if(!lookUpModuleNames.containsKey(lookupField.getDisplayName()) && !"moduleState".equalsIgnoreCase(lookupField.getName())) {
+						lookUpModuleNames.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
 					}
 				}
 				else {
@@ -75,7 +75,7 @@ public class ReportFactoryFields {
 		if(dimensionFieldMap.get("time") != null) {
 		dimensionListOrder.add("time");
 		}
-		dimensionListOrder.add(facilioModule.getDisplayName().toLowerCase());
+		dimensionListOrder.add(facilioModule.getDisplayName());
 		
 		for(String module:lookUpModuleNames.keySet()) {
 			dimensionFieldMap.put(module, getDimensionLookupFields((List<FacilioField>) additionalModuleFields.get(lookUpModuleNames.get(module))));
@@ -812,14 +812,14 @@ public class ReportFactoryFields {
 			if(field != null) {
 				if (field instanceof NumberField) {
 					if("siteId".equalsIgnoreCase(field.getName())) {
-						addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
+						addFieldInList(dimensionFieldMap, "siteId", field);
 					}
 					else if((!"stateFlowId".equalsIgnoreCase(field.getName()))) {
 						metricFields.add(field);
 					}
 				} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
 					addFieldInList(dimensionFieldMap, "time", field);
-				} else {
+				} else if(field.getDataTypeEnum() != FieldType.FILE && field.getDataTypeEnum() != FieldType.STRING){
 					addFieldInList(dimensionFieldMap, module.getDisplayName(), field);
 				}
 			}
@@ -841,7 +841,14 @@ public class ReportFactoryFields {
 		List<FacilioField> dimensionFields = new ArrayList();
 		for (FacilioField field : fields) {
 			if(field != null) {
-				if (!(field instanceof NumberField) && !(field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME || field.getDataTypeEnum() == FieldType.LOOKUP)) {
+				if (    !(field instanceof NumberField) 
+						&& (field.getDataTypeEnum() == FieldType.ENUM 
+						|| field.getDataTypeEnum() == FieldType.LOOKUP
+						|| field.getDataTypeEnum() == FieldType.SYSTEM_ENUM 
+						|| field.getDataTypeEnum() == FieldType.BOOLEAN) 
+						|| field.isMainField()
+					) {
+					
 					dimensionFields.add(field);
 				}
 			}
@@ -959,10 +966,11 @@ public class ReportFactoryFields {
 		HashMap<String, List<FacilioField>> additionalModuleFields = new HashMap<String, List<FacilioField>>();
 		
 		for(String module: additonalModules.keySet()) {
+			FacilioModule facilioModule = bean.getModule(additonalModules.get(module));
 			List<FacilioField> moduleFields = bean.getAllFields(additonalModules.get(module));
 
 			List<FacilioField> customModuleFields = bean.getAllCustomFields(additonalModules.get(module));
-			if(customModuleFields != null) {
+			if(customModuleFields != null && facilioModule.getType() != FacilioModule.ModuleType.CUSTOM.getValue()) {
 				moduleFields.addAll(customModuleFields);
 			}
 			

@@ -17,5 +17,5 @@
 <%
     long accountId = Long.parseLong(request.getParameter("orgId"));
     boolean doMigration = Boolean.parseBoolean(request.getParameter("doMig"));
-	PreventiveMaintenanceAPI.findMissingExecutions(accountId, doMigration);
+	PreventiveMaintenanceAPI.populateUniqueId(accountId, doMigration);
 %>
