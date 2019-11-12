@@ -57,7 +57,7 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 		FacilioChain formChain = FacilioChainFactory.getFormMetaChain();
 		FacilioContext formContext=formChain.getContext();
 			
-		formContext.put(FacilioConstants.ContextNames.MODULE_NAME, ContextNames.VISITOR);
+		formContext.put(FacilioConstants.ContextNames.MODULE_NAME, ContextNames.VISITOR_LOGGING);
 		
 		if(formId>0)
 		{

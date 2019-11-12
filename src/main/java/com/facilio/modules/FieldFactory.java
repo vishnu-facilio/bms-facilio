@@ -7068,6 +7068,8 @@ public class FieldFactory {
 		fields.add(getField("isBadgeEnabled","IS_BADGE_ENABLED",FieldType.BOOLEAN));
 		fields.add(getField("isPhotoEnabled","IS_PHOTO_ENABLED",FieldType.BOOLEAN));
 		fields.add(getField("autoSignoutTime","AUTO_SIGNOUT_TIME",FieldType.NUMBER));
+		fields.add(getField("hostSettingsJson","HOST_SETTINGS_JSON",FieldType.STRING));
+		fields.add(getField("hostEnabled","HOST_ENABLED",FieldType.BOOLEAN));
 //		fields.add(getField("isSelfSignoutEnabled","IS_SELF_SIGNOUT_ENABLED",FieldType.BOOLEAN));
 		return fields;
 	}

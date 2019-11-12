@@ -43,7 +43,7 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		FacilioContext formContext=addFormChain.getContext();
 		formContext.put(ContextNames.MODULE_NAME, ContextNames.VISITOR);
 		FacilioForm newVisitorTypeForm=new FacilioForm();//copy guest form
-		List<FormField> newFormfields=FormFactory.getGuestForm().getFields();
+		List<FormField> newFormfields=FormFactory.getGuestForm().getFields();//use get form meta
 		newVisitorTypeForm.setFields(newFormfields);
 		newVisitorTypeForm.setName(newVisitorType.getName()+"_"+newVisitorType.getId());
 		newVisitorTypeForm.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_visitor_mgmt_form");
