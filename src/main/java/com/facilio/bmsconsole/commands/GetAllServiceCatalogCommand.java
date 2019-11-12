@@ -44,6 +44,11 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
             builder.limit(perPage);
         }
 
+        Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+        if (filterCriteria != null && !filterCriteria.isEmpty()) {
+            builder.andCriteria(filterCriteria);
+        }
+
         List<Map<String, Object>> maps = builder.get();
         List<ServiceCatalogContext> serviceCatalogs = FieldUtil.getAsBeanListFromMapList(maps, ServiceCatalogContext.class);
 

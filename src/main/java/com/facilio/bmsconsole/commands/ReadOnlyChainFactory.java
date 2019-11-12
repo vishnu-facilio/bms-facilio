@@ -1622,6 +1622,7 @@ public class ReadOnlyChainFactory {
 
 	public static FacilioChain getServiceCatalogListChain() {
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GetAllServiceCatalogCommand());
 		return chain;
 	}

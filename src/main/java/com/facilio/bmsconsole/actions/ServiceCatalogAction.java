@@ -62,6 +62,13 @@ public class ServiceCatalogAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);
         context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
 
+        if (getFilters() != null) {
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(getFilters());
+            context.put(FacilioConstants.ContextNames.FILTERS, json);
+            context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+        }
+
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.SERVICE_CATALOGS, context.get(FacilioConstants.ContextNames.SERVICE_CATALOGS));
