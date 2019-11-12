@@ -106,6 +106,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.INSURANCE, getInsuranceModule());
 		moduleMap.put(ContextNames.VISITOR_LOGGING, getVisitorLogModule());
 		moduleMap.put(ContextNames.WATCHLIST, getWatchListModule());
+        moduleMap.put(ContextNames.CONTACT, getContactModule());
 		moduleMap.put(FacilioConstants.ContextNames.WORKPERMIT, getWorkPermitModule());
 		return moduleMap;
 	}
@@ -2925,4 +2926,13 @@ public class ModuleFactory {
 		module.setTableName("WatchList");
 		return module;
 	}
+
+    public static FacilioModule getContactModule()
+    {
+        FacilioModule module=new FacilioModule();
+        module.setName(ContextNames.CONTACT);
+        module.setDisplayName("Contact");
+        module.setTableName("Contacts");
+        return module;
+    }
 }

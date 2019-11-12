@@ -27,4 +27,8 @@ enums:
 
   - name: WorkType
     enumClassName: com.facilio.bmsconsole.context.WorkPermitContext$WorkType
+
+  - name: ContactType
+    enumClassName: com.facilio.bmsconsole.context.ContactsContext$ContactType
+
     

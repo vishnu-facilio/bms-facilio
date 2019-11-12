@@ -85,6 +85,7 @@ public class ColumnFactory {
 		columnMap.put("insurance-default", getDefaultInsuranceColumns());
 		columnMap.put("watchlist-default", getDefaultWatchListColumns());
 		columnMap.put("workpermit-default", getDefaultWorkPermitColumns());
+		columnMap.put("contact-default", getDefaultContactColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -690,6 +691,19 @@ public class ColumnFactory {
 		columns.add(new ViewField("EMAIL", "Email"));
 		columns.add(new ViewField("isBlocked", "Visitor Entry"));
 		columns.add(new ViewField("isVip", "VIP"));
+		return columns;
+	}
+
+	public static List<ViewField> getDefaultContactColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("phone", "PHONE"));
+		columns.add(new ViewField("EMAIL", "Email"));
+		columns.add(new ViewField("contactType", "Contact Type"));
+		columns.add(new ViewField("tenant", "Tenant"));
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("isPortalAccessNeeded", "Is Portal Access Needed"));
+		columns.add(new ViewField("isPrimaryContact", "Is Primary Contact"));
 		return columns;
 	}
 

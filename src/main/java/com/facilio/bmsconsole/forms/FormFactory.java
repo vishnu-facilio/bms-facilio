@@ -77,6 +77,8 @@ public class FormFactory {
 		forms.put("watchListForm", getWatchListForm());
 		forms.put("workpermitForm", getWorkPermitForm());
 		forms.put("insuranceForm", getInsuranceForm());
+		forms.put("contactForm", getContactForm());
+
 		return forms;
 	}
     
@@ -1338,9 +1340,9 @@ public class FormFactory {
 
 	private static List<FormField> getVisitorLogFormFields() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("visitor", FieldDisplayType.LOOKUP_SIMPLE, "Visitor", Required.REQUIRED, "visitor", 1, 1).setAllowCreate(true).setCreateFormName("visitor_form"));
+		fields.add(new FormField("visitor", FieldDisplayType.LOOKUP_SIMPLE, "Visitor", Required.REQUIRED, "visitor", 1, 1).setAllowCreate(true).setCreateFormName("visitorForm"));
 		fields.add(new FormField("host", FieldDisplayType.USER, "Host", Required.OPTIONAL, "host", 2, 2));
-		fields.add(new FormField("approvalNeeded", FieldDisplayType.DECISION_BOX, "Is Host Approval Needed", Required.OPTIONAL, 5, 3));
+		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Is Host Approval Needed", Required.OPTIONAL, 5, 3));
 		return fields;
 	}
 
@@ -1428,5 +1430,32 @@ public class FormFactory {
 		fields.add(fileField);
 		return fields;
 	}
+
+	public static FacilioForm getContactForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("CONTACT");
+		form.setName("default_contact_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.CONTACT));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getContactFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
+	private static List<FormField> getContactFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("phone", FieldDisplayType.NUMBER, "Phone", Required.OPTIONAL, 2, 2));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 2, 3));
+		fields.add(new FormField("contactType", FieldDisplayType.SELECTBOX, "Contact Type", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, "vendors",4, 2));
+		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant",4, 3));
+		fields.add(new FormField("isPortalAccessNeeded", FieldDisplayType.DECISION_BOX, "Is Portal Access Needed", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("isPrimaryContact", FieldDisplayType.DECISION_BOX, "Is Primary Contact", Required.OPTIONAL, 5, 3));
+
+		return fields;
+	}
+
+
 
 }

@@ -582,6 +582,11 @@ public class ViewFactory {
 		views.put("all", getAllWatchListView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WATCHLIST, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllContactView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.CONTACT, views);
+
 		return viewsMap;
 	}
 
@@ -4756,6 +4761,14 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Watch List");
+		return allView;
+	}
+
+	private static FacilioView getAllContactView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Contact");
 		return allView;
 	}
 
