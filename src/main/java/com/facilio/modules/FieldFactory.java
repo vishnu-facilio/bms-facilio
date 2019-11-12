@@ -6744,6 +6744,7 @@ public class FieldFactory {
 		list.add(getField("diagramJson", "DIAGRAM_JSON", stateFlowModule, FieldType.STRING));
 		list.add(getField("draftParentId", "DRAFT_PARENT_ID", stateFlowModule, FieldType.NUMBER));
 		list.add(getField("draft", "DRAFT", stateFlowModule, FieldType.BOOLEAN));
+		list.add(getField("formId", "FORM_ID", stateFlowModule, FieldType.NUMBER));
 		return list;
 	}
 	

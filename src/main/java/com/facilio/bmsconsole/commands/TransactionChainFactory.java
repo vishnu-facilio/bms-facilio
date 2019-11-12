@@ -192,13 +192,13 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getWorkOrderWorkflowsChain(boolean sendNotification) {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_CUSTOM_CHANGE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
-			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+//			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			
 			if (sendNotification) {
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {

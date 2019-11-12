@@ -81,6 +81,7 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
         }
         form.setFormType(FacilioForm.FormType.SERVICE_CATALOG);
         form.setName("servicecatalog");
+        form.setHideInList(true);
         List<FormSection> sections = form.getSections();
         if (sections == null || sections.size() != 2) {
             throw new IllegalArgumentException("Sections should be always 2");

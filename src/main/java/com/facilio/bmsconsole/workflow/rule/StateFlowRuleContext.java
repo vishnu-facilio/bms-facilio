@@ -83,9 +83,8 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 			return false;
 		}
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
-		if (moduleRecord.getStateFlowId() > 0) {
-			// Already stateflow assigned
-			return false;
+		if (getFormId() > 0 && moduleRecord.getFormId() > 0) {
+			return getFormId() == moduleRecord.getFormId();
 		}
 		return super.evaluateMisc(moduleName, record, placeHolders, context);
 	}
