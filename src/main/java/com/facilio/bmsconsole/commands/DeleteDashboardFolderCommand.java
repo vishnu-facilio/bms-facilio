@@ -1,7 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardFolderContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
@@ -13,7 +16,13 @@ public class DeleteDashboardFolderCommand extends FacilioCommand {
 		
 		DashboardFolderContext folders = (DashboardFolderContext) context.get(FacilioConstants.ContextNames.DASHBOARD_FOLDER);
 		if(folders != null) {
-			DashboardUtil.deleteDashboardFolder(folders);
+			List<DashboardContext> dbs = DashboardUtil.getDashboardFromFolderId(folders.getId());
+			if(dbs != null) {
+				context.put(FacilioConstants.ContextNames.DASHBOARD_ERROR_MESSAGE, "Folder contains dashboard");
+			}
+			else {
+				DashboardUtil.deleteDashboardFolder(folders);
+			}
 		}
 		return false;
 	}

@@ -3686,6 +3686,10 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardFolderContext.*</param>
 			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+				<param name="includeProperties">^errorString.*</param>
+			</result>
 		</action>
 		<action name="deleteReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteReport">
 			<result name="success" type="json">
