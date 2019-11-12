@@ -7,6 +7,10 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.ContactsContext.ContactType;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
@@ -18,13 +22,18 @@ public class AddTenantUserCommand extends FacilioCommand {
 	
 	
 	public boolean executeCommand(Context context) throws Exception {
+		TenantContext tenant = (TenantContext) context.get(FacilioConstants.ContextNames.RECORD);
 		List<ContactsContext> contacts = (List<ContactsContext>) context.get(FacilioConstants.ContextNames.CONTACTS);
-		if(CollectionUtils.isNotEmpty(contacts)) {
+		if(tenant != null && CollectionUtils.isNotEmpty(contacts)) {
 			for(ContactsContext contact : contacts)	{
 				if(contact.isPortalAccessNeeded()) {
-					TenantsAPI.addTenantUserAsRequester(contact);
+					ContactsAPI.addUserAsRequester(contact);
 				}
+				contact.setTenant(tenant);
+				contact.setContactType(ContactType.TENANT);
+			
 			}
+			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());

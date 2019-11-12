@@ -24,24 +24,22 @@ public class AddVendorContactsCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		VendorContext vendor = (VendorContext) context.get(FacilioConstants.ContextNames.RECORD);
-		if(vendor != null) {
-			List<ContactsContext> contacts = vendor.getVendorContacts();
-			if(CollectionUtils.isNotEmpty(contacts)) {
-				for(ContactsContext contact : contacts) {
-					if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
-						contact.setEmail(contact.getPhone());
-					}
-			
-					if(contact.isPortalAccessNeeded()) {
-						ContactsAPI.addUserAsRequester(contact);
-					}
-					contact.setVendor(vendor);
-					contact.setContactType(ContactType.VENDOR);
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
-					List<FacilioField> fields = modBean.getAllFields(module.getName());
-					RecordAPI.addRecord(true, Collections.singletonList(contact), module, fields);
+		List<ContactsContext> contacts = (List<ContactsContext>)context.get(FacilioConstants.ContextNames.CONTACTS);
+		if(vendor != null && CollectionUtils.isNotEmpty(contacts)) {
+			for(ContactsContext contact : contacts) {
+				if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
+					contact.setEmail(contact.getPhone());
 				}
+		
+				if(contact.isPortalAccessNeeded()) {
+					ContactsAPI.addUserAsRequester(contact);
+				}
+				contact.setVendor(vendor);
+				contact.setContactType(ContactType.VENDOR);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
+				List<FacilioField> fields = modBean.getAllFields(module.getName());
+				RecordAPI.addRecord(true, Collections.singletonList(contact), module, fields);
 			}
 		}
 		

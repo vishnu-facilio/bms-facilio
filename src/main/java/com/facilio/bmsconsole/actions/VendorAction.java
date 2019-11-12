@@ -36,6 +36,15 @@ public class VendorAction extends FacilioAction{
 		this.vendorId = vendorId;
 	}
 	
+	private List<ContactsContext> vendorContacts;
+	
+	public List<ContactsContext> getVendorContacts() {
+		return vendorContacts;
+	}
+	public void setVendorContacts(List<ContactsContext> vendorContacts) {
+		this.vendorContacts = vendorContacts;
+	}
+
 	private List<VendorContext> vendors;
 	public List<VendorContext> getVendors() {
 		return vendors;
@@ -61,6 +70,8 @@ public class VendorAction extends FacilioAction{
 		vendor.setSysCreatedTime(System.currentTimeMillis());
 		FacilioContext context1 = new FacilioContext();
 		context1.put(FacilioConstants.ContextNames.RECORD, vendor);
+		context1.put(FacilioConstants.ContextNames.CONTACTS, vendorContacts);
+		
 		FacilioChain addVendorChain = TransactionChainFactory.getAddVendorChain();
 		addVendorChain.execute(context1);
 		
@@ -204,13 +215,5 @@ public class VendorAction extends FacilioAction{
 		this.vendorsCount = vendorsCount;
 	}
 	
-	private List<ContactsContext> contacts;
-	
-	public List<ContactsContext> getContacts() {
-		return contacts;
-	}
-	public void setContacts(List<ContactsContext> contacts) {
-		this.contacts = contacts;
-	}
 	
 }

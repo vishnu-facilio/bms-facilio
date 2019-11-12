@@ -1654,7 +1654,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
-//		chain.addCommand(new LoadContactsLookUpCommand());
+		chain.addCommand(new LoadContactsLookUpCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
