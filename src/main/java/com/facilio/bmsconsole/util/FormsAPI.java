@@ -400,6 +400,11 @@ public class FormsAPI {
 				;
 	}
 	
+	public static void initFormFields(FacilioForm form) throws Exception {
+		FormsAPI.deleteFormFields(form.getId());
+		FormsAPI.addFormFields(form.getId(), form);
+	}
+	
 	public static List<FacilioForm> getFormsFromDB(Collection<Long> ids) throws Exception {
 		Criteria formNameCriteria = new Criteria();
 		formNameCriteria.addAndCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getFormModule()));

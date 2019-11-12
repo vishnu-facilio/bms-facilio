@@ -379,8 +379,8 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				updateCount += updateBuilder.update(new HashMap<>(moduleProps));
 			}
 			f.clear();
-			if (CollectionUtils.isNotEmpty(builder.getFileFields())) {
-				fileFields.addAll(builder.getFileFields());
+			if (CollectionUtils.isNotEmpty(updateBuilder.getFileFields())) {
+				fileFields.addAll(updateBuilder.getFileFields());
 			}
 		}
 		

@@ -7,10 +7,12 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.List;
@@ -42,6 +44,11 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
 
             builder.offset(offset);
             builder.limit(perPage);
+        }
+
+        String searchString = (String) context.get(FacilioConstants.ContextNames.SEARCH);
+        if (StringUtils.isNotEmpty(searchString)) {
+            builder.andCondition(CriteriaAPI.getCondition("NAME", "name", searchString, StringOperators.CONTAINS));
         }
 
         List<Map<String, Object>> maps = builder.get();

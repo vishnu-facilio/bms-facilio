@@ -348,6 +348,8 @@
 	<package name="portalServiceCatalog" namespace="/api/service/v2/servicecatalog" extends="newServicePortalApiV2">
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogList" />
+		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+				method="getServiceCatalogDetails" />
 	</package>
 
 	<package name="portalServiceCatalogGroup" namespace="/api/service/v2/servicecataloggroup" extends="newServicePortalApiV2">

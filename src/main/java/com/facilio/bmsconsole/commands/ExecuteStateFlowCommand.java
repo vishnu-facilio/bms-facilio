@@ -11,6 +11,10 @@ import java.util.List;
 
 public class ExecuteStateFlowCommand extends ExecuteAllWorkflowsCommand {
 
+    public ExecuteStateFlowCommand() {
+        super(WorkflowRuleContext.RuleType.STATE_FLOW);
+    }
+
     @Override
     protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
         List<WorkflowRuleContext> workflowRules = super.getWorkflowRules(module, activities, records);
@@ -25,6 +29,6 @@ public class ExecuteStateFlowCommand extends ExecuteAllWorkflowsCommand {
                 newWorkflowRules.add(workflowRuleContext);
             }
         }
-        return workflowRules;
+        return newWorkflowRules;
     }
 }

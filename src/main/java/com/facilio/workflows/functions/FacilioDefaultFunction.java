@@ -1,5 +1,7 @@
 package com.facilio.workflows.functions;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.User;
@@ -28,6 +31,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.factory.FacilioFactory;
@@ -530,7 +534,39 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			return fs.getOrgiDownloadUrl(fileId);
 		}
 		
-	}
+	},
+	GET_IMAGE_BASE_64_STRING(17, "encodeFileToBase64Binary") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			FileStore fs = FacilioFactory.getFileStore();
+			long fileId = (long) Double.parseDouble(objects[0].toString());
+			
+			FileInfo fileInfo = fs.getFileInfo(fileId);
+			
+			FileInputStream fileInputStreamReader = null;
+			try {
+				File file = new File(fileInfo.getFilePath());
+				fileInputStreamReader = new FileInputStream(file);
+				byte[] bytes = new byte[(int) file.length()];
+				fileInputStreamReader.read(bytes);
+				String encodedfile = Base64.encodeBase64(bytes).toString();
+				return encodedfile;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			finally {
+				if(fileInputStreamReader != null) {
+					fileInputStreamReader.close();
+				}
+			}
+			
+			return null;
+		}
+		
+	},
 	;
 	private Integer value;
 	private String functionName;

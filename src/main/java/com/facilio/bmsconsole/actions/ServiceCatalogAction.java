@@ -44,6 +44,14 @@ public class ServiceCatalogAction extends FacilioAction {
         this.id = id;
     }
 
+    private String searchString;
+    public String getSearchString() {
+        return searchString;
+    }
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
+    }
+
     public String addOrUpdateServiceCatalog() throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateServiceCatalogChain();
         FacilioContext context = chain.getContext();
@@ -61,6 +69,7 @@ public class ServiceCatalogAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);
         context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+        context.put(FacilioConstants.ContextNames.SEARCH, searchString);
 
         chain.execute();
 
