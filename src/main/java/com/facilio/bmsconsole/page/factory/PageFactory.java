@@ -43,10 +43,11 @@ public class PageFactory {
 			case ContextNames.NEW_READING_ALARM:
 				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record);
 		}
-		if (module.getTypeEnum() == ModuleType.CUSTOM) {
-			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
-		}
-		return null;
+		return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
+//		if (module.getTypeEnum() == ModuleType.CUSTOM) {
+//			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
+//		}
+//		return null;
 	}
 
 	

@@ -454,6 +454,8 @@
 	
 	<package name="vendorInsurance" namespace="/api/service/v2/insurance"
 		extends="newServicePortalApiV2">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.InsuranceAction" method="addInsurances" />
 		<action name="details" class="com.facilio.bmsconsole.actions.InsuranceAction"
 			method="getInsuranceDetails" />
 		<action name="*" class="com.facilio.bmsconsole.actions.InsuranceAction"
@@ -628,6 +630,10 @@
 	</package>
 	 <package name="VendorModuleDataApiv2" namespace="/api/service/v2/module/data"
 		extends="newServicePortalApiV2">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="addModuleData">
+		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="getModuleDataList">
 		</action>
@@ -729,13 +735,21 @@
 		</package>
 		
 		<package name="ServiceModuleApi" namespace="/api/service/module" extends="newServicePortalApiV2">
-		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction"
-			method="fields">
-			<result name="success" type="json">
-				<param name="enumAsBean">true</param>
-				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
-			</result>
-		</action>
+			<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="fields">
+				<result name="success" type="json">
+					<param name="enumAsBean">true</param>
+					<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
+				</result>
+			</action>
+		</package>
+		
+		<package name="SreviceViewApiV2" namespace="/api/service/v2/views"
+		extends="newServicePortalApiV2">
+			<action name="*"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
+				<param name="viewName">{1}</param>
+			</action>
 		</package>
 	<!-- Vendor apis end -->
 	<!-- end -->

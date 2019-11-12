@@ -76,6 +76,7 @@ public class FormFactory {
 		forms.put("visitorLogForm", getVisitorLogForm());
 		forms.put("watchListForm", getWatchListForm());
 		forms.put("workpermitForm", getWorkPermitForm());
+		forms.put("insuranceForm", getInsuranceForm());
 		return forms;
 	}
     
@@ -101,6 +102,7 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractForm())
 						.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractForm())
 						.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestForm())
+						.put(FacilioConstants.ContextNames.INSURANCE, getInsuranceForm())
 						.build())
         			
 				.build();
@@ -258,6 +260,7 @@ public class FormFactory {
 		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm());
 		
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm());
+		List<FacilioForm> insuranceForm = Arrays.asList(getInsuranceForm(),getPortalInsuranceForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -267,6 +270,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.VISITOR_LOGGING,getFormMap(visitorTypeForms))
 				.put(FacilioConstants.ContextNames.VISITOR,getFormMap(visitorForms))
 				.put(FacilioConstants.ContextNames.WORKPERMIT, getFormMap(workPermitForm))
+				.put(FacilioConstants.ContextNames.INSURANCE, getFormMap(insuranceForm))
 				.build();
 	}
 	
@@ -1385,8 +1389,44 @@ public class FormFactory {
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendor", 3, 2);
 		vendorField.setShowField(false);
 		fields.add(vendorField);
+		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 4, 3));
 		return fields;
 	}
 
+	public static FacilioForm getInsuranceForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("INSURACNE");
+		form.setName("default_insurance_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INSURANCE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getInsuranceFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	public static FacilioForm getPortalInsuranceForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("INSURACNE");
+		form.setName("default_insurance_portal");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INSURANCE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getInsuranceFormFields());
+		form.setFormType(FormType.PORTAL);
+		return form;
+	}
+	
+	private static List<FormField> getInsuranceFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("companyName", FieldDisplayType.TEXTBOX, "Company Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("validFrom", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("validTill", FieldDisplayType.DATE, "Valid Till", Required.OPTIONAL, 3, 1));
+		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendor", 3, 2);
+		vendorField.setShowField(false);
+		fields.add(vendorField);
+		FormField fileField= new FormField("insurance", FieldDisplayType.IMAGE, "File", Required.OPTIONAL, 1, 1);
+		fileField.setShowField(true);
+		fields.add(fileField);
+		return fields;
+	}
 
 }

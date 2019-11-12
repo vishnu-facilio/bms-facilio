@@ -24,4 +24,7 @@ enums:
 
   - name: KioskType
     enumClassName: com.facilio.bmsconsole.context.DeviceContext$KioskType
+
+  - name: WorkType
+    enumClassName: com.facilio.bmsconsole.context.WorkPermitContext$WorkType
     
