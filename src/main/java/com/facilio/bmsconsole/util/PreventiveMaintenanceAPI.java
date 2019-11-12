@@ -84,6 +84,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.json.simple.parser.ParseException;
 
+import static com.facilio.bmsconsole.templates.Template.Type.PM_PRE_REQUEST_SECTION;
+import static com.facilio.bmsconsole.templates.Template.Type.PM_TASK_SECTION;
+
 public class PreventiveMaintenanceAPI {
 	
 	private static final Logger LOGGER = Logger.getLogger(PreventiveMaintenanceAPI.class.getName());
@@ -3053,12 +3056,15 @@ public class PreventiveMaintenanceAPI {
 	public static boolean isAllTasksAssignmentTypeIs5(List<TaskSectionTemplate> sectionTemplates) {
 
 		for (TaskSectionTemplate sectionTemplate: sectionTemplates) {
-			if (sectionTemplate.getAssignmentType() != 5) {
+			if (sectionTemplate.getTypeEnum() == PM_PRE_REQUEST_SECTION) {
+				continue;
+			}
+			if (PMAssignmentType.valueOf(sectionTemplate.getAssignmentType()) != PMAssignmentType.CURRENT_ASSET) {
 				return false;
 			}
 			List<TaskTemplate> taskTemplates = sectionTemplate.getTaskTemplates();
 			for (TaskTemplate taskTemplate: taskTemplates) {
-				if (taskTemplate.getAssignmentType() != 5) {
+				if (PMAssignmentType.valueOf(taskTemplate.getAssignmentType()) != PMAssignmentType.CURRENT_ASSET) {
 					return false;
 				}
 			}
@@ -3102,6 +3108,9 @@ public class PreventiveMaintenanceAPI {
 				boolean allTasksAssignmentTypeIs5 = isAllTasksAssignmentTypeIs5(sectionTemplates);
 
 				for (TaskSectionTemplate sectionTemplate: sectionTemplates) {
+					if (sectionTemplate.getTypeEnum() == PM_PRE_REQUEST_SECTION) {
+						continue;
+					}
 					Map<String,Long> taskMap = new HashMap<>();
 					pmLookup.put(sectionTemplate.getName(), taskMap);
 					List<TaskTemplate> taskTemplates = sectionTemplate.getTaskTemplates();
@@ -3123,7 +3132,7 @@ public class PreventiveMaintenanceAPI {
 				List<WorkOrderContext> workOrders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
 				for (WorkOrderContext workOrderContext: workOrders) {
 					LOGGER.log(Level.WARN, "executing for wo " + workOrderContext.getId());
-					List<TaskContext> tasks = TicketAPI.getRelatedTasks(workOrderContext.getId());
+					List<TaskContext> tasks = TicketAPI.getRelatedTasks(Collections.singletonList(workOrderContext.getId()), true, true);
 					Map<String, Object> nullMap = new HashMap<>();
 					nullMap.put("uniqueId", -99L);
 					if (doMigration) {
@@ -3135,6 +3144,9 @@ public class PreventiveMaintenanceAPI {
 					}
 
 					for (TaskContext task: tasks) {
+						if (task.isPreRequest()) {
+							continue;
+						}
 						long sectionId = task.getSectionId();
 						TaskSectionContext taskSection = TicketAPI.getTaskSection(sectionId);
 						Map<String, Long> taskMap = null;
@@ -3146,6 +3158,7 @@ public class PreventiveMaintenanceAPI {
 									taskMap = entry.getValue();
 								}
 							} else if (allTasksAssignmentTypeIs5) {
+								LOGGER.log(Level.ERROR, "resource id fetched from workorder context " + workOrderContext.getResource().getId());
 								resource = ResourceAPI.getResource(workOrderContext.getResource().getId());
 							} else {
 								resourceIsMissing.add(pm.getId());
