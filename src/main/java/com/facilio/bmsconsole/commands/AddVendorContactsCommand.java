@@ -9,6 +9,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.ContactsContext.ContactType;
+import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
@@ -31,8 +33,10 @@ public class AddVendorContactsCommand extends FacilioCommand{
 					}
 			
 					if(contact.isPortalAccessNeeded()) {
-						TenantsAPI.addTenantUserAsRequester(contact);
+						ContactsAPI.addUserAsRequester(contact);
 					}
+					contact.setVendor(vendor);
+					contact.setContactType(ContactType.VENDOR);
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 					List<FacilioField> fields = modBean.getAllFields(module.getName());
