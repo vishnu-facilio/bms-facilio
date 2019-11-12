@@ -5,9 +5,18 @@ public class ConnectionParamContext {
 	long id = -1l;
 	long orgId = -1l;
 	long connectionId = -1l;
+	long connectionApiId = -1l;
 	String key;
 	String value;
 	boolean isProperty;
+	
+	
+	public long getConnectionApiId() {
+		return connectionApiId;
+	}
+	public void setConnectionApiId(long connectionApiId) {
+		this.connectionApiId = connectionApiId;
+	}
 	public long getId() {
 		return id;
 	}

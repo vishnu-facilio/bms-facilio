@@ -473,6 +473,40 @@ public class ConnectionUtil {
 		
 		connectionContext.setId((Long) prop.get("id"));
 	}
+	
+	public static void addConnectionApi(ConnectionApiContext connectionApiContext) throws Exception {
+		
+		
+		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getConnectionApiModule().getTableName())
+				.fields(FieldFactory.getConnectionApiFields());
+		
+		connectionApiContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+		
+		Map<String, Object> prop = FieldUtil.getAsProperties(connectionApiContext);
+		
+		insert.addRecord(prop);
+		
+		insert.save();
+		
+		connectionApiContext.setId((Long) prop.get("id"));
+	}
+	
+	public static void addConnectionParams(ConnectionParamContext connectionParamContext) throws Exception {
+		
+		GenericInsertRecordBuilder insert1 = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getConnectionParamsModule().getTableName())
+				.fields(FieldFactory.getConnectionParamFields());
+		
+		connectionParamContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+		
+		Map<String, Object> prop = FieldUtil.getAsProperties(connectionParamContext);
+		insert1.addRecord(prop);
+		
+		insert1.save();
+		
+		connectionParamContext.setId((Long) prop.get("id"));
+	}
 
 	private static void fillDefaultfields(ConnectionContext connectionContext) throws NoSuchAlgorithmException {
 

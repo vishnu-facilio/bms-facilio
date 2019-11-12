@@ -11,6 +11,9 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.util.ConnectionUtil;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 
@@ -56,7 +59,14 @@ public class PopulateDefaultConnectionsCommand extends FacilioCommand{
 			for (Object connection :connections) {
 				Map connectionMap = (Map) connection;
 				ConnectionContext connectionContext = FieldUtil.getAsBeanFromMap(connectionMap, ConnectionContext.class);
-				ConnectionUtil.addConnection(connectionContext);
+				
+				FacilioChain chain = TransactionChainFactory.getAddConnectionChain();
+				
+				FacilioContext context = chain.getContext();
+				
+				context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
+				
+				chain.execute();
 			}
 		}
 	}

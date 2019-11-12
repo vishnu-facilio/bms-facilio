@@ -3014,6 +3014,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		
 		fields.add(getField("connectionId", "CONNECTION_ID", module, FieldType.LOOKUP));
+		fields.add(getField("connectionApiId", "CONNECTION_API_ID", module, FieldType.LOOKUP));
 		fields.add(getField("key", "KEY_STRING", module, FieldType.STRING));
 		fields.add(getField("value", "VALUE_STRING", module, FieldType.STRING));
 		fields.add(getField("isProperty", "IS_PROPERTY", module, FieldType.BOOLEAN));
@@ -4734,6 +4735,13 @@ public class FieldFactory {
 		displayName.setColumnName("DISPLAY_NAME");
 		displayName.setModule(module);
 		fields.add(displayName);
+		
+		FacilioField fieldName = new FacilioField();
+		fieldName.setName("fieldName");
+		fieldName.setDataType(FieldType.STRING);
+		fieldName.setColumnName("FIELDNAME");
+		fieldName.setModule(module);
+		fields.add(fieldName);
 
 		FacilioField parentFieldId = new FacilioField();
 		parentFieldId.setName("parentFieldId");

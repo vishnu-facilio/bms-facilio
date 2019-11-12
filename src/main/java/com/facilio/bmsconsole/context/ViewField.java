@@ -35,6 +35,15 @@ public class ViewField{
 		this.name = name;
 	}
 	
+	private String fieldName;
+	
+	public String getFieldName() {
+		return fieldName;
+	}
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
+
 	private long viewId = -1;
 	public long getViewId() {
 		return viewId;

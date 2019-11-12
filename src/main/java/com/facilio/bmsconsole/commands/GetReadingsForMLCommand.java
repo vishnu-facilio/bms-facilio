@@ -74,22 +74,30 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
 			for(Map<String,Object> prop : props)
 			{
-				long ttime = (long) prop.get(ttimeField.getName());
-				if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
-					Double previousValue = (Double) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));
-					if(mlContext.getOrgId()==210 && mlContext.getId()==114){
-						LOGGER.info("data :"+data);
-						LOGGER.info("previousValue :"+previousValue);
-						LOGGER.info("variableField.getName() :"+variableField.getName());
-						LOGGER.info("prop.get(variableField.getName()) :"+ prop.get(variableField.getName()));
-						LOGGER.info("previousValue :"+FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
+				if(prop.get(variableField.getName()) != null){
+					long ttime = (long) prop.get(ttimeField.getName());
+					if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
+						Double previousValue = (Double) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));
+						if(mlContext.getOrgId()==210 && mlContext.getId()==114){
+							LOGGER.info("data :"+data);
+							LOGGER.info("previousValue :"+previousValue);
+							LOGGER.info("variableField.getName() :"+variableField.getName());
+							LOGGER.info("prop.get(variableField.getName()) :"+ prop.get(variableField.getName()));
+							LOGGER.info("previousValue :"+FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
+						}
+						data.put(ttime, previousValue + (Double) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
+					}else if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.NUMBER)){
+						Long previousValue = (Long) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));
+						data.put(ttime, previousValue + (Long) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
+					}else{
+						if(variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
+							data.put(ttime,(Double) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
+						}else if(variableField.getDataTypeEnum().equals(FieldType.NUMBER)){
+							data.put(ttime, (Long) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
+						}else{
+							data.put(ttime, prop.get(variableField.getName()));
+						}
 					}
-					data.put(ttime, previousValue + (Double) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
-				}else if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.NUMBER)){
-					Long previousValue = (Long) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));
-					data.put(ttime, previousValue + (Long) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
-				}else{
-					data.put(ttime, prop.get(variableField.getName()));
 				}
 			}
 			if(mlContext.getOrgId()==232 && mlContext.getId()==83)

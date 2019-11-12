@@ -29,6 +29,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -218,8 +219,11 @@ public class LoadViewCommand extends FacilioCommand {
 			
 			
 			List<Long> ids = new ArrayList<>();
+			if (props != null) {
+			
 			for (Map<String, Object> prop : props) {
 				ids.add((Long) prop.get("id"));
+			}
 			}
 				
 			String idString = String.join(",", Lists.transform(ids, Functions.toStringFunction()));
@@ -248,6 +252,7 @@ public class LoadViewCommand extends FacilioCommand {
 	private void setFieldDisplayNames(String moduleName, FacilioView view) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		FacilioModule module = modBean.getModule(moduleName);
 		Map<String, ViewField> fieldMap = new HashMap<>();
 //		if (view.getFields() != null) {
 //			fieldMap = view.getFields().stream().collect(Collectors.toMap(vf -> vf.getField().getName(), Function.identity()));
@@ -256,8 +261,14 @@ public class LoadViewCommand extends FacilioCommand {
 			for(int i=0;i<view.getFields().size();i++) {
 			String modulesName;
 			String fieldsName;
-			modulesName = view.getFields().get(i).getField().getModule().getName();
+			if (view.getFields().get(i).getField() == null && view.getFields().get(i).getName() == null) {
+			modulesName = FieldFactory.getSystemField(view.getFields().get(i).getFieldName(),module).getModule().getName();
+			fieldsName = view.getFields().get(i).getFieldName();
+			}
+			else {
+ 			modulesName = view.getFields().get(i).getField().getModule().getName();
 			fieldsName = view.getFields().get(i).getName();
+			}
 			fieldMap.put(fieldsName + modulesName, view.getFields().get(i));
 			}
 		}
@@ -281,6 +292,13 @@ public class LoadViewCommand extends FacilioCommand {
 					displayName = field.getDisplayName();
 				}
 				fieldNames.put(field.getName(), displayName);
+			}
+		}
+		if (module.getTypeEnum() == ModuleType.CUSTOM) {
+			List<FacilioField> systemFields = FieldFactory.getSystemFields(module);
+			for(FacilioField systemField : systemFields) {
+				fieldNames.put(systemField.getName(), systemField.getDisplayName());
+				
 			}
 		}
 		view.setFieldDisplayNames(fieldNames);

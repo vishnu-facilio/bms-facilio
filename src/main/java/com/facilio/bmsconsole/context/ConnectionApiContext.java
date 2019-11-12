@@ -4,6 +4,7 @@ import com.amazonaws.HttpMethod;
 import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.workflows.functions.FacilioConnectionFunctions;
 
+import java.util.List;
 import java.util.Map;
 
 public class ConnectionApiContext {
@@ -14,6 +15,15 @@ public class ConnectionApiContext {
     String url;
     int type;
     ConnectionContext connectionContext;
+    
+    List<ConnectionParamContext> connectionParams;
+    
+    public List<ConnectionParamContext> getConnectionParams() {
+		return connectionParams;
+	}
+	public void setConnectionParams(List<ConnectionParamContext> connectionParams) {
+		this.connectionParams = connectionParams;
+	}
 
     public ConnectionContext getConnectionContext() {
         return connectionContext;
