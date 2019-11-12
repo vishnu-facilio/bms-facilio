@@ -11,8 +11,8 @@ public class UpdateFormFieldsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
-		FormsAPI.deleteFormFields(form.getId());
-		FormsAPI.addFormFields(form.getId(), form);
+		
+		FormsAPI.initFormFields(form);
 		return false;
 	}
 

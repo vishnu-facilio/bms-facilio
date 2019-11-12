@@ -3,8 +3,10 @@ package com.facilio.bmsconsole.commands;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -28,6 +30,10 @@ public class EditFormCommand extends FacilioCommand {
 				.andCondition(CriteriaAPI.getIdCondition(editedForm.getId(), formModule));
 		
 		formUpdateBuilder.update(props);
+		
+		if (CollectionUtils.isNotEmpty(editedForm.getSections())) {
+			FormsAPI.initFormFields(editedForm);
+		}
 		
 		return false;
 	}
