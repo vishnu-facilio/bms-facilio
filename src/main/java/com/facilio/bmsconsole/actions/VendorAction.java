@@ -10,6 +10,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -201,6 +202,15 @@ public class VendorAction extends FacilioAction{
 	}
 	public void setVendorsCount(Long vendorsCount) {
 		this.vendorsCount = vendorsCount;
+	}
+	
+	private List<ContactsContext> contacts;
+	
+	public List<ContactsContext> getContacts() {
+		return contacts;
+	}
+	public void setContacts(List<ContactsContext> contacts) {
+		this.contacts = contacts;
 	}
 	
 }

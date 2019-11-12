@@ -198,6 +198,16 @@ public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 		this.visitingHoursId = visitingHoursId;
 	}
 	
+	private VendorContext vendor;
+
+
+	public VendorContext getVendor() {
+		return vendor;
+	}
+
+	public void setVendor(VendorContext vendor) {
+		this.vendor = vendor;
+	}
 	
 	
 }

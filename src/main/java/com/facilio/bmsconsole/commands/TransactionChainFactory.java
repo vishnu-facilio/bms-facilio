@@ -3695,7 +3695,7 @@ public class TransactionChainFactory {
 		public static FacilioChain addVisitorLoggingRecordsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
-			//c.addCommand(new CheckForblockedVisitorCommand());
+			c.addCommand(new CheckForWatchListRecordCommand());
 			c.addCommand(new AddNewVisitorWhileLoggingCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new AddNdaForVisitorLogCommand());

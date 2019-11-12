@@ -193,39 +193,6 @@ public class VisitorContext extends ModuleBaseWithCustomFields{
 		this.signatureContentType = signatureContentType;
 	}
 	
-	public Boolean isBlocked;
-
-	public Boolean getIsBlocked() {
-		return isBlocked;
-	}
-
-	public void setIsBlocked(Boolean isBlocked) {
-		this.isBlocked = isBlocked;
-	}
-
-	public boolean isBlocked() {
-		if (isBlocked != null) {
-			return isBlocked.booleanValue();
-		}
-		return false;
-	}
-	public Boolean isVip;
-
-	public Boolean getIsVip() {
-		return isVip;
-	}
-
-	public void setIsVip(Boolean isVip) {
-		this.isVip = isVip;
-	}
-
-	public boolean isVip() {
-		if (isVip != null) {
-			return isVip.booleanValue();
-		}
-		return false;
-	}
-
 	public long getLastVisitDuration() {
 		return lastVisitDuration;
 	}

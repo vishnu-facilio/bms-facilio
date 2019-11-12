@@ -266,6 +266,48 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		this.expectedCheckOutTime = expectedCheckOutTime;
 	}
 	
-	
+	public Boolean isBlocked;
+
+	public Boolean getIsBlocked() {
+		return isBlocked;
+	}
+
+	public void setIsBlocked(Boolean isBlocked) {
+		this.isBlocked = isBlocked;
+	}
+
+	public boolean isBlocked() {
+		if (isBlocked != null) {
+			return isBlocked.booleanValue();
+		}
+		return false;
+	}
+	public Boolean isVip;
+
+	public Boolean getIsVip() {
+		return isVip;
+	}
+
+	public void setIsVip(Boolean isVip) {
+		this.isVip = isVip;
+	}
+
+	public boolean isVip() {
+		if (isVip != null) {
+			return isVip.booleanValue();
+		}
+		return false;
+	}
+
+	private VendorContext vendor;
+
+
+	public VendorContext getVendor() {
+		return vendor;
+	}
+
+	public void setVendor(VendorContext vendor) {
+		this.vendor = vendor;
+	}
 	
 }

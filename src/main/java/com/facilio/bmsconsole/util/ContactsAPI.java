@@ -131,4 +131,21 @@ public class ContactsAPI {
 		}
 	}
 	
+	public static ContactsContext getContactsIdForUser(Long userId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.CONTACT);
+		
+		SelectRecordsBuilder<ContactsContext> builder = new SelectRecordsBuilder<ContactsContext>()
+														.module(module)
+														.beanClass(ContactsContext.class)
+														.select(fields)
+														.andCondition(CriteriaAPI.getCondition("REQUESTER_ID", "requester", String.valueOf(userId), NumberOperators.EQUALS))
+														;
+		
+		ContactsContext record = builder.fetchFirst();
+		return record;
+		
+	}
+	
 }

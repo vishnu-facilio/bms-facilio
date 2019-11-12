@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.chargebee.internal.StringJoiner;
+import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -775,6 +776,7 @@ public class TenantsAPI {
 		user.setEmail(contact.getEmail());
 		user.setPhone(contact.getPhone());
 		user.setName(contact.getName());
+		user.setAppType(AppType.SERVICE_PORTAL);
 		long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false);
 		contact.setId(userId);
 	}

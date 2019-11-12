@@ -166,6 +166,14 @@ public class WorkorderTemplate extends Template {
 		this.tenantId = tenantId;
 	}
 
+	private long vendorId = -1 ;
+	public long getVendorId() {
+		return vendorId;
+	}
+	public void setVendorId(long vendorId) {
+		this.vendorId = vendorId;
+	}
+
 	@JsonIgnore
 	public WorkOrderContext getWorkorder() throws Exception {
 		JSONObject woProp = getAsJSON(false);
@@ -207,6 +215,9 @@ public class WorkorderTemplate extends Template {
 			}
 			if (tenantId != -1) {
 				woProp.put("tenant", FieldUtil.getEmptyLookedUpProp(tenantId));
+			}
+			if (vendorId != -1) {
+				woProp.put("vendor", FieldUtil.getEmptyLookedUpProp(vendorId));
 			}
 			
 			if (fetchPlaceholders && (tasks != null && !tasks.isEmpty())) {
@@ -270,6 +281,10 @@ public class WorkorderTemplate extends Template {
 				tenantId = workorder.getTenant().getId();
 			}
 			
+			if (workorder.getVendor() != null) {
+				vendorId = workorder.getVendor().getId();
+			}
+			
 			Map<String, Object> prop = FieldUtil.getAsProperties(workorder);
 			prop.remove("id");
 			prop.remove("subject");
@@ -284,6 +299,8 @@ public class WorkorderTemplate extends Template {
 			prop.remove("resource");
 			prop.remove("siteId");
 			prop.remove("tenant");
+			prop.remove("vendor");
+			
 			additionInfo = new JSONObject();
 			additionInfo.putAll(prop);
 		}

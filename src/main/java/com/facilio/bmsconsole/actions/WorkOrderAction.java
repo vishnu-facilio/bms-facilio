@@ -82,6 +82,17 @@ public class WorkOrderAction extends FacilioAction {
 		return FormLayout.getNewTicketLayout(fields);
 	}
 
+	private Boolean vendorPortal;
+	public Boolean getVendorPortal() {
+		if (vendorPortal == null) {
+			return false;
+		}
+		return vendorPortal;
+	}
+	public void setVendorPortal(Boolean vendorPortal) {
+		this.vendorPortal = vendorPortal;
+	}
+
 	private ActionForm actionForm;
 
 	public ActionForm getActionForm() {
@@ -1868,6 +1879,7 @@ public class WorkOrderAction extends FacilioAction {
 			setViewName("approval_" + getViewName());
 		}
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.IS_VENDOR_PORTAL, getVendorPortal());
 		context.put(FacilioConstants.ContextNames.WO_DUE_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.WO_DUE_ENDTIME, getEndTime());
 		context.put(FacilioConstants.ContextNames.IS_APPROVAL, isApproval());
@@ -2489,6 +2501,7 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 	public String v2workOrderList() throws Exception {
+		
 		workOrderList();
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		if (getCount() != null) {

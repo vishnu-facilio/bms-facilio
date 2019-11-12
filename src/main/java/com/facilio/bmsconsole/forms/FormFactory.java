@@ -751,7 +751,8 @@ public class FormFactory {
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("website", FieldDisplayType.TEXTBOX, "Website", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("address", FieldDisplayType.ADDRESS, "Address", Required.OPTIONAL, 6, 1));
-		
+		fields.add(new FormField("registeredBy", FieldDisplayType.REQUESTER, "Registered By", Required.OPTIONAL, 6, 1));
+			
 		return fields;
 	}
 

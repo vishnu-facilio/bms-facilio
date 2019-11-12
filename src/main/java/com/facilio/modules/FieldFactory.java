@@ -2481,7 +2481,7 @@ public class FieldFactory {
 
 	public static List<FacilioField> getWorkOrderTemplateFields() {
 		List<FacilioField> woTemplateFields = getWOrderTemplateFields();
-		LookupField vendorField = (LookupField) getField("vendor", "VENDOR_ID",ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
+		LookupField vendorField = (LookupField) getField("vendorId", "VENDOR_ID",ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
 		vendorField.setLookupModule(ModuleFactory.getVendorsModule());
 		woTemplateFields.add(vendorField);
 	

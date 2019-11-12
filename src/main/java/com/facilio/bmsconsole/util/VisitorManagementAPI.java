@@ -16,10 +16,13 @@ import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.context.WatchListContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -392,4 +395,31 @@ public class VisitorManagementAPI {
 	
 	}
 	
+
+	public static WatchListContext getBlockedWatchListRecordForPhoneNumber(String phoneNumber, String email) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WATCHLIST);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.WATCHLIST);
+		SelectRecordsBuilder<WatchListContext> builder = new SelectRecordsBuilder<WatchListContext>()
+														.module(module)
+														.beanClass(WatchListContext.class)
+														.select(fields)
+														;
+		Criteria criteria = new Criteria();
+		if(StringUtils.isNotEmpty(phoneNumber)) {
+			criteria.addAndCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(phoneNumber), StringOperators.IS));
+		}
+		if(StringUtils.isNotEmpty(email)) {
+			criteria.addOrCondition(CriteriaAPI.getCondition("EMAIL", "email", String.valueOf(email), StringOperators.IS));
+		}
+		
+		builder.andCriteria(criteria);
+		builder.andCondition(CriteriaAPI.getCondition("IS_BLOCKED", "isBlocked", "true", BooleanOperators.IS));
+		
+		WatchListContext record = builder.fetchFirst();
+		return record;
+				
+		
+	}
 }

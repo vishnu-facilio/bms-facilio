@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.util.List;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class VendorContext extends ModuleBaseWithCustomFields {
@@ -92,6 +93,15 @@ public class VendorContext extends ModuleBaseWithCustomFields {
 	public void setVendorContacts(List<ContactsContext> vendorContacts) {
 		this.vendorContacts = vendorContacts;
 	}
+	private User registeredBy;
+
+	public User getRegisteredBy() {
+		return registeredBy;
+	}
+
+	public void setRegisteredBy(User registeredBy) {
+		this.registeredBy = registeredBy;
+	}
 	
-		
+	
 }

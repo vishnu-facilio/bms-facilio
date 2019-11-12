@@ -185,6 +185,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		//c.addCommand(new GenerateCondtionsFromFiltersCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new AddVendorScopeForPortalCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetWorkOrderListCommand());
 		c.addCommand(new FetchApprovalRulesCommand());
@@ -1555,6 +1556,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new AddVendorScopeForPortalCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
@@ -1575,6 +1577,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new AddVendorScopeForPortalCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new LoadVisitorLoggingLookUpCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
@@ -1671,6 +1674,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new AddVendorScopeForPortalCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new LoadInsuranceLookUpCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
@@ -1711,6 +1715,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new AddVendorScopeForPortalCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new LoadWorkPermitLookUpsCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());

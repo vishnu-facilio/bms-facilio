@@ -360,6 +360,13 @@ public class IAMAccountConstants {
 			country.setModule(module);
 			fields.add(country);
 
+			FacilioField portalUserType = new FacilioField();
+			portalUserType.setName("appType");
+			portalUserType.setDataType(FieldType.SYSTEM_ENUM);
+			portalUserType.setColumnName("APP_TYPE");
+			portalUserType.setModule(module);
+			fields.add(portalUserType);
+
 			return fields;
 		}
 

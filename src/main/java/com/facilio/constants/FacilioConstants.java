@@ -1290,6 +1290,7 @@ public class FacilioConstants {
 		public static final String VISITOR_TYPE = "visitorType";
 		
 		
+		
 		public static final int SITE_BOUNDARY_RADIUS = 1000; //meter 
 		public static final int ASSET_BOUNDARY_RADIUS = 10; //meter 
 		
@@ -1321,7 +1322,9 @@ public class FacilioConstants {
 		
 		public static final String WORKPERMIT_RECORDS = "workPermitRecords";
 		public static final String WORKPERMIT = "workpermit";
-		
+		public static final String PORTAL_USER_TYPE = "portalUserType";
+		public static final String IS_VENDOR_PORTAL = "isVendorPortal";
+			
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

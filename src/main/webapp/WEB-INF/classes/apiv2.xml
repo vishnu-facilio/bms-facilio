@@ -2514,27 +2514,19 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="addVendor">
-			<param name="moduleName">inventory</param>
-			<param name="permission">CREATE</param>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="updateVendor">
-			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="vendorDetails">
-			<param name="moduleName">inventory</param>
-			<param name="permission">READ,READ_OWN</param>
 			<param name="vendorId">{1}</param>
 		</action>
 		<action name="count"
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="vendorsCount">
-			<param name="moduleName">inventory</param>
-			<param name="permission">READ,READ_OWN</param>
 		</action>
 	</package>
 	<package name="vendorsListApiv2"
@@ -2542,8 +2534,6 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="vendorList">
-			<param name="moduleName">inventory</param>
-			<param name="permission">READ,READ_OWN</param>
 			<param name="viewName">{1}</param>
 		</action>
 	</package>

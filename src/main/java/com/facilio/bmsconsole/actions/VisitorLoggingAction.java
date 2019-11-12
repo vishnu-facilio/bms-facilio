@@ -30,6 +30,16 @@ private static final long serialVersionUID = 1L;
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
 	}
+	private Boolean vendorPortal;
+	public Boolean getVendorPortal() {
+		if (vendorPortal == null) {
+			return false;
+		}
+		return vendorPortal;
+	}
+	public void setVendorPortal(Boolean vendorPortal) {
+		this.vendorPortal = vendorPortal;
+	}
 	
 	private Boolean fetchCount;
 	public Boolean getFetchCount() {
@@ -157,7 +167,8 @@ private static final long serialVersionUID = 1L;
 		chain.getContext().put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
 		chain.getContext().put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "visitorlogging");
- 		
+		chain.getContext().put(FacilioConstants.ContextNames.IS_VENDOR_PORTAL, getVendorPortal());
+		
 		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Visitor_Logging.ID asc");
  		if(getFilters() != null)
  		{	

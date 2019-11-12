@@ -27,6 +27,8 @@ public class User extends IAMUser {
 		setDomainName(user.getDomainName());
 		setOrgId(user.getOrgId());
 		setIamOrgUserId(user.getIamOrgUserId());
+		setAppType(user.getAppType());
+	
 	}
 
 	private Boolean inviteAcceptStatus;

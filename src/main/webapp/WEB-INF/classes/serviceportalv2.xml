@@ -441,18 +441,32 @@
 			<param name="parentId">{1}</param>
 		</action>
 	</package>
-	<!-- Vendor apis -->
+	<!-- Vendor Portal apis -->
+	
+	<package name="vendorworkorders"
+		namespace="/api/service/vendorworkorders" extends="vendorPortalApiV2">
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2workOrderList">
+			<param name="vendorPortal">true</param>
+		</action>
+	</package>
+	
 	<package name="vendorInsurance" namespace="/api/service/v2/insurance"
 		extends="newServicePortalApiV2">
 		<action name="details" class="com.facilio.bmsconsole.actions.InsuranceAction"
 			method="getInsuranceDetails" />
 		<action name="*" class="com.facilio.bmsconsole.actions.InsuranceAction"
-			method="getInsuranceList" />
+			method="getInsuranceList" >
+			<param name="vendorPortal">true</param>
+		</action>
 	</package>
 	<package name="vendorVisitorInvite" namespace="/api/service/v2/visitorInvite"
 		extends="newServicePortalApiV2">
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" >
+			<param name="vendorPortal">true</param>
+			</action>
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
 	</package>
@@ -461,7 +475,9 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" />
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" >
+			<param name="vendorPortal">true</param>
+		</action>
 	</package>
 	<package name="vendorWorkorder" namespace="/api/service/workorder/summary" extends="newServicePortalApiV2">
 		<action name="*"
@@ -675,6 +691,14 @@
 			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitDetails" />
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList" />
+	</package>
+	
+	<package name="VendorWorkPermitApiv2"
+		namespace="/api/service/v2/vendorworkpermit" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList" >
+			<param name="vendorPortal">true</param>
+	</action>
 	</package>
 	<package name="ServicePortalState" namespace="/api/service/v2/state"
 	extends="newServicePortalApiV2">

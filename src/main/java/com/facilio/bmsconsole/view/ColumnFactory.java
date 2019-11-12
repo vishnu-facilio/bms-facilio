@@ -307,6 +307,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("email", "E-Mail"));
 		columns.add(new ViewField("phone", "Phone"));
+		columns.add(new ViewField("registeredBy", "Registered By"));
 		
 		return columns;
 	}
