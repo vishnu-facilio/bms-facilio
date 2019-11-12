@@ -186,7 +186,7 @@ public class AccessLogFilter implements Filter {
                     put("timeTaken", String.valueOf(timeTaken));
                 }
             };
-
+            LOGGER.log(Level.INFO, "Log this to sentry");
             SentryUtil.sendToSentry(contextMap, requestUrl,finalUserId);
         }
   if(appender != null) {

@@ -5,6 +5,9 @@ import io.sentry.SentryClient;
 import io.sentry.SentryClientFactory;
 import io.sentry.context.Context;
 import io.sentry.event.UserBuilder;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 
@@ -12,6 +15,7 @@ import java.util.Map;
 public class SentryUtil {
 
     private static final SentryClient SENTRY_CLIENT = SentryClientFactory.sentryClient(FacilioProperties.getsentrydsn());
+    private static final Logger LOGGER = LogManager.getLogger(SentryUtil.class.getName());
 
     public static void sendToSentry(Map<String, String> contextMap, String requestUrl, String userId) {
         if(FacilioProperties.isSentryEnabled()){
@@ -22,9 +26,10 @@ public class SentryUtil {
                 context.addTag(entry.getKey(), entry.getValue());
             }
             try {
+                LOGGER.log(Level.INFO, "Log this to sentry");
                 SENTRY_CLIENT.sendMessage(requestUrl);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.ERROR,"Cannot log to sentry");
             }
         }
 
