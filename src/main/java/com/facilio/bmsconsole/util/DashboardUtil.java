@@ -1117,6 +1117,23 @@ public class DashboardUtil {
 		return parentTabs;
 	}
 	
+	public static List<DashboardContext> getDashboardFromFolderId(long folderId) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getDashboardFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("dashboardFolderId"), folderId+"", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if(props != null) {
+			return FieldUtil.getAsBeanListFromMapList(props, DashboardContext.class);
+		}
+		return null;
+	}
+	
 	public static List<DashboardFolderContext> getDashboardListWithFolder(String moduleName,boolean getOnlyMobileDashboard) throws Exception {
 		
 //		Criteria criteria = PermissionUtil.getCurrentUserPermissionCriteria("dashboard", "read");
@@ -2787,8 +2804,6 @@ public class DashboardUtil {
 	
 	public static DashboardFolderContext getDashboardFolder(long id) throws Exception {
 		
-		 new ArrayList<>();
-		 
 		 GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getDashboardFolderFields())
 					.table(ModuleFactory.getDashboardFolderModule().getTableName())

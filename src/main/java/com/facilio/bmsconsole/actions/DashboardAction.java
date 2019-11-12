@@ -6721,6 +6721,10 @@ public class DashboardAction extends FacilioAction {
 			FacilioChain chain = TransactionChainFactory.getDeleteDashboardFolderChain();
 			chain.execute(context);
 			
+			if(context.containsKey(FacilioConstants.ContextNames.DASHBOARD_ERROR_MESSAGE)) {
+				errorString = (String) context.get(FacilioConstants.ContextNames.DASHBOARD_ERROR_MESSAGE);
+				return ERROR;
+			}
 		}
 		return SUCCESS;
 	}
@@ -6858,6 +6862,7 @@ public class DashboardAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
 	public String deleteDashboard() throws Exception {
 		
 		if(dashboardId != null) {

@@ -2,6 +2,7 @@ package com.facilio.workflows.functions;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -546,20 +547,20 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			
 			FileInfo fileInfo = fs.getFileInfo(fileId);
 			
-			FileInputStream fileInputStreamReader = null;
+			InputStream inputStream = null;
 			try {
-				File file = new File(fileInfo.getFilePath());
-				fileInputStreamReader = new FileInputStream(file);
-				byte[] bytes = new byte[(int) file.length()];
-				fileInputStreamReader.read(bytes);
-				String encodedfile = Base64.encodeBase64(bytes).toString();
+				inputStream = fs.readFile(fileInfo);
+				System.out.println("length   ------   "+fileInfo.getFileSize());
+				byte[] bytes = new byte[(int) fileInfo.getFileSize()];
+				inputStream.read(bytes);
+				String encodedfile = Base64.encodeBase64String(bytes);
 				return encodedfile;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			finally {
-				if(fileInputStreamReader != null) {
-					fileInputStreamReader.close();
+				if(inputStream != null) {
+					inputStream.close();
 				}
 			}
 			
