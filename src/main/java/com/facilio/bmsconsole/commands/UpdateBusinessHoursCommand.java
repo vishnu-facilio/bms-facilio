@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.BusinessHoursContext;
+import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.modules.FieldFactory;
@@ -19,11 +20,7 @@ public class UpdateBusinessHoursCommand extends FacilioCommand {
 		BusinessHoursContext businessHours = (BusinessHoursContext) context
 				.get(FacilioConstants.ContextNames.BUSINESS_HOUR);
 		if (businessHours != null) {
-			GenericUpdateRecordBuilder businessHoursBuilder = new GenericUpdateRecordBuilder()
-					.table(ModuleFactory.getBusinessHoursModule().getTableName())
-					.fields(FieldFactory.getBusinessHoursFields()).andCustomWhere("id = ?", businessHours.getId());
-			Map<String, Object> props = FieldUtil.getAsProperties(businessHours);
-			businessHoursBuilder.update(props);
+			BusinessHoursAPI.updateBusinessHours(businessHours);
 			context.put(FacilioConstants.ContextNames.ID, businessHours.getId());
 		}
 		return false;

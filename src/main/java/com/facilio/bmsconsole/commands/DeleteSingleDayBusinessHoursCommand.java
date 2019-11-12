@@ -2,9 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.modules.ModuleFactory;
 
 public class DeleteSingleDayBusinessHoursCommand extends FacilioCommand{
 
@@ -14,10 +13,7 @@ public class DeleteSingleDayBusinessHoursCommand extends FacilioCommand{
 		long id=(long)context.get(FacilioConstants.ContextNames.ID);
 		
 		if(id!=-1){
-			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-					.table(ModuleFactory.getSingleDayBusinessHourModule().getTableName())
-					.andCustomWhere("PARENT_ID = ?", id);
-			builder.delete();
+			BusinessHoursAPI.deleteSingleBusinessHour(id);
 		}
 		return false;
 	}

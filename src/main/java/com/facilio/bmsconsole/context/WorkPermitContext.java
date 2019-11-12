@@ -72,7 +72,7 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 		return false;
 	}
 	
-	private BusinessHourContext recurringInfo;
+	private BusinessHoursContext recurringInfo;
 	
 	private long recurringInfoId;
 	public TicketContext getTicket() {
@@ -99,10 +99,10 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	public void setVendor(VendorContext vendor) {
 		this.vendor = vendor;
 	}
-	public BusinessHourContext getRecurringInfo() {
+	public BusinessHoursContext getRecurringInfo() {
 		return recurringInfo;
 	}
-	public void setRecurringInfo(BusinessHourContext recurringInfo) {
+	public void setRecurringInfo(BusinessHoursContext recurringInfo) {
 		this.recurringInfo = recurringInfo;
 	}
 	public long getRecurringInfoId() {

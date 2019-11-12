@@ -3668,6 +3668,7 @@ public class TransactionChainFactory {
 		public static FacilioChain updateVisitorInvitesChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorInvites());
+			c.addCommand(new ComputeScheduleForVisitorInviteCommand());
 			c.addCommand(new GenericUpdateListModuleDataCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
@@ -3725,6 +3726,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorInvites());
 			c.addCommand(new AddNewVisitorsWhilePreRegisteringCommand());
+			c.addCommand(new ComputeScheduleForVisitorInviteCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new LoadInviteIdAfterAdditionCommand());
 			c.addCommand(new AddInviteVisitorRelCommand());
@@ -3893,6 +3895,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addWorkPermitRecordsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkPermit());
+		c.addCommand(new ComputeScheduleForWorkPermitCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 //		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 //		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
@@ -3904,6 +3907,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateWorkPermitRecordsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkPermit());
+		c.addCommand(new ComputeScheduleForWorkPermitCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 //		c.addCommand(new UpdateStateForModuleDataCommand());
 //		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));

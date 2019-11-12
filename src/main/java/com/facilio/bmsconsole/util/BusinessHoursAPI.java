@@ -14,9 +14,11 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.BusinessHoursList;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -36,23 +38,8 @@ public class BusinessHoursAPI {
 
 		businessHoursBuilder.save();
 		long parentId = (long) props.get("id");
-		GenericInsertRecordBuilder singleDayBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getSingleDayBusinessHourModule().getTableName())
-				.fields(FieldFactory.getSingleDayBusinessHoursFields());
-
-		List<Map<String, Object>> singleDayProps = new ArrayList<>();
-		List<BusinessHourContext> singleDayList = businessHours.getSingleDaybusinessHoursList();
-		for (BusinessHourContext singleDay : singleDayList) {
-			singleDay.setParentId(parentId);
-			singleDayProps.add(FieldUtil.getAsProperties(singleDay));
-		}
-		singleDayBuilder.addRecords(singleDayProps);
-		singleDayBuilder.save();
-
-		int len = singleDayList.size();
-		for (int i = 0; i < len; ++i) {
-			singleDayList.get(i).setId((long) singleDayProps.get(i).get("id"));
-		}
+		businessHours.setId(parentId);
+		addSingleBusinessHours(businessHours);
 		return parentId;
 	}
 
@@ -157,6 +144,42 @@ public class BusinessHoursAPI {
 				.andCondition(CriteriaAPI.getIdCondition(id, businessHoursTable)).andCondition(
 						CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), businessHoursTable));
 		builder.delete();
+	}
+	
+	public static int updateBusinessHours(BusinessHoursContext businessHours) throws Exception {
+		GenericUpdateRecordBuilder businessHoursBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getBusinessHoursModule().getTableName())
+				.fields(FieldFactory.getBusinessHoursFields()).andCustomWhere("id = ?", businessHours.getId());
+		Map<String, Object> props = FieldUtil.getAsProperties(businessHours);
+		return businessHoursBuilder.update(props);
+	}
+	
+	public static void deleteSingleBusinessHour(long id) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getSingleDayBusinessHourModule().getTableName())
+				.andCustomWhere("PARENT_ID = ?", id);
+		builder.delete();
+	}
+	
+	public static void addSingleBusinessHours(BusinessHoursContext businessHours) throws Exception {
+		GenericInsertRecordBuilder singleDayBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getSingleDayBusinessHourModule().getTableName())
+				.fields(FieldFactory.getSingleDayBusinessHoursFields());
+
+		List<Map<String, Object>> singleDayProps = new ArrayList<>();
+		List<BusinessHourContext> singleDayList = businessHours.getSingleDaybusinessHoursList();
+		for (BusinessHourContext singleDay : singleDayList) {
+			singleDay.setParentId(businessHours.getId());
+			singleDayProps.add(FieldUtil.getAsProperties(singleDay));
+		}
+		singleDayBuilder.addRecords(singleDayProps);
+		singleDayBuilder.save();
+
+		int len = singleDayList.size();
+		for (int i = 0; i < len; ++i) {
+			singleDayList.get(i).setId((long) singleDayProps.get(i).get("id"));
+		}
+
 	}
 
 }
