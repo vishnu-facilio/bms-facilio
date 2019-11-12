@@ -1,19 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Map;
-
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ConnectionApiContext;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.context.ConnectionParamContext;
 import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 
 public class AddConnectionCommand extends FacilioCommand {
 

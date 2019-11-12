@@ -562,7 +562,7 @@ public class BmsAggregateOperators {
             selectField.setDisplayName(field.getDisplayName());
             selectField.setColumnName(selectFieldString);
             selectField.setFieldId(field.getFieldId());
-            selectField.setDataType(FieldType.DECIMAL);
+            selectField.setDataType(field.getDataType());
             return selectField;
         }
         @Override
