@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -26,9 +28,11 @@ import com.facilio.fs.FileInfo;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.factory.FacilioFactory;
 
 public abstract class FileStore {
+	
+	
+	private static final Logger LOGGER = Logger.getLogger(FileStore.class.getName());
 
 	private long orgId;
 	private long userId;
@@ -206,7 +210,7 @@ public abstract class FileStore {
 			String encodedfile = Base64.encodeBase64String(bytes);
 			return encodedfile;
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e.getMessage());
 		}
 		finally {
 			if(inputStream != null) {
