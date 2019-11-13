@@ -71,6 +71,7 @@ public class FormFactory {
 		forms.put("kioskForm", getVisitorKioskForm());
 		forms.put("visitorForm", getVisitorForm());
 		forms.put("visitorPreRegisterForm", getVisitorPreRegisterForm());
+		forms.put("vendor_contact_form", getVendorContactForm());
 		//visitor type forms
 		
 		forms.put("visitorLogForm", getVisitorLogForm());
@@ -499,6 +500,17 @@ public class FormFactory {
 		return form;
 	}
 
+	public static FacilioForm getVendorContactForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW VENDOR");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VENDORS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getVendorContactFormField());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
 
 	public static FacilioForm getTenantsForm() {
 		FacilioForm form = new FacilioForm();
@@ -757,10 +769,23 @@ public class FormFactory {
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("website", FieldDisplayType.TEXTBOX, "Website", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("address", FieldDisplayType.ADDRESS, "Address", Required.OPTIONAL, 6, 1));
-		fields.add(new FormField("registeredBy", FieldDisplayType.REQUESTER, "Registered By", Required.OPTIONAL, 6, 1));
-			
+//		fields.add(new FormField("registeredBy", FieldDisplayType.REQUESTER, "Registered By", Required.OPTIONAL, 7, 1));
 		return fields;
 	}
+
+	private static List<FormField> getVendorContactFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "E-mail", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("website", FieldDisplayType.TEXTBOX, "Website", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("address", FieldDisplayType.ADDRESS, "Address", Required.OPTIONAL, 6, 1));
+//		fields.add(new FormField("registeredBy", FieldDisplayType.REQUESTER, "Registered By", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("vendorContacts", FieldDisplayType.VENDOR_CONTACTS, "Contacts", Required.OPTIONAL, 8, 1));
+		return fields;
+	}
+
 
 	private static List<FormField> getTenantsFormField() {
 		List<FormField> fields = new ArrayList<>();
@@ -773,7 +798,8 @@ public class FormFactory {
 		fields.add(new FormField("inTime", FieldDisplayType.DATE, "Lease Start Time", Required.OPTIONAL, 8, 1));
 		fields.add(new FormField("outTime", FieldDisplayType.DATE, "Lease End Time", Required.OPTIONAL, 9, 1));
 		fields.add(new FormField("logo", FieldDisplayType.LOGO, "Logo", Required.OPTIONAL, 1, 1));
-		fields.add(new FormField("utilityMeters", FieldDisplayType.ASSETMULTICHOOSER, "UTILITY METERS", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("tenantContacts", FieldDisplayType.VENDOR_CONTACTS , "Contacts", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("utilityMeters", FieldDisplayType.ASSETMULTICHOOSER, "UTILITY METERS", Required.OPTIONAL, 11, 1));
 
 		return fields;
 	}
@@ -1251,10 +1277,11 @@ public class FormFactory {
 	private static List<FormField> getVisitorPreRegisterFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("inviteName", FieldDisplayType.TEXTBOX, "Invite Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Expected Start Time", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Expected End Time", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("inviteHost", FieldDisplayType.USER, "Host", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("invitees", FieldDisplayType.VISITOR_INVITEES , "VISITORS", Required.OPTIONAL, 5, 1));
+//		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Expected Start Time", Required.OPTIONAL, 2, 1));
+//		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Expected End Time", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("inviteHost", FieldDisplayType.USER, "Host", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("recurringVisitor", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("invitees", FieldDisplayType.VISITOR_INVITEES , "VISITORS", Required.OPTIONAL, 4, 1));
 
 		return fields;
 	}
