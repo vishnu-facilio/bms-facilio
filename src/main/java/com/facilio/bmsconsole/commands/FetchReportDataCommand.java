@@ -151,7 +151,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 					throw new IllegalArgumentException("Default sort datapoint should have order by and limit");
 				}
 				
-				itr.remove();
+//				itr.remove();
 				return dp;
 			}
 		}
