@@ -48,7 +48,21 @@ public class ModuleAction extends FacilioAction {
 		setModuleId(module.getModuleId());
 		return SUCCESS;
 	}
-
+	
+	
+	public String v2RecordsDuplication() throws Exception {
+		FacilioChain moduleRecordsDuplicateChain = TransactionChainFactory.getModuleRecordsDuplicateChain();
+		FacilioContext context = moduleRecordsDuplicateChain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.ID, id);
+		context.put(FacilioConstants.ContextNames.STARTING_NUMBER, startingNumber);
+		context.put(FacilioConstants.ContextNames.DUPLICATE_OBJECT, duplicateObj);
+		moduleRecordsDuplicateChain.execute();
+		return SUCCESS;
+		
+	}
+	
+	
 	public String v2AddModule() throws Exception {
 		FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
 		FacilioContext context = addModulesChain.getContext();
@@ -610,7 +624,31 @@ public class ModuleAction extends FacilioAction {
 		this.moduleData = moduleData;
 	}
 	
+	private JSONObject duplicateObj;
+	
+	public JSONObject getDuplicateObj() {
+		return duplicateObj;
+	}
+
+
+	public void setDuplicateObj(JSONObject duplicateObj) {
+		this.duplicateObj = duplicateObj;
+	}
+	private int startingNumber;
+	
+
+
+	public int getStartingNumber() {
+		return startingNumber;
+	}
+
+
+	public void setStartingNumber(int startingNumber) {
+		this.startingNumber = startingNumber;
+	}
+
 	private Long id;
+	
 	public Long getId() {
 		return id;
 	}
@@ -619,6 +657,7 @@ public class ModuleAction extends FacilioAction {
 	}
 	
 	private List<Long> ids;
+	
 	public List<Long> getIds() {
 		return ids;
 	}

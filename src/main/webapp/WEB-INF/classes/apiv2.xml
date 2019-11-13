@@ -1797,6 +1797,10 @@
 			method="v2UpdateModule">
 		</action>
 		
+		<action name="recordsDuplication" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="v2RecordsDuplication">
+		</action>
+		
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2GetModuleList">
 		</action>

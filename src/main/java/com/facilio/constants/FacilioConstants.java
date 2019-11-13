@@ -187,6 +187,7 @@ public class FacilioConstants {
 		public static final String BUSINESS_HOUR_LIST="businesshourlist";
 		
 		public static final String ID = "Id";
+		public static final String STARTING_NUMBER = "startingNumber";
 		public static final String LINK_NAME = "linkName";
 		public static final String PARENT_ID = "parentId";
 		public static final String PARENT_ID_LIST = "parentIds";
@@ -349,6 +350,7 @@ public class FacilioConstants {
 		public static final String MODULE_NAME = "moduleName";
 		public static final String MODULE_DESCRIPTION = "moduleDescription";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
+		public static final String DUPLICATE_OBJECT = "duplicateObj";
 		public static final String STATE_FLOW_ENABLED = "stateFlowEnabled";
 		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
 		public static final String MODULE_DATA = "moduleData";
