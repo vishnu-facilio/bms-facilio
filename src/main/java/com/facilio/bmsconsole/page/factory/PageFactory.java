@@ -1,11 +1,12 @@
 
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.bmsconsole.context.ReadingAlarm;
 import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -20,7 +21,6 @@ import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.mv.context.MVProjectWrapper;
 
@@ -43,11 +43,10 @@ public class PageFactory {
 			case ContextNames.NEW_READING_ALARM:
 				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record);
 		}
-		return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
-//		if (module.getTypeEnum() == ModuleType.CUSTOM) {
-//			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
-//		}
-//		return null;
+		if (module.getExtendModule() == null) {	// temp
+			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
+		}
+		return null;
 	}
 
 	
