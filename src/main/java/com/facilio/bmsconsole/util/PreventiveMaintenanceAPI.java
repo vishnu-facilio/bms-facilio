@@ -3055,6 +3055,10 @@ public class PreventiveMaintenanceAPI {
 
 	public static boolean isAllTasksAssignmentTypeIs5(List<TaskSectionTemplate> sectionTemplates) {
 
+		if (CollectionUtils.isEmpty(sectionTemplates)) {
+			return true;
+		}
+
 		for (TaskSectionTemplate sectionTemplate: sectionTemplates) {
 			if (sectionTemplate.getTypeEnum() == PM_PRE_REQUEST_SECTION) {
 				continue;
@@ -3158,6 +3162,10 @@ public class PreventiveMaintenanceAPI {
 									taskMap = entry.getValue();
 								}
 							} else if (allTasksAssignmentTypeIs5) {
+								if (workOrderContext.getResource() == null) {
+									LOGGER.log(Level.ERROR, "workorder context resource is empty woid: " + workOrderContext.getId());
+									continue;
+								}
 								LOGGER.log(Level.ERROR, "resource id fetched from workorder context " + workOrderContext.getResource().getId());
 								resource = ResourceAPI.getResource(workOrderContext.getResource().getId());
 							} else {
