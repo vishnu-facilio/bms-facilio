@@ -113,6 +113,7 @@ public class FacilioAction extends ActionSupport {
 		if (e != null) {
 			if(!FacilioProperties.isProduction() || fetchStackTrace) {
 				this.stackTrace = ExceptionUtils.getStackTrace(e);
+				System.out.println(this.stackTrace);
 			}
 			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
 		}
