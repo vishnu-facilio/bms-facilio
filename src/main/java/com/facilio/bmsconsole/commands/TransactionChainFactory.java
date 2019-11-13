@@ -876,7 +876,8 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain getModuleRecordsDuplicateChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new recordsDuplicateCommand());
+			c.addCommand(ReadOnlyChainFactory.fetchModuleDataDetailsChain());
+			c.addCommand(new RecordsDuplicateCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			return c;
 		}

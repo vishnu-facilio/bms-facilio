@@ -26,7 +26,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 
-public class recordsDuplicateCommand extends FacilioCommand {
+public class RecordsDuplicateCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -55,9 +55,6 @@ public class recordsDuplicateCommand extends FacilioCommand {
 			}
 		}
 		
-		
-		FacilioChain recordDetailChain = ReadOnlyChainFactory.fetchModuleDataDetailsChain();
-		recordDetailChain.execute(context);
 		ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) context
 				.get(FacilioConstants.ContextNames.RECORD);
 		
