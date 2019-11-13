@@ -19,10 +19,11 @@ public class ExecuteStateFlowCommand extends ExecuteAllWorkflowsCommand {
     protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
         List<WorkflowRuleContext> workflowRules = super.getWorkflowRules(module, activities, records);
         List<WorkflowRuleContext> newWorkflowRules = new ArrayList<>();
+
         // Re-arrange execution order
         for (WorkflowRuleContext workflowRuleContext : workflowRules) {
             StateFlowRuleContext stateFlowRuleContext = (StateFlowRuleContext) workflowRuleContext;
-            if (stateFlowRuleContext.getFormId() > 0) {
+            if (stateFlowRuleContext.isFormLevel()) {
                 newWorkflowRules.add(0, workflowRuleContext);
             }
             else {

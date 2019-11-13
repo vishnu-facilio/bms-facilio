@@ -234,7 +234,8 @@ public class FieldFactory {
 		
 		fields.add(getField("showInMobile", "SHOW_IN_MOBILE", module, FieldType.BOOLEAN));
 		fields.add(getField("hideInList", "HIDE_IN_LIST", module, FieldType.BOOLEAN));
-		
+		fields.add(getField("stateFlowId", "STATE_FLOW_ID", module, FieldType.NUMBER));
+
 		return fields;
 	}
 	
@@ -6755,7 +6756,7 @@ public class FieldFactory {
 		list.add(getField("diagramJson", "DIAGRAM_JSON", stateFlowModule, FieldType.STRING));
 		list.add(getField("draftParentId", "DRAFT_PARENT_ID", stateFlowModule, FieldType.NUMBER));
 		list.add(getField("draft", "DRAFT", stateFlowModule, FieldType.BOOLEAN));
-		list.add(getField("formId", "FORM_ID", stateFlowModule, FieldType.NUMBER));
+		list.add(getField("formLevel", "FORM_LEVEL", stateFlowModule, FieldType.BOOLEAN));
 		return list;
 	}
 	

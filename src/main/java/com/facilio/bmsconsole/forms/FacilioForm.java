@@ -207,6 +207,14 @@ public class FacilioForm implements Serializable {
 		return this.hideInList;
 	}
 
+	private long stateFlowId = -1;
+	public long getStateFlowId() {
+		return stateFlowId;
+	}
+	public void setStateFlowId(long stateFlowId) {
+		this.stateFlowId = stateFlowId;
+	}
+
 	public enum FormType {
 		WEB(1, "web"),
 		MOBILE(2, "mobile"), // Will be removed
