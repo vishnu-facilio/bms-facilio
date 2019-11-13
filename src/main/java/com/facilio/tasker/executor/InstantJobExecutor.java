@@ -96,7 +96,8 @@ public enum InstantJobExecutor implements Runnable {
 											Future f = THREAD_POOL_EXECUTOR.submit(() -> job._execute(context, (instantJob.getTransactionTimeout() - JOB_TIMEOUT_BUFFER) * 1000));
 											JOB_MONITOR_MAP.put(receiptHandle, new JobTimeOutInfo(System.currentTimeMillis(), (instantJob.getTransactionTimeout() + JOB_TIMEOUT_BUFFER) * 1000, f, job));
 										} catch (Exception e) {
-											LOGGER.error(e.getMessage()+" Exception while executing job "+jobName);
+											LOGGER.info("Exception Occured in executing job "+jobName +" "+e);
+//											LOGGER.error(e.getMessage()+" Exception while executing job "+jobName);
 										}
 									}
 								}
