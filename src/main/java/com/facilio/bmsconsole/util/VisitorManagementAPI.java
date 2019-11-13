@@ -284,11 +284,13 @@ public class VisitorManagementAPI {
 				FacilioField checkOutTimeField = modBean.getField("checkOutTime", module.getName());
 				updateMap.put("checkOutTime", time);
 				updatedfields.add(checkOutTimeField);
+				vLog.setCheckOutTime(time);
 			}
 			else {
 				FacilioField checkInTimeField = modBean.getField("checkInTime", module.getName());
 				updatedfields.add(checkInTimeField);
 				updateMap.put("checkInTime", time);
+				vLog.setCheckInTime(time);
 				if(vLog.getExpectedVisitDuration() > 0) {
 					FacilioField expectedCheckOutTimeField = modBean.getField("expectedCheckOutTime", module.getName());
 					updateMap.put("expectedCheckOutTime", time + vLog.getExpectedVisitDuration());
