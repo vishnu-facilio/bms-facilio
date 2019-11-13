@@ -209,5 +209,15 @@ public class VisitorInviteContext extends ModuleBaseWithCustomFields{
 		this.vendor = vendor;
 	}
 	
+	private User requestedBy;
+
+
+	public User getRequestedBy() {
+		return requestedBy;
+	}
+
+	public void setRequestedBy(User requestedBy) {
+		this.requestedBy = requestedBy;
+	}
 	
 }

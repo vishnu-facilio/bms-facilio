@@ -35,6 +35,8 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.services.filestore.FacilioFileStore;
+import com.facilio.services.filestore.FileStore;
 
 public class VisitorManagementAPI {
 
@@ -91,6 +93,23 @@ public class VisitorManagementAPI {
 			FacilioStatus checkedInStatus = TicketAPI.getStatus(module, "CheckedIn");
 			builder.andCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedInStatus.getId()), NumberOperators.EQUALS));
 		}
+		
+		VisitorLoggingContext records = builder.fetchFirst();
+		return records;
+	
+	}
+	
+	public static VisitorLoggingContext getVisitorLogging(long logId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		SelectRecordsBuilder<VisitorLoggingContext> builder = new SelectRecordsBuilder<VisitorLoggingContext>()
+														.module(module)
+														.beanClass(VisitorLoggingContext.class)
+														.select(fields)
+														.andCondition(CriteriaAPI.getIdCondition(logId, module))
+														;
 		
 		VisitorLoggingContext records = builder.fetchFirst();
 		return records;
@@ -327,18 +346,19 @@ public class VisitorManagementAPI {
 	public static void updateVisitorRollUps(VisitorLoggingContext visitorLog) throws Exception {
 		
 		if(visitorLog != null) {
+			VisitorLoggingContext updatedVisitorLog = getVisitorLogging(visitorLog.getId());
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
 			Map<String, Object> updateMap = new HashMap<>();
 			FacilioField avatarId = modBean.getField("avatar", module.getName());
 			FacilioField visitorType = modBean.getField("visitorType", module.getName());
 			
-			updateMap.put("visitorType", FieldUtil.getAsProperties(visitorLog.getVisitorType()));
+			updateMap.put("visitorType", FieldUtil.getAsProperties(updatedVisitorLog.getVisitorType()));
 			
 			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-			if(visitorLog.getAvatarId() > 0) {
+			if(updatedVisitorLog.getAvatarId() > 0) {
 				updatedfields.add(avatarId);
-				updateMap.put("avatar", visitorLog.getAvatarId());
+				updateMap.put("avatar", visitorLog.getAvatar());
 			}
 			
 			updatedfields.add(visitorType);

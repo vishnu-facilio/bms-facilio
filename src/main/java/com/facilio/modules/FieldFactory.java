@@ -3180,13 +3180,6 @@ public class FieldFactory {
 		dayOfWeek.setModule(module);
 		fields.add(dayOfWeek);
 
-		FacilioField dateOfTheDay = new FacilioField();
-		dateOfTheDay.setName("dateOfTheDay");
-		dateOfTheDay.setDataType(FieldType.NUMBER);
-		dateOfTheDay.setColumnName("DATE_OF_THE_DAY");
-		dateOfTheDay.setModule(module);
-		fields.add(dateOfTheDay);
-
 		FacilioField startTime = new FacilioField();
 		startTime.setName("startTime");
 		startTime.setDataType(FieldType.MISC);

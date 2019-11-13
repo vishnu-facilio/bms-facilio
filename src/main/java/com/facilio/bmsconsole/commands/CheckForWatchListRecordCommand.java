@@ -19,7 +19,7 @@ public class CheckForWatchListRecordCommand extends FacilioCommand{
 		List<VisitorLoggingContext> list = (List<VisitorLoggingContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(list)) {
 			for(VisitorLoggingContext vLog : list) {
-				VisitorContext visitor = VisitorManagementAPI.getVisitor(vLog.getVisitor().getId(), null);
+				VisitorContext visitor = vLog.getVisitor();
 				WatchListContext watchListRecord = VisitorManagementAPI.getBlockedWatchListRecordForPhoneNumber(visitor.getPhone(), visitor.getEmail());
 				if(watchListRecord != null) {
 					if(watchListRecord.isVip()) {

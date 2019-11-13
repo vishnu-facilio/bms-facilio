@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -13,6 +14,7 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	private TicketContext ticket;
 	private String name;
 	private String description;
+	private User requestedBy;
 	
 	
 	private WorkType workType;
@@ -111,6 +113,14 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	public void setRecurringInfoId(long recurringInfoId) {
 		this.recurringInfoId = recurringInfoId;
 	}
+	public User getRequestedBy() {
+		return requestedBy;
+	}
+	public void setRequestedBy(User requestedBy) {
+		this.requestedBy = requestedBy;
+	}
+	
+	
 	
 	
 }
