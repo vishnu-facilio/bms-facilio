@@ -208,6 +208,16 @@ public class VisitorManagementAPI {
 														.andCondition(CriteriaAPI.getCondition("INVITE_ID", "inviteId", String.valueOf(inviteId), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition("VISITOR_ID", "visitorId", String.valueOf(visitorId), NumberOperators.EQUALS))
 														;
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		List<LookupField> additionaLookups = new ArrayList<LookupField>();
+		LookupField inviteField = (LookupField) fieldsAsMap.get("inviteId");
+		LookupField visitorField = (LookupField) fieldsAsMap.get("visitorId");
+		
+		additionaLookups.add(inviteField);
+		additionaLookups.add(visitorField);
+		
+		builder.fetchLookups(additionaLookups);
+		
 		
 		InviteVisitorRelContext record = builder.fetchFirst();
 		return record;
