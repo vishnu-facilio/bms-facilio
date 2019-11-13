@@ -98,7 +98,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 											}
 											String receiptHandle = message.getReceiptHandle();
 											job.setReceiptHandle(receiptHandle);
-
+											
 											LOGGER.info("Executing job : " + jobName);
 											Future f = THREAD_POOL_EXECUTOR.submit(() -> job._execute(context,
 													(instantJob.getTransactionTimeout() - JOB_TIMEOUT_BUFFER) * 1000));
@@ -107,7 +107,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 													(instantJob.getTransactionTimeout() + JOB_TIMEOUT_BUFFER) * 1000, f,
 													job));
 										} catch (Exception e) {
-											LOGGER.info("Exception Occured in executing job "+jobName +" "+e);
+											LOGGER.info("Exception Occured in executing job "+jobName, e);
 //											LOGGER.error(e.getMessage() + " Exception while executing job " + jobName);
 										}
 									}
