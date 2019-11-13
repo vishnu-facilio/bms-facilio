@@ -59,7 +59,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 
 	private int getNoOfFreeThreads() {
 		int freeCount = MAX_POOL_SIZE - THREAD_POOL_EXECUTOR.getActiveCount();
-		LOGGER.debug("Instant jobs Free Count : " + freeCount);
+		LOGGER.info("Instant jobs Free Count : " + freeCount);
 		return freeCount;
 	}
 
@@ -75,7 +75,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 						FacilioContext context = (FacilioContext) message.getSerializable();
 						if (context != null) {
 							String jobName = (String) context.get(InstantJobConf.getJobNameKey());
-							LOGGER.debug("Gonna Execute job : " + jobName);
+							LOGGER.info("Gonna Execute job : " + jobName);
 							if (jobName != null) {
 								InstantJobConf.Job instantJob = FacilioScheduler.getInstantJob(jobName);
 								if (instantJob != null) {
@@ -99,7 +99,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 											String receiptHandle = message.getReceiptHandle();
 											job.setReceiptHandle(receiptHandle);
 
-											LOGGER.debug("Executing job : " + jobName);
+											LOGGER.info("Executing job : " + jobName);
 											Future f = THREAD_POOL_EXECUTOR.submit(() -> job._execute(context,
 													(instantJob.getTransactionTimeout() - JOB_TIMEOUT_BUFFER) * 1000));
 											JOB_MONITOR_MAP.put(receiptHandle, new JobTimeOutInfo(
@@ -107,7 +107,8 @@ public enum FacilioInstantJobExecutor implements Runnable {
 													(instantJob.getTransactionTimeout() + JOB_TIMEOUT_BUFFER) * 1000, f,
 													job));
 										} catch (Exception e) {
-											LOGGER.error(e.getMessage() + " Exception while executing job " + jobName);
+											LOGGER.info("Exception Occured in executing job "+jobName +" "+e);
+//											LOGGER.error(e.getMessage() + " Exception while executing job " + jobName);
 										}
 									}
 								}
@@ -120,10 +121,10 @@ public enum FacilioInstantJobExecutor implements Runnable {
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
-					LOGGER.error("Exception in sleep ", e);
+					LOGGER.info("Exception in sleep ", e);
 				}
 			} catch (Exception e) {
-				LOGGER.error("Exception in Facilio instant job queue executor " + e.getMessage());
+				LOGGER.info("Exception in Facilio instant job queue executor " + e);
 				CommonCommandUtil.emailException(FacilioInstantJobExecutor.class.getSimpleName(),
 						"Exception in instant job executor", e);
 			}
