@@ -78,13 +78,6 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 					long ttime = (long) prop.get(ttimeField.getName());
 					if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
 						Double previousValue = (Double) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));
-						if(mlContext.getOrgId()==210 && mlContext.getId()==114){
-							LOGGER.info("data :"+data);
-							LOGGER.info("previousValue :"+previousValue);
-							LOGGER.info("variableField.getName() :"+variableField.getName());
-							LOGGER.info("prop.get(variableField.getName()) :"+ prop.get(variableField.getName()));
-							LOGGER.info("previousValue :"+FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
-						}
 						data.put(ttime, previousValue + (Double) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
 					}else if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.NUMBER)){
 						Long previousValue = (Long) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));

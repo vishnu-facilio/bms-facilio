@@ -1,11 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.constants.FacilioConstants;
@@ -13,6 +17,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
@@ -31,9 +36,20 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 			
 			EnergyMeterContext emContext2 = DeviceAPI.getEnergyMeter(energyMeterID);
 			if(emContext2 != null){
-				MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"LoadPredictionMLLogReadings",FieldFactory.getMLLogLoadPredictFields(),ModuleFactory.getMLLogReadingModule().getTableName());
-				MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"LoadPredictionMLReadings",FieldFactory.getMLLoadPredictFields(),ModuleFactory.getMLReadingModule().getTableName());
-				LOGGER.info("After adding Reading");
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                long categoryId=emContext2.getCategory().getId();
+				AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
+				long assetModuleID = assetCategory.getAssetModuleID();
+				List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
+				boolean moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("LoadPredictionMLLogReadings"));
+				if (!moduleExist) {
+					MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY, categoryId,"LoadPredictionMLLogReadings", FieldFactory.getMLLogLoadPredictFields(),ModuleFactory.getMLLogReadingModule().getTableName(), ModuleType.PREDICTED_READING);
+				}
+				moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("LoadPredictionMLReadings"));
+				if (!moduleExist) {
+					MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY, categoryId,"LoadPredictionMLReadings", FieldFactory.getMLLoadPredictFields(),ModuleFactory.getMLReadingModule().getTableName());
+				}
+                LOGGER.info("After adding Reading");
 				
 				checkGamModel(energyMeterID,emContext2,(String) jc.get("weekEnd"),(String) jc.get("meterInterval"), (String) jc.get("modelName"),(String) jc.get("modelPath"));
 				LOGGER.info("After check Gam Model");
