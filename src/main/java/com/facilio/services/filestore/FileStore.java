@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -24,6 +26,7 @@ import com.facilio.fs.FileInfo;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
 
 public abstract class FileStore {
 
@@ -187,6 +190,30 @@ public abstract class FileStore {
 		finally {
 			DBUtil.closeAll(conn, pstmt);
 		}
+	}
+	
+	
+	public String encodeFileToBase64Binary(long fileId) throws Exception {
+		
+		
+		FileInfo fileInfo = getFileInfo(fileId);
+		
+		InputStream inputStream = null;
+		try {
+			inputStream = readFile(fileInfo);
+			byte[] bytes = new byte[(int) fileInfo.getFileSize()];
+			inputStream.read(bytes);
+			String encodedfile = Base64.encodeBase64String(bytes);
+			return encodedfile;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			if(inputStream != null) {
+				inputStream.close();
+			}
+		}
+		return null;
 	}
 	
 	protected boolean addResizedFileEntry(long fileId, int width, int height, String filePath, long fileSize, String contentType) throws Exception {

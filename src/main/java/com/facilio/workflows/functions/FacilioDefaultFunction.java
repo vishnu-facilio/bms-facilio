@@ -543,28 +543,11 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			// TODO Auto-generated method stub
 			
 			FileStore fs = FacilioFactory.getFileStore();
+			
 			long fileId = (long) Double.parseDouble(objects[0].toString());
 			
-			FileInfo fileInfo = fs.getFileInfo(fileId);
+			return fs.encodeFileToBase64Binary(fileId);
 			
-			InputStream inputStream = null;
-			try {
-				inputStream = fs.readFile(fileInfo);
-				System.out.println("length   ------   "+fileInfo.getFileSize());
-				byte[] bytes = new byte[(int) fileInfo.getFileSize()];
-				inputStream.read(bytes);
-				String encodedfile = Base64.encodeBase64String(bytes);
-				return encodedfile;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			finally {
-				if(inputStream != null) {
-					inputStream.close();
-				}
-			}
-			
-			return null;
 		}
 		
 	},
