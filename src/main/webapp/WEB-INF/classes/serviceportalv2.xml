@@ -782,6 +782,45 @@
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorDetails" />	
 	</package>
+	<package name="tenantVendorsApi" namespace="/api/service/v2/vendors"
+		extends="newServicePortalApiV2">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.VendorAction"
+			method="addVendor">
+		</action>
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.VendorAction"
+			method="updateVendor">
+		</action>
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VendorAction"
+			method="vendorDetails">
+			<param name="vendorId">{1}</param>
+		</action>
+		<action name="count"
+			class="com.facilio.bmsconsole.actions.VendorAction"
+			method="vendorsCount">
+		</action>
+	</package>
+	<package name="tenantVendorsListApiv2"
+		namespace="/api/service/v2/vendors/view" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VendorAction"
+			method="vendorList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="tenantViewApi" namespace="/api/service/view" extends="newServicePortalApiV2">
+	<action name="*" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="getViewDetail">
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="root">view</param>
+				<param name="excludeProperties">criteria.conditions.*\.computedWhereClause</param>
+			</result>
+		</action>
+	</package>
+	
 	<!-- Tenant apis end -->
 	<!-- end -->
 </struts>
