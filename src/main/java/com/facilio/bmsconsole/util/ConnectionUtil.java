@@ -13,6 +13,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ public class ConnectionUtil {
 
 	public static final String CODE_STRING = "code";
 	public static final String CLIENT_ID_STRING = "client_id";
+	public static final String AUTHORIZATION_STRING = "Authorization";
 	public static final String CLIENT_SECRET_STRING = "client_secret";
 	public static final String REDIRECT_URI_STRING = "redirect_uri";
 	public static final String GRANT_TYPE_STRING = "grant_type";
@@ -134,6 +136,9 @@ public class ConnectionUtil {
 				params.put(CODE_STRING, connectionContext.getAuthCode());
 				params.put(CLIENT_ID_STRING, connectionContext.getClientId());
 				params.put(CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
+				
+				params.put(AUTHORIZATION_STRING, "Basic " + Base64.getEncoder().encodeToString(new String(connectionContext.getClientId() + ":" + connectionContext.getClientSecretId()).getBytes()));
+				
 				params.put(GRANT_TYPE_STRING, GRANT_TYPE_AUTH_TOKEN);
 				params.put(REDIRECT_URI_STRING, connectionContext.getCallBackURL());
 				params.put(ACCESS_TYPE_STRING, ACCESS_TYPE_OFFLINE);

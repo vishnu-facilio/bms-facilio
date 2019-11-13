@@ -73,11 +73,7 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 
 			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.POST,bodyString,bodyType);
 			
-			JSONObject resultJson = (JSONObject) new JSONParser().parse(res);
-			
-			System.out.println("res --- "+resultJson);
-			
-			return resultJson;
+			return res;
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
