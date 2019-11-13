@@ -769,7 +769,7 @@ public class FormFactory {
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("website", FieldDisplayType.TEXTBOX, "Website", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("address", FieldDisplayType.ADDRESS, "Address", Required.OPTIONAL, 6, 1));
-//		fields.add(new FormField("registeredBy", FieldDisplayType.REQUESTER, "Registered By", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("registeredBy", FieldDisplayType.LOOKUP_SIMPLE, "Registered By", Required.OPTIONAL, "requester",7, 1));
 		return fields;
 	}
 
@@ -781,7 +781,7 @@ public class FormFactory {
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("website", FieldDisplayType.TEXTBOX, "Website", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("address", FieldDisplayType.ADDRESS, "Address", Required.OPTIONAL, 6, 1));
-//		fields.add(new FormField("registeredBy", FieldDisplayType.REQUESTER, "Registered By", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("registeredBy", FieldDisplayType.LOOKUP_SIMPLE, "Registered By", Required.OPTIONAL, "requester",7, 1));
 		fields.add(new FormField("vendorContacts", FieldDisplayType.VENDOR_CONTACTS, "Contacts", Required.OPTIONAL, 8, 1));
 		return fields;
 	}
@@ -1282,6 +1282,7 @@ public class FormFactory {
 		fields.add(new FormField("inviteHost", FieldDisplayType.USER, "Host", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("recurringVisitor", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("invitees", FieldDisplayType.VISITOR_INVITEES , "VISITORS", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("registeredBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",5, 1));
 
 		return fields;
 	}
@@ -1419,6 +1420,7 @@ public class FormFactory {
 		vendorField.setShowField(false);
 		fields.add(vendorField);
 		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("registeredBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",5, 1));
 		return fields;
 	}
 
