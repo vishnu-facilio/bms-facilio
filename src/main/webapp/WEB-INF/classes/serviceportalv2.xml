@@ -444,7 +444,7 @@
 	<!-- Vendor Portal apis -->
 	
 	<package name="vendorworkorders"
-		namespace="/api/service/vendorworkorders" extends="vendorPortalApiV2">
+		namespace="/api/service/vendorworkorders" extends="newServicePortalApiV2">
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2workOrderList">
@@ -752,5 +752,37 @@
 			</action>
 		</package>
 	<!-- Vendor apis end -->
+	<!-- Tenant apis start -->
+	<package name="TenantVisitorInvite" namespace="/api/service/v2/visitorInvite"
+		extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" >
+			<param name="vendorPortal">true</param>
+		</action>
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
+		<action name="preRegister"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="preRegisterVisitors" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteVisitorInvites" />
+	</package>
+	<package name="TenantVisitor" namespace="/api/service/v2/visitor"
+		extends="newServicePortalApiV2">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitors" />
+		<action name="addVisitor"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitor" />
+		<action name="updateVisitor"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitor" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitors" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorsList" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="deleteVisitors" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorDetails" />	
+	</package>
+	<!-- Tenant apis end -->
 	<!-- end -->
 </struts>
