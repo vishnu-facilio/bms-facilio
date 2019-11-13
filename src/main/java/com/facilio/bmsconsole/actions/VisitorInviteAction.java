@@ -153,12 +153,15 @@ public class VisitorInviteAction extends FacilioAction{
 
 	public String updateVisitorInvites() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(visitorInvites)) {
+		if(visitorInvite != null) {
 			FacilioChain c = TransactionChainFactory.updateVisitorInvitesChain();
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorInvites);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD, visitorInvite);
+			c.getContext().put(FacilioConstants.ContextNames.INVITEES, invitees);
+			
+			
 			c.execute();
-			setResult(FacilioConstants.ContextNames.VISITOR_INVITES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+			setResult(FacilioConstants.ContextNames.VISITOR_INVITE, c.getContext().get(FacilioConstants.ContextNames.RECORD));
 		}
 		return SUCCESS;
 	}

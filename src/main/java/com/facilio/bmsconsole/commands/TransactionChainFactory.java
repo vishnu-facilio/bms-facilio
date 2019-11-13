@@ -3676,8 +3676,14 @@ public class TransactionChainFactory {
 		public static FacilioChain updateVisitorInvitesChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorInvites());
+			c.addCommand(new DeleteVisitorInviteRelCommand());
+			c.addCommand(new AddNewVisitorsWhilePreRegisteringCommand());
 			c.addCommand(new ComputeScheduleForVisitorInviteCommand());
 			c.addCommand(new GenericUpdateListModuleDataCommand());
+			c.addCommand(new LoadInviteIdAfterAdditionCommand());
+			c.addCommand(new AddInviteVisitorRelCommand());
+			c.addCommand(SetTableNamesCommand.getForVisitorInviteRel());
+			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));

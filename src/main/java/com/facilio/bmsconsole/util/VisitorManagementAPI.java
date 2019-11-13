@@ -9,10 +9,12 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
+import com.facilio.bmsconsole.context.PoAssociatedTermsContext;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
@@ -20,17 +22,20 @@ import com.facilio.bmsconsole.context.WatchListContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.LookupFieldMeta;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -440,6 +445,17 @@ public class VisitorManagementAPI {
 		WatchListContext record = builder.fetchFirst();
 		return record;
 				
+		
+	}
+	
+	public static void deleteVisitorInviteRel(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
+		DeleteRecordBuilder<InviteVisitorRelContext> deleteTermsBuilder = new DeleteRecordBuilder<InviteVisitorRelContext>()
+				.module(module)
+				.andCondition(CriteriaAPI.getCondition("INVITE_ID", "inviteId", String.valueOf(id), NumberOperators.EQUALS));
+		deleteTermsBuilder.delete();
+		
 		
 	}
 }
