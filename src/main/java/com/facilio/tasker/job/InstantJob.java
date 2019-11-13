@@ -7,9 +7,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.config.InstantJobConf;
+import com.facilio.tasker.executor.FacilioInstantJobExecutor;
 import com.facilio.tasker.executor.InstantJobExecutor;
 
 public abstract class InstantJob {
@@ -62,7 +64,12 @@ public abstract class InstantJob {
             job.setIsPeriodic(false);
             JobLogger.log(job, (System.currentTimeMillis() - startTime), status);
             currentThread.setName(threadName);
-            InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
+            if(FacilioProperties.isProduction()) {
+            	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
+            }else {
+            	FacilioInstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
+            }
+            
         }
     }
 

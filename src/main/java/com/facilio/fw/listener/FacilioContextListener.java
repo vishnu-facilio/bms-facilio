@@ -61,6 +61,7 @@ import com.facilio.service.FacilioService;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.tasker.FacilioScheduler;
+import com.facilio.tasker.executor.FacilioInstantJobExecutor;
 import com.facilio.tasker.executor.InstantJobExecutor;
 
 public class FacilioContextListener implements ServletContextListener {
@@ -74,7 +75,12 @@ public class FacilioContextListener implements ServletContextListener {
 			RedisManager.getInstance().release();// destroying redis connection pool
 		}
 		FacilioScheduler.stopSchedulers();
-		InstantJobExecutor.INSTANCE.stopExecutor();
+		if(FacilioProperties.isProduction()) {
+			InstantJobExecutor.INSTANCE.stopExecutor();
+		}else {
+			FacilioInstantJobExecutor.INSTANCE.stopExecutor();
+		}
+		
 		FacilioService.shutDown();
 		timer.cancel();
 		FacilioConnectionPool.INSTANCE.close();
@@ -123,7 +129,12 @@ public class FacilioContextListener implements ServletContextListener {
 			BeanFactory.initBeans();
 			
 			FacilioScheduler.initScheduler();
-			InstantJobExecutor.INSTANCE.startExecutor();
+			if(FacilioProperties.isProduction()) {
+				InstantJobExecutor.INSTANCE.startExecutor();
+			}else {
+				FacilioInstantJobExecutor.INSTANCE.startExecutor();
+			}
+			
 
 			if(RedisManager.getInstance() != null) {
 				RedisManager.getInstance().connect(); // creating redis connection pool

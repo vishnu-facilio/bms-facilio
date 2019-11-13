@@ -6,7 +6,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.chain.FacilioContext;
+import com.facilio.queue.FacilioObjectQueue;
 import com.facilio.queue.ObjectQueue;
 import com.facilio.service.FacilioService;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
@@ -97,9 +99,20 @@ public class FacilioTimer {
 //		}
 //		LOGGER.info(new StringBuilder().append("Adding instant job : ").append(jobName).append("\n Size : \n").append(size.toString()));
 		LOGGER.debug("Adding instant job : "+jobName);
-		if (!ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
-			throw new IllegalArgumentException("Unable to add instant job to queue");
+		if(FacilioProperties.isProduction()) {
+			if (!ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
+				throw new IllegalArgumentException("Unable to add instant job to queue");
+			}
+		}else {
+			try {
+				if (!FacilioObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
+					throw new IllegalArgumentException("Unable to add instant job to queue");
+				}
+			} catch (Exception e) {
+				LOGGER.info("Exception occurred in Facilio Instant Job Queue"+e);
+			}
 		}
+		
 		
 	}
 
