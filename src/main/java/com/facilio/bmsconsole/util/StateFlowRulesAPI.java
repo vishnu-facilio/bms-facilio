@@ -579,7 +579,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 					.on(ModuleFactory.getWorkflowRuleModule().getTableName() + ".ID = " + ModuleFactory.getStateFlowModule().getTableName() + ".ID")
 				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("DRAFT_PARENT_ID", "draftParentId", "", CommonOperators.IS_EMPTY))
-				.andCondition(CriteriaAPI.getCondition("FORM_ID", "formId", "", CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition("FORM_LEVEL", "formLevel", "false", BooleanOperators.IS))
 				.orderBy("EXECUTION_ORDER");
 		List<Map<String, Object>> list = builder.get();
 		List<WorkflowRuleContext> stateFlowList = WorkflowRuleAPI.getWorkFlowsFromMapList(list, true, true);
