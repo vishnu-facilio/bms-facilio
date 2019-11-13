@@ -753,11 +753,10 @@
 		</package>
 	<!-- Vendor apis end -->
 	<!-- Tenant apis start -->
-	<package name="TenantVisitorInvite" namespace="/api/service/v2/visitorInvite"
+	<package name="TenantVisitorInvite" namespace="/api/service/v2/visitorinvite"
 		extends="newServicePortalApiV2">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" >
-			<param name="vendorPortal">true</param>
 		</action>
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
