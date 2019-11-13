@@ -1357,7 +1357,7 @@ public class FormFactory {
 
 	public static FacilioForm getVisitorLogForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("VISITOR LOG");
+		form.setDisplayName("VISITS");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
 		form.setLabelPosition(LabelPosition.TOP);

@@ -4695,7 +4695,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Visitor Logs");
+		allView.setDisplayName("All Visits");
 		return allView;
 	}
 
