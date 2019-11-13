@@ -96,7 +96,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 													continue;
 												}
 											}
-											String receiptHandle = message.getReceiptHandle();
+											String receiptHandle = message.getId();
 											job.setReceiptHandle(receiptHandle);
 											LOGGER.info("receiptHandle is  "+receiptHandle);
 											LOGGER.info("Executing job : " + jobName);

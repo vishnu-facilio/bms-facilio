@@ -16,7 +16,7 @@ import com.facilio.service.FacilioService;
 public class FacilioObjectQueue {
 	private static final Logger LOGGER = Logger.getLogger(FacilioObjectQueue.class.getName());
 	private static final FacilioQueueService INSTANCE = new FacilioDbQueue("FacilioInstantJobQueue",false);
-	static FacilioQueueService getInstance() {
+	private static FacilioQueueService getInstance() {
 		
 		return INSTANCE;
 	}
