@@ -1235,7 +1235,7 @@ public class FormFactory {
 		fields.add(new FormField("phone", FieldDisplayType.NUMBER, "Enter your mobile number", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Hi,What is your full name?", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("email", FieldDisplayType.EMAIL, "What is your email id?", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("host", FieldDisplayType.USER, "Host", Required.OPTIONAL, 2, 1));
+//		fields.add(new FormField("host", FieldDisplayType.USER, "Host", Required.OPTIONAL, 2, 1));
 		//fields.add(new FormField("location", FieldDisplayType.SADDRESS, "Location", Required.OPTIONAL, 3, 1));
 		
 		return fields;
@@ -1254,9 +1254,9 @@ public class FormFactory {
 
 	private static List<FormField> getVisitorFormFields() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Enter your name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.REQUIRED, 2, 2));
-		fields.add(new FormField("email", FieldDisplayType.EMAIL, "What is your email address", Required.OPTIONAL, 2, 3));		
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("isBlocked", FieldDisplayType.DECISION_BOX, "Visitor Entry", Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 4, 3));
 		fields.add(new FormField("location", FieldDisplayType.ADDRESS, "Location", Required.OPTIONAL, 5, 1));
