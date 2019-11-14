@@ -26,7 +26,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.services.kafka.notification.NotificationProcessor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -60,6 +59,7 @@ import com.facilio.queue.FacilioExceptionProcessor;
 import com.facilio.service.FacilioService;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.kafka.notification.NotificationProcessor;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.FacilioInstantJobExecutor;
 import com.facilio.tasker.executor.InstantJobExecutor;
@@ -102,9 +102,9 @@ public class FacilioContextListener implements ServletContextListener {
 		timer.schedule(new TransactionMonitor(), 0L, 3000L);
 		
 		if(FacilioProperties.isScheduleServer() && FacilioProperties.isProduction()) {
-			/*timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
+			timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
 		}
-		if(!FacilioProperties.isProduction()) {*/
+		if(!FacilioProperties.isProduction()) {
 			LOGGER.info("##Facilio exception queue Pull method calling");
 			timer.schedule(new FacilioDBQueueExceptionProcessor(), 0L, 900000L); // 30 minutes
 		}
