@@ -29,11 +29,11 @@ public class KPIPageFacory extends PageFactory {
 			addMetersWidget(tab1Sec1);
 			addViolationsWidget(tab1Sec1, true);
 			addLatestValueWidget(tab1Sec1);
-
-			Tab tab2 = page.new Tab("historicalTrends", "kpiHistoricalTrend");
-			page.addTab(tab2);
 		}
 
+		Tab tab2 = page.new Tab("kpiViewer", "kpiViewer");
+		page.addTab(tab2);
+		
 		Tab tab3 = page.new Tab("kpiViolations", "violationsList");
 		page.addTab(tab3);
 
