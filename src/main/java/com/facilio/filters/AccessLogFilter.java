@@ -57,6 +57,8 @@ public class AccessLogFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+
+
         long startTime = System.currentTimeMillis();
 
         Thread thread = Thread.currentThread();
@@ -184,6 +186,7 @@ public class AccessLogFilter implements Filter {
                     put("userId", finalUserId);
                     put("responseCode", responseCode);
                     put("timeTaken", String.valueOf(timeTaken));
+                    put("thread", thread.getName());
                 }
             };
             LOGGER.log(Level.INFO, "Log this to sentry");
