@@ -28,6 +28,17 @@
 	
 	<dependencies>
 		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-pubsub</artifactId>
+			<version>1.99.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.api/gax -->
+		<dependency>
+			<groupId>com.google.api</groupId>
+			<artifactId>gax</artifactId>
+			<version>1.50.1</version>
+		</dependency>
+		<dependency>
 			<groupId>com.facilio</groupId>
 			<artifactId>agent-framework</artifactId>
 			<version>0.0.4</version>
@@ -477,6 +488,11 @@
 		    <artifactId>commons-text</artifactId>
 		    <version>1.4</version>
 		</dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.10.0</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<extensions>

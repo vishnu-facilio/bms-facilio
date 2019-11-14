@@ -77,6 +77,25 @@ public class FieldFactory {
 		return  fields;
 	}
 
+	public static Collection<FacilioField> getAgentMessageIntegrationFields() {
+		FacilioModule module = ModuleFactory.getAgentMessageIntegrationModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		//fields.add(getField("orgId","ORGID",module,FieldType.NUMBER));
+		fields.add(getNameField(module));
+		fields.add(getField("url","URL",module,FieldType.STRING));
+		fields.add(getField("topic","TOPIC",module,FieldType.STRING));
+		fields.add(getField("clientId","CLIENT_ID",module,FieldType.STRING));
+		fields.add(getField("queueType","QUEUE_TYPE",module,FieldType.STRING));
+		fields.add(getField("preProcessorType","PREPROCESSOR_TYPE",module,FieldType.STRING));
+		fields.add(getField("authType","AUTH_TYPE",module,FieldType.STRING));
+		fields.add(getField("username","USERNAME",module,FieldType.STRING));
+		fields.add(getField("password","PASSWORD",module,FieldType.STRING));
+		fields.add(getField("header","HEADER",module,FieldType.STRING));
+		return  fields;
+	}
+
     public static class Fields {
 		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
 		static {

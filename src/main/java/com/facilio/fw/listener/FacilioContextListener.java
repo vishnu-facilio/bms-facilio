@@ -11,11 +11,7 @@ import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Timer;
+import java.util.*;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -26,6 +22,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.agentIntegration.AgentIntegrationQueue.AgentIntegrationQueue;
+import com.facilio.agentIntegration.AgentIntegrationQueue.AgentIntegrationQueueFactory;
+import com.facilio.services.kafka.notification.NotificationProcessor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -59,7 +58,6 @@ import com.facilio.queue.FacilioExceptionProcessor;
 import com.facilio.service.FacilioService;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.kafka.notification.NotificationProcessor;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.FacilioInstantJobExecutor;
 import com.facilio.tasker.executor.InstantJobExecutor;
@@ -154,6 +152,7 @@ public class FacilioContextListener implements ServletContextListener {
 				if (FacilioProperties.isMessageProcessor()) {
 					FacilioFactory.getMessageQueue().start();
 				}
+				AgentIntegrationQueueFactory.startIntegrationQueues();
 			} catch (Exception e){
 				LOGGER.info("Exception occurred ", e);
 			}

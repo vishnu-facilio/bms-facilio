@@ -2935,4 +2935,12 @@ public class ModuleFactory {
         module.setTableName("Contacts");
         return module;
     }
+
+	public static FacilioModule getAgentMessageIntegrationModule() {
+		FacilioModule module=new FacilioModule();
+		module.setTableName("Agent_Message_Integration");
+		module.setDisplayName("Agent Message Integration");
+		module.setName("agentMessageIntegration");
+		return module;
+	}
 }
