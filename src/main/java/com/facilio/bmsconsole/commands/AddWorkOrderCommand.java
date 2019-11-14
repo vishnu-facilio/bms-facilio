@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -55,6 +57,10 @@ public class AddWorkOrderCommand extends FacilioCommand {
 				workOrder.setCreatedTime(workOrder.getScheduledStart());
 			} else {
 				workOrder.setCreatedTime(workOrder.getCurrentTime());
+			}
+
+			if (workOrder.getParentWO() != null) {
+				validateStatusOfParentAndChild(workOrder);
 			}
 
 			workOrder.setModifiedTime(workOrder.getCreatedTime());
@@ -195,5 +201,13 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");
 		}
 		return false;
+	}
+
+	private void validateStatusOfParentAndChild(WorkOrderContext workOrder) throws Exception {
+		WorkOrderContext parentWO = WorkOrderAPI.getWorkOrder(workOrder.getParentWO().getId());
+		FacilioStatus status = TicketAPI.getStatus(parentWO.getStatus().getId());
+		if (status.getType() == FacilioStatus.StatusType.CLOSED) {
+			throw new IllegalArgumentException("Cannot add open WO as a child to closed parent");
+		}
 	}
 }
