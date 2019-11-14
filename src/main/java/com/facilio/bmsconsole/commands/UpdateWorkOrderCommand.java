@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -98,6 +99,10 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 	private int updateWorkOrders (WorkOrderContext workOrder, FacilioModule module, List<WorkOrderContext> oldWos, Map<Long, List<UpdateChangeSet>> changeSets, Context context, List<Long> recordIds) throws Exception {
 
 		updateWODetails(workOrder);
+
+		if (workOrder.getParentWO() != null) {
+			validateStatusOfParentAndChild(workOrder, oldWos);
+		}
 		
 		if(workOrder.getStatus() != null) {
 			validateCloseStatus(workOrder, oldWos);
@@ -129,7 +134,21 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 		
 		return rowsUpdated;
 	}
-	
+
+	private void validateStatusOfParentAndChild(WorkOrderContext workOrder, List<WorkOrderContext> oldWos) throws Exception {
+		WorkOrderContext parentWO = WorkOrderAPI.getWorkOrder(workOrder.getParentWO().getId());
+		FacilioStatus status = TicketAPI.getStatus(parentWO.getStatus().getId());
+		if (status.getType() == StatusType.CLOSED) {
+			for (WorkOrderContext oldWo : oldWos) {
+				long statusId = oldWo.getStatus().getId();
+				FacilioStatus statusObj = TicketAPI.getStatus(statusId);
+				if (statusObj.getType() != StatusType.CLOSED) {
+					throw new IllegalArgumentException("Cannot add open WO as a child to closed parent");
+				}
+			}
+		}
+	}
+
 	private void validateSyncTime(Context context, WorkOrderContext workOrder, List<WorkOrderContext> oldWos) throws Exception {
 		Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
 		// For syncing, only one workorder will be there
