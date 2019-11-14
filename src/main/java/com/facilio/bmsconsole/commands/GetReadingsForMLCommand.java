@@ -100,7 +100,9 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			}
 			mlContext.setMlVariablesDataMap(variables.getParentID(), variableField.getName(), data);
 		}
-		
+		if(mlContext.getOrgId()==210 && mlContext.getId()==4){
+			LOGGER.info("ML variables Data map"+mlContext.getMlVariablesDataMap());
+		}
 		List<MLVariableContext> mlCriteriaVariable = mlContext.getMLCriteriaVariables();
 		if(mlCriteriaVariable!=null)
 		{
