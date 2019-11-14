@@ -1738,5 +1738,10 @@ public class ReadOnlyChainFactory {
 		
 		return c;
 	}
-	
+
+	public static FacilioChain getServiceCatalogGroupDetailChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetServiceCatalogGroupDetailsCommand());
+		return chain;
+	}
 }

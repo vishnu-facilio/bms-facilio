@@ -115,4 +115,15 @@ public class ServiceCatalogAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.SERVICE_CATALOG_GROUPS, context.get(FacilioConstants.ContextNames.SERVICE_CATALOG_GROUPS));
         return SUCCESS;
     }
+
+    public String getServiceCatalogDetailGroup() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getServiceCatalogGroupDetailChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, id);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SERVICE_CATALOG_GROUP, context.get(FacilioConstants.ContextNames.SERVICE_CATALOG_GROUP));
+
+        return SUCCESS;
+    }
 }
