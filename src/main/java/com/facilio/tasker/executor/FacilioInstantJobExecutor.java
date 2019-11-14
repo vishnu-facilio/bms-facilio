@@ -89,7 +89,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 													FacilioObjectQueue.changeVisibilityTimeout(
 															InstantJobConf.getInstantJobQueue(),
 															message.getId(),
-															instantJob.getTransactionTimeout());
+															(instantJob.getTransactionTimeout() * 1000));
 												} catch (Exception e) {
 													LOGGER.info(
 															"Ignoring job " + jobName + " since it's not available");
