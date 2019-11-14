@@ -1,5 +1,7 @@
 package com.facilio.agentIntegration.AgentIntegrationQueue;
-
+/**
+ * Enums for Agent Message Integration Queue Type
+ */
 public enum AgentMessageIntegrationQueueType {
     HTTP(0,"SimpleHTTP"),
     GOOGLE_PUB_SUB(1,"GooglePubSub"),

@@ -15,7 +15,9 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
+/**
+ * Class for handling data from Google Pub Sub through Agent Message Integration Preprocessor
+ */
 public class GooglePubSub extends AgentIntegrationQueue{
     private static final Logger LOGGER = LogManager.getLogger(GooglePubSub.class.getName());
 
@@ -27,7 +29,9 @@ public class GooglePubSub extends AgentIntegrationQueue{
         this.projectId=projectId;
         this.subscriptionId=subscriptionId;
     }
-
+    /**
+     * Starts asynchronous thread for handling data from pub sub
+     */
 
     @Override
     public void startProcessor(long orgid) {
@@ -35,7 +39,7 @@ public class GooglePubSub extends AgentIntegrationQueue{
         ProjectSubscriptionName subscriptionName =
                 ProjectSubscriptionName.of(projectId, subscriptionId);
         LOGGER.info("Google Pub Sub started...");
-// Instantiate an asynchronous message receiver
+        // Instantiate an asynchronous message receiver
         MessageReceiver receiver =
                 new MessageReceiver() {
                     @Override

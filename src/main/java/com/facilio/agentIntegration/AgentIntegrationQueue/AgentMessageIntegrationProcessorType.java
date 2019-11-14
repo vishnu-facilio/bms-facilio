@@ -1,5 +1,7 @@
 package com.facilio.agentIntegration.AgentIntegrationQueue;
-
+/**
+ * Enums for Agent Message Integration Processor type
+ */
 public enum AgentMessageIntegrationProcessorType {
 
     WATTSENSE(1,"Wattsense"),

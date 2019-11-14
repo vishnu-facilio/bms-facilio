@@ -1,26 +1,42 @@
 package com.facilio.agentIntegration.AgentIntegrationQueue;
 
 import com.facilio.agentIntegration.AgentIntegrationQueue.preprocessor.AgentIntegrationPreprocessor;
-
+/**
+ * Abstract class for the AgentIntegrationQueue thread
+ */
 public abstract class AgentIntegrationQueue implements Runnable{
-    long orgiD = -1;
+    private long orgId = -1;
     private AgentIntegrationPreprocessor preprocessor = null;
 
-    public long getOrgiD() {
-        return orgiD;
+    public long getOrgId() {
+        return orgId;
     }
 
-    public void setOrgiD(long orgiD) {
-        this.orgiD = orgiD;
+    void setOrgId(long orgId) {
+        this.orgId = orgId;
     }
-    abstract void startProcessor(long orgiD);
-    @Override
-    public void run(){
-        if (orgiD!=-1)
-        startProcessor(orgiD);
-    }
-    public void setPreprocessor(AgentIntegrationPreprocessor preprocessor) {
+    /**
+     * Sets the pre processor
+     * @param preprocessor
+     */
+    void setPreprocessor(AgentIntegrationPreprocessor preprocessor) {
         this.preprocessor=preprocessor;
     }
+
+    /**
+     * Starts the pre processor thread (Asynchronous)
+     * @param orgId
+     */
+    abstract void startProcessor(long orgId);
+
+    /**
+     * returns pre processor
+     * @return
+     */
     public AgentIntegrationPreprocessor getPreProcessor(){return preprocessor; }
+    @Override
+    public void run(){
+        if (orgId !=-1)
+            startProcessor(orgId);
+    }
 }

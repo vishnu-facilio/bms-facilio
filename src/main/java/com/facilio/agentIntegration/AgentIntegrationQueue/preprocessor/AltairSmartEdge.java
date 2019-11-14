@@ -5,7 +5,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
+/**
+ * Implementation for pre processing the data from AltairSmartEdge
+ */
 public class AltairSmartEdge implements AgentIntegrationPreprocessor {
     private static final Logger LOGGER = LogManager.getLogger(AltairSmartEdge.class.getName());
 
