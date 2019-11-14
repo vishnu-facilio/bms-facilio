@@ -195,15 +195,33 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 		if (statusObj.getType() == StatusType.CLOSED) {
 			for(WorkOrderContext oldWo: oldWos) {
 				if (!validateTaskStatus(statusObj, oldWo)) {
-					throw new IllegalArgumentException("Please close all tasks before closing/resolving the workorder");
+					throw new IllegalArgumentException("Please close all tasks before closing the workorder");
 				}
 				if (oldWo.isUserSignatureRequired() && workOrder.getSignature() == null) {
 					throw new IllegalArgumentException("Please enter the signature before closing the workorder");
 				}
+				if (!validateChildWOStatus(oldWo)) {
+					throw new IllegalArgumentException("Please close all child WO before closing the workorder");
+				}
 			}
 		}
 	}
-	
+
+	private boolean validateChildWOStatus(WorkOrderContext oldWo) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+				.beanClass(WorkOrderContext.class)
+				.module(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER))
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+				.innerJoin("TicketStatus")
+					.on("TicketStatus.ID = Tickets.STATUS_ID")
+				.andCondition(CriteriaAPI.getCondition("PARENT_WOID", "parentWO", String.valueOf(oldWo), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "statusType", String.valueOf(2), NumberOperators.NOT_EQUALS))
+				;
+		List<WorkOrderContext> workOrderContexts = builder.get();
+		return CollectionUtils.isEmpty(workOrderContexts);
+	}
+
 	private boolean validateTaskStatus(FacilioStatus statusObj , WorkOrderContext oldWo) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = ModuleFactory.getTasksModule();

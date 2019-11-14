@@ -289,6 +289,14 @@ public class WorkOrderContext extends TicketContext {
 		this.signatureContentType = signatureContentType;
 	}
 
+	private WorkOrderContext parentWO;
+	public WorkOrderContext getParentWO() {
+		return parentWO;
+	}
+	public void setParentWO(WorkOrderContext parentWO) {
+		this.parentWO = parentWO;
+	}
+
 	private WOUrgency urgency;
 	public WOUrgency getUrgencyEnum() {
 		return urgency;
