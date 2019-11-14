@@ -114,7 +114,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 								}
 							}
 						} else {
-							FacilioObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), message.getReceiptHandle());
+							FacilioObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), message.getId());
 						}
 					}
 				}
