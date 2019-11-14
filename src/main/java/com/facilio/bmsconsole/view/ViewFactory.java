@@ -3062,7 +3062,7 @@ public class ViewFactory {
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("sysCreatedTime");
 			createdTime.setDataType(FieldType.NUMBER);
-			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setColumnName("SYS_CREATED_TIME");
 			createdTime.setModule(visitorInvitesModule);
 
 			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -3087,7 +3087,7 @@ public class ViewFactory {
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("sysCreatedTime");
 			createdTime.setDataType(FieldType.NUMBER);
-			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setColumnName("SYS_CREATED_TIME");
 			createdTime.setModule(visitorInvitesModule);
 
 			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));

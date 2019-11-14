@@ -703,10 +703,14 @@
 			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="deleteWorkPermit" />
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitDetails" />
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList" />
 	</package>
-	
+	<package name="TenantWorkPermitApiv2"
+		namespace="/api/service/v2/workpermit" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList" >
+			<param name="viewName">{1}</param>
+	</action>
+	</package>
 	<package name="VendorWorkPermitApiv2"
 		namespace="/api/service/v2/vendorworkpermit" extends="newServicePortalApiV2">
 		<action name="*"
@@ -763,15 +767,20 @@
 	<!-- Tenant apis start -->
 	<package name="TenantVisitorInvite" namespace="/api/service/v2/visitorinvite"
 		extends="newServicePortalApiV2">
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" >
-		</action>
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
 		<action name="preRegister"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="preRegisterVisitors" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteVisitorInvites" />
+	</package>
+	
+	<package name="TenantVisitorInviteList" namespace="/api/service/v2/visitorinvite" extends="newServicePortalApiV2">
+		<action name="*" class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" >
+		<param name="viewName">{1}</param>
+			</action>
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
 	</package>
 	<package name="TenantVisitor" namespace="/api/service/v2/visitor"
 		extends="newServicePortalApiV2">
@@ -835,6 +844,14 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactsList" />
 	</package>
+	<package name="ServiceAttachmentApi" namespace="/api/service/attachment" extends="newServicePortalApiV2">
+		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction"
+			method="addAttachment">
+			<result name="success" type="json">
+				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
+			</result>
+		</action>
+		</package>
 	<!-- Tenant apis end -->
 	<!-- end -->
 </struts>
