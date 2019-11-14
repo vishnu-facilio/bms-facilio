@@ -94,7 +94,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		}
 		
 		List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
-		if (CollectionUtils.isNotEmpty(fetchLookup)) {
+		if (CollectionUtils.isNotEmpty(fetchLookup) && !fetchCount) {
 			builder.fetchLookups(fetchLookup);
 		}
 		

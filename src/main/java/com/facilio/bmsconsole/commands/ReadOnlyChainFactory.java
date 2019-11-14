@@ -1711,6 +1711,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWatchList());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetLogsForWatchListCommand());
 		
 		return c;
 	}

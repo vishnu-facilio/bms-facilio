@@ -142,6 +142,23 @@ public class VisitorManagementAPI {
 	
 	}
 	
+	public static List<VisitorLoggingContext> getAllVisitorLogging(long visitorId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		SelectRecordsBuilder<VisitorLoggingContext> builder = new SelectRecordsBuilder<VisitorLoggingContext>()
+														.module(module)
+														.beanClass(VisitorLoggingContext.class)
+														.select(fields)
+														.andCondition(CriteriaAPI.getCondition("VISITOR", "visitor", String.valueOf(visitorId), NumberOperators.EQUALS))
+														;
+		
+		List<VisitorLoggingContext> records = builder.get();
+		return records;
+	
+	}
+	
 	public static InviteVisitorRelContext getInviteVisitorRel(long visitorId, long inviteId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

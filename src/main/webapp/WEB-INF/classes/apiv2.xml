@@ -4460,6 +4460,13 @@
 			<action name="disconnect" class="com.facilio.bmsconsole.actions.DevicesAction" method="disconnectDevice">							
 			</action>
 	</package>
+	<package name="visitorViews" namespace="/api/v2/visitor/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorsList" >
+			<param name="viewName">{1}</param>
+			</action>
+	</package>
 	<package name="visitor" namespace="/api/v2/visitor"
 		extends="v2Api">
 		<action name="add"
@@ -4478,6 +4485,13 @@
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorDetails" />	
 	</package>
 	
+	<package name="visitorInviteViews" namespace="/api/v2/visitorInvite/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	<package name="visitorinvite" namespace="/api/v2/visitorInvite"
 		extends="v2Api">
 		<action name="add"
@@ -4500,6 +4514,14 @@
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="vistorInviteRelContext" />
 		<action name="qrScanVisitor"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="qrScanVisitor" />				
+	</package>
+	
+	<package name="visitorLoggingViews" namespace="/api/v2/visitorLogging/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList">
+			<param name="viewName">{1}</param>
+		</action>
 	</package>
 	
 		<package name="visitorlogging" namespace="/api/v2/visitorLogging"
@@ -4531,6 +4553,14 @@
 	<package name="pythonai" namespace="/api/v2/ai" extends="v2Api">
 		<action name="trendline" class="com.facilio.bmsconsole.actions.PythonAIAction" method="getTrendLine">
 			<param name="auth">false</param>
+		</action>
+	</package>
+	
+	<package name="contactsViews" namespace="/api/v2/contacts/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactsList" >
+			<param name="viewName">{1}</param>
 		</action>
 	</package>
 	<package name="contacts" namespace="/api/v2/contacts"
@@ -4565,6 +4595,13 @@
 			class="com.facilio.bmsconsole.actions.InsuranceAction" method="getInsuranceList" />
 	</package>
 	
+	<package name="watchListViews" namespace="/api/v2/watchlist/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WatchListAction" method="getWatchListRecordList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	<package name="watchlist" namespace="/api/v2/watchlist"
 		extends="v2Api">
 		<action name="add"

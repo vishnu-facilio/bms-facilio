@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -17,6 +18,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -38,10 +40,16 @@ public class GetTenantListCommand extends FacilioCommand{
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
 		Boolean getCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
-		if (getCount != null && getCount) {
-			fields = FieldFactory.getCountField(module);
+		List<FacilioField> fields = null;
+		
+		if (getCount == null || !getCount) {
+			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			if (CollectionUtils.isEmpty(fields)) {
+				fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
+				context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, fields);
+			}
 		}
+		
 		SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
 														.module(module)
 														.beanClass(TenantContext.class)
@@ -65,7 +73,7 @@ public class GetTenantListCommand extends FacilioCommand{
 			builder.andCriteria(searchCriteria);
 		}
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-		if (pagination != null) {
+		if (pagination != null && (getCount == null || !getCount)) {
 			int page = (int) pagination.get("page");
 			int perPage = (int) pagination.get("perPage");
 			int offset = ((page-1) * perPage);
@@ -75,16 +83,22 @@ public class GetTenantListCommand extends FacilioCommand{
 			builder.offset(offset);
 			builder.limit(perPage);
 		}
+		else if (getCount != null && getCount) {
+			builder.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
+		}
 		
-		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-		List<LookupField> additionaLookups = new ArrayList<LookupField>();
-		LookupField contactField = (LookupField) fieldsAsMap.get("contact");
-		additionaLookups.add(contactField);
-		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
+		
+		if(getCount == null || !getCount) {
+			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+			List<LookupField> additionaLookups = new ArrayList<LookupField>();
+			LookupField contactField = (LookupField) fieldsAsMap.get("contact");
+			additionaLookups.add(contactField);
+			context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
+		}
 	
 		List<TenantContext> records = builder.get();
 		if (getCount != null && getCount) {
-			context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
+			context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getId());
 		}
 		else {
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, records);

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.File;
+import java.util.List;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -116,5 +117,17 @@ public class WatchListContext extends ModuleBaseWithCustomFields{
 		}
 		return false;
 	}
+	
+	private List<VisitorLoggingContext> visitorLogs ;
+
+
+	public List<VisitorLoggingContext> getVisitorLogs() {
+		return visitorLogs;
+	}
+
+	public void setVisitorLogs(List<VisitorLoggingContext> visitorLogs) {
+		this.visitorLogs = visitorLogs;
+	}
+	
 
 }
