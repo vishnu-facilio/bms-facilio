@@ -241,12 +241,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
 			return Action.LOGIN;
 		}
 
-		String result = Action.LOGIN;
 		try {
 			AccountUtil.setReqUri(request.getRequestURI());
             AccountUtil.setRequestParams(request.getParameterMap());
             if((FacilioProperties.isProduction())){  // make false to intercept
-				result = arg0.invoke();
+				return arg0.invoke();
 			} else {
 				AuditData data = null;
 				FacilioAudit audit = new DBAudit();
@@ -256,10 +255,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					if(data != null) {
 						data.setId(audit.add(data));
 					}
-					result = arg0.invoke();
+					return arg0.invoke();
 				} catch (Exception e) {
 					status = 500;
 					LOGGER.info("Exception from action classs " + e.getMessage());
+					throw e;
 				} finally {
 					if(data != null) {
 						data.setEndTime(System.currentTimeMillis());
@@ -269,7 +269,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					}
 				}
 			}
-			return result;
 		} catch (Exception e) {
 			System.out.println("exception code 154");
 
