@@ -1048,6 +1048,8 @@
 				method="addOrUpdateServiceCatalogGroup" />
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getAllServiceCatalogGroup" />
+		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+				method="getServiceCatalogDetailGroup" />
 	</package>
 
 	<package name="alarmEventListApiv2"
