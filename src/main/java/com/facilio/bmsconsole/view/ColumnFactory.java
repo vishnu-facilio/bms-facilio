@@ -663,6 +663,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("inviteHost", "Host"));
 		columns.add(new ViewField("expectedStartTime", "Expected Start Time"));
 		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
+		columns.add(new ViewField("requestedBy", "Requested By"));
 		return columns;
 	}
 	
@@ -681,6 +682,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("isRecurring", "Recurring"));
+		columns.add(new ViewField("requestedBy", "Requested By"));
 		return columns;
 	}
 

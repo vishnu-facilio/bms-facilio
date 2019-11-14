@@ -301,6 +301,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVendors().setOrder(order++));
+		views.put("myVendors", getMyVendors().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VENDORS, views);
 		
 		order = 1;
@@ -558,6 +559,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVisitorInvitesView().setOrder(order++));
+		views.put("myInvites", getMyVisitorInvites().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
 		
 		order = 1;
@@ -568,6 +570,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllWorkPermitView().setOrder(order++));
+		views.put("myWorkpermits", getMyWorkPermits().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORKPERMIT, views);
 
 		order = 1;
@@ -2010,6 +2013,54 @@ public class ViewFactory {
 
 		return myUserCondition;
 	}
+	
+	public static Condition getMyVendorsCondition() {
+		LookupField userField = new LookupField();
+		userField.setName("registeredBy");
+		userField.setColumnName("REGISTERED_BY");
+		userField.setDataType(FieldType.LOOKUP);
+		userField.setModule(ModuleFactory.getVendorsModule());
+		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+
+		Condition myUserCondition = new Condition();
+		myUserCondition.setField(userField);
+		myUserCondition.setOperator(PickListOperators.IS);
+		myUserCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
+
+		return myUserCondition;
+	}
+	
+	public static Condition getMyVistorInvitesCondition() {
+		LookupField userField = new LookupField();
+		userField.setName("requestedBy");
+		userField.setColumnName("REQUESTED_BY");
+		userField.setDataType(FieldType.LOOKUP);
+		userField.setModule(ModuleFactory.getVisitorInviteModule());
+		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+
+		Condition myUserCondition = new Condition();
+		myUserCondition.setField(userField);
+		myUserCondition.setOperator(PickListOperators.IS);
+		myUserCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
+
+		return myUserCondition;
+	}
+	
+	public static Condition getMyWorkPermitsCondition() {
+		LookupField userField = new LookupField();
+		userField.setName("requestedBy");
+		userField.setColumnName("REQUESTED_BY");
+		userField.setDataType(FieldType.LOOKUP);
+		userField.setModule(ModuleFactory.getWorkPermitModule());
+		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
+
+		Condition myUserCondition = new Condition();
+		myUserCondition.setField(userField);
+		myUserCondition.setOperator(PickListOperators.IS);
+		myUserCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
+
+		return myUserCondition;
+	}
 
 	private static Condition getMyTeamCondition() {
 		LookupField groupField = new LookupField();
@@ -2975,6 +3026,81 @@ public class ViewFactory {
 
 		return allView;
 	}
+		
+		private static FacilioView getMyVendors() {
+			
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(getMyVendorsCondition());
+
+			FacilioModule vendorModule = ModuleFactory.getVendorsModule();
+
+			FacilioField createdTime = new FacilioField();
+			createdTime.setName("sysCreatedTime");
+			createdTime.setDataType(FieldType.NUMBER);
+			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setModule(vendorModule);
+
+			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+			FacilioView myVendorView = new FacilioView();
+			myVendorView.setName("myVendors");
+			myVendorView.setDisplayName("My Vendors");
+			myVendorView.setCriteria(criteria);
+			myVendorView.setSortFields(sortFields);
+			myVendorView.setHidden(true);
+
+			return myVendorView;
+		}
+		
+		private static FacilioView getMyVisitorInvites() {
+			
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(getMyVistorInvitesCondition());
+
+			FacilioModule visitorInvitesModule = ModuleFactory.getVisitorInviteModule();
+
+			FacilioField createdTime = new FacilioField();
+			createdTime.setName("sysCreatedTime");
+			createdTime.setDataType(FieldType.NUMBER);
+			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setModule(visitorInvitesModule);
+
+			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+			FacilioView myVisitorInvitesView = new FacilioView();
+			myVisitorInvitesView.setName("myInvites");
+			myVisitorInvitesView.setDisplayName("My Visitor Invites");
+			myVisitorInvitesView.setCriteria(criteria);
+			myVisitorInvitesView.setSortFields(sortFields);
+			myVisitorInvitesView.setHidden(true);
+
+			return myVisitorInvitesView;
+		}
+		
+		private static FacilioView getMyWorkPermits() {
+			
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(getMyWorkPermitsCondition());
+
+			FacilioModule visitorInvitesModule = ModuleFactory.getWorkPermitModule();
+
+			FacilioField createdTime = new FacilioField();
+			createdTime.setName("sysCreatedTime");
+			createdTime.setDataType(FieldType.NUMBER);
+			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setModule(visitorInvitesModule);
+
+			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+			FacilioView myVisitorInvitesView = new FacilioView();
+			myVisitorInvitesView.setName("myWorkpermits");
+			myVisitorInvitesView.setDisplayName("My Work Permits");
+			myVisitorInvitesView.setCriteria(criteria);
+			myVisitorInvitesView.setSortFields(sortFields);
+			myVisitorInvitesView.setHidden(true);
+
+			return myVisitorInvitesView;
+		}
 	
 	private static FacilioView getAllInventry() {
 
