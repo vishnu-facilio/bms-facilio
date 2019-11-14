@@ -178,11 +178,11 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("ML_Log_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("FAHU_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("Chiller_Readings2" , Arrays.asList("ACTUAL_TTIME","TTIME"));
-		tablesContainsDateField.put(ContextNames.ALARM_OCCURRENCE , Arrays.asList("CREATED_TIME","CLEARED_TIME", "ACKNOWLEDGED_TIME"));
-		tablesContainsDateField.put(ContextNames.BASE_EVENT , Arrays.asList("CREATED_TIME"));
-		tablesContainsDateField.put(ContextNames.BASE_ALARM , Arrays.asList("ACKNOWLEDGED_TIME", "LAST_OCCURRED_TIME", "LAST_CLEARED_TIME", "LAST_CREATED_TIME"));
-		tablesContainsDateField.put("basealarmnotes", Arrays.asList("CREATED_TIME"));
-		tablesContainsDateField.put(ContextNames.ML_ANOMALY_ALARM, Arrays.asList("CREATED_TIME"));
+		tablesContainsDateField.put("AlarmOccurrence" , Arrays.asList("CREATED_TIME","CLEARED_TIME", "ACKNOWLEDGED_TIME"));
+		tablesContainsDateField.put("BaseEvent" , Arrays.asList("CREATED_TIME"));
+		tablesContainsDateField.put("BaseAlarm" , Arrays.asList("ACKNOWLEDGED_TIME", "LAST_OCCURRED_TIME", "LAST_CLEARED_TIME", "LAST_CREATED_TIME"));
+		tablesContainsDateField.put("BaseAlarm_Notes", Arrays.asList("CREATED_TIME"));
+		tablesContainsDateField.put("ML_Anomaly_Alarm", Arrays.asList("CREATED_TIME"));
 
 		return tablesContainsDateField;
 		
