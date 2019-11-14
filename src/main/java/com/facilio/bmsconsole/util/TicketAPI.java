@@ -1359,9 +1359,6 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 							}
 						}
 					}
-				
-					associateTenant(ticket);
-				
 				}
 			}
 		} else if(ticket.getAssignedTo() != null || ticket.getAssignmentGroup() != null) {
