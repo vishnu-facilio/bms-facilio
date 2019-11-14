@@ -219,6 +219,12 @@
 		</interceptors>
 
 		<default-interceptor-ref name="defaultInterceptor" />
+		<action name="view" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="viewList">
+			<result name="success" type="json">
+				<param name="includeProperties">views,views\[\d+\],views\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
 			<param name="auth">false</param>
@@ -822,7 +828,13 @@
 			</result>
 		</action>
 	</package>
-	
+	<package name="TenantContacts" namespace="/api/service/v2/contacts"
+		extends="newServicePortalApiV2">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="addContacts" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactsList" />
+	</package>
 	<!-- Tenant apis end -->
 	<!-- end -->
 </struts>

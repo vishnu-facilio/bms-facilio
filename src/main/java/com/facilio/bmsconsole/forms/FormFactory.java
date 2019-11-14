@@ -262,7 +262,7 @@ public class FormFactory {
 		List<FacilioForm> visitorTypeForms = Arrays.asList(getGuestForm(),getEmployeeForm(),getVendorForm());
 		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm());
 		
-		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm());
+		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
 		List<FacilioForm> insuranceForm = Arrays.asList(getInsuranceForm(),getPortalInsuranceForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
@@ -1409,19 +1409,31 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getPortalWorkPermitForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WORK PERMIT");
+		form.setName("default_workpermit_portal");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORKPERMIT));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getWorkPermitFormFields());
+		form.setFormType(FormType.PORTAL);
+		return form;
+	}
+	
 	private static List<FormField> getWorkPermitFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("descritption", FieldDisplayType.TEXTBOX, "Descritption", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTBOX, "Descritption", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("isRecurring", FieldDisplayType.DECISION_BOX, "Is Recurring", Required.OPTIONAL, 3, 2));
+		fields.add(new FormField("recurringInfoId", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
 		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
 		ticketField.setShowField(false);
 		fields.add(ticketField);
-		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendor", 3, 2);
+		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 3, 2);
 		vendorField.setShowField(false);
 		fields.add(vendorField);
-		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 4, 3));
-		fields.add(new FormField("registeredBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",5, 1));
+		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("registeredBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1));
 		return fields;
 	}
 
