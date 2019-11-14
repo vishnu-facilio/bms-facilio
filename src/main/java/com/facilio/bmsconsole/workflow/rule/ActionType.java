@@ -1209,7 +1209,7 @@ public enum ActionType {
 			if (obj != null) {  //&& FacilioProperties.isProduction() add this on commit
 				try {
 					String to = (String) obj.get("to");
-					if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
+					if (to != null && !to.isEmpty()) {
 						List<String> sms = new ArrayList<>();
 						
 						WhatsappUtil.sendMessage(obj);
@@ -1232,7 +1232,7 @@ public enum ActionType {
 			if (obj != null) { //&& FacilioProperties.isProduction() add this on commit
 				try {
 					String to = (String) obj.get("to");
-					if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
+					if (to != null && !to.isEmpty()) {
 						
 						CallUtil.makeCall(obj);
 					}
