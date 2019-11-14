@@ -151,7 +151,9 @@ public class FacilioContextListener implements ServletContextListener {
 			}*/
 
 			try {
-				FacilioFactory.getMessageQueue().start();
+				if (FacilioProperties.isMessageProcessor()) {
+					FacilioFactory.getMessageQueue().start();
+				}
 			} catch (Exception e){
 				LOGGER.info("Exception occurred ", e);
 			}
