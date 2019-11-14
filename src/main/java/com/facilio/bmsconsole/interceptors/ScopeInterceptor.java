@@ -244,7 +244,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 		try {
 			AccountUtil.setReqUri(request.getRequestURI());
             AccountUtil.setRequestParams(request.getParameterMap());
-            if((FacilioProperties.isProduction())){  // make false to intercept
+            if(true){  // make false to intercept
 				return arg0.invoke();
 			} else {
 				AuditData data = null;
