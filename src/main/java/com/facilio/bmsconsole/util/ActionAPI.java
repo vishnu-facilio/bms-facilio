@@ -16,6 +16,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.templates.CallTemplate;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.EMailTemplate;
@@ -24,6 +25,7 @@ import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
+import com.facilio.bmsconsole.templates.WhatsappMessageTemplate;
 import com.facilio.bmsconsole.templates.WorkflowTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -278,6 +280,12 @@ public class ActionAPI {
 							case BULK_SMS_NOTIFICATION:
 								setSMSTemplate(action);
 								break;
+							case MAKE_CALL:
+								setCallTemplate(action);
+								break;
+							case WHATSAPP_MESSAGE:
+								setWhatsappMessageTemplate(action);
+								break;
 							case PUSH_NOTIFICATION:
 								setMobileTemplate(action);
 								break;
@@ -365,6 +373,31 @@ public class ActionAPI {
 		smsTemplate.setType(Type.SMS);
 		action.setTemplate(smsTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), smsTemplate);
+	}
+	
+	
+	private static void setCallTemplate(ActionContext action) {
+		CallTemplate callTemplate = new CallTemplate();
+		String toPhones = action.getTemplateJson().get("to").toString();
+
+		callTemplate.setName((String) action.getTemplateJson().get("name"));
+		callTemplate.setTo(toPhones);
+		callTemplate.setMessage((String) action.getTemplateJson().get("body"));
+		callTemplate.setType(Type.CALL);
+		action.setTemplate(callTemplate);
+		checkAndSetWorkflow(action.getTemplateJson(), callTemplate);
+	}
+	
+	private static void setWhatsappMessageTemplate(ActionContext action) {
+		WhatsappMessageTemplate whatsappMessageTemplate = new WhatsappMessageTemplate();
+		String toPhones = action.getTemplateJson().get("to").toString();
+
+		whatsappMessageTemplate.setName((String) action.getTemplateJson().get("name"));
+		whatsappMessageTemplate.setTo(toPhones);
+		whatsappMessageTemplate.setMessage((String) action.getTemplateJson().get("body"));
+		whatsappMessageTemplate.setType(Type.WHATSAPP);
+		action.setTemplate(whatsappMessageTemplate);
+		checkAndSetWorkflow(action.getTemplateJson(), whatsappMessageTemplate);
 	}
 	
 	private static void setMobileTemplate(ActionContext action) {
