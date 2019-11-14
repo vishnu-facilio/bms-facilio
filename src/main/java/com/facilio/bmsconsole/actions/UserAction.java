@@ -27,6 +27,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
@@ -253,6 +254,7 @@ public class UserAction extends FacilioAction {
 		}
 
 		user.setUserType(UserType.REQUESTER.getValue());
+		user.setAppType(AppType.SERVICE_PORTAL);
 		if(emailVerificationNeeded) {
 			user.setUserVerified(false);
 			user.setInviteAcceptStatus(false);

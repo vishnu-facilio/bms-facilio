@@ -26,11 +26,12 @@ public class AddTenantUserCommand extends FacilioCommand {
 		List<ContactsContext> contacts = (List<ContactsContext>) context.get(FacilioConstants.ContextNames.CONTACTS);
 		if(tenant != null && CollectionUtils.isNotEmpty(contacts)) {
 			for(ContactsContext contact : contacts)	{
+				contact.setTenant(tenant);
+				contact.setContactType(ContactType.TENANT);
+			
 				if(contact.isPortalAccessNeeded()) {
 					ContactsAPI.addUserAsRequester(contact);
 				}
-				contact.setTenant(tenant);
-				contact.setContactType(ContactType.TENANT);
 			
 			}
 			

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.*;
@@ -572,6 +573,7 @@ public class ProcessImportCommand extends FacilioCommand {
 				if(user == null) {
 					user = new User();
 					user.setEmail(value.toString());
+					user.setAppType(AppType.SERVICE_PORTAL);
 					AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false, false);
 				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);

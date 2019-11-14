@@ -99,8 +99,15 @@ public class ContactsAPI {
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
 
+		if(contact.getContactType() == 1) {
+			user.setAppType(2);
+		}
+		else if(contact.getContactType() == 2) {
+			user.setAppType(3);
+		}
 		long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false);
-		contact.setId(userId);
+		user.setId(userId);
+		contact.setRequester(user);
 	}
 	
 	public static int updatePrimaryContact(ContactsContext contact) throws Exception{

@@ -13,6 +13,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -87,10 +88,10 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 				
 				Organization organization = null;
 				if (StringUtils.isNotBlank(currentOrgDomain)) {
-					organization = IAMUtil.getUserBean().getOrgv2(currentOrgDomain, iamAccount.getUser().getUid());
+					organization = IAMUserUtil.getOrg(currentOrgDomain, iamAccount.getUser().getUid());
 				}
 				else {
-					organization = IAMUtil.getUserBean().getDefaultOrgv2(iamAccount.getUser().getUid());
+					organization = IAMUserUtil.getDefaultOrg(iamAccount.getUser().getUid());
 				}
 				iamAccount.setOrg(organization);
 			}

@@ -546,6 +546,7 @@ public class TenantsAPI {
 	public static void addTenantContact(User user, Long tenantId) throws Exception{
 		long orgid = AccountUtil.getCurrentOrg().getOrgId();
 		user.setOrgId(orgid);
+		user.setAppType(AppType.TENANT_PORTAL);
 		if(user.getEmail() == null || user.getEmail().isEmpty()) {
 			user.setEmail(user.getMobile());
 		}
@@ -776,7 +777,7 @@ public class TenantsAPI {
 		user.setEmail(contact.getEmail());
 		user.setPhone(contact.getPhone());
 		user.setName(contact.getName());
-		user.setAppType(AppType.SERVICE_PORTAL);
+		user.setAppType(AppType.TENANT_PORTAL);
 		long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false);
 		contact.setId(userId);
 	}

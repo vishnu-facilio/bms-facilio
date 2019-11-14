@@ -8,6 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class AddContactsAsRequesterCommand extends FacilioCommand{
@@ -19,19 +20,7 @@ public class AddContactsAsRequesterCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(contactsList)) {
 			for(ContactsContext contact : contactsList) {
 				if(contact.isPortalAccessNeeded()) {
-					User user = new User();
-					user.setEmail(contact.getEmail());
-					user.setPhone(contact.getPhone());
-					user.setName(contact.getName());
-					if(contact.getContactType() == 1) {
-						user.setAppType(1);
-					}
-					else if(contact.getContactType() == 2) {
-						user.setAppType(2);
-					}
-					long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false);
-					user.setOuid(userId);
-					contact.setRequester(user);
+					ContactsAPI.addUserAsRequester(contact);
 				}
 			}
 		}

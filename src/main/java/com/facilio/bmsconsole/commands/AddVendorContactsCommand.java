@@ -30,12 +30,12 @@ public class AddVendorContactsCommand extends FacilioCommand{
 				if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
 					contact.setEmail(contact.getPhone());
 				}
-		
+				contact.setVendor(vendor);
+				contact.setContactType(ContactType.VENDOR);
+				
 				if(contact.isPortalAccessNeeded()) {
 					ContactsAPI.addUserAsRequester(contact);
 				}
-				contact.setVendor(vendor);
-				contact.setContactType(ContactType.VENDOR);
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 				List<FacilioField> fields = modBean.getAllFields(module.getName());

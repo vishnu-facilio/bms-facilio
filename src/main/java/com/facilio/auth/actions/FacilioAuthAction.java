@@ -33,6 +33,7 @@ import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
+import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -835,6 +836,7 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		if (anydomain_allowedforsignup || opensignup || whitelisteddomain) {
 			try {
+				user.setAppType(AppType.SERVICE_PORTAL);
 				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true);
 				LOGGER.info("user signup done " + user);
 			} catch (InvocationTargetException ie) {
