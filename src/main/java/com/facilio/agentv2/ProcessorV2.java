@@ -1,9 +1,7 @@
 package com.facilio.agentv2;
 
 import com.facilio.agent.PublishType;
-import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.device.DeviceUtil;
 import com.facilio.agentv2.point.PointsUtil;
@@ -54,9 +52,8 @@ public class ProcessorV2
             LOGGER.info(" processing in processorV2 " + payload);
             String agentName = orgDomainName.trim();
             if (payload.containsKey(PublishType.agent.getValue())) {
-                agentName = payload.remove(PublishType.agent.getValue()).toString().trim();
+                agentName = payload.get(PublishType.agent.getValue()).toString().trim();
             }
-            LOGGER.info(" agent name is " + agentName);
             FacilioAgent agent = au.getFacilioAgent(agentName);
             if (agent == null) {
                 LOGGER.info(" agent is null ");
@@ -65,11 +62,10 @@ public class ProcessorV2
                 if (agentId < 1L) {
                     LOGGER.info(" Error in AgentId generation ");
                 }else {
-                    cU = getControllerUtil(agent.getId());
                     agent.setId(agentId);
                 }
             }
-            LOGGER.info(" agent ID " + agentName + " - " + agent.getId());
+            cU = getControllerUtil(agent.getId());
             if( ! payload.containsKey(AgentConstants.PUBLISH_TYPE)){
                 LOGGER.info("Exception Occurred, "+AgentConstants.PUBLISH_TYPE+" is mandatory in payload "+payload);
             }
@@ -88,7 +84,7 @@ public class ProcessorV2
                     dU.processDevices(agent, payload);
                     break;
                 case DEVICE_POINTS:
-                        Controller controller = getControllerFromAgentPayload(payload, agent.getId());
+                        Controller controller = cU.getControllerFromAgentPayload(payload);
                         if (controller != null) {
                             LOGGER.info(" controller not null and so processing point");
                             PointsUtil pU = new PointsUtil(agent.getId(), controller.getId());
@@ -104,7 +100,7 @@ public class ProcessorV2
                     //processLog(payload, agent.getId(), recordId);
                     break;
                 case TIMESERIES:
-                    Controller controllerTs = getControllerFromAgentPayload(payload,agent.getId());
+                    Controller controllerTs = cU.getControllerFromAgentPayload(payload);
                     if( controllerTs != null){
                         processTimeSeries(payload,controllerTs);
                     }
@@ -127,27 +123,7 @@ public class ProcessorV2
         }
     }
 
-    private Controller getControllerFromAgentPayload(JSONObject payload, long agentId) {
-        if( ! payload.containsKey(AgentConstants.CONTROLLER) ){
-            return null;
-        }
-        String identifier = String.valueOf(payload.get(AgentConstants.CONTROLLER));
-        if (payload.containsKey(AgentConstants.CONTROLLER) && payload.containsKey(AgentConstants.TYPE)) {
-            FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.TYPE)).intValue());
-            if(controllerType != null){
-                return ControllerApiV2.getControllerFromDb(identifier, agentId, controllerType);
-            }else{
-                return ControllerUtilV2.makeCustomController(orgId,agentId,identifier);
-            }
-        }
-        else if (payload.containsKey(AgentConstants.CONTROLLER)){
-                return ControllerUtilV2.makeCustomController(orgId,agentId,identifier);
-        }
-        else {
-            LOGGER.info(" EXveption occurred, Controller detail missing from payload -> " + payload);
-        }
-        return null;
-    }
+
 
     public ControllerUtilV2 getControllerUtil(long agentId){
         ControllerUtilV2 cU;
@@ -156,7 +132,7 @@ public class ProcessorV2
             cU = agentIdControllerUtilMap.get(agentId);
         }else {
             LOGGER.info(" creating new controllerUtil");
-            cU = new ControllerUtilV2(agentId);
+            cU = new ControllerUtilV2(agentId,orgId);
             LOGGER.info(" created new controllerUtil");
             agentIdControllerUtilMap.put(agentId,cU);
         }

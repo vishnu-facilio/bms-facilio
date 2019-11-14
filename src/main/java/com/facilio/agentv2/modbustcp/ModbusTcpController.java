@@ -8,10 +8,15 @@ import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -102,6 +107,11 @@ public class ModbusTcpController extends Controller {
 
     @Override
     public List<Condition> getControllerConditions(String identifier) throws Exception {
-        return null;
+        processIdentifier(identifier);
+        List<Condition> conditions = new ArrayList<>();
+        Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SLAVE_ID), String.valueOf(getSlaveId()), NumberOperators.EQUALS));
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.IP_ADDRESS),getIpAddress(), StringOperators.IS));
+        return conditions;
     }
 }

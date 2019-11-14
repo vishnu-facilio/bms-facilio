@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class AgentUtilV2
@@ -35,22 +34,19 @@ public class AgentUtilV2
     public AgentUtilV2(long orgId, String orgDomainName)  {
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
-        populateAgentContextMap();
+        //populateAgentContextMap();
     }
 
-    private static StackTraceElement[] stackStrace(){
-        return Thread.currentThread().getStackTrace();
-    }
 
     /**
      * This method populates the agents from database and maps them to their name
      */
-    public void populateAgentContextMap() {
+   /* public void populateAgentContextMap() {
             List<FacilioAgent> agentList = AgentApiV2.getAgents();
             LOGGER.info(" getting all agents "+agentList);
             agentList.forEach(agent -> agentMap.put(agent.getName(),agent));
             LOGGER.info("\n-\n-\n- after populating new agents" + agentMap + "\n-\n-\n-");
-    }
+    }*/
 
     /**
      * This method processes the {@link JSONObject} and creates or updates the agent in the database
@@ -59,7 +55,6 @@ public class AgentUtilV2
      * @return {@link Long} 0 if failure
      */
     public long processAgent(JSONObject jsonObject,String agentName) {
-        LOGGER.info(" processing agent " + agentName + " - - " + stackStrace());
         FacilioAgent agent = getFacilioAgent(agentName);
         if(agent==null) {
             try {
@@ -71,9 +66,7 @@ public class AgentUtilV2
             }
         }
         else  {
-            LOGGER.info(" updating new agent " + stackStrace());
             if (updateAgent(agent, jsonObject)) {
-                LOGGER.info(" update success " + stackStrace());
                 return 1;
             }
             return 0;
@@ -191,16 +184,13 @@ public class AgentUtilV2
     }
 
     public FacilioAgent getFacilioAgent(String agentName) {
-        LOGGER.info("getting facilioAgent from agentMap "+stackStrace());
         FacilioAgent agent = agentMap.get(agentName);
         if(agent == null){
-            LOGGER.info("agent is null when getting  from AgentMap" + stackStrace());
             agent = AgentApiV2.getAgent(agentName);
             if( agent != null ){
                 agentMap.put(agentName,agent);
             }
         }
-        LOGGER.info(" final new agent return - - " + agent);
         return agent;
     }
 

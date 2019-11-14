@@ -913,6 +913,12 @@ public class FacilioChainFactory {
 		c.addCommand(new GetAssetRelationCountCommand());
 		return c;
 	}
+
+	public static FacilioChain getControllerModuleName(){
+        FacilioChain c = FacilioChain.getNonTransactionChain();
+        c.addCommand(new SetModuleForSpecialAssetsCommand());
+        return c;
+    }
 	
 	public static FacilioChain getAssetReportCardsChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();

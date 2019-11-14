@@ -83,8 +83,6 @@ public class ControllerMessenger {
                         object.put(AgentConstants.POINTS, MessengerUtil.getPointsData(points));
                         break;
                     //
-
-
                     case SHUTDOWN:
                         break;
                     case PROPERTY:

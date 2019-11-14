@@ -1,6 +1,5 @@
 package com.facilio.agentv2.controller;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.bacnet.BacnetIpController;
@@ -26,19 +25,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.facilio.agentv2.controller.ControllerApiV2.getControllerFromDb;
-
 public class ControllerUtilV2
 {
 
     private static final Logger LOGGER = LogManager.getLogger(ControllerUtilV2.class.getName());
-    private long ogdId;
+    private long orgId;
     private long agentId;
     List<Map<String, Controller>> controllerMapList = new ArrayList<>();
 
 
-    public ControllerUtilV2(long agentId) {
-        this.ogdId = AccountUtil.getCurrentOrg().getOrgId();
+    public ControllerUtilV2(long agentId,long orgId) {
+        this.orgId = orgId;
         this.agentId = agentId;
         loadControllerListMap();
     }
@@ -58,28 +55,27 @@ public class ControllerUtilV2
 
     /**
      *
-     * @param agentId
      * @param controllerIdentifier
      * @param controllerType
      * @return
      */
-    public Controller getController(long agentId, String controllerIdentifier, FacilioControllerType controllerType){
+    public Controller getController( String controllerIdentifier, FacilioControllerType controllerType){
         LOGGER.info(" getting controllers from db");
         // avoids null pointer --  loads the controller map
         if( (controllerMapList.get(controllerType.asInt()) == null) ){
             controllerMapList.get(controllerType.asInt()).putAll(new HashMap<>());
         }
         // map empty
-        if(controllerType == null){
-            return ControllerApiV2.getAllControllersFromDb(agentId).get(controllerIdentifier);
+        if(controllerType == null){ // controller type is null
+            return null;
+            //return ControllerApiV2.getAllControllersFromDb(agentId).get(controllerIdentifier);
         }
-        else if( (controllerMapList.get(controllerType.asInt()).isEmpty()) ){
-            Map<String, Controller> controllers = ControllerApiV2.getControllersFromDb(agentId,controllerType);
+        else if( (controllerMapList.get(controllerType.asInt()).isEmpty()) ){ // map for the controllerType is empty
+            Map<String, Controller> controllers = ControllerApiV2.getControllersFromDb(agentId,controllerType); // get all controller fpr that controllerType
             if(controllers.isEmpty()){
                 return null;
             }
             for (String key : controllers.keySet()) {
-                LOGGER.info(" controller type is "+controllers.get(key).getControllerType());
                     controllerMapList.get(controllers.get(key).getControllerType()).put(key,controllers.get(key));
             }
             return controllerMapList.get(controllerType.asInt()).get(controllerIdentifier);
@@ -88,7 +84,7 @@ public class ControllerUtilV2
                 return controllerMapList.get(controllerType.asInt()).get(controllerIdentifier);
             }
             else {
-                Controller controller = getControllerFromDb(controllerIdentifier,agentId,controllerType);
+                Controller controller = ControllerApiV2.getControllerFromDb(controllerIdentifier,agentId,controllerType);
                 if(controller != null){
                     try {
                         controllerMapList.get(controllerType.asInt()).put(controller.makeIdentifier(),controller);
@@ -103,6 +99,45 @@ public class ControllerUtilV2
         }
     }
 
+
+    public Controller getControllerFromAgentPayload(JSONObject payload) {
+        if (!payload.containsKey(AgentConstants.CONTROLLER)) {
+            return null;
+        }
+        LOGGER.info(" controller map list ");
+        for (Map<String, Controller> controllerMap : controllerMapList) {
+            LOGGER.info(" controllerMap \n"+controllerMap+"\n");
+        }
+        String identifier = String.valueOf(payload.get(AgentConstants.CONTROLLER));
+
+        if (payload.containsKey(AgentConstants.CONTROLLER) && payload.containsKey(AgentConstants.TYPE)) {
+            FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.TYPE)).intValue());
+
+            if (controllerType != null) {
+                LOGGER.info(" getControllerFromPayload "+controllerMapList.get(controllerType.asInt()));
+                return getController(identifier, controllerType);
+            }
+            // if controllerType is null from the information - then make it custom
+            else {
+                LOGGER.info(" getControllerFromPayload "+controllerMapList.get(controllerType.asInt()));
+                Controller customController = ControllerUtilV2.makeCustomController(orgId, agentId, identifier);
+                controllerMapList.get(FacilioControllerType.CUSTOM.asInt()).put(customController.getName(),customController);
+                return customController;
+            }
+        }
+        // if payload isn't having controllerType information- make it custom.
+        else if (payload.containsKey(AgentConstants.CONTROLLER)) {
+            LOGGER.info(" getControllerFromPayload "+controllerMapList.get(FacilioControllerType.CUSTOM.asInt()));
+            Controller customController = ControllerUtilV2.makeCustomController(orgId, agentId, identifier);
+            controllerMapList.get(FacilioControllerType.CUSTOM.asInt()).put(customController.getName(),customController);
+            return customController;
+        }
+
+        else {
+            LOGGER.info(" EXveption occurred, Controller detail missing from payload -> " + payload);
+        }
+        return null;
+    }
 
     // pakka
 
@@ -224,7 +259,9 @@ public class ControllerUtilV2
 
 public static Controller makeCustomController(long orgId, long agentId, String name ){
     CustomController controller;
-    controller = (CustomController) ControllerApiV2.getControllerFromDb(name,agentId,FacilioControllerType.CUSTOM);
+
+    controller = (CustomController) ControllerApiV2.getControllerFromDb(name,agentId,FacilioControllerType.CUSTOM); // check if a custom controller is present already
+
     if(controller == null){
         controller = new CustomController();
         controller.setOrgId(orgId);

@@ -21,18 +21,18 @@ public class ModbusTcpPoint extends Point {
     @Deprecated
     private ModbusTcpPoint() { }
 
-    private int offset = -1;
+    private int registerNumber = -1;
     private int functionCode = -1;
-    private Integer modbusDatatype = -1;
+    private Integer modbusDataType = -1;
 
-    public int getOffset() { return offset; }
-    public void setOffset(int offset) { this.offset = offset; }
+    public int getRegisterNumber() { return registerNumber; }
+    public void setRegisterNumber(int registerNumber) { this.registerNumber = registerNumber; }
 
     public int getFunctionCode() { return functionCode; }
     public void setFunctionCode(int functionCode) { this.functionCode = functionCode; }
 
-    public Integer getModbusDatatype() { return modbusDatatype; }
-    public void setModbusDatatype(int modbusDatatype) { this.modbusDatatype = modbusDatatype; }
+    public Integer getModbusDataType() { return modbusDataType; }
+    public void setModbusDataType(int modbusDataType) { this.modbusDataType = modbusDataType; }
 
     @Override
     public FacilioControllerType getControllerType() {
@@ -68,9 +68,9 @@ public class ModbusTcpPoint extends Point {
         JSONObject object = new JSONObject();
         object.put(AgentConstants.ID,getId());
         object.put(AgentConstants.CONTROLLER_ID,getControllerId());
-        object.put(AgentConstants.REGISTER_NUMBER,getOffset());
+        object.put(AgentConstants.REGISTER_NUMBER, getRegisterNumber());
         object.put(AgentConstants.FUNCTION_CODE,getFunctionCode());
-        object.put(AgentConstants.MODBUS_DATA_TYPE,getModbusDatatype());
+        object.put(AgentConstants.MODBUS_DATA_TYPE, getModbusDataType());
         return object;
     }
 }

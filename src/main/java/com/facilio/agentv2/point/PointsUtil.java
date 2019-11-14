@@ -53,7 +53,6 @@ public class PointsUtil
                     Point point = PointsAPI.getPointFromJSON(pointJSON,agentId,controllerId);
                     if(point != null){
                         points.add(point);
-                        LOGGER.info(" point generated " + point.toJSON());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -61,7 +60,6 @@ public class PointsUtil
             }
             LOGGER.info(" points processed "+points.size());
             for (Point point : points) {
-                LOGGER.info("point to add to db point -> " + point.toJSON());
                 boolean pointEntry = PointsAPI.addPoint(point);
                 LOGGER.info("point add status -> "+pointEntry);;
             }

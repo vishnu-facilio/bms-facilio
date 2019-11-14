@@ -1,32 +1,15 @@
 
 package com.facilio.bmsconsole.interceptors;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.facilio.audit.AuditData;
-import com.facilio.audit.DBAudit;
-import com.facilio.audit.FacilioAudit;
-import com.facilio.server.ServerInfo;
-import com.opensymphony.xwork2.ActionProxy;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.dispatcher.Parameter;
-
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.audit.AuditData;
+import com.facilio.audit.DBAudit;
+import com.facilio.audit.FacilioAudit;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
@@ -36,10 +19,21 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.screen.context.RemoteScreenContext;
+import com.facilio.server.ServerInfo;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 public class ScopeInterceptor extends AbstractInterceptor {
 
@@ -251,7 +245,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 		try {
 			AccountUtil.setReqUri(request.getRequestURI());
             AccountUtil.setRequestParams(request.getParameterMap());
-			if(true){
+            if((FacilioProperties.isProduction())){  // make false to intercept
 				result = arg0.invoke();
 			} else {
 				AuditData data = null;

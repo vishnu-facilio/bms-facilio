@@ -33,6 +33,10 @@ public class DeviceUtil {
                 JSONObject deviceJSON = (JSONObject) deviceObject;
                 deviceJSON.put(AgentConstants.AGENT_ID, agent.getId());
                 Device device = new Device(AccountUtil.getCurrentOrg().getOrgId(), agent.getId());
+                if( agent.getSiteId() == null ){
+                    LOGGER.info(" Exception occurred. Agent is missing its siteId,skipping device processing.");
+                    continue;
+                }
                 device.setSiteId(agent.getSiteId());
                 if (deviceJSON.containsKey(AgentConstants.IDENTIFIER)) {
                     device.setName(String.valueOf(deviceJSON.get(AgentConstants.IDENTIFIER)));

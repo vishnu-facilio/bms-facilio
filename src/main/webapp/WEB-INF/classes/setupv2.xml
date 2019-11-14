@@ -242,6 +242,8 @@
 		<action name="getUsingId"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getControllerUsingId">
 		</action>
 
+		<action name="getUsingIdType"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getControllerUsingIdType">
+		</action>
 
 	</package>
 

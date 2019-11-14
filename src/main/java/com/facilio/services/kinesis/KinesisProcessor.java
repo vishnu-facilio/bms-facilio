@@ -19,9 +19,7 @@ import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
-import com.facilio.services.kinesis.ErrorDataProducer;
 import com.facilio.util.AckUtil;
-import org.apache.commons.chain.Chain;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -166,9 +164,9 @@ public class KinesisProcessor implements IRecordProcessor {
                 }
                 //Temp fix  - bug: Publish_Type wrongly set to "agents"
                 PublishType publishType = PublishType.valueOf(dataType);
-                String agentName = orgDomainName;
+                String agentName = orgDomainName; // trim missing
                 if ( payLoad.containsKey(PublishType.agent.getValue())) {
-                    agentName = (String)payLoad.remove(PublishType.agent.getValue());
+                    agentName = (String)payLoad.remove(PublishType.agent.getValue()); // trim missing
                 }
 
                 String deviceId = orgDomainName;
@@ -192,7 +190,7 @@ public class KinesisProcessor implements IRecordProcessor {
                     }
                     agent.setId(agentId);
                 }
-                if( agent != null) {
+                if( agent != null) { // no metrics block there
                     agentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
                     String agentType = agent.getAgentType();
                     try {

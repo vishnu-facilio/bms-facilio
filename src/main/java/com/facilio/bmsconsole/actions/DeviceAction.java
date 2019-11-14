@@ -14,6 +14,7 @@ import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.modules.FieldUtil;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
@@ -308,9 +309,24 @@ public class DeviceAction extends ActionSupport
         return SUCCESS;
     }
 
+    public String getControllerUsingIdType(){
+		if( checkValue(getControllerId())  && (getControllerType()>0)){
+			Controller controller = ControllerApiV2.getControllerIdType(getControllerId(), FacilioControllerType.valueOf(getControllerType()));
+			if( controller != null ){
+				try {
+					setResult(AgentConstants.DATA, FieldUtil.getAsJSON(controller));
+				} catch (Exception e) {
+					LOGGER.info(" Exception occurred ",e);
+				}
+			}
+		}
+		return SUCCESS;
+	}
+
 	public String getControllerUsingId(){
 		if(checkValue(getControllerId())){
 			Controller controller = ControllerApiV2.getControllerFromDb(getControllerId());
+			LOGGER.info(" got controller ");
 			if(controller != null){
 				setResult(AgentConstants.DATA,controller.toJSON());
 				return SUCCESS;
@@ -319,6 +335,8 @@ public class DeviceAction extends ActionSupport
 		setResult(AgentConstants.DATA,new JSONObject());
 	return SUCCESS;
 	}
+
+
 
 	boolean checkValue(Long value){
 		return (value != null) && (value >  0);

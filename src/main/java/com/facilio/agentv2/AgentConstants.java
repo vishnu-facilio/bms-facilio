@@ -121,4 +121,5 @@ public class AgentConstants
     public static final String COMPLETED_TIME = "completedTime";
     public static final String MSG_DATA = "msgData";
     public static final String FIELD_DEIVICES = "fieldDevices";
+    public static final String MODULE_NAME = "moduleName";
 }
