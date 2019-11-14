@@ -279,5 +279,16 @@ public class VisitorInviteAction extends FacilioAction{
 		return SUCCESS;
 		
 	}
+	
+	public String vistorInviteRelContext() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getVisitorInviteRelContextChain();
+		chain.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+		chain.getContext().put(FacilioConstants.ContextNames.VISITOR_INVITE_ID, inviteId);
+		chain.getContext().put(FacilioConstants.ContextNames.VISITOR_ID, visitorId);
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.VISITOR_INVITE_REL, chain.getContext().get(FacilioConstants.ContextNames.VISITOR_INVITE_REL));
+		
+		return SUCCESS;
+	}
 
 }

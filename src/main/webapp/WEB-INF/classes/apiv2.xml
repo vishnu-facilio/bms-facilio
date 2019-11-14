@@ -4494,6 +4494,8 @@
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteInvitees" />
 		<action name="preRegister"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="preRegisterVisitors" />
+		<action name="getVisitorInviteRel"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="vistorInviteRelContext" />
 		<action name="qrScanVisitor"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="qrScanVisitor" />				
 	</package>

@@ -1599,6 +1599,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetVisitorAndInviteForQrScanCommand());
 		return c;
 	}
+	
+	public static FacilioChain getVisitorInviteRelContextChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetVisitorInviteRelContextCommand());
+		return c;
+	}
 
 	public static FacilioChain getKPIViewListChain() {
 		FacilioChain chain = getDefaultChain();
