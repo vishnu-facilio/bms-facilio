@@ -1611,7 +1611,10 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForVendors());
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new AddVendorContactsCommand());
-			
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			return c;
 		}
 		
@@ -1619,6 +1622,11 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVendors());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new UpdateStateForModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			
 			return c;
 		}
 		
@@ -3942,10 +3950,10 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForWorkPermit());
 		c.addCommand(new ComputeScheduleForWorkPermitCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
-//		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
-//		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
-//		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-//		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 		return c;
 	}
 
@@ -3954,10 +3962,10 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForWorkPermit());
 		c.addCommand(new ComputeScheduleForWorkPermitCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
-//		c.addCommand(new UpdateStateForModuleDataCommand());
-//		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
-//		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
-//		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		
 		return c;
 	}
