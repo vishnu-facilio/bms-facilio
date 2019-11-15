@@ -767,6 +767,8 @@
 	<!-- Tenant apis start -->
 	<package name="TenantVisitorInvite" namespace="/api/service/v2/visitorinvite"
 		extends="newServicePortalApiV2">
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="updateVisitorInvites" />
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
 		<action name="preRegister"
