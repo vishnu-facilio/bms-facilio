@@ -219,6 +219,12 @@
 		</interceptors>
 
 		<default-interceptor-ref name="defaultInterceptor" />
+		<action name="getSite" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getMySiteList">
+		</action>
+		<action name="getGroups" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getGroups">
+		</action>
 		<action name="view" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="viewList">
 			<result name="success" type="json">
