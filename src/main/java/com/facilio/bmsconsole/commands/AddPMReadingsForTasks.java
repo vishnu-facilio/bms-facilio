@@ -16,6 +16,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
@@ -30,6 +31,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 
@@ -173,7 +175,40 @@ public class AddPMReadingsForTasks extends FacilioCommand {
 		String displayName = StringUtils.abbreviate(task.getSubject(), MAX_LENGTH_OF_FIELD_NAME);
 		FacilioField field = modBean.getField(task.getReadingFieldId());
 		task.setReadingField(field);
-		if (!field.getDisplayName().equals(displayName)) {
+		boolean fieldNameChanged = false;
+		if (task.getInputTypeEnum() != null && task.getInputTypeEnum() == InputType.RADIO && task.getOptions() != null && field instanceof EnumField) {
+			EnumField enumField = (EnumField) field;
+			List<EnumFieldValue> enumValues = new ArrayList<>(); 
+			int existingLength = enumField.getValues().size();
+			boolean valuesChanged = false;
+			for(int i = 0; i < task.getOptions().size(); i++) {
+				String value = task.getOptions().get(i);
+				if (existingLength >= i+1) {
+					EnumFieldValue existingFieldVal = enumField.getValues().get(i);
+					if (!value.equals(existingFieldVal.getValue())) {
+						existingFieldVal.setValue(value);
+						valuesChanged = true;
+					}
+					enumValues.add(existingFieldVal);
+				}
+				else {
+					valuesChanged = true;
+					enumValues.add(new EnumFieldValue(i+1, value, i+1, true));
+				}
+			}
+			
+			if (valuesChanged) {
+				EnumField updateField = new EnumField();
+				updateField.setFieldId(task.getReadingFieldId());
+				updateField.setValues(enumValues);
+				updateField.setDisplayName(displayName);
+				modBean.updateField(updateField);
+				enumField.setValues(updateField.getValues());
+				enumField.setDisplayName(displayName);
+				fieldNameChanged = true;
+			}
+		}
+		if (!fieldNameChanged && !field.getDisplayName().equals(displayName)) {
 			FacilioField updateField = new FacilioField();
 			updateField.setFieldId(task.getReadingFieldId());
 			updateField.setDisplayName(displayName);
