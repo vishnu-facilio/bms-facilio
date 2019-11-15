@@ -68,6 +68,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import org.json.simple.JSONObject;
 
 ;
 
@@ -986,6 +987,12 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public String generatePermalinkForURL(String url, User user) throws Exception {
 		String token = IAMUserUtil.generatePermalinkForUrl(url, user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
+		return token;
+	}
+
+	@Override
+	public String generatePermalink(User user, JSONObject sessionInfo) throws Exception {
+		String token = IAMUserUtil.generatePermalink(user.getUid(), AccountUtil.getCurrentOrg().getOrgId(), sessionInfo);
 		return token;
 	}
 

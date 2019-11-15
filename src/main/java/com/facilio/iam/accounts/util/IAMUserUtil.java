@@ -13,6 +13,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
+import org.json.simple.JSONObject;
 
 public class IAMUserUtil {
 
@@ -114,6 +115,10 @@ public class IAMUserUtil {
 	
 	public static String generatePermalinkForUrl(String url, long uId, long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generatePermalinkForURL(url, uId, orgId));
+	}
+
+	public static String generatePermalink(long uId, long orgId, JSONObject sessionInfo) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().generatePermalinkForURL(uId, orgId, sessionInfo));
 	}
 	
 	public static boolean verifyPermalinkForUrl(String token, List<String> urls) throws Exception {

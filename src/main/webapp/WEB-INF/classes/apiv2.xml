@@ -342,6 +342,16 @@
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="viewStateTransition" />
 	</package>
+	
+	<package name="automation" namespace="/api/v2/automation" extends="v2Api">
+		<action name="module"
+				class="com.facilio.bmsconsole.actions.ModuleAction" method="automationModules" />
+	</package>
+	
+	<package name="permalinkToken" namespace="/api/v2/permalink" extends="v2Api">
+		<action name="details"
+				class="com.facilio.bmsconsole.actions.AccountsAction" method="details" />
+	</package>
 
 	<package name="shift" namespace="/api/v2/shift" extends="v2Api">
 		<action name="add"

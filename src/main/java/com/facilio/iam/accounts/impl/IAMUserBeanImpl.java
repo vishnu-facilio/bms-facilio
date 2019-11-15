@@ -759,17 +759,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 //		}
 		return user;
 	}
-	
+
 	@Override
-	public String generatePermalinkForURL(String url, long uid, long orgId) throws Exception {
-		
+	public String generatePermalinkForURL(long uid, long orgId, JSONObject sessionInfo) throws Exception {
 		Organization org = IAMUtil.getOrgBean().getOrgv2(orgId);
 		String tokenKey = orgId + "-" + uid ;
 		String jwt = createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000);
-		
-		JSONObject sessionInfo = new JSONObject();
-		sessionInfo.put("allowUrls", url);
-		
+
 		List<FacilioField> fields = IAMAccountConstants.getUserSessionFields();
 
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -787,8 +783,17 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		long sessionId = (Long) props.get("id");
-		
+
 		return jwt;
+	}
+
+	@Override
+	public String generatePermalinkForURL(String url, long uid, long orgId) throws Exception {
+
+		JSONObject sessionInfo = new JSONObject();
+		sessionInfo.put("allowUrls", url);
+
+		return generatePermalinkForURL(uid, orgId, sessionInfo);
 	}
     
 	@Override

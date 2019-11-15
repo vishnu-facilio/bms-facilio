@@ -9,6 +9,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.fields.FacilioField;
+import org.json.simple.JSONObject;
 
 public interface IAMUserBean {
 	
@@ -76,6 +77,8 @@ public interface IAMUserBean {
 	public IAMUser getFacilioUser(String email, String portalDomain) throws Exception;
 	
 	public String generatePermalinkForURL(String url, long uid, long orgId) throws Exception;
+
+	public String generatePermalinkForURL(long uid, long orgId, JSONObject sessionInfo) throws Exception;
 	    
 	public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
 

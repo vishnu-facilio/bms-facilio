@@ -48,6 +48,15 @@ public class ModuleAction extends FacilioAction {
 		setModuleId(module.getModuleId());
 		return SUCCESS;
 	}
+
+	public String automationModules() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getAutomationModules();
+		FacilioContext context = chain.getContext();
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.MODULE_LIST, context.get(FacilioConstants.ContextNames.MODULE_LIST));
+		return SUCCESS;
+	}
 	
 	
 	public String v2RecordsDuplication() throws Exception {

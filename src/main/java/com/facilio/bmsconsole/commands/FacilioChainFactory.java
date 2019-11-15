@@ -2088,6 +2088,11 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		return c;
 	}
-	
-	
+
+
+	public static FacilioChain getPermaLinkDetailsChain() {
+		FacilioChain chain = FacilioChain.getTransactionChain();
+		chain.addCommand(new GetPermalinkDetailsCommand());
+		return chain;
+	}
 }

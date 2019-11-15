@@ -12,6 +12,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.db.criteria.Criteria;
+import org.json.simple.JSONObject;
 
 public interface UserBean {
 	
@@ -74,6 +75,8 @@ public interface UserBean {
     public User getPortalUser(long uid) throws Exception;
     
     public String generatePermalinkForURL(String url, User user) throws Exception;
+
+    public String generatePermalink(User user, JSONObject sessionInfo) throws Exception;
     
     public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
     

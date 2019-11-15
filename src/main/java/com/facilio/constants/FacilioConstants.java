@@ -231,7 +231,9 @@ public class FacilioConstants {
 		public static final String PERMALINK_TOKEN_FOR_URL = "permalinkTokenForUrl";
 		public static final String USER_EMAIL = "userEmail";
 		public static final String ADMIN_USER_EMAIL = "email";
-		
+		public static final String SESSION = "session";
+		public static final String TOKEN = "token";
+
 		
 		public static final String TEMPLATE_ID = "templateId";
 		public static final String TEMPLATE_TYPE = "templateType";
