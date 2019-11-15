@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.io.File;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -123,5 +124,14 @@ public class InsuranceContext extends ModuleBaseWithCustomFields{
 		this.insuranceContentType = insuranceContentType;
 	}
 
+	private User addedBy;
+	public User getAddedBy() {
+		return addedBy;
+	}
+	public void setAddedBy(User addedBy) {
+		this.addedBy = addedBy;
+	}
+	
+	
 	
 }

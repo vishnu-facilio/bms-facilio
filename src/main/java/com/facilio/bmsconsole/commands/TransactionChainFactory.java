@@ -3909,6 +3909,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addInsurancesChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForInsurance());
+		c.addCommand(new AssociateVendorToInsuranceFromRequesterCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		return c;
 	}
