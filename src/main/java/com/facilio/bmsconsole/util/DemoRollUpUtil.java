@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.constants.FacilioConstants.ContextNames;
-
 public class DemoRollUpUtil {
 
 	public static final Map<String, List<String>> TABLES_WITH_COLUMN = Collections.unmodifiableMap(dateFieldModified());
@@ -182,7 +180,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("BaseEvent" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("BaseAlarm" , Arrays.asList("ACKNOWLEDGED_TIME", "LAST_OCCURRED_TIME", "LAST_CLEARED_TIME", "LAST_CREATED_TIME"));
 		tablesContainsDateField.put("BaseAlarm_Notes", Arrays.asList("CREATED_TIME"));
-		tablesContainsDateField.put("ML_Anomaly_Alarm", Arrays.asList("CREATED_TIME"));
+		tablesContainsDateField.put("ML_Anomaly_Alarm", Arrays.asList("READING_TIME"));
 
 		return tablesContainsDateField;
 		
