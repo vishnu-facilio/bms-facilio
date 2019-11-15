@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -27,8 +28,19 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			for(VisitorLoggingContext vL : visitorLogs) {
-				if(vL.getVisitor() != null && vL.getVisitor().getId() > 0 && VisitorManagementAPI.getVisitorLogging(vL.getVisitor().getId(), true) != null){
-					throw new IllegalArgumentException("This visitor has an active record already. Kindly Checkout and proceed to CheckIn");
+				if(vL.getVisitor() != null && vL.getVisitor().getId() > 0){
+					VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLogging(vL.getVisitor().getId(), true);
+					if(vLog != null) {
+						FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
+						VisitorManagementAPI.checkOutVisitorLogging(vL.getVisitor().getPhone(), c.getContext());
+						if(c.getContext().get("visitorLogging") != null) {
+							c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get("nextTransitionId"));
+							VisitorLoggingContext visitorLoggingContext = (VisitorLoggingContext) c.getContext().get("visitorLogging");
+							c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLoggingContext));
+							c.execute();
+						}
+					}
+					//throw new IllegalArgumentException("This visitor has an active record already. Kindly Checkout and proceed to CheckIn");
 				}
 				if(vL.getVisitor() != null && vL.getVisitor().getId() <= 0) {
 					RecordAPI.addRecord(true, Collections.singletonList(vL.getVisitor()) , module, fields);
