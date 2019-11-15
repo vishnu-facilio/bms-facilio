@@ -7,6 +7,7 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import org.apache.log4j.LogManager;
@@ -29,11 +30,9 @@ public class DeleteInstantJobQueue extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
 
-        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                .table(TABLE_NAME).andCondition(CriteriaAPI.getCondition(FIELD_MAP.get("deletedTime"),deleteCondition,CommonOperators.IS_NOT_EMPTY));
-        LOGGER.info("###############FacilioInstantJobQueue ");
+
         try{
-            int count = builder.delete();
+            int count =  FacilioService.runAsServiceWihReturn(() ->deleteQueue());
             LOGGER.info("FacilioInstantJobQueue deleted queue count is  : "+count);
         }catch(Exception e){
             LOGGER.info("Exception occurred in FacilioInstantJob deletedJob  :  ",e);
@@ -50,5 +49,10 @@ public class DeleteInstantJobQueue extends FacilioJob {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(FieldFactory.getField("deletedTime", "DELETED_TIME", FieldType.DATE_TIME));
         return fields;
+    }
+    private static  int deleteQueue() throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(TABLE_NAME).andCondition(CriteriaAPI.getCondition(FIELD_MAP.get("deletedTime"),deleteCondition, CommonOperators.IS_NOT_EMPTY));
+        return builder.delete();
     }
 }
