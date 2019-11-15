@@ -929,14 +929,16 @@ public class ReportFactoryFields {
 			
 			
 		}
-		else if(module.equals("alarm") || module.equals("alarmoccurrence")) {
+		else if(module.equals("alarm")) {
 			metricFields.add(ReportFactory.getReportField(Alarm.FIRST_RESPONSE_TIME_COL));
 			metricFields.add(ReportFactory.getReportField(Alarm.ALARM_DURATION_COL));
+		}
+		else if(module.equals("alarmoccurrence")) {
+			metricFields.add(ReportFactory.getReportField(Alarm.NEW_ALARM_DURATION_COL));
+			metricFields.add(ReportFactory.getReportField(Alarm.NEW_FIRST_RESPONSE_TIME_COL));
+			List<FacilioField> dimensionFields = dimensionFieldMap.get(module);
+			dimensionFields.add(ReportFactory.getReportField(Alarm.WO_ID));
 			
-			if(module.equals("alarmoccurrence")) {
-				List<FacilioField> dimensionFields = dimensionFieldMap.get(module);
-				dimensionFields.add(ReportFactory.getReportField(Alarm.WO_ID));
-			}
 		}
 		
 		fieldsObject.put("metrics", metricFields);
