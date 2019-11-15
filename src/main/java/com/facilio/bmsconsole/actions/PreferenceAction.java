@@ -50,14 +50,17 @@ public class PreferenceAction extends FacilioAction {
 	public void setPreferenceId(long preferenceId) {
 		this.preferenceId = preferenceId;
 	}
-	private boolean isModuleSpecific;
+	private Boolean fetchModuleSpecific;
+	public Boolean getFetchModuleSpecific() {
+		if (fetchModuleSpecific == null) {
+			return false;
+		}
+		return fetchModuleSpecific;
+	}
+	public void setfetchModuleSpecific(Boolean fetchModuleSpecific) {
+		this.fetchModuleSpecific = fetchModuleSpecific;
+	}
 	
-	public boolean isModuleSpecific() {
-		return isModuleSpecific;
-	}
-	public void setModuleSpecific(boolean isModuleSpecific) {
-		this.isModuleSpecific = isModuleSpecific;
-	}
 	public String enablePreference() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PREFERENCE_VALUE_LIST, getValue());
@@ -89,7 +92,7 @@ public class PreferenceAction extends FacilioAction {
 	public String getAllPreferences() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-		context.put(FacilioConstants.ContextNames.MODULE_SPECIFIC, isModuleSpecific());
+		context.put(FacilioConstants.ContextNames.MODULE_SPECIFIC, getFetchModuleSpecific());
 		
 		FacilioChain chain = TransactionChainFactory.getAllPreferences();
 		chain.execute(context);

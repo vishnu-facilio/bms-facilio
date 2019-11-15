@@ -37,7 +37,7 @@ public class EnablePreferenceCommand extends FacilioCommand {
 			preference = PreferenceFactory.getModulePreference(moduleName, name);
 		}
 		if (preference != null) {
-			preference.subsituteAndEnable(map, recordId, module.getModuleId());
+			preference.subsituteAndEnable(map, recordId > 0 ? recordId : -1, module.getModuleId());
 		}
 		else {
 			throw new IllegalArgumentException("Invalid preference configuration");

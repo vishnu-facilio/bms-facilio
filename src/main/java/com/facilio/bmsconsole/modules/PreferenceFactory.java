@@ -10,6 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.context.Preference;
 import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.bmsconsole.util.InventoryApi;
+import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class PreferenceFactory {
@@ -33,6 +34,7 @@ public class PreferenceFactory {
 	private static void initializeModuleMap() {
 		
 	//	modulePrefMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModulePrefList());
+		modulePrefMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, getVisitorLogModulePrefList());
 	}
 	
 	public static List<Preference> getAllPreferencesForModuleRecord(String moduleName) {
@@ -82,6 +84,33 @@ public class PreferenceFactory {
 		storeRoomPreference.add(InventoryApi.getStoreRoomOutOfStockNotificationPref());
 		storeRoomPreference.add(InventoryApi.getStoreRoomMinQtyNotificationPref());
 		return storeRoomPreference;
+	}
+	
+	private static List<Preference> getVisitorLogModulePrefList() {
+		
+		List<Preference> visitorLogPreferences = new ArrayList<Preference>();
+		
+		visitorLogPreferences.add(VisitorManagementAPI.getHostMailNotificationsPref());
+		//visitorLogPreferences.add(VisitorManagementAPI.getHostSmsNotificationsPref());
+		//visitorLogPreferences.add(VisitorManagementAPI.getHostWappNotificationsPref());
+		
+		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeMailNotificationsPref());
+		//visitorLogPreferences.add(VisitorManagementAPI.getWelcomeSmsNotificationsPref());
+		//visitorLogPreferences.add(VisitorManagementAPI.getWelcomeWappNotificationsPref());
+		
+		visitorLogPreferences.add(VisitorManagementAPI.getThanksMailNotificationsPref());
+		//visitorLogPreferences.add(VisitorManagementAPI.getThanksSmsNotificationsPref());
+		//visitorLogPreferences.add(VisitorManagementAPI.getThanksWappNotificationsPref());
+		
+		visitorLogPreferences.add(VisitorManagementAPI.getInviteMailNotificationsPref());
+		//visitorLogPreferences.add(VisitorManagementAPI.getInviteSMSNotificationsPref());
+		//visitorLogPreferences.add(VisitorManagementAPI.getInviteWappNotificationsPref());
+		
+		visitorLogPreferences.add(VisitorManagementAPI.getApprovalMailNotificationsPref());
+		//visitorLogPreferences.add(VisitorManagementAPI.getApprovalSMSNotificationsPref());
+		//visitorLogPreferences.add(VisitorManagementAPI.getApprovalWappNotificationsPref());
+		
+		return visitorLogPreferences;
 	}
 
 }

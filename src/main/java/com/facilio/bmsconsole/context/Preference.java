@@ -6,8 +6,9 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 
 public abstract class Preference {
 	
-	public Preference(String name, String displayName, FacilioForm form) {
+	public Preference(String name, String displayName, FacilioForm form, String desc) {
 		this.name = name;
+		this.description = desc;
 		this.form = form;
 		this.displayName = displayName;
 	}
@@ -18,6 +19,15 @@ public abstract class Preference {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	private String description;
+	
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	private FacilioForm form;

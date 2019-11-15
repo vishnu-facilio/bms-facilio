@@ -174,7 +174,7 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		form.setSections(sections);
 		form.setFields(fields);
 		form.setLabelPosition(LabelPosition.TOP);
-		return new Preference("outOfStockNotification", "Out Of Stock Notifications", form) {
+		return new Preference("outOfStockNotification", "Out Of Stock Notifications", form, "Out Of Stock Notifications") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				Long ruleId1 = saveItemOutOfStockPrefs(map, recordId);
@@ -207,7 +207,7 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		form.setSections(sections);
 		form.setFields(fields);
 		form.setLabelPosition(LabelPosition.TOP);
-		return new Preference("minQtyNotification", "Minimum Quantity Notifications", form) {
+		return new Preference("minQtyNotification", "Minimum Quantity Notifications", form, "Minimum Quantity Notifications") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				Long ruleId1 = saveItemMinQtyPrefs(map, recordId);

@@ -419,7 +419,7 @@ public class ContractsAPI {
 		form.setSections(sections);
 		form.setFields(fields);
 		form.setLabelPosition(LabelPosition.TOP);
-		return new Preference("expireDateNotification", "Expiry Date Notifications", form) {
+		return new Preference("expireDateNotification", "Expiry Date Notifications", form, "Expiry Date Notifications") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -455,7 +455,7 @@ public class ContractsAPI {
 		form.setSections(sections);
 		form.setFields(fields);
 		form.setLabelPosition(LabelPosition.TOP);
-		return new Preference("renewalDateNotification", "Renewal Date Notifications", form) {
+		return new Preference("renewalDateNotification", "Renewal Date Notifications", form, "Renewal Date Notifications") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -491,7 +491,7 @@ public class ContractsAPI {
 		form.setSections(sections);
 		form.setFields(fields);
 		form.setLabelPosition(LabelPosition.TOP);
-		return new Preference("paymentNotification", "Payment Notifications", form) {
+		return new Preference("paymentNotification", "Payment Notifications", form, "Payment Notifications") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

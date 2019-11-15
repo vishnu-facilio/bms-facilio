@@ -1171,5 +1171,96 @@
 				type="String" />
 		</workflow>
 	</template>
-	
+		<template id="102">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.name"
+				type="String" />
+				<parameter name="visitorlogging.visitor.email"
+				type="String" />
+			<parameter name="visitorlogging.visitor.phone"
+				type="String" />
+			<parameter name="visitorlogging.visitor.checkInTimeString"
+				type="String" />
+			<parameter name="visitorlogging.host.name"
+				type="String" />
+			<parameter name="visitorlogging.host.email"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="103">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.name"
+				type="String" />
+				<parameter name="visitorlogging.visitor.email"
+				type="String" />
+			<parameter name="visitorlogging.visitor.phone"
+				type="String" />
+			<parameter name="visitorlogging.visitor.checkInTimeString"
+				type="String" />
+			<parameter name="visitorlogging.host.name"
+				type="String" />
+			<parameter name="visitorlogging.host.email"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="104">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.name"
+				type="String" />
+				<parameter name="visitorlogging.visitor.email"
+				type="String" />
+			<parameter name="visitorlogging.visitor.phone"
+				type="String" />
+			<parameter name="visitorlogging.visitor.checkInTimeString"
+				type="String" />
+			<parameter name="visitorlogging.host.name"
+				type="String" />
+			<parameter name="visitorlogging.host.email"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="105">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorinviterel.inviteId.host.name"
+				type="String" />
+			<parameter name="visitorinviterel.inviteId.expectedStartTime"
+				type="String" />
+			<parameter name="visitorinviterel.inviteId.expectedStartTime"
+				type="String" />
+			<parameter name="visitorinviterel.qrUrl"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="106">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.name"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="107">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.host.name"
+				type="String" />
+			<parameter name="visitorlogging.checkInTimeString"
+				type="String" />
+		</workflow>
+	</template>
 </workflows>

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -47,8 +48,10 @@ public class AddEnabledPreferenceMetaCommand extends FacilioCommand{
 					preferenceMeta.setRecordId((Long)context.get(FacilioConstants.ContextNames.RECORD_ID));
 				}
 				Map<String, Object> map = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PREFERENCE_VALUE_LIST);
-				JSONObject jObj = FieldUtil.getAsJSON(map);
-				preferenceMeta.setFormData(jObj.toString());
+				if(MapUtils.isNotEmpty(map)) {
+					JSONObject jObj = FieldUtil.getAsJSON(map);
+					preferenceMeta.setFormData(jObj.toString());
+				}
 				preferenceMeta.setIsActive(true);
 				Map<String, Object> props = FieldUtil.getAsProperties(preferenceMeta);
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()

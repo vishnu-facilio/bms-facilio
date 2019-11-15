@@ -8,24 +8,47 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
+import com.chargebee.internal.StringJoiner;
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
+import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.PoAssociatedTermsContext;
+import com.facilio.bmsconsole.context.Preference;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.WatchListContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.templates.DefaultTemplate;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
+import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
+import com.facilio.bmsconsole.forms.FormField.Required;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.ScheduledRuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -40,8 +63,12 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.services.filestore.FacilioFileStore;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.workflows.context.ParameterContext;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class VisitorManagementAPI {
 
@@ -487,4 +514,523 @@ public class VisitorManagementAPI {
 		
 		
 	}
+	
+	public static Preference getWelcomeMailNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("welcome_MailNotification", "Welcome Mail Notifications", form, "Welcome Mail Notifications") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveWelcomeMailNotifications(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+	
+	public static Preference getWelcomeSmsNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("welcome_SmsNotification", "Welcome SMS Notifications", form, "Welcome Mail Notifications") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveWelcomeSmsNotifications(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+	
+
+	public static Preference getThanksMailNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("thanks_MailNotification", "Thanks Mail Notifications", form, "Thanks Mail Notifications") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveThanksEmailNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+	
+	public static Preference getInviteMailNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("invite_MailNotification", "Invite Mail Notifications", form, "Invite Notifications") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
+				Long ruleId = saveInviteEmailNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+
+	
+	public static Preference getApprovalMailNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("approval_MailNotification", "Approval Mail Notifications", form, "Approval Notifications") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveInviteEmailNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+
+	
+	public static Preference getHostMailNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("host_MailNotification", "Host Email Notifications", form, "Host Notifications") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveHostMailNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+	
+	public static Preference getHostSmsNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("host_SmsNotification", "Host Sms Notifications", form, "Host Notifications") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveHostSmsNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+	
+	public static Preference getHostWappNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("host_WappNotification", "Host Wapp Notifications", form, "Host Notifications") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveHostMailNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+	
+	public static Long saveHostMailNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Host Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("host");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("VisitorLogging.HOST");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.setPattern("(1)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
+		
+		emailAction.setDefaultTemplateId(102);
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
+	
+	public static Long saveHostSmsNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Host Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("host");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("VisitorLogging.HOST");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.setPattern("(1)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.SMS_NOTIFICATION);
+		
+		emailAction.setDefaultTemplateId(107);
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
+	
+	private static Long saveWelcomeMailNotifications(Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Welcome MAIL Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("visitor");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("VisitorLogging.VISITOR_ID");
+		
+		FacilioStatus status = TicketAPI.getStatus(module, "CheckedOut");
+		Condition status_condition = new Condition();
+		status_condition.setFieldName("moduleState");
+		status_condition.setOperator(NumberOperators.EQUALS);
+		status_condition.setValue(String.valueOf(status.getId()));
+		status_condition.setColumnName("VisitorLogging.MODULE_STATE");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.addConditionMap(status_condition);
+		
+		criteria.setPattern("(1 and 2)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
+		
+		emailAction.setDefaultTemplateId(103);
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+
+	private static Long saveWelcomeSmsNotifications(Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Welcome MAIL Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("visitor");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("VisitorLogging.VISITOR_ID");
+		
+		FacilioStatus status = TicketAPI.getStatus(module, "CheckedOut");
+		Condition status_condition = new Condition();
+		status_condition.setFieldName("moduleState");
+		status_condition.setOperator(NumberOperators.EQUALS);
+		status_condition.setValue(String.valueOf(status.getId()));
+		status_condition.setColumnName("VisitorLogging.MODULE_STATE");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.addConditionMap(status_condition);
+		
+		criteria.setPattern("(1 and 2)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.SMS_NOTIFICATION);
+		
+		emailAction.setDefaultTemplateId(103);
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+
+	
+	
+	public static Long saveThanksEmailNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Thanks Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("visitor");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("VisitorLogging.VISITOR_ID");
+		
+		FacilioStatus status = TicketAPI.getStatus(module, "CheckedOut");
+		Condition status_condition = new Condition();
+		status_condition.setFieldName("moduleState");
+		status_condition.setOperator(NumberOperators.EQUALS);
+		status_condition.setValue(String.valueOf(status.getId()));
+		status_condition.setColumnName("VisitorLogging.MODULE_STATE");
+		
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.addConditionMap(status_condition);
+		
+		criteria.setPattern("(1 and 2)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
+		
+		emailAction.setDefaultTemplateId(104);
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
+	public static Long saveInviteEmailNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Invite Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("visitorId");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("Invite_Visitor_Rel.VISITOR_ID");
+		
+		Condition inviteCondition = new Condition();
+		inviteCondition.setFieldName("inviteId");
+		inviteCondition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		inviteCondition.setColumnName("Invite_Visitor_Rel.INVITE_ID");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.addConditionMap(inviteCondition);
+		
+		criteria.setPattern("(1 and 2)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
+		
+		emailAction.setDefaultTemplateId(105);
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
+	public static Long saveApprovalNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Approval Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("host");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("VisitorLogging.HOST");
+		
+		FacilioStatus status = TicketAPI.getStatus(module, "Requested");
+		Condition status_condition = new Condition();
+		status_condition.setFieldName("moduleState");
+		status_condition.setOperator(NumberOperators.EQUALS);
+		status_condition.setValue(String.valueOf(status.getId()));
+		status_condition.setColumnName("VisitorLogging.MODULE_STATE");
+		
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.addConditionMap(status_condition);
+		
+		criteria.setPattern("(1 and 2)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
+		
+		emailAction.setDefaultTemplateId(106);
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
+
 }

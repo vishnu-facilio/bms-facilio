@@ -108,7 +108,9 @@ public class ActionContext implements Serializable {
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);
 			String type = placeHolders.get("mailType") != null ? placeHolders.get("mailType").toString() : null;
-			actionObj.put("mailType", type);
+			if(actionObj != null && (!actionObj.containsKey("mailType") || actionObj.get("mailType") == null)) {
+				actionObj.put("mailType", type);
+			}
 			if (AccountUtil.getCurrentOrg().getId() == 151 && actionType == ActionType.BULK_EMAIL_NOTIFICATION) {
 				LOGGER.info("Email json : "+actionObj.toJSONString());
 			}
