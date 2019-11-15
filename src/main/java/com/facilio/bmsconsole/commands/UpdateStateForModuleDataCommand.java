@@ -41,6 +41,9 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 			}
 			for (ModuleBaseWithCustomFields wo : wos) {
 				Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, wo, WorkflowRuleAPI.getOrgPlaceHolders());
+				if (wo.getModuleState().getId() != stateflowTransition.getFromStateId()) {
+					throw new IllegalArgumentException("Invalid transition");
+				}
 				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransition, moduleName, wo, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, wo.getId()), recordPlaceHolders, (FacilioContext) context, false);
 				if (shouldChangeState) {
 					FacilioStatus newState = StateFlowRulesAPI.getStateContext(stateflowTransition.getToStateId());
@@ -48,7 +51,7 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 						throw new Exception("Invalid state");
 					}
 					stateflowTransition.executeTrueActions(wo, context, recordPlaceHolders);
-				} 
+				}
 			}
 		}
 		return false;

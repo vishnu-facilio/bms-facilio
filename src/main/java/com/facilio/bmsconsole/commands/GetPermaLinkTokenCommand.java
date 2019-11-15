@@ -29,7 +29,7 @@ public class GetPermaLinkTokenCommand extends FacilioCommand{
 		String token;
 		if (sessionObject != null) {
 			if (StringUtils.isNotEmpty(url)) {
-				sessionObject.put("url", url);
+				sessionObject.put("allowUrls", url);
 			}
 			token = AccountUtil.getUserBean().generatePermalink(user, sessionObject);
 		}
