@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.twilio.rest.authy.v1.Form;
 
 public class FormFactory {
 	
@@ -71,12 +72,15 @@ public class FormFactory {
 		forms.put("kioskForm", getVisitorKioskForm());
 		forms.put("visitorForm", getVisitorForm());
 		forms.put("visitorPreRegisterForm", getVisitorPreRegisterForm());
+		forms.put("portalVisitorPreRegisterForm", getPortalVisitorPreRegisterForm());
 		forms.put("vendor_contact_form", getVendorContactForm());
+		forms.put("portal_vendor_contact_form", getPortalVendorContactForm());
 		//visitor type forms
 		
 		forms.put("visitorLogForm", getVisitorLogForm());
 		forms.put("watchListForm", getWatchListForm());
 		forms.put("workpermitForm", getWorkPermitForm());
+		forms.put("portalWorkpermitForm", getPortalWorkPermitForm());
 		forms.put("insuranceForm", getInsuranceForm());
 		forms.put("contactForm", getContactForm());
 
@@ -510,6 +514,17 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
+	
+	public static FacilioForm getPortalVendorContactForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW VENDOR");
+		form.setName("portal_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VENDORS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getPortalVendorContactFormField());
+		form.setFormType(FormType.PORTAL);
+		return form;
+	}
 
 
 	public static FacilioForm getTenantsForm() {
@@ -783,6 +798,19 @@ public class FormFactory {
 		fields.add(new FormField("website", FieldDisplayType.TEXTBOX, "Website", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("address", FieldDisplayType.ADDRESS, "Address", Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("registeredBy", FieldDisplayType.LOOKUP_SIMPLE, "Registered By", Required.OPTIONAL, "requester",7, 1));
+		fields.add(new FormField("vendorContacts", FieldDisplayType.VENDOR_CONTACTS, "Contacts", Required.OPTIONAL, 8, 1));
+		return fields;
+	}
+
+	
+	private static List<FormField> getPortalVendorContactFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "E-mail", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("website", FieldDisplayType.TEXTBOX, "Website", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("address", FieldDisplayType.ADDRESS, "Address", Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("vendorContacts", FieldDisplayType.VENDOR_CONTACTS, "Contacts", Required.OPTIONAL, 8, 1));
 		return fields;
 	}
@@ -1284,7 +1312,34 @@ public class FormFactory {
 		fields.add(new FormField("visitorType", FieldDisplayType.LOOKUP_SIMPLE, "Visitor Type", Required.OPTIONAL, "visitorType", 3, 1));
 		fields.add(new FormField("recurringVisitor", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("invitees", FieldDisplayType.VISITOR_INVITEES , "VISITORS", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("registeredBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1));
+		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1));
+
+		return fields;
+	}
+	
+	public static FacilioForm getPortalVisitorPreRegisterForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("PRE REGISTER VISITOR");
+		form.setName("portal_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_INVITE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getPotalVisitorPreRegisterFormFields());
+		form.setFormType(FormType.PORTAL);
+		return form;
+	}
+
+	private static List<FormField> getPotalVisitorPreRegisterFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("inviteName", FieldDisplayType.TEXTBOX, "Invite Name", Required.REQUIRED, 1, 1));
+//		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Expected Start Time", Required.OPTIONAL, 2, 1));
+//		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Expected End Time", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("inviteHost", FieldDisplayType.USER, "Host", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("visitorType", FieldDisplayType.LOOKUP_SIMPLE, "Visitor Type", Required.OPTIONAL, "visitorType", 3, 1));
+		fields.add(new FormField("recurringVisitor", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("invitees", FieldDisplayType.VISITOR_INVITEES , "VISITORS", Required.OPTIONAL, 5, 1));
+//		FormField requestedByField = new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1);
+//		requestedByField.setShowField(false);
+//		fields.add(requestedByField);
 
 		return fields;
 	}
@@ -1416,7 +1471,7 @@ public class FormFactory {
 		form.setName("default_workpermit_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORKPERMIT));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFields(getWorkPermitFormFields());
+		form.setFields(getPortalWorkPermitFormFields());
 		form.setFormType(FormType.PORTAL);
 		return form;
 	}
@@ -1434,7 +1489,26 @@ public class FormFactory {
 		vendorField.setShowField(false);
 		fields.add(vendorField);
 		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("registeredBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1));
+		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1));
+		return fields;
+	}
+	
+	private static List<FormField> getPortalWorkPermitFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTBOX, "Descritption", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("isRecurring", FieldDisplayType.DECISION_BOX, "Is Recurring", Required.OPTIONAL, 3, 2));
+		fields.add(new FormField("recurringInfoId", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
+		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
+		ticketField.setShowField(false);
+		fields.add(ticketField);
+		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 3, 2);
+		vendorField.setShowField(false);
+		fields.add(vendorField);
+		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 5, 1));
+//		FormField requestedByField = new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1);
+//		requestedByField.setShowField(false);
+//		fields.add(requestedByField);
 		return fields;
 	}
 
