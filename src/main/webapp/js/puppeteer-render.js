@@ -44,13 +44,18 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
         await page.setViewport({width: 800, height: 768});
         await page.setExtraHTTPHeaders({
             'X-Is-Export': 'true',
-            'X-Device-Type': 'pdf'
+            'X-Device-Type': 'puppeteer'
         })
 
         await page.goto(pageUrl, {
             waitUntil: 'networkidle0'
         });
-        await page.pdf({path: output, format: 'A4'})
+        if (output.endsWith(".pdf")) {
+        		await page.pdf({path: output, format: 'A4'});
+        }
+        else {
+        		await page.screenshot({path: output});
+        }
 
     }catch(e){
         console.log(e)
