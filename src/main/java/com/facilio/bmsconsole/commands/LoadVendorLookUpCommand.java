@@ -13,7 +13,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class LoadWorkPermitLookUpsCommand extends FacilioCommand{
+public class LoadVendorLookUpCommand extends FacilioCommand{
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -28,14 +28,8 @@ public class LoadWorkPermitLookUpsCommand extends FacilioCommand{
 		}
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
-		LookupField vendorField = (LookupField) fieldsAsMap.get("vendor");
-		LookupField ticketField = (LookupField) fieldsAsMap.get("ticket");
-		LookupField moduleStateField = (LookupField)fieldsAsMap.get("moduleState");
-		LookupField requestedByField = (LookupField)fieldsAsMap.get("requestedBy");
-		additionaLookups.add(vendorField);
-		additionaLookups.add(ticketField);
-		additionaLookups.add(moduleStateField);
-		additionaLookups.add(requestedByField);
+		LookupField contactField = (LookupField) fieldsAsMap.get("registeredBy");
+		additionaLookups.add(contactField);
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
 		return false;
 	}

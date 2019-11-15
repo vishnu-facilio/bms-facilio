@@ -29,7 +29,10 @@ public class LoadInsuranceLookUpCommand extends FacilioCommand{
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		LookupField contactField = (LookupField) fieldsAsMap.get("vendor");
+		LookupField addedByField = (LookupField) fieldsAsMap.get("addedBy");
 		additionaLookups.add(contactField);
+		additionaLookups.add(addedByField);
+		
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
 		return false;
 	}

@@ -565,6 +565,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain fetchVendorDetails() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendors());
+		c.addCommand(new LoadVendorLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetVendorDetailsCommand());
 		return c;
@@ -1565,6 +1566,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getVisitorInvitesDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVisitorInvites());
+		c.addCommand(new LoadVisitorInviteLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetInviteesListCommand());
 		
