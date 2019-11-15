@@ -45,7 +45,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	
 	public static final int noOfDaysDeltaToBeFetched = 10;
 	
-	public static final int averageboundPercentage = 100; 
+	public static final int averageboundPercentage = 200; 
 	
 	long taskContextId, currentInputTime;
 	String currentInputValue;
