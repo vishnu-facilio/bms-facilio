@@ -265,6 +265,7 @@ public class FormFactory {
 		List<FacilioForm> prForm = Arrays.asList(getPurchaseRequestForm());
 		List<FacilioForm> visitorTypeForms = Arrays.asList(getGuestForm(),getEmployeeForm(),getVendorForm());
 		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm());
+		List<FacilioForm> vendorsForms = Arrays.asList(getVendorsForm());
 		
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
 		List<FacilioForm> insuranceForm = Arrays.asList(getInsuranceForm(),getPortalInsuranceForm());
@@ -278,6 +279,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.VISITOR,getFormMap(visitorForms))
 				.put(FacilioConstants.ContextNames.WORKPERMIT, getFormMap(workPermitForm))
 				.put(FacilioConstants.ContextNames.INSURANCE, getFormMap(insuranceForm))
+				.put(FacilioConstants.ContextNames.VENDORS, getFormMap(vendorsForms))
 				.build();
 	}
 	
@@ -496,7 +498,7 @@ public class FormFactory {
 	public static FacilioForm getVendorsForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW VENDOR");
-		form.setName("web_default");
+		form.setName("default_vendors_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VENDORS));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVendorsFormField());
