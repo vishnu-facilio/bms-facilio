@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -734,6 +733,9 @@ public class TaskAction extends FacilioAction {
 	}
 	
 	public String v2updateTask() throws Exception {
+		if (CollectionUtils.isNotEmpty(id) && id.size() == 1) {
+			task.setId(id.get(0));
+		}
 		updateTask();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.TASK, task);
