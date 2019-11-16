@@ -130,14 +130,14 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 														}
 													}
 													else {
-//														TaskErrorContext taskError = checkValueRangeForCounterField(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
-//														if(taskError!= null) {
-//															errors.add(taskError);
-//															TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
-//															if(unitSuggestion != null) {
-//																errors.add(unitSuggestion);
-//															}
-//														}
+														TaskErrorContext taskError = checkValueRangeForCounterField(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
+														if(taskError!= null) {
+															errors.add(taskError);
+															TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
+															if(unitSuggestion != null) {
+																errors.add(unitSuggestion);
+															}
+														}
 													}																					
 												}													
 											}																						
@@ -242,6 +242,11 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		
 		double previousValue = getLatestPreviousReading (numberField, rdm, currentTask, taskContext);	
 		if(previousValue < 0 || isNextReading)
+		{
+			return null;
+		}
+		
+		if(AccountUtil.getCurrentOrg().getId() != 155)
 		{
 			return null;
 		}
