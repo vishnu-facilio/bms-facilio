@@ -910,30 +910,35 @@
 	"102": {
 		"name": "VISITOR_HOST_NOTIFICATION",
 		"mailType": "html",
+		"subject": "Visitor Arrived!",
 		"to": "${vLog.host.email}",
 		"message_ftl": "notifyHost"
 	},
 	"103": {
 		"name": "VISITOR_WELCOME_NOTIFICATION",
 		"mailType": "html",
+		"subject": "Welcome!",
 		"to": "${vLog.visitor.email}",
 		"message_ftl": "welcomeVisitor"
 	},
 	"104": {
 		"name": "VISITOR_THANKS_NOTIFICATION",
 		"mailType": "html",
+		"subject": "Thanks For Visiting!",
 		"to": "${vLog.visitor.email}",
 		"message_ftl": "thankYouVisitor"
 	},
 	"105": {
 		"name": "VISITOR_INVITE_NOTIFICATION",
 		"mailType": "html",
+		"subject": "You are Invited!",
 		"to": "${vInviteRel.visitorId.email}",
 		"message_ftl": "inviteVisitor"
 	},
 	"106": {
 		"name": "VISITOR_APPROVAL_NOTIFICATION",
 		"mailType": "html",
+		"subject": "Visitor Approval Needed!",
 		"to": "${visitorlogging.email}",
 		"message_ftl": "approveVisitor"
 	}
