@@ -14,6 +14,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -84,6 +85,28 @@ public class PreferenceAPI {
 		List<Map<String, Object>> prefs = builder.get();
 		if(CollectionUtils.isNotEmpty(prefs)) {
 			return FieldUtil.getAsBeanListFromMapList(prefs, PreferenceMetaContext.class);
+		}
+		return null;
+	}
+	
+	public static PreferenceMetaContext checkForEnabledPreference(long moduleId, String prefName, long recordId) throws Exception{
+		FacilioModule module = ModuleFactory.getPreferenceMetaModule();
+		List<FacilioField> fields = FieldFactory.getPreferencesMetaFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+													.table(module.getTableName())
+													.select(fields)
+													.andCondition(CriteriaAPI.getCondition("MODULE_ID", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS))
+													.andCondition(CriteriaAPI.getCondition("PREFERENCE_NAME", "name", prefName, StringOperators.IS))
+													;
+		if(recordId > 0) {
+			builder.andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", String.valueOf(recordId), NumberOperators.EQUALS));
+			
+		}
+		List<Map<String, Object>> prefs = builder.get();
+		if(CollectionUtils.isNotEmpty(prefs)) {
+			return FieldUtil.getAsBeanFromMap(prefs.get(0), PreferenceMetaContext.class);
 		}
 		return null;
 	}

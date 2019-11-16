@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -52,6 +55,36 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 			}
 		}
 	},
+	GET_VISITOR_LOG(2,"getVisitorLog") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLogging(Long.valueOf(objects[0].toString()));
+			return vLog;
+		
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_VISITOR_INVITE_REL(3,"getVisitorInviteRel") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			InviteVisitorRelContext rel = VisitorManagementAPI.getInviteVisitorRel(Long.valueOf(objects[0].toString()));
+			return rel;
+		
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	}
 	;
 	
 	private Integer value;

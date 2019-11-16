@@ -3718,11 +3718,14 @@ public class TransactionChainFactory {
 			c.addCommand(new AddNewVisitorsWhilePreRegisteringCommand());
 			c.addCommand(new ComputeScheduleForVisitorInviteCommand());
 			c.addCommand(new GenericUpdateListModuleDataCommand());
+			c.addCommand(new UpdateStateForModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new LoadInviteIdAfterAdditionCommand());
 			c.addCommand(new AddInviteVisitorRelCommand());
 			c.addCommand(SetTableNamesCommand.getForVisitorInviteRel());
 			c.addCommand(new GenericAddModuleDataListCommand());
-			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
@@ -3736,6 +3739,7 @@ public class TransactionChainFactory {
 			c.addCommand(addVisitorChain());
 			c.addCommand(new AddInviteVisitorRelCommand());
 			c.addCommand(SetTableNamesCommand.getForVisitorInviteRel());
+			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
@@ -3753,11 +3757,12 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new AddNdaForVisitorLogCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+			
 			return c;
 		}
 
@@ -3767,10 +3772,10 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateListModuleDataCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ChangeVisitorInviteStateCommand());
-
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+			
 			return c;
 		}
 
@@ -3779,14 +3784,18 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForVisitorInvites());
 			c.addCommand(new AddNewVisitorsWhilePreRegisteringCommand());
 			c.addCommand(new ComputeScheduleForVisitorInviteCommand());
-			c.addCommand(new GenericAddModuleDataListCommand());
+			c.addCommand(new GenericAddModuleDataListCommand()); 
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new LoadInviteIdAfterAdditionCommand());
 			c.addCommand(new AddInviteVisitorRelCommand());
 			c.addCommand(SetTableNamesCommand.getForVisitorInviteRel());
+			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 
 			return c;

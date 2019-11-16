@@ -129,5 +129,36 @@ public class WatchListContext extends ModuleBaseWithCustomFields{
 		this.visitorLogs = visitorLogs;
 	}
 	
+	private String aliases;
+	public String getAliases() {
+		return aliases;
+	}
+
+	public void setAliases(String aliases) {
+		this.aliases = aliases;
+	}
+
+	private String physicalDescription;
+
+
+	public String getPhysicalDescription() {
+		return physicalDescription;
+	}
+
+	public void setPhysicalDescription(String physicalDescription) {
+		this.physicalDescription = physicalDescription;
+	}
+	
+	private String remarks;
+
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+	
 
 }

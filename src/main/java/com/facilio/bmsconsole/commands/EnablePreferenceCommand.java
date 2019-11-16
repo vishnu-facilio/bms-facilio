@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.Preference;
 import com.facilio.bmsconsole.modules.PreferenceFactory;
+import com.facilio.bmsconsole.util.PreferenceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -30,6 +31,9 @@ public class EnablePreferenceCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 	
+		if(PreferenceAPI.checkForEnabledPreference(module.getModuleId(), name, recordId) != null) {
+			throw new IllegalArgumentException("Preference already enabled");
+		}
 		if(recordId > 0) {
 			preference = PreferenceFactory.getModuleRecordPreference(moduleName, name);
 		}

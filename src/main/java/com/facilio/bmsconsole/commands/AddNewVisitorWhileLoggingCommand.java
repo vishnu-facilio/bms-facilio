@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -32,7 +33,11 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 					VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLogging(vL.getVisitor().getId(), true);
 					if(vLog != null) {
 						FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
-						VisitorManagementAPI.checkOutVisitorLogging(vL.getVisitor().getPhone(), c.getContext());
+						VisitorContext visitor = null;
+						if(vL.getVisitor() != null && vL.getVisitor().getId() > 0) {
+							visitor = VisitorManagementAPI.getVisitor(vL.getVisitor().getId(), null);
+							VisitorManagementAPI.checkOutVisitorLogging(visitor.getPhone(), c.getContext());
+						}
 						if(c.getContext().get("visitorLogging") != null) {
 							c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get("nextTransitionId"));
 							VisitorLoggingContext visitorLoggingContext = (VisitorLoggingContext) c.getContext().get("visitorLogging");

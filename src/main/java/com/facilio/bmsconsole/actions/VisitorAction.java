@@ -174,17 +174,22 @@ public class VisitorAction extends FacilioAction
 				{
 					FacilioChain locationChain = null;
 					location.setName(v.getName()+"_Location");
-					locationChain.getContext().put(FacilioConstants.ContextNames.RECORD, location);
-					locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
-					locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
-				
+					
 					if (location.getId() > 0) {
 						locationChain = FacilioChainFactory.updateLocationChain();
+						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
+						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
+					
 						locationChain.execute();
 						v.setLocation(location);
 					}
 					else {
 						locationChain = FacilioChainFactory.addLocationChain();
+						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD, location);
+						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
+						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
+					
 						locationChain.execute();
 						long locationId = (long) locationChain.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
 						location.setId(locationId);

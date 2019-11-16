@@ -8,47 +8,31 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
 
-import com.chargebee.internal.StringJoiner;
-import com.facilio.accounts.bean.UserBean;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
-import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
-import com.facilio.bmsconsole.context.PoAssociatedTermsContext;
 import com.facilio.bmsconsole.context.Preference;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.WatchListContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.templates.DefaultTemplate;
-import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
-import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
-import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.ScheduledRuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -56,6 +40,7 @@ import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.LookupFieldMeta;
 import com.facilio.modules.ModuleFactory;
@@ -63,12 +48,6 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.FacilioField.FieldDisplayType;
-import com.facilio.services.filestore.FacilioFileStore;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.time.DateTimeUtil;
-import com.facilio.workflows.context.ParameterContext;
-import com.facilio.workflows.context.WorkflowContext;
 
 public class VisitorManagementAPI {
 
@@ -142,6 +121,15 @@ public class VisitorManagementAPI {
 														.select(fields)
 														.andCondition(CriteriaAPI.getIdCondition(logId, module))
 														;
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		List<LookupField> additionaLookups = new ArrayList<LookupField>();
+		LookupField contactField = (LookupField) fieldsAsMap.get("visitor");
+		LookupField hostField = (LookupField) fieldsAsMap.get("host");
+		
+		additionaLookups.add(contactField);
+		additionaLookups.add(hostField);
+		
+		builder.fetchLookups(additionaLookups);
 		
 		VisitorLoggingContext records = builder.fetchFirst();
 		return records;
@@ -198,6 +186,35 @@ public class VisitorManagementAPI {
 														.andCondition(CriteriaAPI.getCondition("VISITOR_ID", "visitorId", String.valueOf(visitorId), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition("INVITE_ID", "inviteId", String.valueOf(inviteId), NumberOperators.EQUALS))
 														
+														;
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		LookupFieldMeta inviteField = new LookupFieldMeta((LookupField) fieldsAsMap.get("inviteId"));
+		LookupField inviteHost = (LookupField) modBean.getField("inviteHost", FacilioConstants.ContextNames.VISITOR_INVITE);
+		
+		LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitorId"));
+		LookupField visitorLocation = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.VISITOR);
+		inviteField.addChildLookupFIeld(inviteHost);
+		visitorField.addChildLookupFIeld(visitorLocation);
+		
+		List<LookupField> additionaLookups = new ArrayList<LookupField>();
+		additionaLookups.add(inviteField);
+		additionaLookups.add(visitorField);
+		builder.fetchLookups(additionaLookups);
+		InviteVisitorRelContext records = builder.fetchFirst();
+		return records;
+	
+	}
+	
+	public static InviteVisitorRelContext getInviteVisitorRel(long id) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
+		SelectRecordsBuilder<InviteVisitorRelContext> builder = new SelectRecordsBuilder<InviteVisitorRelContext>()
+														.module(module)
+														.beanClass(InviteVisitorRelContext.class)
+														.select(fields)
+														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		LookupFieldMeta inviteField = new LookupFieldMeta((LookupField) fieldsAsMap.get("inviteId"));
@@ -289,6 +306,8 @@ public class VisitorManagementAPI {
 		return records;
 	
 	}
+	
+	
 	
 	public static void updateVisitorInviteStateToArrived(long visitorId, long visitorInviteId, String status) throws Exception {
 		
@@ -621,7 +640,7 @@ public class VisitorManagementAPI {
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleId);
-				Long ruleId = saveInviteEmailNotificationPrefs(map, module.getName());
+				Long ruleId = saveApprovalNotificationPrefs(map, module.getName());
 				List<Long> ruleIdList = new ArrayList<>();
 				ruleIdList.add(ruleId);
 				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
@@ -727,9 +746,17 @@ public class VisitorManagementAPI {
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
 		condition.setColumnName("VisitorLogging.HOST");
 		
+		Condition isApprovalNeeded = new Condition();
+		isApprovalNeeded.setFieldName("isApprovalNeeded");
+		isApprovalNeeded.setOperator(BooleanOperators.IS);
+		isApprovalNeeded.setValue("false");
+		isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
+		
+		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
-		criteria.setPattern("(1)");
+		criteria.addConditionMap(isApprovalNeeded);
+		criteria.setPattern("(1 and 2)");
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -740,10 +767,10 @@ public class VisitorManagementAPI {
 		emailAction.setDefaultTemplateId(102);
 		//add rule,action and job
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
         
-		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
 		chain.execute(context);
 	
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
@@ -767,9 +794,17 @@ public class VisitorManagementAPI {
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
 		condition.setColumnName("VisitorLogging.HOST");
 		
+		Condition isApprovalNeeded = new Condition();
+		isApprovalNeeded.setFieldName("isApprovalNeeded");
+		isApprovalNeeded.setOperator(BooleanOperators.IS);
+		isApprovalNeeded.setValue("false");
+		isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
+		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
-		criteria.setPattern("(1)");
+		criteria.addConditionMap(isApprovalNeeded);
+		
+		criteria.setPattern("(1 and 2)");
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -807,18 +842,11 @@ public class VisitorManagementAPI {
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
 		condition.setColumnName("VisitorLogging.VISITOR_ID");
 		
-		FacilioStatus status = TicketAPI.getStatus(module, "CheckedOut");
-		Condition status_condition = new Condition();
-		status_condition.setFieldName("moduleState");
-		status_condition.setOperator(NumberOperators.EQUALS);
-		status_condition.setValue(String.valueOf(status.getId()));
-		status_condition.setColumnName("VisitorLogging.MODULE_STATE");
-		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
-		criteria.addConditionMap(status_condition);
 		
-		criteria.setPattern("(1 and 2)");
+		criteria.setPattern("(1)");
+		criteria.andCriteria(getVisitorLogStatusCriteria("CheckedIn"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -829,10 +857,10 @@ public class VisitorManagementAPI {
 		emailAction.setDefaultTemplateId(103);
 		//add rule,action and job
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
         
-		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
 		chain.execute(context);
 	
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
@@ -905,19 +933,11 @@ public class VisitorManagementAPI {
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
 		condition.setColumnName("VisitorLogging.VISITOR_ID");
 		
-		FacilioStatus status = TicketAPI.getStatus(module, "CheckedOut");
-		Condition status_condition = new Condition();
-		status_condition.setFieldName("moduleState");
-		status_condition.setOperator(NumberOperators.EQUALS);
-		status_condition.setValue(String.valueOf(status.getId()));
-		status_condition.setColumnName("VisitorLogging.MODULE_STATE");
-		
-		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
-		criteria.addConditionMap(status_condition);
 		
-		criteria.setPattern("(1 and 2)");
+		criteria.setPattern("(1)");
+		criteria.andCriteria(getVisitorLogStatusCriteria("CheckedOut"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -928,10 +948,10 @@ public class VisitorManagementAPI {
 		emailAction.setDefaultTemplateId(104);
 		//add rule,action and job
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
         
-		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
 		chain.execute(context);
 	
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
@@ -974,10 +994,10 @@ public class VisitorManagementAPI {
 		emailAction.setDefaultTemplateId(105);
 		//add rule,action and job
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
         
-		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
 		chain.execute(context);
 	
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
@@ -1000,19 +1020,20 @@ public class VisitorManagementAPI {
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
 		condition.setColumnName("VisitorLogging.HOST");
 		
-		FacilioStatus status = TicketAPI.getStatus(module, "Requested");
-		Condition status_condition = new Condition();
-		status_condition.setFieldName("moduleState");
-		status_condition.setOperator(NumberOperators.EQUALS);
-		status_condition.setValue(String.valueOf(status.getId()));
-		status_condition.setColumnName("VisitorLogging.MODULE_STATE");
+		Condition isApprovalNeeded = new Condition();
+		isApprovalNeeded.setFieldName("isApprovalNeeded");
+		isApprovalNeeded.setOperator(BooleanOperators.IS);
+		isApprovalNeeded.setValue("true");
+		isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
+		
 		
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
-		criteria.addConditionMap(status_condition);
+		criteria.addConditionMap(isApprovalNeeded);
 		
-		criteria.setPattern("(1 and 2)");
+		criteria.setPattern("(1 and 3)");
+		criteria.andCriteria(getVisitorLogStatusCriteria("Requested"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1023,14 +1044,47 @@ public class VisitorManagementAPI {
 		emailAction.setDefaultTemplateId(106);
 		//add rule,action and job
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
         
-		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
 		chain.execute(context);
 	
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 	}
+	
+	private static Criteria getVisitorLogStatusCriteria(String status) {
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("status");
+		statusTypeField.setColumnName("STATUS");
+		statusTypeField.setDataType(FieldType.STRING);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition statusCondition = new Condition();
+		statusCondition.setField(statusTypeField);
+		statusCondition.setOperator(StringOperators.IS);
+		statusCondition.setValue(status);
+
+		Criteria statusCriteria = new Criteria() ;
+		statusCriteria.addAndCondition(statusCondition);
+
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(ModuleFactory.getVisitorLoggingModule());
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition condition = new Condition();
+		condition.setField(statusField);
+		condition.setOperator(LookupOperator.LOOKUP);
+		condition.setCriteriaValue(statusCriteria);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(condition);
+		return criteria;
+	}
+
 	
 
 }
