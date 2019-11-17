@@ -538,7 +538,7 @@ public class VisitorManagementAPI {
 	public static Preference getWelcomeMailNotificationsPref() {
 		
 		FacilioForm form = new FacilioForm();
-		return new Preference("welcome_MailNotification", "Welcome Mail Notifications", form, "Welcome Mail Notifications") {
+		return new Preference("welcomeVisitor_MailNotification", "Welcome Visitor_Email", form, "Notify Visitors when they check-in") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -587,7 +587,7 @@ public class VisitorManagementAPI {
 	public static Preference getThanksMailNotificationsPref() {
 		
 		FacilioForm form = new FacilioForm();
-		return new Preference("thanks_MailNotification", "Thanks Mail Notifications", form, "Thanks Mail Notifications") {
+		return new Preference("thankVisitor_MailNotification", "Thank Visitor_Email", form, "Notify Visitor when they check-out") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -611,7 +611,7 @@ public class VisitorManagementAPI {
 	public static Preference getInviteMailNotificationsPref() {
 		
 		FacilioForm form = new FacilioForm();
-		return new Preference("invite_MailNotification", "Invite Mail Notifications", form, "Invite Notifications") {
+		return new Preference("inviteVisitor_MailNotification", "Invite Visitor_Email", form, "Notify invited visitors before the day of Visit") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -636,7 +636,7 @@ public class VisitorManagementAPI {
 	public static Preference getApprovalMailNotificationsPref() {
 		
 		FacilioForm form = new FacilioForm();
-		return new Preference("approval_MailNotification", "Approval Mail Notifications", form, "Approval Notifications") {
+		return new Preference("approveVisitor_MailNotification", "Approve Visitor_Email", form, "Notify Hosts requesting approval for their Visitors") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -661,7 +661,7 @@ public class VisitorManagementAPI {
 	public static Preference getHostMailNotificationsPref() {
 		
 		FacilioForm form = new FacilioForm();
-		return new Preference("host_MailNotification", "Host Email Notifications", form, "Host Notifications") {
+		return new Preference("notifyHost_MailNotification", "Notify Host_Email", form, "Automatically notify hosts when their visitors arrive") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

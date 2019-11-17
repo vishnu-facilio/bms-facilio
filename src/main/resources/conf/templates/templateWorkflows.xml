@@ -1174,6 +1174,7 @@
 		<template id="102">
 		<workflow>
 			<parameter name="org.domain" type="String" />
+			<parameter name="org" type="String" />
 			<parameter name="org.name" type="String" />
 			<parameter name="visitorlogging"
 				type="String" />
@@ -1190,6 +1191,7 @@
 	</template>
 	<template id="103">
 		<workflow>
+			<parameter name="org" type="String" />
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			<parameter name="visitorlogging"
@@ -1207,6 +1209,7 @@
 	</template>
 	<template id="104">
 		<workflow>
+			<parameter name="org" type="String" />
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			<parameter name="visitorlogging"
@@ -1224,6 +1227,7 @@
 	</template>
 	<template id="105">
 		<workflow>
+			<parameter name="org" type="String" />
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			<parameter name="visitorinviterel"
@@ -1241,6 +1245,7 @@
 	</template>
 	<template id="106">
 		<workflow>
+			<parameter name="org" type="String" />
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			<parameter name="visitorlogging"
