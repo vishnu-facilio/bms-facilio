@@ -31,4 +31,6 @@ enums:
   - name: ContactType
     enumClassName: com.facilio.bmsconsole.context.ContactsContext$ContactType
 
+  - name: VisitorLogo
+    enumClassName: com.facilio.bmsconsole.context.VisitorTypeContext$VisitorLogo
     

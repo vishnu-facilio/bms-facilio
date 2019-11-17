@@ -1754,4 +1754,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAutomationModulesCommand());
 		return chain;
 	}
+	public static FacilioChain fetchVisitorTypePicklistData() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVisitorType());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
 }
