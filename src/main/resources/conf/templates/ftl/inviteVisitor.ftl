@@ -10,6 +10,7 @@
 </head>
 
 <body style="background: #ffffff;">
+<#setting time_zone=org.timezone>
       <div style="max-width:600px;margin: 0 auto;display: block;padding-top: 50px;">
             <div style="margin:20px auto 0;padding-left: 0;padding-right: 0;background-color:#FFFFFF;box-shadow: 0 1px 15px 0 rgba(0, 0, 0, 0.05); border: solid 1px #ebecf0;border-radius: 10px;overflow: hidden;width: 100%;">
                  
@@ -25,7 +26,7 @@
                                          See you soon! 
                                       </div>
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          You have been invited to [FACILITY] by ${vInviteRel.inviteId.inviteHost.name} on ${vInviteRel.inviteId.expectedStartTime} ! 
+                                          You have been invited to [FACILITY] by ${vInviteRel.inviteId.inviteHost.name} on ${(vInviteRel.inviteId.expectedStartTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} ! 
                                     </div>
                                 </td>
                               </tr>

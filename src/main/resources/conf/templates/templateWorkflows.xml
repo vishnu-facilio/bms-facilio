@@ -1176,6 +1176,8 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org" type="String" />
 			<parameter name="org.name" type="String" />
+			<parameter name="org.timezone" type="String" />
+		
 			<parameter name="visitorlogging"
 				type="String" />
 				<parameter name="visitorlogging.id"
@@ -1194,6 +1196,8 @@
 			<parameter name="org" type="String" />
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
+			<parameter name="org.timezone" type="String" />
+		
 			<parameter name="visitorlogging"
 				type="String" />
 				<parameter name="visitorlogging.id"
@@ -1212,6 +1216,8 @@
 			<parameter name="org" type="String" />
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
+			<parameter name="org.timezone" type="String" />
+		
 			<parameter name="visitorlogging"
 				type="String" />
 				<parameter name="visitorlogging.id"
@@ -1230,6 +1236,8 @@
 			<parameter name="org" type="String" />
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
+			<parameter name="org.timezone" type="String" />
+		
 			<parameter name="visitorinviterel"
 				type="String" />
 				<parameter name="visitorinviterel.id"
@@ -1247,6 +1255,8 @@
 		<workflow>
 			<parameter name="org" type="String" />
 			<parameter name="org.domain" type="String" />
+			<parameter name="org.timezone" type="String" />
+		
 			<parameter name="org.name" type="String" />
 			<parameter name="visitorlogging"
 				type="String" />

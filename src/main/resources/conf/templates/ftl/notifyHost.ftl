@@ -10,6 +10,7 @@
 </head>
 
 <body style="background: #ffffff;">
+	<#setting time_zone=org.timezone>
       <div style="max-width:600px;margin: 0 auto;display: block;padding-top: 50px;">
             <div style="margin:20px auto 0;padding-left: 0;padding-right: 0;background-color:#FFFFFF;box-shadow: 0 1px 15px 0 rgba(0, 0, 0, 0.05); border: solid 1px #ebecf0;border-radius: 10px;overflow: hidden;width: 100%;">
                  
