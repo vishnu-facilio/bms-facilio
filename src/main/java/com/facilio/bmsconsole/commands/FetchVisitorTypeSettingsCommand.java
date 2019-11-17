@@ -1,10 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -38,17 +40,28 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 		Map<String,Object> visitorSetting= selectBuilder.get().get(0);
 		
 		VisitorSettingsContext visitorSettingsContext=FieldUtil.getAsBeanFromMap(visitorSetting, VisitorSettingsContext.class);
-		//get and fill visitortype in context
-		FacilioChain pickListChain = FacilioChainFactory.getPickListChain();
+		//get and fill visitortypeCtx in Visitor Setting context
+		
+		FacilioChain pickListChain = ReadOnlyChainFactory.fetchVisitorTypePicklistData();
 		FacilioContext pickListContext =pickListChain.getContext();
-		pickListContext.put(ContextNames.MODULE_NAME, "visitorType");
+		pickListContext.put(FacilioConstants.ContextNames.RECORD, visitorTypeCtx);
+		pickListContext.put(FacilioConstants.ContextNames.ID, visitorTypeCtx.getId());
+		
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(visitorTypeCtx));
+
 		pickListChain.execute();
 		
-		Map<Long, String> pickListMap=(Map<Long, String>) pickListContext.get(FacilioConstants.ContextNames.PICKLIST);
-		String visitorTypeName=pickListMap.get(visitorTypeId);
-		visitorTypeCtx.setName(visitorTypeName);
+		VisitorTypeContext visitorTypeCtxFill=(VisitorTypeContext)pickListContext.get(FacilioConstants.ContextNames.RECORD);
+		visitorSettingsContext.setVisitorType(visitorTypeCtxFill);
+//		
+//		Map<Long, String> pickListMap=(Map<Long, String>) pickListContext.get(FacilioConstants.ContextNames.PICKLIST);
+		String visitorTypeName=visitorTypeCtxFill.getName();
+//		visitorTypeCtx.setName(visitorTypeName);
 		
-		visitorSettingsContext.setVisitorType(visitorTypeCtx);
+		
+		
+		
+		//visitorSettingsContext.setVisitorType(visitorTypeCtx);
         
 		Long formId=visitorSettingsContext.getVisitorFormId();
 		

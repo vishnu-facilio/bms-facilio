@@ -1,11 +1,12 @@
 package com.facilio.bmsconsole.context;
 
-import org.apache.struts2.json.annotations.JSON;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
+import java.util.Map;
 
+import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.util.FacilioUtil;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class VisitorTypeContext extends ModuleBaseWithCustomFields {
 	/**
@@ -13,15 +14,78 @@ public class VisitorTypeContext extends ModuleBaseWithCustomFields {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String name;
-	private boolean isEnabled;
+	private Boolean enabled;
+	
+	  
+	  private VisitorLogo visitorLogo;
+	  @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+	  public static enum VisitorLogo implements FacilioEnum {
+	        GUEST("kiosk-guest"),
+	        VENDOR("kiosk-vendor"),
+	        EMPLOYEE("kiosk-employee"),
+	        CUSTOM("kiosk-custom"),
+	        DELIVERY("kiosk-delivery"),
+	        EMPLOYEE_2("employee"),
+	        ELECTRICIAN("electrician"),
+	        STUDENT("student"),
+	        DOCTOR("doc"),
+	        MESSAGE("kiosk-message")
+	        ;
+
+	        private String name;
+	        VisitorLogo (String name) {
+	            this.name = name;
+	        }
+
+	        @Override
+	        public int getIndex() {
+	            return ordinal() + 1;
+	        }
+
+	        @Override
+	        public String getValue() {
+	            return name;
+	        }
+
+	        public static VisitorLogo valueOf(int value) {
+	            if (value > 0 && value <= values().length) {
+	                return values()[value - 1];
+	            }
+	            return null;
+	        }
+	    }
 	
 
+		public VisitorLogo getVisitorLogoEnum() {
+			return visitorLogo;
+		}
+		
+		public int getVisitorLogo() {
+			if(visitorLogo!=null)
+			{
+				return visitorLogo.getIndex();
+			}
+			return -1;
+		}
+		@JsonIgnore
+		public Map<String, Object> getVisitorLogoObj() throws Exception {
+			return FieldUtil.getAsProperties(visitorLogo);
+		}
+		
+
+		public void setVisitorLogo(int visitorLogo) {
+			this.visitorLogo = VisitorLogo.valueOf(visitorLogo);
+		}
+		public void setVisitorLog(VisitorLogo visitorLogo) {
+			this.visitorLogo = visitorLogo;
+		}
+
 	
-	public boolean getIsEnabled() {
-		return isEnabled;
+	public Boolean getEnabled() {
+		return enabled;
 	}
-	public void setIsEnabled(boolean isEnabled) {
-		this.isEnabled = isEnabled;
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 	public String getName() {
 		return name;
@@ -42,4 +106,7 @@ public class VisitorTypeContext extends ModuleBaseWithCustomFields {
 	public String toString() {
 		return name;
 	}
+	
+	
+	
 }
