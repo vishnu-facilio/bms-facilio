@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -449,7 +450,7 @@ public class VisitorManagementAPI {
 		
 	}
 	
-	public static void updateVisitorLogNDA(long logId, long fileId) throws Exception {
+	public static void updateVisitorLogNDA(long logId, File file) throws Exception {
 		
 		if(logId > 0) {
 //			AttachmentContext attachment = new AttachmentContext();
@@ -467,7 +468,7 @@ public class VisitorManagementAPI {
 			
 			Map<String, Object> updateMap = new HashMap<>();
 			FacilioField ndaIdField = modBean.getField("nda", module.getName());
-			updateMap.put("nda", fileId);
+			updateMap.put("nda", file);
 			updatedfields.add(ndaIdField);
 			
 			UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()

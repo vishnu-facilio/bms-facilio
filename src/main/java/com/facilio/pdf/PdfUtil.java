@@ -139,4 +139,14 @@ public class PdfUtil {
         }
         return null;
     }
+    
+    public static File exportUrlAsFile(String url, String name, FileFormat... formats){
+        FileFormat format = FileFormat.PDF;
+        if (formats != null && formats.length > 0) {
+            format = formats[0];
+        }
+        String pdfFileLocation = convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), url, format);
+        File pdfFile = new File(pdfFileLocation);
+        return pdfFile;
+    }
 }
