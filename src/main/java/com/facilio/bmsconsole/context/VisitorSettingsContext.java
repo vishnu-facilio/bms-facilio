@@ -15,13 +15,7 @@ public class VisitorSettingsContext implements Serializable {
 	private static final long serialVersionUID = 1L;
 	long orgId=-1;
 	long visitorTypeId=-1;
-	Boolean isHostEnabled;
-	public Boolean getIsHostEnabled() {
-		return isHostEnabled;
-	}
-	public void setIsHostEnabled(Boolean isHostEnabled) {
-		this.isHostEnabled = isHostEnabled;
-	}
+
 	
 	private JSONObject hostSetttings;
 	public JSONObject getHostSettings() {
@@ -81,24 +75,7 @@ public class VisitorSettingsContext implements Serializable {
 	public void setVisitorType(VisitorTypeContext visitorType) {
 		this.visitorType = visitorType;
 	}
-	public Boolean getIsNdaEnabled() {
-		return isNdaEnabled;
-	}
-	public void setIsNdaEnabled(Boolean isNdaEnabled) {
-		this.isNdaEnabled = isNdaEnabled;
-	}
-	public Boolean getIsBadgeEnabled() {
-		return isBadgeEnabled;
-	}
-	public void setIsBadgeEnabled(Boolean isBadgeEnabled) {
-		this.isBadgeEnabled = isBadgeEnabled;
-	}
-	public Boolean getIsPhotoEnabled() {
-		return isPhotoEnabled;
-	}
-	public void setIsPhotoEnabled(Boolean isPhotoEnabled) {
-		this.isPhotoEnabled = isPhotoEnabled;
-	}
+
 	public long getAutoSignoutTime() {
 		return autoSignoutTime;
 	}
@@ -108,10 +85,35 @@ public class VisitorSettingsContext implements Serializable {
 	long visitorFormId=-1;
 	FacilioForm form;
 	VisitorTypeContext visitorType;
-
-	Boolean isNdaEnabled;
-	Boolean isBadgeEnabled;
-	Boolean isPhotoEnabled;
+	
+	public Boolean getHostEnabled() {
+		return hostEnabled;
+	}
+	public void setHostEnabled(Boolean hostEnabled) {
+		this.hostEnabled = hostEnabled;
+	}
+	public Boolean getNdaEnabled() {
+		return ndaEnabled;
+	}
+	public void setNdaEnabled(Boolean ndaEnabled) {
+		this.ndaEnabled = ndaEnabled;
+	}
+	public Boolean getBadgeEnabled() {
+		return badgeEnabled;
+	}
+	public void setBadgeEnabled(Boolean badgeEnabled) {
+		this.badgeEnabled = badgeEnabled;
+	}
+	public Boolean getPhotoEnabled() {
+		return photoEnabled;
+	}
+	public void setPhotoEnabled(Boolean photoEnabled) {
+		this.photoEnabled = photoEnabled;
+	}
+	Boolean hostEnabled;
+	Boolean ndaEnabled;
+	Boolean badgeEnabled;
+	Boolean photoEnabled;
 	long autoSignoutTime;
 //	
 

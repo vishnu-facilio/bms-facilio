@@ -7088,9 +7088,9 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField("visitorTypeId", "VISITOR_TYPE_ID", FieldType.LOOKUP));		
 		fields.add(getField("visitorFormId","VISITOR_FORM_ID",FieldType.LOOKUP));
-		fields.add(getField("isNdaEnabled","IS_NDA_ENABLED",FieldType.BOOLEAN));
-		fields.add(getField("isBadgeEnabled","IS_BADGE_ENABLED",FieldType.BOOLEAN));
-		fields.add(getField("isPhotoEnabled","IS_PHOTO_ENABLED",FieldType.BOOLEAN));
+		fields.add(getField("ndaEnabled","IS_NDA_ENABLED",FieldType.BOOLEAN));
+		fields.add(getField("badgeEnabled","IS_BADGE_ENABLED",FieldType.BOOLEAN));
+		fields.add(getField("photoEnabled","IS_PHOTO_ENABLED",FieldType.BOOLEAN));
 		fields.add(getField("autoSignoutTime","AUTO_SIGNOUT_TIME",FieldType.NUMBER));
 		fields.add(getField("hostSettingsJson","HOST_SETTINGS_JSON",FieldType.STRING));
 		fields.add(getField("hostEnabled","HOST_ENABLED",FieldType.BOOLEAN));
