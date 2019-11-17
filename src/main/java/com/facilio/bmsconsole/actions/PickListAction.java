@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.ToolStatusContext;
 import com.facilio.bmsconsole.context.ToolTypesCategoryContext;
 import com.facilio.bmsconsole.context.ToolTypesStatusContext;
+import com.facilio.bmsconsole.context.VisitorTypeContext;
 import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioChain;
@@ -511,6 +512,16 @@ public class PickListAction extends FacilioAction {
 	public void setInventoryCategory(InventoryCategoryContext inventoryCategory) {
 		this.inventoryCategory = inventoryCategory;
 	}
+	
+	VisitorTypeContext  visitorType;
+
+	public VisitorTypeContext getVisitorType() {
+		return visitorType;
+	}
+
+	public void setVisitorType(VisitorTypeContext visitorType) {
+		this.visitorType = visitorType;
+	}
 
 	public String addInventoryCategory() throws Exception {
 		if(inventoryCategory.getDisplayName() != null && !inventoryCategory.getDisplayName().isEmpty()) {
@@ -538,6 +549,16 @@ public class PickListAction extends FacilioAction {
 		FacilioChain updateInventoryCategoryChain = TransactionChainFactory.getUpdateInventoryCategoryChain();
 		updateInventoryCategoryChain.execute(context);
 		setResult(FacilioConstants.ContextNames.RECORD, getInventoryCategory());
+		return SUCCESS;
+	}
+	
+	public String updateVisitorType() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getVisitorType());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getVisitorType().getId()));
+		FacilioChain updateVisitorTypeChain = TransactionChainFactory.getUpdateVisitorTypePicklistOptionChain();
+		updateVisitorTypeChain.execute(context);
+		setResult(FacilioConstants.ContextNames.RECORD, getVisitorType());
 		return SUCCESS;
 	}
 	

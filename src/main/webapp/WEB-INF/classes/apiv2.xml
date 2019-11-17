@@ -1294,6 +1294,10 @@
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateInventoryCategory">
 		</action>
+		<action name="updateVisitorType"
+			class="com.facilio.bmsconsole.actions.PickListAction"
+			method="updateVisitorType">
+		</action>
 		<action name="deleteInventoryCategory"
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteInventoryCategory">
