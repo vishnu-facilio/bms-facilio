@@ -909,6 +909,7 @@
 	},
 	"102": {
 		"name": "VISITOR_HOST_NOTIFICATION",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "Visitor Arrived!",
 		"to": "${vLog.host.email}",
@@ -916,6 +917,7 @@
 	},
 	"103": {
 		"name": "VISITOR_WELCOME_NOTIFICATION",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "Welcome!",
 		"to": "${vLog.visitor.email}",
@@ -923,6 +925,7 @@
 	},
 	"104": {
 		"name": "VISITOR_THANKS_NOTIFICATION",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "Thanks For Visiting!",
 		"to": "${vLog.visitor.email}",
@@ -930,6 +933,7 @@
 	},
 	"105": {
 		"name": "VISITOR_INVITE_NOTIFICATION",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "You are Invited!",
 		"to": "${vInviteRel.visitorId.email}",
@@ -937,6 +941,7 @@
 	},
 	"106": {
 		"name": "VISITOR_APPROVAL_NOTIFICATION",
+		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "Visitor Approval Needed!",
 		"to": "${visitorlogging.email}",
