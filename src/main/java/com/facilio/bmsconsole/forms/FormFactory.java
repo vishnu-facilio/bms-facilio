@@ -1413,7 +1413,7 @@ public class FormFactory {
 	private static List<FormField> getEmployeeFormFields()
 	{
 		List<FormField> fields=new ArrayList<>();
-		fields.add(new FormField("visitor", FieldDisplayType.LOOKUP_SIMPLE, "Visitor", Required.OPTIONAL, "visitor", 1, 1).setAllowCreate(true).setCreateFormName("vendors_form"));
+		fields.add(new FormField("visitor", FieldDisplayType.LOOKUP_SIMPLE, "Visitor", Required.OPTIONAL, "visitor", 1, 1));
 //		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.REQUIRED,1,1));
 		FormField avatarField = new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1);
 		avatarField.setShowField(true);
@@ -1555,7 +1555,7 @@ public class FormFactory {
 		fields.add(new FormField("companyName", FieldDisplayType.TEXTBOX, "Company Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("validFrom", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("validTill", FieldDisplayType.DATE, "Valid Till", Required.OPTIONAL, 3, 1));
-		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendor", 3, 2);
+		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 3, 2);
 		vendorField.setShowField(false);
 		fields.add(vendorField);
 		FormField fileField= new FormField("insurance", FieldDisplayType.IMAGE, "File", Required.OPTIONAL, 1, 1);
