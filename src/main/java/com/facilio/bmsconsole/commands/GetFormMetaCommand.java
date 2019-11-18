@@ -30,7 +30,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		String formName = (String) context.get(FacilioConstants.ContextNames.FORM_NAME);
-		Long formId = (Long) context.getOrDefault(FacilioConstants.ContextNames.FORM_ID, -1);
+		Long formId = (Long) context.getOrDefault(FacilioConstants.ContextNames.FORM_ID, -1l);
 		String formModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);	// TODO...needs to be mandatory
 		FacilioModule formModule = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -111,7 +111,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 			}
 			context.put(FacilioConstants.ContextNames.FORM, form);
 		}
-		else if(formId != null) {
+		else if(formId != null && formId > 0) {
 			form= FormsAPI.getFormFromDB(formId);
 			context.put(FacilioConstants.ContextNames.FORM, form);
 		}
