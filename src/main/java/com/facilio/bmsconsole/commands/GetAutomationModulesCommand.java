@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -18,6 +19,13 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         modules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.ASSET));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
+
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE));
+        }
+        else {
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.ALARM));
+        }
 
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.CUSTOM));
 
