@@ -60,7 +60,7 @@ public class AccessLogFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        if( ! FacilioProperties.isProduction()) {
+        if( false) {
             response = new FacilioHttpResponse(response);
         }
 
