@@ -43,6 +43,7 @@ public class AccessLogFilter implements Filter {
     private static final String X_APP_VERSION = "X-App-Version";
     private static final String REFERER = "referer";
     private static final String RESPONSE_SIZE = "res_size";
+    private static final boolean ENABLE_FHR = false;
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
     private static final long TIME_THRESHOLD = 5000 ;
@@ -60,7 +61,7 @@ public class AccessLogFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        if( false) {
+        if( ENABLE_FHR) {
             response = new FacilioHttpResponse(response);
         }
 
@@ -167,7 +168,7 @@ public class AccessLogFilter implements Filter {
         }
         event.setProperty("appVersion", appVersion);
 
-        if ( ! FacilioProperties.isProduction()) {
+        if ( ENABLE_FHR ) {
             event.setProperty(RESPONSE_SIZE, String.valueOf(((FacilioOutputStream)response.getOutputStream()).getLengthInBytes()));
         }
 
