@@ -91,6 +91,7 @@ public class DBAudit implements FacilioAudit {
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder().table(TABLE_NAME).fields(FIELDS);
         try {
             id = insertBuilder.insert(getValueMap(data));
+            data.setId(id);
         } catch (Exception e) {
             LOGGER.info("Exception while adding : ", e);
         }

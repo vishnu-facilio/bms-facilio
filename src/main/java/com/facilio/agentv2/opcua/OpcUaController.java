@@ -32,6 +32,7 @@ public class OpcUaController extends Controller {
 
 
     public OpcUaController() {
+        super();
     }
 
     public OpcUaController(long agentId, long orgId) throws Exception {
@@ -93,10 +94,9 @@ public class OpcUaController extends Controller {
     public void processIdentifier(String identifier) throws Exception {
         if( (identifier != null) && ( ! identifier.isEmpty() ) ){
             String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
-            if( (uniques.length == 3) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_UA) ) )
+            if( (uniques.length == 2) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_UA) ) )
             {
                 this.url = uniques[1];
-                this.certPath = uniques[2];
                 this.identifier = identifier;
             }else {
                 throw  new Exception(" Exceprion while processing identifier -- length or Type didnt match ");
@@ -111,8 +111,8 @@ public class OpcUaController extends Controller {
         if( (identifier != null ) && ( ! identifier.isEmpty() ) ){
             return identifier;
         }
-        if( (url != null && ( ! url.isEmpty() ) ) && ( certPath != null && ( ! certPath.isEmpty()) ) ){
-            identifier = FacilioControllerType.OPC_UA.asInt()+IDENTIFIER_SEPERATOR+url+IDENTIFIER_SEPERATOR+certPath;
+        if( (url != null && ( ! url.isEmpty() ) ) ){
+            identifier = FacilioControllerType.OPC_UA.asInt()+IDENTIFIER_SEPERATOR+url;
             return identifier;
         }
         throw new Exception("Exception Occurred, parameters for identifier not set yet");

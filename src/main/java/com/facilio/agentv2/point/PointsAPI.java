@@ -13,6 +13,7 @@ import com.facilio.agentv2.opcua.OpcUaPoint;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaPoint;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -72,9 +73,12 @@ public class PointsAPI
     public static List<Point> getAllPoints(long agentId, long controllerId){
         List<Point> allPoints = new ArrayList<>();
         for (FacilioControllerType type : FacilioControllerType.values()) {
-            List<Point> pointList = getPointFromRows(getAllPoints(type, agentId,controllerId,-1,-1),agentId,controllerId);
-            if( (pointList != null) && ( ! pointList.isEmpty()) ){
-                allPoints.addAll(pointList);
+            List<Map<String, Object>> pointData = getAllPoints(type, agentId, controllerId, -1, -1);
+            if ( ! pointData.isEmpty()){
+                List<Point> pointList = getPointFromRows(pointData,agentId,controllerId);
+                if( (pointList != null) && ( ! pointList.isEmpty()) ){
+                    allPoints.addAll(pointList);
+                }
             }
         }
         /*try {
@@ -87,9 +91,12 @@ public class PointsAPI
 
     public static Point getPoint(long assetCategoryId, long fieldId, FacilioControllerType controllerType,long agentId,long controllerId){
         if( (assetCategoryId>0) && (fieldId>0) && (controllerType != null) && (agentId>0) && (controllerId>0)){
-            List<Point> points = getPointFromRows(getAllPoints(controllerType, -1, -1, assetCategoryId, fieldId),agentId,controllerId);
-            if(! points.isEmpty()){
-                return points.get(0);
+            List<Map<String, Object>> pointData = getAllPoints(controllerType, -1, -1, assetCategoryId, fieldId);
+            if( ! pointData.isEmpty() ){
+                List<Point> points = getPointFromRows(pointData,agentId,controllerId);
+                if(! points.isEmpty()){
+                    return points.get(0);
+                }
             }
         }
         return null;
@@ -256,5 +263,11 @@ public class PointsAPI
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void configurePoint(long agentId) {
+        if (( agentId > 0 )) {
+            FacilioChain editChain = TransactionChainFactory.getEditPointChain();
+        }
     }
 }

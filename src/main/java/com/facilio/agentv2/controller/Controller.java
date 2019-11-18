@@ -41,15 +41,21 @@ public abstract class Controller extends AssetContext {
     private long deletedTime =-1;
     private static Map<String, FacilioField> fieldsMap;
 
-    public Controller() {}
+    private final long DEFAULT_DATA_INTERVAL = 900000 ;
+    //private final boolean DEFAULT_ACTIVE = true;
+    //private final int DEFAULT_AVAIL_POINTS = 0;
+
+    public Controller() {
+        dataInterval = DEFAULT_DATA_INTERVAL;
+    /*    active = DEFAULT_ACTIVE;
+        availablePoints =  DEFAULT_AVAIL_POINTS;
+    */}
 
     public Controller(long agentId, long orgId) {
         this.agentId = agentId;
         this.orgId = orgId;
-        setAvailablePoints(0);
-        dataInterval = 900000;
-        active = true;
-    }
+        dataInterval = DEFAULT_DATA_INTERVAL;
+     }
 
     /**
      * Make identifier must be implemented for each controller using  IDENTIFIER_SEPERATOR
@@ -85,7 +91,7 @@ public abstract class Controller extends AssetContext {
     public Boolean getWritable(){ return writable; }
 
     public Boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public void setActive(Boolean active) { this.active = active; }
 
     public Boolean getActive() {return active; }
 

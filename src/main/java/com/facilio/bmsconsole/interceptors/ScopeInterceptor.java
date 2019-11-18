@@ -20,6 +20,7 @@ import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.server.ServerInfo;
+import com.facilio.service.FacilioService;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -244,7 +245,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 		try {
 			AccountUtil.setReqUri(request.getRequestURI());
             AccountUtil.setRequestParams(request.getParameterMap());
-            if(true){  // make false to intercept
+            if(  FacilioProperties.isProduction() ){  // make false to intercept
 				return arg0.invoke();
 			} else {
 				AuditData data = null;
@@ -253,7 +254,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				try {
 					data = getAuditData(arg0);
 					if(data != null) {
-						data.setId(audit.add(data));
+						AuditData finalData = data;
+						FacilioService.runAsServiceWihReturn(() ->audit.add(finalData));
+						data.setId(finalData.getId());
 					}
 					return arg0.invoke();
 				} catch (Exception e) {
@@ -265,7 +268,8 @@ public class ScopeInterceptor extends AbstractInterceptor {
 						data.setEndTime(System.currentTimeMillis());
 						data.setStatus(status);
 						data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());
-						audit.update(data);
+						AuditData finalData1 = data;
+						FacilioService.runAsServiceWihReturn(() ->audit.update(finalData1));
 					}
 				}
 			}

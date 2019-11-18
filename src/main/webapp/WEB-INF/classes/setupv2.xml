@@ -212,7 +212,11 @@
 		<action name="set"  class="com.facilio.bmsconsole.actions.DeviceAction" method="setValue">
 		</action>
 
-	</package>
+        <action name="configure"  class="com.facilio.bmsconsole.actions.DeviceAction" method="configurePoint">
+        </action>
+
+    </package>
+
 
 	<package name="newAgentSetupApiV2" namespace="/api/v2/setup/newAgent" extends="setupApiV2">
 

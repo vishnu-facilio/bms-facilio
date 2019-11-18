@@ -99,12 +99,29 @@ public class ControllerUtilV2
         }
     }
 
-
+    /**
+     *
+     *
+         {
+         "controller": "X_#_X",
+         "type": 1,
+         ...,
+         ...,
+         ...
+         }
+         "controller" - identifier actully, MANDATORY- if not present returns null.
+         "type" - mandatory for Java-Agent, but if not present will make it custom controllers.
+     *
+     *
+     * Gets respective controller or makes them from the payload.
+     * @param payload - must contain key "controller"
+     * @return - null if controller is not found or if the key "controller" is missing.
+     */
     public Controller getControllerFromAgentPayload(JSONObject payload) {
         if (!payload.containsKey(AgentConstants.CONTROLLER)) {
             return null;
         }
-        LOGGER.info(" controller map list ");
+        LOGGER.info(" get controller from payload  ");
         for (Map<String, Controller> controllerMap : controllerMapList) {
             LOGGER.info(" controllerMap \n"+controllerMap+"\n");
         }
@@ -175,6 +192,8 @@ public class ControllerUtilV2
                         continue;
                     } else {
                         controller.setActive(true);
+                        controller.setDataInterval(900000);
+                        controller.setAvailablePoints(0);
                         long controllerId = ControllerApiV2.addController(controller);
                         if( controllerId > 0){
                             deviceId.add(device.getId());

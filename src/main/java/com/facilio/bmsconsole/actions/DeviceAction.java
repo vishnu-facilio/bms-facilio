@@ -323,6 +323,17 @@ public class DeviceAction extends ActionSupport
 		return SUCCESS;
 	}
 
+	private long pointId;
+	public long getPointId() { return pointId; }
+	public void setPointId(long pointId) { this.pointId = pointId; }
+
+	public String configurePoint(){
+		if( checkValue( getPointId() ) ){
+			PointsAPI.configurePoint(getAgentId());
+		}
+		return SUCCESS;
+	}
+
 	public String getControllerUsingId(){
 		if(checkValue(getControllerId())){
 			Controller controller = ControllerApiV2.getControllerFromDb(getControllerId());

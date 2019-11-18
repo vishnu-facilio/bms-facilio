@@ -48,7 +48,7 @@ public class OpcUaPoint extends Point {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
-        if(containsValueCheck(AgentConstants.NAMESPACE, pointMap) && containsValueCheck(AgentConstants.IDENTIFIER, pointMap)){
+        if(containsValueCheck(AgentConstants.NAMESPACE, pointMap) && containsValueCheck(AgentConstants.IDENTIFIER, pointMap)){ //namespace
            /* OpcUaPoint point = new OpcUaPoint(agentId,controllerId);
             point.setNamespace(JsonUtil.getInt(pointMap.get(AgentConstants.NAMESPACE)));
             point.setIdentifier((String)pointMap.get(AgentConstants.IDENTIFIER));
