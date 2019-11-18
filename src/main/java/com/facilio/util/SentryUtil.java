@@ -20,7 +20,7 @@ public class SentryUtil {
 
     public static void sendToSentry(Map<String, String> contextMap, HttpServletRequest request ) {
 
-        if(FacilioProperties.isSentryEnabled()){
+        if (FacilioProperties.isSentryEnabled()) {
             Context context = SENTRY_CLIENT.getContext();
             context.clear();
             //context.setUser(new UserBuilder().setId(userId).build());
@@ -36,10 +36,10 @@ public class SentryUtil {
                 if (contextMap.containsKey("url")) {
                     SENTRY_CLIENT.sendMessage(contextMap.get("url"));
                 } else {
-                    LOGGER.log(Level.ERROR,"url is not present");
+                    LOGGER.log(Level.ERROR, "url is not present");
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.ERROR,"Cannot log to sentry");
+                LOGGER.log(Level.ERROR, "Cannot log to sentry");
             }
         }
 
