@@ -194,19 +194,19 @@ public class TransactionChainFactory {
 		public static FacilioChain getWorkOrderWorkflowsChain(boolean sendNotification) {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ExecuteStateFlowCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_CUSTOM_CHANGE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
-//			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			
 			if (sendNotification) {
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
-					c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE));
+					c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION));
 				} else {
 					c.addCommand(new ForkChainToInstantJobCommand()
-							.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE)));
+							.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION)));
 				}
 			}
 			return c;
@@ -282,13 +282,13 @@ public class TransactionChainFactory {
 			c.addCommand(new VerifyQrCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new SendNotificationCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 				.addCommand(new ClearAlarmOnWOCloseCommand())
 				.addCommand(new ExecuteTaskFailureActionCommand())
 			);
@@ -816,10 +816,10 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.REPORT_DOWNTIME_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.CONTROL_ACTION_READING_ALARM_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.BUSSINESS_LOGIC_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 			);
 			c.addCommand(new AddAlarmFollowersCommand());
 			c.addCommand(new ConstructTicketNotesCommand());
@@ -839,12 +839,12 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new UpdateAlarmCommand());
 			c.addCommand(new AddMLOccurrenceCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.BUSSINESS_LOGIC_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.CONTROL_ACTION_READING_ALARM_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 				.addCommand(new AddClearCommentInWoOnAlarmClearCommand())
 			);
 			c.addCommand(new ConstructTicketNotesCommand());
@@ -998,7 +998,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateTaskCommand());
 			c.addCommand(new UpdateClosedTasksCounterCommand());
 			c.addCommand(new AddTaskTicketActivityCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			c.addCommand(new AddActivitiesCommand());
 			c.addCommand(new UpdateRdmWithLatestInputUnit());
 			c.addCommand(new SiUnitConversionToEnteredReadingUnit());
@@ -2076,7 +2076,7 @@ public class TransactionChainFactory {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseRequest());
 			chain.addCommand(new AddOrUpdatePurchaseRequestCommand());
-			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			chain.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
 			return chain;
 		}
@@ -3000,7 +3000,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.REPORT_DOWNTIME_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.CONTROL_ACTION_READING_ALARM_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.BUSSINESS_LOGIC_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.ALARM_WORKFLOW_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
 			c.addCommand(new FacilioCommand() {
@@ -3011,7 +3011,7 @@ public class TransactionChainFactory {
 				}
 			});
 			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 			);
 			return c;
 		}
@@ -3021,11 +3021,11 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateAlarmOccurrenceCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.REPORT_DOWNTIME_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
-		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.BUSSINESS_LOGIC_ALARM_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.ALARM_WORKFLOW_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
 		c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 		);
 		//c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 		return c;

@@ -18,7 +18,7 @@ public class ExecuteWorkFlowsBusinessLogicInPostTransactionCommand extends Facil
 	@Override
 	public boolean postExecute() throws Exception {
 		// TODO Auto-generated method stub
-		new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE).execute(context);
+		new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE).execute(context);
 		return false;
 	}
 
