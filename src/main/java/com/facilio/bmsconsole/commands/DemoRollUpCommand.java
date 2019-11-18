@@ -48,6 +48,7 @@ public class DemoRollUpCommand extends FacilioCommand {
 //						}
 //
 //=======
+			LOGGER.info("DemoRollUp job start to executed");
 			long executionTime=(long) context.get(FacilioConstants.ContextNames.DEMO_ROLLUP_EXECUTION_TIME);
 			long daysToMillisec=(executionTime * 24 * 60 * 60 * 1000);
 			long startTime = System.currentTimeMillis();

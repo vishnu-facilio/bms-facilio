@@ -30,6 +30,7 @@ public class DemoRollUpJob extends FacilioJob{
 		long orgId=AccountUtil.getCurrentOrg().getId();
 		long timeDuration = 1;
 		try {
+			LOGGER.info("DemorollupJob started in facilioJob");
 			FacilioContext context=new FacilioContext();
 			context.put(ContextNames.DEMO_ROLLUP_EXECUTION_TIME,timeDuration);
 			context.put(ContextNames.DEMO_ROLLUP_JOB_ORG,orgId);
