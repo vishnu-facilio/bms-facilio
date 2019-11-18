@@ -3133,7 +3133,9 @@ public class PreventiveMaintenanceAPI {
 						taskMap.put(taskTemplate.getName(), (Long) taskTemplate.getAdditionInfo().get("uniqueId"));
 					}
 				}
-				List<WorkOrderContext> workOrders = WorkOrderAPI.getWorkOrderFromPMId(pm.getId());
+				Criteria timeCriteria = new Criteria();
+				timeCriteria.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "1547887790000", NumberOperators.GREATER_THAN));
+				List<WorkOrderContext> workOrders = WorkOrderAPI.getWorkOrdersFromPM(pm.getId(), timeCriteria);
 				for (WorkOrderContext workOrderContext: workOrders) {
 					LOGGER.log(Level.WARN, "executing for wo " + workOrderContext.getId());
 					List<TaskContext> tasks = TicketAPI.getRelatedTasks(Collections.singletonList(workOrderContext.getId()), true, true);
