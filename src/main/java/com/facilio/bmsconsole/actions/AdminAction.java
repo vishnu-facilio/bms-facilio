@@ -282,6 +282,21 @@ public class AdminAction extends ActionSupport
 		
 	}
 
+	public String deleteMessageQueue(){
+		HttpServletRequest request = ServletActionContext.getRequest();
+		int daysToDelete = Integer.parseInt(request.getParameter("days"));
+		String tableName = request.getParameter("tableName");
+		try{
+			FacilioChain deleteMessageChain = TransactionChainFactory.deleteMessageQueueChain();
+			deleteMessageChain.getContext().put("NO_OF_DAYS",daysToDelete);
+			deleteMessageChain.getContext().put("TABLE_NAME",tableName);
+			deleteMessageChain.execute();
+		}catch(Exception e){
+			logger.log(Level.SEVERE,"Exception occurred in Delelt Message queue"+e.getMessage(),e);
+		}
+
+		return SUCCESS;
+	}
 	
 	
 	public String adminReadingTools() throws Exception {

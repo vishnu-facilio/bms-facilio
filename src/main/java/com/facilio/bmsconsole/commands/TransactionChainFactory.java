@@ -389,6 +389,11 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain deleteMessageQueueChain(){
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DeleteMessageQueueJobsCommand());
+			return c;
+		}
 
 		public static FacilioChain openUnOpenedPMs() {
 			FacilioChain c = getDefaultChain();

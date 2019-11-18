@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
+import com.facilio.bmsconsole.commands.DeleteMessageQueueJobsCommand;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -16,22 +17,17 @@ public class DeleteEmailExceptionQueue extends FacilioJob {
 
     private static final Logger LOGGER = LogManager.getLogger(DeleteEmailExceptionQueue.class.getName());
     private static final String TABLE_NAME = "FacilioExceptionQueue";
-    private static final Map<String, FacilioField> FIELD_MAP = DeleteInstantJobQueue.FIELD_MAP;
-    private static final String deleteCondition = DeleteInstantJobQueue.deleteCondition;
+    private static final String DELETE_CONDITION = "< NOW() - INTERVAL 7 DAY";
     @Override
     public void execute(JobContext jc) throws Exception {
 
         try{
-            int count = FacilioService.runAsServiceWihReturn(() ->deleteQueue());
+            int count = FacilioService.runAsServiceWihReturn(() -> DeleteMessageQueueJobsCommand.deleteQueue(TABLE_NAME, DELETE_CONDITION));
             LOGGER.info("FacilioExceptionQueue deleted queue count is  : "+count);
         }catch(Exception e){
             LOGGER.info("Exception occurred in FacilioExceptionQueue deletedJob  :  ",e);
         }
 
     }
-    private static  int deleteQueue() throws Exception {
-        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                .table(TABLE_NAME).andCondition(CriteriaAPI.getCondition(FIELD_MAP.get("deletedTime"),deleteCondition, CommonOperators.IS_NOT_EMPTY));
-        return builder.delete();
-    }
+
 }
