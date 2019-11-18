@@ -653,6 +653,9 @@ public class ColumnFactory {
 		columns.add(new ViewField("checkOutTime", "CheckOut Time"));
 		columns.add(new ViewField("approvalNeeded", "Is Host Approval Needed"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
+		columns.add(new ViewField("isBlocked", "Visitor Entry"));
+		columns.add(new ViewField("isVip", "VIP"));
+		columns.add(new ViewField("moduleState", "Module State"));
 		columns.add(new ViewField("attachmentPreview", "Attachment Preview"));
 		return columns;
 	}
