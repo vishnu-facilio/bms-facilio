@@ -169,7 +169,6 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Tool_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Tool_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Gate_Pass_Line_Items" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME"));
-		tablesContainsDateField.put("StateFlowTransition" , Arrays.asList("SCHEDULE_TIME"));
 		tablesContainsDateField.put("ConnectedApps" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME"));
 		tablesContainsDateField.put("Connection" , Arrays.asList("EXPIRY_TIME"));
 		tablesContainsDateField.put("ML_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
