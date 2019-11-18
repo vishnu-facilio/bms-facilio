@@ -4,7 +4,6 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.server.ServerInfo;
 import com.facilio.util.SentryUtil;
 import org.apache.http.HttpHeaders;
@@ -201,9 +200,10 @@ public class AccessLogFilter implements Filter {
             contextMap.put("grayLogUrl",grayLogSearchUrl);
 
             LOGGER.log(Level.INFO, "Log this to sentry");
+            LOGGER.log(Level.INFO, grayLogSearchUrl );
+
             SentryUtil.sendToSentry(contextMap, request );
         }
-
         if(appender != null) {
             appender.doAppend(event);
         } else {
