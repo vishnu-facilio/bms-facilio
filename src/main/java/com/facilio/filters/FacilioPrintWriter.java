@@ -70,8 +70,10 @@ class FacilioPrintWriter extends PrintWriter {
 
     @Override
     public void write(char[] buf) {
-        addLength(buf.length);
-        writer.write(buf);
+        if(buf != null) {
+            addLength(buf.length);
+            writer.write(buf);
+        }
     }
 
     @Override
@@ -82,8 +84,10 @@ class FacilioPrintWriter extends PrintWriter {
 
     @Override
     public void write(String s) {
-        addLength(s.length());
-        writer.write(s);
+        if(s != null) {
+            addLength(s.length());
+            writer.write(s);
+        }
     }
 
     @Override
@@ -114,14 +118,26 @@ class FacilioPrintWriter extends PrintWriter {
 
     @Override
     public void print(char[] s) {
-        addLength(s.length);
-        writer.print(s);
+        if(s != null) {
+            addLength(s.length);
+            writer.print(s);
+        } else {
+            printNull();
+        }
+    }
+
+    private void printNull() {
+        print("null");
     }
 
     @Override
     public void print(String s) {
-        addLength(s.length());
-        writer.print(s);
+        if(s != null) {
+            addLength(s.length());
+            writer.print(s);
+        } else {
+            printNull();
+        }
     }
 
     @Override
@@ -168,19 +184,31 @@ class FacilioPrintWriter extends PrintWriter {
 
     @Override
     public void println(char[] x) {
-        addLength(x.length + LINE_SEPARATOR_LENGTH);
-        writer.println(x);
+        if( x != null) {
+            addLength(x.length + LINE_SEPARATOR_LENGTH);
+            writer.println(x);
+        } else {
+            printNull();
+        }
     }
 
     @Override
     public void println(String x) {
-        addLength(x.length() + LINE_SEPARATOR_LENGTH);
-        writer.println(x);
+        if(x != null) {
+            addLength(x.length() + LINE_SEPARATOR_LENGTH);
+            writer.println(x);
+        } else {
+            printNull();
+        }
     }
 
     @Override
     public void println(Object x) {
-        println(String.valueOf(x));
+        if(x != null) {
+            println(String.valueOf(x));
+        } else {
+            printNull();
+        }
     }
 
     @Override

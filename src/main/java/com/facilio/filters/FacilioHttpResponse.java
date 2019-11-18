@@ -18,17 +18,25 @@ public class FacilioHttpResponse implements HttpServletResponse {
     private PrintWriter writer;
 
     private static final Logger LOGGER = LogManager.getLogger(FacilioHttpResponse.class.getName());
+    private int lengthInBytes = 0;
 
     FacilioHttpResponse(HttpServletResponse servletResponse) {
         response = servletResponse;
         try {
             outputStream = new FacilioOutputStream(servletResponse.getOutputStream());
-            writer = new FacilioPrintWriter(servletResponse.getWriter());
+            writer = new FacilioPrintWriter(this, servletResponse.getWriter());
         } catch (IOException e) {
             LOGGER.info("Exception while creating writer and outputstream ", e);
         }
     }
 
+    public int getLengthInBytes() {
+        return lengthInBytes;
+    }
+
+    public void setLengthInBytes(int lengthInBytes) {
+        this.lengthInBytes = lengthInBytes;
+    }
 
     @Override
     public void addCookie(Cookie cookie) {
