@@ -83,7 +83,7 @@ public class CommonAction extends FacilioAction {
 	}
 	
 	public String parseFtl() throws Exception {
-		if (workflow.getWorkflowString() == null) {
+		if (!workflow.isV2Script() && workflow.getWorkflowString() == null) {
 			workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 		}
 		Map<String, Object> parameters = new HashMap<String,Object>();
@@ -91,7 +91,14 @@ public class CommonAction extends FacilioAction {
 		if (this.parameters != null) {
 			parameters.putAll(this.parameters);
 		}
-		Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow, parameters);
+		
+		Map<String, Object> params;
+		if (workflow.isV2Script()) {
+			params = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(workflow, parameters);
+		}
+		else {
+			params = WorkflowUtil.getExpressionResultMap(workflow, parameters);
+		}
 		
 		setResult("parsedFtl", FreeMarkerAPI.processTemplate(ftl, params));
 		setResult("workflowResultMap", params);
