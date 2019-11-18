@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.server.ServerInfo;
 import com.facilio.util.SentryUtil;
 import org.apache.http.HttpHeaders;
@@ -59,6 +60,9 @@ public class AccessLogFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
+        if( ! FacilioProperties.isProduction()) {
+            response = new FacilioHttpResponse(response);
+        }
 
         long startTime = System.currentTimeMillis();
 
@@ -146,24 +150,25 @@ public class AccessLogFilter implements Filter {
         }
 
         String origin = request.getHeader("Origin");
-        if(origin != null) {
-            event.setProperty("origin", origin);
-        } else {
-            event.setProperty("origin", request.getServerName());
+        if(origin == null) {
+            origin = request.getServerName();
         }
-
+        event.setProperty("origin", origin);
+        
         String deviceType = request.getHeader(X_DEVICE_TYPE);
-        if(deviceType != null) {
-            event.setProperty("deviceType", deviceType);
-        } else {
-            event.setProperty("deviceType", DEFAULT_QUERY_STRING);
+        if(deviceType == null) {
+            deviceType = DEFAULT_QUERY_STRING;
         }
+        event.setProperty("deviceType", deviceType);
 
         String appVersion = request.getHeader(X_APP_VERSION);
-        if(appVersion != null) {
-            event.setProperty("appVersion", appVersion);
-        } else {
-            event.setProperty("appVersion", DEFAULT_QUERY_STRING);
+        if(appVersion == null) {
+            appVersion = DEFAULT_QUERY_STRING;
+        }
+        event.setProperty("appVersion", appVersion);
+
+        if ( ! FacilioProperties.isProduction()) {
+            event.setProperty(RESPONSE_SIZE, String.valueOf(((FacilioOutputStream)response.getOutputStream()).getLengthInBytes()));
         }
 
         long timeTaken = System.currentTimeMillis()-startTime;
@@ -197,6 +202,7 @@ public class AccessLogFilter implements Filter {
             LOGGER.log(Level.INFO, "Log this to sentry");
             SentryUtil.sendToSentry(contextMap, request );
         }
+
         if(appender != null) {
             appender.doAppend(event);
         } else {
