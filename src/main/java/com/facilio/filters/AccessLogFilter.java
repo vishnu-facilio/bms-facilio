@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.server.ServerInfo;
 import com.facilio.util.SentryUtil;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Appender;
@@ -16,8 +17,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,8 +45,7 @@ public class AccessLogFilter implements Filter {
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
     private static final long TIME_THRESHOLD = 5000 ;
-    private static String grayLogUrl = "https://logs.facilio.in/streams/000000000000000000000001/search?saved=5d19a5329b569c766b3a1f2f&rangetype=relative&fields=logger&width=1536&highlightMessage=&relative=86400";
-
+    private static String grayLogUrl = "https://logs.facilio.in/streams/000000000000000000000001/search?saved=5d19a5329b569c766b3a1f2f&rangetype=relative&fields=logger&width=1536&highlightMessage=&relative=172800&q=facility%3Aproduction-user%20AND%20%20thread%20%3A%20";
     private static Appender appender;
 
 
@@ -153,14 +151,14 @@ public class AccessLogFilter implements Filter {
         } else {
             event.setProperty("origin", request.getServerName());
         }
-        
+
         String deviceType = request.getHeader(X_DEVICE_TYPE);
         if(deviceType != null) {
             event.setProperty("deviceType", deviceType);
         } else {
             event.setProperty("deviceType", DEFAULT_QUERY_STRING);
         }
-        
+
         String appVersion = request.getHeader(X_APP_VERSION);
         if(appVersion != null) {
             event.setProperty("appVersion", appVersion);
@@ -175,28 +173,31 @@ public class AccessLogFilter implements Filter {
         event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(timeTaken));
 
         if (response.getStatus() == HttpServletResponse.SC_INTERNAL_SERVER_ERROR  || timeTaken > TIME_THRESHOLD  ) {
-            String searchQuery = "&q=logger%3Acom.facilio.util.SentryUtil%20AND%20facility%3Aproduction-user%20AND%20thread%20%3A"+"%20"+thread.getName()+"%20";
+            String sourceIp = null;
+            if (ServerInfo.getHostname() != null) {
+                 sourceIp = ServerInfo.getHostname();
+            }
+            String searchQuery = thread.getName()+"%20AND%20ip-"+sourceIp;
             String grayLogSearchUrl;
             grayLogSearchUrl = grayLogUrl + searchQuery;
 
             Map<String, String> contextMap = new HashMap<>();
 
-                    contextMap.put("orgId", orgId);
-                    contextMap.put("url", requestUrl);
-                    contextMap.put("remoteIp", remoteIp);
-                    contextMap.put("referer", referer);
-                    contextMap.put("query", queryString);
-                    contextMap.put("userId", userId);
-                    contextMap.put("responseCode", responseCode);
-                    contextMap.put("timeTaken", String.valueOf(timeTaken));
-                    contextMap.put("thread", thread.getName());
-                    contextMap.put("grayLogUrl",grayLogSearchUrl);
-
+            contextMap.put("orgId", orgId);
+            contextMap.put("url", requestUrl);
+            contextMap.put("remoteIp", remoteIp);
+            contextMap.put("referer", referer);
+            contextMap.put("query", queryString);
+            contextMap.put("userId", userId);
+            contextMap.put("responseCode", responseCode);
+            contextMap.put("timeTaken", String.valueOf(timeTaken));
+            contextMap.put("thread", thread.getName());
+            contextMap.put("grayLogUrl",grayLogSearchUrl);
 
             LOGGER.log(Level.INFO, "Log this to sentry");
             SentryUtil.sendToSentry(contextMap, request );
         }
-  if(appender != null) {
+        if(appender != null) {
             appender.doAppend(event);
         } else {
             LOGGER.callAppenders(event);
