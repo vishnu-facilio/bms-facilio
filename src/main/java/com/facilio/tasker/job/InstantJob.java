@@ -29,7 +29,7 @@ public abstract class InstantJob {
     public final void _execute(FacilioContext context, int transactionTimeout) {
         Thread currentThread = Thread.currentThread();
         String threadName = currentThread.getName();
-        currentThread.setName(threadName + "-" + StringUtils.truncate(getReceiptHandle(), 150));
+        currentThread.setName(threadName + "-instant-job-" + StringUtils.truncate(getReceiptHandle(), 50));
     	String jobName = (String) context.remove(InstantJobConf.getJobNameKey());
     	int status = 0;
     	long startTime = System.currentTimeMillis();
