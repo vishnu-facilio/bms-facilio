@@ -309,7 +309,7 @@
 			"workflow" : "Map assetAlarmDetails(Number resourceId) {
 				date = NameSpace(\"date\");
 				durtaion = 0;
-                durationInMilli = 0;
+				 durationInMilli = 0;
 				thisCurrentYear = date.getDateRange(\"Current Year\");
 				readingAlarmOccurrence = Module(\"readingalarmoccurrence\");
 				occurenceThisMonthCrit = null;
@@ -343,12 +343,23 @@
 						aggregation: \"sum, duration\"
 					};
 					durationrecord = readingAlarmOccurrence.fetch(ruleDurationCriteria);
-					duration = durationrecord ;
-					durationInMilli = duration * 1000 ;
+					if (durationrecord != null) {
+						duration = durationrecord ;
+						durationInMilli = duration * 1000 ;
+					} else {
+						newReadingAlarmModule = Module(\"newreadingalarm\");
+						ruleDurationCriteria = {
+							criteria: [rule == ruleId && resource == resourceId]
+						};
+						durationRecord = newReadingAlarmModule.fetch(ruleDurationCriteria);
+						if (durationRecord != null && durationRecord.get(0).lastOccurredTime > 0) {
+							duration = date().now() - durationRecord.get(0).lastOccurredTime;
+						}
+					}
 					ruleObj = readingRuleModule.fetch(readingRuleCrite);
 					if (ruleObj != null) {
-						firstRes =ruleObj[0];
-						commonRule = firstRes.name;
+					firstRes =ruleObj[0];
+					commonRule = firstRes.name;
 					}
 				}
 				resMap[\"commonRule\"] = commonRule;
@@ -356,7 +367,7 @@
 				resMap[\"durationInSeconds\"] = duration;
 				log resMap;
 				return resMap;
-			}"
+				}"
 		},
 		"6": {
 			"description": "",
@@ -1091,7 +1102,7 @@
 				mttcCount = 0;
 				for each index,occurrence in alarmMonthOccurenceList {
 					if (occurrence.acknowledged != null) {
-						acknowledgedDuration = acknowledgedDuration + ( occurrence.acknowledged - occurrence.createdTime);
+						acknowledgedDuration = acknowledgedDuration + ( occurrence.acknowledgedTime - occurrence.createdTime);
 					}
 					if (previousClearedTime != 0) {
 						if (previousClearedTime > occurrence.createdTime) {
