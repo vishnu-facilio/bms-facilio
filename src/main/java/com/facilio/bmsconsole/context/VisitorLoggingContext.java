@@ -310,4 +310,72 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		this.vendor = vendor;
 	}
 	
+	public Boolean isNdaSigned;
+
+	public Boolean getIsNdaSigned() {
+		return isNdaSigned;
+	}
+
+	public void setIsNdaSigned(Boolean isNdaSigned) {
+		this.isNdaSigned = isNdaSigned;
+	}
+
+	public boolean isNdaSigned() {
+		if (isNdaSigned != null) {
+			return isNdaSigned.booleanValue();
+		}
+		return false;
+	}
+	
+	public Boolean isInvited;
+
+	public Boolean getIsInvited() {
+		return isInvited;
+	}
+
+	public void setIsInvited(Boolean isInvited) {
+		this.isInvited = isInvited;
+	}
+
+	public boolean isInvited() {
+		if (isInvited != null) {
+			return isInvited.booleanValue();
+		}
+		return false;
+	}
+	
+	private Boolean photoStatus;
+	public Boolean getPhotoStatus() {
+		if (photoStatus == null) {
+			return false;
+		}
+		return photoStatus;
+	}
+	public void setPhotoStatus(Boolean photoStatus) {
+		this.photoStatus = photoStatus;
+	}
+	
+	private Boolean hostStatus;
+	public Boolean getHostStatus() {
+		if (hostStatus == null) {
+			return false;
+		}
+		return hostStatus;
+	}
+	public void setHostStatus(Boolean hostStatus) {
+		this.hostStatus = hostStatus;
+	}
+	
+	private Boolean idProofScanned;
+	public Boolean getIdProofScanned() {
+		if (idProofScanned == null) {
+			return false;
+		}
+		return idProofScanned;
+	}
+	public void setIdProofScanned(Boolean idProofScanned) {
+		this.idProofScanned = idProofScanned;
+	}
+	
+	
 }

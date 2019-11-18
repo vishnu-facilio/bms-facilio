@@ -21,9 +21,11 @@ public class AddNdaForVisitorLogCommand extends FacilioCommand implements PostTr
 		List<VisitorLoggingContext> visitorLoggings = (List<VisitorLoggingContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(visitorLoggings)) {
 			for(VisitorLoggingContext vL : visitorLoggings) {
-				File file = PdfUtil.exportUrlAsFile(FacilioProperties.getClientAppUrl() + "/app/pdf/visitornda/" + vL.getId(), vL.getId()+" - NDA");
-				//VisitorManagementAPI.updateVisitorLogNDA(vL.getId(), fileId);
-				VisitorManagementAPI.updateVisitorLogNDA(vL.getId(), file);
+				if(vL.getIsNdaSigned()) {
+					File file = PdfUtil.exportUrlAsFile(FacilioProperties.getClientAppUrl() + "/app/pdf/visitornda/" + vL.getId(), vL.getId()+" - NDA");
+					//VisitorManagementAPI.updateVisitorLogNDA(vL.getId(), fileId);
+					VisitorManagementAPI.updateVisitorLogNDA(vL.getId(), file);
+				}
 			}
 		}
 		

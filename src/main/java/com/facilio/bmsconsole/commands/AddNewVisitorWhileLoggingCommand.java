@@ -29,6 +29,24 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			for(VisitorLoggingContext vL : visitorLogs) {
+				if(vL.getInvite() != null && vL.getInvite().getId() > 0) {
+					vL.setIsInvited(true);
+				}
+				else {
+					vL.setIsInvited(false);
+				}
+				if(vL.getAvatar() != null) {
+					vL.setPhotoStatus(true);
+				}
+				else {
+					vL.setPhotoStatus(false);
+				}
+				if(vL.getHost() != null && vL.getHost().getId() > 0) {
+					vL.setHostStatus(true);
+				}
+				else {
+					vL.setHostStatus(false);
+				}
 				if(vL.getVisitor() != null && vL.getVisitor().getId() > 0){
 					VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLogging(vL.getVisitor().getId(), true);
 					if(vLog != null) {

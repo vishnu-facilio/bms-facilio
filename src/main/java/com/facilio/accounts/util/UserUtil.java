@@ -112,12 +112,12 @@ public class UserUtil {
 	
 	public static Map<String, Object> getUserFromPhone(String phone) throws Exception {
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
+		//criteria.addAndCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
 		criteria.addAndCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		
 		Criteria criteria2 = new Criteria();
-		criteria2.addAndCondition(CriteriaAPI.getCondition("PHONE", "phone", phone, StringOperators.IS));
-		criteria2.addOrCondition(CriteriaAPI.getCondition("MOBILE", "mobile", phone, StringOperators.IS));
+		criteria2.addAndCondition(CriteriaAPI.getCondition("Account_Users.PHONE", "phone", phone, StringOperators.IS));
+		criteria2.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", phone, StringOperators.IS));
 		
 		Criteria finalCriteria = new Criteria();
 		finalCriteria.andCriteria(criteria);
