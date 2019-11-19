@@ -157,11 +157,16 @@ public class ModuleLocalIdUtil {
 		
 	}
 	
-	public static boolean isModuleWithLocalId(String moduleName) {
+	public static boolean isModuleWithLocalId(FacilioModule module) {
 		
-		if(AccountUtil.getCurrentOrg().getId() == 92l && moduleName.equals("kdm")) {
+		if(AccountUtil.getCurrentOrg().getId() == 92l && module.getName().equals("kdm")) {
 			return true;
 		}
-		return MODULES_WITH_LOCAL_ID.contains(moduleName) ? true : false;
+		if (MODULES_WITH_LOCAL_ID.contains(module.getName())) {
+			return true;
+		} else if (module.getExtendModule() != null)  {
+			return isModuleWithLocalId(module.getExtendModule());
+		}
+		return false;
 	}
 }

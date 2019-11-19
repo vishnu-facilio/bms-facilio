@@ -106,7 +106,7 @@ public static List<Long> populateData(ImportProcessContext importProcessContext,
 				}
 				
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
+			FacilioModule module = bean.getModule(moduleName);
 			bean.getAllFields(moduleName);
 			InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
 					.table(moduleTableName)
@@ -114,7 +114,7 @@ public static List<Long> populateData(ImportProcessContext importProcessContext,
 					.fields(bean.getAllFields(moduleName))
 					.addRecords(readingsList);
 			
-			if(ModuleLocalIdUtil.isModuleWithLocalId(moduleName)) {
+			if(ModuleLocalIdUtil.isModuleWithLocalId(module)) {
 				readingBuilder.withLocalId();
 			}
 			readingBuilder.save();

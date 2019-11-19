@@ -436,7 +436,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 						.fields(bean.getAllFields(moduleName))
 						.addRecords(readingsList);
 				
-				if(ModuleLocalIdUtil.isModuleWithLocalId(moduleName)) {
+				if(ModuleLocalIdUtil.isModuleWithLocalId(module)) {
 					readingBuilder.withLocalId();
 				}
 				readingBuilder.save();

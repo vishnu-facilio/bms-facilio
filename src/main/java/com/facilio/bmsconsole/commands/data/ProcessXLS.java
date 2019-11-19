@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -47,10 +48,6 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.services.factory.FacilioFactory;
@@ -333,13 +330,13 @@ public class ProcessXLS extends FacilioCommand {
 					}
 				}
 				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				
+				FacilioModule module = bean.getModule(moduleName);
 				InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
 						.moduleName(moduleName)
 						.fields(bean.getAllFields(moduleName))
 						.addRecords(readingsList);
 				
-				if(ModuleLocalIdUtil.isModuleWithLocalId(moduleName)) {
+				if(ModuleLocalIdUtil.isModuleWithLocalId(module)) {
 					readingBuilder.withLocalId();
 				}
 				readingBuilder.save();
