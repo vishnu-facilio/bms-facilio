@@ -20,6 +20,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.BitlyUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -547,6 +548,20 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			long fileId = (long) Double.parseDouble(objects[0].toString());
 			
 			return fs.encodeFileToBase64Binary(fileId);
+			
+		}
+		
+	},
+	
+	GET_TINY_URL(18, "getTinyUrl") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			String longUrl = objects[0].toString();
+			
+			return BitlyUtil.getSmallUrl(longUrl);
 			
 		}
 		

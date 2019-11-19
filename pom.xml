@@ -24,6 +24,11 @@
 			<id>facilio-agent-framework-java-snapshot</id>
 			<url>s3://repo.facilio/facilio-agent-framework-java/snapshot/</url>
 		</repository>
+		<repository>
+	        <id>central</id>
+	        <name>bintray</name>
+	        <url>http://jcenter.bintray.com</url>
+    	</repository>
 	</repositories>
 	
 	<dependencies>
@@ -480,7 +485,12 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.5.9</version>
 		</dependency>
-
+		<!-- https://mvnrepository.com/artifact/net.swisstech/bitly-api-client -->
+		<dependency>
+		    <groupId>net.swisstech</groupId>
+		    <artifactId>bitly-api-client</artifactId>
+		    <version>0.8.0</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		<dependency>
