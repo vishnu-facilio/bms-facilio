@@ -183,6 +183,10 @@ public class MLAnomalyEvent extends BaseEventContext{
 	{
 		this.ratio=ratio;
 	}
+	public double getRatio()
+	{
+		return ratio;
+	}
 	private long parentID;
 	public void setParentID(long parentID)
 	{
@@ -193,10 +197,19 @@ public class MLAnomalyEvent extends BaseEventContext{
 	{
 		this.upperAnomaly=upperAnomaly;
 	}
+	public double getUpperAnomaly()
+	{
+		return upperAnomaly;
+	}
+	
 	private double lowerAnomaly;
 	public void setLowerAnomaly(double lowerAnomaly)
 	{
 		this.lowerAnomaly = lowerAnomaly;
+	}
+	public double getLowerAnomaly()
+	{
+		return lowerAnomaly;
 	}
 	
 	private MLAnomalyEvent parentEvent;

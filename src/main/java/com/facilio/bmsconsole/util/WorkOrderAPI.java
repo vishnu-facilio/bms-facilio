@@ -122,7 +122,7 @@ public class WorkOrderAPI {
       return null;
    }
 
-   public static List<WorkOrderContext> getWorkOrdersFromPM(long pmid, Criteria cr) throws Exception {
+   public static List<WorkOrderContext> getWorkOrdersFromPM(long pmid, Criteria cr, int limit) throws Exception {
        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
        SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
@@ -132,6 +132,11 @@ public class WorkOrderAPI {
                .andCondition(CriteriaAPI.getCondition("PM_ID", "pmId", pmid+"", NumberOperators.EQUALS));
                if (cr != null) {
                    builder.andCriteria(cr);
+               }
+               if (limit > 0) {
+                   builder
+                           .orderBy("WorkOrders.CREATED_TIME DESC")
+                           .limit(limit);
                }
        List<WorkOrderContext> workOrderContexts = builder.get();
        return workOrderContexts;

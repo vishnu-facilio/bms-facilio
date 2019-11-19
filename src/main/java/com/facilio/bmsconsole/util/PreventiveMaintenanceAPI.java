@@ -3098,6 +3098,12 @@ public class PreventiveMaintenanceAPI {
 			Set<Long> additionInfoMissing = new HashSet<>();
 			List<Long> skipList = Arrays.asList();
 			Set<Long> skip = new HashSet<>(skipList);
+			FacilioStatus status = TicketAPI.getStatus("preopen");
+
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
 			for (PreventiveMaintenance pm: allPMs) {
 				if (skip.contains(pm.getId())) {
 					LOGGER.log(Level.WARN, "skipping " + pm.getId());
@@ -3135,7 +3141,16 @@ public class PreventiveMaintenanceAPI {
 				}
 				Criteria timeCriteria = new Criteria();
 				timeCriteria.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "1547887790000", NumberOperators.GREATER_THAN));
-				List<WorkOrderContext> workOrders = WorkOrderAPI.getWorkOrdersFromPM(pm.getId(), timeCriteria);
+				timeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(status.getId()), NumberOperators.NOT_EQUALS));
+				List<WorkOrderContext> workOrders = WorkOrderAPI.getWorkOrdersFromPM(pm.getId(), timeCriteria, 30);
+
+				Criteria preOpen = new Criteria();
+				preOpen.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS));
+				preOpen.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "1547887790000", NumberOperators.GREATER_THAN));
+
+				List<WorkOrderContext> preOpens = WorkOrderAPI.getWorkOrdersFromPM(pm.getId(), preOpen, -1);
+				workOrders.addAll(preOpens);
+
 				for (WorkOrderContext workOrderContext: workOrders) {
 					LOGGER.log(Level.WARN, "executing for wo " + workOrderContext.getId());
 					List<TaskContext> tasks = TicketAPI.getRelatedTasks(Collections.singletonList(workOrderContext.getId()), true, true);

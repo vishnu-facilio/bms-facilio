@@ -79,15 +79,80 @@ public enum CardLayout {
 	READINGCARD_LAYOUT_2 ("readingcard_layout_2") {
 		
 		public JSONObject getParameters () {
-			return null;
+			JSONObject params = new JSONObject();
+			params.put("title", true);
+			params.put("reading", true);
+			params.put("baseline", true);
+			params.put("dateRange", false);
+			return params;
 		}
 		
 		public JSONObject getReturnValue () {
-			return null;
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", true);
+			returnValue.put("value", true);
+			returnValue.put("baselineValue", true);
+			returnValue.put("period", true);
+			return returnValue;
 		}
 		
 		public String getScript () {
-			return null;
+			StringBuilder sb = new StringBuilder();
+			
+			sb.append("fieldObj = NameSpace(\"module\").getField(params.reading.fieldName, params.reading.moduleName);\n"
+					+ "if (fieldObj != null) {"
+					+ "		fieldid = fieldObj.id();"
+					+ "		fieldMapInfo = fieldObj.asMap();"
+					+ "		date = NameSpace(\"date\");"
+					+ "		dateRangeObj = date.getDateRange(params.dateRange);"
+					+ "		baselineDateRangeObj = date.getDateRange(params.dateRange, params.baseline);"
+					+ "		period = params.dateRange;"
+					+ "		db = {"
+					+ "			criteria : [parentId == (params.reading.parentId) && ttime == dateRangeObj],"
+					+ "			field : params.reading.fieldName,"
+					+ "			aggregation : params.reading.yAggr"
+					+ "		};"
+					+ "		fetchModule = Module(params.reading.moduleName);"
+					+ "		cardValue = fetchModule.fetch(db);"
+					+ "		baselineDb = {"
+					+ "			criteria : [parentId == (params.reading.parentId) && ttime == baselineDateRangeObj],"
+					+ "			field : params.reading.fieldName,"
+					+ "			aggregation : params.reading.yAggr"
+					+ "		};"
+					+ "		baselineCardValue = fetchModule.fetch(baselineDb);"
+					+ "		enumMap = Reading(fieldid, params.reading.parentId).getEnumMap();"
+					+ "		valueMap = {};"
+					+ "		baselineValueMap = {};"
+					+ "		valueMap[\"value\"] = cardValue;"
+					+ "		baselineValueMap[\"value\"] = baselineCardValue;"
+					+ "		if (enumMap != null) {"
+					+ "			if (cardValue != null) {"
+					+ "				valueMap[\"value\"] = enumMap[cardValue];"
+					+ "			}"
+					+ "			if (baselineCardValue != null) {"
+					+ "				baselineValueMap[\"value\"] = enumMap[baselineCardValue];"
+					+ "			}"
+					+ "		}"
+					+ "		if (fieldMapInfo != null) {"
+					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			baselineValueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "		}"
+					+ "		result[\"value\"] = valueMap;"
+					+ "		result[\"baselineValue\"] = baselineValueMap;"
+					+ "}"
+					+ "else {"
+					+ "		valueMap = {};"
+					+ "		valueMap[\"value\"] = null;"
+					+ "		result[\"value\"] = valueMap;"
+					+ "		baselineValueMap = {};"
+					+ "		baselineValueMap[\"value\"] = null;"
+					+ "		result[\"baselineValue\"] = baselineValueMap;"
+					+ "}"
+					+ "result[\"title\"] = params.title;"
+					+ "result[\"period\"] = period;");
+					
+			
+			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
 		}
 	},
 	

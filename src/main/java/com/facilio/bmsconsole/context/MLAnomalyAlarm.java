@@ -68,4 +68,9 @@ public class MLAnomalyAlarm extends BaseAlarmContext {
 	public void setRatio(double ratio) {
 		this.ratio = ratio;
 	}
+	
+	public double getRatio()
+	{
+		return ratio;
+	}
 }
