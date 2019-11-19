@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.IAMUser.AppType;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.*;
@@ -20,6 +20,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
@@ -275,9 +277,12 @@ public class ProcessImportCommand extends FacilioCommand {
 								
 								if (lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET_CATEGORY) && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) && fieldMapping.get(facilioField.getModule().getName() + "__" + facilioField.getName()) == null) {
 									ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+									List<FacilioField> lookupModuleFields = bean.getAllFields(lookupField.getLookupModule().getName());
+
+									Map<String, FacilioField> lookupModuleFieldMap = FieldFactory.getAsMap(lookupModuleFields);
 									GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(bean.getAllFields(lookupField.getLookupModule().getName()))
 											.table(lookupField.getLookupModule().getTableName())
-											.andCustomWhere("LOWER(NAME) = ?", importProcessContext.getModule().getName().toString().toLowerCase());
+											.andCondition(CriteriaAPI.getCondition(lookupModuleFieldMap.get("assetModuleID"), importProcessContext.getModule().getModuleId() + "", NumberOperators.EQUALS));
 
 									List<Map<String, Object>> categoryPropList = selectBuilder.get();
 									if (categoryPropList.isEmpty()) {
