@@ -24,6 +24,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
@@ -542,7 +543,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			addedModules.add(resourceModule);
 		}
 		selectBuilder.innerJoin(baseSpaceModule.getTableName())
-		.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
+		.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");		
 		addedModules.add(baseSpaceModule);
 
 		FacilioField spaceField = null;
@@ -557,6 +558,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				spaceField = fieldMap.get("floor").clone();
 				break;
 			case SPACE:
+				selectBuilder.andCondition(CriteriaAPI.getCondition(baseSpaceModule.getTableName()+".SPACE_TYPE", "SPACE_TYPE", String.valueOf(SpaceType.valueOf(aggr.toString()).getIntVal()), NumberOperators.EQUALS));
 				spaceField = FieldFactory.getIdField(baseSpaceModule);
 				break;
 			default:

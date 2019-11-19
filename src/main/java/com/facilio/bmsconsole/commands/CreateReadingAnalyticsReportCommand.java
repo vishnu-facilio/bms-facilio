@@ -148,6 +148,12 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 			case BUILDING:
 				aggr = SpaceAggregateOperator.BUILDING;
 				break;
+			case FLOOR:
+				aggr = SpaceAggregateOperator.FLOOR;
+				break;
+			case SPACE:
+				aggr = SpaceAggregateOperator.SPACE;
+				break;
 			default: 
 				break;
 		}
@@ -206,6 +212,8 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 				return FieldFactory.getField("parentId", "Parent ID", "PARENT_ID", null, FieldType.NUMBER);
 			case SITE:
 			case BUILDING:
+			case FLOOR:
+			case SPACE:
 			case RESOURCE:
 				dp.setFetchResource(true);
 				return FieldFactory.getField("parentId", "Parent ID", "PARENT_ID", null, FieldType.NUMBER);
@@ -226,6 +234,8 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 				break;
 			case SITE:
 			case BUILDING:
+			case FLOOR:
+			case SPACE:
 			case RESOURCE:
 				xField = fieldMap.get("parentId");
 				dataPoint.setFetchResource(true);

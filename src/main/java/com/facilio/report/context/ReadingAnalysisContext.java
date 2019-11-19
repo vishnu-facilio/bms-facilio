@@ -155,7 +155,9 @@ public class ReadingAnalysisContext {
 		TIME_SPLIT,
 		SITE,
 		BUILDING,
-		RESOURCE
+		RESOURCE,
+		FLOOR,
+		SPACE
 		;
 		
 		public int getValue() {
