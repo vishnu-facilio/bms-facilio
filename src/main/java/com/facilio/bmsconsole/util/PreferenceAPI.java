@@ -49,6 +49,9 @@ public class PreferenceAPI {
 		
 	}
 	public static List<PreferenceMetaContext> getEnabledPreference(Long recordId, String moduleName) throws Exception{
+		if(recordId == null || recordId <= 0) {
+			throw new IllegalArgumentException("Invalid record id");
+		}
 		FacilioModule module = ModuleFactory.getPreferenceMetaModule();
 		List<FacilioField> fields = FieldFactory.getPreferencesMetaFields();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

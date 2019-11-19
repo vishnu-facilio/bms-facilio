@@ -91,23 +91,23 @@ public class PreferenceFactory {
 		List<Preference> visitorLogPreferences = new ArrayList<Preference>();
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getHostMailNotificationsPref());
-		//visitorLogPreferences.add(VisitorManagementAPI.getHostSmsNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getHostSmsNotificationsPref());
 		//visitorLogPreferences.add(VisitorManagementAPI.getHostWappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeMailNotificationsPref());
-		//visitorLogPreferences.add(VisitorManagementAPI.getWelcomeSmsNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeSmsNotificationsPref());
 		//visitorLogPreferences.add(VisitorManagementAPI.getWelcomeWappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getThanksMailNotificationsPref());
-		//visitorLogPreferences.add(VisitorManagementAPI.getThanksSmsNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getThanksSmsNotificationsPref());
 		//visitorLogPreferences.add(VisitorManagementAPI.getThanksWappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getInviteMailNotificationsPref());
-		//visitorLogPreferences.add(VisitorManagementAPI.getInviteSMSNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getInviteSmsNotificationsPref());
 		//visitorLogPreferences.add(VisitorManagementAPI.getInviteWappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getApprovalMailNotificationsPref());
-		//visitorLogPreferences.add(VisitorManagementAPI.getApprovalSMSNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getApprovalSmsNotificationsPref());
 		//visitorLogPreferences.add(VisitorManagementAPI.getApprovalWappNotificationsPref());
 		
 		return visitorLogPreferences;

@@ -1034,7 +1034,7 @@
 			<parameter name="visitorlogging.visitor.phone"
 				type="String" />
 			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
+			<parameter name="visitorlogging.host.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1135,10 +1135,7 @@
 			
 			<parameter name="visitorlogging.visitor.name"
 				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
-				type="String" />
-			<parameter name="visitorlogging.eventHost.phone"
+			<parameter name="visitorlogging.host.phone"
 				type="String" />
 		</workflow>
 	</template>
@@ -1163,11 +1160,6 @@
 			<parameter name="org.name" type="String" />
 			
 			<parameter name="visitorlogging.visitor.phone"
-				type="String" />
-			<parameter name="visitorlogging.checkInTimeString" type="String" />
-			<parameter name="visitorlogging.eventHost.name"
-				type="String" />
-			<parameter name="visitorlogging.eventHost.phone"
 				type="String" />
 		</workflow>
 	</template>
@@ -1269,6 +1261,31 @@
 			</expression>
 			
 		
+		</workflow>
+	</template>
+	<template id="107">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.host.phone"
+				type="String" />
+			<parameter name="visitorlogging.visitor.name"
+				type="String" />
+		</workflow>
+	</template>
+	<template id="108">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorinviterel.inviteId.name"
+				type="String" />
+			<parameter name="visitorinviterel.inviteId.expectedStartTime"
+				type="String" />
+			
+			<parameter name="visitorinviterel.visitorId.name"
+				type="String" />
 		</workflow>
 	</template>
 </workflows>

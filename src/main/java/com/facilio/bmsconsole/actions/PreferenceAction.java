@@ -93,6 +93,7 @@ public class PreferenceAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_SPECIFIC, getFetchModuleSpecific());
+		context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
 		
 		FacilioChain chain = TransactionChainFactory.getAllPreferences();
 		chain.execute(context);

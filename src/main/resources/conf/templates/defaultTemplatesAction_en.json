@@ -890,9 +890,9 @@
 	
 	},
 	"99": {
-		"name": "VISITOR_REQUESTING_EMAIL",
-		"to": "${visitorlogging.eventHost.phone:-}",
-		"message": "${visitorlogging.visitor.name:-} has requested to visit you and is now waiting in your premises.Kindly login facilio to proceed further \nAdmin Team."
+		"name": "VISITOR_REQUESTING_SMS",
+		"to": "${visitorlogging.host.phone}",
+		"message": "${visitorlogging.visitor.name} has requested to visit you and is now waiting in your premises.Kindly login facilio to proceed further \nAdmin Team."
 	},
 	"100": {
 		"name": "VISITOR_CHECKINGOUT_EMAIL",
@@ -903,8 +903,8 @@
 	
 	},
 	"101": {
-		"name": "VISITOR_CHECKINGOUT_EMAIL",
-		"to": "${visitorlogging.visitor.phone:-}",
+		"name": "VISITOR_CHECKINGOUT_SMS",
+		"to": "${visitorlogging.visitor.phone}",
 		"message": "Thanks for visiting us.You have successfully checked out.\nAdmin Team."
 	},
 	"102": {
@@ -946,6 +946,16 @@
 		"subject": "Visitor Approval Needed!",
 		"to": "${visitorlogging.email}",
 		"message_ftl": "approveVisitor"
+	},
+	"107": {
+		"name": "NOTIFY_HOST_SMS",
+		"to": "${visitorlogging.host.phone:-}",
+		"message": "${visitorlogging.visitor.name} has checked in and is on the way to visit you.\nAdmin Team."
+	},
+	"108": {
+		"name": "INVITE_VISITOR_SMS",
+		"to": "${visitorinviterel.visitorId.phone:-}",
+		"message": "You have been invited for ${visitorinviterel.inviteId.inviteName} on ${visitorinviterel.inviteId.expectedStartTimeString}. Meet you there !\nAdmin Team."
 	}
 	
 	

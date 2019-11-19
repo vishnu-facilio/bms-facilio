@@ -169,7 +169,7 @@ private static final long serialVersionUID = 1L;
 		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "visitorlogging");
 		chain.getContext().put(FacilioConstants.ContextNames.IS_VENDOR_PORTAL, getVendorPortal());
 		
-		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Visitor_Logging.ID asc");
+		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Visitor_Logging.SYS_CREATED_TIME desc");
  		if(getFilters() != null)
  		{	
 	 		JSONParser parser = new JSONParser();

@@ -47,5 +47,26 @@ public abstract class Preference {
 	}
 	public abstract void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception;
 	public abstract void disable(Long recordId, Long moduleId) throws Exception;
+	
+	private Boolean enabled;
+	public Boolean getEnabled() {
+		if (enabled == null) {
+			return false;
+		}
+		return enabled;
+	}
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+	
+	private PreferenceMetaContext prefMeta;
+	public PreferenceMetaContext getPrefMeta() {
+		return prefMeta;
+	}
+	public void setPrefMeta(PreferenceMetaContext prefMeta) {
+		this.prefMeta = prefMeta;
+	}
+	
+	
 
 }
