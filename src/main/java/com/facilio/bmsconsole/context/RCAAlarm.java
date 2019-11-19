@@ -22,9 +22,5 @@ public class RCAAlarm extends MLAnomalyAlarm
 		this.ratio=ratio;
 	}
 	
-	public long getRatio()
-	{
-		return ratio;
-	}
 
 }

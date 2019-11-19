@@ -24,10 +24,6 @@ public class RCAEvent extends MLAnomalyEvent
 		this.ratio=ratio;
 	}
 	
-	public long getRatio()
-	{
-		return ratio;
-	}
 
 	
 	@Override
