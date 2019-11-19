@@ -18,7 +18,7 @@ public class SentryUtil {
     private static final SentryClient SENTRY_CLIENT = SentryClientFactory.sentryClient(FacilioProperties.getsentrydsn());
     private static final Logger LOGGER = LogManager.getLogger(SentryUtil.class.getName());
 
-    public static void sendToSentry(Map<String, String> contextMap, HttpServletRequest request ) {
+    public static void sendToSentry(Map<String, String> contextMap, HttpServletRequest request) {
 
         if (FacilioProperties.isSentryEnabled()) {
             Context context = SENTRY_CLIENT.getContext();
@@ -29,19 +29,21 @@ public class SentryUtil {
                 context.setHttp(new HttpInterface(request));
             }
             for (Map.Entry<String, String> entry : contextMap.entrySet()) {
-                context.addTag(entry.getKey(), entry.getValue());
-            }
-            try {
-                LOGGER.log(Level.INFO, "Log this to sentry");
-                if (contextMap.containsKey("url")) {
-                    SENTRY_CLIENT.sendMessage(contextMap.get("url"));
-                } else {
-                    LOGGER.log(Level.ERROR, "url is not present");
+                try {
+                    if (contextMap.containsKey("graylogurl")) {
+                        context.addExtra("graylogurl", contextMap.get("graylogurl"));
+                    } else {
+                        context.addTag(entry.getKey(), entry.getValue());
+                    }
+                    if (contextMap.containsKey("url")) {
+                        SENTRY_CLIENT.sendMessage(contextMap.get("url"));
+                    } else {
+                        LOGGER.log(Level.ERROR, "url is not present");
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(Level.ERROR, "Cannot log to sentry");
                 }
-            } catch (Exception e) {
-                LOGGER.log(Level.ERROR, "Cannot log to sentry");
             }
         }
-
     }
 }
