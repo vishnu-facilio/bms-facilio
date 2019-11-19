@@ -96,6 +96,10 @@ public class MLAnomalyEvent extends BaseEventContext{
 		{
 			anomalyAlarm.setmlid(mlid);
 		}
+		if(ratio!=-1)
+		{
+			anomalyAlarm.setRatio(ratio);
+		}
 		
 		return baseAlarm;
 	}

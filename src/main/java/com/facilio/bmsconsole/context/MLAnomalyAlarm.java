@@ -62,5 +62,10 @@ public class MLAnomalyAlarm extends BaseAlarmContext {
 	public void setmlid(long mlid) {
 		this.mlid = mlid;
 	}
-	
+
+	private double ratio;
+
+	public void setRatio(double ratio) {
+		this.ratio = ratio;
+	}
 }

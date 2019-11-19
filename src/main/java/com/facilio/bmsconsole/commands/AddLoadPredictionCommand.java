@@ -41,11 +41,11 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 				AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 				long assetModuleID = assetCategory.getAssetModuleID();
 				List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
-				boolean moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("LoadPredictionMLLogReadings"));
+				boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("LoadPredictionMLLogReadings"));
 				if (!moduleExist) {
 					MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY, categoryId,"LoadPredictionMLLogReadings", FieldFactory.getMLLogLoadPredictFields(),ModuleFactory.getMLLogReadingModule().getTableName(), ModuleType.PREDICTED_READING);
 				}
-				moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("LoadPredictionMLReadings"));
+				moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("LoadPredictionMLReadings"));
 				if (!moduleExist) {
 					MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY, categoryId,"LoadPredictionMLReadings", FieldFactory.getMLLoadPredictFields(),ModuleFactory.getMLReadingModule().getTableName());
 				}
@@ -69,8 +69,8 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		FacilioModule logReadingModule = modBean.getModule("LoadPredictionMLLogReadings");
-		FacilioModule readingModule = modBean.getModule("LoadPredictionMLReadings");
+		FacilioModule logReadingModule = modBean.getModule("loadpredictionmllogreadings");
+		FacilioModule readingModule = modBean.getModule("loadpredictionmlreadings");
 		
 		FacilioField energyField = modBean.getField("totalDemand", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);

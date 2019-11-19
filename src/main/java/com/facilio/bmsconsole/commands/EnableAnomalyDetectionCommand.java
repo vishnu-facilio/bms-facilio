@@ -26,6 +26,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.ScheduleInfo;
@@ -61,11 +62,11 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 		long assetModuleID = assetCategory.getAssetModuleID();
 		List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
-		boolean moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("AnomalyDetectionMLLogReadings"));
+		boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("AnomalyDetectionMLLogReadings"));
 		if(!moduleExist){
 			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,categoryId,"AnomalyDetectionMLLogReadings",FieldFactory.getMLLogCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
 		}
-		moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("AnomalyDetectionMLReadings"));
+		moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("AnomalyDetectionMLReadings"));
 		if(!moduleExist){
 			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,categoryId,"AnomalyDetectionMLReadings",FieldFactory.getMLCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 		}
@@ -96,8 +97,8 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		JSONArray mlIDList = new JSONArray();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		FacilioModule logReadingModule = modBean.getModule("AnomalyDetectionMLLogReadings");
-		FacilioModule readingModule = modBean.getModule("AnomalyDetectionMLReadings");
+		FacilioModule logReadingModule = modBean.getModule("anomalydetectionmllogreadings");
+		FacilioModule readingModule = modBean.getModule("anomalydetectionmlreadings");
 		
 		
 		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
@@ -146,7 +147,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		}
 		info.setTimeObjects(hourlyList);
 		MLAPI.addJobs((long)mlIDList.get(0),"DefaultMLJob",info,"ml");
-		
+		LOGGER.info("Check Gam Module adding Completed");
 	}
 	
 	private void updateSequenceForMLModel(long mlID,String mlIDList) throws SQLException
@@ -168,19 +169,31 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 		long assetModuleID = assetCategory.getAssetModuleID();
 		List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
-		boolean moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("checkRatioMLLogReadings"));
-		if(!moduleExist){
-			MLAPI.addReading(FacilioConstants.ContextNames.ENERGY_METER,categoryId,"checkRatioMLLogReadings",FieldFactory.getMLLogCheckRatioFields(),ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
+		
+		List<FacilioField> mLLogCheckRatioFields = FieldFactory.getMLLogCheckRatioFields();
+		int decimalColumnHigherValue = mLLogCheckRatioFields.stream().map(FacilioField::getColumnName).filter(f->f.startsWith("DECIMAL_CF")).map(c->c.replaceFirst("DECIMAL_CF", "")).map(Integer::parseInt).mapToInt(i -> i).max().orElse(0);
+		for(int i=0;i<ratioHierachyList.length();i++)
+		{
+			JSONArray emObject =(JSONArray) ratioHierachyList.get(i);
+			for(int j=0;j<emObject.length();j++)
+			{
+				Integer id =  (Integer) emObject.get(j);
+				mLLogCheckRatioFields.add(FieldFactory.getField(id+"_ratio","ratioLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));
+				mLLogCheckRatioFields.add(FieldFactory.getField(id+"_upperAnomaly","upperAnomalyLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));
+				mLLogCheckRatioFields.add(FieldFactory.getField(id+"_lowerAnomaly","lowerAnomalyLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));				
+			}
 		}
-		moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("checkRatioMLReadings"));
+		
+		String checkRatioLogReadingNewModuleName = MLAPI.addReadingEveryTime(FacilioConstants.ContextNames.ENERGY_METER,categoryId,"checkRatioMLLogReadings",mLLogCheckRatioFields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
+		boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("checkRatioMLReadings"));
 		if(!moduleExist){
 			MLAPI.addReading(FacilioConstants.ContextNames.ENERGY_METER,categoryId,"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
 		}
 		
-		FacilioModule logReadingModule = modBean.getModule("checkRatioMLLogReadings");
-		FacilioModule readingModule = modBean.getModule("checkRatioMLReadings");
+		FacilioModule logReadingModule = modBean.getModule(checkRatioLogReadingNewModuleName);
+		FacilioModule readingModule = modBean.getModule("checkratiomlreadings");
 		
-		FacilioModule checkGamReadingModule = modBean.getModule("AnomalyDetectionMLLogReadings");
+		FacilioModule checkGamReadingModule = modBean.getModule("anomalydetectionmllogreadings");
 		
 		
 	
@@ -223,7 +236,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			{
 				Integer id =  (Integer) emObject.get(j);
 				
-				MLAPI.addMLVariables(ml_id,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,j==0);
 				MLAPI.addMLVariables(ml_id,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
 				MLAPI.addMLVariables(ml_id,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
 				MLAPI.addMLVariables(ml_id,gamAnomalyField.getModuleId(),gamAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
@@ -258,19 +271,27 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 		long assetModuleID = assetCategory.getAssetModuleID();
 		List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
-		boolean moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("checkRatioMLLogReadings"));
-		if(!moduleExist){
-			MLAPI.addReading(FacilioConstants.ContextNames.ENERGY_METER,categoryId,"checkRatioMLLogReadings",FieldFactory.getMLLogCheckRatioFields(),ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
+		
+		List<FacilioField> mLLogCheckRatioFields = FieldFactory.getMLLogCheckRatioFields();
+		int decimalColumnHigherValue = mLLogCheckRatioFields.stream().map(FacilioField::getColumnName).filter(f->f.startsWith("DECIMAL_CF")).map(c->c.replaceFirst("DECIMAL_CF", "")).map(Integer::parseInt).mapToInt(i -> i).max().orElse(0);
+		for(EnergyMeterContext emContext : emContextList.values())
+		{
+			long id =  emContext.getId();
+			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_ratio","ratioLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.DECIMAL));
+			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_upperAnomaly","upperAnomalyLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.DECIMAL));
+			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_lowerAnomaly","lowerAnomalyLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.DECIMAL));				
 		}
-		moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("checkRatioMLReadings"));
+		String checkRatioLogReadingNewModuleName = MLAPI.addReadingEveryTime(FacilioConstants.ContextNames.ENERGY_METER,categoryId,"checkRatioMLLogReadings",mLLogCheckRatioFields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
+		
+		boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("checkRatioMLReadings"));
 		if(!moduleExist){
 			MLAPI.addReading(FacilioConstants.ContextNames.ENERGY_METER,categoryId,"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
 		}
 		
-		FacilioModule logReadingModule = modBean.getModule("checkRatioMLLogReadings");
-		FacilioModule readingModule = modBean.getModule("checkRatioMLReadings");
+		FacilioModule logReadingModule = modBean.getModule(checkRatioLogReadingNewModuleName);
+		FacilioModule readingModule = modBean.getModule("checkratiomlreadings");
 		
-		FacilioModule checkGamReadingModule = modBean.getModule("AnomalyDetectionMLLogReadings");
+		FacilioModule checkGamReadingModule = modBean.getModule("anomalydetectionmllogreadings");
 		
 		long mlID = MLAPI.addMLModel("ratioCheck",logReadingModule.getModuleId(),readingModule.getModuleId());
 	
@@ -279,7 +300,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		FacilioField actualValueField = modBean.getField("actualValue", checkGamReadingModule.getName());
 		for(EnergyMeterContext emContext : emContextList.values())
 		{
-			MLAPI.addMLVariables(mlID,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
+			MLAPI.addMLVariables(mlID,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,(emContext.getId()==Long.parseLong(TreeHierarchy.split(",")[0])));
 		}
 		
 		FacilioField adjustedLowerBoundField = modBean.getField("adjustedLowerBound", checkGamReadingModule.getName());

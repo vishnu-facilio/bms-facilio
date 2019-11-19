@@ -74,14 +74,17 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
 			for(Map<String,Object> prop : props)
 			{
-				if(prop.get(variableField.getName()) != null){
 					long ttime = (long) prop.get(ttimeField.getName());
 					if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
 						Double previousValue = (Double) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));
-						data.put(ttime, previousValue + (Double) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
+						Double currentValue = (Double) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName()));
+						Double newValue = previousValue == null && currentValue == null ? null : previousValue == null ? currentValue : currentValue == null ? previousValue : previousValue + currentValue;
+						data.put(ttime, newValue);
 					}else if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.NUMBER)){
 						Long previousValue = (Long) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));
-						data.put(ttime, previousValue + (Long) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
+						Long currentValue = (Long) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName()));
+						Long newValue = previousValue == null && currentValue == null ? null : previousValue == null ? currentValue : currentValue == null ? previousValue : previousValue + currentValue;
+						data.put(ttime, newValue);
 					}else{
 						if(variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
 							data.put(ttime,(Double) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName())));
@@ -91,7 +94,6 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 							data.put(ttime, prop.get(variableField.getName()));
 						}
 					}
-				}
 			}
 			if(mlContext.getOrgId()==232 && mlContext.getId()==83)
 			{

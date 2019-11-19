@@ -29,7 +29,7 @@ public class AddModulesCommand extends FacilioCommand {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				long moduleId = modBean.addModule(module);
 				module.setModuleId(moduleId);
-				
+				context.put(FacilioConstants.ContextNames.MODULE_NAME,module.getName());
 				String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE);
 				if(parentModuleName != null && !parentModuleName.isEmpty()) {
 					FacilioModule parentModule = modBean.getModule(parentModuleName);

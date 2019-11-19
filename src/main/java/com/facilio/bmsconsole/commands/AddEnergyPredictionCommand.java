@@ -42,11 +42,11 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 				AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 				long assetModuleID = assetCategory.getAssetModuleID();
 				List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
-				boolean moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("EnergyPredictionMLLogReadings"));
+				boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("EnergyPredictionMLLogReadings"));
                 if(!moduleExist){
     				MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,categoryId,"EnergyPredictionMLLogReadings",FieldFactory.getMLLogPredictCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
                 }
-                moduleExist = modules.stream().anyMatch(m->m.getName().equalsIgnoreCase("EnergyPredictionMLReadings"));
+                moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("EnergyPredictionMLReadings"));
 				if (!moduleExist) {
 					MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY, categoryId,"EnergyPredictionMLReadings", FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 				}
@@ -72,8 +72,8 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		FacilioModule logReadingModule = modBean.getModule("EnergyPredictionMLLogReadings");
-		FacilioModule readingModule = modBean.getModule("EnergyPredictionMLReadings");
+		FacilioModule logReadingModule = modBean.getModule("energypredictionmllogreadings");
+		FacilioModule readingModule = modBean.getModule("energypredictionmlreadings");
 		
 		
 		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
