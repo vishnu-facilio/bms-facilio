@@ -1363,7 +1363,7 @@ public class FormFactory {
 	{
 		List<FormField> fields=new ArrayList<>();
 		
-		fields.add(new FormField("host",FieldDisplayType.USER,"Who do you want to meet",Required.REQUIRED,1,1));
+		fields.add(new FormField("host",FieldDisplayType.LOOKUP_SIMPLE,"Who do you want to meet",Required.OPTIONAL, "user",1,1));
 		fields.add(new FormField("purposeOfVisit",FieldDisplayType.TEXTBOX,"What is the purpose of visit",Required.OPTIONAL,1,1));
 		fields.add(new FormField("visitor", FieldDisplayType.LOOKUP_SIMPLE, "Visitor", Required.OPTIONAL, "visitor", 1, 1));
 //		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.REQUIRED,1,1));
@@ -1389,7 +1389,7 @@ public class FormFactory {
 	{
 		List<FormField> fields=new ArrayList<>();
 		fields.add(new FormField("purposeOfVisit",FieldDisplayType.TEXTBOX,"What is the purpose of visit",Required.OPTIONAL,1,1));
-		fields.add(new FormField("host",FieldDisplayType.USER,"Who do you want to meet",Required.REQUIRED,1,1));
+		fields.add(new FormField("host",FieldDisplayType.LOOKUP_SIMPLE,"Who do you want to meet",Required.OPTIONAL, "user",1,1));
 //		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.REQUIRED,1,1));
 		FormField avatarField = new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1);
 		avatarField.setShowField(true);
