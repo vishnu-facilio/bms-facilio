@@ -227,6 +227,9 @@
 							  baseline = Module(\"mvbaseline\").fetch([project == projectId])[0];
 							  formulaFieldWithAdj = Module(\"formulaField\").fetch([id == (baseline.formulaFieldWithAjustment.id)])[0];
 							  lastMonthEndTime = NameSpace(\"date\").getDateRange(\"Last Month\").getEndTime();
+							  if (mvProject.frequency == 1) {
+							    lastMonthEndTime = NameSpace(\"date\").getDateRange(\"Yesterday\").getEndTime();
+							  }
 							  db = {
 							    criteria : [parentId == (mvProject.meter.id) && ttime >= (mvProject.reportingPeriodStartTime) && ttime < lastMonthEndTime],
 							    field : \"totalEnergyConsumptionDelta\",
