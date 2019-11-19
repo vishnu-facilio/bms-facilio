@@ -232,10 +232,6 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         event.setEnergyDataFieldid(energyDataFieldid);
         event.setUpperAnomalyFieldid(upperAnomalyFieldid);
         event.setmlid(mlContext.getId());
-        if(mlContext.getAssetDetails().containsKey(assetID+"_ratio"))
-        {
-        	event.setRatio(((Number)mlContext.getAssetDetails().get(assetID+"_ratio")).doubleValue());
-        }
         
        addEvent(mlContext,event);
        return event;
