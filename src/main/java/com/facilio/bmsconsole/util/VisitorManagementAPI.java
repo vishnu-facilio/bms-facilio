@@ -782,7 +782,7 @@ public class VisitorManagementAPI {
 	public static Preference getHostWappNotificationsPref() {
 		
 		FacilioForm form = new FacilioForm();
-		return new Preference("host_WappNotification", "Host Wapp Notifications", form, "Host Notifications") {
+		return new Preference("host_WappNotification", "Notify Host_WHATSAPP", form, "Automatically notify hosts when their visitors arrive") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
