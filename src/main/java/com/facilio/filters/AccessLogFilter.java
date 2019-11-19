@@ -154,7 +154,7 @@ public class AccessLogFilter implements Filter {
             origin = request.getServerName();
         }
         event.setProperty("origin", origin);
-        
+
         String deviceType = request.getHeader(X_DEVICE_TYPE);
         if(deviceType == null) {
             deviceType = DEFAULT_QUERY_STRING;
@@ -182,7 +182,7 @@ public class AccessLogFilter implements Filter {
             if (ServerInfo.getHostname() != null) {
                  sourceIp = ServerInfo.getHostname();
             }
-            String searchQuery = thread.getName()+"%20AND%20ip-"+sourceIp;
+            String searchQuery = thread.getName()+"%20AND%20"+sourceIp;
             String grayLogSearchUrl;
             grayLogSearchUrl = grayLogUrl + searchQuery;
 
