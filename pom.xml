@@ -25,10 +25,13 @@
 			<url>s3://repo.facilio/facilio-agent-framework-java/snapshot/</url>
 		</repository>
 		<repository>
-	        <id>central</id>
-	        <name>bintray</name>
-	        <url>http://jcenter.bintray.com</url>
-    	</repository>
+	    	<snapshots>
+	        	<enabled>false</enabled>
+		    </snapshots>
+		    <id>bintray-stackmagic-maven</id>
+		    <name>bintray</name>
+	    	<url>http://dl.bintray.com/stackmagic/maven</url>
+		</repository>
 	</repositories>
 	
 	<dependencies>
