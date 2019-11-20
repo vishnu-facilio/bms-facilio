@@ -26,14 +26,14 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
 		
         List<QueueMessage> messageList = new ArrayList<>();
         try {
-            messageList = FacilioQueueException.pull(QUEUE, 100);
+            messageList = FacilioQueueException.pull(QUEUE, 20);
         } catch (Exception e1) {
             LOGGER.info("Exception Occurred in  FacilioQueue  : ",e1);
         }
-        while(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 100) {
+        while(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 20) {
             processMessages(messageList);
             try {
-				messageList = FacilioQueueException.pull(QUEUE, 100);
+				messageList = FacilioQueueException.pull(QUEUE, 20);
 			} catch (Exception e) {
 				 LOGGER.info("Exception Occurred in  FacilioQueue  : ",e);
 			}
