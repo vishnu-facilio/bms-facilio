@@ -15,11 +15,73 @@ public class VisitorSettingsContext implements Serializable {
 	private static final long serialVersionUID = 1L;
 	long orgId=-1;
 	long visitorTypeId=-1;
+	String ndaContent;
+	
+	public String getNdaContent() {
+		if(ndaContent==null)
+		{
+			return " \n          1. I may be given access to confidential information belonging to (the “Company”) through my relationship with Company or as a result of\n           my access to Company’s premises.\n\n          2. I understand and acknowledge that Company’s trade secrets consist of information and materials that are valuable and not generally known by\n           Company’s competitors, including:\n\n          (a) Any and all information concerning Company’s current, future or proposed products, including, but not limited to, computer code, drawings, \n          specifications, notebook entries, technical notes and graphs, computer printouts, technical memoranda and correspondence, product development \n          agreements and related agreements.\n\n          (b) Information and materials relating to  Company’s purchasing, accounting, and marketing; including, but not limited to, marketing plans, \n          sales data, unpublished promotional material, cost and pricing information and customer lists.\n\n          (c) Information of the type described above which Company obtained from another party and which Company treats\n          as confidential, whether or not owned or developed by Company.\n\n          (d) Other: __________________________________\n\n          3. In consideration of being admitted to Company’s facilities, I will hold in the strictest confidence any trade secrets or confidential information \n          that is disclosed to me. I will not remove any document, equipment or other materials from the premises without Company’s written permission. I will \n          not photograph or otherwise record any information to which I may have access during my visit.\n\n          4. This Agreement is binding on me, my heirs, executors, administrators and assigns and inures to the benefit of Company, its successors, and \n          assigns.\n          \n          5. This Agreement constitutes the entire understanding between Company and me with respect to its subject matter. It supersedes all earlier \n          representations and understandings, whether oral or written.\n";          
+		}
+		return ndaContent;
+	}
+	public void setNdaContent(String ndaContent) {
+		this.ndaContent = ndaContent;
+	}
+
+
+
+
+	private JSONObject photoSettings;
+	public JSONObject getPhotoSettings() {
+		if(photoSettings==null)
+		{
+			JSONObject photoSetttingsDefault=new JSONObject() ;
+			photoSetttingsDefault.put("retakeReturningUserPhotos", false);
+			return  photoSetttingsDefault;
+		
+		}
+		return photoSettings;
+		
+	}
+	public void setPhotoSettings(JSONObject photoSettings) {
+		this.photoSettings = photoSettings;
+	}
+	
+	
+	@JSON(serialize = false)
+	public String getPhotoSettingsJson() {
+		if (this.photoSettings!=null)
+		return photoSettings.toJSONString();
+		else {
+			return null;
+		}
+	}
+	public void setPhotoSettingsJson(String photoSettingsJson) {
+		if(photoSettingsJson!=null)
+		{
+		try {
+			this.photoSettings = FacilioUtil.parseJson(photoSettingsJson);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block			
+			e.printStackTrace();
+		}
+		}
+	}
+	
+	
 
 	
 	private JSONObject hostSetttings;
 	public JSONObject getHostSettings() {
+		if(hostSetttings==null)
+		{
+			JSONObject hostSettingsDefault=new JSONObject() ;
+			hostSettingsDefault.put("requireApproval", false);
+			hostSettingsDefault.put("hostType", "user");
+			return hostSettingsDefault;
+		}
 		return hostSetttings;
+		
 	}
 	public void setHostSettings(JSONObject hostSetttings) {
 		this.hostSetttings = hostSetttings;
@@ -45,6 +107,12 @@ public class VisitorSettingsContext implements Serializable {
 		}
 		}
 	}
+	
+	
+	
+	
+	
+	
 	public long getOrgId() {
 		return orgId;
 	}
@@ -114,6 +182,13 @@ public class VisitorSettingsContext implements Serializable {
 	Boolean ndaEnabled;
 	Boolean badgeEnabled;
 	Boolean photoEnabled;
+	Boolean idScanEnabled;
+	public Boolean getIdScanEnabled() {
+		return idScanEnabled;
+	}
+	public void setIdScanEnabled(Boolean idScanEnabled) {
+		this.idScanEnabled = idScanEnabled;
+	}
 	long autoSignoutTime;
 //	
 

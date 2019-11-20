@@ -7096,7 +7096,12 @@ public class FieldFactory {
 		fields.add(getField("photoEnabled","IS_PHOTO_ENABLED",FieldType.BOOLEAN));
 		fields.add(getField("autoSignoutTime","AUTO_SIGNOUT_TIME",FieldType.NUMBER));
 		fields.add(getField("hostSettingsJson","HOST_SETTINGS_JSON",FieldType.STRING));
+		fields.add(getField("photoSettingsJson","PHOTO_SETTINGS_JSON",FieldType.STRING));
 		fields.add(getField("hostEnabled","HOST_ENABLED",FieldType.BOOLEAN));
+		fields.add(getField("idScanEnabled","IS_ID_SCAN_ENABLED",FieldType.BOOLEAN));
+		fields.add(getField("ndaContent","NDA_CONTENT",FieldType.STRING));
+		
+		
 //		fields.add(getField("isSelfSignoutEnabled","IS_SELF_SIGNOUT_ENABLED",FieldType.BOOLEAN));
 		return fields;
 	}
