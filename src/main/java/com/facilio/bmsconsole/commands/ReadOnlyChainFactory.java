@@ -1760,4 +1760,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
+
+	public static FacilioChain getSubFormModulesChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSubFormModulesCommand());
+		return chain;
+	}
 }

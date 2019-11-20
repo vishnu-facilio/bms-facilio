@@ -597,7 +597,10 @@ public class FieldFactory {
 		fields.add(getField("formId", "FORMID", module, FieldType.NUMBER));
 		fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
 		fields.add(getField("showLabel", "SHOW_LABEL", module, FieldType.BOOLEAN));
-		
+
+		fields.add(getField("subFormId", "SUB_FORM_ID", module, FieldType.NUMBER));
+		fields.add(getField("sectionType", "SECTION_TYPE", module, FieldType.NUMBER));
+
 		return fields;
 	}
 

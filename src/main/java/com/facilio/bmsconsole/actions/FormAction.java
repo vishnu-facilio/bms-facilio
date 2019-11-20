@@ -216,6 +216,28 @@ public class FormAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+
+	public String subFormModules() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getSubFormModulesChain();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.MODULE_NAME, moduleName);
+
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.MODULE_LIST, context.get(FacilioConstants.ContextNames.MODULE_LIST));
+		return SUCCESS;
+	}
+
+	public String addSubForm() throws Exception {
+		if (form == null) {
+			throw new IllegalArgumentException("Form cannot be empty");
+		}
+
+		form.setHideInList(true);
+		form.setFormType(FormType.WEB);
+		addForm();
+		return SUCCESS;
+	}
 	
 	public String addForm() throws Exception {
 		Context context=new FacilioContext();

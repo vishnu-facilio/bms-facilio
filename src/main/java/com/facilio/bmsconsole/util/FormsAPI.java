@@ -231,6 +231,15 @@ public class FormsAPI {
 		List<Map<String, Object>> props = builder.get();
 		if (props != null && !props.isEmpty()) {
 			List<FormSection> sections = FieldUtil.getAsBeanListFromMapList(props, FormSection.class);
+			if (CollectionUtils.isNotEmpty(sections)) {
+				for (FormSection section : sections) {
+					if (section.getSectionTypeEnum() == FormSection.SectionType.SUB_FORM) {
+						long subFormId = section.getSubFormId();
+						FacilioForm subForm = getFormFromDB(subFormId);
+						section.setSubForm(subForm);
+					}
+				}
+			}
 			form.setSections(sections);
 		}
 	}

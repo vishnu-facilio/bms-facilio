@@ -1410,6 +1410,12 @@
 			class="com.facilio.bmsconsole.actions.FormAction" method="addForm">
 			<param name="permission">CREATE</param>
 		</action>
+		<action name="addSubForm"
+				class="com.facilio.bmsconsole.actions.FormAction" method="addSubForm">
+			<param name="permission">CREATE</param>
+		</action>
+		<action name="subFormModules"
+				class="com.facilio.bmsconsole.actions.FormAction" method="subFormModules" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
 		</action>

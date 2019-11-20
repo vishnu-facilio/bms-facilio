@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.forms;
 
+import com.facilio.modules.FacilioEnum;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,5 +88,70 @@ public class FormSection {
 			this.fields = new ArrayList<>();
 		}
 		this.fields.add(field);
+	}
+
+	private long subFormId = -1;
+	public long getSubFormId() {
+		return subFormId;
+	}
+	public void setSubFormId(long subFormId) {
+		this.subFormId = subFormId;
+	}
+
+	private FacilioForm subForm;
+	public FacilioForm getSubForm() {
+		return subForm;
+	}
+	public void setSubForm(FacilioForm subForm) {
+		this.subForm = subForm;
+	}
+
+	private SectionType sectionType;
+	public SectionType getSectionTypeEnum() {
+		return sectionType;
+	}
+	public void setSectionType(SectionType sectionType) {
+		this.sectionType = sectionType;
+	}
+	public void setSectionType(int sectionTypeInt) {
+		this.sectionType = SectionType.valueOf(sectionTypeInt);
+	}
+	public int getSectionType() {
+		if (this.sectionType != null) {
+			return this.sectionType.getIndex();
+		}
+		return -1;
+	}
+
+	public enum SectionType implements FacilioEnum {
+		FIELDS("Fields"),
+		SUB_FORM("Sub Form"),
+		;
+
+		SectionType(String name) {
+			this.name = name;
+		}
+
+		private String name;
+		public String getName() {
+			return name;
+		}
+
+		@Override
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+
+		public static SectionType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+
+		@Override
+		public String getValue() {
+			return getName();
+		}
 	}
 }

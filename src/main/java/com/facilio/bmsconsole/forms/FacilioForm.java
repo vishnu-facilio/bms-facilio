@@ -219,7 +219,8 @@ public class FacilioForm implements Serializable {
 		WEB(1, "web"),
 		MOBILE(2, "mobile"), // Will be removed
 		PORTAL(3, "portal"),
-		SERVICE_CATALOG(4, "portal"),
+		SERVICE_CATALOG(4, "serviceCatalog"),
+		SUB_FORM(5, "subForm"),
 		;
 		
 		private int intVal;
