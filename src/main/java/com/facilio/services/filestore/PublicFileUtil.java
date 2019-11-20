@@ -77,6 +77,25 @@ public class PublicFileUtil {
 			
 	}
 	
+	public static PublicFileContext createPublicFile(long fileID,String fileName,String fileType,String contentType) throws Exception {
+		
+		PublicFileContext publicFileContext = new PublicFileContext();
+		
+		publicFileContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+		publicFileContext.setExpiresOn(DateTimeUtil.getCurrenTime()+PUBLIC_FILE_EXPIRY_IN_MILLIS);
+		
+		String key = CryptoUtils.hash256(""+fileID+DateTimeUtil.getCurrenTime());
+		
+		publicFileContext.setKey(key);
+		
+		publicFileContext.setFileId(fileID);
+		
+		FacilioService.runAsServiceWihReturn(() -> addPublicFileContext(publicFileContext));
+		
+		return publicFileContext;
+			
+	}
+	
 	public static PublicFileContext addPublicFileContext(PublicFileContext publicFileContext) throws Exception {
 		Map<String, Object> props = FieldUtil.getAsProperties(publicFileContext);
 		

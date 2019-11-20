@@ -26,7 +26,29 @@ public class WhatsappMessageTemplate extends Template {
 	public void setTo(String to) {
 		this.to = to;
 	}
+		
+	private boolean isHtmlContent;
 	
+	public boolean isHtmlContent() {
+		return isHtmlContent;
+	}
+	public void setHtmlContent(boolean isHtmlContent) {
+		this.isHtmlContent = isHtmlContent;
+	}
+
+	public void setIsHtmlContent(boolean isHtmlContent) {
+		this.isHtmlContent = isHtmlContent;
+	}
+	
+	private String htmlContentString;
+
+	public String getHtmlContentString() {
+		return htmlContentString;
+	}
+	public void setHtmlContentString(String htmlContentString) {
+		this.htmlContentString = htmlContentString;
+	}
+
 	private String message;
 	public String getMessage() {
 		return message;
@@ -40,6 +62,8 @@ public class WhatsappMessageTemplate extends Template {
 		JSONObject obj = new JSONObject();
 		obj.put("to", to);
 		obj.put("message", message);
+		obj.put("isHtmlContent", isHtmlContent);
+		obj.put("htmlContentString", htmlContentString);
 		
 		return obj;
 	}

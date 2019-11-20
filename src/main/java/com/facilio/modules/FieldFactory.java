@@ -2303,6 +2303,8 @@ public class FieldFactory {
 		fields.add(getField("from", "FROM_NUM", module, FieldType.STRING));
 		fields.add(getField("to", "TO_NUM", module, FieldType.STRING));
 		fields.add(getField("message", "MSG", module, FieldType.STRING));
+		fields.add(getField("isHtmlContent", "IS_HTML_CONTENT", module, FieldType.BOOLEAN));
+		fields.add(getField("htmlContentString", "HTML_CONTENT", module, FieldType.STRING));
 
 		return fields;
 	}

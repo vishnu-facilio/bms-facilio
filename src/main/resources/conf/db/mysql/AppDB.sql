@@ -6142,6 +6142,8 @@ CREATE TABLE IF NOT EXISTS Whatsapp_Message_Template (
   FROM_NUM varchar(100),
   TO_NUM varchar(100) NOT NULL,
   MSG varchar(5000) NOT NULL,
+  IS_HTML_CONTENT boolean,
+  HTML_CONTENT varchar(5000),
   PRIMARY KEY (ID),
   CONSTRAINT Whatsapp_Message_Template_ID FOREIGN KEY (ID) REFERENCES Templates (ID) ON DELETE CASCADE
 );

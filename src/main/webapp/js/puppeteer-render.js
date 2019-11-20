@@ -10,6 +10,7 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
     var output = process.argv[3]
     var token = process.argv[4]
     var domain  = process.argv[5]
+    var htmlContent  = process.argv[6]
 
     var cookies = [
         {
@@ -46,10 +47,20 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
             'X-Is-Export': 'true',
             'X-Device-Type': 'puppeteer'
         })
-
-        await page.goto(pageUrl, {
-            waitUntil: 'networkidle0'
-        });
+        
+        if(htmlContent)
+        {
+        	await page.setContent(htmlContent, {
+                waitUntil: 'networkidle0'
+            })
+        }
+        else
+        {
+        	await page.goto(pageUrl, {
+                waitUntil: 'networkidle0'
+            });   	
+        }
+        
         if (output.endsWith(".pdf")) {
         		await page.pdf({path: output, format: 'A4'});
         }

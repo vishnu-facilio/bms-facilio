@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.io.File;
+import java.net.URLDecoder;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +42,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.PublicFileContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -72,6 +75,7 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
+import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
@@ -85,7 +89,9 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.pdf.PdfUtil;
 import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.PublicFileUtil;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
@@ -1205,15 +1211,37 @@ public enum ActionType {
 	WHATSAPP_MESSAGE(26) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
-			// TODO Auto-generated method stub
 			if (obj != null) {  //&& FacilioProperties.isProduction() add this on commit
 				try {
 					String to = (String) obj.get("to");
+					Boolean isHtmlContent = (Boolean) obj.get("isHtmlContent");
+					String htmlContentString = (String) obj.get("htmlContentString");
+					
 					if (to != null && !to.isEmpty()) {
 						List<String> sms = new ArrayList<>();
+					
+						if(isHtmlContent != null && htmlContentString != null && isHtmlContent)
+						{						
+							htmlContentString = "\'" + htmlContentString+ "\'";
+							Long fileId = PdfUtil.exportUrlAsPdf("http://www.facilio.com", null, URLDecoder.decode(htmlContentString), FileFormat.IMAGE);
+							
+							if(fileId !=null )
+							{
+								PublicFileContext publicFileContext = PublicFileUtil.createPublicFile(fileId, "twilioImage", "jpeg", "image/jpeg");
+								
+								if(publicFileContext != null)
+								{
+									String htmlContentPublicUrl = publicFileContext.getPublicUrl();
+								    
+							//		htmlContentPublicUrl = htmlContentPublicUrl.replace("http://localhost:8080/", "https://74c18167.ngrok.io/ROOT/");
+									obj.put("htmlContentPublicUrl", htmlContentPublicUrl);				
+								}
+															
+							}							
+						}
 						
-						WhatsappUtil.sendMessage(obj);
-
+						WhatsappUtil.sendMessage(obj); 
+						
 						sms.add(to);
 						if (context != null) {
 							context.put(FacilioConstants.Workflow.NOTIFIED_SMS, sms);
@@ -1244,7 +1272,8 @@ public enum ActionType {
 	},
 	
 	;
-
+	
+	
 	private static AlarmOccurrenceContext getAlarmOccurrenceFromAlarm(BaseAlarmContext baseAlarm) throws Exception {
 		AlarmOccurrenceContext lastOccurrence = NewAlarmAPI.getAlarmOccurrence(baseAlarm.getLastOccurrenceId());
 		baseAlarm.setLastOccurrence(lastOccurrence);
@@ -1297,7 +1326,7 @@ public enum ActionType {
 		json.put("message", "hello world");
 		t.performAction(json, null, null, null);
 	}
-
+	
 	private static boolean checkIfActiveUserFromEmail(String email) throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
 		User user = userBean.getUser(email);

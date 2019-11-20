@@ -54,7 +54,11 @@ public class PdfUtil {
         return pdfFileLocation;
     }
     
-    public static String convertUrlToPdfNew(Long orgId, String url, FileFormat... formats) {
+	public static String convertUrlToPdfNew(Long orgId, String url, FileFormat... formats) {
+			return convertUrlToPdfNew(orgId, url, null, formats);
+	}
+    
+    public static String convertUrlToPdfNew(Long orgId, String url, String htmlContent, FileFormat... formats) {
     	FileFormat format = FileFormat.PDF;
   		if (formats != null && formats.length > 0) {
   			format = formats[0];
@@ -76,7 +80,7 @@ public class PdfUtil {
                       String[] server = serverName.split(":");
                       serverName = server[0];
                   }
-                  String[] command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, token, serverName};
+                  String[] command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, token, serverName, htmlContent};
                   int exitStatus = CommandExecutor.execute(command);
                   LOGGER.info("Converted to pdf with exit status : " + exitStatus + " and file " + pdfFile.getAbsolutePath());
         	  }catch(IOException e) {
@@ -92,12 +96,12 @@ public class PdfUtil {
     		return exportUrlAsPdf(url, false, null, formats);
     }
     
-    public static String exportUrlAsPdf(String url, boolean isPublicUrl, String name, FileFormat... formats){
+    public static String exportUrlAsPdf(String url, boolean isPublicUrl, String name, FileFormat... formats){      	
         FileFormat format = FileFormat.PDF;
         if (formats != null && formats.length > 0) {
             format = formats[0];
-        }
-        String pdfFileLocation = convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), url, format);
+        }                
+        String pdfFileLocation = convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), url, format);         
         File pdfFile = new File(pdfFileLocation);
         if(pdfFileLocation != null) {
 
@@ -119,11 +123,26 @@ public class PdfUtil {
     }
     
     public static Long exportUrlAsPdf(String url, String name, FileFormat... formats){
+    	return exportUrlAsPdf(url, name, null, formats);
+    }
+    
+    
+    public static Long exportUrlAsPdf(String url, String name, String htmlContent, FileFormat... formats){
         FileFormat format = FileFormat.PDF;
         if (formats != null && formats.length > 0) {
             format = formats[0];
         }
-        String pdfFileLocation = convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), url, format);
+        
+        String pdfFileLocation;
+        if(htmlContent != null)
+        {
+        	pdfFileLocation = convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), url, htmlContent, format);
+        }
+        else
+        {
+        	pdfFileLocation = convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), url, format);
+        }
+ 
         File pdfFile = new File(pdfFileLocation);
         if(pdfFileLocation != null) {
 
@@ -140,13 +159,17 @@ public class PdfUtil {
         return null;
     }
     
-    public static File exportUrlAsFile(String url, String name, FileFormat... formats){
+    
+    public static File exportUrlAsFile(String url, String name, FileFormat... formats){	
         FileFormat format = FileFormat.PDF;
         if (formats != null && formats.length > 0) {
             format = formats[0];
-        }
+        }        
+        
         String pdfFileLocation = convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), url, format);
-        File pdfFile = new File(pdfFileLocation);
+        
+    	File pdfFile = new File(pdfFileLocation);
         return pdfFile;
-    }
+	}
+    	
 }
