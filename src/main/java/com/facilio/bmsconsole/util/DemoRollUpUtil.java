@@ -191,6 +191,9 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("WorkPermit_Attachments", Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("WorkPermit_Notes", Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Visitor", Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME","LAST_VISITED_TIME"));
+		tablesContainsDateField.put("MV_Project", Arrays.asList("START_TIME", "END_TIME", "REPORTING_START_TIME", "REPORTING_END_TIME"));
+		tablesContainsDateField.put("MV_Baseline", Arrays.asList("START_TIME", "END_TIME"));
+		tablesContainsDateField.put("MV_Adjustment", Arrays.asList("START_TIME", "END_TIME"));
 			
 		
 		return tablesContainsDateField;
