@@ -197,11 +197,8 @@ public class AccessLogFilter implements Filter {
             contextMap.put("responseCode", responseCode);
             contextMap.put("timeTaken", String.valueOf(timeTaken));
             contextMap.put("thread", thread.getName());
-           // contextMap.put("grayLogUrl", grayLogSearchUrl);
             contextMap.put("graylogurl", grayLogSearchUrl);
             contextMap.put("test","testing_context");
-            LOGGER.log(Level.INFO, "Log this to sentry");
-            LOGGER.log(Level.INFO, grayLogSearchUrl );
 
             SentryUtil.sendToSentry(contextMap, request );
         }
