@@ -28,11 +28,20 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
         try {
             messageList = FacilioQueueException.pull(QUEUE, 100);
         } catch (Exception e1) {
-            LOGGER.info("Exception Occurred in  FacilioQueue  : "+e1);
+            LOGGER.info("Exception Occurred in  FacilioQueue  : ",e1);
         }
-        if(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 100) {
+        while(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 100) {
             processMessages(messageList);
+            try {
+				messageList = FacilioQueueException.pull(QUEUE, 100);
+			} catch (Exception e) {
+				 LOGGER.info("Exception Occurred in  FacilioQueue  : ",e);
+			}
         }
+
+//        if(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 100) {
+//            processMessages(messageList);
+//        }
         if(EXCEPTION_MESSAGES.size() > 0 ) {
         	JSONObject json = new JSONObject();
 
