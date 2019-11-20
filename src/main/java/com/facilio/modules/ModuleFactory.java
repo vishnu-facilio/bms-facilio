@@ -1,5 +1,9 @@
 package com.facilio.modules;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
@@ -8,10 +12,6 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.constants.FacilioConstants.ModuleNames;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.fields.FacilioField;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ModuleFactory {
 
@@ -2941,6 +2941,14 @@ public class ModuleFactory {
 		module.setTableName("Agent_Message_Integration");
 		module.setDisplayName("Agent Message Integration");
 		module.setName("agentMessageIntegration");
+		return module;
+	}
+	
+	public static FacilioModule getRelatedWorkorderModule() {
+		FacilioModule module=new FacilioModule();
+		module.setTableName("Related_Workorders");
+		module.setDisplayName("Related Workorders");
+		module.setName("relatedWorkorders");
 		return module;
 	}
 }

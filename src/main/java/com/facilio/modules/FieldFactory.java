@@ -3421,8 +3421,6 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		/*fields.add(getOrgIdField(module));*/
 		fields.add(getControllerIdField(module));
-		fields.add(getNewAgentIdField(module));
-		fields.add(getField("newControllerId","NEW_CONTROLLER_ID",module,FieldType.NUMBER));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("acknowledgeTime", "ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("responseAckTime", "RESPONSE_ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
@@ -7099,6 +7097,14 @@ public class FieldFactory {
 	}
 
 	
-	
+	public static List<FacilioField> getRelatedWorkorderFields() {
+		FacilioModule module = ModuleFactory.getRelatedWorkorderModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getField("sourceWo", "SOURCE_WO", module, FieldType.NUMBER));
+		fields.add(getField("targetWo", "TARGET_WO", module, FieldType.NUMBER));
+
+		return fields;
+	}
 	
 }
