@@ -11,8 +11,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import com.google.api.client.util.DateTime;
 
 public class updateScheduledWorkflowCommand extends FacilioCommand {
 
@@ -24,6 +26,10 @@ public class updateScheduledWorkflowCommand extends FacilioCommand {
 		updateWorkflow(scheduledWorkflowContext);
 		
 		FacilioTimer.deleteJob(scheduledWorkflowContext.getId(), WorkflowV2Util.SCHEDULED_WORKFLOW_JOB_NAME);
+		
+		if(scheduledWorkflowContext.getStartTime() < DateTimeUtil.getCurrenTime()) {
+			scheduledWorkflowContext.setStartTime(DateTimeUtil.getCurrenTime());
+		}
 		
 		FacilioTimer.scheduleCalendarJob(scheduledWorkflowContext.getId(), WorkflowV2Util.SCHEDULED_WORKFLOW_JOB_NAME, scheduledWorkflowContext.getStartTime(), scheduledWorkflowContext.getSchedule(), "facilio");
 			
