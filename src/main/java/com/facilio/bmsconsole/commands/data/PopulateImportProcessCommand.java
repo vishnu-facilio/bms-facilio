@@ -257,7 +257,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			List<ReadingContext> readingsList = readingsEntireList.subList(fromValue , toValue);
 			
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			bean.getModule(importProcessContext.getModuleId());
+			FacilioModule module = bean.getModule(importProcessContext.getModuleId());
 			ArrayList<String> updateFields = new ArrayList();
 			JSONObject meta = importProcessContext.getImportJobMetaJson();
 			FacilioField siteField = FieldFactory.getSiteIdField(importProcessContext.getModule());
@@ -271,7 +271,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			
 			for(int j =0;j< readingsList.size();j++) {
 				UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>()
-						.table(moduleName)
+						.table(module.getTableName())
 						.moduleName(moduleName).
 						fields(bean.getAllFields(moduleName));
 				if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {

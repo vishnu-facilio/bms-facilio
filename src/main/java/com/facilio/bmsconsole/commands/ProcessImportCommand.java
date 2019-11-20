@@ -277,18 +277,23 @@ public class ProcessImportCommand extends FacilioCommand {
 								
 								if (lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET_CATEGORY) && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) && fieldMapping.get(facilioField.getModule().getName() + "__" + facilioField.getName()) == null) {
 									ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-									List<FacilioField> lookupModuleFields = bean.getAllFields(lookupField.getLookupModule().getName());
+									String assetCategoryModuleName = lookupField.getLookupModule().getName();
+									List<FacilioField> lookupModuleFields = bean.getAllFields(assetCategoryModuleName);
+									FacilioModule assetCategoryModule = bean.getModule(assetCategoryModuleName);
 
 									Map<String, FacilioField> lookupModuleFieldMap = FieldFactory.getAsMap(lookupModuleFields);
-									GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(bean.getAllFields(lookupField.getLookupModule().getName()))
-											.table(lookupField.getLookupModule().getTableName())
-											.andCondition(CriteriaAPI.getCondition(lookupModuleFieldMap.get("assetModuleID"), importProcessContext.getModule().getModuleId() + "", NumberOperators.EQUALS));
+									SelectRecordsBuilder<AssetCategoryContext> builder = new SelectRecordsBuilder<AssetCategoryContext>()
+											.beanClass(AssetCategoryContext.class)
+											.module(assetCategoryModule)
+											.select(bean.getAllFields(assetCategoryModuleName))
+											.andCondition(CriteriaAPI.getCondition(lookupModuleFieldMap.get("assetModuleID"), importProcessContext.getModule().getModuleId() + "", NumberOperators.EQUALS));;
 
-									List<Map<String, Object>> categoryPropList = selectBuilder.get();
+									List<AssetCategoryContext> categoryPropList = builder.get();
 									if (categoryPropList.isEmpty()) {
 										throw new Exception("Asset Category " + importProcessContext.getModule().getName() + " not Found.");
 									}
-									Map<String, Object> categoryProp = categoryPropList.get(0);
+									AssetCategoryContext categoryProp = categoryPropList.get(0);
+
 									if (!props.containsKey(facilioField.getName())) {
 										props.put(facilioField.getName(), categoryProp);
 										groupedFields.put(importProcessContext.getModule().getExtendModule().getName(), lookupField.getName());
