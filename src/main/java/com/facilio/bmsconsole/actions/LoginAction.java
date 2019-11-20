@@ -310,6 +310,7 @@ public class LoginAction extends FacilioAction {
 		Map<String, Object> data = new HashMap<>();
 		data.put("users", users);
 		data.put("ticketStatus", TicketAPI.getAllStatus(false));
+		data.put("ticketType", TicketAPI.getTypes(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("assetCategory", AssetsAPI.getCategoryList());
