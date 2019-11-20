@@ -105,6 +105,13 @@ if (buildinfo == null) {
                <span class="nav-title">Data</span>
                </a>
            </li> 
+           <li>
+               <a href="deletemessagequeue">
+               <span class="nav-icon">
+              <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+               <span class="nav-title">DeleteMessageQueue</span>
+               </a>
+           </li> 
 
          </ul>
         
@@ -167,5 +174,8 @@ $(document).ready(function(){
     color: #fff;
     padding: 2px;
     text-align: left;
+}
+#side-menu{
+  padding-bottom: 150px;
 }
   </style>

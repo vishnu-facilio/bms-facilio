@@ -1130,6 +1130,12 @@
 			<action name="getAlertsPointsData" class="com.facilio.bmsconsole.actions.AdminAction" method ="getAlertsPointsData">
 			<result   type="tiles">adminpage/data.jsp</result>
 			</action>
+			<action name="deletemessagequeue" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/deletemessagequeue.jsp</result>
+			</action>
+			<action name="deleteMessageQueue" class="com.facilio.bmsconsole.actions.AdminAction" method = "deleteMessageQueue">
+			<result   type="tiles">adminpage/deletemessagequeue.jsp</result>
+			</action>
 			<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method ="addAgentVersion">
 			</action>
 	</package>

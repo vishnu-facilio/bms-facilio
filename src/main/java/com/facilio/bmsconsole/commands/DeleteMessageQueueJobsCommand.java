@@ -8,6 +8,8 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
+
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -31,7 +33,9 @@ public class DeleteMessageQueueJobsCommand extends FacilioCommand{
         String tableName = (String) context.get("TABLE_NAME");
         String deleteCondition = "< NOW() - INTERVAL "+ customDaysToDelete+" DAY";
         try{
-             deleteQueue(tableName,deleteCondition);
+        	int count =FacilioService.runAsServiceWihReturn(() -> deleteQueue(tableName,deleteCondition));
+        	System.out.println("Facilio Queue Deleted rows count is "+ count +" in table : " +tableName);
+        	LOGGER.info("Facilio Queue Deleted rows count is "+ count +" in table : " +tableName);
         }catch(Exception e){
             LOGGER.info("Exception occurred in DeleteMessage Through Admin Console : ",e);
         }
