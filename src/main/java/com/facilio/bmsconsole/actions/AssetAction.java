@@ -142,7 +142,11 @@ public class AssetAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
+		if (assetsId != null && assetsId.size() > 0) {
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, assetsId);
+		}else {
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
+		}
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		// cannot update module state directly
@@ -167,6 +171,8 @@ public class AssetAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	
 	
 	public String deleteAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -623,7 +629,7 @@ public class AssetAction extends FacilioAction {
 	public String v2updateAsset() throws Exception {
 		updateAsset();
 		setAssetId(asset.getId());
-		assetDetails();
+//		assetDetails();
 		return SUCCESS;
 	}
 	

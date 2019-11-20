@@ -27,7 +27,7 @@ public class AddCategoryOnAssetUpdateCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
-		if (asset.getCategory() != null && asset.getCategory().getId() > 0) {
+		if (asset.getId() > 0  && asset.getCategory() != null && asset.getCategory().getId() > 0) {
 			AssetContext oldAsset = AssetsAPI.getAssetInfo(asset.getId());
 			long categoryId = -1;
 			if (oldAsset.getCategory() != null && oldAsset.getCategory().getId() > 0) {

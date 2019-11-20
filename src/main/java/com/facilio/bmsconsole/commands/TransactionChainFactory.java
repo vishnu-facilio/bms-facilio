@@ -269,6 +269,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		
 		public static FacilioChain getUpdateWorkOrderChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());
@@ -673,6 +674,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
+		
 		
 		public static FacilioChain getUpdateQrChain() {
 			FacilioChain c = getDefaultChain();
