@@ -95,7 +95,7 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 			if (moduleRecord.getFormId() > 0) {
 				Criteria criteria = new Criteria();
 				criteria.addAndCondition(CriteriaAPI.getIdCondition(moduleRecord.getFormId(), ModuleFactory.getFormModule()));
-				List<FacilioForm> dbFormList = FormsAPI.getDBFormList(moduleName, null, criteria, null, false);
+				List<FacilioForm> dbFormList = FormsAPI.getDBFormList(moduleName, (FacilioForm.FormType) null, criteria, null, false);
 				if (CollectionUtils.isNotEmpty(dbFormList)) {
 					FacilioForm facilioForm = dbFormList.get(0);
 					long stateFlowId = facilioForm.getStateFlowId();
