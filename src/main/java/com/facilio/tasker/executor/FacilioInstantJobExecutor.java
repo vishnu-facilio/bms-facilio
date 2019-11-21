@@ -59,7 +59,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 
 	private int getNoOfFreeThreads() {
 		int freeCount = MAX_POOL_SIZE - THREAD_POOL_EXECUTOR.getActiveCount();
-		LOGGER.info("Instant jobs Free Count : " + freeCount);
+		LOGGER.debug("Instant jobs Free Count : " + freeCount);
 		return freeCount;
 	}
 
@@ -75,7 +75,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 						FacilioContext context = (FacilioContext) message.getSerializable();
 						if (context != null) {
 							String jobName = (String) context.get(InstantJobConf.getJobNameKey());
-							LOGGER.info("Gonna Execute job : " + jobName);
+							LOGGER.debug("Gonna Execute job : " + jobName);
 							if (jobName != null) {
 								InstantJobConf.Job instantJob = FacilioScheduler.getInstantJob(jobName);
 								if (instantJob != null) {
@@ -98,7 +98,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 											}
 											String receiptHandle = message.getId();
 											job.setReceiptHandle(receiptHandle);
-											LOGGER.info("Executing job : " + jobName);
+											LOGGER.debug("Executing job : " + jobName);
 											Future f = THREAD_POOL_EXECUTOR.submit(() -> job._execute(context,
 													(instantJob.getTransactionTimeout() - JOB_TIMEOUT_BUFFER) * 1000));
 											JOB_MONITOR_MAP.put(receiptHandle, new JobTimeOutInfo(
@@ -113,6 +113,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 								}
 							}
 						} else {
+							LOGGER.info("Facilio Instant Delete Message ID "+message.getId());
 							FacilioObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), message.getId());
 						}
 					}
@@ -133,6 +134,8 @@ public enum FacilioInstantJobExecutor implements Runnable {
 
 	public void jobEnd(String receiptHandle) {
 		try {
+
+			LOGGER.info("Facilio Instant Delete receiptHandle ID "+receiptHandle);
 			FacilioObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), receiptHandle);
 		} catch (Exception e) {
 			LOGGER.info("Exception occurred in FacilioInstant Job Qeueu :  "+e);
