@@ -99,11 +99,11 @@ public class FacilioTimer {
 //		}
 //		LOGGER.info(new StringBuilder().append("Adding instant job : ").append(jobName).append("\n Size : \n").append(size.toString()));
 		LOGGER.debug("Adding instant job : "+jobName);
-		if(FacilioProperties.isProduction()) {
-			if (!ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
-				throw new IllegalArgumentException("Unable to add instant job to queue");
-			}
-		}else {
+//		if(FacilioProperties.isProduction()) {
+//			if (!ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
+//				throw new IllegalArgumentException("Unable to add instant job to queue");
+//			}
+//		}else {
 			try {
 				if (!FacilioObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
 					throw new IllegalArgumentException("Unable to add instant job to queue");
@@ -111,7 +111,7 @@ public class FacilioTimer {
 			} catch (Exception e) {
 				LOGGER.info("Exception occurred in Facilio Instant Job Queue"+e);
 			}
-		}
+//		}
 		
 		
 	}
