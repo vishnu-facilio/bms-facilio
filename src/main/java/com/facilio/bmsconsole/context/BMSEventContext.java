@@ -24,7 +24,7 @@ public class BMSEventContext extends BaseEventContext {
         this.source = source;
     }
 
-    private long controller;
+    private long controller = -1;
     public long getController() {
         return controller;
     }
