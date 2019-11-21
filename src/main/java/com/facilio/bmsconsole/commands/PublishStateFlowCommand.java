@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -22,6 +23,7 @@ public class PublishStateFlowCommand extends FacilioCommand {
             if (stateFlowContext.isDraft() && stateFlowContext.getDraftParentId() == -1) {
                 // newly created stateflow, that is not live yet
                 stateFlowContext.setDraft(false);
+                stateFlowContext.setPublishedDate(DateTimeUtil.getCurrenTime());
                 FacilioChain chain = TransactionChainFactory.updateWorkflowRuleChain();
                 FacilioContext updateWorkflowContext = chain.getContext();
                 updateWorkflowContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateFlowContext);
@@ -59,6 +61,12 @@ public class PublishStateFlowCommand extends FacilioCommand {
 
             StateFlowRulesAPI.deleteWorkflowRule(draftStateFlowForParent.getId());
 
+
+            stateFlowContext.setPublishedDate(DateTimeUtil.getCurrenTime());
+            FacilioChain chain = TransactionChainFactory.updateWorkflowRuleChain();
+            FacilioContext updateWorkflowContext = chain.getContext();
+            updateWorkflowContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateFlowContext);
+            chain.execute();
 
         }
         return false;

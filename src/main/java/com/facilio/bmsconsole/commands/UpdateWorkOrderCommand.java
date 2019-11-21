@@ -100,7 +100,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 
 		updateWODetails(workOrder);
 
-		if (workOrder.getParentWO() != null) {
+		if (workOrder.getParentWO() != null && workOrder.getParentWO().getId() > 0) {
 			validateStatusOfParentAndChild(workOrder, oldWos);
 		}
 		

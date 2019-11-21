@@ -75,6 +75,14 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		return false;
 	}
 
+	private long publishedDate = -1;
+	public long getPublishedDate() {
+		return publishedDate;
+	}
+	public void setPublishedDate(long publishedDate) {
+		this.publishedDate = publishedDate;
+	}
+
 	private boolean formLevel = false;
 	public boolean isFormLevel() {
 		return formLevel;
