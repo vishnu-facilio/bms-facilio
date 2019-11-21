@@ -25,22 +25,30 @@ public class AddMLJob extends FacilioJob {
 		LOGGER.info("ML JOB name : "+props.get("name").toString().toUpperCase());
 		switch(props.get("name").toString().toUpperCase()){
 			case "ANOMALY":{
-				FacilioChain c = FacilioChainFactory.enableAnomalyDetectionChain();
-				context.put("TreeHierarchy", props.get("TreeHierarchy"));
-				context.put("meterInterval", props.get("meterInterval"));
-				if(props.containsKey("ratioHierarchy"))
-				{
-					context.put("ratioHierarchy", props.get("ratioHierarchy"));
+				if(!props.containsKey("parentHierarchy") || (props.containsKey("parentHierarchy") && props.get("parentHierarchy").toString().equalsIgnoreCase("true"))){
+					FacilioChain c = FacilioChainFactory.enableAnomalyDetectionChain();
+					context.put("TreeHierarchy", props.get("TreeHierarchy"));
+					context.put("meterInterval", props.get("meterInterval"));
+					if(props.containsKey("ratioHierarchy"))
+					{
+						context.put("ratioHierarchy", props.get("ratioHierarchy"));
+					}
+					c.execute(context);
+				}else{
+					 String[] ids = props.get("assetIds").toString().split(",");
+					for (int i = 0; i < ids.length; i++) {
+						FacilioChain c = FacilioChainFactory.enableAnomalyDetectionChain();
+						context.put("TreeHierarchy", ids[i]);
+						context.put("meterInterval", props.get("meterInterval"));
+						c.execute(context);
+					}
 				}
-				c.execute(context);
 				break;
 			}
 			case "ENERGY":{
 				FacilioChain c = FacilioChainFactory.addEnergyPredictionchain();
 				context.put("energyMeterID",props.get("energyMeterId"));
-				context.put("weekEnd", props.get("weekEnd"));
-				context.put("meterInterval", props.get("meterInterval"));
-				context.put("modelName", props.get("modelName"));
+				context.put("mlModelVariables", props.get("mlModelVariables"));
 				context.put("modelPath", props.get("modelPath"));
 				c.execute(context);		
 				break;
@@ -48,9 +56,7 @@ public class AddMLJob extends FacilioJob {
 			case "LOAD":{
 				FacilioChain c = FacilioChainFactory.addLoadPredictionchain();
 				context.put("energyMeterID",props.get("energyMeterId"));
-				context.put("weekEnd", props.get("weekEnd"));
-				context.put("meterInterval", props.get("meterInterval"));
-				context.put("modelName", props.get("modelName"));
+				context.put("mlModelVariables", props.get("mlModelVariables"));
 				context.put("modelPath", props.get("modelPath"));
 				c.execute(context);
 				break;

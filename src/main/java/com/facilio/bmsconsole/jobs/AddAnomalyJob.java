@@ -55,17 +55,17 @@ public class AddAnomalyJob extends FacilioJob {
 		
 		buildGamModel(emContextList);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        long categoryId=emContextList.get(0).getCategory().getId();
+		Long categoryId=emContextList.get(0).getCategory().getId();
 		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 		long assetModuleID = assetCategory.getAssetModuleID();
 		List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
 		boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("AnomalyDetectionMLLogReadings"));
 		if(!moduleExist){
-			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(0).getCategory().getId(),"AnomalyDetectionMLLogReadings",FieldFactory.getMLLogCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
+			MLAPI.addReading(categoryId,"AnomalyDetectionMLLogReadings",FieldFactory.getMLLogCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
 		}
 		moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("AnomalyDetectionMLReadings"));
 		if(!moduleExist){
-			MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(0).getCategory().getId(),"AnomalyDetectionMLReadings",FieldFactory.getMLCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
+			MLAPI.addReading(categoryId,"AnomalyDetectionMLReadings",FieldFactory.getMLCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 		}
 		long ratioCheckMLid = addRatioCheckModel(emContextList,"5674,5645,5646,5647");
 		checkGamModel(ratioCheckMLid,emContextList);
@@ -179,17 +179,17 @@ public class AddAnomalyJob extends FacilioJob {
 	private long addRatioCheckModel(List<EnergyMeterContext> emContextList, String treeHierachy) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        long categoryId=emContextList.get(0).getCategory().getId();
+		Long categoryId=emContextList.get(0).getCategory().getId();
 		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 		long assetModuleID = assetCategory.getAssetModuleID();
 		List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
 		boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("checkRatioMLLogReadings"));
 		if(!moduleExist){
-			MLAPI.addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(0).getCategory().getId(),"checkRatioMLLogReadings",FieldFactory.getMLLogCheckRatioFields(),ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
+			MLAPI.addReading(categoryId,"checkRatioMLLogReadings",FieldFactory.getMLLogCheckRatioFields(),ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
 		}
 		moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("checkRatioMLReadings"));
 		if(!moduleExist){
-			MLAPI.addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(0).getCategory().getId(),"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
+			MLAPI.addReading(categoryId,"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
 		}
 		
 		FacilioModule logReadingModule = modBean.getModule("checkRatioMLLogReadings");

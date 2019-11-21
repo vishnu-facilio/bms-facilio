@@ -12,7 +12,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.AddValidationRulesCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
@@ -164,15 +163,14 @@ public class MLAPI {
 		return insertBuilder.insert(FieldUtil.getAsProperties(mlContext));
 	}
 	
-	public static void addReading(String parentModule,long parentCategoryID, String readingName,List<FacilioField> fields,String tableName) throws Exception 
+	public static void addReading(Long parentCategoryID, String readingName,List<FacilioField> fields,String tableName) throws Exception 
 	{
-		addReading(parentModule,parentCategoryID,readingName,fields,tableName,null);
+		addReading(parentCategoryID,readingName,fields,tableName,null);
 	}
 	
-	public static String addReadingEveryTime(String parentModule,long parentCategoryID, String readingName,List<FacilioField> fields,String tableName,ModuleType moduleType) throws Exception 
+	public static Long addReadingEveryTime(Long parentCategoryID, String readingName,List<FacilioField> fields,String tableName,ModuleType moduleType) throws Exception 
 	{
          FacilioContext context = new FacilioContext();
-         context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModule);
          context.put(FacilioConstants.ContextNames.READING_NAME,readingName);
          context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
          context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
@@ -184,14 +182,12 @@ public class MLAPI {
 		 }
          FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
          addReadingChain.execute(context);
-         LOGGER.info("addReading execution completed");
-        return (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        return (Long) context.get(FacilioConstants.ContextNames.MODULE_ID);
 	}
-	
-	public static void addReading(String parentModule,long parentCategoryID, String readingName,List<FacilioField> fields,String tableName,ModuleType moduleType) throws Exception 
+
+	public static void addReading(Long parentCategoryID,String readingName,List<FacilioField> fields,String tableName,ModuleType moduleType) throws Exception 
 	{
          FacilioContext context = new FacilioContext();
-         context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModule);
          context.put(FacilioConstants.ContextNames.READING_NAME,readingName);
          context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
          context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
@@ -203,7 +199,6 @@ public class MLAPI {
 		 }
          FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
          addReadingChain.execute(context);
-         LOGGER.info("addReading execution completed");
 	}
 	
 	public static void addMLModelVariables(long mlId,String Key,String value) throws Exception

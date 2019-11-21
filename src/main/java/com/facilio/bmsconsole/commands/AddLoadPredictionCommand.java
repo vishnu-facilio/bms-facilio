@@ -1,11 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -37,21 +38,21 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 			EnergyMeterContext emContext2 = DeviceAPI.getEnergyMeter(energyMeterID);
 			if(emContext2 != null){
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                long categoryId=emContext2.getCategory().getId();
+				Long categoryId=emContext2.getCategory().getId();
 				AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 				long assetModuleID = assetCategory.getAssetModuleID();
 				List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
 				boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("LoadPredictionMLLogReadings"));
 				if (!moduleExist) {
-					MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY, categoryId,"LoadPredictionMLLogReadings", FieldFactory.getMLLogLoadPredictFields(),ModuleFactory.getMLLogReadingModule().getTableName(), ModuleType.PREDICTED_READING);
+					MLAPI.addReading(categoryId,"LoadPredictionMLLogReadings", FieldFactory.getMLLogLoadPredictFields(),ModuleFactory.getMLLogReadingModule().getTableName(), ModuleType.PREDICTED_READING);
 				}
 				moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("LoadPredictionMLReadings"));
 				if (!moduleExist) {
-					MLAPI.addReading(FacilioConstants.ContextNames.ASSET_CATEGORY, categoryId,"LoadPredictionMLReadings", FieldFactory.getMLLoadPredictFields(),ModuleFactory.getMLReadingModule().getTableName());
+					MLAPI.addReading(categoryId,"LoadPredictionMLReadings", FieldFactory.getMLLoadPredictFields(),ModuleFactory.getMLReadingModule().getTableName());
 				}
                 LOGGER.info("After adding Reading");
 				
-				checkGamModel(energyMeterID,emContext2,(String) jc.get("weekEnd"),(String) jc.get("meterInterval"), (String) jc.get("modelName"),(String) jc.get("modelPath"));
+				checkGamModel(energyMeterID,emContext2, (JSONObject) jc.get("mlModelVariables"),(String) jc.get("modelPath"));
 				LOGGER.info("After check Gam Model");
 			}else{
 				LOGGER.info("Energy Meter context is Null");
@@ -65,7 +66,7 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		}
 	}
 	
-	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context,String weekend,String meterInterval,String modelName,String modelPath) throws Exception
+	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context,JSONObject mlModelVariables,String modelPath) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -80,15 +81,23 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		
 		MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 		
-		MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
-		MLAPI.addMLModelVariables(mlID,"weekend",weekend);
-		MLAPI.addMLModelVariables(mlID,"meterinterval",meterInterval);
-		MLAPI.addMLModelVariables(mlID,"modelName",modelName);
+		mlModelVariables.entrySet().forEach(entry -> {
+			try {
+				Map.Entry<String, String> en = (Map.Entry) entry;
+				MLAPI.addMLModelVariables(mlID, en.getKey(), en.getValue());
+			} catch (Exception e) {
+				LOGGER.fatal("Error when adding ML Model variables for EnergyPrediction Job " + mlID);
+			}
+		});
 		
 		ScheduleInfo info = new ScheduleInfo();
 		info.setFrequencyType(FrequencyType.DAILY);
 
-		MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
+		try {
+			MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
+		} catch (InterruptedException e) {
+			Thread.sleep(1000);
+		}
 		LOGGER.info("checkGamModel Completed");
 	}
 	
