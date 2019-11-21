@@ -641,28 +641,27 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("email", "Email"));
 		columns.add(new ViewField("phone", "Phone"));
-		columns.add(new ViewField("location", "Address"));
+		columns.add(new ViewField("visitorType", "Type"));
+		columns.add(new ViewField("lastVisitedTime", "Last Visited Time"));
+		columns.add(new ViewField("lastVisitedHost", "Last Visited Host"));
 		return columns;
 	}
 
 	public static List<ViewField> getDefaultVisitorLoggingColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("visitor", "Visitor"));
-		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("checkInTime", "CheckIn Time"));
 		columns.add(new ViewField("checkOutTime", "CheckOut Time"));
-		columns.add(new ViewField("approvalNeeded", "Is Host Approval Needed"));
+		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
-		columns.add(new ViewField("isBlocked", "Visitor Entry"));
-		columns.add(new ViewField("isVip", "VIP"));
-		columns.add(new ViewField("moduleState", "Module State"));
-		columns.add(new ViewField("attachmentPreview", "Attachment Preview"));
 		return columns;
 	}
 
 	public static List<ViewField> getDefaultVisitorInvitesColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("inviteName", "Name"));
+		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("inviteHost", "Host"));
 		columns.add(new ViewField("expectedStartTime", "Expected Start Time"));
 		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
@@ -693,7 +692,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("phone", "PHONE"));
-		columns.add(new ViewField("EMAIL", "Email"));
+		columns.add(new ViewField("email", "Email"));
 		columns.add(new ViewField("isBlocked", "Visitor Entry"));
 		columns.add(new ViewField("isVip", "VIP"));
 		return columns;

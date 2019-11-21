@@ -2922,7 +2922,7 @@ public class ModuleFactory {
 	{
 		FacilioModule module=new FacilioModule();
 		module.setName(ContextNames.WATCHLIST);
-		module.setDisplayName("Watch List");
+		module.setDisplayName("Watchlist");
 		module.setTableName("WatchList");
 		return module;
 	}
