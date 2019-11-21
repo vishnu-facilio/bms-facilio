@@ -7101,6 +7101,7 @@ public class FieldFactory {
 		fields.add(getField("hostEnabled","HOST_ENABLED",FieldType.BOOLEAN));
 		fields.add(getField("idScanEnabled","IS_ID_SCAN_ENABLED",FieldType.BOOLEAN));
 		fields.add(getField("ndaContent","NDA_CONTENT",FieldType.STRING));
+		fields.add(getField("approvalRequiredForInvite","IS_INVITE_APPROVAL_REQUIRED",FieldType.BOOLEAN));
 		
 		
 //		fields.add(getField("isSelfSignoutEnabled","IS_SELF_SIGNOUT_ENABLED",FieldType.BOOLEAN));

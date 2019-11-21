@@ -17,7 +17,14 @@ public class VisitorSettingsContext implements Serializable {
 	long orgId=-1;
 	long visitorTypeId=-1;
 	String ndaContent;
+	Boolean approvalRequiredForInvite;
 	
+	public Boolean getApprovalRequiredForInvite() {
+		return approvalRequiredForInvite;
+	}
+	public void setApprovalRequiredForInvite(Boolean approvalRequiredForInvite) {
+		this.approvalRequiredForInvite = approvalRequiredForInvite;
+	}
 	public String getNdaContent() {
 		if(ndaContent==null)
 		{
