@@ -27,7 +27,6 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import com.twilio.rest.authy.v1.Form;
 
 public class FormFactory {
 	
@@ -115,7 +114,7 @@ public class FormFactory {
 				.build();
 	}
 	
-	public static Map<String, FacilioForm> getForms(String moduleName, FormType formtype) {
+	public static Map<String, FacilioForm> getForms(String moduleName, List<Integer> formtype) {
 		Map<String, FacilioForm> forms = getForms(moduleName);
 		if (MapUtils.isEmpty(forms)) {
 			return new HashMap<>();
@@ -123,7 +122,7 @@ public class FormFactory {
 		if (formtype == null) {
 			return forms;
 		}
-		return forms.entrySet().stream().filter(f -> f.getValue().getFormTypeEnum() == formtype)
+		return forms.entrySet().stream().filter(f -> formtype.contains(f.getValue().getFormType()))
 	            .collect(Collectors.toMap(f -> f.getKey(), f -> f.getValue()));
 	}
 	
@@ -140,7 +139,7 @@ public class FormFactory {
 	}
 	
 	public static String getDefaultFormName(String moduleName, String formTypeVal) {
-		return "default_"+moduleName+"_"+formTypeVal;
+		return "default_"+moduleName+"_"+ (formTypeVal.equals("portal") ? formTypeVal : "web" ) ;
 	}
 	
 	public static FacilioForm getForm(String moduleName, String formName, Boolean...onlyFields) {
@@ -260,7 +259,7 @@ public class FormFactory {
 	
 	private static Map<String, Map<String, FacilioForm>>  initFormsList() {
 		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm());
-		List<FacilioForm> assetForms = Arrays.asList(getAssetForm());
+		List<FacilioForm> assetForms = Arrays.asList(getAssetForm(), getMobileAssetForm());
 		List<FacilioForm> poForm = Arrays.asList(getPurchaseOrderForm());
 		List<FacilioForm> prForm = Arrays.asList(getPurchaseRequestForm());
 		List<FacilioForm> visitorTypeForms = Arrays.asList(getGuestForm(),getEmployeeForm(),getVendorForm());
@@ -344,11 +343,12 @@ public class FormFactory {
 	public static FacilioForm getMobileAssetForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("Asset");
-		form.setName("mobile_asset");
+		form.setName("default_asset_mobile");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ASSET));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getMobileAssetFormFields());
 		form.setFormType(FormType.MOBILE);
+		form.setShowInMobile(true);
 		return form;
 	}
 	
@@ -381,8 +381,10 @@ public class FormFactory {
 		fields.add(new FormField("purchasedDate", FieldDisplayType.DATE, "Purchased Date", Required.OPTIONAL, 12, 1));
 		fields.add(new FormField("retireDate", FieldDisplayType.DATE, "Retire Date", Required.OPTIONAL, 13, 1));
 		fields.add(new FormField("warrantyExpiryDate", FieldDisplayType.DATE, "Warranty Expiry Date", Required.OPTIONAL, 14, 1));
+		fields.add(new FormField("qrVal", FieldDisplayType.TEXTBOX, "QR Value", Required.OPTIONAL, 15, 1));
 		return Collections.unmodifiableList(fields);
 	}
+	
 	
 	public static List<FormField> getMetaFormFieldApprovals(List<FacilioField> allFields) throws Exception {
 		List<FormField> fields = new ArrayList<>();

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -195,7 +196,10 @@ public class FormAction extends FacilioAction {
 	public String formList() throws Exception {
 		Context context=new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.FORM_TYPE, formType);
+		if (formType != null && CollectionUtils.isEmpty(formTypes)) {
+			formTypes = Collections.singletonList(formType.getIntVal());
+		}
+		context.put(FacilioConstants.ContextNames.FORM_TYPE, formTypes);
 		
 		ReadOnlyChainFactory.getFormList().execute(context);
 		setResult("forms",context.get(ContextNames.FORMS));
@@ -261,6 +265,14 @@ public class FormAction extends FacilioAction {
 	}
 	public void setFormTypeEnum(FormType type) {
 		this.formType = type;
+	}
+	
+	private List<Integer> formTypes;
+	public List<Integer> getFormTypes() {
+		return formTypes;
+	}
+	public void setFormTypes(List<Integer> formTypes) {
+		this.formTypes = formTypes;
 	}
 
 	public long getFormId() {

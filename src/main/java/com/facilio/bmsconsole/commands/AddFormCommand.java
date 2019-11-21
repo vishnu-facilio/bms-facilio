@@ -44,7 +44,7 @@ public class AddFormCommand extends FacilioCommand {
 		}
 		
 		if (form.getSections() == null && (module.getTypeEnum() != ModuleType.CUSTOM)) {
-			FacilioForm defaultForm = FormsAPI.getDefaultForm(moduleName, form);
+			FacilioForm defaultForm = FormsAPI.getDefaultForm(moduleName, form.getFormTypeEnum());
 			if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getSections())) {
 				form.setSections(new ArrayList<>(defaultForm.getSections()));
 				for(FormSection section: form.getSections()) {

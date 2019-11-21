@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -132,7 +133,7 @@ public class FormsAPI {
 	}
 
 	public static List<FacilioForm> getFormFromDB(Criteria criteria) throws Exception {
-		return getDBFormList(null, null, criteria, null, true);
+		return getDBFormList(null, (List<Integer>) null, criteria, null, true);
 	}
 	
 	private static void setFormFields (FacilioForm form) throws Exception {
@@ -470,8 +471,8 @@ public class FormsAPI {
 		return formField;
 	}
 	
-	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,FormType formType) throws Exception {
-		List<FacilioForm> forms = getDBFormList(moduleName, formType);
+	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,List<Integer> formTypes) throws Exception {
+		List<FacilioForm> forms = getDBFormList(moduleName, formTypes);
 		Map<String, FacilioForm> formMap = new LinkedHashMap<>();
 		if (forms != null && !forms.isEmpty()) {
 			for(FacilioForm form: forms) {
@@ -482,11 +483,19 @@ public class FormsAPI {
 		return null;
 	}
 	
-	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType) throws Exception{
-		return getDBFormList(moduleName, formType, null, null, false);
+	public static List<FacilioForm> getDBFormList(String moduleName,List<Integer> formTypes) throws Exception{
+		return getDBFormList(moduleName, formTypes, null, null, false);
 	}
 	
 	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields) throws Exception{
+		List<Integer> formTypes = null;
+		if (formType != null) {
+			formTypes = Collections.singletonList(formType.getIntVal());
+		}
+		return getDBFormList(moduleName, formTypes, criteria, selectParams, fetchFields);
+	}
+	
+	public static List<FacilioForm> getDBFormList(String moduleName,List<Integer> formTypes, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields) throws Exception{
 		
 		FacilioModule formModule = ModuleFactory.getFormModule();
 		
@@ -502,8 +511,8 @@ public class FormsAPI {
 			long moduleId=modBean.getModule(moduleName).getModuleId();
 			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
 		}
-		if (formType != null) {
-			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("formType"), String.valueOf(formType.getIntVal()), NumberOperators.EQUALS));
+		if (formTypes != null) {
+			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("formType"), StringUtils.join(formTypes, ","), NumberOperators.EQUALS));
 		}
 		if (criteria != null) {
 			formListBuilder.andCriteria(criteria);
@@ -596,7 +605,7 @@ public class FormsAPI {
 			addUnusedSystemFields(form, systemFields);
 		}
 		else {
-			FacilioForm defaultForm = getDefaultForm(moduleName, form, true);
+			FacilioForm defaultForm = getDefaultForm(moduleName, form.getFormTypeEnum(), true);
 			if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getFields())) {
 				for (FormField f: defaultForm.getFields()) {	// TODO get fields from all sections
 					if (!formFieldMap.containsKey(f.getName()) && (f.getField() == null || f.getField().isDefault())) {
@@ -665,13 +674,16 @@ public class FormsAPI {
 		}
 	}
 	
-	public static FacilioForm getDefaultForm(String moduleName, FacilioForm form, Boolean...onlyFields) throws Exception {
-		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form, onlyFields);
+	public static FacilioForm getDefaultForm(String moduleName, FormType formType, Boolean...onlyFields) throws Exception {
+		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, formType.getStringVal(), onlyFields);
+		if (defaultForm == null && formType != FormType.PORTAL) {
+			defaultForm = FormFactory.getDefaultForm(moduleName, FormType.WEB.getStringVal(), onlyFields);
+		}
 		if (defaultForm == null) {
 			Map<String, Object> params = new HashMap<>();
 			params.put(Builder.ORDER_BY, "id");
 			params.put(Builder.LIMIT, 1);
-			List<FacilioForm> forms = getDBFormList(moduleName, form.getFormTypeEnum(), null, params, true);
+			List<FacilioForm> forms = getDBFormList(moduleName, formType, null, params, true);
 			if (CollectionUtils.isNotEmpty(forms)) {
 				return forms.get(0);
 			}
