@@ -4,5 +4,5 @@
 <!--	<executor name="system" period="300" threads="25" maxRetry="4" />-->
 	<executor name="priority" period="60" threads="25" />
 	<executor name="ml" period="60" threads="3" />
-	<executor name="history" period="60" threads="25" maxRetry="2" />
+	<executor name="history" period="60" threads="15" maxRetry="2" />
 </executors>
