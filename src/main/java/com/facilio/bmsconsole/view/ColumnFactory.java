@@ -651,8 +651,8 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("visitor", "Visitor"));
 		columns.add(new ViewField("visitorType", "Type"));
-		columns.add(new ViewField("checkInTime", "CheckIn Time"));
-		columns.add(new ViewField("checkOutTime", "CheckOut Time"));
+		columns.add(new ViewField("checkInTime", "Check-In Time"));
+		columns.add(new ViewField("checkOutTime", "Check-Out Time"));
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
 		return columns;

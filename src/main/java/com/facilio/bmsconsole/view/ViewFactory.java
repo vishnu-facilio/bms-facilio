@@ -4829,7 +4829,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Visitor Invites");
+		allView.setDisplayName("All Invites");
 		return allView;
 	}
 	
