@@ -142,16 +142,20 @@ public class KinesisProcessor implements IRecordProcessor {
 
                 reader = new StringReader(data);
                 JSONObject payLoad = (JSONObject) parser.parse(reader);
-                if(payLoad.containsKey(AgentConstants.VERSION) && ( ("2".equalsIgnoreCase((String)payLoad.get(AgentConstants.VERSION))))){
-                    if( processorV2 != null && isStage ) {
-                        LOGGER.info(" newProcessor payload -> "+payLoad);
-                        try {
-                            processorV2.processNewAgentData(payLoad);
-                        }catch (Exception newProcessorException){
-                            LOGGER.info("Exception occurred ",newProcessorException);
+                try {
+                    if (payLoad.containsKey(AgentConstants.VERSION) && (("2".equalsIgnoreCase((String) payLoad.get(AgentConstants.VERSION))))) {
+                        if (processorV2 != null && isStage) {
+                            LOGGER.info(" newProcessor payload -> " + payLoad);
+                            try {
+                                processorV2.processNewAgentData(payLoad);
+                            } catch (Exception newProcessorException) {
+                                LOGGER.info("Exception occurred ", newProcessorException);
+                            }
                         }
+                        continue;
                     }
-                    continue;
+                }catch (Exception ex){
+                    LOGGER.info("Exception occurred ",ex);
                 }
                 String dataType = PublishType.event.getValue();
                 if(payLoad.containsKey(EventUtil.DATA_TYPE)) {
