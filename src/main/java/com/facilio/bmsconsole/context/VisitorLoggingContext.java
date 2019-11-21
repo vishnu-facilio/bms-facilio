@@ -1,8 +1,18 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.File;
+import java.util.List;
 
-import com.facilio.accounts.dto.User;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.VisitorInviteContext.InviteSource;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.VisitorManagementAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
@@ -23,7 +33,7 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 	}
 
 	private VisitorInviteContext invite;
-	private User host;
+	private ContactsContext host;
 	private long checkInTime = -1;
 	private long checkOutTime = -1;
 	private VisitorContext visitor;
@@ -47,11 +57,11 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		this.invite = invite;
 	}
 
-	public User getHost() {
+	public ContactsContext getHost() {
 		return host;
 	}
 
-	public void setHost(User host) {
+	public void setHost(ContactsContext host) {
 		this.host = host;
 	}
 
@@ -375,6 +385,203 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 	}
 	public void setIdProofScanned(Boolean idProofScanned) {
 		this.idProofScanned = idProofScanned;
+	}
+	
+	private long parentLogId;
+
+	public long getParentLogId() {
+		return parentLogId;
+	}
+
+	public void setParentLogId(long parentLogId) {
+		this.parentLogId = parentLogId;
+	}
+	
+	private String groupName;
+	private long expectedCheckInTime;
+	private long sourceId;
+	
+	private Boolean isRecurring;
+
+	public Boolean getIsRecurring() {
+		return isRecurring;
+	}
+
+	public void setIsRecurring(Boolean isRecurring) {
+		this.isRecurring = isRecurring;
+	}
+
+	public boolean isRecurring() {
+		if (isRecurring != null) {
+			return isRecurring.booleanValue();
+		}
+		return false;
+	}
+	
+	private Boolean isPreregistered;
+
+	public Boolean getIsPreregistered() {
+		return isRecurring;
+	}
+
+	public void setIsPreregistered(Boolean isPreregistered) {
+		this.isPreregistered = isPreregistered;
+	}
+
+	public boolean isPreregistered() {
+		if (isPreregistered != null) {
+			return isPreregistered.booleanValue();
+		}
+		return false;
+	}
+	
+	
+	private Boolean isInviteApprovalNeeded;
+
+	public Boolean getIsInviteApprovalNeeded() {
+		return isInviteApprovalNeeded;
+	}
+
+	public void setIsInviteApprovalNeeded(Boolean isInviteApprovalNeeded) {
+		this.isInviteApprovalNeeded = isInviteApprovalNeeded;
+	}
+
+	public boolean isInviteApprovalNeeded() {
+		if (isInviteApprovalNeeded != null) {
+			return isInviteApprovalNeeded.booleanValue();
+		}
+		return false;
+	}
+	
+	public static enum Source implements FacilioEnum {
+		WORKORDER, PURCHASE_ORDER, TENANT, MANUAL;
+
+		@Override
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name();
+		}
+
+		public static Source valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public long getExpectedCheckInTime() {
+		return expectedCheckInTime;
+	}
+
+	public void setExpectedCheckInTime(long expectedCheckInTime) {
+		this.expectedCheckInTime = expectedCheckInTime;
+	}
+
+	public long getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(long sourceId) {
+		this.sourceId = sourceId;
+	}
+	
+	private Source source;
+	public int getSource() {
+		if (source != null) {
+			return source.getIndex();
+		}
+		return -1;
+	}
+	public void setSource(int source) {
+		this.source = Source.valueOf(source);
+	}
+	public Source getSourceEnum() {
+		return source;
+	}
+	public void setSource(Source source) {
+		this.source = source;
+	}
+	
+	private PMTriggerContext trigger;
+
+	public PMTriggerContext getTrigger() {
+		return trigger;
+	}
+
+	public void setTrigger(PMTriggerContext trigger) {
+		this.trigger = trigger;
+	}
+	
+	public VisitorLoggingContext getChildLog(long expectedCheckInTime) throws Exception{
+		VisitorLoggingContext childLog = FieldUtil.cloneBean(this, VisitorLoggingContext.class);
+		childLog.setExpectedCheckInTime(expectedCheckInTime * 1000);
+		childLog.setExpectedCheckOutTime((expectedCheckInTime * 1000) + this.getExpectedVisitDuration());
+		childLog.setIsRecurring(false);
+		childLog.setParentLogId(this.getId());
+		childLog.setIsInviteApprovalNeeded(false);
+		FacilioStatus status = VisitorManagementAPI.getLogStatus("Upcoming");
+		if(status != null) {
+			childLog.setModuleState(status);
+		}
+		childLog.setIsInvitationSent(true);
+		
+		return childLog;
+	}
+	
+	private long logGeneratedUpto;
+	public long getLogGeneratedUpto() {
+		return logGeneratedUpto;
+	}
+
+	public void setLogGeneratedUpto(long logGeneratedUpto) {
+		this.logGeneratedUpto = logGeneratedUpto;
+	}
+	
+	private Boolean isInvitationSent;
+
+	public Boolean getIsInvitationSent() {
+		return isInvitationSent;
+	}
+
+	public void setIsInvitationSent(Boolean isInvitationSent) {
+		this.isInvitationSent = isInvitationSent;
+	}
+
+	public boolean isInvitationSent() {
+		if (isInvitationSent != null) {
+			return isInvitationSent.booleanValue();
+		}
+		return false;
+	}
+	
+	private Boolean isOverStay;
+
+	public Boolean getIsOverStay() {
+		return isOverStay;
+	}
+
+	public void setIsOverStay(Boolean isOverStay) {
+		this.isOverStay = isOverStay;
+	}
+
+	public boolean isOverStay() {
+		if (isOverStay != null) {
+			return isOverStay.booleanValue();
+		}
+		return false;
 	}
 	
 	

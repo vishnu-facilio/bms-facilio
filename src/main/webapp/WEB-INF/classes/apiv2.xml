@@ -4536,6 +4536,13 @@
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="qrScanVisitor" />				
 	</package>
 	
+	<package name="visitorLoggingInvites" namespace="/api/v2/visitorLogging/invites/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorInviteList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	<package name="visitorLoggingViews" namespace="/api/v2/visitorLogging/view"
 		extends="v2Api">
 		<action name="*"
@@ -4548,17 +4555,26 @@
 		extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging" />
+		<action name="addRecurring"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addRecurringVisitorLogging" />
+		
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
+		<action name="updateRecurring"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateRecurringVisitorLogging" />
+		
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="deleteVisitorLogging" />
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingDetails" />
 		<action name="checkOutWithPhone"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkOutVisitorLogging" />
+		<action name="qrScanLog"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="qrScanLog" />
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" />
 	</package>
+	
 	<package name="visitorSettings" namespace="/api/v2/visitorSettings"
 		extends="v2Api">
 		<action name="add"

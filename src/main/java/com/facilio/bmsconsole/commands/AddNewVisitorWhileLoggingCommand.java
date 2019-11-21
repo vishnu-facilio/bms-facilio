@@ -2,14 +2,17 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.chain.FacilioChain;
@@ -26,9 +29,24 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 		List<VisitorLoggingContext> visitorLogs = (List<VisitorLoggingContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(visitorLogs)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			Map<Long, VisitorSettingsContext> settingsMap = VisitorManagementAPI.getVisitorSettingsForType();
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			for(VisitorLoggingContext vL : visitorLogs) {
+				
+				VisitorSettingsContext setting = settingsMap.get(vL.getVisitorType().getId());
+				if(setting != null) {
+					JSONObject hostSetting = setting.getHostSettings();
+					if(!vL.isPreregistered() && hostSetting.get("requireApproval") != null && (boolean)hostSetting.get("requireApproval")) {
+						vL.setIsApprovalNeeded((boolean)hostSetting.get("requireApproval"));
+					}
+					else {
+						vL.setIsApprovalNeeded(false);
+					}
+				}
+				else {
+					vL.setIsApprovalNeeded(false);
+				}
 				if(vL.getInvite() != null && vL.getInvite().getId() > 0) {
 					vL.setIsInvited(true);
 				}

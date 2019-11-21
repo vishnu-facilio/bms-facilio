@@ -105,6 +105,9 @@ public class ContactsAPI {
 		else if(contact.getContactType() == 2) {
 			user.setAppType(3);
 		}
+		else if(contact.getContactType() == 3) {
+			user.setAppType(1);
+		}
 		long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false);
 		user.setId(userId);
 		contact.setRequester(user);

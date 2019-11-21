@@ -3735,7 +3735,27 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
+			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+			
+			return c;
+		}
+		
+		public static FacilioChain addRecurringVisitorLoggingRecordsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
+			c.addCommand(new CheckForWatchListRecordCommand());
+			c.addCommand(new AddNewVisitorWhileLoggingCommand());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			c.addCommand(new AddOrUpdateVisitorLogTriggerCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new SchedulePreOpenVisitorLogsCreateCommand(false));
+			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
+			c.addCommand(new ChangeVisitorInviteStateCommand());
+			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			
@@ -3749,7 +3769,24 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+			
+			return c;
+		}
+		
+		public static FacilioChain updateRecurringVisitorLoggingRecordsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
+			c.addCommand(new GenericUpdateListModuleDataCommand());
+			c.addCommand(new UpdateStateForModuleDataCommand());
+			c.addCommand(new AddOrUpdateVisitorLogTriggerCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new SchedulePreOpenVisitorLogsCreateCommand(true));
+			c.addCommand(new ChangeVisitorInviteStateCommand());
+			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			
 			return c;

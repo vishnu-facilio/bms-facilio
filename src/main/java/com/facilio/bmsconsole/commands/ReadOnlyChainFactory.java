@@ -1603,6 +1603,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain qrScanVisitorLogChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new QrScanVisitorLogCommand());
+		return c;
+	}
+	
 	public static FacilioChain getVisitorInviteRelContextChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetVisitorInviteRelContextCommand());

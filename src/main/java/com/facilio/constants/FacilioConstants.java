@@ -139,6 +139,7 @@ public class FacilioConstants {
 		public static final String CHANGE_SET_MAP = "changeSetMap";
 		public static final String RECORD = "record";
 		public static final String REVISED_RECORD = "revisedRecord";
+		public static final String PARENT_RECORD = "parentRecord";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_MAP = "recordMap";
 		public static final String RECORD_ID = "recordId";
@@ -1292,6 +1293,7 @@ public class FacilioConstants {
 		public static final String VISITOR_LOGGING_RECORDS = "visitorloggingrecords";
 		public static final String VISITOR_ID = "visitorId";
 		public static final String VISITOR_TYPE = "visitorType";
+		public static final String IS_EDIT = "isEdit";
 		
 		
 		

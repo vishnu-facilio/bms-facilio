@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -32,7 +34,9 @@ public class LoadContactsLookUpCommand extends FacilioCommand{
 		LookupField vendorField = (LookupField) fieldsAsMap.get("vendor");
 		
 		LookupField requesterField = (LookupField) fieldsAsMap.get("requester");
-		additionaLookups.add(tenantField);
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+			additionaLookups.add(tenantField);
+		}
 		additionaLookups.add(vendorField);
 		additionaLookups.add(requesterField);
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);

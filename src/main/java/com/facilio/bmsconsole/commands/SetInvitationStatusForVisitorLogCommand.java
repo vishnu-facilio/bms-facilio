@@ -16,9 +16,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
-import com.google.common.base.Objects;
 
-public class ChangeVisitorInviteStateCommand extends FacilioCommand{
+public class SetInvitationStatusForVisitorLogCommand extends FacilioCommand{
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -39,21 +38,8 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 								if(field != null) {
 									if(field.getName().equals("moduleState")) {
 										FacilioStatus status = StateFlowRulesAPI.getStateContext((long)changes.getNewValue());
-										if(status.getStatus().toString().trim().equals("CheckedIn")) {
-											VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, true, time);
-											VisitorManagementAPI.updateVisitorRollUps(record);
-											VisitorManagementAPI.updateVisitorLastVisitRollUps(record);
-//											if(record.getInvite() != null) {
-//												VisitorManagementAPI.updateVisitorInviteStateToArrived(record.getVisitor().getId(), record.getInvite().getId(), "Arrived");
-//											}
-										}
-										else if(status.getStatus().toString().trim().equals("CheckedOut")) {
-											VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, false, time);
-											VisitorManagementAPI.updateVisitorLastVisitDurationRollUp(record);
-//											
-//											if(record.getInvite() != null && !record.getInvite().isRecurring()) {
-//												VisitorManagementAPI.updateVisitorInviteStateToArrived(record.getVisitor().getId(), record.getInvite().getId(), "CheckedOut");
-//											}
+										if(status.getStatus().toString().trim().equals("Invited") || status.getStatus().toString().trim().equals("Upcoming")) {
+											VisitorManagementAPI.updateVisitorLogInvitationStatus(record, true);
 										}
 									}
 								}
@@ -63,7 +49,6 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 				}
 			}
 		}
-			
 		return false;
 	}
 

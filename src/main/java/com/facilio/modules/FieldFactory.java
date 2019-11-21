@@ -7116,5 +7116,25 @@ public class FieldFactory {
 
 		return fields;
 	}
+	public static List<FacilioField> getVisitorLogTriggerFields() {
+		FacilioModule module = ModuleFactory.getVisitorLogTriggersModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("pmId", "VISITOR_LOG_ID", module, FieldType.NUMBER));
+		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
+		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("frequency", "FREQUENCY", module, FieldType.NUMBER));
+		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("triggerExecutionSource", "TRIGGER_EXECUTION_SOURCE", module, FieldType.NUMBER));
+		fields.add(getField("custom", "IS_CUSTOM", module, FieldType.BOOLEAN));
+
+		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("lastGeneratedTime", "LOG_GENERATED_UPTO", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
 	
 }

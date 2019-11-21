@@ -29,7 +29,7 @@ public class LoadAllFieldsCommand extends FacilioCommand{
 					  continue;
 					}
 						
-				}
+				} 
 				restrictedFields.add(fields.get(i));
 			}
 			

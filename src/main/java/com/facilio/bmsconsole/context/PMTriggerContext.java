@@ -96,6 +96,14 @@ public class PMTriggerContext implements Serializable {
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
 	}
+	
+	private long lastGeneratedTime = -1;
+	public long getLastGeneratedTime() {
+		return lastGeneratedTime;
+	}
+	public void setLastGeneratedTime(long lastGeneratedTime) {
+		this.lastGeneratedTime = lastGeneratedTime;
+	}
 
 	private ReadingRuleContext readingRule;
 	public ReadingRuleContext getReadingRule() {

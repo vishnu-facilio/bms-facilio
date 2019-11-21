@@ -48,10 +48,13 @@
 	 <job name='DeviceMonitor' classname= 'com.facilio.bmsconsole.jobs.DeviceMonitorJob' transactionTimeout='300000'/>
 	 <job name='ScheduleNewPM' classname= 'com.facilio.bmsconsole.commands.ScheduleNewPMCommand' transactionTimeout='600000'/>
 	 <job name='SchedulePMBackgroundJob' classname= 'com.facilio.bmsconsole.jobs.SchedulePMBackgroundJob' transactionTimeout='100000'/>
+	 <job name='ScheduleNewVisitorLogs' classname= 'com.facilio.bmsconsole.commands.ScheduleNewVisitorLogCommand' transactionTimeout='600000'/> -->
 	 <job name='ScheduleDeletePreOpenJob' classname= 'com.facilio.bmsconsole.jobs.ScheduleDeletePreOpenJob' transactionTimeout='1200000'/>
 	 <job name='DeletePMJob' classname= 'com.facilio.bmsconsole.jobs.DeletePMJob' transactionTimeout='1200000'/>
 	 <job name='AttendanceAbsentSchedulerJob' classname='com.facilio.bmsconsole.commands.AttendanceAbsentSchedulerJob' transactionTimeout='14400000'/>
 	 <job name= 'ShiftRotationSchedulerJob' classname='com.facilio.bmsconsole.commands.ShiftRotationSchedulerJob' transactionTimeout= '14400000'></job>
+	<job name='ScheduleVisitorLogs' classname= 'com.facilio.bmsconsole.jobs.VisitorLogScheduler' transactionTimeout='600000'/> -->
+	 
 
      <!-- Shift jobs -->
 	 <job name='scheduledReadingRule' classname= 'com.facilio.bmsconsole.jobs.ScheduledReadingRuleJob' transactionTimeout='300000'/>

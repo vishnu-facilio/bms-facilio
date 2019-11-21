@@ -2951,4 +2951,11 @@ public class ModuleFactory {
 		module.setName("relatedWorkorders");
 		return module;
 	}
+	public static FacilioModule getVisitorLogTriggersModule() {
+		FacilioModule pmTriggers = new FacilioModule();
+		pmTriggers.setName("visitorLogTrigger");
+		pmTriggers.setDisplayName("Visitor Log Triggers");
+		pmTriggers.setTableName("VisitorLog_Triggers");
+		return pmTriggers;
+	}
 }

@@ -3,23 +3,31 @@ package com.facilio.bmsconsole.util;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.Preference;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.WatchListContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI.ScheduleActions;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -28,11 +36,14 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -49,6 +60,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.time.DateTimeUtil;
 
 public class VisitorManagementAPI {
 
@@ -111,7 +123,26 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static VisitorLoggingContext getVisitorLogging(long logId) throws Exception {
+	public static List<VisitorLoggingContext> getRecurringVisitorLogs() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		Map<String, FacilioField> map = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<VisitorLoggingContext> builder = new SelectRecordsBuilder<VisitorLoggingContext>()
+														.module(module)
+														.beanClass(VisitorLoggingContext.class)
+														.select(fields)
+														.andCondition(CriteriaAPI.getCondition("IS_RECURRING", "isRecurring", "true", BooleanOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(map.get("parentLogId"),CommonOperators.IS_EMPTY))
+														;
+		
+		List<VisitorLoggingContext> records = builder.get();
+		return records;
+	
+	}
+	
+	public static VisitorLoggingContext getVisitorLoggingTriggers(long logId, boolean fetchTriggers) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
@@ -133,6 +164,17 @@ public class VisitorManagementAPI {
 		builder.fetchLookups(additionaLookups);
 		
 		VisitorLoggingContext records = builder.fetchFirst();
+		if(records != null && records.isRecurring() && fetchTriggers) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getVisitorLogTriggerFields())
+					.table(ModuleFactory.getVisitorLogTriggersModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition("VISITOR_LOG_ID", "pmId", String.valueOf(records.getId()), NumberOperators.EQUALS));
+			List<Map<String, Object>> map = selectBuilder.get();
+			if(CollectionUtils.isNotEmpty(map)) {
+				records.setTrigger(FieldUtil.getAsBeanFromMap(map.get(0), PMTriggerContext.class));
+			}
+	
+		}
 		return records;
 	
 	}
@@ -153,6 +195,25 @@ public class VisitorManagementAPI {
 			builder.andCondition(CriteriaAPI.getCondition("VISITOR_INVITE", "visitorInvite", String.valueOf(inviteId), NumberOperators.EQUALS));
 			
 		}
+		VisitorLoggingContext records = builder.fetchFirst();
+		return records;
+	
+	}
+	
+	public static VisitorLoggingContext getValidChildLogForToday(long parentLogId) throws Exception {
+		
+		long currentTime = System.currentTimeMillis();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		SelectRecordsBuilder<VisitorLoggingContext> builder = new SelectRecordsBuilder<VisitorLoggingContext>()
+														.module(module)
+														.beanClass(VisitorLoggingContext.class)
+														.select(fields)
+														.andCondition(CriteriaAPI.getCondition("PARENT_LOG_ID", "parentLogId", String.valueOf(parentLogId), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition("EXPECTED_CHECKIN_TIME", "expectedCheckInTime", String.valueOf(currentTime) , DateOperators.IS_BEFORE))
+														.andCondition(CriteriaAPI.getCondition("EXPECTED_CHECKOUT_TIME", "expectedCheckOutnTime", String.valueOf(currentTime) , DateOperators.IS_AFTER));
+		
 		VisitorLoggingContext records = builder.fetchFirst();
 		return records;
 	
@@ -348,8 +409,20 @@ public class VisitorManagementAPI {
 			if(!isCheckIn) {
 				FacilioField checkOutTimeField = modBean.getField("checkOutTime", module.getName());
 				updateMap.put("checkOutTime", time);
+				FacilioField overStayField = modBean.getField("isOverStay", module.getName());
+				boolean isOverStay = false;
+				if(time - vLog.getExpectedCheckOutTime() > 0) {
+					isOverStay = true;
+				}
+				else {
+					isOverStay = false;
+				}
+				updateMap.put("isOverStay", isOverStay);
 				updatedfields.add(checkOutTimeField);
+				updatedfields.add(overStayField);
+				
 				vLog.setCheckOutTime(time);
+				vLog.setIsOverStay(isOverStay);
 			}
 			else {
 				FacilioField checkInTimeField = modBean.getField("checkInTime", module.getName());
@@ -363,6 +436,29 @@ public class VisitorManagementAPI {
 				}
 			}
 		
+			UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()
+					.module(module)
+					.fields(updatedfields)
+					.andCondition(CriteriaAPI.getIdCondition(vLog.getId(), module))
+				;
+			
+			updateBuilder.updateViaMap(updateMap);
+		}
+		
+	}
+	
+	public static void updateVisitorLogInvitationStatus(VisitorLoggingContext vLog, boolean isInvitationSent) throws Exception {
+		
+		if(vLog.getId() > 0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+			
+			Map<String, Object> updateMap = new HashMap<>();
+			FacilioField invitationSentField = modBean.getField("isInvitationSent", module.getName());
+			updateMap.put("isInvitationSent", isInvitationSent);
+			updatedfields.add(invitationSentField);
+			
 			UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()
 					.module(module)
 					.fields(updatedfields)
@@ -403,22 +499,44 @@ public class VisitorManagementAPI {
 			FacilioField lastVisitedTime = modBean.getField("lastVisitedTime", module.getName());
 			FacilioField lastVisitedSpace = modBean.getField("lastVisitedSpace", module.getName());
 			FacilioField lastVisitedHost = modBean.getField("lastVisitedHost", module.getName());
-			FacilioField lastVisitDuration = modBean.getField("lastVisitDuration", module.getName());
+			FacilioField firstVisitedTime = modBean.getField("firstVisitedTime", module.getName());
 			
-			long workDuration = visitorLog.getCheckOutTime() - visitorLog.getCheckInTime();
 			updateMap.put("lastVisitedTime", visitorLog.getCheckInTime());
 			updateMap.put("lastVisitedHost", FieldUtil.getAsProperties(visitorLog.getHost()));
-			updateMap.put("lastVisitDuration", workDuration);
 			
 			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 			updatedfields.add(lastVisitedTime);
 			updatedfields.add(lastVisitedHost);
-			updatedfields.add(lastVisitDuration);
 			
 			if(visitorLog.getVisitedSpace() != null) {
 				updateMap.put("lastVisitedSpace", FieldUtil.getAsProperties(visitorLog.getVisitedSpace()));
 				updatedfields.add(lastVisitedSpace);
 			}
+			VisitorContext visitor = VisitorManagementAPI.getVisitor(visitorLog.getVisitor().getId(), null);
+			if(visitor.getFirstVisitedTime() <= 0) {
+				updateMap.put("firstVisitedTime", visitorLog.getCheckInTime());
+				updatedfields.add(firstVisitedTime);
+			}
+			updatevisitor(visitorLog.getVisitor().getId(),updatedfields, updateMap);
+		}
+			
+		
+	}
+	
+	public static void updateVisitorLastVisitDurationRollUp(VisitorLoggingContext visitorLog) throws Exception {
+		
+		if(visitorLog != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
+			Map<String, Object> updateMap = new HashMap<>();
+			FacilioField lastVisitDuration = modBean.getField("lastVisitDuration", module.getName());
+			
+			long workDuration = visitorLog.getCheckOutTime() - visitorLog.getCheckInTime();
+			updateMap.put("lastVisitDuration", workDuration);
+			
+			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+			updatedfields.add(lastVisitDuration);
+			
 			updatevisitor(visitorLog.getVisitor().getId(),updatedfields, updateMap);
 		}
 			
@@ -428,7 +546,7 @@ public class VisitorManagementAPI {
 	public static void updateVisitorRollUps(VisitorLoggingContext visitorLog) throws Exception {
 		
 		if(visitorLog != null) {
-			VisitorLoggingContext updatedVisitorLog = getVisitorLogging(visitorLog.getId());
+			VisitorLoggingContext updatedVisitorLog = getVisitorLoggingTriggers(visitorLog.getId(), false);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
 			Map<String, Object> updateMap = new HashMap<>();
@@ -1289,7 +1407,109 @@ public class VisitorManagementAPI {
 		criteria.addAndCondition(condition);
 		return criteria;
 	}
-
 	
+	public static void scheduleVisitorLog(long visitorLogId, ScheduleActions action, long endTime) throws Exception {
+		BmsJobUtil.deleteJobsWithProps(Collections.singletonList(visitorLogId), "ScheduleNewVisitorLogs");
+	}
+	
+	public static long getEndTime(long startTime, List<PMTriggerContext> triggers) {
+		Optional<PMTriggerContext> minTrigger = triggers.stream().min(Comparator.comparingInt(PMTriggerContext::getFrequency));
 
+		int maxSchedulingDays = minTrigger.get().getFrequencyEnum().getMaxSchedulingDays();
+		if (startTime == -1) {
+			return DateTimeUtil.getDayStartTime(maxSchedulingDays, true) - 1;
+		}
+
+		return startTime + (maxSchedulingDays * 24 * 60 * 60);
+	}
+	
+	public static long getStartTime(int action, VisitorLoggingContext log, PMTriggerContext trigger) {
+		long startTime = -1;
+		if (action == 1) {
+			startTime = getStartTimeInSecond(trigger.getStartTime());
+		} else if (action == 2) {
+			startTime = log.getLogGeneratedUpto();
+		}
+		return startTime;
+	}
+	
+	public static long getStartTimeInSecond(long startTime) {
+		
+		long startTimeInSecond = startTime / 1000;
+		startTimeInSecond = startTimeInSecond - 300; //for calculating next execution time
+
+		return startTimeInSecond;
+	}
+
+	public static void updateGeneratedUptoInLogAndAddChildren(PMTriggerContext trigger, VisitorLoggingContext parentLog, List<VisitorLoggingContext> children) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		RecordAPI.addRecord(true, children, module, fields);
+		RecordAPI.updateRecord(parentLog, module, fields);
+		updateTrigger(trigger);
+	}
+	
+	public static void updateTrigger(PMTriggerContext trigger) throws Exception {
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getVisitorLogTriggersModule().getTableName())
+				.fields(FieldFactory.getVisitorLogTriggerFields())
+				.andCondition(CriteriaAPI.getIdCondition(trigger.getId(), ModuleFactory.getVisitorLogTriggersModule()));
+		update.update(FieldUtil.getAsProperties(trigger));
+	}
+	
+	public enum ScheduleActions {
+		GENERATION,
+		NIGHTLY;
+
+		public int getVal() {
+			return ordinal() + 1;
+		}
+
+		public static ScheduleActions getEnum(int val) {
+			if (val > 0 && val <= values().length) {
+				return values()[val - 1];
+			}
+			return null;
+		}
+	}
+
+	public static void deleteUpcomingChildLogs(long parentLogId, long currentTime) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		DeleteRecordBuilder<VisitorLoggingContext> deleteBuilder = new DeleteRecordBuilder<VisitorLoggingContext>()
+				.module(module)
+				.andCondition(CriteriaAPI.getCondition("PARENT_LOG_ID", "parentLogId", String.valueOf(parentLogId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("EXPECTED_CHECKIN_TIME", "expectedCheckInTime", String.valueOf(currentTime), DateOperators.IS_AFTER));
+		
+		deleteBuilder.markAsDelete();
+	
+	}
+	
+	public static FacilioStatus getLogStatus(String statusString) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		FacilioStatus status = TicketAPI.getStatus(module, statusString);
+		return status;
+	
+	}
+	
+	public static Map<Long, VisitorSettingsContext> getVisitorSettingsForType() throws Exception {
+		FacilioModule module = ModuleFactory.getVisitorSettingsModule();
+		List<FacilioField> fields = FieldFactory.getVisitorSettingsFields();
+		Map<Long, VisitorSettingsContext> typeSettingsMap = new HashMap<Long, VisitorSettingsContext>();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName());
+		List<Map<String, Object>> map = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(map)) {
+			for(Map<String, Object> visitorSetting : map) {
+				VisitorSettingsContext settingBean = FieldUtil.getAsBeanFromMap(visitorSetting, VisitorSettingsContext.class);
+				typeSettingsMap.put(settingBean.getVisitorTypeId(), settingBean);
+			}
+		}
+		return typeSettingsMap;
+
+	}
 }
