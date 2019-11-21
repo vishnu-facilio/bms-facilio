@@ -66,6 +66,7 @@ public abstract class InstantJob {
             currentThread.setName(threadName);
             if(FacilioProperties.isProduction()) {
             	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
+            	FacilioInstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
             }else {
             	FacilioInstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
             }
