@@ -18,11 +18,15 @@ public class AddLookupFieldMetaList extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		Boolean shouldFetchLookup = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_LOOKUPS);
+
+		if (shouldFetchLookup != null && !shouldFetchLookup) {
+			return false;
+		}
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-		
-		List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
+
+		List<LookupField> fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
 		// return if existing lookup_field_meta_list is found
 		if (CollectionUtils.isNotEmpty(fetchLookup)) {
 			return false;

@@ -495,11 +495,20 @@ public class ModuleAction extends FacilioAction {
 	}
 	
 	/************* V2 Apis *****************/
-	
+
+	private Boolean shouldFetchLookup;
+	public Boolean getShouldFetchLookup() {
+		return shouldFetchLookup;
+	}
+	public void setShouldFetchLookup(Boolean shouldFetchLookup) {
+		this.shouldFetchLookup = shouldFetchLookup;
+	}
+
 	public String moduleDataDetails() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getId());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(ContextNames.FETCH_LOOKUPS, shouldFetchLookup);
 		
 		FacilioChain dataDetailsChain = ReadOnlyChainFactory.fetchModuleDataDetailsChain();
 		dataDetailsChain.execute(context);
