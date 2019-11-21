@@ -297,6 +297,11 @@
 			</result>
 		</action>
 		
+		<action name="getRoles" class="com.facilio.bmsconsole.actions.LoginAction" method="getRoles">
+		</action>
+		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.LoginAction" method="getAllBuildings">
+		</action>
+		
 		<action name="basespace"
 			class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 			method="v2baseSpaceList">
