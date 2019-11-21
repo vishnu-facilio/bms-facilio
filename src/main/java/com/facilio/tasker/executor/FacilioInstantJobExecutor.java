@@ -113,7 +113,6 @@ public enum FacilioInstantJobExecutor implements Runnable {
 								}
 							}
 						} else {
-							LOGGER.info("Facilio Instant Delete Message ID "+message.getId());
 							FacilioObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), message.getId());
 						}
 					}
@@ -135,7 +134,6 @@ public enum FacilioInstantJobExecutor implements Runnable {
 	public void jobEnd(String receiptHandle) {
 		try {
 
-			LOGGER.info("Facilio Instant Delete receiptHandle ID "+receiptHandle);
 			FacilioObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), receiptHandle);
 		} catch (Exception e) {
 			LOGGER.info("Exception occurred in FacilioInstant Job Qeueu :  "+e);
