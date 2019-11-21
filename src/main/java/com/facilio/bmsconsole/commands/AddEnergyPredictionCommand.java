@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -93,6 +94,7 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 		MLAPI.addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");
     	
+		MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
 		mlModelVariables.entrySet().forEach(entry -> {
 			try {
 				Map.Entry<String, String> en = (Map.Entry) entry;
