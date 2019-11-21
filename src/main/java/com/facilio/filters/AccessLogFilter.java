@@ -46,7 +46,7 @@ public class AccessLogFilter implements Filter {
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
     private static final long TIME_THRESHOLD = 5000 ;
-    private static String grayLogUrl = "https://logs.facilio.in/streams/000000000000000000000001/search?saved=5d19a5329b569c766b3a1f2f&rangetype=relative&fields=logger&width=1536&highlightMessage=&relative=172800&q=facility%3Aproduction-user%20AND%20%20thread%20%3A%20";
+    private static final String GRAY_LOG_URL = "https://logs.facilio.in/streams/000000000000000000000001/search?saved=5d19a5329b569c766b3a1f2f&rangetype=relative&fields=logger%2Cmessage&width=1536&relative=86400&q=facility%3Aproduction-user%20AND%20thread%20%3A%20";
     private static Appender appender;
 
 
@@ -182,9 +182,8 @@ public class AccessLogFilter implements Filter {
             if (ServerInfo.getHostname() != null) {
                  sourceIp = ServerInfo.getHostname();
             }
-            String searchQuery = thread.getName()+"%20AND%20"+sourceIp;
-            String grayLogSearchUrl;
-            grayLogSearchUrl = grayLogUrl + searchQuery;
+            String searchQuery = thread.getName()+"%20AND%20source%3A%20"+sourceIp;
+            String grayLogSearchUrl = GRAY_LOG_URL + searchQuery;
 
             Map<String, String> contextMap = new HashMap<>();
 
