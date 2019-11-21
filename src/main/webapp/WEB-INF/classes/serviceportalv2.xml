@@ -442,6 +442,10 @@
 		</action>
 		<action name="search" class="com.facilio.bmsconsole.actions.V2ReportAction" method="searchReportAndFolders">
 		</action>
+		<action name="executeReport"
+			class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="executeReport">
+		</action>
 	</package>
 	<package name="newServiceFormApiv2" namespace="/api/service/v2/forms" extends="newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
