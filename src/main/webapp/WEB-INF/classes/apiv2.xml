@@ -4567,6 +4567,9 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="deleteVisitorLogging" />
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingDetails" />
+		<action name="checkInFromKiosk"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkInVisitorLogging" />
+		
 		<action name="checkOutWithPhone"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkOutVisitorLogging" />
 		<action name="qrScanLog"

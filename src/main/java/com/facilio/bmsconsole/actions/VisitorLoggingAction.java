@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -391,6 +392,24 @@ private static final long serialVersionUID = 1L;
 				c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get("nextTransitionId"));
 				VisitorLoggingContext visitorLoggingContext = (VisitorLoggingContext) c.getContext().get("visitorLogging");
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLoggingContext));
+				c.execute();
+			}
+			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+		}
+		return SUCCESS;
+	}
+	
+	public String checkInVisitorLogging() throws Exception {
+		
+		if(recordId > 0) {
+			FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
+			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(recordId, false);
+			if(vLog != null) {
+				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(vLog.getStateFlowId(), vLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOGGING, vLog, c.getContext());
+				vLog.setCheckInTime(System.currentTimeMillis());
+				long nextTransitionId = nextStateRule.get(0).getId();
+				c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(vLog));
 				c.execute();
 			}
 			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));

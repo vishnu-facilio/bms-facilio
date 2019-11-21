@@ -200,9 +200,8 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static VisitorLoggingContext getValidChildLogForToday(long parentLogId) throws Exception {
+	public static VisitorLoggingContext getValidChildLogForToday(long parentLogId, long currentTime) throws Exception {
 		
-		long currentTime = System.currentTimeMillis();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);

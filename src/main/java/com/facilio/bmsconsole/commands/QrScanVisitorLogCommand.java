@@ -12,18 +12,25 @@ public class QrScanVisitorLogCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Long recordId = (Long)context.getOrDefault(FacilioConstants.ContextNames.RECORD_ID, -1);
+		long currentTime = System.currentTimeMillis();
+		
 		if(recordId > 0) {
 			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(recordId, false);
 			if(vLog != null) {
 				if(!vLog.isRecurring()) {
-					long currentTime = System.currentTimeMillis();
 					if(currentTime < vLog.getExpectedCheckInTime() || currentTime > vLog.getExpectedCheckOutTime()) {
 						throw new IllegalArgumentException("Invalid checkin time");
 					}
 					context.put(FacilioConstants.ContextNames.VISITOR_LOGGING, vLog);
 				}
 				else {
-					VisitorLoggingContext validChildLog = VisitorManagementAPI.getValidChildLogForToday(recordId);
+					VisitorLoggingContext validChildLog = null;
+					if(currentTime >= vLog.getExpectedCheckInTime() && currentTime <= vLog.getExpectedCheckOutTime()) {
+						validChildLog = vLog;
+					}
+					else {
+						validChildLog = VisitorManagementAPI.getValidChildLogForToday(recordId, currentTime);
+					}
 					if(validChildLog == null) {
 						throw new IllegalArgumentException("No valid invite log found for the day");
 					}
