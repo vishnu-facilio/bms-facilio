@@ -25,15 +25,6 @@ public abstract class InstantJob {
     String getReceiptHandle() {
         return receiptHandle;
     }
-    
-    private String messageId;
-    
-    public String getMessageId() {
-		return messageId;
-	}
-	public void setMessageId(String messageId) {
-		this.messageId = messageId;
-	}
 
     public final void _execute(FacilioContext context, int transactionTimeout) {
         Thread currentThread = Thread.currentThread();
@@ -75,9 +66,8 @@ public abstract class InstantJob {
             currentThread.setName(threadName);
             if(FacilioProperties.isProduction()) {
             	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
-            	FacilioInstantJobExecutor.INSTANCE.jobEnd(getMessageId());
             }else {
-            	FacilioInstantJobExecutor.INSTANCE.jobEnd(getMessageId());
+            	FacilioInstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
             }
             
         }

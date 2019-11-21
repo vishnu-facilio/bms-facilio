@@ -75,7 +75,6 @@ public class FacilioContextListener implements ServletContextListener {
 		FacilioScheduler.stopSchedulers();
 		if(FacilioProperties.isProduction()) {
 			InstantJobExecutor.INSTANCE.stopExecutor();
-			FacilioInstantJobExecutor.INSTANCE.stopExecutor();
 		}else {
 			FacilioInstantJobExecutor.INSTANCE.stopExecutor();
 		}
@@ -130,7 +129,6 @@ public class FacilioContextListener implements ServletContextListener {
 			FacilioScheduler.initScheduler();
 			if(FacilioProperties.isProduction()) {
 				InstantJobExecutor.INSTANCE.startExecutor();
-				FacilioInstantJobExecutor.INSTANCE.startExecutor();
 			}else {
 				FacilioInstantJobExecutor.INSTANCE.startExecutor();
 			}
