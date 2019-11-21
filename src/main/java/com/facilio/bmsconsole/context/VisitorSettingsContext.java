@@ -6,6 +6,7 @@ import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.util.FacilioUtil;
 
@@ -20,16 +21,20 @@ public class VisitorSettingsContext implements Serializable {
 	public String getNdaContent() {
 		if(ndaContent==null)
 		{
-			return " \n          1. I may be given access to confidential information belonging to (the “Company”) through my relationship with Company or as a result of\n           my access to Company’s premises.\n\n          2. I understand and acknowledge that Company’s trade secrets consist of information and materials that are valuable and not generally known by\n           Company’s competitors, including:\n\n          (a) Any and all information concerning Company’s current, future or proposed products, including, but not limited to, computer code, drawings, \n          specifications, notebook entries, technical notes and graphs, computer printouts, technical memoranda and correspondence, product development \n          agreements and related agreements.\n\n          (b) Information and materials relating to  Company’s purchasing, accounting, and marketing; including, but not limited to, marketing plans, \n          sales data, unpublished promotional material, cost and pricing information and customer lists.\n\n          (c) Information of the type described above which Company obtained from another party and which Company treats\n          as confidential, whether or not owned or developed by Company.\n\n          (d) Other: __________________________________\n\n          3. In consideration of being admitted to Company’s facilities, I will hold in the strictest confidence any trade secrets or confidential information \n          that is disclosed to me. I will not remove any document, equipment or other materials from the premises without Company’s written permission. I will \n          not photograph or otherwise record any information to which I may have access during my visit.\n\n          4. This Agreement is binding on me, my heirs, executors, administrators and assigns and inures to the benefit of Company, its successors, and \n          assigns.\n          \n          5. This Agreement constitutes the entire understanding between Company and me with respect to its subject matter. It supersedes all earlier \n          representations and understandings, whether oral or written.\n";          
+			return " \n          1. I may be given access to confidential information belonging to (the {{company}}) through my relationship with {{company}} or as a result of\n           my access to {{company}}'s premises.\n\n          2. I understand and acknowledge that {{company}}'s trade secrets consist of information and materials that are valuable and not generally known by\n           {{company}}'s competitors, including:\n\n          (a) Any and all information concerning {{company}}'s current, future or proposed products, including, but not limited to, computer code, drawings, \n          specifications, notebook entries, technical notes and graphs, computer printouts, technical memoranda and correspondence, product development \n          agreements and related agreements.\n\n          (b) Information and materials relating to  {{company}}'s purchasing, accounting, and marketing; including, but not limited to, marketing plans, \n          sales data, unpublished promotional material, cost and pricing information and customer lists.\n\n          (c) Information of the type described above which {{company}} obtained from another party and which {{company}} treats\n          as confidential, whether or not owned or developed by {{company}}.\n\n          (d) Other: __________________________________\n\n          3. In consideration of being admitted to {{company}}'s facilities, I will hold in the strictest confidence any trade secrets or confidential information \n          that is disclosed to me. I will not remove any document, equipment or other materials from the premises without {{company}}'s written permission. I will \n          not photograph or otherwise record any information to which I may have access during my visit.\n\n          4. This Agreement is binding on me, my heirs, executors, administrators and assigns and inures to the benefit of {{company}}, its successors, and \n          assigns.\n          \n          5. This Agreement constitutes the entire understanding between {{company}} and me with respect to its subject matter. It supersedes all earlier \n          representations and understandings, whether oral or written.\n";          
 		}
 		return ndaContent;
 	}
 	public void setNdaContent(String ndaContent) {
 		this.ndaContent = ndaContent;
 	}
-
-
-
+	
+	public String getFinalNdaContent() {
+		if (AccountUtil.getCurrentOrg() != null) {
+			return this.getNdaContent().replaceAll("{{company}}", AccountUtil.getCurrentOrg().getName());
+		}
+		return getNdaContent();
+	}
 
 	private JSONObject photoSettings;
 	public JSONObject getPhotoSettings() {
