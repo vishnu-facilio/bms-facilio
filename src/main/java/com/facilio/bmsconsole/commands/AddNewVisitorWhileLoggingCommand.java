@@ -43,6 +43,8 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 					else {
 						vL.setIsApprovalNeeded(false);
 					}
+					
+					vL.setIsInviteApprovalNeeded(setting.getApprovalRequiredForInvite());
 				}
 				else {
 					vL.setIsApprovalNeeded(false);
