@@ -80,7 +80,17 @@ public class PdfUtil {
                       String[] server = serverName.split(":");
                       serverName = server[0];
                   }
-                  String[] command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, token, serverName, htmlContent};
+                  
+                  String[] command;                  
+                  if(htmlContent != null)
+                  {
+                	  command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, token, serverName, htmlContent};
+                  }
+                  else
+                  {
+                	  command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, token, serverName};
+                  }
+                                   
                   int exitStatus = CommandExecutor.execute(command);
                   LOGGER.info("Converted to pdf with exit status : " + exitStatus + " and file " + pdfFile.getAbsolutePath());
         	  }catch(IOException e) {
