@@ -61,7 +61,7 @@ public class WorkpermitPageFactory extends PageFactory {
 
 	private static void addRecurringInfoWidget(Section section) {
 		PageWidget recurringInfoWidget = new PageWidget(WidgetType.RECURRING_INFO, "recurringInfo");
-		recurringInfoWidget.addToLayoutParams(section, 24, 7);
+		recurringInfoWidget.addToLayoutParams(section, 24, 5);
 		section.addWidget(recurringInfoWidget);
 	}
 
