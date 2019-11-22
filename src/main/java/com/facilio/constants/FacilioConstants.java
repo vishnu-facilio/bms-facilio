@@ -1330,7 +1330,8 @@ public class FacilioConstants {
 		public static final String WORKPERMIT = "workpermit";
 		public static final String PORTAL_USER_TYPE = "portalUserType";
 		public static final String IS_VENDOR_PORTAL = "isVendorPortal";
-			
+		public static final String IS_TENANT_PORTAL = "isTenantPortal";
+				
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

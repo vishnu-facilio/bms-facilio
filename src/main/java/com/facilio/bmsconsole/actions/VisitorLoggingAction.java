@@ -54,6 +54,17 @@ private static final long serialVersionUID = 1L;
 		this.vendorPortal = vendorPortal;
 	}
 	
+	private Boolean tenantPortal;
+	public Boolean getTenantPortal() {
+		if (tenantPortal == null) {
+			return false;
+		}
+		return tenantPortal;
+	}
+	public void setTenantPortal(Boolean tenantPortal) {
+		this.tenantPortal = tenantPortal;
+	}
+	
 	private Boolean fetchCount;
 	public Boolean getFetchCount() {
 		if (fetchCount == null) {
@@ -310,7 +321,8 @@ private static final long serialVersionUID = 1L;
 		chain.getContext().put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "visitorlogging");
 		chain.getContext().put(FacilioConstants.ContextNames.IS_VENDOR_PORTAL, getVendorPortal());
-		
+		chain.getContext().put(FacilioConstants.ContextNames.IS_TENANT_PORTAL, getTenantPortal());
+			
 		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Visitor_Logging.SYS_CREATED_TIME desc");
 		
 		String filters = getFilters();

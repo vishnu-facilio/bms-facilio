@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.io.File;
 import java.util.List;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.VisitorInviteContext.InviteSource;
 import com.facilio.bmsconsole.util.TicketAPI;
