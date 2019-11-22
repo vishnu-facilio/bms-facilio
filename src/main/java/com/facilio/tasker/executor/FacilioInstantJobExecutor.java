@@ -47,7 +47,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 
 	public void startExecutor() {
 		if (Boolean.parseBoolean(FacilioProperties.getConfig("instantJobServer")) && !isRunning) {
-			executorThread = new Thread(this, "instantJobExecutor");
+			executorThread = new Thread(this, "facilioInstantJobExecutor");
 			isRunning = true;
 			executorThread.start();
 		}

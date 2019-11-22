@@ -54,9 +54,7 @@ public abstract class InstantJob {
             }
             context.put(JobConstants.INSTANT_JOB, this);
             
-            if (StringUtils.isNotBlank(getReceiptHandle())) {
             JobConstants.ChainFactory.instantJobExecutionChain(transactionTimeout).execute(context);
-            }
 //            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 88 && jobName.equals("ControllerActivityWatcher")) {
 //            	LOGGER.info("Executing Job "+jobName+" with props : "+context);
 //            }
@@ -71,12 +69,14 @@ public abstract class InstantJob {
             job.setIsPeriodic(false);
             JobLogger.log(job, (System.currentTimeMillis() - startTime), status);
             currentThread.setName(threadName);
-            if(FacilioProperties.isProduction() && StringUtils.isNotBlank(getReceiptHandle())) {
-            	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
-            }
+//            if(FacilioProperties.isProduction() && StringUtils.isNotBlank(getReceiptHandle())) {
+//            	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
+//            }
             if(getMessageId() !=null) {
             	FacilioInstantJobExecutor.INSTANCE.jobEnd(getMessageId());
             	LOGGER.info("FacilioInstantJobjobQueue msg ID to JobEnd  job is  : "+getMessageId());
+            } else {
+            	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
             }
         }
     }
