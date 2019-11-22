@@ -14,27 +14,27 @@ public class ContactsContext extends ModuleBaseWithCustomFields{
 	private String phone;
 	
 	public String getName() {
-		if(requester != null && requester.getOuid() > 0) {
-			return requester.getName();
-		}
+//		if(requester != null && requester.getOuid() > 0) {
+//			return requester.getName();
+//		}
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
 	public String getEmail() {
-		if(requester != null && requester.getOuid() > 0) {
-			return requester.getEmail();
-		}
+//		if(requester != null && requester.getOuid() > 0) {
+//			return requester.getEmail();
+//		}
 	    return email;
 	}
 	public void setEmail(String email) {
 		this.email = email;
 	}
 	public String getPhone() {
-		if(requester != null && requester.getOuid() > 0) {
-			return requester.getMobile();
-		}
+//		if(requester != null && requester.getOuid() > 0) {
+//			return requester.getMobile();
+//		}
 		return phone;
 	}
 	public void setPhone(String phone) {
