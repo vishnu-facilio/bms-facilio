@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.PublishMessage;
@@ -54,7 +55,10 @@ public class PublishedDataCheckerJob extends InstantJob {
 			PublishData data = IoTMessageAPI.getPublishData(pingData.getId(), true);
 			if (data.getPingAckTime() == -1) {
 				LOGGER.info("Agent not active. Controller Id: " + data.getControllerId() + ", Data Id: " + data.getId());
-				IoTMessageAPI.handlePublishMessageFailure(pingData);
+				JSONObject msgData = data.getMessages().get(0).getData();
+				msgData.put("isPing", true);
+				msgData.put("pingAgent", pingData.getMessages().get(0).getData().get("pingAgent"));
+				IoTMessageAPI.handlePublishMessageFailure(data);
 			}
 		}
 		catch (Exception e) {
