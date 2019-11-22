@@ -583,7 +583,9 @@ public class FieldFactory {
 		fields.add(getField("showField", "SHOW_FIELD", module, FieldType.BOOLEAN));
 		fields.add(getField("value", "DEFAULT_VALUE", module, FieldType.STRING));
 		fields.add(getField("sectionId", "SECTIONID", module, FieldType.NUMBER));
-		
+
+		fields.add(getField("config", "CONFIG", module, FieldType.STRING));
+
 		fields.add(span);
 		return fields;
 	}

@@ -4,7 +4,12 @@ import java.io.Serializable;
 
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 public class FormField implements Serializable {
 	private static final long serialVersionUID = 4252438995947509456L;
@@ -229,5 +234,24 @@ public class FormField implements Serializable {
 	}
 	public void setSectionId(long sectionId) {
 		this.sectionId = sectionId;
+	}
+
+	private JSONObject config;
+	public String getConfig() {
+		if (config != null) {
+			return config.toJSONString();
+		}
+		return null;
+	}
+	public JSONObject getConfigJSON() {
+		return config;
+	}
+	public void setConfig(String config) throws ParseException {
+		if (StringUtils.isNotEmpty(config)) {
+			this.config = FacilioUtil.parseJson(config);
+		}
+	}
+	public void setConfig(JSONObject config) {
+		this.config = config;
 	}
 }

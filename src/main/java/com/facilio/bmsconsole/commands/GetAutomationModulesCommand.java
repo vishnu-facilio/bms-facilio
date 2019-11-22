@@ -21,7 +21,7 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         modules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
 
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-            modules.add(modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE));
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM));
         }
         else {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.ALARM));
