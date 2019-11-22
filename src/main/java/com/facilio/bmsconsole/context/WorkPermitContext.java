@@ -120,6 +120,21 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 		this.requestedBy = requestedBy;
 	}
 	
+	private long expectedStartTime;
+	private long expectedEndTime;
+	public long getExpectedStartTime() {
+		return expectedStartTime;
+	}
+	public void setExpectedStartTime(long expectedStartTime) {
+		this.expectedStartTime = expectedStartTime;
+	}
+	public long getExpectedEndTime() {
+		return expectedEndTime;
+	}
+	public void setExpectedEndTime(long expectedEndTime) {
+		this.expectedEndTime = expectedEndTime;
+	}
+	
 	
 	
 	
