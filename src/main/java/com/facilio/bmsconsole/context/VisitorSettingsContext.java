@@ -38,7 +38,7 @@ public class VisitorSettingsContext implements Serializable {
 	
 	public String getFinalNdaContent() {
 		if (AccountUtil.getCurrentOrg() != null) {
-			return this.getNdaContent().replaceAll("{{company}}", AccountUtil.getCurrentOrg().getName());
+			return this.getNdaContent().replaceAll("\\{\\{company\\}\\}", AccountUtil.getCurrentOrg().getName());
 		}
 		return getNdaContent();
 	}
