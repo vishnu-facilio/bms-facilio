@@ -60,7 +60,7 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 		FacilioForm visitorLogForm = FormsAPI.getFormFromDB(visitorSettingsContext.getVisitorLogFormId());		
 		visitorSettingsContext.setVisitorLogForm(visitorLogForm);
 		FacilioForm visitorInviteForm = FormsAPI.getFormFromDB(visitorSettingsContext.getVisitorInviteFormId());		
-		visitorSettingsContext.setVisitorLogForm(visitorInviteForm);
+		visitorSettingsContext.setVisitorInviteForm(visitorInviteForm);
 		
 		
 		context.put(ContextNames.VISITOR_SETTINGS,visitorSettingsContext);
