@@ -7094,7 +7094,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField("visitorTypeId", "VISITOR_TYPE_ID", FieldType.LOOKUP));		
 		fields.add(getField("visitorLogFormId","VISITOR_LOG_FORM_ID",FieldType.LOOKUP));
-		fields.add(getField("visitorInviteFormId","VISITOR_LOG_FORM_ID",FieldType.LOOKUP));
+		fields.add(getField("visitorInviteFormId","VISITOR_INVITE_FORM_ID",FieldType.LOOKUP));
 		fields.add(getField("ndaEnabled","IS_NDA_ENABLED",FieldType.BOOLEAN));
 		fields.add(getField("badgeEnabled","IS_BADGE_ENABLED",FieldType.BOOLEAN));
 		fields.add(getField("photoEnabled","IS_PHOTO_ENABLED",FieldType.BOOLEAN));

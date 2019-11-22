@@ -58,14 +58,14 @@ public class AddVisitorTypeCommand extends FacilioCommand {
 		FacilioForm visitorInviteFormTemplate=FormsAPI.getFormFromDB(FacilioConstants.ContextNames.DEFAULT_VISITOR_INVITE_FORM_NAME,visitorLoggingModule);
 		
 		visitorLogFormTemplate.setId(-1);
-		visitorLogFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId());
+		visitorLogFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"visitor_log_form");
 		visitorLogFormTemplate.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_visitor_log_form");
 		visitorLogFormTemplate.setFormType(FormType.WEB);
 		
 		
 
 		visitorInviteFormTemplate.setId(-1);
-		visitorInviteFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId());
+		visitorInviteFormTemplate.setName(newVisitorType.getName()+"_"+newVisitorType.getId()+"visitor_invite_form");
 		visitorInviteFormTemplate.setDisplayName(newVisitorType.getName()+"_"+newVisitorType.getId()+"_visitor_invite_form");
 		visitorInviteFormTemplate.setFormType(FormType.WEB);
 		
