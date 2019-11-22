@@ -1548,7 +1548,7 @@ public class FormFactory {
 		form.setName("default_insurance_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INSURANCE));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFields(getInsuranceFormFields());
+		form.setFields(getPortalInsuranceFormFields());
 		form.setFormType(FormType.PORTAL);
 		return form;
 	}
@@ -1561,6 +1561,17 @@ public class FormFactory {
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 3, 2);
 		vendorField.setShowField(false);
 		fields.add(vendorField);
+		FormField fileField= new FormField("insurance", FieldDisplayType.IMAGE, "File", Required.OPTIONAL, 1, 1);
+		fileField.setShowField(true);
+		fields.add(fileField);
+		return fields;
+	}
+	
+	private static List<FormField> getPortalInsuranceFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("companyName", FieldDisplayType.TEXTBOX, "Company Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("validFrom", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("validTill", FieldDisplayType.DATE, "Valid Till", Required.OPTIONAL, 3, 1));
 		FormField fileField= new FormField("insurance", FieldDisplayType.IMAGE, "File", Required.OPTIONAL, 1, 1);
 		fileField.setShowField(true);
 		fields.add(fileField);

@@ -224,7 +224,8 @@ public class PageWidget {
  		ALARM_REPORT("alarmReport"),
  		KPI_DETAILS_WIDGET("kpiDetailsWidget"),
 		IMPACTS("impactsWidget"),
-		ALARM_TIME_LINE("alarmTimeLine")
+		ALARM_TIME_LINE("alarmTimeLine"),
+		INSURANCE("insurance")
  		;
 		
 		private String name;
