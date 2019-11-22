@@ -1445,6 +1445,10 @@
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateFormFields">
 		</action>
+		<action name="initForms"
+				class="com.facilio.bmsconsole.actions.FormAction"
+				method="updateFormListFields">
+		</action>
 		<action name="unusedlist"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="formUnusedFieldList">

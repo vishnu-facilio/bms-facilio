@@ -184,6 +184,15 @@ public class FormAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+
+	public String updateFormListFields() throws Exception {
+		FacilioChain c = TransactionChainFactory.getUpdateFormListFieldsChain();
+		c.getContext().put(ContextNames.FORMS_LIST, this.getForms());
+		c.execute();
+		setResult(ContextNames.FORMS_RESPONSE_LIST, c.getContext().get(ContextNames.FORMS_RESPONSE_LIST));
+
+		return SUCCESS;
+	}
 	
 	public String getServicePortalForms() throws Exception{
 		

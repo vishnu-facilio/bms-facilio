@@ -2293,6 +2293,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+	public static FacilioChain getUpdateFormListFieldsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new UpdateFormListFieldsCommand());
+		return c;
+	}
+
 		public static FacilioChain getUpdateFormSectionChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UpdateFormSectionCommand());
