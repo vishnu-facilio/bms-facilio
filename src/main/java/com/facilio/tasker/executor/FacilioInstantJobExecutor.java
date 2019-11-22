@@ -97,7 +97,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 												}
 											}
 											String receiptHandle = message.getId();
-											job.setReceiptHandle(receiptHandle);
+											job.setMessageId(receiptHandle);;
 											LOGGER.info("FacilioInstantJobjobQueue setReceiptHandle ID to JobEnd is  : "+receiptHandle);
 											LOGGER.debug("Executing job : " + jobName);
 											Future f = THREAD_POOL_EXECUTOR.submit(() -> job._execute(context,

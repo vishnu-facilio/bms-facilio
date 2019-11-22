@@ -25,8 +25,14 @@ public abstract class InstantJob {
     String getReceiptHandle() {
         return receiptHandle;
     }
-
-    public final void _execute(FacilioContext context, int transactionTimeout) {
+    private String messageId;
+    public String getMessageId() {
+		return messageId;
+	}
+	public void setMessageId(String messageId) {
+		this.messageId = messageId;
+	}
+	public final void _execute(FacilioContext context, int transactionTimeout) {
         Thread currentThread = Thread.currentThread();
         String threadName = currentThread.getName();
         currentThread.setName(threadName + "-instant-job-" + StringUtils.truncate(getReceiptHandle(), 50));
@@ -68,8 +74,8 @@ public abstract class InstantJob {
             	LOGGER.info("FacilioInstantJobjobQueue msg ID to JobEnd before job is  : "+getReceiptHandle());
             	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
             }
-            	FacilioInstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
-            	LOGGER.info("FacilioInstantJobjobQueue msg ID to JobEnd after job is  : "+getReceiptHandle());
+            	FacilioInstantJobExecutor.INSTANCE.jobEnd(getMessageId());
+            	LOGGER.info("FacilioInstantJobjobQueue msg ID to JobEnd after job is  : "+getMessageId());
             
         }
     }
