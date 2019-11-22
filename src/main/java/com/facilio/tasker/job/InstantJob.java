@@ -65,10 +65,11 @@ public abstract class InstantJob {
             JobLogger.log(job, (System.currentTimeMillis() - startTime), status);
             currentThread.setName(threadName);
             if(FacilioProperties.isProduction()) {
+            	LOGGER.info("FacilioInstantJobjobQueue msg ID to JobEnd before job is  : "+getReceiptHandle());
             	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
-            }else {
-            	FacilioInstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
             }
+            	FacilioInstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
+            	LOGGER.info("FacilioInstantJobjobQueue msg ID to JobEnd after job is  : "+getReceiptHandle());
             
         }
     }

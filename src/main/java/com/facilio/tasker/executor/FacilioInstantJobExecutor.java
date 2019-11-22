@@ -98,6 +98,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 											}
 											String receiptHandle = message.getId();
 											job.setReceiptHandle(receiptHandle);
+											LOGGER.info("FacilioInstantJobjobQueue setReceiptHandle ID to JobEnd is  : "+receiptHandle);
 											LOGGER.debug("Executing job : " + jobName);
 											Future f = THREAD_POOL_EXECUTOR.submit(() -> job._execute(context,
 													(instantJob.getTransactionTimeout() - JOB_TIMEOUT_BUFFER) * 1000));
@@ -133,7 +134,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 
 	public void jobEnd(String receiptHandle) {
 		try {
-
+			LOGGER.info("FacilioInstantJobjobQueue msg ID to JobEnd is  : "+receiptHandle);
 			FacilioObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), receiptHandle);
 		} catch (Exception e) {
 			LOGGER.info("Exception occurred in FacilioInstant Job Qeueu :  "+e);
