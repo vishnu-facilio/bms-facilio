@@ -1015,6 +1015,11 @@
 			<param name="moduleName">alarm</param>
 			<param name="viewName">{1}</param>
 			<param name="ruleType">1</param>
+			<result name="success" type="json">
+				<param name="excludeNullProperties">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
 		</action>
 		<action name="rulesCount"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
