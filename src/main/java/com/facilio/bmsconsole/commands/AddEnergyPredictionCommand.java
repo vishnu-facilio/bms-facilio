@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 				
 				LOGGER.info("After adding Reading");
 				
-				checkGamModel(energyMeterID,emContext2, (JSONObject) jc.get("mlModelVariables"),(String) jc.get("modelPath"));
+				checkGamModel(energyMeterID,emContext2, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),(String) jc.get("modelPath"));
 				LOGGER.info("After check Gam Model");
 			}else{
 				LOGGER.info("Energy Meter context is Null");
@@ -70,7 +71,7 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		
 	}
 	
-	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context,JSONObject mlModelVariables,String modelPath) throws Exception
+	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context,JSONObject mlModelVariables,JSONObject mlVariables,String modelPath) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -87,23 +88,30 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
 	
 		long mlID = MLAPI.addMLModel(modelPath,logReadingModule.getModuleId(),readingModule.getModuleId());
-		MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),7776000000l,0,true);
-		MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),7776000000l,0,false);
-		MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),31536000000l,172800000l,false);
+		
+		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
+		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();
+		if (mlVariables != null) {
+			for(Object entry:mlVariables.entrySet()){
+				Map.Entry en = (Map.Entry) entry;
+				maxSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("maxSamplingPeriod").toString()));
+				futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
+			}
+		}
+		
+		MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),maxSamplingPeriodMap.containsKey(energyField.getName())? maxSamplingPeriodMap.get(energyField.getName()):7776000000l,futureSamplingPeriodMap.containsKey(energyField.getName())? futureSamplingPeriodMap.get(energyField.getName()):0,true);
+		MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),maxSamplingPeriodMap.containsKey(markedField.getName())? maxSamplingPeriodMap.get(markedField.getName()):7776000000l,futureSamplingPeriodMap.containsKey(markedField.getName())? futureSamplingPeriodMap.get(markedField.getName()):0,false);
+		MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),maxSamplingPeriodMap.containsKey(temperatureField.getName())? maxSamplingPeriodMap.get(temperatureField.getName()):31536000000l,futureSamplingPeriodMap.containsKey(temperatureField.getName())? futureSamplingPeriodMap.get(temperatureField.getName()):172800000l,false);
 		
 		MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 		MLAPI.addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");
     	
 		MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
-		mlModelVariables.entrySet().forEach(entry -> {
-			try {
-				Map.Entry<String, String> en = (Map.Entry) entry;
-				MLAPI.addMLModelVariables(mlID, en.getKey(), en.getValue());
-			} catch (Exception e) {
-				LOGGER.fatal("Error when adding ML Model variables for EnergyPrediction Job " + mlID);
-			}
-		});
-
+		
+		for(Object entry:mlModelVariables.entrySet()){
+			Map.Entry<String, String> en = (Map.Entry) entry;
+			MLAPI.addMLModelVariables(mlID, en.getKey(), en.getValue());
+		}
 		
 		ScheduleInfo info = new ScheduleInfo();
 		info.setFrequencyType(FrequencyType.DAILY);

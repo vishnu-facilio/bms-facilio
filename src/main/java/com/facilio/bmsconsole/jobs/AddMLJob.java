@@ -49,6 +49,7 @@ public class AddMLJob extends FacilioJob {
 				FacilioChain c = FacilioChainFactory.addEnergyPredictionchain();
 				context.put("energyMeterID",props.get("energyMeterId"));
 				context.put("mlModelVariables", props.get("mlModelVariables"));
+				context.put("mlVariables", props.get("mlVariables"));
 				context.put("modelPath", props.get("modelPath"));
 				c.execute(context);		
 				break;
@@ -57,6 +58,7 @@ public class AddMLJob extends FacilioJob {
 				FacilioChain c = FacilioChainFactory.addLoadPredictionchain();
 				context.put("energyMeterID",props.get("energyMeterId"));
 				context.put("mlModelVariables", props.get("mlModelVariables"));
+				context.put("mlVariables", props.get("mlVariables"));
 				context.put("modelPath", props.get("modelPath"));
 				c.execute(context);
 				break;
