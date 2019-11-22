@@ -3732,6 +3732,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddNewVisitorWhileLoggingCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new AddNdaForVisitorLogCommand());
+			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
@@ -3749,6 +3750,7 @@ public class TransactionChainFactory {
 			c.addCommand(new CheckForWatchListRecordCommand());
 			c.addCommand(new AddNewVisitorWhileLoggingCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
+			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new AddOrUpdateVisitorLogTriggerCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));

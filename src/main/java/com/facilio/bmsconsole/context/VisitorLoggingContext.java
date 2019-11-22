@@ -585,5 +585,25 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		return false;
 	}
 	
+	private String qrUrl;
+
+	public String getQrUrl() {
+		return qrUrl;
+	}
+
+	public void setQrUrl(String qrUrl) {
+		this.qrUrl = qrUrl;
+	}
+	
+	private User requestedBy;
+
+	public User getRequestedBy() {
+		return requestedBy;
+	}
+
+	public void setRequestedBy(User requestedBy) {
+		this.requestedBy = requestedBy;
+	}
+	
 	
 }

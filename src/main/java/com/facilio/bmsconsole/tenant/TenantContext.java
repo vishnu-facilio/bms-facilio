@@ -8,6 +8,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ZoneContext;
+import com.facilio.bmsconsole.context.VisitorLoggingContext.Source;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class TenantContext extends ModuleBaseWithCustomFields{
@@ -189,6 +191,42 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 		this.tenantContacts = tenantContacts;
 	}
 	
+	private TenantType tenantType;
+	public int gettenantType() {
+		if (tenantType != null) {
+			return tenantType.getIndex();
+		}
+		return -1;
+	}
+	public void settenantType(int tenantType) {
+		this.tenantType = TenantType.valueOf(tenantType);
+	}
+	public TenantType getTypeEnum() {
+		return tenantType;
+	}
+	public void setType(TenantType tenantType) {
+		this.tenantType = tenantType;
+	}
 	
+	public static enum TenantType implements FacilioEnum {
+		COMMERCIAL, RESIDENTIAL;
+
+		@Override
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name();
+		}
+
+		public static TenantType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
 	
 }

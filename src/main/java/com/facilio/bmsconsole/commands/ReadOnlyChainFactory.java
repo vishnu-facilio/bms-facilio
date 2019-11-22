@@ -1581,7 +1581,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new AddVendorScopeForPortalCommand());
-		chain.addCommand(new AddTenantScopeForVisitorLoggingListCommand());
+		//chain.addCommand(new AddTenantScopeForVisitorLoggingListCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new LoadVisitorLoggingLookUpCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());

@@ -78,6 +78,7 @@ public class ScheduleNewVisitorLogCommand extends FacilioJob {
 			}
 			
 			parentLog.setLogGeneratedUpto(generatedUpto * 1000);
+			parentLog.setParentLogId(parentLog.getId());
 			trigger.setLastGeneratedTime(generatedUpto * 1000);
 			VisitorManagementAPI.updateGeneratedUptoInLogAndAddChildren(trigger, parentLog, children);
 			

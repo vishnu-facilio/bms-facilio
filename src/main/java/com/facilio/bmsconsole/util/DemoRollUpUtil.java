@@ -180,10 +180,11 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("BaseAlarm" , Arrays.asList("ACKNOWLEDGED_TIME", "LAST_OCCURRED_TIME", "LAST_CLEARED_TIME", "LAST_CREATED_TIME"));
 		tablesContainsDateField.put("BaseAlarm_Notes", Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("ML_Anomaly_Alarm", Arrays.asList("READING_TIME"));
-		tablesContainsDateField.put("Visitor_Logging", Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME","CHECKIN_TIME", "CHECKOUT_TIME", "EXPECTED_CHECKOUT_TIME"));
+		tablesContainsDateField.put("Visitor_Logging", Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME","CHECKIN_TIME", "CHECKOUT_TIME", "LOG_GENERATED_UPTO", "EXPECTED_CHECKIN_TIME", "EXPECTED_CHECKOUT_TIME"));
 		tablesContainsDateField.put("Visitor_Logging_Attachments", Arrays.asList("CREATED_TIME"));
+		tablesContainsDateField.put("VisitorLog_Triggers", Arrays.asList("START_TIME" , "END_TIME", "LOG_GENERATED_UPTO"));
 		tablesContainsDateField.put("Visitor_Logging_Notes", Arrays.asList("CREATED_TIME"));
-		tablesContainsDateField.put("Visitor_Invites", Arrays.asList("SYS_CREATED_TIME", "SYS_MODIFIED_TIME", "EXPECTED_START_TIME", "EXPECTED_END_TIME", "SYS_DELETED_TIME"));
+		//tablesContainsDateField.put("Visitor_Invites", Arrays.asList("SYS_CREATED_TIME", "SYS_MODIFIED_TIME", "EXPECTED_START_TIME", "EXPECTED_END_TIME", "SYS_DELETED_TIME"));
 		tablesContainsDateField.put("Insurance", Arrays.asList("SYS_CREATED_TIME", "SYS_MODIFIED_TIME", "SYS_DELETED_TIME"));
 		tablesContainsDateField.put("Insurance_Attachments", Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Insurance_Notes", Arrays.asList("CREATED_TIME"));

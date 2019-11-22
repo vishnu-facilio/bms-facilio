@@ -157,9 +157,11 @@ public class VisitorManagementAPI {
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		LookupField contactField = (LookupField) fieldsAsMap.get("visitor");
 		LookupField hostField = (LookupField) fieldsAsMap.get("host");
+		LookupField visitedSpacefield = (LookupField) fieldsAsMap.get("visitedSpace");
 		
 		additionaLookups.add(contactField);
 		additionaLookups.add(hostField);
+		additionaLookups.add(visitedSpacefield);
 		
 		builder.fetchLookups(additionaLookups);
 		
@@ -947,7 +949,9 @@ public class VisitorManagementAPI {
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		criteria.addConditionMap(isApprovalNeeded);
-		criteria.setPattern("(1 and 2)");
+		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
+		
+		criteria.setPattern("(1 and 2 and 3)");
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -992,10 +996,12 @@ public class VisitorManagementAPI {
 		isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
 		
 		
+		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		criteria.addConditionMap(isApprovalNeeded);
-		criteria.setPattern("(1 and 2)");
+		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
+		criteria.setPattern("(1 and 2 and 3)");
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1036,8 +1042,8 @@ public class VisitorManagementAPI {
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		
-		criteria.setPattern("(1)");
-		criteria.andCriteria(getVisitorLogStatusCriteria("CheckedIn"));
+		criteria.setPattern("(1 and 2)");
+		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1077,8 +1083,8 @@ public class VisitorManagementAPI {
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		
-		criteria.setPattern("(1)");
-		criteria.andCriteria(getVisitorLogStatusCriteria("CheckedIn"));
+		criteria.setPattern("(1 and 2)");
+		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1120,8 +1126,8 @@ public class VisitorManagementAPI {
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		
-		criteria.setPattern("(1)");
-		criteria.andCriteria(getVisitorLogStatusCriteria("CheckedOut"));
+		criteria.setPattern("(1 and 2)");
+		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedOut"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1161,8 +1167,8 @@ public class VisitorManagementAPI {
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		
-		criteria.setPattern("(1)");
-		criteria.andCriteria(getVisitorLogStatusCriteria("CheckedOut"));
+		criteria.setPattern("(1 and 2)");
+		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedOut"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1298,14 +1304,19 @@ public class VisitorManagementAPI {
 		isApprovalNeeded.setValue("true");
 		isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
 		
-		
+		Condition isPreregistered = new Condition();
+		isPreregistered.setFieldName("isPreregistered");
+		isPreregistered.setOperator(BooleanOperators.IS);
+		isPreregistered.setValue("false");
+		isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED IS NULL OR VisitorLogging.IS_PREREGISTERED IS FALSE");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		criteria.addConditionMap(isApprovalNeeded);
+		criteria.addConditionMap(isPreregistered);
 		
-		criteria.setPattern("(1 and 3)");
-		criteria.andCriteria(getVisitorLogStatusCriteria("Requested"));
+		criteria.setPattern("(1 and 2 and 3 and 4)");
+		criteria.addConditionMap(getVisitorLogStatusCriteria("Requested"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1348,14 +1359,20 @@ public class VisitorManagementAPI {
 		isApprovalNeeded.setValue("true");
 		isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
 		
+		Condition isPreregistered = new Condition();
+		isPreregistered.setFieldName("isPreregistered");
+		isPreregistered.setOperator(BooleanOperators.IS);
+		isPreregistered.setValue("false");
+		isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED IS NULL OR VisitorLogging.IS_PREREGISTERED IS FALSE");
 		
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		criteria.addConditionMap(isApprovalNeeded);
+		criteria.addConditionMap(isPreregistered);
 		
-		criteria.setPattern("(1 and 3)");
-		criteria.andCriteria(getVisitorLogStatusCriteria("Requested"));
+		criteria.setPattern("(1 and 2 and 3 and 4)");
+		criteria.addConditionMap(getVisitorLogStatusCriteria("Requested"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1375,7 +1392,7 @@ public class VisitorManagementAPI {
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 	}
 	
-	private static Criteria getVisitorLogStatusCriteria(String status) {
+	private static Condition getVisitorLogStatusCriteria(String status) {
 		FacilioField statusTypeField = new FacilioField();
 		statusTypeField.setName("status");
 		statusTypeField.setColumnName("STATUS");
@@ -1402,9 +1419,7 @@ public class VisitorManagementAPI {
 		condition.setOperator(LookupOperator.LOOKUP);
 		condition.setCriteriaValue(statusCriteria);
 
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(condition);
-		return criteria;
+		return condition;
 	}
 	
 	public static void scheduleVisitorLog(long visitorLogId, ScheduleActions action, long endTime) throws Exception {
