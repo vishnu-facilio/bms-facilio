@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -21,12 +20,12 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewField;
@@ -36,8 +35,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fs.FileInfo.FileFormat;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -47,6 +44,8 @@ import com.facilio.modules.LookupFieldMeta;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
 
 public class ExportUtil {
@@ -122,13 +121,15 @@ public class ExportUtil {
 		autoSizeColumns(sheet);
 		
 		String fileName = facilioModule.getDisplayName() + ".xls";
-		FileOutputStream fileOut = new FileOutputStream(fileName);
+		String filePath = getRootFilePath(fileName);
+
+		FileOutputStream fileOut = new FileOutputStream(filePath);
 		workbook.write(fileOut);
 		fileOut.close();
 
-		File file = new File(fileName);
+		File file = new File(filePath);
 		FileStore fs = FacilioFactory.getFileStore();
-		long fileId = fs.addFile(file.getPath(), file, "application/xls");
+		long fileId = fs.addFile(fileName, file, "application/xls");
 
 		if (isS3Url) {
 			return fs.getOrgiDownloadUrl(fileId);
@@ -209,13 +210,15 @@ public class ExportUtil {
 		autoSizeColumns(sheet);
 	
 		String fileName = name + ".xls";
-		FileOutputStream fileOut = new FileOutputStream(fileName);
+		String filePath = getRootFilePath(fileName);
+		
+		FileOutputStream fileOut = new FileOutputStream(filePath);
 		workbook.write(fileOut);
 		fileOut.close();
 
-		File file = new File(fileName);
+		File file = new File(filePath);
 		FileStore fs = FacilioFactory.getFileStore();
-		long fileId = fs.addFile(file.getPath(), file, "application/xls");
+		long fileId = fs.addFile(fileName, file, "application/xls");
 		
 		if (isS3Url) {
 			return fs.getOrgiDownloadUrl(fileId);
@@ -246,7 +249,8 @@ public class ExportUtil {
 	public static String exportDataAsCSV(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception
     {
 		String fileName = facilioModule.getDisplayName() + ".csv";
-        	FileWriter writer = new FileWriter(fileName, false);
+		String filePath = getRootFilePath(fileName);
+        	FileWriter writer = new FileWriter(filePath, false);
         	
         	StringBuilder str = new StringBuilder();
         	for(ViewField vf : fields)
@@ -289,9 +293,9 @@ public class ExportUtil {
         	writer.flush();
         	writer.close();
         	
-        	File file = new File(fileName);
+        	File file = new File(filePath);
 	    FileStore fs = FacilioFactory.getFileStore();
-	    long fileId = fs.addFile(file.getPath(), file, "application/csv");
+	    long fileId = fs.addFile(fileName, file, "application/csv");
 
 	    if (isS3Url) {
 	    	return fs.getOrgiDownloadUrl(fileId);
@@ -303,7 +307,8 @@ public class ExportUtil {
 	public static String exportDataAsCSV(String name, Map<String,Object> table, boolean isS3Url) throws Exception
     {
 		String fileName = name + ".csv";
-        	FileWriter writer = new FileWriter(fileName, false);
+		String filePath = getRootFilePath(fileName);
+        	FileWriter writer = new FileWriter(filePath, false);
         	
         	StringBuilder str = new StringBuilder();
         	List<String> headers = (ArrayList<String>) table.get("headers");
@@ -375,9 +380,9 @@ public class ExportUtil {
         	writer.flush();
         	writer.close();
         	
-        	File file = new File(fileName);
+        	File file = new File(filePath);
 	    FileStore fs = FacilioFactory.getFileStore();
-	    long fileId = fs.addFile(file.getPath(), file, "application/csv");
+	    long fileId = fs.addFile(fileName, file, "application/csv");
 	    
 	    if (isS3Url) {
 			return fs.getOrgiDownloadUrl(fileId);
@@ -692,6 +697,17 @@ public class ExportUtil {
 			}
 		}
 		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records, isS3Value);
+	}
+	
+	private static String getRootFilePath(String fileName) {
+		ClassLoader classLoader = ExportUtil.class.getClassLoader();
+		String path = classLoader.getResource("").getFile() + File.separator + "facilio-temp-files" + File.separator + AccountUtil.getCurrentOrg().getOrgId();
+
+		File file = new File(path);
+		if (!(file.exists() && file.isDirectory())) {
+			file.mkdirs();
+		}
+		return path + File.separator + fileName ;
 	}
 	
 }
