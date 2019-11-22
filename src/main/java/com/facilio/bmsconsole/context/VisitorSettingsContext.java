@@ -137,18 +137,8 @@ public class VisitorSettingsContext implements Serializable {
 	public void setVisitorTypeId(long visitorTypeId) {
 		this.visitorTypeId = visitorTypeId;
 	}
-	public long getVisitorFormId() {
-		return visitorFormId;
-	}
-	public void setVisitorFormId(long visitorFormId) {
-		this.visitorFormId = visitorFormId;
-	}
-	public FacilioForm getForm() {
-		return form;
-	}
-	public void setForm(FacilioForm form) {
-		this.form = form;
-	}
+	
+
 	public VisitorTypeContext getVisitorType() {
 		return visitorType;
 	}
@@ -162,8 +152,36 @@ public class VisitorSettingsContext implements Serializable {
 	public void setAutoSignoutTime(long autoSignoutTime) {
 		this.autoSignoutTime = autoSignoutTime;
 	}
-	long visitorFormId=-1;
-	FacilioForm form;
+	public long getVisitorLogFormId() {
+		return visitorLogFormId;
+	}
+	public void setVisitorLogFormId(long visitorLogFormId) {
+		this.visitorLogFormId = visitorLogFormId;
+	}
+	public long getVisitorInviteFormId() {
+		return visitorInviteFormId;
+	}
+	public void setVisitorInviteFormId(long visitorInviteFormId) {
+		this.visitorInviteFormId = visitorInviteFormId;
+	}
+	public FacilioForm getVisitorLogForm() {
+		return visitorLogForm;
+	}
+	public void setVisitorLogForm(FacilioForm visitorLogForm) {
+		this.visitorLogForm = visitorLogForm;
+	}
+	public FacilioForm getVisitorInviteForm() {
+		return visitorInviteForm;
+	}
+	public void setVisitorInviteForm(FacilioForm visitorInviteForm) {
+		this.visitorInviteForm = visitorInviteForm;
+	}
+
+	long visitorLogFormId=-1;
+	long visitorInviteFormId=-1;
+	FacilioForm visitorLogForm;
+	FacilioForm visitorInviteForm;
+	
 	VisitorTypeContext visitorType;
 	
 	public Boolean getHostEnabled() {

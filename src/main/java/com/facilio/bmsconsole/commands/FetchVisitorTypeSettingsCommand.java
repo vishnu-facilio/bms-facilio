@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -51,43 +52,15 @@ public class FetchVisitorTypeSettingsCommand extends FacilioCommand {
 
 		pickListChain.execute();
 		
-		VisitorTypeContext visitorTypeCtxFill=(VisitorTypeContext)pickListContext.get(FacilioConstants.ContextNames.RECORD);
-		visitorSettingsContext.setVisitorType(visitorTypeCtxFill);
-//		
-//		Map<Long, String> pickListMap=(Map<Long, String>) pickListContext.get(FacilioConstants.ContextNames.PICKLIST);
-		String visitorTypeName=visitorTypeCtxFill.getName();
-//		visitorTypeCtx.setName(visitorTypeName);
+		VisitorTypeContext visitorTypeCtxFilled=(VisitorTypeContext)pickListContext.get(FacilioConstants.ContextNames.RECORD);
+		visitorSettingsContext.setVisitorType(visitorTypeCtxFilled);
 		
-		
-		
-		
-		//visitorSettingsContext.setVisitorType(visitorTypeCtx);
-        
-		Long formId=visitorSettingsContext.getVisitorFormId();
-		
-		//get and fill form object in context		
-		
-		FacilioChain formChain = FacilioChainFactory.getFormMetaChain();
-		FacilioContext formContext=formChain.getContext();
-			
-		formContext.put(FacilioConstants.ContextNames.MODULE_NAME, ContextNames.VISITOR_LOGGING);
-		
-		if(formId>0)
-		{
-			formContext.put(FacilioConstants.ContextNames.FORM_ID, formId);
+	
 
-			
-		}
-		else {
-			formContext.put(FacilioConstants.ContextNames.FORM_ID, formId);
-
-			formContext.put(FacilioConstants.ContextNames.FORM_NAME, visitorTypeName);
-		}
-		
-		formChain.execute();
-		FacilioForm form = (FacilioForm) formContext.get(FacilioConstants.ContextNames.FORM);
-		
-		visitorSettingsContext.setForm(form);
+		FacilioForm visitorLogForm = FormsAPI.getFormFromDB(visitorSettingsContext.getVisitorLogFormId());		
+		visitorSettingsContext.setVisitorLogForm(visitorLogForm);
+		FacilioForm visitorInviteForm = FormsAPI.getFormFromDB(visitorSettingsContext.getVisitorInviteFormId());		
+		visitorSettingsContext.setVisitorLogForm(visitorInviteForm);
 		
 		
 		context.put(ContextNames.VISITOR_SETTINGS,visitorSettingsContext);

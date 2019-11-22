@@ -1315,6 +1315,8 @@ public class FacilioConstants {
 		public static final String TREND_LINE = "trendLine";
 		public static final String VISITOR_TYPE_PICKLIST_OPTION="visitorTypePicklistOption";
 		public static final String VISITOR_SETTINGS="visitorSettings";
+		public static final String DEFAULT_VISITOR_LOG_FORM_NAME="default_visitor_log_form";
+		public static final String DEFAULT_VISITOR_INVITE_FORM_NAME="default_visitor_invite_form";
 
 
 
