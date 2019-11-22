@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
@@ -34,29 +37,28 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		
 		try
 		{
-			LOGGER.info("Inside Execute Command");
+			LOGGER.info("Inside Energy Prediction Command");
 			long energyMeterID=(long) jc.get("energyMeterID");
-			LOGGER.info("Inside Energy Meter Command"+energyMeterID);
-			EnergyMeterContext emContext2 = DeviceAPI.getEnergyMeter(energyMeterID);
-			LOGGER.info("Energy meter context :"+emContext2);
-			if(emContext2 != null){
+			EnergyMeterContext assetContext = DeviceAPI.getEnergyMeter(energyMeterID);
+			if(assetContext != null){
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                Long categoryId=emContext2.getCategory().getId();
+                Long categoryId=assetContext.getCategory().getId();
 				AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 				long assetModuleID = assetCategory.getAssetModuleID();
 				List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
-				boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("EnergyPredictionMLLogReadings"));
-				if(!moduleExist){
+				Set<String> moduleNames = new HashSet<>();
+				if(modules !=null){
+					moduleNames = modules.stream().filter(m-> m != null && m.getName() != null).map(FacilioModule::getName).collect(Collectors.toSet());
+				}
+				
+				if(!moduleNames.contains("energypredictionmllogreadings")){
     				MLAPI.addReading(categoryId,"EnergyPredictionMLLogReadings",FieldFactory.getMLLogPredictCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
                 }
-                moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("EnergyPredictionMLReadings"));
-				if (!moduleExist) {
+				if (!moduleNames.contains("energypredictionmlreadings")) {
 					MLAPI.addReading(categoryId,"EnergyPredictionMLReadings", FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 				}
 				
-				LOGGER.info("After adding Reading");
-				
-				checkGamModel(energyMeterID,emContext2, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),(String) jc.get("modelPath"));
+				checkGamModel(energyMeterID,assetContext, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),(String) jc.get("modelPath"));
 				LOGGER.info("After check Gam Model");
 			}else{
 				LOGGER.info("Energy Meter context is Null");

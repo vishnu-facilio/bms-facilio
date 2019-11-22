@@ -4,10 +4,13 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
@@ -61,15 +64,19 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 		long assetModuleID = assetCategory.getAssetModuleID();
 		List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
-		boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("AnomalyDetectionMLLogReadings"));
-		if(!moduleExist){
+		Set<String> moduleNames = new HashSet<>();
+		if(modules !=null){
+			moduleNames = modules.stream().filter(m-> m != null && m.getName() != null).map(FacilioModule::getName).collect(Collectors.toSet());
+		}
+		
+		if(!moduleNames.contains("anomalydetectionmllogreadings")){
 			MLAPI.addReading(categoryId,"AnomalyDetectionMLLogReadings",FieldFactory.getMLLogCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
 		}
-		moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("AnomalyDetectionMLReadings"));
-		if(!moduleExist){
+		if(!moduleNames.contains("anomalydetectionmlreadings")){
 			MLAPI.addReading(categoryId,"AnomalyDetectionMLReadings",FieldFactory.getMLCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 		}
-			long ratioCheckMLid = 0L;
+		
+        long ratioCheckMLid = 0L;
 		
 		LOGGER.info("Additional Context "+context.containsKey("ratioHierarchy")+"::"+context.containsKey("meterInterval")+"::"+context.containsKey("TreeHierarchy"));
 		for(Object key:context.keySet())
@@ -80,11 +87,11 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		{
 			JSONArray ratioHierachy = new JSONArray((String)context.get("ratioHierarchy"));
 			LOGGER.info("Ratio Hierachy is "+ratioHierachy);
-			ratioCheckMLid = addMultipleRatioCheckModel(assetContextList,ratioHierachy);
+			ratioCheckMLid = addMultipleRatioCheckModel(categoryId,assetContextList,ratioHierachy,moduleNames);
 		}
 		else
 		{
-			ratioCheckMLid = addRatioCheckModel(assetContextList,(String)context.get("TreeHierarchy"));
+			ratioCheckMLid = addRatioCheckModel(categoryId,assetContextList,(String)context.get("TreeHierarchy"),moduleNames);
 		}
 		checkGamModel(ratioCheckMLid,assetContextList,(String) context.get("meterInterval"));
 		
@@ -164,14 +171,9 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
         updateBuilder.update(prop);
 	}
 	
-	private long addMultipleRatioCheckModel(Hashtable<Long,AssetContext> energyContextTable, JSONArray ratioHierachyList) throws Exception
+	private long addMultipleRatioCheckModel(Long categoryId,Hashtable<Long,AssetContext> energyContextTable, JSONArray ratioHierachyList,Set<String> moduleNames) throws Exception
 	{
-		Entry<Long, AssetContext> entry = energyContextTable.entrySet().iterator().next();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        Long categoryId=energyContextTable.get(entry.getKey()).getCategory().getId();
-		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
-		long assetModuleID = assetCategory.getAssetModuleID();
-		List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
 		
 		List<FacilioField> mLLogCheckRatioFields = FieldFactory.getMLLogCheckRatioFields();
 		int decimalColumnHigherValue = mLLogCheckRatioFields.stream().map(FacilioField::getColumnName).filter(f->f.startsWith("DECIMAL_CF")).map(c->c.replaceFirst("DECIMAL_CF", "")).map(Integer::parseInt).mapToInt(i -> i).max().orElse(0);
@@ -188,8 +190,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		}
 		
 		long checkRatioLogReadingNewModuleId = MLAPI.addReadingEveryTime(categoryId,"checkRatioMLLogReadings",mLLogCheckRatioFields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
-		boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("checkRatioMLReadings"));
-		if(!moduleExist){
+		if(!moduleNames.contains("checkratiomlreadings")){
 			MLAPI.addReading(categoryId,"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
 		}
 		
@@ -265,14 +266,9 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		return mlID;
 	}
 	
-	private long addRatioCheckModel(Hashtable<Long,AssetContext> emContextList, String TreeHierarchy) throws Exception
+	private long addRatioCheckModel(Long categoryId,Hashtable<Long,AssetContext> emContextList, String TreeHierarchy,Set<String> moduleNames) throws Exception
 	{
-		Map.Entry<Long,AssetContext> entry = emContextList.entrySet().iterator().next();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		Long categoryId=emContextList.get(entry.getKey()).getCategory().getId();
-		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
-		long assetModuleID = assetCategory.getAssetModuleID();
-		List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
 		
 		List<FacilioField> mLLogCheckRatioFields = FieldFactory.getMLLogCheckRatioFields();
 		int decimalColumnHigherValue = mLLogCheckRatioFields.stream().map(FacilioField::getColumnName).filter(f->f.startsWith("DECIMAL_CF")).map(c->c.replaceFirst("DECIMAL_CF", "")).map(Integer::parseInt).mapToInt(i -> i).max().orElse(0);
@@ -285,8 +281,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		}
 		Long checkRatioLogReadingNewModuleId = MLAPI.addReadingEveryTime(categoryId,"checkRatioMLLogReadings",mLLogCheckRatioFields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
 		
-		boolean moduleExist = modules.stream().anyMatch(m-> m != null && m.getName().equalsIgnoreCase("checkRatioMLReadings"));
-		if(!moduleExist){
+		if(!moduleNames.contains("checkratiomlreadings")){
 			MLAPI.addReading(categoryId,"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
 		}
 		
@@ -358,7 +353,6 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		for(AssetContext emContext : assetContextList.values())
 		{
 			long mlID = MLAPI.addMLModel("buildGamModel",-1,-1);
-			System.out.println("Module id are "+energyField.getModuleId());
 			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),777600000,0,true);
 			MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),777600000,0,false);
 			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),emContext.getSiteId(),777600000,0,false);

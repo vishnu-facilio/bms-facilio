@@ -63,6 +63,9 @@ public class AddMLJob extends FacilioJob {
 				c.execute(context);
 				break;
 			}
+			default :{
+				LOGGER.fatal("Name not matched with any Job");
+			}
 		}
 		
 	}
