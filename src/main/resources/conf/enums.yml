@@ -33,4 +33,7 @@ enums:
 
   - name: VisitorLogo
     enumClassName: com.facilio.bmsconsole.context.VisitorTypeContext$VisitorLogo
+
+  - name: TenantType
+    enumClassName: com.facilio.bmsconsole.tenant.TenantContext$TenantType
     
