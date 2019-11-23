@@ -4507,7 +4507,9 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitors" />
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorsList" />
+				class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorsList">
+			<param name="viewName">{1}</param>
+		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="deleteVisitors" />
 		<action name="details"
@@ -4583,8 +4585,9 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkOutVisitorLogging" />
 		<action name="qrScanLog"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="qrScanLog" />
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" />
+		<action name="*" class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList">
+			<param name="viewName">{1}</param>
+		</action>
 	</package>
 	
 	<package name="visitorSettings" namespace="/api/v2/visitorSettings"
@@ -4626,7 +4629,9 @@
 		<action name="updatePrimaryContact"
 			class="com.facilio.bmsconsole.actions.ContactsAction" method="markAsPrimaryContact" />
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactsList" />
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactsList">
+			<param name="viewName">{1}</param>
+		</action>
 	</package>
 	
 	<package name="insurance" namespace="/api/v2/insurance"
@@ -4640,7 +4645,9 @@
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.InsuranceAction" method="getInsuranceDetails" />
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.InsuranceAction" method="getInsuranceList" />
+			class="com.facilio.bmsconsole.actions.InsuranceAction" method="getInsuranceList">
+		<param name="viewName">{1}</param>
+		</action>
 	</package>
 	
 	<package name="watchListViews" namespace="/api/v2/watchlist/view"
@@ -4661,7 +4668,9 @@
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.WatchListAction" method="getWatchListRecordDetails" />
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.WatchListAction" method="getWatchListRecordList" />
+				class="com.facilio.bmsconsole.actions.WatchListAction" method="getWatchListRecordList">
+			<param name="viewName">{1}</param>
+		</action>
 	</package>
 	<package name="workpermit" namespace="/api/v2/workpermit"
 		extends="v2Api">
@@ -4674,6 +4683,8 @@
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitDetails" />
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList" />
+			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList">
+			<param name="viewName">{1}</param>
+		</action>
 	</package>
 </struts>
