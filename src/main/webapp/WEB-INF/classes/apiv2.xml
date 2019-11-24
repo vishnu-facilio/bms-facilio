@@ -4554,6 +4554,15 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="visitorInviteApprovals" namespace="/api/v2/visitorLogging/invites/approvals/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorInviteRequestList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	
 	<package name="visitorLoggingViews" namespace="/api/v2/visitorLogging/view"
 		extends="v2Api">
 		<action name="*"

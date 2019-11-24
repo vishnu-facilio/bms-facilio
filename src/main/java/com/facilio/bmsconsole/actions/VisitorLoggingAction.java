@@ -261,27 +261,16 @@ private static final long serialVersionUID = 1L;
 		chain.getContext().put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "visitorlogging");
 		chain.getContext().put(FacilioConstants.ContextNames.IS_VENDOR_PORTAL, getVendorPortal());
-		
+		chain.getContext().put("logType", 1);
 		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Visitor_Logging.SYS_CREATED_TIME desc");
  		
 		String filters = getFilters();
 		JSONObject json = new JSONObject();
-		JSONObject status = new JSONObject();
-		
-		FacilioStatus upcomingStatus = VisitorManagementAPI.getLogStatus("CheckedIn");
-		
-		JSONArray parentLogIdArray = new JSONArray();
-		parentLogIdArray.add(String.valueOf(upcomingStatus.getId()));
-		
-		status.put("operatorId", (long) PickListOperators.IS.getOperatorId());
-		status.put("value", parentLogIdArray);
-		
 		
 		if(StringUtils.isNotEmpty(filters)) {
 			JSONParser parser = new JSONParser();
 	 		json = (JSONObject) parser.parse(getFilters());
 	 	}
-		json.put("moduleState", status);
 		
 		chain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
  		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
@@ -332,16 +321,17 @@ private static final long serialVersionUID = 1L;
 		
 		JSONArray array = new JSONArray();
 		array.add("true");
-		//FacilioStatus upcomingStatus = VisitorManagementAPI.getLogStatus("Upcoming");
 		
-		//JSONArray parentLogIdArray = new JSONArray();
-		//parentLogIdArray.add(String.valueOf(upcomingStatus.getId()));
+		FacilioStatus upcomingStatus = VisitorManagementAPI.getLogStatus("Upcoming");
+		
+		JSONArray parentLogIdArray = new JSONArray();
+		parentLogIdArray.add(String.valueOf(upcomingStatus.getId()));
 		
 		isPreregistered.put("operatorId", (long) BooleanOperators.IS.getOperatorId());
 		isPreregistered.put("value", array);
 		
-		//status.put("operatorId", (long) PickListOperators.IS.getOperatorId());
-		//status.put("value", parentLogIdArray);
+		status.put("operatorId", (long) PickListOperators.IS.getOperatorId());
+		status.put("value", parentLogIdArray);
 		
 		
 		if(StringUtils.isNotEmpty(filters)) {
@@ -349,7 +339,80 @@ private static final long serialVersionUID = 1L;
 	 		json = (JSONObject) parser.parse(getFilters());
 	 	}
 		json.put("isPreregistered", isPreregistered);
-		//json.put("moduleState", status);
+		json.put("moduleState", status);
+		
+		chain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
+ 		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+ 		
+		if (getSearch() != null) {
+ 			JSONObject searchObj = new JSONObject();
+ 			searchObj.put("fields", "visitorlogging.host");
+ 			searchObj.put("query", getSearch());
+ 			chain.getContext().put(FacilioConstants.ContextNames.SEARCH, searchObj);
+ 		}
+ 		JSONObject pagination = new JSONObject();
+ 	 	pagination.put("page", getPage());
+ 	 	pagination.put("perPage", getPerPage());
+ 	 	if (getPerPage() < 0) {
+ 	 		pagination.put("perPage", 5000);
+ 	 	}
+ 	 	
+ 	 	chain.execute();
+		if (getFetchCount()) {
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,chain.getContext().get(FacilioConstants.ContextNames.RECORD_COUNT));
+		}
+		else {
+		List<VisitorLoggingContext> visitorLoggingRecords = (List<VisitorLoggingContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
+		setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, visitorLoggingRecords);
+			setStateFlows((Map<String, List<WorkflowRuleContext>>) chain.getContext().get("stateFlows"));
+			setResult("stateFlows", getStateFlows());
+		}
+		
+		return SUCCESS;
+		
+	}
+	
+	public String getVisitorInviteRequestList() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getVisitorLoggingListChain();
+		
+		chain.getContext().put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
+		chain.getContext().put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "visitorlogging");
+		chain.getContext().put(FacilioConstants.ContextNames.IS_VENDOR_PORTAL, getVendorPortal());
+		chain.getContext().put(FacilioConstants.ContextNames.IS_TENANT_PORTAL, getTenantPortal());
+		chain.getContext().put("logType", 2);
+			
+		
+		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Visitor_Logging.SYS_CREATED_TIME desc");
+		
+		String filters = getFilters();
+		JSONObject json = new JSONObject();
+		JSONObject isPreregistered = new JSONObject();
+		JSONObject status = new JSONObject();
+		
+		JSONArray array = new JSONArray();
+		array.add("true");
+		
+		FacilioStatus requestedStatus = VisitorManagementAPI.getLogStatus("InviteRequested");
+		FacilioStatus rejectedStatus = VisitorManagementAPI.getLogStatus("InviteRejected");
+		
+		JSONArray possibleStatesIdArray = new JSONArray();
+		possibleStatesIdArray.add(String.valueOf(requestedStatus.getId()));
+		possibleStatesIdArray.add(String.valueOf(rejectedStatus.getId()));
+		
+		isPreregistered.put("operatorId", (long) BooleanOperators.IS.getOperatorId());
+		isPreregistered.put("value", array);
+		
+		status.put("operatorId", (long) PickListOperators.IS.getOperatorId());
+		status.put("value", possibleStatesIdArray);
+		
+		
+		if(StringUtils.isNotEmpty(filters)) {
+			JSONParser parser = new JSONParser();
+	 		json = (JSONObject) parser.parse(getFilters());
+	 	}
+		json.put("isPreregistered", isPreregistered);
+		json.put("moduleState", status);
 		
 		chain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
  		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
