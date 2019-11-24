@@ -8,8 +8,10 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.ItemActivityType;
+import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
@@ -58,7 +60,6 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<ItemTransactionsContext> itemTransactionsList = new ArrayList<>();
 		List<ItemTransactionsContext> itemTransactiosnToBeAdded = new ArrayList<>();
-		List<Object> woitemactivity = new ArrayList<>();
 		long itemTypeId = -1;
 		ApprovalState approvalState = null;
 		if (itemTransactions != null && !itemTransactions.isEmpty()) {
@@ -94,21 +95,12 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 								if (itemTransaction.getRequestedLineItem() != null && itemTransaction.getRequestedLineItem().getId() > 0) {
 									approvalState = ApprovalState.APPROVED;
 								}
-								JSONObject info = new JSONObject();
-								info.put("itemid", itemTransaction.getItem().getId());
-								info.put("itemtype", itemType.getName());
-								info.put("quantity", itemTransaction.getQuantity());
-								info.put("transactionState", itemTransaction.getTransactionStateEnum().toString());
-								info.put("transactionType", itemTransaction.getTransactionTypeEnum().toString());
-								info.put("issuedToId", itemTransaction.getParentId());
 								if (itemType.isRotating()) {
-									woitemactivity.add(info);
 									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, itemTransaction,
-											itemType, approvalState, wItem.getAsset(), shipment);
+											itemType, approvalState, wItem.getAsset(), shipment, context);
 								} else {
-									woitemactivity.add(info);
 									wItem = setWorkorderItemObj(purchaseditem, itemTransaction.getQuantity(), item,
-											parentId, itemTransaction, itemType, approvalState, null, shipment);
+											parentId, itemTransaction, itemType, approvalState, null, shipment, context);
 								}
 								//updatePurchasedItem(purchaseditem);
 								wItem.setId(itemTransaction.getId());
@@ -137,33 +129,15 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
 									ItemTransactionsContext woItem = new ItemTransactionsContext();
-									JSONObject info = new JSONObject();
-									info.put("itemid", itemTransaction.getItem().getId());
-									info.put("itemtype", itemType.getName());
-									info.put("quantity", itemTransaction.getQuantity());
-									info.put("transactionState", itemTransaction.getTransactionStateEnum().toString());
-									info.put("transactionType", itemTransaction.getTransactionTypeEnum().toString());
-									info.put("serialno", asset.getSerialNumber());
-//									if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-//											&& (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
-//										asset.setIsUsed(false);
-//										info.put("issuedToId", itemTransaction.getParentId());
-//										woitemactivity.add(info);
-//									} else {
-										if (itemTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
+									if (itemTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
 											asset.setIsUsed(false);
-											info.put("parentTransactionId", itemTransaction.getParentTransactionId());
-											info.put("returnItemId", itemTransaction.getParentId());
-											woitemactivity.add(info);
 										} else if (itemTransaction
 												.getTransactionStateEnum() == TransactionState.ISSUE) {
 											asset.setIsUsed(true);
-											info.put("issuedToId", itemTransaction.getParentId());
-											woitemactivity.add(info);
 										}
 								//	}
 									woItem = setWorkorderItemObj(null, 1, item, parentId, itemTransaction, itemType,
-											approvalState, asset, shipment);
+											approvalState, asset, shipment, context);
 									updatePurchasedItem(asset);
 									itemTransactionsList.add(woItem);
 									itemTransactiosnToBeAdded.add(woItem);
@@ -182,30 +156,15 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 							}
 
 							if (purchasedItem != null && !purchasedItem.isEmpty()) {
-								JSONObject info = new JSONObject();
-								info.put("itemid", itemTransaction.getItem().getId());
-								info.put("itemtype", itemType.getName());
-								info.put("quantity", itemTransaction.getQuantity());
-								info.put("transactionState", itemTransaction.getTransactionStateEnum().toString());
-								info.put("transactionType", itemTransaction.getTransactionTypeEnum().toString());
 								PurchasedItemContext pItem = purchasedItem.get(0);
 								if (itemTransaction.getQuantity() <= pItem.getCurrentQuantity()) {
 									ItemTransactionsContext woItem = new ItemTransactionsContext();
 									woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
-											itemTransaction, itemType, approvalState, null, shipment);
+											itemTransaction, itemType, approvalState, null, shipment, context);
 									itemTransactionsList.add(woItem);
 									itemTransactiosnToBeAdded.add(woItem);
-									if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE) {
-										info.put("issuedToId", itemTransaction.getParentId());
-									} else if (itemTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
-										info.put("returnId", itemTransaction.getParentId());
-										info.put("parentTransactionId", itemTransaction.getParentTransactionId());
-									}
-									woitemactivity.add(info);
-
 								} else {
 									double requiredQuantity = itemTransaction.getQuantity();
-									woitemactivity.add(info);
 									for (PurchasedItemContext purchaseitem : purchasedItem) {
 										ItemTransactionsContext woItem = new ItemTransactionsContext();
 										double quantityUsedForTheCost = 0;
@@ -215,7 +174,7 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 											quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
 										}
 										woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-												parentId, itemTransaction, itemType, approvalState, null, shipment);
+												parentId, itemTransaction, itemType, approvalState, null, shipment, context);
 										requiredQuantity -= quantityUsedForTheCost;
 										itemTransactionsList.add(woItem);
 										itemTransactiosnToBeAdded.add(woItem);
@@ -231,22 +190,7 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 
 			}
 
-			JSONObject newinfo = new JSONObject();
-			if (itemTransactions.get(0).getTransactionStateEnum() == TransactionState.ISSUE
-					&& !(approvalState == ApprovalState.REQUESTED)) {
-				newinfo.put("issued", woitemactivity);
-				CommonCommandUtil.addActivityToContext(itemTypeId, -1, ItemActivityType.ISSUED, newinfo,
-						(FacilioContext) context);
-			} else if (itemTransactions.get(0).getTransactionStateEnum() == TransactionState.RETURN) {
-				newinfo.put("returned", woitemactivity);
-				CommonCommandUtil.addActivityToContext(itemTypeId, -1, ItemActivityType.RETURN, newinfo,
-						(FacilioContext) context);
-			} else if (approvalState == ApprovalState.REQUESTED) {
-				newinfo.put("requested", woitemactivity);
-				CommonCommandUtil.addActivityToContext(itemTypeId, -1, ItemActivityType.REQUESTED, newinfo,
-						(FacilioContext) context);
-			}
-
+			
 			if (itemTransactiosnToBeAdded != null && !itemTransactiosnToBeAdded.isEmpty()) {
 				addWorkorderParts(itemTransactionsModule, itemTransactionsFields, itemTransactiosnToBeAdded);
 			}
@@ -265,7 +209,7 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 
 	private ItemTransactionsContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
 			ItemContext item, long parentId, ItemTransactionsContext itemTransactions, ItemTypesContext itemTypes,
-			ApprovalState approvalState, AssetContext asset, ShipmentContext shipment) {
+			ApprovalState approvalState, AssetContext asset, ShipmentContext shipment, Context context) throws Exception {
 		ItemTransactionsContext woItem = new ItemTransactionsContext();
 		if(itemTransactions.getRequestedLineItem() != null) {
 			woItem.setRequestedLineItem(itemTransactions.getRequestedLineItem());
@@ -311,6 +255,31 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 			woItem.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}
 		woItem.setIssuedTo(itemTransactions.getIssuedTo());
+		JSONObject newinfo = new JSONObject();
+		
+		if (itemTypes.isRotating() && woItem.getTransactionStateEnum() == TransactionState.ISSUE) {
+			
+			if(woItem.getTransactionTypeEnum() == TransactionType.MANUAL) {
+				User user = AccountUtil.getUserBean().getUser(woItem.getParentId(), true);
+				newinfo.put("issuedTo",user.getName());
+					
+			}
+			CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.ISSUE, newinfo,
+					(FacilioContext) context);
+					
+		}
+		else if(itemTypes.isRotating() && woItem.getTransactionStateEnum() == TransactionState.RETURN) {
+			if(woItem.getTransactionTypeEnum() == TransactionType.MANUAL) {
+				User user = AccountUtil.getUserBean().getUser(woItem.getParentId(), true);
+				newinfo.put("returnedBy", user.getName());
+			}
+			else if(woItem.getTransactionTypeEnum() == TransactionType.WORKORDER) {
+				newinfo.put("returnedBy", "WO - #"+ woItem.getParentId());
+			}
+			CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.RETURN, newinfo,
+					(FacilioContext) context);
+		}
+		
 		return woItem;
 	}
 

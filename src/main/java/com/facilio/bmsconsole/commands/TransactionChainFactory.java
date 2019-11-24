@@ -1727,10 +1727,10 @@ public class TransactionChainFactory {
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(new ItemTransactionRemainingQuantityRollupCommand());
+			c.addCommand(new AddActivitiesCommand());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 //			c.addCommand(getUpdateWorkOrderChain());
-			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1785,6 +1785,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateWorkorderToolsCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(new AddActivitiesCommand());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 //			c.addCommand(getUpdateWorkOrderChain());
@@ -1977,6 +1978,8 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new UpdateRequestedToolIssuedQuantityCommand());
+			c.addCommand(new AddActivitiesCommand());
+
 
 			return c;
 		}

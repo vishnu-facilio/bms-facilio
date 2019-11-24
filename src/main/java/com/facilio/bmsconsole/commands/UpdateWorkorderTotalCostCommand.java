@@ -51,6 +51,7 @@ public class UpdateWorkorderTotalCostCommand extends FacilioCommand {
 				workorder.setId(parentId);
 				workorder.setTotalCost(totalcost);
 
+				context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, null);
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, parentIds);

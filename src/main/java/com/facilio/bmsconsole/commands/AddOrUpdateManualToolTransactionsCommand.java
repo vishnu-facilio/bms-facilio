@@ -6,8 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.AssetActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
@@ -17,6 +22,7 @@ import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -77,7 +83,7 @@ public class AddOrUpdateManualToolTransactionsCommand extends FacilioCommand {
 							}
 						
 							wTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
-									toolTypes, approvalState, null, shipment);
+									toolTypes, approvalState, null, shipment, context);
 							// update
 							wTool.setId(toolTransaction.getId());
 							toolTransactionslist.add(wTool);
@@ -122,7 +128,7 @@ public class AddOrUpdateManualToolTransactionsCommand extends FacilioCommand {
 									// pTool.setIsUsed(true);
 									// }
 									woTool = setWorkorderItemObj(1, tool, toolTransaction, toolTypes,
-											approvalState, asset, shipment);
+											approvalState, asset, shipment, context);
 									updateAsset(asset);
 									toolTransactionslist.add(woTool);
 									toolTransactionsToBeAdded.add(woTool);
@@ -131,7 +137,7 @@ public class AddOrUpdateManualToolTransactionsCommand extends FacilioCommand {
 						} else {
 							ToolTransactionContext woTool = new ToolTransactionContext();
 							woTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
-									toolTypes, approvalState, null, shipment);
+									toolTypes, approvalState, null, shipment, context);
 							toolTransactionslist.add(woTool);
 							toolTransactionsToBeAdded.add(woTool);
 						}
@@ -157,7 +163,7 @@ public class AddOrUpdateManualToolTransactionsCommand extends FacilioCommand {
 
 	private ToolTransactionContext setWorkorderItemObj(double quantity,
 			ToolContext tool, ToolTransactionContext toolTransaction, ToolTypesContext toolTypes,
-			ApprovalState approvalState, AssetContext asset, ShipmentContext shipment) {
+			ApprovalState approvalState, AssetContext asset, ShipmentContext shipment, Context context) throws Exception {
 		ToolTransactionContext woTool = new ToolTransactionContext();
 
 		if(shipment == null) {
@@ -188,7 +194,30 @@ public class AddOrUpdateManualToolTransactionsCommand extends FacilioCommand {
 			woTool.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}
 		woTool.setIssuedTo(toolTransaction.getIssuedTo());
-
+		
+		JSONObject newinfo = new JSONObject();
+		
+		if (toolTypes.isRotating() && woTool.getTransactionStateEnum() == TransactionState.ISSUE) {
+			
+			if(woTool.getTransactionTypeEnum() == TransactionType.MANUAL) {
+				User user = AccountUtil.getUserBean().getUser(woTool.getParentId(), true);
+				newinfo.put("issuedTo",user.getName());
+					
+			}
+			CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.ISSUE, newinfo,
+					(FacilioContext) context);
+		}
+		else if(toolTypes.isRotating() && woTool.getTransactionStateEnum() == TransactionState.RETURN) {
+			if(woTool.getTransactionTypeEnum() == TransactionType.MANUAL) {
+				User user = AccountUtil.getUserBean().getUser(woTool.getParentId(), true);
+				newinfo.put("returnedBy", user.getName());
+			}
+			else if(woTool.getTransactionTypeEnum() == TransactionType.WORKORDER) {
+				newinfo.put("returnedBy", "WO - #"+ woTool.getParentId());
+			}
+			CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.RETURN, newinfo,
+					(FacilioContext) context);
+		}
 		return woTool;
 	}
 

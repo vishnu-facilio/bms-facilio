@@ -72,7 +72,7 @@ public class ItemTransactionsAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
-		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		FacilioChain addWorkorderPartChain = TransactionChainFactory.getAddOrUpdateItemTransactionsChain();
 		addWorkorderPartChain.execute(context);
 		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 
+import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
@@ -43,6 +44,8 @@ public class WorkorderItemsAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderItems);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+		
 		FacilioChain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderItemsChain();
 		addWorkorderPartChain.execute(context);
 		setWorkorderItemsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));

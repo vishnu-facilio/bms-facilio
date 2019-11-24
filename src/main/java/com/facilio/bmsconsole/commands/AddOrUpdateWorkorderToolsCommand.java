@@ -7,10 +7,14 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.AssetActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolContext;
@@ -18,10 +22,12 @@ import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
+import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -92,7 +98,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 									approvalState = ApprovalState.APPROVED;
 							}
 							wTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
-									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId);
+									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context);
 							// update
 							wTool.setId(workorderTool.getId());
 							workorderToolslist.add(wTool);
@@ -117,7 +123,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 									}
 									WorkorderToolsContext woTool = new WorkorderToolsContext();
 									woTool = setWorkorderItemObj(null, 1, tool, parentId, workorder,
-											workorderTool, approvalState, asset, workorderTool.getRequestedLineItem(), parentTransactionId);
+											workorderTool, approvalState, asset, workorderTool.getRequestedLineItem(), parentTransactionId, context);
 									updatePurchasedTool(asset);
 									asset.setIsUsed(true);
 									workorderToolslist.add(woTool);
@@ -127,7 +133,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 						} else {
 							WorkorderToolsContext woTool = new WorkorderToolsContext();
 							woTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
-									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId);
+									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context);
 							workorderToolslist.add(woTool);
 							toolsToBeAdded.add(woTool);
 						}
@@ -155,7 +161,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 
 	private WorkorderToolsContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
 			ToolContext tool, long parentId, WorkOrderContext workorder, WorkorderToolsContext workorderTools,
-			ApprovalState approvalState, AssetContext asset, InventoryRequestLineItemContext lineItem, long parentTransactionId) throws Exception{
+			ApprovalState approvalState, AssetContext asset, InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context) throws Exception{
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
 		woTool.setIssueTime(workorderTools.getIssueTime());
 		woTool.setReturnTime(workorderTools.getReturnTime());
@@ -215,6 +221,20 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 		
 		if(parentTransactionId != -1) {
 			woTool.setParentTransactionId(parentTransactionId);
+		}
+
+		JSONObject newinfo = new JSONObject();
+		
+		if (tool.getToolType() != null) {
+			ToolTypesContext toolType = ToolsApi.getToolTypes(tool.getToolType().getId()); 
+			if(toolType != null && toolType.isRotating() && woTool.getTransactionStateEnum() == TransactionState.USE) {
+			
+				if(woTool.getTransactionTypeEnum() == TransactionType.WORKORDER) {
+					newinfo.put("woId", woTool.getParentId());
+				}
+				CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.USE, newinfo,
+						(FacilioContext) context);
+			}
 		}
 
 		return woTool;

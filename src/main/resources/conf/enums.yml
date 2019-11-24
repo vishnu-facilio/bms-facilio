@@ -37,3 +37,6 @@ enums:
   - name: TenantType
     enumClassName: com.facilio.bmsconsole.tenant.TenantContext$TenantType
     
+  - name: Source
+    enumClassName: com.facilio.bmsconsole.context.VisitorLoggingContext$Source
+  

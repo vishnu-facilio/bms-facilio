@@ -9,7 +9,10 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -21,6 +24,7 @@ import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
+import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
@@ -59,8 +63,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<WorkorderItemContext> workorderItemslist = new ArrayList<>();
 		List<WorkorderItemContext> itemToBeAdded = new ArrayList<>();
-		List<Object> woitemactivity = new ArrayList<>();
-
+		
 		long itemTypesId = -1;
 		ApprovalState approvalState = null;
 		if (CollectionUtils.isNotEmpty(workorderitems)) {
@@ -107,19 +110,12 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 								if (workorderitem.getRequestedLineItem() != null && workorderitem.getRequestedLineItem().getId() > 0) {
 									approvalState = ApprovalState.APPROVED;
 								}
-								JSONObject info = new JSONObject();
-								info.put("itemid", workorderitem.getItem().getId());
-								info.put("itemtype", itemType.getName());
-								info.put("quantity", workorderitem.getQuantity());
-								info.put("issuedToId", workorderitem.getParentId());
 								if (itemType.isRotating()) {
-									woitemactivity.add(info);
-									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, approvalState, wo, workorderitem.getAsset(), workorderitem.getRequestedLineItem(), parentTransactionId);
+									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, approvalState, wo, workorderitem.getAsset(), workorderitem.getRequestedLineItem(), parentTransactionId, context);
 
 								} else {
-									woitemactivity.add(info);
 									wItem = setWorkorderItemObj(purchaseditem, workorderitem.getQuantity(), item,
-											parentId, approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId);
+											parentId, approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context);
 								}
 								// updatePurchasedItem(purchaseditem);
 								wItem.setId(workorderitem.getId());
@@ -144,16 +140,9 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 									if (workorderitem.getRequestedLineItem() == null && workorderitem.getParentTransactionId() <= 0 && asset.isUsed()) {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
-									JSONObject info = new JSONObject();
-									info.put("itemid", workorderitem.getItem().getId());
-									info.put("itemtype", itemType.getName());
-									info.put("quantity", workorderitem.getQuantity());
-									info.put("issuedToId", workorderitem.getParentId());
-									info.put("serialno", asset.getSerialNumber());
 									WorkorderItemContext woItem = new WorkorderItemContext();
 									asset.setIsUsed(true);
-									woitemactivity.add(info);
-									woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, asset, workorderitem.getRequestedLineItem(), parentTransactionId);
+									woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, asset, workorderitem.getRequestedLineItem(), parentTransactionId, context);
 									updatePurchasedItem(asset);
 									workorderItemslist.add(woItem);
 									itemToBeAdded.add(woItem);
@@ -173,20 +162,13 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 
 							if (purchasedItem != null && !purchasedItem.isEmpty()) {
 								PurchasedItemContext pItem = purchasedItem.get(0);
-								JSONObject info = new JSONObject();
-								info.put("itemid", workorderitem.getItem().getId());
-								info.put("itemtype", itemType.getName());
-								info.put("quantity", workorderitem.getQuantity());
-								info.put("issuedToId", workorderitem.getParentId());
 								if (workorderitem.getQuantity() <= pItem.getCurrentQuantity()) {
 									WorkorderItemContext woItem = new WorkorderItemContext();
-									woitemactivity.add(info);
 									woItem = setWorkorderItemObj(pItem, workorderitem.getQuantity(), item, parentId,
-											approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId);
+											approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context);
 									workorderItemslist.add(woItem);
 									itemToBeAdded.add(woItem);
 								} else {
-									woitemactivity.add(info);
 									double requiredQuantity = workorderitem.getQuantity();
 									for (PurchasedItemContext purchaseitem : purchasedItem) {
 										WorkorderItemContext woItem = new WorkorderItemContext();
@@ -197,7 +179,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 											quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
 										}
 										woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-												parentId, approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId);
+												parentId, approvalState, wo, null, workorderitem.getRequestedLineItem(), parentTransactionId, context);
 										requiredQuantity -= quantityUsedForTheCost;
 										workorderItemslist.add(woItem);
 										itemToBeAdded.add(woItem);
@@ -212,16 +194,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 				}
 
 			}
-			JSONObject newinfo = new JSONObject();
-			if (!(approvalState == ApprovalState.REQUESTED)) {
-				newinfo.put("issued", woitemactivity);
-				CommonCommandUtil.addActivityToContext(itemTypesId, -1, ItemActivityType.ISSUED, newinfo,
-						(FacilioContext) context);
-			} else if (approvalState == ApprovalState.REQUESTED) {
-				newinfo.put("requested", woitemactivity);
-				CommonCommandUtil.addActivityToContext(itemTypesId, -1, ItemActivityType.REQUESTED, newinfo,
-						(FacilioContext) context);
-			}
+			
 
 			if (itemToBeAdded != null && !itemToBeAdded.isEmpty()) {
 				addWorkorderParts(workorderItemsModule, workorderItemFields, itemToBeAdded);
@@ -242,7 +215,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 	}
 
 	private WorkorderItemContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
-			ItemContext item, long parentId, ApprovalState approvalState, WorkOrderContext wo, AssetContext asset, InventoryRequestLineItemContext lineItem, long parentTransactionId) throws Exception{
+			ItemContext item, long parentId, ApprovalState approvalState, WorkOrderContext wo, AssetContext asset, InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context) throws Exception{
 		WorkorderItemContext woItem = new WorkorderItemContext();
 		woItem.setTransactionType(TransactionType.WORKORDER);
 		woItem.setIsReturnable(false);
@@ -284,6 +257,19 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 			woItem.setWorkorder(wo);
 			if (wo.getAssignedTo() != null) {
 				woItem.setIssuedTo(wo.getAssignedTo());
+			}
+		}
+		JSONObject newinfo = new JSONObject();
+		
+		if (item.getItemType() != null) {
+			ItemTypesContext itemType = ItemsApi.getItemTypes(item.getItemType().getId()); 
+			if(itemType != null && itemType.isRotating() && woItem.getTransactionStateEnum() == TransactionState.USE) {
+			
+				if(woItem.getTransactionTypeEnum() == TransactionType.WORKORDER) {
+					newinfo.put("woId", woItem.getParentId());
+				}
+				CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.USE, newinfo,
+						(FacilioContext) context);
 			}
 		}
 		return woItem;
