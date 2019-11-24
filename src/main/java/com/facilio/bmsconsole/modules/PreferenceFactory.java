@@ -92,23 +92,23 @@ public class PreferenceFactory {
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getHostMailNotificationsPref());
 		visitorLogPreferences.add(VisitorManagementAPI.getHostSmsNotificationsPref());
-		//visitorLogPreferences.add(VisitorManagementAPI.getHostWappNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getHostWhatsappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeMailNotificationsPref());
 		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeSmsNotificationsPref());
-		//visitorLogPreferences.add(VisitorManagementAPI.getWelcomeWappNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeWhatsappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getThanksMailNotificationsPref());
 		visitorLogPreferences.add(VisitorManagementAPI.getThanksSmsNotificationsPref());
-		//visitorLogPreferences.add(VisitorManagementAPI.getThanksWappNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getThanksWhatsappNotificationsPref());
 		
 		//visitorLogPreferences.add(VisitorManagementAPI.getInviteMailNotificationsPref());
 	//	visitorLogPreferences.add(VisitorManagementAPI.getInviteSmsNotificationsPref());
-		//visitorLogPreferences.add(VisitorManagementAPI.getInviteWappNotificationsPref());
+		//visitorLogPreferences.add(VisitorManagementAPI.getInviteWhatsappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getApprovalMailNotificationsPref());
 		visitorLogPreferences.add(VisitorManagementAPI.getApprovalSmsNotificationsPref());
-		//visitorLogPreferences.add(VisitorManagementAPI.getApprovalWappNotificationsPref());
+	//	visitorLogPreferences.add(VisitorManagementAPI.getApprovalWhatsappNotificationsPref());
 		
 		return visitorLogPreferences;
 	}

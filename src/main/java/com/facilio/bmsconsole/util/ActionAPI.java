@@ -396,6 +396,9 @@ public class ActionAPI {
 		whatsappMessageTemplate.setTo(toPhones);
 		whatsappMessageTemplate.setMessage((String) action.getTemplateJson().get("body"));
 		whatsappMessageTemplate.setType(Type.WHATSAPP);
+		if (action.getTemplateJson().containsKey("ftl")) {
+			whatsappMessageTemplate.setFtl((Boolean) action.getTemplateJson().get("ftl"));
+		}
 		action.setTemplate(whatsappMessageTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), whatsappMessageTemplate);
 	}

@@ -28,6 +28,8 @@ import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.WatchListContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI.ScheduleActions;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.WhatsappMessageTemplate;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -703,6 +705,30 @@ public class VisitorManagementAPI {
 	
 	}
 	
+	public static Preference getWelcomeWhatsappNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("welcomeVisitor_WhatsappNotification", "Welcome Visitor_Whatsapp", form, "Notify Visitors when they check-in") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveWelcomeWhatsappNotifications(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+	
 
 	public static Preference getThanksMailNotificationsPref() {
 		
@@ -752,6 +778,30 @@ public class VisitorManagementAPI {
 	
 	}
 	
+	public static Preference getThanksWhatsappNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("thankVisitor_WhatsappNotification", "Thank Visitor_Whatsapp", form, "Notify Visitor when they check-out") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveThanksWhatsappNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+
 	public static Preference getInviteMailNotificationsPref() {
 		
 		FacilioForm form = new FacilioForm();
@@ -799,8 +849,29 @@ public class VisitorManagementAPI {
 		};
 	
 	}
-
 	
+	public static Preference getInviteWhatsappNotificationsPref() {			
+			FacilioForm form = new FacilioForm();
+			return new Preference("inviteVisitor_WhatsappNotification", "Invite Visitor_Whatsapp", form, "Notify invited visitors before the day of Visit") {
+				@Override
+				public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
+					Long ruleId = saveInviteWhatsappNotificationPrefs(map, module.getName());
+					List<Long> ruleIdList = new ArrayList<>();
+					ruleIdList.add(ruleId);
+					PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+				}
+
+				@Override
+				public void disable(Long recordId, Long moduleId) throws Exception {
+					// TODO Auto-generated method stub
+					PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+				}
+		
+			};		
+	}
+
 	public static Preference getApprovalMailNotificationsPref() {
 		
 		FacilioForm form = new FacilioForm();
@@ -834,6 +905,30 @@ public class VisitorManagementAPI {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleId);
 				Long ruleId = saveApprovalSmsNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+	
+	public static Preference getApprovalWhatsappNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("approveVisitor_WhatsappNotification", "Approve Visitor_Whatsapp", form, "Notify Hosts requesting approval for their Visitors") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveApprovalWhatsappNotificationPrefs(map, module.getName());
 				List<Long> ruleIdList = new ArrayList<>();
 				ruleIdList.add(ruleId);
 				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
@@ -898,15 +993,15 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static Preference getHostWappNotificationsPref() {
+	public static Preference getHostWhatsappNotificationsPref() {
 		
 		FacilioForm form = new FacilioForm();
-		return new Preference("host_WappNotification", "Notify Host_WHATSAPP", form, "Automatically notify hosts when their visitors arrive") {
+		return new Preference("notifyHost_WhatsappNotification", "Notify Host_Whatsapp", form, "Automatically notify hosts when their visitors arrive") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleId);
-				Long ruleId = saveHostMailNotificationPrefs(map, module.getName());
+				Long ruleId = saveHostWhatsappNotificationPrefs(map, module.getName());
 				List<Long> ruleIdList = new ArrayList<>();
 				ruleIdList.add(ruleId);
 				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
@@ -1006,14 +1101,14 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setCriteria(criteria);
 		
 		
-		ActionContext emailAction = new ActionContext();
-		emailAction.setActionType(ActionType.SMS_NOTIFICATION);
+		ActionContext smsAction = new ActionContext();
+		smsAction.setActionType(ActionType.SMS_NOTIFICATION);
 		
-		emailAction.setDefaultTemplateId(107);
+		smsAction.setDefaultTemplateId(107);
 		//add rule,action and job
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
-		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(smsAction));
         
 		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
 		chain.execute(context);
@@ -1021,6 +1116,53 @@ public class VisitorManagementAPI {
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 	}
 	
+	
+	public static Long saveHostWhatsappNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Host Whatsapp Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("host");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("VisitorLogging.HOST");
+		
+		Condition isApprovalNeeded = new Condition();
+		isApprovalNeeded.setFieldName("isApprovalNeeded");
+		isApprovalNeeded.setOperator(BooleanOperators.IS);
+		isApprovalNeeded.setValue("false");
+		isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
+				
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.addConditionMap(isApprovalNeeded);
+		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
+		criteria.setPattern("(1 and 2 and 3)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext whatsappAction = new ActionContext();
+		whatsappAction.setActionType(ActionType.WHATSAPP_MESSAGE);
+		
+		whatsappAction.setDefaultTemplateId(110);
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(whatsappAction));
+        
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
 	
 	private static Long saveWelcomeMailNotifications(Map<String, Object> map, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1104,7 +1246,45 @@ public class VisitorManagementAPI {
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 	}
 
+	private static Long saveWelcomeWhatsappNotifications(Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Welcome Whatsapp Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("visitor");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("VisitorLogging.VISITOR_ID");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		
+		criteria.setPattern("(1 and 2)");
+		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
+		
+		workflowRuleContext.setCriteria(criteria);		
+		
+		ActionContext whatsappAction = new ActionContext();
+		whatsappAction.setActionType(ActionType.WHATSAPP_MESSAGE);	
+		whatsappAction.setDefaultTemplateId(109);
+		
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(whatsappAction));
+        
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+		chain.execute(context);
 	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
 	
 	public static Long saveThanksEmailNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1181,6 +1361,47 @@ public class VisitorManagementAPI {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
+	public static Long saveThanksWhatsappNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Thanks Whatsapp Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("visitor");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("VisitorLogging.VISITOR_ID");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		
+		criteria.setPattern("(1 and 2)");
+		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedOut"));
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext whatsappAction = new ActionContext();
+		whatsappAction.setActionType(ActionType.WHATSAPP_MESSAGE);
+		
+		whatsappAction.setDefaultTemplateId(111);
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(whatsappAction));
         
 		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
 		chain.execute(context);
@@ -1274,6 +1495,50 @@ public class VisitorManagementAPI {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
+	public static Long saveInviteWhatsappNotificationPrefs(Map<String, Object> map, String moduleName) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+				
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Invite Whatsapp Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("visitorId");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("Invite_Visitor_Rel.VISITOR_ID");
+		
+		Condition inviteCondition = new Condition();
+		inviteCondition.setFieldName("inviteId");
+		inviteCondition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		inviteCondition.setColumnName("Invite_Visitor_Rel.INVITE_ID");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.addConditionMap(inviteCondition);
+		
+		criteria.setPattern("(1 and 2)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		ActionContext whatsappAction = new ActionContext();
+		whatsappAction.setActionType(ActionType.WHATSAPP_MESSAGE);
+		whatsappAction.setDefaultTemplateId(112);
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(whatsappAction));
         
 		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
 		chain.execute(context);
@@ -1391,8 +1656,63 @@ public class VisitorManagementAPI {
 	
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 	}
+	public static Long saveApprovalWhatsappNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Approval Whatsapp Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		
+		Condition condition = new Condition();
+		condition.setFieldName("host");
+		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
+		condition.setColumnName("VisitorLogging.HOST");
+		
+		Condition isApprovalNeeded = new Condition();
+		isApprovalNeeded.setFieldName("isApprovalNeeded");
+		isApprovalNeeded.setOperator(BooleanOperators.IS);
+		isApprovalNeeded.setValue("true");
+		isApprovalNeeded.setColumnName("VisitorLogging.IS_APPROVAL_NEEDED");
+		
+		Condition isPreregistered = new Condition();
+		isPreregistered.setFieldName("isPreregistered");
+		isPreregistered.setOperator(BooleanOperators.IS);
+		isPreregistered.setValue("false");
+		isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED IS NULL OR VisitorLogging.IS_PREREGISTERED IS FALSE");
+				
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.addConditionMap(isApprovalNeeded);
+		criteria.addConditionMap(isPreregistered);
+		
+		criteria.setPattern("(1 and 2 and 3 and 4)");
+		criteria.addConditionMap(getVisitorLogStatusCriteria("Requested"));
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext whatsappAction = new ActionContext();
+		whatsappAction.setActionType(ActionType.WHATSAPP_MESSAGE);
+		
+		whatsappAction.setDefaultTemplateId(113);
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(whatsappAction));
+        
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
 	
 	private static Condition getVisitorLogStatusCriteria(String status) {
+
 		FacilioField statusTypeField = new FacilioField();
 		statusTypeField.setName("status");
 		statusTypeField.setColumnName("STATUS");

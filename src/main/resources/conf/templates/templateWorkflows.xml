@@ -1288,4 +1288,84 @@
 				type="String" />
 		</workflow>
 	</template>
+	<template id="109">
+		<workflow>
+			<parameter name="org" type="String" />
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.timezone" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging"
+				type="String" />
+			<parameter name="visitorlogging.id"
+				type="String" />
+			<expression name="vLog">
+				<function>resource.getVisitorLog(visitorlogging.id)
+				</function>
+			</expression>			
+		</workflow>
+	</template>
+	<template id="110">
+		<workflow>
+			<parameter name="org" type="String" />
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.timezone" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging"
+				type="String" />
+			<parameter name="visitorlogging.id"
+				type="String" />	
+			<expression name="vLog">
+				<function>resource.getVisitorLog(visitorlogging.id)
+				</function>
+			</expression>			
+		</workflow>
+	</template>
+	<template id="111">
+		<workflow>
+			<parameter name="org" type="String" />
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.timezone" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.visitor.phone"
+				type="String" />		
+		</workflow>
+	</template>
+	<template id="112">
+		<workflow>
+			<parameter name="org" type="String" />
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.timezone" type="String" />
+			<parameter name="org.name" type="String" />				
+			
+			<parameter name="visitorinviterel"
+				type="String" />
+			<parameter name="visitorinviterel.id"
+				type="String" />
+			
+			<expression name="vInviteRel">
+				<function>resource.getVisitorInviteRel(visitorinviterel.id)
+				</function>
+			</expression>		
+		</workflow>
+	</template>
+	<template id="113">
+		<workflow>
+			<parameter name="org" type="String" />
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.timezone" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging"
+				type="String" />
+			<parameter name="visitorlogging.id"
+				type="String" />	
+			<expression name="vLog">
+				<function>resource.getVisitorLog(visitorlogging.id)
+				</function>
+			</expression>			
+		</workflow>
+	</template>
 </workflows>

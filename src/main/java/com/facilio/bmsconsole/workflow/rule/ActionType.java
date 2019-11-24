@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.workflow.rule;
 
 import java.io.File;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1214,8 +1215,9 @@ public enum ActionType {
 			if (obj != null) {  //&& FacilioProperties.isProduction() add this on commit
 				try {
 					String to = (String) obj.get("to");
-					Boolean isHtmlContent = (Boolean) obj.get("isHtmlContent");
-					String htmlContentString = (String) obj.get("htmlContentString");
+					String isHtmlContentStr = (String)obj.get("isHtmlContent");
+					Boolean isHtmlContent = Boolean.parseBoolean(isHtmlContentStr);
+					String htmlContentString = (String) obj.get("message");
 					
 					if (to != null && !to.isEmpty()) {
 						List<String> sms = new ArrayList<>();
@@ -1223,7 +1225,7 @@ public enum ActionType {
 						if(isHtmlContent != null && htmlContentString != null && isHtmlContent)
 						{						
 							htmlContentString = "\'" + htmlContentString+ "\'";
-							Long fileId = PdfUtil.exportUrlAsPdf("http://www.facilio.com", null, URLDecoder.decode(htmlContentString), FileFormat.IMAGE);
+							Long fileId = PdfUtil.exportUrlAsPdf("http://www.facilio.com", null, htmlContentString, FileFormat.IMAGE);
 							
 							if(fileId !=null )
 							{
@@ -1233,8 +1235,9 @@ public enum ActionType {
 								{
 									String htmlContentPublicUrl = publicFileContext.getPublicUrl();
 								    
-							//		htmlContentPublicUrl = htmlContentPublicUrl.replace("http://localhost:8080/", "https://74c18167.ngrok.io/ROOT/");
-									obj.put("htmlContentPublicUrl", htmlContentPublicUrl);				
+									//htmlContentPublicUrl = htmlContentPublicUrl.replace("http://localhost:8080/", "https://40cdd0fb.ngrok.io/ROOT/");
+									obj.put("htmlContentPublicUrl", htmlContentPublicUrl);	
+									obj.put("message", "");
 								}
 															
 							}							
