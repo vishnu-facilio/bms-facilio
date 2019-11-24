@@ -422,7 +422,7 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 	private Boolean isPreregistered;
 
 	public Boolean getIsPreregistered() {
-		return isRecurring;
+		return isPreregistered;
 	}
 
 	public void setIsPreregistered(Boolean isPreregistered) {
