@@ -194,24 +194,24 @@ public class DeviceAction extends ActionSupport
     }
 
 	private List<Long> ids;
-
 	public List<Long> getIds() {
 		return ids;
 	}
-
 	public void setIds(List<Long> ids) {
 		this.ids = ids;
 	}
 
-	public Long getAgentId() {
-		return agentId;
-	}
+	/*public static void main(String[] args) {
+		DeviceAction deviceAction = new DeviceAction();
+		deviceAction.getAgentUsingId();
+	}*/
 
-	public void setAgentId(Long agentId) {
+	private Long agentId;
+	public Long getAgentId() { return agentId; }
+	public void setAgentId( Long agentId) {
 		this.agentId = agentId;
 	}
 
-	private Long agentId;
 	public String configureController(){
 		if( ( getIds() != null  &&  ( ! getIds().isEmpty() ) ) && ( (getAgentId() != null) && (getAgentId() > 0 ) ) ){
 			if(ControllerUtilV2.processController(getAgentId(),getIds())){
@@ -296,7 +296,10 @@ public class DeviceAction extends ActionSupport
     }
 
     public String getAgentUsingId(){
-	    if(checkValue(getAgentId())){
+		System.out.println("agent id got is -"+getAgentId());
+	    if(true){
+	    	LOGGER.info("passed notnull");
+			System.out.println("passed notnull");
             FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
             if(agent != null){
                 setResult(AgentConstants.DATA, agent.toJSON());

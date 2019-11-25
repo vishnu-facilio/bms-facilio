@@ -34,7 +34,6 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.context.EventRuleContext;
-import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fs.FileInfo;
@@ -758,15 +757,18 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
     @Override
-    public int updateAgentMetrics(Map<String,Object> metrics, Map<String, Object> criteria) throws Exception { // done transaction
+    public int updateAgentMetrics(Map<String,Object> metrics, Criteria criteria) throws Exception { // done transaction
 		FacilioModule metricsmodule = ModuleFactory.getAgentMetricsModule();
 		GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
 																.table(AgentKeys.METRICS_TABLE)
 																.fields(FieldFactory.getAgentMetricsFields())
 //																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsmodule))
-																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule), criteria.get(AgentKeys.AGENT_ID).toString(),NumberOperators.EQUALS))
-																.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule), criteria.get(EventUtil.DATA_TYPE).toString(),NumberOperators.EQUALS));
-
+				.andCriteria(criteria);
+																/*.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule), criteria.get(AgentKeys.AGENT_ID).toString(),NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule), criteria.get(EventUtil.DATA_TYPE).toString(),NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(metricsmodule), String.valueOf(criteria.get(AgentKeys.ID)),NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getAgentMetricsFields()).get(AgentKeys.CREATED_TIME), String.valueOf(criteria.get(AgentKeys.CREATED_TIME)),NumberOperators.EQUALS));
+*/
                 return genericUpdateRecordBuilder.update(metrics);
 
 

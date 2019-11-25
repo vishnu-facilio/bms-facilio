@@ -1,7 +1,7 @@
 package com.facilio.services.kafka;
 
 import com.facilio.agent.*;
-import com.facilio.agentv2.ProcessorV2;
+import com.facilio.agentv2.DataProcessorV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.dataprocessor.DataProcessorUtil;
@@ -32,7 +32,7 @@ public class KafkaProcessor extends FacilioProcessor {
     private long orgId;
     private String orgDomainName;
     private static final Logger LOGGER = LogManager.getLogger(KafkaProcessor.class.getName());
-    private ProcessorV2 processorV2;
+    private DataProcessorV2 dataProcessorV2;
     private DataProcessorUtil dataProcessorUtil;
 
     public KafkaProcessor(long orgId, String orgDomainName) {
@@ -51,9 +51,9 @@ public class KafkaProcessor extends FacilioProcessor {
         eventUtil = new EventUtil();
         setEventType("processor");
         try {
-            processorV2 = new ProcessorV2(orgId, orgDomainName);
+            dataProcessorV2 = new DataProcessorV2(orgId, orgDomainName);
         }catch (Exception e){
-            processorV2 = null;
+            dataProcessorV2 = null;
             LOGGER.info(" Exception occurred ",e);
         }
         dataProcessorUtil = new DataProcessorUtil(orgId,orgDomainName);

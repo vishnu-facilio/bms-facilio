@@ -10,6 +10,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -525,19 +526,28 @@ public  class AgentUtil
             List<Map<String,Object>> records = bean.getMetrics(agentId,publishType,createdTime);
             if(!records.isEmpty()) {
                 record = records.get(0);
+                //LOGGER.info(" record selected is -> "+record);
                 if ( (!record.isEmpty()) && createdTime == Long.parseLong(record.get(AgentKeys.CREATED_TIME).toString())) {
-                        HashMap<String, Object> criteria = new HashMap<>();
-                        criteria.put(AgentKeys.AGENT_ID, agentId);
-                        criteria.put(EventUtil.DATA_TYPE, publishType);
-                        criteria.put(AgentKeys.CREATED_TIME, createdTime);
-                        criteria.put(AgentKeys.ID, record.get(AgentKeys.ID));
+                       // HashMap<String, Object> criteriax = new HashMap<>();
+                    Criteria criteria = new Criteria();
+                    Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentMetricsFields());
+                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.CREATED_TIME), String.valueOf(createdTime),NumberOperators.EQUALS));
+                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.ID), String.valueOf(record.get(AgentKeys.ID)),NumberOperators.EQUALS));
+                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(EventUtil.DATA_TYPE), String.valueOf(publishType),NumberOperators.EQUALS));
+                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.AGENT_ID), String.valueOf(agentId),NumberOperators.EQUALS));
 
+                   /* criteriax.put(AgentKeys.AGENT_ID, agentId);
+
+                        criteriax.put(EventUtil.DATA_TYPE, publishType);
+                        criteriax.put(AgentKeys.CREATED_TIME, createdTime);
+                        criteriax.put(AgentKeys.ID, record.get(AgentKeys.ID));*/
+                        //LOGGER.info(" updating id ->"+record.get(AgentKeys.ID));
                         metrics.put(AgentKeys.SIZE, Integer.parseInt(record.get(AgentKeys.SIZE).toString()) + messageSize);
                         metrics.put(AgentKeys.NO_OF_MESSAGES, Integer.parseInt(record.get(AgentKeys.NO_OF_MESSAGES).toString()) + 1);
                         metrics.put(AgentKeys.LAST_UPDATED_TIME, lastUpdatedTime);
                         context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,metrics);
                         context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
-
+                        //LOGGER.info(" updating Agent Metrics");
                         updateAgentMetricsChain.execute(context);
                         //bean.updateAgentMetrics(metrics, criteria);
                     }

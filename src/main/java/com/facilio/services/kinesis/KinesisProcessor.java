@@ -6,7 +6,7 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.agent.*;
-import com.facilio.agentv2.ProcessorV2;
+import com.facilio.agentv2.DataProcessorV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.dataprocessor.DataProcessorUtil;
@@ -45,7 +45,7 @@ public class KinesisProcessor implements IRecordProcessor {
     private EventUtil eventUtil;
     private Boolean isStage = !FacilioProperties.isProduction();
     private  boolean isRestarted = true;
-    private ProcessorV2 processorV2;
+    private DataProcessorV2 dataProcessorV2;
     private DataProcessorUtil dataProcessorUtil;
 
     public static final String DATA_TYPE = "PUBLISH_TYPE";
@@ -63,9 +63,9 @@ public class KinesisProcessor implements IRecordProcessor {
         ackUtil = new AckUtil();
         eventUtil = new EventUtil();
         try {
-            processorV2 = new ProcessorV2(orgId,orgDomainName);
+            dataProcessorV2 = new DataProcessorV2(orgId,orgDomainName);
         }catch (Exception e){
-            processorV2 = null;
+            dataProcessorV2 = null;
             LOGGER.info("Exception occurred ",e);
         }
     }

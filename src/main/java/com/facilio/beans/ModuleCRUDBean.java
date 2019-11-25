@@ -7,6 +7,7 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FacilioModule;
@@ -76,7 +77,7 @@ public interface ModuleCRUDBean {
 
 	public Long addLog(Map<String,Object> logData) throws Exception;
 
-	public int updateAgentMetrics(Map<String,Object> metrics, Map<String,Object> criteria) throws Exception;
+	public int updateAgentMetrics(Map<String,Object> metrics, Criteria criteria) throws Exception;
 
 	public long insertAgentMetrics(Map<String,Object> metrics) throws Exception;
 

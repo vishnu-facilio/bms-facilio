@@ -16,7 +16,7 @@ import org.json.simple.parser.JSONParser;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProcessorV2
+public class DataProcessorV2
 {
 
     private long orgId;
@@ -31,9 +31,9 @@ public class ProcessorV2
 
 
 
-    private static final Logger LOGGER = LogManager.getLogger(ProcessorV2.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(DataProcessorV2.class.getName());
 
-    public ProcessorV2(long orgId, String orgDomainName) {
+    public DataProcessorV2(long orgId, String orgDomainName) {
         LOGGER.info(" loading newProcessor ");
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
@@ -73,26 +73,14 @@ public class ProcessorV2
             LOGGER.info(" publish type for this record is "+publishType.name());
             switch (publishType) {
                 case AGENT:
-                    long processStatus = au.processAgent(payload,agentName);
-                    if(processStatus>0){
-                        LOGGER.info(" Agent processing successful "+processStatus);
-                    }else {
-                        LOGGER.info(" Agent processing failed");
-                    }
+                    processAgent(payload,agentName);
+                    break;
                 case CONTROLLERS:
-                    LOGGER.info("payload at case controllers " + payload);
                     dU.processDevices(agent, payload);
                     break;
                 case DEVICE_POINTS:
-                        Controller controller = cU.getControllerFromAgentPayload(payload);
-                        if (controller != null) {
-                            LOGGER.info(" controller not null and so processing point");
-                            PointsUtil pU = new PointsUtil(agent.getId(), controller.getId());
-                            pU.processPoints(payload, controller);
-                        } else {
-                            LOGGER.info("Exception occurred, Controller obtained in null");
-                        }
-                        break;
+                        processController(payload,agent);
+                    break;
                 case ACK:
                     LOGGER.info(" iamcvijay logs processing ack");
                     payload.put(AgentConstants.IS_NEW_AGENT,Boolean.TRUE);
@@ -112,6 +100,28 @@ public class ProcessorV2
         }catch (Exception e){
             LOGGER.info("Exception occurred ,",e);
         }
+    }
+
+    private boolean processController(JSONObject payload, FacilioAgent agent) throws Exception {
+        Controller controller = cU.getControllerFromAgentPayload(payload);
+        if (controller != null) {
+            LOGGER.info(" controller not null and so processing point");
+            PointsUtil pU = new PointsUtil(agent.getId(), controller.getId());
+            return pU.processPoints(payload, controller);
+        } else {
+            throw new Exception("Exception occurred, Controller obtained in null");
+        }
+    }
+
+    private boolean processAgent(JSONObject payload, String agentName) {
+        long processStatus = au.processAgent(payload,agentName);
+        if(processStatus>0){
+            LOGGER.info(" Agent processing successful "+processStatus);
+            return true;
+        }else {
+            LOGGER.info(" Agent processing failed");
+        }
+        return false;
     }
 
     private void processTimeSeries(JSONObject payload, Controller controllerTs) {

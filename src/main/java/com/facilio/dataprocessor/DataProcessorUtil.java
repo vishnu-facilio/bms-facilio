@@ -3,7 +3,7 @@ package com.facilio.dataprocessor;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.ProcessorV2;
+import com.facilio.agentv2.DataProcessorV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -62,7 +62,7 @@ public class DataProcessorUtil {
         DataProcessorUtil.isRestarted = isRestarted;
     }
 
-    private ProcessorV2 processorV2;
+    private DataProcessorV2 dataProcessorV2;
     private List<EventRuleContext> eventRules = new ArrayList<>();
 
     public DataProcessorUtil(long orgId, String orgDomainName) {
@@ -76,9 +76,9 @@ public class DataProcessorUtil {
         ackUtil = new AckUtil();
         eventUtil = new EventUtil();
         try {
-            processorV2 = new ProcessorV2(orgId, orgDomainName);
+            dataProcessorV2 = new DataProcessorV2(orgId, orgDomainName);
         } catch (Exception e) {
-            processorV2 = null;
+            dataProcessorV2 = null;
             LOGGER.info("Exception occurred ", e);
         }
     }
@@ -117,10 +117,10 @@ public class DataProcessorUtil {
             }
             try {
                 if (payLoad.containsKey(AgentConstants.VERSION) && (("2".equalsIgnoreCase((String) payLoad.get(AgentConstants.VERSION))))) {
-                    if (processorV2 != null && isStage) {
+                    if (dataProcessorV2 != null && isStage) {
                         LOGGER.info(" newProcessor payload -> " + payLoad);
                         try {
-                            processorV2.processNewAgentData(payLoad);
+                            dataProcessorV2.processNewAgentData(payLoad);
                         } catch (Exception newProcessorException) {
                             LOGGER.info("Exception occurred ", newProcessorException);
                             return false;

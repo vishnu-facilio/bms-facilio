@@ -31,16 +31,10 @@ public class PointsUtil
         return controllerId;
     }
 
-
-    public boolean processPoints(JSONObject payload, Controller controller){
+    public boolean processPoints(JSONObject payload, Controller controller) throws Exception{
         LOGGER.info(" processing points ");
         String identifier;
-        try {
-            identifier = controller.makeIdentifier();
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred ",e);
-            return false;
-        }
+        identifier = controller.makeIdentifier();
         if(containsValueCheck(AgentConstants.DATA,payload)){
             JSONArray pointsJSON = (JSONArray) payload.get(AgentConstants.DATA);
             List<Point> points = new ArrayList<>();

@@ -330,6 +330,7 @@ public class FieldFactory {
 	public static List<FacilioField> getAgentMetricsFields(){
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getAgentMetricsModule();
+		fields.add(getIdField(module));
 		fields.add(getAgentIdField(module));
 		fields.add(getPublishTypeField(module));
 		fields.add(getField(AgentKeys.SIZE,"SIZE",module,FieldType.NUMBER));
