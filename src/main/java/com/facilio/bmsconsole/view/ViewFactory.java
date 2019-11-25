@@ -554,6 +554,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVisitorLogsView().setOrder(order++));
+		views.put("myInvites", getMyVisitorInvites().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
 
 		order = 1;
@@ -2035,7 +2036,7 @@ public class ViewFactory {
 		userField.setName("requestedBy");
 		userField.setColumnName("REQUESTED_BY");
 		userField.setDataType(FieldType.LOOKUP);
-		userField.setModule(ModuleFactory.getVisitorInviteModule());
+		userField.setModule(ModuleFactory.getVisitorLoggingModule());
 		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
 
 		Condition myUserCondition = new Condition();
@@ -3057,7 +3058,7 @@ public class ViewFactory {
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(getMyVistorInvitesCondition());
 
-			FacilioModule visitorInvitesModule = ModuleFactory.getVisitorInviteModule();
+			FacilioModule visitorInvitesModule = ModuleFactory.getVisitorLoggingModule();
 
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("sysCreatedTime");

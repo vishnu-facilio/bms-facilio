@@ -486,6 +486,22 @@
 			<param name="vendorPortal">true</param>
 		</action>
 	</package>
+	<package name="vendorVisitorLoggingInvites" namespace="/api/service/v2/visitorLogging/invites/view"
+		extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorInviteList">
+			<param name="viewName">{1}</param>
+			<param name="vendorPortal">true</param>
+		</action>
+	</package>
+	<package name="serviceVisitorLoggingInvites" namespace="/api/service/v2/visitorlogging/invites/view"
+		extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorInviteList">
+			<param name="viewName">{1}</param>
+			<param name="tenantPortal">true</param>
+		</action>
+	</package>
 	<package name="vendorVisitorInvite" namespace="/api/service/v2/visitorInvite"
 		extends="newServicePortalApiV2">
 		<action name="*"
