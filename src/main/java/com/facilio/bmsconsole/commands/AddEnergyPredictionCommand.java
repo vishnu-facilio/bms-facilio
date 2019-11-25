@@ -96,8 +96,12 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		if (mlVariables != null) {
 			for(Object entry:mlVariables.entrySet()){
 				Map.Entry en = (Map.Entry) entry;
-				maxSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("maxSamplingPeriod").toString()));
-				futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
+				if(((JSONObject)en.getValue()).containsKey("maxSamplingPeriod")){
+					maxSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("maxSamplingPeriod").toString()));
+				}
+				if(((JSONObject)en.getValue()).containsKey("futureSamplingPeriod")){
+					futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
+				}
 			}
 		}
 		

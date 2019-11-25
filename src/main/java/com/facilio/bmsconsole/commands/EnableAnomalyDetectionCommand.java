@@ -62,7 +62,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		fieldObj = ((JSONObject)context.get("parentIdField"));
 		FacilioField energyParentField = modBean.getField(fieldObj.get("fieldName").toString(), fieldObj.get("moduleName").toString());
 		
-		buildGamModel(assetContextList,(String) context.get("meterInterval"),energyField,markedField,energyParentField);
+		buildGamModel(assetContextList,(String) context.get("meterInterval"),(JSONObject)((JSONObject)context.get("mlVariables")).get("buildGam") ,energyField,markedField,energyParentField);
 				
 		Long categoryId=assetContextList.get(0).getCategory().getId();
 		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
@@ -91,18 +91,18 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		{
 			JSONArray ratioHierachy = new JSONArray((String)context.get("ratioHierarchy"));
 			LOGGER.info("Ratio Hierachy is "+ratioHierachy);
-			ratioCheckMLid = addMultipleRatioCheckModel(categoryId,assetContextList,ratioHierachy,moduleNames,energyField.getId());
+			ratioCheckMLid = addMultipleRatioCheckModel(categoryId,assetContextList,ratioHierachy,moduleNames,(JSONObject)((JSONObject)context.get("mlVariables")).get("ratioCheck"),energyField.getId());
 		}
 		else
 		{
-			ratioCheckMLid = addRatioCheckModel(categoryId,assetContextList,(String)context.get("TreeHierarchy"),moduleNames,energyField.getId());
+			ratioCheckMLid = addRatioCheckModel(categoryId,assetContextList,(String)context.get("TreeHierarchy"),moduleNames,(JSONObject)((JSONObject)context.get("mlVariables")).get("ratioCheck"),energyField.getId());
 		}
-		checkGamModel(ratioCheckMLid,assetContextList,(String) context.get("meterInterval"),energyField,markedField,energyParentField);
+		checkGamModel(ratioCheckMLid,assetContextList,(String) context.get("meterInterval"),(JSONObject)((JSONObject)context.get("mlVariables")).get("checkGam"),energyField,markedField,energyParentField);
 		
 		return false;
 	}
 	
-	private void checkGamModel(long ratioCheckMLID, LinkedList<AssetContext> assetContextList,String meterInterval,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
+	private void checkGamModel(long ratioCheckMLID, LinkedList<AssetContext> assetContextList,String meterInterval,JSONObject mlVariables,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
 	{
 		JSONArray mlIDList = new JSONArray();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -112,12 +112,27 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
 		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
+		
+		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
+		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();
+		if (mlVariables != null) {
+			for(Object entry:mlVariables.entrySet()){
+				Map.Entry en = (Map.Entry) entry;
+				if(((JSONObject)en.getValue()).containsKey("maxSamplingPeriod")){
+					maxSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("maxSamplingPeriod").toString()));
+				}
+				if(((JSONObject)en.getValue()).containsKey("futureSamplingPeriod")){
+					futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
+				}
+			}
+		}
+		
 		for(AssetContext context:assetContextList)
 		{
 			long mlID = MLAPI.addMLModel("checkGam1",logReadingModule.getModuleId(),readingModule.getModuleId());
-			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),1209600000l,0,true);
-			MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),1209600000l,0,false);
-			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),1209600000l,0,false);
+			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),maxSamplingPeriodMap.containsKey(energyField.getName())? maxSamplingPeriodMap.get(energyField.getName()):1209600000l,futureSamplingPeriodMap.containsKey(energyField.getName())? futureSamplingPeriodMap.get(energyField.getName()):0,true);
+			MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),maxSamplingPeriodMap.containsKey(markedField.getName())? maxSamplingPeriodMap.get(markedField.getName()):1209600000l,futureSamplingPeriodMap.containsKey(markedField.getName())? futureSamplingPeriodMap.get(markedField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),maxSamplingPeriodMap.containsKey(temperatureField.getName())? maxSamplingPeriodMap.get(temperatureField.getName()):1209600000l,futureSamplingPeriodMap.containsKey(temperatureField.getName())? futureSamplingPeriodMap.get(temperatureField.getName()):0,false);
 			
 			MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 			MLAPI.addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");
@@ -169,7 +184,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
         updateBuilder.update(prop);
 	}
 	
-	private long addMultipleRatioCheckModel(Long categoryId,LinkedList<AssetContext> assetContextList, JSONArray ratioHierachyList,Set<String> moduleNames,long energyfieldid) throws Exception
+	private long addMultipleRatioCheckModel(Long categoryId,LinkedList<AssetContext> assetContextList, JSONArray ratioHierachyList,Set<String> moduleNames,JSONObject mlVariables,long energyfieldid) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -191,9 +206,6 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		FacilioModule readingModule = modBean.getModule("checkratiomlreadings");
 		
 		FacilioModule checkGamReadingModule = modBean.getModule("anomalydetectionmllogreadings");
-		
-		
-	
 		FacilioField parentField = modBean.getField("parentId", checkGamReadingModule.getName());
 		
 		FacilioField actualValueField = modBean.getField("actualValue", checkGamReadingModule.getName());
@@ -224,6 +236,20 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			mlIDList.add(MLAPI.addMLModel("ratioCheck",checkRatioLogReadingNewModuleId,readingModule.getModuleId()));
 		}
 		
+		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
+		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();
+		if (mlVariables != null) {
+			for(Object entry:mlVariables.entrySet()){
+				Map.Entry en = (Map.Entry) entry;
+				if(((JSONObject)en.getValue()).containsKey("maxSamplingPeriod")){
+					maxSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("maxSamplingPeriod").toString()));
+				}
+				if(((JSONObject)en.getValue()).containsKey("futureSamplingPeriod")){
+					futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
+				}
+			}
+		}
+		
 		for(int i=0;i<ratioHierachyList.length();i++)
 		{
 			JSONArray emObject =(JSONArray) ratioHierachyList.get(i);
@@ -233,33 +259,32 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			{
 				Integer id =  (Integer) emObject.get(j);
 				
-				MLAPI.addMLVariables(ml_id,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,j==0);
-				MLAPI.addMLVariables(ml_id,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,gamAnomalyField.getModuleId(),gamAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,lowerARMAField.getModuleId(),lowerARMAField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,lowerBoundField.getModuleId(),lowerBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,lowerGAMField.getModuleId(),lowerGAMField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,predictedField.getModuleId(),predictedField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,predictedResidualFields.getModuleId(),predictedResidualFields.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,residualField.getModuleId(),residualField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,temperatureField.getModuleId(),temperatureField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,lowerAnomalyField.getModuleId(),lowerAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,upperARMAField.getModuleId(),upperARMAField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,upperAnomalyField.getModuleId(),upperAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,upperBoundField.getModuleId(),upperBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
-				MLAPI.addMLVariables(ml_id,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
+				MLAPI.addMLVariables(ml_id,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(actualValueField.getName())? maxSamplingPeriodMap.get(actualValueField.getName()): 4200000,futureSamplingPeriodMap.containsKey(actualValueField.getName())? futureSamplingPeriodMap.get(actualValueField.getName()):0,j==0);
+				MLAPI.addMLVariables(ml_id,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(adjustedLowerBoundField.getName())? maxSamplingPeriodMap.get(adjustedLowerBoundField.getName()): 4200000,futureSamplingPeriodMap.containsKey(adjustedLowerBoundField.getName())? futureSamplingPeriodMap.get(adjustedLowerBoundField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(adjustedUpperBoundField.getName())? maxSamplingPeriodMap.get(adjustedUpperBoundField.getName()): 4200000,futureSamplingPeriodMap.containsKey(adjustedUpperBoundField.getName())? futureSamplingPeriodMap.get(adjustedUpperBoundField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,gamAnomalyField.getModuleId(),gamAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(gamAnomalyField.getName())? maxSamplingPeriodMap.get(gamAnomalyField.getName()): 4200000,futureSamplingPeriodMap.containsKey(gamAnomalyField.getName())? futureSamplingPeriodMap.get(gamAnomalyField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,lowerARMAField.getModuleId(),lowerARMAField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(lowerARMAField.getName())? maxSamplingPeriodMap.get(lowerARMAField.getName()): 4200000,futureSamplingPeriodMap.containsKey(lowerARMAField.getName())? futureSamplingPeriodMap.get(lowerARMAField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,lowerBoundField.getModuleId(),lowerBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(lowerBoundField.getName())? maxSamplingPeriodMap.get(lowerBoundField.getName()): 4200000,futureSamplingPeriodMap.containsKey(lowerBoundField.getName())? futureSamplingPeriodMap.get(lowerBoundField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,lowerGAMField.getModuleId(),lowerGAMField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(lowerGAMField.getName())? maxSamplingPeriodMap.get(lowerGAMField.getName()): 4200000,futureSamplingPeriodMap.containsKey(lowerGAMField.getName())? futureSamplingPeriodMap.get(lowerGAMField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,predictedField.getModuleId(),predictedField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(predictedField.getName())? maxSamplingPeriodMap.get(predictedField.getName()): 4200000,futureSamplingPeriodMap.containsKey(predictedField.getName())? futureSamplingPeriodMap.get(predictedField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,predictedResidualFields.getModuleId(),predictedResidualFields.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(predictedResidualFields.getName())? maxSamplingPeriodMap.get(predictedResidualFields.getName()): 4200000,futureSamplingPeriodMap.containsKey(predictedResidualFields.getName())? futureSamplingPeriodMap.get(predictedResidualFields.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,residualField.getModuleId(),residualField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(residualField.getName())? maxSamplingPeriodMap.get(residualField.getName()): 4200000,futureSamplingPeriodMap.containsKey(residualField.getName())? futureSamplingPeriodMap.get(residualField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,temperatureField.getModuleId(),temperatureField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(temperatureField.getName())? maxSamplingPeriodMap.get(temperatureField.getName()): 4200000,futureSamplingPeriodMap.containsKey(temperatureField.getName())? futureSamplingPeriodMap.get(temperatureField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,lowerAnomalyField.getModuleId(),lowerAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(lowerAnomalyField.getName())? maxSamplingPeriodMap.get(lowerAnomalyField.getName()): 4200000,futureSamplingPeriodMap.containsKey(lowerAnomalyField.getName())? futureSamplingPeriodMap.get(lowerAnomalyField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,upperARMAField.getModuleId(),upperARMAField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(upperARMAField.getName())? maxSamplingPeriodMap.get(upperARMAField.getName()): 4200000,futureSamplingPeriodMap.containsKey(upperARMAField.getName())? futureSamplingPeriodMap.get(upperARMAField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,upperAnomalyField.getModuleId(),upperAnomalyField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(upperAnomalyField.getName())? maxSamplingPeriodMap.get(upperAnomalyField.getName()): 4200000,futureSamplingPeriodMap.containsKey(upperAnomalyField.getName())? futureSamplingPeriodMap.get(upperAnomalyField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,upperBoundField.getModuleId(),upperBoundField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(upperBoundField.getName())? maxSamplingPeriodMap.get(upperBoundField.getName()): 4200000,futureSamplingPeriodMap.containsKey(upperBoundField.getName())? futureSamplingPeriodMap.get(upperBoundField.getName()):0,false);
+				MLAPI.addMLVariables(ml_id,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),id.longValue(),maxSamplingPeriodMap.containsKey(upperGAMField.getName())? maxSamplingPeriodMap.get(upperGAMField.getName()): 4200000,futureSamplingPeriodMap.containsKey(upperGAMField.getName())? futureSamplingPeriodMap.get(upperGAMField.getName()):0,false);
 			}
 			MLAPI.addMLModelVariables(ml_id,"TreeHierarchy",emObject.toString());
 			MLAPI.addMLModelVariables(ml_id,"energyfieldid",""+energyfieldid);
-			
 			MLAPI.addMLModelVariables(ml_id,"adjustedupperboundfieldid",""+adjustedUpperBoundField.getId());	
 		}
 		updateSequenceForMLModel(mlID,mlIDList.toString());
 		return mlID;
 	}
 	
-	private long addRatioCheckModel(Long categoryId,LinkedList<AssetContext> assetContextList, String TreeHierarchy,Set<String> moduleNames,long energyfieldid) throws Exception
+	private long addRatioCheckModel(Long categoryId,LinkedList<AssetContext> assetContextList, String TreeHierarchy,Set<String> moduleNames,JSONObject mlVariables,long energyfieldid) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -301,47 +326,76 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		FacilioField upperAnomalyField = modBean.getField("upperAnomaly",checkGamReadingModule.getName());
 		FacilioField upperBoundField = modBean.getField("upperBound", checkGamReadingModule.getName());
 		FacilioField upperGAMField = modBean.getField("upperGAM", checkGamReadingModule.getName());
+		
+		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
+		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();
+		if (mlVariables != null) {
+			for(Object entry:mlVariables.entrySet()){
+				Map.Entry en = (Map.Entry) entry;
+				if(((JSONObject)en.getValue()).containsKey("maxSamplingPeriod")){
+					maxSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("maxSamplingPeriod").toString()));
+				}
+				if(((JSONObject)en.getValue()).containsKey("futureSamplingPeriod")){
+					futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
+				}
+			}
+		}
+		
+		
 		for(AssetContext emContext : assetContextList)
 		{
-			MLAPI.addMLVariables(mlID,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,(emContext.getId()==Long.parseLong(TreeHierarchy.split(",")[0])));
-			MLAPI.addMLVariables(mlID,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,gamAnomalyField.getModuleId(),gamAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,lowerARMAField.getModuleId(),lowerARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,lowerBoundField.getModuleId(),lowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,lowerGAMField.getModuleId(),lowerGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,predictedField.getModuleId(),predictedField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,predictedResidualFields.getModuleId(),predictedResidualFields.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,residualField.getModuleId(),residualField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,lowerAnomalyField.getModuleId(),lowerAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,upperARMAField.getModuleId(),upperARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,upperAnomalyField.getModuleId(),upperAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,upperBoundField.getModuleId(),upperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
-			MLAPI.addMLVariables(mlID,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
+			MLAPI.addMLVariables(mlID,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(actualValueField.getName())? maxSamplingPeriodMap.get(actualValueField.getName()): 4200000,futureSamplingPeriodMap.containsKey(actualValueField.getName())? futureSamplingPeriodMap.get(actualValueField.getName()):0,(emContext.getId()==Long.parseLong(TreeHierarchy.split(",")[0])));
+			MLAPI.addMLVariables(mlID,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(adjustedLowerBoundField.getName())? maxSamplingPeriodMap.get(adjustedLowerBoundField.getName()): 4200000,futureSamplingPeriodMap.containsKey(adjustedLowerBoundField.getName())? futureSamplingPeriodMap.get(adjustedLowerBoundField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,adjustedUpperBoundField.getModuleId(),adjustedUpperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(adjustedUpperBoundField.getName())? maxSamplingPeriodMap.get(adjustedUpperBoundField.getName()): 4200000,futureSamplingPeriodMap.containsKey(adjustedUpperBoundField.getName())? futureSamplingPeriodMap.get(adjustedUpperBoundField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,gamAnomalyField.getModuleId(),gamAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(gamAnomalyField.getName())? maxSamplingPeriodMap.get(gamAnomalyField.getName()): 4200000,futureSamplingPeriodMap.containsKey(gamAnomalyField.getName())? futureSamplingPeriodMap.get(gamAnomalyField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,lowerARMAField.getModuleId(),lowerARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(lowerARMAField.getName())? maxSamplingPeriodMap.get(lowerARMAField.getName()): 4200000,futureSamplingPeriodMap.containsKey(lowerARMAField.getName())? futureSamplingPeriodMap.get(lowerARMAField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,lowerBoundField.getModuleId(),lowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(lowerBoundField.getName())? maxSamplingPeriodMap.get(lowerBoundField.getName()): 4200000,futureSamplingPeriodMap.containsKey(lowerBoundField.getName())? futureSamplingPeriodMap.get(lowerBoundField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,lowerGAMField.getModuleId(),lowerGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(lowerGAMField.getName())? maxSamplingPeriodMap.get(lowerGAMField.getName()): 4200000,futureSamplingPeriodMap.containsKey(lowerGAMField.getName())? futureSamplingPeriodMap.get(lowerGAMField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,predictedField.getModuleId(),predictedField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(predictedField.getName())? maxSamplingPeriodMap.get(predictedField.getName()): 4200000,futureSamplingPeriodMap.containsKey(predictedField.getName())? futureSamplingPeriodMap.get(predictedField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,predictedResidualFields.getModuleId(),predictedResidualFields.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(predictedResidualFields.getName())? maxSamplingPeriodMap.get(predictedResidualFields.getName()): 4200000,futureSamplingPeriodMap.containsKey(predictedResidualFields.getName())? futureSamplingPeriodMap.get(predictedResidualFields.getName()):0,false);
+			MLAPI.addMLVariables(mlID,residualField.getModuleId(),residualField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(residualField.getName())? maxSamplingPeriodMap.get(residualField.getName()): 4200000,futureSamplingPeriodMap.containsKey(residualField.getName())? futureSamplingPeriodMap.get(residualField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(temperatureField.getName())? maxSamplingPeriodMap.get(temperatureField.getName()): 4200000,futureSamplingPeriodMap.containsKey(temperatureField.getName())? futureSamplingPeriodMap.get(temperatureField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,lowerAnomalyField.getModuleId(),lowerAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(lowerAnomalyField.getName())? maxSamplingPeriodMap.get(lowerAnomalyField.getName()): 4200000,futureSamplingPeriodMap.containsKey(lowerAnomalyField.getName())? futureSamplingPeriodMap.get(lowerAnomalyField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,upperARMAField.getModuleId(),upperARMAField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(upperARMAField.getName())? maxSamplingPeriodMap.get(upperARMAField.getName()): 4200000,futureSamplingPeriodMap.containsKey(upperARMAField.getName())? futureSamplingPeriodMap.get(upperARMAField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,upperAnomalyField.getModuleId(),upperAnomalyField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(upperAnomalyField.getName())? maxSamplingPeriodMap.get(upperAnomalyField.getName()): 4200000,futureSamplingPeriodMap.containsKey(upperAnomalyField.getName())? futureSamplingPeriodMap.get(upperAnomalyField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,upperBoundField.getModuleId(),upperBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(upperBoundField.getName())? maxSamplingPeriodMap.get(upperBoundField.getName()): 4200000,futureSamplingPeriodMap.containsKey(upperBoundField.getName())? futureSamplingPeriodMap.get(upperBoundField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(upperGAMField.getName())? maxSamplingPeriodMap.get(upperGAMField.getName()): 4200000,futureSamplingPeriodMap.containsKey(upperGAMField.getName())? futureSamplingPeriodMap.get(upperGAMField.getName()):0,false);
 		}
 		
 		MLAPI.addMLModelVariables(mlID,"TreeHierarchy",TreeHierarchy);
 		MLAPI.addMLModelVariables(mlID,"energyfieldid",""+energyfieldid);
-		
 		MLAPI.addMLModelVariables(mlID,"adjustedupperboundfieldid",""+adjustedUpperBoundField.getId());
 		
 		return mlID;
 	}
 	
-	private void buildGamModel(List<AssetContext> assetContextList,String meterInterval,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
+	private void buildGamModel(List<AssetContext> assetContextList,String meterInterval,JSONObject mlVariables,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
 		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
 		
+		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
+		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();
+		if (mlVariables != null) {
+			for(Object entry:mlVariables.entrySet()){
+				Map.Entry en = (Map.Entry) entry;
+				if(((JSONObject)en.getValue()).containsKey("maxSamplingPeriod")){
+					maxSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("maxSamplingPeriod").toString()));
+				}
+				if(((JSONObject)en.getValue()).containsKey("futureSamplingPeriod")){
+					futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
+				}
+			}
+		}
+		
 		for(AssetContext emContext : assetContextList)
 		{
 			long mlID = MLAPI.addMLModel("buildGamModel",-1,-1);
-			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),777600000,0,true);
-			MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),777600000,0,false);
-			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),emContext.getSiteId(),777600000,0,false);
+			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(energyField.getName())? maxSamplingPeriodMap.get(energyField.getName()):777600000,futureSamplingPeriodMap.containsKey(energyField.getName())? futureSamplingPeriodMap.get(energyField.getName()):0,true);
+			MLAPI.addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),maxSamplingPeriodMap.containsKey(markedField.getName())? maxSamplingPeriodMap.get(markedField.getName()):777600000,futureSamplingPeriodMap.containsKey(markedField.getName())? futureSamplingPeriodMap.get(markedField.getName()):0,false);
+			MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),emContext.getSiteId(),maxSamplingPeriodMap.containsKey(temperatureField.getName())? maxSamplingPeriodMap.get(temperatureField.getName()):777600000,futureSamplingPeriodMap.containsKey(temperatureField.getName())? futureSamplingPeriodMap.get(temperatureField.getName()):0,false);
 			
 			MLAPI.addMLAssetVariables(mlID,emContext.getId(),"TYPE","Energy Meter");
 			MLAPI.addMLAssetVariables(mlID,emContext.getSiteId(),"TYPE","Site");

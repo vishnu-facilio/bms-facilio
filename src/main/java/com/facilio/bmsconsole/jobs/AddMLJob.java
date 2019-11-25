@@ -32,6 +32,7 @@ public class AddMLJob extends FacilioJob {
 					context.put("energyDeltaField", props.get("energyDeltaField"));
 					context.put("markedField", props.get("markedField"));
 					context.put("parentIdField", props.get("parentIdField"));
+					context.put("mlVariables", props.get("mlVariables"));
 					if(props.containsKey("ratioHierarchy"))
 					{
 						context.put("ratioHierarchy", props.get("ratioHierarchy"));
@@ -46,6 +47,7 @@ public class AddMLJob extends FacilioJob {
 						context.put("energyDeltaField", props.get("energyDeltaField"));
 						context.put("markedField", props.get("markedField"));
 						context.put("parentIdField", props.get("parentIdField"));
+						context.put("mlVariables", props.get("mlVariables"));
 						c.execute(context);
 					}
 				}

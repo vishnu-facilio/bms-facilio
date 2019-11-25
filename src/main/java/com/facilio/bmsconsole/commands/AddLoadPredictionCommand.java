@@ -90,10 +90,14 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
 		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();
 		if (mlVariables != null) {
-			for (Object entry : mlVariables.entrySet()) {
+			for(Object entry:mlVariables.entrySet()){
 				Map.Entry en = (Map.Entry) entry;
-				maxSamplingPeriodMap.put(en.getKey().toString(),Long.parseLong(((JSONObject) en.getValue()).get("maxSamplingPeriod").toString()));
-				futureSamplingPeriodMap.put(en.getKey().toString(),Long.parseLong(((JSONObject) en.getValue()).get("futureSamplingPeriod").toString()));
+				if(((JSONObject)en.getValue()).containsKey("maxSamplingPeriod")){
+					maxSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("maxSamplingPeriod").toString()));
+				}
+				if(((JSONObject)en.getValue()).containsKey("futureSamplingPeriod")){
+					futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
+				}
 			}
 		}
 		
