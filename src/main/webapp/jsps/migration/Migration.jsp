@@ -4,33 +4,23 @@
 
 <%
 
-GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+List<Long> orgids = new ArrayList<Long>();
 
-FacilioField OrgIdField = new FacilioField();
-OrgIdField.setName("orgId");
-OrgIdField.setDisplayName("Org Id");
-OrgIdField.setDataType(FieldType.NUMBER);
-OrgIdField.setColumnName("ORGID");
-
-
-List fields = new ArrayList<>();
-fields.add(OrgIdField);
-select.select(fields);
-select.table("Organizations");
-
-List<Map<String, Object>> orgids = select.get();
-
-for(Map org :orgids) 
+for(long i=1; i<300; i++)
 {
-Long orgid = (Long) org.get("orgId");
-AccountUtil.setCurrentAccount(orgid);
+	orgids.add(i);
+}
+
+for(Long orgId :orgids) 
+{
+AccountUtil.setCurrentAccount(orgId);
 
 if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.READING_FIELD_UNITS_VALIDATION))
 {
 	long featureLicenseModule = AccountUtil.getFeatureLicense();
 	featureLicenseModule = featureLicenseModule + 67108864;	
 	
-	long licence = AccountUtil.getTransactionalOrgBean(orgid).addLicence(featureLicenseModule);
+	long licence = AccountUtil.getTransactionalOrgBean(orgId).addLicence(featureLicenseModule);
 
 }
 }
