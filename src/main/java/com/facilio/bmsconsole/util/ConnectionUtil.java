@@ -307,7 +307,7 @@ public class ConnectionUtil {
 			urlString = urlString+queryString;
 		}
 
-		URL url = new URL(null,urlString,new sun.net.www.protocol.https.Handler());
+		URL url = new URL(urlString);
 		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 
 		conn.setDoInput(true);
