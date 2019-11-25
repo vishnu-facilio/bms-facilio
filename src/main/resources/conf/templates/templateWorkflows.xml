@@ -1230,16 +1230,16 @@
 			<parameter name="org.name" type="String" />
 			<parameter name="org.timezone" type="String" />
 		
-			<parameter name="visitorinviterel"
+			<parameter name="visitorlogging"
 				type="String" />
-				<parameter name="visitorinviterel.id"
+			<parameter name="visitorlogging.id"
 				type="String" />
 			
-			 <expression name="vInviteRel">
-				<function>resource.getVisitorInviteRel(visitorinviterel.id)
+			 <expression name="vLog">
+				<function>resource.getVisitorLog(visitorlogging.id)
 				</function>
 			</expression>
-			
+		
 		
 		</workflow>
 	</template>
@@ -1329,8 +1329,14 @@
 			<parameter name="org.timezone" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorlogging.visitor.phone"
-				type="String" />		
+			<parameter name="visitorlogging"
+				type="String" />
+			<parameter name="visitorlogging.id"
+				type="String" />	
+			<expression name="vLog">
+				<function>resource.getVisitorLog(visitorlogging.id)
+				</function>
+			</expression>			
 		</workflow>
 	</template>
 	<template id="112">
@@ -1340,15 +1346,14 @@
 			<parameter name="org.timezone" type="String" />
 			<parameter name="org.name" type="String" />				
 			
-			<parameter name="visitorinviterel"
+			<parameter name="visitorlogging"
 				type="String" />
-			<parameter name="visitorinviterel.id"
-				type="String" />
-			
-			<expression name="vInviteRel">
-				<function>resource.getVisitorInviteRel(visitorinviterel.id)
+			<parameter name="visitorlogging.id"
+				type="String" />	
+			<expression name="vLog">
+				<function>resource.getVisitorLog(visitorlogging.id)
 				</function>
-			</expression>		
+			</expression>					
 		</workflow>
 	</template>
 	<template id="113">

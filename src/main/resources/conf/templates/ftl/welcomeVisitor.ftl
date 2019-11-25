@@ -27,7 +27,7 @@
                                       </div>
                                       <# if (vLog.visitedSpace) ?? >
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          You have successfully checked in at [${vLog.visitedSpace.name} on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} and are on your way to meet ${vLog.host.name}.
+                                          You have successfully checked in at ${vLog.visitedSpace.name} on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} and are on your way to meet ${vLog.host.name}.
                                     </div>
                                     <#else>
                                      <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
@@ -40,6 +40,21 @@
                         </tbody>
                   </table>
                   <table cellpadding="0" cellspacing="0" style="width:100%;max-width:100%;padding: 30px 55px;">
+                          <#if vLog.qrUrl ??>
+                
+                        <tr>
+                              <td>
+                                    <div style="color: #8e8c97;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;font-size: 14px;padding-bottom: 30px;letter-spacing: 0.5px;">Skip the line on arrival - here’s QR code for quick access</div>
+                              </td>
+                        </tr>
+                        <tr>
+                              <td colspan="100%" align="center">
+                                    <div style="width: 150px;height: auto;">
+                                          <img src="${vLog.qrUrl}" width="130px" height="auto" />
+                                    </div>
+                              </td>
+                        </tr>
+                        </#if>
                         <tr>
                               <td>
                                     <div style="color: #8e8c97;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;font-size: 14px;padding-bottom: 30px;letter-spacing: 0.5px;padding-top: 30px;line-height: 23px;">

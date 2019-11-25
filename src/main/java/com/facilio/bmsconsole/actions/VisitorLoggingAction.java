@@ -322,24 +322,24 @@ private static final long serialVersionUID = 1L;
 		JSONArray array = new JSONArray();
 		array.add("true");
 		
-		FacilioStatus upcomingStatus = VisitorManagementAPI.getLogStatus("Upcoming");
-		
-		JSONArray parentLogIdArray = new JSONArray();
-		parentLogIdArray.add(String.valueOf(upcomingStatus.getId()));
-		
+//		FacilioStatus upcomingStatus = VisitorManagementAPI.getLogStatus("Upcoming");
+//		
+//		JSONArray parentLogIdArray = new JSONArray();
+//		parentLogIdArray.add(String.valueOf(upcomingStatus.getId()));
+//		
 		isPreregistered.put("operatorId", (long) BooleanOperators.IS.getOperatorId());
 		isPreregistered.put("value", array);
 		
-		status.put("operatorId", (long) PickListOperators.IS.getOperatorId());
-		status.put("value", parentLogIdArray);
-		
+//		status.put("operatorId", (long) PickListOperators.IS.getOperatorId());
+//		status.put("value", parentLogIdArray);
+//		
 		
 		if(StringUtils.isNotEmpty(filters)) {
 			JSONParser parser = new JSONParser();
 	 		json = (JSONObject) parser.parse(getFilters());
 	 	}
 		json.put("isPreregistered", isPreregistered);
-		json.put("moduleState", status);
+	//	json.put("moduleState", status);
 		
 		chain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
  		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
@@ -474,7 +474,7 @@ private static final long serialVersionUID = 1L;
 		return SUCCESS;
 	}
 	
-	public String checkInVisitorLogging() throws Exception {
+	public String checkInCheckOutVisitorLogging() throws Exception {
 		
 		if(recordId > 0) {
 			FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();

@@ -40,12 +40,14 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 									if(field.getName().equals("moduleState")) {
 										FacilioStatus status = StateFlowRulesAPI.getStateContext((long)changes.getNewValue());
 										if(status.getStatus().toString().trim().equals("CheckedIn")) {
-											VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, true, time);
-											VisitorManagementAPI.updateVisitorRollUps(record);
-											VisitorManagementAPI.updateVisitorLastVisitRollUps(record);
-//											if(record.getInvite() != null) {
-//												VisitorManagementAPI.updateVisitorInviteStateToArrived(record.getVisitor().getId(), record.getInvite().getId(), "Arrived");
-//											}
+											if(record.getCheckInTime() <= 0) { 
+												VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, true, time);
+												VisitorManagementAPI.updateVisitorRollUps(record);
+												VisitorManagementAPI.updateVisitorLastVisitRollUps(record);
+	//											if(record.getInvite() != null) {
+	//												VisitorManagementAPI.updateVisitorInviteStateToArrived(record.getVisitor().getId(), record.getInvite().getId(), "Arrived");
+	//											}
+											}
 										}
 										else if(status.getStatus().toString().trim().equals("CheckedOut")) {
 											VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, false, time);

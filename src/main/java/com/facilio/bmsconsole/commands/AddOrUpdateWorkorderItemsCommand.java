@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.ItemsApi;
@@ -264,7 +265,12 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 		if (item.getItemType() != null) {
 			ItemTypesContext itemType = ItemsApi.getItemTypes(item.getItemType().getId()); 
 			if(itemType != null && itemType.isRotating() && woItem.getTransactionStateEnum() == TransactionState.USE) {
-			
+				
+				asset.setLastIssuedToUser(woItem.getIssuedTo());
+				asset.setLastIssuedToWo(woItem.getWorkorder().getId());
+				asset.setLastIssuedTime(System.currentTimeMillis());
+				AssetsAPI.updateAsset(asset, asset.getId());
+				
 				if(woItem.getTransactionTypeEnum() == TransactionType.WORKORDER) {
 					newinfo.put("woId", woItem.getParentId());
 				}

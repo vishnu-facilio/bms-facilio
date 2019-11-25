@@ -19,11 +19,9 @@ public class GenerateQrInviteUrlCommand extends FacilioCommand {
 		List<VisitorLoggingContext> inviteVisitors = (List<VisitorLoggingContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(inviteVisitors)) {
 			for(VisitorLoggingContext inviteVisitor : inviteVisitors) {
-				if(inviteVisitor.isPreregistered()) {
-					String qrCode = "visitorLog_" + inviteVisitor.getId();
-					String originalUrl = PdfUtil.exportUrlAsPdf("https://app.facilio.com/app/qr?code=" + qrCode, true, null, FileFormat.IMAGE);
-					inviteVisitor.setQrUrl(originalUrl);
-				}
+				String qrCode = "visitorLog_" + inviteVisitor.getId();
+				String originalUrl = PdfUtil.exportUrlAsPdf("https://app.facilio.com/app/qr?code=" + qrCode, true, null, FileFormat.IMAGE);
+				inviteVisitor.setQrUrl(originalUrl);
 			}
 			
 			

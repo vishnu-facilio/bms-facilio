@@ -936,7 +936,7 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "You are Invited!",
-		"to": "${vInviteRel.visitorId.email}",
+		"to": "${vLog.visitor.email}",
 		"message_ftl": "inviteVisitor"
 	},
 	"106": {
@@ -971,13 +971,13 @@
 	},
 	"111": {
 		"name": "VISITOR_THANKS_WHATSAPP_NOTIFICATION",
-		"to": "${visitorlogging.visitor.phone}",
+		"to": "${vLog.visitor.phone}",
 		"isHtmlContent": false,
 		"message": "Thanks for visiting us.You have successfully checked out.\nAdmin Team."
 	},	
 	"112": {
 		"name": "VISITOR_INVITE_WHATSAPP_NOTIFICATION",
-		"to": "${vInviteRel.visitorId.phone}",
+		"to": "${vLog.visitor.phone}",
 		"isHtmlContent": true,
 		"message_ftl": "inviteVisitor"
 	},

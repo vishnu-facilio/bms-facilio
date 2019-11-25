@@ -200,7 +200,7 @@ public class AccessLogFilter implements Filter {
             contextMap.put("graylogurl", grayLogSearchUrl);
             contextMap.put("test","testing_context");
 
-            SentryUtil.sendToSentry(contextMap, request );
+     //       SentryUtil.sendToSentry(contextMap, request );
         }
         if(appender != null) {
             appender.doAppend(event);

@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -259,6 +260,13 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 		
 		if (itemTypes.isRotating() && woItem.getTransactionStateEnum() == TransactionState.ISSUE) {
 			
+			asset.setLastIssuedToUser(woItem.getIssuedTo());
+			if(woItem.getWorkorder() != null) {
+				asset.setLastIssuedToWo(woItem.getWorkorder().getId());
+			}
+			asset.setLastIssuedTime(System.currentTimeMillis());
+			AssetsAPI.updateAsset(asset, asset.getId());
+			
 			if(woItem.getTransactionTypeEnum() == TransactionType.MANUAL) {
 				User user = AccountUtil.getUserBean().getUser(woItem.getParentId(), true);
 				newinfo.put("issuedTo",user.getName());
@@ -269,8 +277,15 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 					
 		}
 		else if(itemTypes.isRotating() && woItem.getTransactionStateEnum() == TransactionState.RETURN) {
+			User user = new User();
+			user.setId(-99);
+			asset.setLastIssuedToUser(user);
+			asset.setLastIssuedToWo(-99);
+			asset.setLastIssuedTime(-99);
+			AssetsAPI.updateAsset(asset, asset.getId());
+			
 			if(woItem.getTransactionTypeEnum() == TransactionType.MANUAL) {
-				User user = AccountUtil.getUserBean().getUser(woItem.getParentId(), true);
+				user = AccountUtil.getUserBean().getUser(woItem.getParentId(), true);
 				newinfo.put("returnedBy", user.getName());
 			}
 			else if(woItem.getTransactionTypeEnum() == TransactionType.WORKORDER) {

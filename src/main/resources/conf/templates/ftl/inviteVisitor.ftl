@@ -25,14 +25,21 @@
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;padding-bottom:20px;color:#282c36;font-size:40px;line-height:50px;text-align:left;font-weight:bold;padding-top: 20px;letter-spacing: 0.6px;">
                                          See you soon! 
                                       </div>
+                                        <# if (vLog.visitedSpace) ?? >
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          You have been invited to [FACILITY] by ${vInviteRel.inviteId.inviteHost.name} on ${(vInviteRel.inviteId.expectedStartTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} ! 
+                                          You have been invited to ${vLog.visitedSpace.name} by ${vLog.host.name} on ${(vLog.expectedStartTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} ! 
                                     </div>
+                                     <#else>
+                                      <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
+                                          You have been invited by ${vLog.host.name} on ${(vLog.expectedStartTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} ! 
+                                    </div>
+                                   
+                                   </#if>
                                 </td>
                               </tr>
                         </tbody>
                   </table>
-                  <#if vInviteRel.qrUrl ??>
+                  <#if vLog.qrUrl ??>
                   <table cellpadding="0" cellspacing="0" style="width:100%;max-width:100%;padding: 30px 55px 40px;">
                         <tr>
                               <td>
@@ -44,7 +51,7 @@
                         <tr>
                               <td colspan="100%" align="center">
                                     <div style="width: 150px;height: auto;">
-                                          <img src="${vInviteRel.qrUrl}" width="130px" height="auto" />
+                                          <img src="${vLog.qrUrl}" width="130px" height="auto" />
                                     </div>
                               </td>
                         </tr>

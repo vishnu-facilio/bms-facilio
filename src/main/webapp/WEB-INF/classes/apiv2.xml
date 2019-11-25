@@ -4592,7 +4592,7 @@
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingDetails" />
 		<action name="checkInFromKiosk"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkInVisitorLogging" />
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkInCheckOutVisitorLogging" />
 		
 		<action name="checkOutWithPhone"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkOutVisitorLogging" />

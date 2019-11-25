@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -406,6 +407,36 @@ public class AssetContext extends ResourceContext {
 	public void setCurrentSpaceId(long currentSpaceId) {
 		this.currentSpaceId = currentSpaceId;
 	}
+	
+	private long lastIssuedTime;
+	private User lastIssuedToUser;
+	private long lastIssuedToWo;
+
+	public long getLastIssuedTime() {
+		return lastIssuedTime;
+	}
+
+	public void setLastIssuedTime(long lastIssuedTime) {
+		this.lastIssuedTime = lastIssuedTime;
+	}
+
+	public User getLastIssuedToUser() {
+		return lastIssuedToUser;
+	}
+
+	public void setLastIssuedToUser(User lastIssuedToUser) {
+		this.lastIssuedToUser = lastIssuedToUser;
+	}
+
+	public long getLastIssuedToWo() {
+		return lastIssuedToWo;
+	}
+
+	public void setLastIssuedToWo(long lastIssuedToWo) {
+		this.lastIssuedToWo = lastIssuedToWo;
+	}
+
+	
 	
 	
 }

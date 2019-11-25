@@ -1020,7 +1020,7 @@ public class AssetsAPI {
 		}
    }
    
-   private static void updateAsset(AssetContext asset, long assetId) throws Exception {
+   public static void updateAsset(AssetContext asset, long assetId) throws Exception {
 	   	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
@@ -1094,7 +1094,7 @@ public class AssetsAPI {
    }
    
 
- public static boolean getPendingAssetMovementRecordForAsset(long assetId) throws Exception {
+   public static boolean getPendingAssetMovementRecordForAsset(long assetId) throws Exception {
 	   
 	   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_MOVEMENT);
@@ -1114,4 +1114,5 @@ public class AssetsAPI {
 		}
         return true;
    }
+ 
 }

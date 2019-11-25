@@ -437,6 +437,7 @@ public class VisitorManagementAPI {
 					updateMap.put("expectedCheckOutTime", time + vLog.getExpectedVisitDuration());
 					updatedfields.add(expectedCheckOutTimeField);
 				}
+			
 			}
 		
 			UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()
@@ -1422,20 +1423,23 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
-		condition.setFieldName("visitorId");
+		condition.setFieldName("visitor");
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		condition.setColumnName("Invite_Visitor_Rel.VISITOR_ID");
+		condition.setColumnName("Visitor_Logging.VISITOR");
 		
-		Condition inviteCondition = new Condition();
-		inviteCondition.setFieldName("inviteId");
-		inviteCondition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		inviteCondition.setColumnName("Invite_Visitor_Rel.INVITE_ID");
+		Condition preregisteredCondition = new Condition();
+		preregisteredCondition.setFieldName("isPreregistered");
+		preregisteredCondition.setOperator(BooleanOperators.IS);
+		preregisteredCondition.setValue("true");
+		preregisteredCondition.setColumnName("Visitor_Logging.IS_PREREGISTERED");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
-		criteria.addConditionMap(inviteCondition);
+		criteria.addConditionMap(preregisteredCondition);
+		criteria.addConditionMap(getVisitorLogStatusCriteria("Upcoming"));
 		
-		criteria.setPattern("(1 and 2)");
+		
+		criteria.setPattern("(1 and 2 and 3)");
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1469,20 +1473,23 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
-		condition.setFieldName("visitorId");
+		condition.setFieldName("visitor");
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		condition.setColumnName("Invite_Visitor_Rel.VISITOR_ID");
+		condition.setColumnName("Visitor_Logging.VISITOR");
 		
-		Condition inviteCondition = new Condition();
-		inviteCondition.setFieldName("inviteId");
-		inviteCondition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		inviteCondition.setColumnName("Invite_Visitor_Rel.INVITE_ID");
+		Condition preregisteredCondition = new Condition();
+		preregisteredCondition.setFieldName("isPreregistered");
+		preregisteredCondition.setOperator(BooleanOperators.IS);
+		preregisteredCondition.setValue("true");
+		preregisteredCondition.setColumnName("Visitor_Logging.IS_PREREGISTERED");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
-		criteria.addConditionMap(inviteCondition);
+		criteria.addConditionMap(preregisteredCondition);
+		criteria.addConditionMap(getVisitorLogStatusCriteria("Upcoming"));
 		
-		criteria.setPattern("(1 and 2)");
+		
+		criteria.setPattern("(1 and 2 and 3)");
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1515,20 +1522,23 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
-		condition.setFieldName("visitorId");
+		condition.setFieldName("visitor");
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		condition.setColumnName("Invite_Visitor_Rel.VISITOR_ID");
+		condition.setColumnName("Visitor_Logging.VISITOR");
 		
-		Condition inviteCondition = new Condition();
-		inviteCondition.setFieldName("inviteId");
-		inviteCondition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		inviteCondition.setColumnName("Invite_Visitor_Rel.INVITE_ID");
+		Condition preregisteredCondition = new Condition();
+		preregisteredCondition.setFieldName("isPreregistered");
+		preregisteredCondition.setOperator(BooleanOperators.IS);
+		preregisteredCondition.setValue("true");
+		preregisteredCondition.setColumnName("Visitor_Logging.IS_PREREGISTERED");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
-		criteria.addConditionMap(inviteCondition);
+		criteria.addConditionMap(preregisteredCondition);
+		criteria.addConditionMap(getVisitorLogStatusCriteria("Upcoming"));
 		
-		criteria.setPattern("(1 and 2)");
+		
+		criteria.setPattern("(1 and 2 and 3)");
 		
 		workflowRuleContext.setCriteria(criteria);
 		
