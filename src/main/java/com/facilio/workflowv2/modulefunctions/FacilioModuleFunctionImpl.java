@@ -386,4 +386,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		return fileUrl;
 	}
+
+	@Override
+	public Map<String, Object> asMap(List<Object> objects) throws Exception {
+		FacilioModule module = (FacilioModule) objects.get(0);
+		return FieldUtil.getAsProperties(module);
+	}
 }
