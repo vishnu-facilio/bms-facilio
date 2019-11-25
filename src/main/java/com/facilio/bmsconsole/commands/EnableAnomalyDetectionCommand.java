@@ -5,16 +5,17 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -44,23 +45,26 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 	{
 		
 		//Get All Assets
-		Hashtable<Long,AssetContext>  assetContextList = new Hashtable<Long,AssetContext>(10);
+		LinkedList<AssetContext> assetContextList = new LinkedList<>();
+		String[] assetID = context.get("TreeHierarchy").toString().split(",");
 		
-		String[] energyMeterID = context.get("TreeHierarchy").toString().split(",");
-		for(String ID:energyMeterID)
-		{
-			long id = Long.parseLong(ID);
-			AssetContext emContext = AssetsAPI.getAssetInfo(Long.parseLong(ID));
-			assetContextList.put(id,emContext);
-		}
+		AssetContext assetContext = AssetsAPI.getAssetInfo(Long.parseLong(assetID[0]));
+		assetContextList.add(assetContext);
 		
-		buildGamModel(assetContextList,(String) context.get("meterInterval"));
-		
-		Entry<Long, AssetContext> entry = assetContextList.entrySet().iterator().next();
-		LOGGER.info("testing "+assetContextList.get(entry.getKey()).getCategory().getId());
-		
+		List<Long> assetIDList = Stream.of(assetID).filter(i->i != assetID[0]).map(Long::valueOf).collect(Collectors.toList());
+		assetContextList.addAll(AssetsAPI.getAssetInfo(assetIDList));
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		Long categoryId=assetContextList.get(entry.getKey()).getCategory().getId();
+		JSONObject fieldObj = ((JSONObject)context.get("energyDeltaField"));
+		FacilioField energyField = modBean.getField(fieldObj.get("fieldName").toString(), fieldObj.get("moduleName").toString());
+		fieldObj = ((JSONObject)context.get("markedField"));
+		FacilioField markedField = modBean.getField(fieldObj.get("fieldName").toString(), fieldObj.get("moduleName").toString());
+		fieldObj = ((JSONObject)context.get("parentIdField"));
+		FacilioField energyParentField = modBean.getField(fieldObj.get("fieldName").toString(), fieldObj.get("moduleName").toString());
+		
+		buildGamModel(assetContextList,(String) context.get("meterInterval"),energyField,markedField,energyParentField);
+				
+		Long categoryId=assetContextList.get(0).getCategory().getId();
 		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 		long assetModuleID = assetCategory.getAssetModuleID();
 		List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
@@ -87,18 +91,18 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		{
 			JSONArray ratioHierachy = new JSONArray((String)context.get("ratioHierarchy"));
 			LOGGER.info("Ratio Hierachy is "+ratioHierachy);
-			ratioCheckMLid = addMultipleRatioCheckModel(categoryId,assetContextList,ratioHierachy,moduleNames);
+			ratioCheckMLid = addMultipleRatioCheckModel(categoryId,assetContextList,ratioHierachy,moduleNames,energyField.getId());
 		}
 		else
 		{
-			ratioCheckMLid = addRatioCheckModel(categoryId,assetContextList,(String)context.get("TreeHierarchy"),moduleNames);
+			ratioCheckMLid = addRatioCheckModel(categoryId,assetContextList,(String)context.get("TreeHierarchy"),moduleNames,energyField.getId());
 		}
-		checkGamModel(ratioCheckMLid,assetContextList,(String) context.get("meterInterval"));
+		checkGamModel(ratioCheckMLid,assetContextList,(String) context.get("meterInterval"),energyField,markedField,energyParentField);
 		
 		return false;
 	}
 	
-	private void checkGamModel(long ratioCheckMLID, Hashtable<Long,AssetContext> assetContextList,String meterInterval) throws Exception
+	private void checkGamModel(long ratioCheckMLID, LinkedList<AssetContext> assetContextList,String meterInterval,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
 	{
 		JSONArray mlIDList = new JSONArray();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -106,15 +110,9 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		FacilioModule logReadingModule = modBean.getModule("anomalydetectionmllogreadings");
 		FacilioModule readingModule = modBean.getModule("anomalydetectionmlreadings");
 		
-		
-		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		FacilioField markedField = modBean.getField("marked", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		
-		
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
 		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
-		for(AssetContext context:assetContextList.values())
+		for(AssetContext context:assetContextList)
 		{
 			long mlID = MLAPI.addMLModel("checkGam1",logReadingModule.getModuleId(),readingModule.getModuleId());
 			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),1209600000l,0,true);
@@ -171,22 +169,18 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
         updateBuilder.update(prop);
 	}
 	
-	private long addMultipleRatioCheckModel(Long categoryId,Hashtable<Long,AssetContext> energyContextTable, JSONArray ratioHierachyList,Set<String> moduleNames) throws Exception
+	private long addMultipleRatioCheckModel(Long categoryId,LinkedList<AssetContext> assetContextList, JSONArray ratioHierachyList,Set<String> moduleNames,long energyfieldid) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<FacilioField> mLLogCheckRatioFields = FieldFactory.getMLLogCheckRatioFields();
 		int decimalColumnHigherValue = mLLogCheckRatioFields.stream().map(FacilioField::getColumnName).filter(f->f.startsWith("DECIMAL_CF")).map(c->c.replaceFirst("DECIMAL_CF", "")).map(Integer::parseInt).mapToInt(i -> i).max().orElse(0);
-		for(int i=0;i<ratioHierachyList.length();i++)
+		for(AssetContext asset:assetContextList)
 		{
-			JSONArray emObject =(JSONArray) ratioHierachyList.get(i);
-			for(int j=0;j<emObject.length();j++)
-			{
-				Integer id =  (Integer) emObject.get(j);
-				mLLogCheckRatioFields.add(FieldFactory.getField(id+"_ratio","ratioLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));
-				mLLogCheckRatioFields.add(FieldFactory.getField(id+"_upperAnomaly","upperAnomalyLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));
-				mLLogCheckRatioFields.add(FieldFactory.getField(id+"_lowerAnomaly","lowerAnomalyLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));				
-			}
+			Long id =  asset.getId();
+			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_ratio","ratioLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));
+			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_upperAnomaly","upperAnomalyLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));
+			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_lowerAnomaly","lowerAnomalyLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.NUMBER));				
 		}
 		
 		long checkRatioLogReadingNewModuleId = MLAPI.addReadingEveryTime(categoryId,"checkRatioMLLogReadings",mLLogCheckRatioFields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
@@ -257,8 +251,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 				MLAPI.addMLVariables(ml_id,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),id.longValue(),4200000,0,false);
 			}
 			MLAPI.addMLModelVariables(ml_id,"TreeHierarchy",emObject.toString());
-			FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-			MLAPI.addMLModelVariables(ml_id,"energyfieldid",""+energyField.getId());
+			MLAPI.addMLModelVariables(ml_id,"energyfieldid",""+energyfieldid);
 			
 			MLAPI.addMLModelVariables(ml_id,"adjustedupperboundfieldid",""+adjustedUpperBoundField.getId());	
 		}
@@ -266,13 +259,13 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		return mlID;
 	}
 	
-	private long addRatioCheckModel(Long categoryId,Hashtable<Long,AssetContext> emContextList, String TreeHierarchy,Set<String> moduleNames) throws Exception
+	private long addRatioCheckModel(Long categoryId,LinkedList<AssetContext> assetContextList, String TreeHierarchy,Set<String> moduleNames,long energyfieldid) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<FacilioField> mLLogCheckRatioFields = FieldFactory.getMLLogCheckRatioFields();
 		int decimalColumnHigherValue = mLLogCheckRatioFields.stream().map(FacilioField::getColumnName).filter(f->f.startsWith("DECIMAL_CF")).map(c->c.replaceFirst("DECIMAL_CF", "")).map(Integer::parseInt).mapToInt(i -> i).max().orElse(0);
-		for(AssetContext emContext : emContextList.values())
+		for(AssetContext emContext : assetContextList)
 		{
 			long id =  emContext.getId();
 			mLLogCheckRatioFields.add(FieldFactory.getField(id+"_ratio","ratioLog","DECIMAL_CF"+(++decimalColumnHigherValue),ModuleFactory.getMLLogReadingModule(),FieldType.DECIMAL));
@@ -308,7 +301,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		FacilioField upperAnomalyField = modBean.getField("upperAnomaly",checkGamReadingModule.getName());
 		FacilioField upperBoundField = modBean.getField("upperBound", checkGamReadingModule.getName());
 		FacilioField upperGAMField = modBean.getField("upperGAM", checkGamReadingModule.getName());
-		for(AssetContext emContext : emContextList.values())
+		for(AssetContext emContext : assetContextList)
 		{
 			MLAPI.addMLVariables(mlID,actualValueField.getModuleId(),actualValueField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,(emContext.getId()==Long.parseLong(TreeHierarchy.split(",")[0])));
 			MLAPI.addMLVariables(mlID,adjustedLowerBoundField.getModuleId(),adjustedLowerBoundField.getFieldId(),parentField.getFieldId(),emContext.getId(),4200000,0,false);
@@ -329,28 +322,21 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		}
 		
 		MLAPI.addMLModelVariables(mlID,"TreeHierarchy",TreeHierarchy);
-		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		MLAPI.addMLModelVariables(mlID,"energyfieldid",""+energyField.getId());
+		MLAPI.addMLModelVariables(mlID,"energyfieldid",""+energyfieldid);
 		
 		MLAPI.addMLModelVariables(mlID,"adjustedupperboundfieldid",""+adjustedUpperBoundField.getId());
 		
 		return mlID;
 	}
 	
-	private void buildGamModel(Hashtable<Long,AssetContext> assetContextList,String meterInterval) throws Exception
+	private void buildGamModel(List<AssetContext> assetContextList,String meterInterval,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		FacilioField markedField = modBean.getField("marked", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		
-		
 		
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
 		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
 		
-		for(AssetContext emContext : assetContextList.values())
+		for(AssetContext emContext : assetContextList)
 		{
 			long mlID = MLAPI.addMLModel("buildGamModel",-1,-1);
 			MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),777600000,0,true);

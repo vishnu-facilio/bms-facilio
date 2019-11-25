@@ -29,17 +29,23 @@ public class AddMLJob extends FacilioJob {
 					FacilioChain c = FacilioChainFactory.enableAnomalyDetectionChain();
 					context.put("TreeHierarchy", props.get("TreeHierarchy"));
 					context.put("meterInterval", props.get("meterInterval"));
+					context.put("energyDeltaField", props.get("energyDeltaField"));
+					context.put("markedField", props.get("markedField"));
+					context.put("parentIdField", props.get("parentIdField"));
 					if(props.containsKey("ratioHierarchy"))
 					{
 						context.put("ratioHierarchy", props.get("ratioHierarchy"));
 					}
 					c.execute(context);
-				}else{
+				}else if(props.get("parentHierarchy").toString().equalsIgnoreCase("false")){
 					 String[] ids = props.get("assetIds").toString().split(",");
 					for (int i = 0; i < ids.length; i++) {
 						FacilioChain c = FacilioChainFactory.enableAnomalyDetectionChain();
 						context.put("TreeHierarchy", ids[i]);
 						context.put("meterInterval", props.get("meterInterval"));
+						context.put("energyDeltaField", props.get("energyDeltaField"));
+						context.put("markedField", props.get("markedField"));
+						context.put("parentIdField", props.get("parentIdField"));
 						c.execute(context);
 					}
 				}
