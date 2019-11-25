@@ -1588,8 +1588,8 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new AddVendorContactsCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			return c;
 		}
@@ -1600,8 +1600,8 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			
 			return c;
 		}

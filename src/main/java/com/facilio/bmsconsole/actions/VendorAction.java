@@ -56,6 +56,7 @@ public class VendorAction extends FacilioAction{
 	public String addVendor() throws Exception {
 		FacilioContext context = new FacilioContext();
 		LocationContext location = vendor.getAddress();
+		
 		if(location!=null)
 		{	
 			location.setName(vendor.getName()+"_location");
@@ -71,6 +72,8 @@ public class VendorAction extends FacilioAction{
 		FacilioContext context1 = new FacilioContext();
 		context1.put(FacilioConstants.ContextNames.RECORD, vendor);
 		context1.put(FacilioConstants.ContextNames.CONTACTS, vendorContacts);
+		context1.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+		
 		
 		FacilioChain addVendorChain = TransactionChainFactory.getAddVendorChain();
 		addVendorChain.execute(context1);
@@ -84,7 +87,6 @@ public class VendorAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		LocationContext location = vendor.getAddress();
 		
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		
 		if(location != null && location.getLat() != -1 && location.getLng() != -1)
 		{
@@ -112,6 +114,8 @@ public class VendorAction extends FacilioAction{
 		FacilioContext context1 = new FacilioContext();
 		context1.put(FacilioConstants.ContextNames.RECORD, vendor);
 		context1.put(FacilioConstants.ContextNames.ID, vendor.getId());
+		context1.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+		
 		context1.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(vendor.getId()));
 		context1.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 
