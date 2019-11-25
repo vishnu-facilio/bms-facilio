@@ -1,14 +1,11 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -17,20 +14,17 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 public class VisitorLoggingAction extends FacilioAction{
 
@@ -201,7 +195,7 @@ private static final long serialVersionUID = 1L;
 		
 		if(parentLog != null) {
 			FacilioChain c = TransactionChainFactory.updateRecurringVisitorLoggingRecordsChain();
-			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			
 			if(triggerString != null) {
 				setTriggerContext(triggerString);
@@ -235,6 +229,7 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(visitorLoggingRecords)) {
 			FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -342,7 +337,7 @@ private static final long serialVersionUID = 1L;
 	//	json.put("moduleState", status);
 		
 		chain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
- 		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+ 		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, true);
  		
 		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
@@ -415,7 +410,7 @@ private static final long serialVersionUID = 1L;
 		json.put("moduleState", status);
 		
 		chain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
- 		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+ 		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, true);
  		
 		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
