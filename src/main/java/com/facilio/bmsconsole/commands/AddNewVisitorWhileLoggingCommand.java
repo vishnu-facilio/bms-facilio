@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
@@ -34,6 +35,9 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			for(VisitorLoggingContext vL : visitorLogs) {
 				
+				if(vL.getRequestedBy() == null || vL.getRequestedBy().getId() <= 0) {
+					vL.setRequestedBy(AccountUtil.getCurrentUser());
+				}
 				VisitorSettingsContext setting = settingsMap.get(vL.getVisitorType().getId());
 				if(setting != null) {
 					JSONObject hostSetting = setting.getHostSettings();

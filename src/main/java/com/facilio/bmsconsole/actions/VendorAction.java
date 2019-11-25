@@ -53,6 +53,15 @@ public class VendorAction extends FacilioAction{
 		this.vendors = vendors;
 	}
 	
+	private Long stateTransitionId;
+	public Long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(Long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+	
+	
 	public String addVendor() throws Exception {
 		FacilioContext context = new FacilioContext();
 		LocationContext location = vendor.getAddress();
@@ -115,6 +124,7 @@ public class VendorAction extends FacilioAction{
 		context1.put(FacilioConstants.ContextNames.RECORD, vendor);
 		context1.put(FacilioConstants.ContextNames.ID, vendor.getId());
 		context1.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+		context1.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		
 		context1.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(vendor.getId()));
 		context1.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
