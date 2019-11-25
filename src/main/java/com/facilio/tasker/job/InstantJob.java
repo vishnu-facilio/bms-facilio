@@ -74,7 +74,6 @@ public abstract class InstantJob {
 //            }
             if(getMessageId() !=null) {
             	FacilioInstantJobExecutor.INSTANCE.jobEnd(getMessageId());
-            	LOGGER.info("FacilioInstantJobjobQueue msg ID to JobEnd  job is  : "+getMessageId());
             } else {
             	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
             }
