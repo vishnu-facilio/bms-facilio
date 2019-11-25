@@ -14,15 +14,14 @@ import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
-import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
-import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
@@ -228,6 +227,12 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 		if (tool.getToolType() != null) {
 			ToolTypesContext toolType = ToolsApi.getToolTypes(tool.getToolType().getId()); 
 			if(toolType != null && toolType.isRotating() && woTool.getTransactionStateEnum() == TransactionState.USE) {
+				
+				asset.setLastIssuedToUser(woTool.getIssuedTo());
+				asset.setLastIssuedToWo(woTool.getWorkorder().getId());
+				asset.setLastIssuedTime(System.currentTimeMillis());
+				AssetsAPI.updateAsset(asset, asset.getId());
+
 			
 				if(woTool.getTransactionTypeEnum() == TransactionType.WORKORDER) {
 					newinfo.put("woId", woTool.getParentId());

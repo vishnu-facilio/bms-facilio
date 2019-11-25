@@ -29,6 +29,10 @@ public class AddVisitorLogStatesCommand extends FacilioCommand{
 		
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		
+		if(filterCriteria == null) {
+			filterCriteria = new Criteria();
+		}
+		
 		if(logType == 1) { // checkedin log list
 			Criteria statusCriteria = new Criteria();
 			statusCriteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedIn.getId()) + ","  + String.valueOf(checkedOut.getId()) + "," +  String.valueOf(requested.getId()) + "," +  String.valueOf(approved.getId()) + "," +  String.valueOf(rejected.getId()) + "," +  String.valueOf(blocked.getId()) + "," +  String.valueOf(waiting.getId()), NumberOperators.EQUALS));

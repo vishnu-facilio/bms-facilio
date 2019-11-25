@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -199,6 +200,14 @@ public class AddOrUpdateManualToolTransactionsCommand extends FacilioCommand {
 		
 		if (toolTypes.isRotating() && woTool.getTransactionStateEnum() == TransactionState.ISSUE) {
 			
+			asset.setLastIssuedToUser(woTool.getIssuedTo());
+			if(woTool.getWorkorder() != null) {
+				asset.setLastIssuedToWo(woTool.getWorkorder().getId());
+			}
+			asset.setLastIssuedTime(System.currentTimeMillis());
+			AssetsAPI.updateAsset(asset, asset.getId());
+
+			
 			if(woTool.getTransactionTypeEnum() == TransactionType.MANUAL) {
 				User user = AccountUtil.getUserBean().getUser(woTool.getParentId(), true);
 				newinfo.put("issuedTo",user.getName());
@@ -208,8 +217,15 @@ public class AddOrUpdateManualToolTransactionsCommand extends FacilioCommand {
 					(FacilioContext) context);
 		}
 		else if(toolTypes.isRotating() && woTool.getTransactionStateEnum() == TransactionState.RETURN) {
+            User user = new User();
+			user.setId(-99);
+			asset.setLastIssuedToUser(user);
+			asset.setLastIssuedToWo(-99);
+			asset.setLastIssuedTime(-99);
+			AssetsAPI.updateAsset(asset, asset.getId());
+
 			if(woTool.getTransactionTypeEnum() == TransactionType.MANUAL) {
-				User user = AccountUtil.getUserBean().getUser(woTool.getParentId(), true);
+				user = AccountUtil.getUserBean().getUser(woTool.getParentId(), true);
 				newinfo.put("returnedBy", user.getName());
 			}
 			else if(woTool.getTransactionTypeEnum() == TransactionType.WORKORDER) {
