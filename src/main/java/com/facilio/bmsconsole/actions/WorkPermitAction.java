@@ -130,6 +130,7 @@ private static final long serialVersionUID = 1L;
 		
 		if(!CollectionUtils.isEmpty(workPermitRecords)) {
 			FacilioChain c = TransactionChainFactory.updateWorkPermitRecordsChain();
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, workPermitRecords);
 			c.execute();

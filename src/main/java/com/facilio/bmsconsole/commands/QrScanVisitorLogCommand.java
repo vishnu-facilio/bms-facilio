@@ -26,6 +26,11 @@ public class QrScanVisitorLogCommand extends FacilioCommand{
 					if(currentTime < vLog.getExpectedCheckInTime() || currentTime > vLog.getExpectedCheckOutTime()) {
 						throw new IllegalArgumentException("Invalid checkin time");
 					}
+					if(vLog != null) {
+						List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(vLog.getStateFlowId(), vLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOGGING, vLog, (FacilioContext)context);
+						long nextTransitionId = nextStateRule.get(0).getId();
+						context.put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
+					}
 					context.put(FacilioConstants.ContextNames.VISITOR_LOGGING, vLog);
 				}
 				else {
@@ -47,6 +52,8 @@ public class QrScanVisitorLogCommand extends FacilioCommand{
 					context.put(FacilioConstants.ContextNames.VISITOR_LOGGING, validChildLog);
 					
 				}
+				
+				
 			}
 			
 		}
