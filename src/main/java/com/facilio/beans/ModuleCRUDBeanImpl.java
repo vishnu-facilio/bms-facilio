@@ -1,25 +1,5 @@
 package com.facilio.beans;
 
-import java.io.File;
-import java.sql.BatchUpdateException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
-import com.amazonaws.services.kinesis.model.Record;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
@@ -33,30 +13,12 @@ import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.actions.ReadingAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.ControllerAPI;
-import com.facilio.bmsconsole.util.PMStatus;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -77,23 +39,24 @@ import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.procon.consumer.FacilioConsumer;
-import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.io.File;
+import java.sql.BatchUpdateException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -653,21 +616,34 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record,
-			IRecordProcessorCheckpointer checkPointer, boolean adjustTime) throws Exception {
-			TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, checkPointer, null, adjustTime);
+	public void processTimeSeries(long timeStamp, JSONObject payLoad, FacilioRecord record, boolean adjustTime) throws Exception {
+			TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, null, adjustTime);
 	}
 
 	@Override
-	public void processTimeSeries(FacilioConsumer consumer, FacilioRecord record) throws Exception {
+	public void processTimeSeries( FacilioRecord record) throws Exception {
 		try {
-			TimeSeriesAPI.processFacilioRecord(consumer, record);
+			TimeSeriesAPI.processFacilioRecord(record);
 		} catch (AmazonS3Exception e) {
 			LOGGER.info("s3 exception " + e.getLocalizedMessage());
 		}
 	}
 
-	@Override
+  /*  @Override
+    public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer, boolean adjustTime) throws Exception {
+        TimeSeriesAPI.processPayLoadOld(timeStamp, payLoad, record, checkpointer, null, adjustTime);
+    }
+
+    @Override
+    public void processTimeSeries(FacilioConsumer consumer, FacilioRecord record) throws Exception {
+        try {
+            TimeSeriesAPI.processFacilioRecordOld(consumer, record);
+        } catch (AmazonS3Exception e) {
+            LOGGER.info("s3 exception " + e.getLocalizedMessage());
+        }
+    }*/
+
+    @Override
 	public long processEvents(long timeStamp, JSONObject payLoad, List<EventRuleContext> eventRules,
 			Map<String, Integer> eventCountMap, long lastEventTime, String partitionKey) throws Exception {
 		if (partitionKey != null && !partitionKey.isEmpty()) {
@@ -862,12 +838,13 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public Long updateAgentMessage(Map<String,Object> map) throws Exception{ // transaction done
 		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
 		try{
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentMessageFields());
 			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
 					.table(messageModule.getTableName())
-					.fields(FieldFactory.getAgentMessageFields())
+					.fields(new ArrayList<>(fieldMap.values()))
 //					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
-                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessageStatusField(messageModule),"0",NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),map.get(AgentKeys.RECORD_ID).toString(),StringOperators.IS));
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.MSG_STATUS),"0",NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.RECORD_ID),map.get(AgentKeys.RECORD_ID).toString(),StringOperators.IS));
 
 			Integer rowsAffected= updateRecordBuilder.update(map);
 			return Long.valueOf(rowsAffected);

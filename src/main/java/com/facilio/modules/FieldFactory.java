@@ -1,18 +1,5 @@
 package com.facilio.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
@@ -20,12 +7,12 @@ import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.*;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -325,15 +312,13 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getAgentMessageModule();
 		fields.add(getIdField(module));
-		fields.add(getAgentMessagePartitionKeyField(module));
+		fields.add(getField(AgentKeys.RECORD_ID,"RECORD_ID",module,FieldType.STRING));
 		fields.add(getAgentMessageStatusField(module));
 		fields.add(getAgentMessageStartTimeField(module));
 		fields.add(getField(AgentKeys.FINISH_TIME,"FINISH_TIME",module,FieldType.NUMBER));
 		return fields;
 	}
-	public static FacilioField getAgentMessagePartitionKeyField(FacilioModule module){
-		return getField(AgentKeys.RECORD_ID,"RECORD_ID",module,FieldType.STRING);
-	}
+
 	public static FacilioField getAgentMessageStartTimeField(FacilioModule module){
 		return getField(AgentKeys.START_TIME,"START_TIME",module,FieldType.NUMBER);
 	}

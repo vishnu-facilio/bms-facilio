@@ -29,6 +29,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -265,9 +266,54 @@ public class PointsAPI
         return null;
     }
 
-    public static void configurePoint(long agentId) {
-        if (( agentId > 0 )) {
-            FacilioChain editChain = TransactionChainFactory.getEditPointChain();
+    public static boolean configurePoint(long pointId) {
+        try {
+            if (( pointId > 0 )) {
+                FacilioChain editChain = TransactionChainFactory.getEditPointChain();
+                FacilioContext context = editChain.getContext();
+                context.put(FacilioConstants.ContextNames.CRITERIA,getIdCriteria(pointId));
+                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.IN_PROGRESS.getIndex())); //TODO write method to make it CONFIGURES on ack.
+                editChain.execute();
+                LOGGER.info(" before check "+context);
+                if( context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer)context.get(FacilioConstants.ContextNames.ROWS_UPDATED)>0)){
+                    LOGGER.info(" returning truew");
+                    return true;
+                }
+            }else {
+                throw new Exception(" pointId cant be less than 1");
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ",e);
         }
+        return false;
     }
+    public static boolean unConfigurePoint(Long pointId) {
+        try {
+            if (( pointId > 0 )) {
+                FacilioChain editChain = TransactionChainFactory.getEditPointChain();
+                FacilioContext context = editChain.getContext();
+                context.put(FacilioConstants.ContextNames.CRITERIA,getIdCriteria(pointId));
+                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.UNCONFIGURED.getIndex()));
+                editChain.execute();
+                LOGGER.info(" before check "+context);
+                if( context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer)context.get(FacilioConstants.ContextNames.ROWS_UPDATED)>0)){
+                    LOGGER.info(" returning truew");
+                    return true;
+                }
+            }else {
+                throw new Exception(" pointId cant be less than 1");
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ",e);
+        }
+        return false;
+    }
+
+    private static Criteria getIdCriteria(long pointId) {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getIdCondition(pointId,ModuleFactory.getPointModule()));
+        return criteria;
+    }
+
+
 }

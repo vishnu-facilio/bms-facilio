@@ -1,14 +1,10 @@
 package com.facilio.services.kafka;
 
 import com.facilio.agent.*;
-import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.ProcessorV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
+import com.facilio.dataprocessor.DataProcessorUtil;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
@@ -20,13 +16,10 @@ import com.facilio.util.AckUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static com.facilio.agent.PublishType.event;
 
 //Renamed from Processor
 public class KafkaProcessor extends FacilioProcessor {
@@ -38,11 +31,9 @@ public class KafkaProcessor extends FacilioProcessor {
     private HashMap<String, HashMap<String, Long>> deviceMessageTime = new HashMap<>();
     private long orgId;
     private String orgDomainName;
-    private JSONParser parser = new JSONParser();
     private static final Logger LOGGER = LogManager.getLogger(KafkaProcessor.class.getName());
     private ProcessorV2 processorV2;
-    private boolean isRestarted = true;
-
+    private DataProcessorUtil dataProcessorUtil;
 
     public KafkaProcessor(long orgId, String orgDomainName) {
         super(orgId, orgDomainName);
@@ -65,6 +56,7 @@ public class KafkaProcessor extends FacilioProcessor {
             processorV2 = null;
             LOGGER.info(" Exception occurred ",e);
         }
+        dataProcessorUtil = new DataProcessorUtil(orgId,orgDomainName);
         LOGGER.info("Initializing processor " + orgDomainName);
     }
 
@@ -72,39 +64,42 @@ public class KafkaProcessor extends FacilioProcessor {
     @Override
     public void processRecords(List<FacilioRecord> records) {
         for (FacilioRecord record : records) {
-            boolean alarmCreated = false;
-            long numberOfRows = 0;
             String recordId = record.getId();
-            try {
+            LOGGER.info(" getting messages via kafka "+recordId);
+            /*if( ( DataProcessorUtil.isIsRestarted()) && ( DataProcessorUtil.isDuplicate(record.getId())) ) {
                 try {
-                    boolean  isDuplicateMessage = agentUtil.isDuplicate(recordId);
-                    if ( isDuplicateMessage ) {
-                        if(isRestarted){
-                            LOGGER.info(" Duplicate message received but can be processed due to server-restart "+recordId);
-                            isRestarted = false;
-                        }
-                        else {
-                            LOGGER.info(" Duplicate message received and cannot be reprocessed "+recordId);
-                            continue;
-                        }
-                    }
-                    else {
-                        boolean originalFlag =false;
-                        originalFlag = agentUtil.addAgentMessage(recordId);
-                        if(!originalFlag){
-                            LOGGER.info("tried adding duplicate message "+ recordId);
-                            continue;
-                        }
-                    }
-                }catch (Exception e1){
-                    LOGGER.info("Exception Occured while adding agentMessage so, skipping record ",e1);
-                    continue;
+                    FacilioRecord record1 = new FacilioRecord("0",new JSONObject());
+                    record1.setId(DataProcessorUtil.getLastRecordChecked());
+                    getConsumer().commit(record);
+                    DataProcessorUtil.setIsRestarted(false);
+                    return;
+                } catch (Exception e) {
+                    LOGGER.info("Exception occurred while making new checkPointer",e);
                 }
+            }*/
+
+            if( true ){
+                try {
+                    if( ! dataProcessorUtil.processRecord(record) ){
+                        LOGGER.info("Exception while processing ->"+record.getData());
+                        }
+                    getConsumer().commit(record);
+                }catch (Exception e){
+                    LOGGER.info("Exception occurred ",e);
+                }
+                continue;
+
+            }
+
+            /*boolean alarmCreated = false;
+            long numberOfRows = 0;
+            try {
+
                 String data = "";
                 data = record.getData().toString();
                 if (data.isEmpty()) {
                     LOGGER.info(" Empty message received "+recordId);
-                    agentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
+                    DataProcessorUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
                     continue;
                 }
                 ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
@@ -178,7 +173,7 @@ public class KafkaProcessor extends FacilioProcessor {
                                     processTimeSeries(record);
                                     break;
                                 case devicepoints:
-                                    /*if(payLoad.containsKey(AgentConstants.CONTROLLER) && payLoad.containsKey(AgentConstants.CONTROLLER_TYPE) ){ // change name to controller
+                                    *//*if(payLoad.containsKey(AgentConstants.CONTROLLER) && payLoad.containsKey(AgentConstants.CONTROLLER_TYPE) ){ // change name to controller
                                         String controllerIdentifier = String.valueOf(payLoad.get(AgentConstants.CONTROLLER));
                                         if(controllerIdentifier != null){
                                             BmsController controller = cU.getController(agent.getId(),controllerIdentifier, FacilioControllerType.valueOf(Math.toIntExact((Long) payLoad.get(AgentConstants.CONTROLLER_TYPE))));
@@ -193,7 +188,7 @@ public class KafkaProcessor extends FacilioProcessor {
                                         }
                                     }else {
                                         LOGGER.info(" Exception occurred , payload is missing " + AgentConstants.CONTROLLER + "," + AgentConstants.CONTROLLER_TYPE);
-                                    }*/
+                                    }*//*
                                     devicePointsUtil.processDevicePoints(payLoad, orgId, agent.getId());
                                     break;
                                 case ack:
@@ -207,9 +202,9 @@ public class KafkaProcessor extends FacilioProcessor {
                                 case event:
                                     alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
                                     break;
-                               /* case controllers:
+                               *//* case controllers:
                                     LOGGER.info(" iamcvijaylogs   payload at case controllers "+payLoad);
-                                    dU.processDevices(agent,payLoad);*/
+                                    dU.processDevices(agent,payLoad);*//*
                             }
                             dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
                             deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
@@ -219,14 +214,14 @@ public class KafkaProcessor extends FacilioProcessor {
                             context.put(AgentKeys.NAME, agentName);
                             updateAgentTable.execute();
 
-                            /*GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
+                            *//*GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
                                   .andCondition()
-                                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));*/
+                                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));*//*
 
-                            /*Map<String, Object> toUpdate = new HashMap<>();
+                            *//*Map<String, Object> toUpdate = new HashMap<>();
                             toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
                             toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
-                            toUpdate.put(AgentKeys.STATE, 1);*/
+                            toUpdate.put(AgentKeys.STATE, 1);*//*
 
                             //genericUpdateRecordBuilder.update(toUpdate);
 
@@ -234,7 +229,7 @@ public class KafkaProcessor extends FacilioProcessor {
 
                         }
                         agentUtil.addAgentMetrics(dataLength, agent.getId(), publishType.getKey());
-                        agentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
+                        DataProcessorUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
                     }
 
                     catch (Exception e) {
@@ -253,6 +248,7 @@ public class KafkaProcessor extends FacilioProcessor {
             catch (Exception e) {
                 LOGGER.info("Exception occured", e);
             }
+            */
 
         }
     }
@@ -308,7 +304,7 @@ public class KafkaProcessor extends FacilioProcessor {
     private void processTimeSeries(FacilioRecord record) throws Exception {
         long orgCheck = 78;
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",orgId);
-        bean.processTimeSeries(getConsumer(), record);
+        bean.processTimeSeries(record);
     }
 
     private FacilioAgent getFacilioAgent(String agentName) {

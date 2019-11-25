@@ -1,8 +1,6 @@
 package com.facilio.timeseries;
 
-import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.PutRecordResult;
-import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.point.PointEnum;
@@ -34,7 +32,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.procon.consumer.FacilioConsumer;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.lang3.StringUtils;
@@ -72,10 +69,61 @@ public class TimeSeriesAPI {
 	}
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr, boolean adjustTime) throws Exception {
-		processPayLoad(ttime, payLoad, null, null, macAddr, adjustTime);
+		processPayLoad(ttime, payLoad, null, macAddr, adjustTime);
 	}
 	
-	public static void processPayLoad(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer, String macAddr, boolean adjustTime) throws Exception {
+	public static void processPayLoad(long ttime, JSONObject payLoad, FacilioRecord record, String macAddr, boolean adjustTime) throws Exception {
+
+		long timeStamp = getTimeStamp(ttime, payLoad);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TIMESTAMP , timeStamp);
+		context.put(FacilioConstants.ContextNames.PAY_LOAD , payLoad);
+		//Temp code. To be removed later *START*
+		if (record != null) {
+			context.put(FacilioConstants.ContextNames.FACILIO_RECORD, record);
+/*
+			context.put(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER, checkpointer);
+*/
+			//even if the above two lines are removed.. please do not remove the below partitionKey..
+			macAddr = record.getPartitionKey();
+		}
+		if (macAddr != null){
+			ControllerContext controller=  ControllerAPI.getController(macAddr);
+			if(controller!=null) {
+				context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
+			}
+		}
+		//Temp code. To be removed later *END*
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
+		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, adjustTime);
+		FacilioChain processDataChain = TransactionChainFactory.getProcessDataChain();
+		processDataChain.execute(context);
+	}
+	
+	public static void processFacilioRecord(FacilioRecord record) throws Exception {
+		if (record == null) {
+			return;
+		}
+		long timeStamp = getTimeStamp(record.getTimeStamp(), record.getData());
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TIMESTAMP , timeStamp);
+		context.put(FacilioConstants.ContextNames.PAY_LOAD , record.getData());
+		context.put(FacilioConstants.ContextNames.FACILIO_RECORD, record);
+/*
+		context.put(FacilioConstants.ContextNames.FACILIO_CONSUMER, consumer);
+*/
+		//even if the above two lines are removed.. please do not remove the below partitionKey..
+		ControllerContext controller=  ControllerAPI.getController(record.getPartitionKey());
+		if(controller!=null) {
+			context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
+		}
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
+		FacilioChain processDataChain = TransactionChainFactory.getProcessDataChain();
+		processDataChain.execute(context);
+	}
+
+/*
+	public static void processPayLoadOld(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer, String macAddr, boolean adjustTime) throws Exception {
 
 		long timeStamp = getTimeStamp(ttime, payLoad);
 		FacilioContext context = new FacilioContext();
@@ -100,8 +148,9 @@ public class TimeSeriesAPI {
 		FacilioChain processDataChain = TransactionChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
 	}
-	
-	public static void processFacilioRecord(FacilioConsumer consumer, FacilioRecord record) throws Exception {
+*/
+
+	/*public static void processFacilioRecordOld(FacilioConsumer consumer, FacilioRecord record) throws Exception {
 		if (record == null) {
 			return;
 		}
@@ -119,8 +168,9 @@ public class TimeSeriesAPI {
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
 		FacilioChain processDataChain = TransactionChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
-	}
-	
+	}*/
+
+
 
 	private static long getTimeStamp(long ttime, JSONObject payLoad) {
 

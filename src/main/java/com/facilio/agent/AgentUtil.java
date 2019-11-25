@@ -10,7 +10,6 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -23,7 +22,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -480,56 +478,7 @@ public  class AgentUtil
         return genericSelectRecordBuilder.get();
     }
 
-    public boolean addAgentMessage(String recordId) throws Exception{
-        return addOrUpdateAgentMessage(recordId,MessageStatus.RECIEVED);
-    }
-    public boolean updateAgentMessage(String recordId,MessageStatus messageStatus) throws Exception{
-        return addOrUpdateAgentMessage(recordId,messageStatus);
-    }
 
-    private   boolean addOrUpdateAgentMessage(String recordId, MessageStatus messageStatus)throws Exception{
-        boolean status = false;
-
-            Map<String,Object> map = new HashMap<>();
-            map.put(AgentKeys.RECORD_ID,recordId);
-            map.put(AgentKeys.MSG_STATUS,messageStatus.getStatusKey());
-            map.put(AgentKeys.START_TIME,System.currentTimeMillis());
-
-            FacilioChain updateAgentMessageChain = TransactionChainFactory.getUpdateAgentMessageChain();
-            FacilioChain addAgentMessageChain = TransactionChainFactory.getAddAgentMessageChain();
-
-            FacilioContext context = new FacilioContext();
-            context.put(AgentKeys.ORG_ID,orgId);
-
-
-            if(messageStatus == MessageStatus.RECIEVED ){
-                try {
-                    context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,map);
-                    if (addAgentMessageChain.execute(context)) {
-                        status = true;
-                    }
-                }catch (MySQLIntegrityConstraintViolationException e){
-                    LOGGER.info("Duplicate Message "+e.getMessage());
-                }
-            }
-
-            else if(messageStatus == MessageStatus.DATA_EMPTY){
-                map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
-                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,map);
-                if(updateAgentMessageChain.execute(context)){
-                    status = true;
-                }
-            }
-            else {
-                map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
-                map.remove(AgentKeys.START_TIME);
-                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,map);
-                if(updateAgentMessageChain.execute(context)){
-                    status = true;
-                }
-            }
-           return status;
-    }
 
     // not used
     /**
@@ -611,31 +560,7 @@ public  class AgentUtil
         }
     }
 
-    public boolean isDuplicate(String recordId) throws Exception{
-        boolean status = true;
-            FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
-            FacilioContext context = new FacilioContext();
 
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule), recordId, StringOperators.IS));
-
-            context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentKeys.AGENT_MESSAGE_TABLE);
-            context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getAgentMessageFields());
-            context.put(FacilioConstants.ContextNames.MODULE, messageModule);
-            context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
-            try {
-                ModuleCRUDBean bean;
-                bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-                List<Map<String, Object>> rows = bean.getRows(context);
-                if (((rows == null) || (rows.isEmpty()))) {
-                    status = false;
-                }
-            } catch (Exception e) {
-                LOGGER.info("Exception Occurred ", e);
-                throw e;
-            }
-        return status;
-    }
 
     public static FacilioAgent getAgentDetails(long agentId) throws Exception {
     		List<FacilioAgent> agents = getAgents(Collections.singletonList(agentId));

@@ -149,6 +149,15 @@ public class AgentApiV2 {
         return -1;
     }
 
+    public static long addAgent(JSONObject jsonObject) {
+        if( (jsonObject != null) && ( ! jsonObject.isEmpty() ) ){
+            if( containsValueCheck(AgentConstants.NAME,jsonObject) && containsValueCheck(AgentConstants.TYPE,jsonObject) && containsValueCheck(AgentConstants.SITE_NAME,jsonObject)){
+
+            }
+        }
+        return -1;
+    }
+
 
     private FacilioAgent getAgent(Controller controller) throws Exception {
         if ((controller != null)) {

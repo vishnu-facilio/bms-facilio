@@ -6,19 +6,15 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.agent.*;
-import com.facilio.agentIntegration.wattsense.WattsenseUtil;
-import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.ProcessorV2;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
+import com.facilio.dataprocessor.DataProcessorUtil;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
+import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.util.AckUtil;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
@@ -26,7 +22,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.io.StringReader;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
@@ -50,7 +46,7 @@ public class KinesisProcessor implements IRecordProcessor {
     private Boolean isStage = !FacilioProperties.isProduction();
     private  boolean isRestarted = true;
     private ProcessorV2 processorV2;
-
+    private DataProcessorUtil dataProcessorUtil;
 
     public static final String DATA_TYPE = "PUBLISH_TYPE";
     private List<EventRuleContext> eventRules = new ArrayList<>();
@@ -60,6 +56,7 @@ public class KinesisProcessor implements IRecordProcessor {
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
         this.errorStream = orgDomainName + "-error";
+        dataProcessorUtil = new DataProcessorUtil(orgId,orgDomainName);
         agentUtil = new AgentUtil(orgId, orgDomainName);
         agentUtil.populateAgentContextMap(null,null);
         devicePointsUtil = new DevicePointsUtil();
@@ -95,16 +92,78 @@ public class KinesisProcessor implements IRecordProcessor {
         this.shardId = initializationInput.getShardId();
     }
 
+    public void toDataProcessor(ProcessRecordsInput processRecordsInput){
+        for (Record record : processRecordsInput.getRecords()) {
+
+            FacilioRecord facilioRecord = toFacilioRecord(record);
+
+            if( facilioRecord != null){
+
+              /*  if( ( DataProcessorUtil.isIsRestarted()) &&  (  DataProcessorUtil.isDuplicate(facilioRecord.getId())) ) {
+                    try {
+                        processRecordsInput.getCheckpointer().checkpoint(DataProcessorUtil.getLastRecordChecked());
+                        DataProcessorUtil.setIsRestarted(false);
+                        return;
+                    } catch (Exception e) {
+                        LOGGER.info("Exception occurred while making new checkPointer",e);
+                    }
+                }*/
+                try{
+
+                    if(dataProcessorUtil.processRecord(facilioRecord)){
+                        LOGGER.info("Exception while processing kinesis record -> "+record.getData());
+                    }
+                    processRecordsInput.getCheckpointer().checkpoint(DataProcessorUtil.getLastRecordChecked());
+                } catch (Exception e) {
+                    LOGGER.info("Exception occurred in changing checkpoint ");
+                }
+            }
+
+        }
+
+    }
+
+    static FacilioRecord toFacilioRecord(Record record) {
+        if(record != null) {
+            String data = "";
+            try {
+                JSONParser parser = new JSONParser();
+                ByteBuffer byteData = record.getData();
+                JSONObject jsonData = new JSONObject();
+                if ((byteData != null)) {
+                    CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+                    data = decoder.decode(byteData).toString();
+                    jsonData = (JSONObject) parser.parse(data);
+                }
+                jsonData.put("timestamp", "" + record.getApproximateArrivalTimestamp().getTime());
+                jsonData.put("key", record.getPartitionKey());
+                jsonData.put("sequenceNumber", record.getSequenceNumber());
+                FacilioRecord facilioRecord = new FacilioRecord(record.getPartitionKey(), jsonData);
+                facilioRecord.setId(record.getSequenceNumber());
+                System.out.println(" json data " + facilioRecord.getData());
+                return facilioRecord;
+            } catch (Exception e) {
+                LOGGER.info("Exception occurred while converting kinesis record to facilio record ", e);
+            }
+        }
+    return null;
+    }
+
     @Override
     public void processRecords(ProcessRecordsInput processRecordsInput) {
-        for (Record record : processRecordsInput.getRecords()) {
+
+        if(true){
+            toDataProcessor(processRecordsInput);
+            return;
+        }
+        /*for (Record record : processRecordsInput.getRecords()) {
             String data = "";
             StringReader reader = null;
             String recordId = record.getSequenceNumber();
             try {
 
                 try {
-                    boolean  isDuplicateMessage = agentUtil.isDuplicate(recordId);
+                    boolean  isDuplicateMessage = DataProcessorUtil.isDuplicate(recordId);
                     if ( isDuplicateMessage ) {
                         if(isRestarted){
                             LOGGER.info(" Duplicate message received but can be processed due to server-restart "+recordId);
@@ -117,7 +176,7 @@ public class KinesisProcessor implements IRecordProcessor {
                     }
                     else {
                         boolean originalFlag =false;
-                        originalFlag = agentUtil.addAgentMessage(recordId);
+                        originalFlag = DataProcessorUtil.addAgentMessage(recordId);
                         if(!originalFlag){
                             LOGGER.info("tried adding duplicate message "+ recordId);
                             continue;
@@ -130,7 +189,7 @@ public class KinesisProcessor implements IRecordProcessor {
                 data = decoder.decode(record.getData()).toString();
                 if (data.isEmpty()) {
                     LOGGER.info(" Empty message received "+recordId);
-                    agentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
+                    DataProcessorUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
                     continue;
                 }
 
@@ -141,6 +200,7 @@ public class KinesisProcessor implements IRecordProcessor {
                 }
 
                 reader = new StringReader(data);
+                parser.parse(data);
                 JSONObject payLoad = (JSONObject) parser.parse(reader);
                 try {
                     if (payLoad.containsKey(AgentConstants.VERSION) && (("2".equalsIgnoreCase((String) payLoad.get(AgentConstants.VERSION))))) {
@@ -265,17 +325,17 @@ public class KinesisProcessor implements IRecordProcessor {
 
 
 
-                        /*GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
+                        *//*GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
                                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()),agentName,StringOperators.IS))
                                 .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
                         Map<String,Object> toUpdate = new HashMap<>();
                         toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
                         toUpdate.put(AgentKeys.STATE, 1);
                         toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, lastMessageReceivedTime);
-                        genericUpdateRecordBuilder.update(toUpdate);*/
+                        genericUpdateRecordBuilder.update(toUpdate);*//*
 
                 }
-                agentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
+                DataProcessorUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
             } catch (Exception e) {
                 try {
                     if(FacilioProperties.isProduction()) {
@@ -289,7 +349,7 @@ public class KinesisProcessor implements IRecordProcessor {
                         +record.getSequenceNumber()+ " in TimeSeries ", e, data);
                 LOGGER.info("Exception occurred ", e);
             }
-        }
+        }*/
         // LOGGER.debug("TOTAL PROCESSOR DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::TIME TAKEN : "+(System.currentTimeMillis() - processStartTime));
     }
 
@@ -370,7 +430,7 @@ public class KinesisProcessor implements IRecordProcessor {
         /*if (AccountUtil.getCurrentOrg().getId() == 146 ) {
             LOGGER.info("Payload in processor : "+payLoad);
         }*/
-        bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer(), isTimeSeries);
+        //bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer(), isTimeSeries);
         long timeTaken = (System.currentTimeMillis() - startTime);
         if(timeTaken >  100000L){
             LOGGER.info("timetaken : "+timeTaken);

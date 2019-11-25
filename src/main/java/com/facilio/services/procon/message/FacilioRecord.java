@@ -8,9 +8,14 @@ public class FacilioRecord {
     private JSONObject data;
     private long timeStamp;
     private String id;
+    private long size;
 
     public FacilioRecord(String partitionKey, JSONObject data) {
         this.data = data;
+        size = 0;
+        if( (data != null) && (!data.isEmpty()) ){
+            size = data.size();
+        }
         this.partitionKey = partitionKey;
         timeStamp = System.currentTimeMillis();
     }
@@ -46,4 +51,8 @@ public class FacilioRecord {
     public void setId(String id) {
         this.id = id;
     }
+
+    public long getSize() { return size; }
+
+    public void setSize(long size) { this.size = size; }
 }

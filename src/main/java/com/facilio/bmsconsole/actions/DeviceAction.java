@@ -329,8 +329,21 @@ public class DeviceAction extends ActionSupport
 
 	public String configurePoint(){
 		if( checkValue( getPointId() ) ){
-			PointsAPI.configurePoint(getAgentId());
+			setResult(RESULT,PointsAPI.configurePoint(getPointId()));
+		}else {
+			setResult(RESULT,"Exception, pointId not correct");
 		}
+		setResult(RESULT,false);
+		return SUCCESS;
+	}
+
+	public String unConfigurePoint(){
+		if( checkValue( getPointId() ) ){
+			setResult(RESULT,PointsAPI.unConfigurePoint(getPointId()));
+		}else {
+			setResult(RESULT,"Exception, pointId not correct");
+		}
+		setResult(RESULT,false);
 		return SUCCESS;
 	}
 
@@ -345,6 +358,13 @@ public class DeviceAction extends ActionSupport
 		}
 		setResult(AgentConstants.DATA,new JSONObject());
 	return SUCCESS;
+	}
+
+	public String addAgent(){
+		if ( (getJsonObject() != null) && ( ! getJsonObject().isEmpty() ) ) {
+			AgentApiV2.addAgent(getJsonObject());
+		}
+		return SUCCESS;
 	}
 
 

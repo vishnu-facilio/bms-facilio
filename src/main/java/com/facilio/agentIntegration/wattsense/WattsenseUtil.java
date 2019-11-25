@@ -58,35 +58,45 @@ public class WattsenseUtil
 
     private static final String NOT_DELETED = "-1";
 
+    private static boolean notNullAndEmpty(String s){
+        return (s != null) && (!s.isEmpty());
+    }
+
+    private static boolean authenticate(String username,String password) {
+            return authStringEnc(getEncodedBasicAuthString(username, password));
+    }
+
+    private static boolean authStringEnc(String authStr) {
+        try {
+            HttpGet get = new HttpGet(AgentIntegrationUtil.getWattsenseAuthApi());
+            get.addHeader(HttpHeaders.AUTHORIZATION, authStr);
+            HttpResponse response = httpclient.execute(get);
+            if ((response.getStatusLine().getStatusCode()) == 200) {
+                return true;
+            } else {
+                LOGGER.info("authenticating with Wattsense failed");
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception while authenticating with Wattsense", e);
+        }
+        return false;
+    }
+
     public static boolean authenticateAndConfigureWattsense(String username, String password)  {
         try {
-            if(username == null || password == null){
+            if( notNullAndEmpty(username) || password == null){
                 LOGGER.info("Authentication params not proper");
                 return false;
             }
             Wattsense wattsense = new Wattsense();
             wattsense.setUserName(username);
-            String authStringEnc = getEncodedBasicAuthString(username,password);
-            HttpGet get = new HttpGet(AgentIntegrationUtil.getWattsenseAuthApi());
-            get.addHeader(HttpHeaders.AUTHORIZATION, authStringEnc);
-            HttpResponse response = httpclient.execute(get);
-            if ((response.getStatusLine().getStatusCode()) == 200) { // if status is 200 proceed
-                String result = getResponseString(response);
-                JSONObject jsonObject = new JSONObject();
-                JSONParser parser = new JSONParser();
-                try {
-                    jsonObject = (JSONObject) parser.parse(result); // json for getting data if needed.
-                } catch (ParseException e) {
-                    LOGGER.info("Exception Occurred 1",e);
-                    return false;
-                }
-                String wattClientId = AgentIntegrationKeys.CLIENT_ID_TAG+"-"+ Objects.requireNonNull(AccountUtil.getCurrentOrg()).getDomain();
-                LOGGER.info("wattsense client id generated - "+wattClientId);
+
+            if (authenticate(username,password)) { // if status is 200 proceed
+                String wattClientId = AgentIntegrationKeys.CLIENT_ID_TAG + "-" + Objects.requireNonNull(AccountUtil.getCurrentOrg()).getDomain();
+                LOGGER.info("wattsense client id generated - " + wattClientId);
                 wattsense.setClientId(wattClientId);
-                wattsense.setAuthStringEncoded(authStringEnc);
+                wattsense.setAuthStringEncoded(getEncodedBasicAuthString(username, password));
                 return integrateWattsense(wattsense);
-            }else {
-                LOGGER.info("Exception occurred while basic http authentication - response "+response.getStatusLine().getStatusCode());
             }
         }catch (Exception e){
             LOGGER.info("Exception while authentication ",e);
@@ -94,6 +104,7 @@ public class WattsenseUtil
         }
         return false;
     }
+
     private static String getEncodedBasicAuthString(String userName, String password){
         byte[] authEncodedBytes = Base64.getEncoder().encode((userName + ":" + password).getBytes());
         String authStringEncoded = basic + new String(authEncodedBytes);
