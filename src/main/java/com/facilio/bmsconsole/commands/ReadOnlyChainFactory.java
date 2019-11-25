@@ -1745,6 +1745,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkPermit());
 		c.addCommand(new LoadWorkPermitLookUpsCommand());
+		c.addCommand(new LoadWorkPermitLookUpsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new LoadWorkPermitRecurringInfoCommand());
 		
