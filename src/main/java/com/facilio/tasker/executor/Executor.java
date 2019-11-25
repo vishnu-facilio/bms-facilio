@@ -10,6 +10,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.util.FacilioUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -79,6 +81,7 @@ public class Executor implements Runnable {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			LOGGER.error("Exception occurred ", e);
+			CommonCommandUtil.emailException("Executor", this.name+" - Executor Down", e);
 		}
 		finally {
 			currentThread.setName(threadName);
