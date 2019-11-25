@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.io.File;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -13,7 +12,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.facilio.bmsconsole.commands.UpdateWoIdInNewAlarmCommand;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,6 +30,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.UpdateWoIdInNewAlarmCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
@@ -1225,7 +1224,7 @@ public enum ActionType {
 						if(isHtmlContent != null && htmlContentString != null && isHtmlContent)
 						{						
 							htmlContentString = "\'" + htmlContentString+ "\'";
-							Long fileId = PdfUtil.exportUrlAsPdf("http://www.facilio.com", null, htmlContentString, FileFormat.IMAGE);
+							Long fileId = PdfUtil.exportUrlAsPdf("http://www.facilio.com", null, htmlContentString, null, FileFormat.IMAGE);
 							
 							if(fileId !=null )
 							{

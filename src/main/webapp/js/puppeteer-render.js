@@ -11,6 +11,7 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
     var token = process.argv[4]
     var domain  = process.argv[5]
     var htmlContent  = process.argv[6]
+    var infoStr  = process.argv[7]
 
     var cookies = [
         {
@@ -40,15 +41,27 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
     ]
 
     try{
+    		
+    		let size = {width: 800, height: 768};
+    		if (infoStr) {
+    			let info = JSON.parse(infoStr);
+    			if (info.width) {
+    				size.width = info.width;
+    			}
+    			if (info.height) {
+    				size.height = info.height;
+    			}
+    		}
+    	
         await page.setCookie(... cookies)
         await page.emulateMedia('print');
-        await page.setViewport({width: 800, height: 768});
+        await page.setViewport(size);
         await page.setExtraHTTPHeaders({
             'X-Is-Export': 'true',
             'X-Device-Type': 'puppeteer'
         })
         
-        if(htmlContent)
+        if(htmlContent && htmlContent != "false")
         {
         	await page.setContent(htmlContent, {
                 waitUntil: 'networkidle0'
