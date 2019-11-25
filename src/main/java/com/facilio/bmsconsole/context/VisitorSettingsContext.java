@@ -89,7 +89,7 @@ public class VisitorSettingsContext implements Serializable {
 		{
 			JSONObject hostSettingsDefault=new JSONObject() ;
 			hostSettingsDefault.put("requireApproval", false);
-			hostSettingsDefault.put("hostType", "user");
+			hostSettingsDefault.put("hostType", Integer.toString(ContactsContext.ContactType.EMPLOYEE.getIndex()));
 			return hostSettingsDefault;
 		}
 		return hostSetttings;
