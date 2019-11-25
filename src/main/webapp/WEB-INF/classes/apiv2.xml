@@ -341,6 +341,10 @@
 		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="viewStateTransition" />
+
+		<action name="detailsFromToken"
+				class="com.facilio.bmsconsole.actions.StateFlowAction"
+				method="getTransitionDetailsFromPermalink" />
 	</package>
 	
 	<package name="automation" namespace="/api/v2/automation" extends="v2Api">

@@ -1774,4 +1774,13 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetSubFormModulesCommand());
 		return chain;
 	}
+
+	public static FacilioChain getStateTransitionDetailsFromPermalink() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetPermalinkDetailsCommand());
+		chain.addCommand(new GetStateTransitionIdFromSessionCommand());
+		chain.addCommand(new GetStateTransitionCommand());
+		chain.addCommand(new VerifyTransitionAccessFromPermalinkCommand());
+		return chain;
+	}
 }

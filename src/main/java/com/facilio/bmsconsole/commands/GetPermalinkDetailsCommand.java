@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;

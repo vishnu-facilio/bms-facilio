@@ -89,6 +89,20 @@ public class StateflowTransitionContext extends ApproverWorkflowRuleContext impl
 		this.scheduleTime = scheduleTime;
 	}
 
+	private Boolean shouldExecuteFromPermalink;
+	public Boolean getShouldExecuteFromPermalink() {
+		return shouldExecuteFromPermalink;
+	}
+	public void setShouldExecuteFromPermalink(Boolean shouldExecuteFromPermalink) {
+		this.shouldExecuteFromPermalink = shouldExecuteFromPermalink;
+	}
+	public Boolean isShouldExecuteFromPermalink() {
+		if (shouldExecuteFromPermalink == null) {
+			return false;
+		}
+		return shouldExecuteFromPermalink;
+	}
+
 	// temporary fix
 	private Boolean showInVendorPortal;
 	public Boolean getShowInVendorPortal() {

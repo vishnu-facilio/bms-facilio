@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -276,5 +277,19 @@ public class StateFlowAction extends FacilioAction {
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateStateChain();
 		chain.execute(context);
 		return SUCCESS;
+	}
+
+	public String getTransitionDetailsFromPermalink() throws Exception {
+		String token = ServletActionContext.getRequest().getHeader("X-Permalink-Token");
+
+		FacilioChain chain = ReadOnlyChainFactory.getStateTransitionDetailsFromPermalink();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.TOKEN, token);
+
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
+        setResult(FacilioConstants.ContextNames.SESSION, context.get(FacilioConstants.ContextNames.SESSION));
+        return SUCCESS;
 	}
 }
