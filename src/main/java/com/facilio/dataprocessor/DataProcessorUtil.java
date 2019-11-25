@@ -405,10 +405,10 @@ public class DataProcessorUtil {
                 .orderBy(AgentKeys.ID + " DESC ")
                 .limit(1);
         List<Map<String, Object>> record = builder.get();
-        LOGGER.info(" select query -> " + builder.toString());
+        //LOGGER.info(" select query -> " + builder.toString());
         if (!record.isEmpty()) {
             if (record.get(0).containsKey(AgentKeys.MSG_STATUS)) {
-                LOGGER.info(" record selected is -> " + record.get(0));
+                //OGGER.info(" record selected is -> " + record.get(0));
                 return (String) record.get(0).get(AgentKeys.RECORD_ID);
             } else {
                 throw new Exception(AgentKeys.MSG_STATUS + " field missing from record selected ->" + record.get(0));
