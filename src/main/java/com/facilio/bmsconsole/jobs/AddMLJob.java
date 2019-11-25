@@ -28,11 +28,11 @@ public class AddMLJob extends FacilioJob {
 				if(!props.containsKey("parentHierarchy") || (props.containsKey("parentHierarchy") && props.get("parentHierarchy").toString().equalsIgnoreCase("true"))){
 					FacilioChain c = FacilioChainFactory.enableAnomalyDetectionChain();
 					context.put("TreeHierarchy", props.get("TreeHierarchy"));
-					context.put("meterInterval", props.get("meterInterval"));
 					context.put("energyDeltaField", props.get("energyDeltaField"));
 					context.put("markedField", props.get("markedField"));
 					context.put("parentIdField", props.get("parentIdField"));
 					context.put("mlVariables", props.get("mlVariables"));
+					context.put("mlModelVariables", props.get("mlModelVariables"));
 					if(props.containsKey("ratioHierarchy"))
 					{
 						context.put("ratioHierarchy", props.get("ratioHierarchy"));
@@ -43,11 +43,11 @@ public class AddMLJob extends FacilioJob {
 					for (int i = 0; i < ids.length; i++) {
 						FacilioChain c = FacilioChainFactory.enableAnomalyDetectionChain();
 						context.put("TreeHierarchy", ids[i]);
-						context.put("meterInterval", props.get("meterInterval"));
 						context.put("energyDeltaField", props.get("energyDeltaField"));
 						context.put("markedField", props.get("markedField"));
 						context.put("parentIdField", props.get("parentIdField"));
 						context.put("mlVariables", props.get("mlVariables"));
+						context.put("mlModelVariables", props.get("mlModelVariables"));
 						c.execute(context);
 					}
 				}

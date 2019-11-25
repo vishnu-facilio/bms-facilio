@@ -62,7 +62,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		fieldObj = ((JSONObject)context.get("parentIdField"));
 		FacilioField energyParentField = modBean.getField(fieldObj.get("fieldName").toString(), fieldObj.get("moduleName").toString());
 		
-		buildGamModel(assetContextList,(String) context.get("meterInterval"),(JSONObject)((JSONObject)context.get("mlVariables")).get("buildGam") ,energyField,markedField,energyParentField);
+		buildGamModel(assetContextList,(JSONObject)((JSONObject)context.get("mlVariables")).get("buildGam"),(JSONObject)context.get("mlModelVariables"),energyField,markedField,energyParentField);
 				
 		Long categoryId=assetContextList.get(0).getCategory().getId();
 		AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
@@ -97,12 +97,12 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		{
 			ratioCheckMLid = addRatioCheckModel(categoryId,assetContextList,(String)context.get("TreeHierarchy"),moduleNames,(JSONObject)((JSONObject)context.get("mlVariables")).get("ratioCheck"),energyField.getId());
 		}
-		checkGamModel(ratioCheckMLid,assetContextList,(String) context.get("meterInterval"),(JSONObject)((JSONObject)context.get("mlVariables")).get("checkGam"),energyField,markedField,energyParentField);
+		checkGamModel(ratioCheckMLid,assetContextList,(JSONObject)((JSONObject)context.get("mlVariables")).get("checkGam"),(JSONObject)context.get("mlModelVariables"),energyField,markedField,energyParentField);
 		
 		return false;
 	}
 	
-	private void checkGamModel(long ratioCheckMLID, LinkedList<AssetContext> assetContextList,String meterInterval,JSONObject mlVariables,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
+	private void checkGamModel(long ratioCheckMLID, LinkedList<AssetContext> assetContextList,JSONObject mlVariables,JSONObject mlModelVariables,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
 	{
 		JSONArray mlIDList = new JSONArray();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -138,15 +138,12 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			MLAPI.addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");
 			
 			MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
-			MLAPI.addMLModelVariables(mlID,"dimension1","WEEKDAY");
-			MLAPI.addMLModelVariables(mlID,"dimension1Value","[1,2,3,4,5],[6,7]");
-			MLAPI.addMLModelVariables(mlID,"tableValue","1.96");
-			MLAPI.addMLModelVariables(mlID,"adjustmentPercentage","10");
-			MLAPI.addMLModelVariables(mlID,"orderRange","2");
-			MLAPI.addMLModelVariables(mlID,"meterInterval",meterInterval);
-			MLAPI.addMLModelVariables(mlID,"modelname","catboost");
-			MLAPI.addMLModelVariables(mlID,"ml_custom_configs","{\"inputmetrics\" : [\"LOCAL_TTIME\",\"totalEnergyConsumptionDelta\",\"HOUR\", \"prevWeekMedianEnergy\",\"currentWeekMedianEnergy\",\"prevWeekEnergy\",\"prevDayEnergy\"],\"outputmetrics\" : \"totalEnergyConsumptionDelta\" ,\"optionalVariables\" : [\"marked\" , \"temperature\"] ,\"additionalVariables\": [] ,\"Aggregator\" : {\"totalEnergyConsumptionDelta\": \"sum\" ,\"marked\":\"sum\" , \"runStatus\":\"sum\"}}");
-			MLAPI.addMLModelVariables(mlID,"percentile","5");
+			
+			for(Object entry:mlModelVariables.entrySet()){
+				Map.Entry<String, String> en = (Map.Entry) entry;
+				MLAPI.addMLModelVariables(mlID, en.getKey(), en.getValue());
+			}
+			
 			ScheduleInfo info = new ScheduleInfo();
 			info.setFrequencyType(FrequencyType.DAILY);
 			
@@ -369,7 +366,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		return mlID;
 	}
 	
-	private void buildGamModel(List<AssetContext> assetContextList,String meterInterval,JSONObject mlVariables,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
+	private void buildGamModel(List<AssetContext> assetContextList,JSONObject mlVariables,JSONObject mlModelVariables,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -401,15 +398,11 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			MLAPI.addMLAssetVariables(mlID,emContext.getSiteId(),"TYPE","Site");
 			
 			MLAPI.addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
-			MLAPI.addMLModelVariables(mlID,"dimension1","WEEKDAY");
-			MLAPI.addMLModelVariables(mlID,"dimension1Value","[1,2,3,4,5],[6,7]");
-			MLAPI.addMLModelVariables(mlID,"tableValue","1.96");
-			MLAPI.addMLModelVariables(mlID,"percentile","5");
-			MLAPI.addMLModelVariables(mlID,"adjustmentPercentage","10");
-			MLAPI.addMLModelVariables(mlID,"orderRange","2");
-			MLAPI.addMLModelVariables(mlID,"meterInterval",meterInterval);
-			MLAPI.addMLModelVariables(mlID,"modelname","catboost");
-			MLAPI.addMLModelVariables(mlID,"ml_custom_configs","{\"inputmetrics\" : [\"LOCAL_TTIME\",\"totalEnergyConsumptionDelta\",\"HOUR\", \"prevWeekMedianEnergy\",\"currentWeekMedianEnergy\",\"prevWeekEnergy\",\"prevDayEnergy\"],\"outputmetrics\" : \"totalEnergyConsumptionDelta\" ,\"optionalVariables\" : [\"marked\" , \"temperature\"] ,\"additionalVariables\": [] ,\"Aggregator\" : {\"totalEnergyConsumptionDelta\": \"sum\" ,\"marked\":\"sum\" , \"runStatus\":\"sum\"}}");
+			
+			for(Object entry:mlModelVariables.entrySet()){
+				Map.Entry<String, String> en = (Map.Entry) entry;
+				MLAPI.addMLModelVariables(mlID, en.getKey(), en.getValue());
+			}
 			ScheduleInfo info = new ScheduleInfo();
 			info.setFrequencyType(FrequencyType.DAILY);
 			MLAPI.addJobs(mlID,"DefaultMLJob",info,"ml");
