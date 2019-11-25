@@ -31,6 +31,7 @@ public class GetModuleListCommand extends FacilioCommand {
 			moduleList.add(modBean.getModule("building"));
 			moduleList.add(modBean.getModule("space"));
 			moduleList.add(modBean.getModule("alarm"));
+			moduleList.add(modBean.getModule("vendors"));
 		}
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
 		return false;
