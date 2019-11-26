@@ -93,14 +93,14 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 
 					Map<Integer,List<EnergyMeterContext>> sortedHierarchyVMMap = new TreeMap<Integer,List<EnergyMeterContext>>(hierarchyVMMap); 
 					
-					for(Integer hierarchy:sortedHierarchyVMMap.keySet()) {
-						List<EnergyMeterContext> vmList = sortedHierarchyVMMap.get(hierarchy);
-						System.out.println(" Hierarchy -- " + hierarchy + " VMs --" + vmList);
-						LOGGER.info(" VM Job Hierarchy -- " + hierarchy + " VMs --" + vmList + " Job Id --" + jc.getJobId());
-					}
 					
-					for(List<EnergyMeterContext> groupedVMList:sortedHierarchyVMMap.values())
-					{
+					for(Integer hierarchy:sortedHierarchyVMMap.keySet())
+					{		
+						List<EnergyMeterContext> groupedVMList = sortedHierarchyVMMap.get(hierarchy);
+						
+						System.out.println(" Hierarchy -- " + hierarchy + " VMs --" + groupedVMList);
+						LOGGER.info(" VM Job Hierarchy -- " + hierarchy + " VMs --" + groupedVMList + " Job Id --" + jc.getJobId());
+						
 						List<ReadingContext> hierarchicalVMReadings = new ArrayList<ReadingContext>();
 						List<MarkedReadingContext> hierarchicalMarkedList = new ArrayList<MarkedReadingContext>();
 						
@@ -117,6 +117,9 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 								hierarchicalMarkedList.addAll(markedList); //Grouping readings for all the meters in the same hierarchy	
 							}										
 						}
+						
+						LOGGER.info(" GroupedVMList Size -- " + groupedVMList.size() + " Job Id --" + jc.getJobId());
+						LOGGER.info(" hierarchicalVMReadings Size -- " + hierarchicalVMReadings.size() + " Job Id --" + jc.getJobId());
 						
 						DeviceAPI.insertVMReadingsBasedOnHierarchy(hierarchicalVMReadings,endTime,minutesInterval,true, false, hierarchicalMarkedList);						
 					}
@@ -226,10 +229,6 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 		}
 		return hierarchy;
 	}
-	
-//		else {
-//			return hierarchy; //check if no children for that VM, return hierarchy, if(childMeterIds==null || childMeterIds.isEmpty())
-//		}
 
 	private int getDefaultDataInterval() throws Exception {
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
