@@ -470,7 +470,7 @@ public class PreventiveMaintenanceAPI {
 
 		if (!isScheduled && pmTrigger.getFrequencyEnum() != FacilioFrequency.ANNUALLY) {
 			LOGGER.log(Level.WARN, "No Work orders generated for PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
-			CommonCommandUtil.emailAlert("No Work orders generated for pm", "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
+			//CommonCommandUtil.emailAlert("No Work orders generated for pm", "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 		}
 		return createBulkContextFromPM(context, pm, pmTrigger, woTemplate, nextExecutionTimes);
 	}
