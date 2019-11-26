@@ -65,7 +65,7 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 				for(EnergyMeterContext vm:virtualMeters) {
 					virtualEnergyMeterContextMap.put(vm.getId(), vm);
 				}
-				
+				LOGGER.info("VirtualMetersList Size -- " + virtualMeters.size() + " Job Id --" + jc.getJobId());
 				Map <Long, List<Long>> childMeterIdMap= new HashMap<Long,List<Long>>();
 				Map<Integer,List<EnergyMeterContext>> hierarchyVMMap = new HashMap<Integer, List<EnergyMeterContext>>();
 						
@@ -85,7 +85,12 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 							groupedVMList.add(vm);
 							hierarchyVMMap.put(hierarchy, groupedVMList);
 						}		
-					}			
+					}
+					else
+					{
+						LOGGER.info("Hierarchy null for -- " + vm.getId() + " Job Id --" + jc.getJobId());
+					}
+					
 				}
 				
 				if(MapUtils.isNotEmpty(hierarchyVMMap))
@@ -93,7 +98,9 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 
 					Map<Integer,List<EnergyMeterContext>> sortedHierarchyVMMap = new TreeMap<Integer,List<EnergyMeterContext>>(hierarchyVMMap); 
 					
-					
+					LOGGER.info("hierarchyVMMapValues Size -- " + hierarchyVMMap.values().size() + " Job Id --" + jc.getJobId());
+					LOGGER.info("sortedHierarchyVMMapValues Size -- " + sortedHierarchyVMMap.values().size() + " Job Id --" + jc.getJobId());
+										
 					for(Integer hierarchy:sortedHierarchyVMMap.keySet())
 					{		
 						List<EnergyMeterContext> groupedVMList = sortedHierarchyVMMap.get(hierarchy);
@@ -105,7 +112,7 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 						List<MarkedReadingContext> hierarchicalMarkedList = new ArrayList<MarkedReadingContext>();
 						
 						for(EnergyMeterContext vm:groupedVMList)
-						{		
+						{						
 							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(vm.getId(), deltaField); //childrenVM not VM as well as all VMChildren has completed insertion
 							long startTime = meta.getTtime()+1;
 							List<ReadingContext> vmReadings = DeviceAPI.getandDeleteDuplicateVirtualMeterReadings(vm,childMeterIdMap.get(vm.getId()),startTime,endTime,minutesInterval,true, false);
