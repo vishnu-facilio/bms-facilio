@@ -17,7 +17,7 @@ public class DeleteInstantJobQueue extends FacilioJob {
 
 
         try{
-            int count =  FacilioService.runAsServiceWihReturn(() -> DeleteMessageQueueJobsCommand.deleteQueue(TABLE_NAME, DELETE_CONDITION));
+            int count =  DeleteMessageQueueJobsCommand.deleteQueue(TABLE_NAME, DELETE_CONDITION);
             LOGGER.info("FacilioInstantJobQueue deleted queue count is  : "+count);
         }catch(Exception e){
             LOGGER.info("Exception occurred in FacilioInstantJob deletedJob  :  ",e);

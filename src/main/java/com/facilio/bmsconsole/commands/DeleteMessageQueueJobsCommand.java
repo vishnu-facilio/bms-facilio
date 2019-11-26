@@ -33,7 +33,7 @@ public class DeleteMessageQueueJobsCommand extends FacilioCommand{
         String tableName = (String) context.get("TABLE_NAME");
         String deleteCondition = "< NOW() - INTERVAL "+ customDaysToDelete+" DAY";
         try{
-        	int count =FacilioService.runAsServiceWihReturn(() -> deleteQueue(tableName,deleteCondition));
+        	int count = deleteQueue(tableName,deleteCondition);
         	System.out.println("Facilio Queue Deleted rows count is "+ count +" in table : " +tableName);
         	LOGGER.info("Facilio Queue Deleted rows count is "+ count +" in table : " +tableName);
         }catch(Exception e){

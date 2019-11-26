@@ -17,7 +17,7 @@ public class DeleteEmailExceptionQueue extends FacilioJob {
     public void execute(JobContext jc) throws Exception {
 
         try{
-            int count = FacilioService.runAsServiceWihReturn(() -> DeleteMessageQueueJobsCommand.deleteQueue(TABLE_NAME, DELETE_CONDITION));
+            int count =  DeleteMessageQueueJobsCommand.deleteQueue(TABLE_NAME, DELETE_CONDITION);
             LOGGER.info("FacilioExceptionQueue deleted queue count is  : "+count);
         }catch(Exception e){
             LOGGER.info("Exception occurred in FacilioExceptionQueue deletedJob  :  ",e);
