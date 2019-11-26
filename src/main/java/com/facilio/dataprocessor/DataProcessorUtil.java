@@ -284,9 +284,6 @@ public class DataProcessorUtil {
 
     private void processLog(JSONObject object, Long agentId) {
         JSONObject payLoad = (JSONObject) object.clone();
-        if (orgId == 169L) {
-            LOGGER.info("payload " + payLoad);
-        }
         if ((payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))) {
             int connectionCount = -1;
             //checks for key status in payload and if it 'agent'-publishype
@@ -331,7 +328,6 @@ public class DataProcessorUtil {
             }
             // ack type - so content is always msgid.
             else {
-                LOGGER.info(" ackLog processing ");
                 payLoad.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.MESSAGE_ID));
             }
             AgentUtil.putLog(payLoad, orgId, agentId, false);
@@ -483,7 +479,7 @@ public class DataProcessorUtil {
             try {
                 context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, map);
                 if (addAgentMessageChain.execute(context)) {
-                    LOGGER.info(" agentMessage added ");
+                   // LOGGER.info(" agentMessage added ");
                     status = true;
                 }
             } catch (MySQLIntegrityConstraintViolationException e) {
@@ -493,7 +489,7 @@ public class DataProcessorUtil {
             map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
             context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, map);
             if (updateAgentMessageChain.execute(context)) {
-                LOGGER.info(" agentMessage updated ");
+               // LOGGER.info(" agentMessage updated ");
                 status = true;
             }
         } else {
@@ -501,7 +497,7 @@ public class DataProcessorUtil {
             map.remove(AgentKeys.START_TIME);
             context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, map);
             if (updateAgentMessageChain.execute(context)) {
-                LOGGER.info(" agentMessage finish time updated ");
+                //LOGGER.info(" agentMessage finish time updated ");
                 status = true;
             }
         }

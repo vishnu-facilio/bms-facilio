@@ -23,6 +23,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
@@ -112,7 +113,7 @@ public class KinesisProcessor implements IRecordProcessor {
 
                     if(dataProcessorUtil.processRecord(facilioRecord)){
                         try {
-                            LOGGER.info("Exception while processing kinesis record -> " + byteDataToJSON(record.getData()));
+                            LOGGER.info(record.getSequenceNumber()+" Exception while processing kinesis record -> " + getString(record.getData()));
                         }catch (Exception e){
                             LOGGER.info(" exception while parsing failed record "+record.getSequenceNumber());
                         }
@@ -131,8 +132,7 @@ public class KinesisProcessor implements IRecordProcessor {
         if(record != null) {
             String data = "";
             try {
-                ByteBuffer byteData = record.getData();
-                JSONObject jsonData = byteDataToJSON( byteData);
+                JSONObject jsonData = byteDataToJSON( record.getData());
                 jsonData.put("timestamp", "" + record.getApproximateArrivalTimestamp().getTime());
                 jsonData.put("key", record.getPartitionKey());
                 jsonData.put("sequenceNumber", record.getSequenceNumber());
@@ -150,22 +150,22 @@ public class KinesisProcessor implements IRecordProcessor {
     private static JSONObject byteDataToJSON(ByteBuffer byteData) throws Exception {
         JSONParser parser = new JSONParser();
         if ((byteData != null)) {
-            CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
-            String data = decoder.decode(byteData).toString();
-            JSONObject jsonData = (JSONObject) parser.parse(data);
-            return jsonData;
+            JSONObject data = (JSONObject) parser.parse(getString(byteData));
+            return data;
         }else {
             throw new Exception("ByteData can't be null");
         }
     }
 
+    private static String getString(ByteBuffer byteData) throws CharacterCodingException {
+        CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+        return decoder.decode(byteData).toString();
+    }
+
     @Override
     public void processRecords(ProcessRecordsInput processRecordsInput) {
-
-        if(true){
-            toDataProcessor(processRecordsInput);
-            return;
-        }
+        toDataProcessor(processRecordsInput);
+        return;
         /*for (Record record : processRecordsInput.getRecords()) {
             String data = "";
             StringReader reader = null;
