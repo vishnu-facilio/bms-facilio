@@ -858,7 +858,9 @@ public class WorkflowRuleAPI {
 				}
 			}
 		}
-		
+		if (AccountUtil.getCurrentOrg().getId() == 155l && (workflowRule.getId() == 32177l)) {
+			LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
+		}
 		if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
 			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
 		}
