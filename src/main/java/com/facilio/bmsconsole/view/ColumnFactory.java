@@ -675,6 +675,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("validFrom", "Valid From"));
 		columns.add(new ViewField("validTill", "Valid Till"));
 		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("insurance", "Insurance"));
 		return columns;
 	}
 	
