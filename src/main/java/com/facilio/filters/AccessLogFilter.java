@@ -178,7 +178,7 @@ public class AccessLogFilter implements Filter {
         event.setProperty(TIME_TAKEN, String.valueOf(timeTaken/1000));
         event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(timeTaken));
 
-        if ( FacilioProperties.isSentryEnabled() && (response.getStatus() == HttpServletResponse.SC_INTERNAL_SERVER_ERROR) || (timeTaken > TIME_THRESHOLD) ) {
+        if ( FacilioProperties.isSentryEnabled() && (response.getStatus() == HttpServletResponse.SC_INTERNAL_SERVER_ERROR || timeTaken > TIME_THRESHOLD) ) {
             String sourceIp = null;
             if (ServerInfo.getHostname() != null) {
                  sourceIp = ServerInfo.getHostname();
