@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
@@ -23,13 +24,15 @@ public class QrScanVisitorLogCommand extends FacilioCommand{
 			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(recordId, false);
 			if(vLog != null) {
 				if(!vLog.isRecurring()) {
-					if(currentTime < vLog.getExpectedCheckInTime() || currentTime > vLog.getExpectedCheckOutTime()) {
+					if(vLog.getExpectedCheckInTime() > 0 && vLog.getExpectedCheckOutTime() > 0 && (currentTime < vLog.getExpectedCheckInTime() || currentTime > vLog.getExpectedCheckOutTime())) {
 						throw new IllegalArgumentException("Invalid checkin time");
 					}
 					if(vLog != null) {
 						List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(vLog.getStateFlowId(), vLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOGGING, vLog, (FacilioContext)context);
-						long nextTransitionId = nextStateRule.get(0).getId();
-						context.put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
+						if(CollectionUtils.isNotEmpty(nextStateRule)) {
+							long nextTransitionId = nextStateRule.get(0).getId();
+							context.put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
+						}
 					}
 					context.put(FacilioConstants.ContextNames.VISITOR_LOGGING, vLog);
 				}

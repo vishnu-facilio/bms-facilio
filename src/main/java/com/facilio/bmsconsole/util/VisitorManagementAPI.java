@@ -125,6 +125,37 @@ public class VisitorManagementAPI {
 	
 	}
 	
+	public static Boolean checkExistingVisitorLogging(long logId) throws Exception {
+		long currenttime = System.currentTimeMillis();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		SelectRecordsBuilder<VisitorLoggingContext> builder = new SelectRecordsBuilder<VisitorLoggingContext>()
+														.module(module)
+														.beanClass(VisitorLoggingContext.class)
+														.select(fields)
+														.andCondition(CriteriaAPI.getIdCondition(logId, module))
+													
+														;
+		FacilioStatus checkedOutStatus = TicketAPI.getStatus(module, "CheckedOut");
+		
+		VisitorLoggingContext records = builder.fetchFirst();
+		if(records != null && records.getModuleState().getId() == checkedOutStatus.getId()) {
+			if(currenttime >= records.getCheckInTime()) {
+				if(records.getExpectedCheckOutTime() <= 0) {
+					return true;
+				}
+				if(records.getExpectedCheckOutTime() > 0 && currenttime <= records.getExpectedCheckOutTime()) {
+					return true;
+				}
+				return false;
+			}
+			return false;
+		}
+		return null;
+	
+	}
+	
 	public static List<VisitorLoggingContext> getRecurringVisitorLogs() throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -412,6 +443,8 @@ public class VisitorManagementAPI {
 			if(!isCheckIn) {
 				FacilioField checkOutTimeField = modBean.getField("checkOutTime", module.getName());
 				updateMap.put("checkOutTime", time);
+				//FacilioField actualVisitdurationField = modBean.getField("actualVisitDuration", module.getName());
+				
 				FacilioField overStayField = modBean.getField("isOverStay", module.getName());
 				boolean isOverStay = false;
 				if(time - vLog.getExpectedCheckOutTime() > 0) {
@@ -420,11 +453,16 @@ public class VisitorManagementAPI {
 				else {
 					isOverStay = false;
 				}
+				long actualVisitDuration = time - vLog.getCheckInTime();
 				updateMap.put("isOverStay", isOverStay);
+				//updateMap.put("actualVisitDuration", actualVisitDuration);
+				
 				updatedfields.add(checkOutTimeField);
 				updatedfields.add(overStayField);
+			//	updatedfields.add(actualVisitdurationField);
 				
 				vLog.setCheckOutTime(time);
+				vLog.setActualVisitDuration(actualVisitDuration);
 				vLog.setIsOverStay(isOverStay);
 			}
 			else {
@@ -1180,7 +1218,7 @@ public class VisitorManagementAPI {
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		condition.setColumnName("VisitorLogging.VISITOR_ID");
+		condition.setColumnName("VisitorLogging.VISITOR");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
@@ -1221,7 +1259,7 @@ public class VisitorManagementAPI {
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		condition.setColumnName("VisitorLogging.VISITOR_ID");
+		condition.setColumnName("VisitorLogging.VISITOR");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
@@ -1262,7 +1300,7 @@ public class VisitorManagementAPI {
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		condition.setColumnName("VisitorLogging.VISITOR_ID");
+		condition.setColumnName("VisitorLogging.VISITOR");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
@@ -1297,12 +1335,12 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		workflowRuleContext.setActivityType(EventType.EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		condition.setColumnName("VisitorLogging.VISITOR_ID");
+		condition.setColumnName("VisitorLogging.VISITOR");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
@@ -1338,12 +1376,12 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		workflowRuleContext.setActivityType(EventType.EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		condition.setColumnName("VisitorLogging.VISITOR_ID");
+		condition.setColumnName("VisitorLogging.VISITOR");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
@@ -1379,12 +1417,12 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		workflowRuleContext.setActivityType(EventType.EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
 		condition.setOperator(CommonOperators.IS_NOT_EMPTY);
-		condition.setColumnName("VisitorLogging.VISITOR_ID");
+		condition.setColumnName("VisitorLogging.VISITOR");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
@@ -1420,7 +1458,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		workflowRuleContext.setActivityType(EventType.CREATE);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
@@ -1470,7 +1508,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		workflowRuleContext.setActivityType(EventType.CREATE);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
@@ -1519,7 +1557,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		workflowRuleContext.setActivityType(EventType.CREATE);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
@@ -1566,7 +1604,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		workflowRuleContext.setActivityType(EventType.CREATE);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("host");
@@ -1621,7 +1659,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		workflowRuleContext.setActivityType(EventType.CREATE);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("host");
@@ -1676,7 +1714,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
+		workflowRuleContext.setActivityType(EventType.CREATE);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("host");

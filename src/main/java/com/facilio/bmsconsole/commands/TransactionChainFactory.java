@@ -3748,7 +3748,8 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			
 			return c;
@@ -3768,7 +3769,8 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			
 			return c;
@@ -3784,8 +3786,9 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
-			
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		
 			return c;
 		}
 		
@@ -3801,8 +3804,9 @@ public class TransactionChainFactory {
 			c.addCommand(new SchedulePreOpenVisitorLogsCreateCommand(true));
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
-			
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		
 			return c;
 		}
 
