@@ -1504,7 +1504,7 @@ public class FormFactory {
 		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
 		ticketField.setShowField(false);
 		fields.add(ticketField);
-		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 3, 2);
+		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 3, 2);
 		vendorField.setShowField(false);
 		fields.add(vendorField);
 		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 5, 1));
@@ -1521,7 +1521,7 @@ public class FormFactory {
 		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
 		ticketField.setShowField(false);
 		fields.add(ticketField);
-		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 3, 2);
+		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 3, 2);
 		vendorField.setShowField(false);
 		fields.add(vendorField);
 		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 5, 1));

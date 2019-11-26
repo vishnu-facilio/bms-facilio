@@ -19,7 +19,7 @@ public class AssociateVendorToInsuranceFromRequesterCommand extends FacilioComma
 		List<InsuranceContext> insurances = (List<InsuranceContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(insurances)) {
 			for(InsuranceContext ins : insurances) {
-				if(ins.getAddedBy() != null && ins.getAddedBy().getId() > 0) {
+				if(ins.getAddedBy() != null && ins.getAddedBy().getId() > 0 && ins.getVendor() == null) {
 					ContactsContext contact = ContactsAPI.getContactsIdForUser(ins.getAddedBy().getId());
 					ins.setVendor(contact.getVendor());
 				}
