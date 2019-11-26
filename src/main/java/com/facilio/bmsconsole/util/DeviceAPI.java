@@ -584,7 +584,102 @@ public class DeviceAPI
 		return historicalLogger;
 		
 	}
+	
+	public static List<ReadingContext> getandDeleteDuplicateVirtualMeterReadings(EnergyMeterContext meter, List<Long> childMeterIds,  long startTime, long endTime, int minutesInterval, boolean updateReading, boolean isHistorical) throws Exception {
+		
+		if(childMeterIds == null) {
+			return null;
+		}
+		List<DateRange> intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
+		List<ReadingContext> completeReadings = new LinkedList<>(getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval));
+		if(completeReadings.isEmpty()) {
+			return null;
+		}
+		List<ReadingContext> vmReadings = new ArrayList<ReadingContext>();
+		List<ReadingContext> intervalReadings=new ArrayList<ReadingContext>();
+		for(int i = 0; i < intervals.size(); i++) {
+			DateRange interval = intervals.get(i);
+			double iStartTime = Math.floor(interval.getStartTime()/1000);
+			double iEndTime = Math.floor(interval.getEndTime()/1000);
+			
+			Iterator<ReadingContext> itr = completeReadings.iterator();
+			while (itr.hasNext()) {
+				ReadingContext reading= itr.next();
+				double ttime = Math.floor(reading.getTtime()/1000); //Checking only in second level
+				if(ttime >= iStartTime && ttime <= iEndTime) {
+					intervalReadings.add(reading);
+					itr.remove();
+				}
+				else {
+					break;
+				}
+			}
+			
+			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds, interval, isHistorical || i != (intervals.size() - 1));
 
+			if(virtualMeterReading != null) {
+				vmReadings.add(virtualMeterReading);
+				intervalReadings=new ArrayList<ReadingContext>();
+			}
+		}
+
+		if (!vmReadings.isEmpty()) {
+
+			ReadingContext firstReading=vmReadings.get(0);
+			long firstReadingTime =firstReading.getTtime();
+			ReadingContext lastReading=vmReadings.get(vmReadings.size() - 1);
+			deleteEnergyData(meter.getId(), firstReadingTime, lastReading.getTtime()); //Deleting anyway to avoid duplicate entries			
+		}	
+					
+		return vmReadings;
+	}	
+	
+	public static List<MarkedReadingContext> validatedataGapCountForVMReadings(List<ReadingContext> vmReadings, EnergyMeterContext meter, boolean isHistorical) throws Exception{
+		
+		if (vmReadings != null && !vmReadings.isEmpty()) 
+		{	
+			ReadingContext firstReading=vmReadings.get(0);
+			long firstReadingTime =firstReading.getTtime();
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean"); 
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+			FacilioField energyField=modBean.getField(TOTAL_ENERGY_CONSUMPTION_DELTA, module.getName());
+			long resourceId=meter.getId();
+			long previousTime=getPreviousDataTime(resourceId,energyField); //data Gap implementation starts here..
+			if(!isHistorical && getDataGapCount(resourceId,energyField, module,firstReadingTime,previousTime)>1) {
+				
+				firstReading.setMarked(true);
+				List<MarkedReadingContext> markedList=new ArrayList<MarkedReadingContext> ();
+				markedList.add(MarkingUtil.getMarkedReading(firstReading,energyField.getFieldId(),module.getModuleId(),MarkType.HIGH_VALUE_HOURLY_VIOLATION,firstReading,firstReading));
+				return markedList;
+			}//data Gap implementation ends..	
+			
+		}	
+		return null;
+	}
+	
+	public static void insertVMReadingsBasedOnHierarchy (List<ReadingContext> vmReadings, long endTime, int minutesInterval, boolean updateReading, boolean isHistorical, List<MarkedReadingContext> markedList) throws Exception
+	{
+		
+		if (!vmReadings.isEmpty()) {			
+	
+			boolean runThroughUpdate= Math.floor((System.currentTimeMillis()-endTime)/(60*1000)) < minutesInterval;
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
+			context.put(FacilioConstants.ContextNames.READINGS, vmReadings);
+			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, updateReading || runThroughUpdate);
+			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, isHistorical);
+			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+			
+			if (markedList != null) {
+				context.put(FacilioConstants.ContextNames.MARKED_READINGS, markedList);
+			}		
+			FacilioChain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+			addReading.execute(context);
+		}
+		
+	}
+	
 	public static List<ReadingContext> insertVirtualMeterReadings(EnergyMeterContext meter, List<Long> childMeterIds,  long startTime, long endTime, int minutesInterval, boolean updateReading, boolean isHistorical) throws Exception {
 
 		

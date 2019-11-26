@@ -1,36 +1,51 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
+import com.facilio.bmsconsole.util.MarkingUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.time.SecondsChronoUnit;
 
 public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 
 	private static final Logger LOGGER = LogManager.getLogger(VirtualMeterEnergyDataCalculator.class.getName());
-
-	@Override
-	public void execute(JobContext jc) {
-		try {
+	
+	public void execute(JobContext jc) throws Exception {
+		try {		
+			long jobStartTime = System.currentTimeMillis();
+			
 			List<EnergyMeterContext> virtualMeters = DeviceAPI.getAllVirtualMeters();
 			if(virtualMeters == null || virtualMeters.isEmpty()) {
 				return;
@@ -40,65 +55,102 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 			
-			List<Long> completedVms= new ArrayList<Long>();
-			List<Long> vmList=getVmList(virtualMeters);
-//			if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-//				LOGGER.info("Calculating VM for Meters : "+vmList);
-//			}
-			Map <Long, List<Long>> childMeterMap= new HashMap<Long,List<Long>> ();
+			Map<Long,EnergyMeterContext> virtualEnergyMeterContextMap = new HashMap<Long,EnergyMeterContext>();
+			for(EnergyMeterContext vm:virtualMeters) {
+				virtualEnergyMeterContextMap.put(vm.getId(), vm);
+			}
 			
-			while (!virtualMeters.isEmpty()) {
-				Iterator<EnergyMeterContext> itr = virtualMeters.iterator();
-				while (itr.hasNext()) {
-					EnergyMeterContext meter = itr.next();
-					long meterId=meter.getId();
-					try {
-						List<Long> childMeterIds=childMeterMap.get(meterId);
-						if(childMeterIds==null) {
-							childMeterIds=DeviceAPI.getChildrenMeters(meter);
-						}
-//						if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-//							LOGGER.info("Child meter IDS for meter : "+meter.getId()+" is : "+childMeterIds);
-//						}
-						if(childMeterIds!=null) {
-
-							//check any childMeter is a VM..
-							List<Long> vmChildren= getVmChildren(vmList,childMeterIds);
-							if(!vmChildren.isEmpty() && !isCompleted(completedVms,vmChildren)) {
-								childMeterMap.put(meterId, childMeterIds);
-//								if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-//									LOGGER.info("Not calculating for meter : "+meterId+". Since it has a VM child and it's not calculated yet.");
-//								}
-								continue;
-							}
-							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(meterId, deltaField);
-							long startTime = meta.getTtime()+1;
-							List<ReadingContext> readings = DeviceAPI.insertVirtualMeterReadings(meter,childMeterIds,startTime,endTime,minutesInterval,true, false);
-//							if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-//								LOGGER.info("Calculation completed for VM : "+meter.getId()+". Readings : "+readings);
-//							}
-						}
-
-					}
-					catch (Exception e) {
-						LOGGER.info("Exception occurred ", e);
-						CommonCommandUtil.emailException("VMEnergyDataCalculatorForMeter", "VM Calculation failed for meter : "+meterId, e);
-					}
-					completedVms.add(meter.getId());
-					itr.remove();
+			Map <Long, List<Long>> childMeterIdMap= new HashMap<Long,List<Long>>();
+			Map<Integer,List<EnergyMeterContext>> hierarchyVMMap = new HashMap<Integer, List<EnergyMeterContext>>();
+					
+			for(EnergyMeterContext vm:virtualMeters)
+			{			
+				Integer hierarchy = getHierarchy(vm, 0, virtualEnergyMeterContextMap, childMeterIdMap);
+				if(hierarchyVMMap.containsKey(hierarchy))
+				{
+					List<EnergyMeterContext> groupedVMList = hierarchyVMMap.get(hierarchy);
+					groupedVMList.add(vm);
+				}
+				else
+				{
+					List<EnergyMeterContext> groupedVMList = new ArrayList<EnergyMeterContext>();
+					groupedVMList.add(vm);
+					hierarchyVMMap.put(hierarchy, groupedVMList);
 				}
 			}
-//			if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-//				LOGGER.info("VM Calculation job completed for meters : "+completedVms);
-//			}
+		
+			Map<Integer,List<EnergyMeterContext>> sortedHierarchyVMMap = new TreeMap<Integer,List<EnergyMeterContext>>(hierarchyVMMap); 
+			
+			for(Integer hierarchy:sortedHierarchyVMMap.keySet()) {
+				List<EnergyMeterContext> vmList = sortedHierarchyVMMap.get(hierarchy);
+				System.out.println(" Hierarchy -- " + hierarchy + " VMs --" + vmList);
+			}
+			
+			for(List<EnergyMeterContext> groupedVMList:sortedHierarchyVMMap.values())
+			{
+				List<ReadingContext> hierarchicalVMReadings = new ArrayList<ReadingContext>();
+				List<MarkedReadingContext> hierarchicalMarkedList = new ArrayList<MarkedReadingContext>();
+				
+				for(EnergyMeterContext vm:groupedVMList)
+				{		
+					ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(vm.getId(), deltaField); //childrenVM not VM as well as all VMChildren has completed insertion
+					long startTime = meta.getTtime()+1;
+					List<ReadingContext> vmReadings = DeviceAPI.getandDeleteDuplicateVirtualMeterReadings(vm,childMeterIdMap.get(vm.getId()),startTime,endTime,minutesInterval,true, false);
+					if (vmReadings != null) {
+						hierarchicalVMReadings.addAll(vmReadings); 		
+					}
+					List<MarkedReadingContext> markedList= DeviceAPI.validatedataGapCountForVMReadings(vmReadings, vm, false);										
+					if (vmReadings != null && markedList != null) {
+						hierarchicalMarkedList.addAll(markedList); //Grouping readings for all the meters in the same hierarchy	
+					}										
+				}
+				
+				DeviceAPI.insertVMReadingsBasedOnHierarchy(hierarchicalVMReadings,endTime,minutesInterval,true, false, hierarchicalMarkedList);						
+			}
+			
+			System.out.println(" VM Job Timetaken -- " + (System.currentTimeMillis()-jobStartTime));
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			LOGGER.error("Exception occurred ", e);
 			CommonCommandUtil.emailException("VMEnergyDataCalculator", "VM Calculation failed", e);
 		}
 	}
 	
+	private Integer getHierarchy(EnergyMeterContext vm, Integer hierarchy, Map<Long,EnergyMeterContext> virtualEnergyMeterContextMap, 
+			 Map <Long, List<Long>> childMeterIdMap) throws Exception {
+		
+		hierarchy++;
+		long vmId = vm.getId();
+		
+		List<Long> childMeterIds = childMeterIdMap.get(vmId);
+		if(childMeterIds==null) {
+			childMeterIds=DeviceAPI.getChildrenMeters(vm);
+			childMeterIdMap.put(vmId, childMeterIds);
+		}
+
+		if(childMeterIds != null) 
+		{			
+			List<Long> vmChildren = getVmChildren(new ArrayList<Long>(virtualEnergyMeterContextMap.keySet()),childMeterIds);                
+			if(vmChildren == null || vmChildren.isEmpty()) {
+				return hierarchy;									//check if the children for that VM is a VM, if not, return hierarchy
+			}
+			else
+			{
+				List<Integer> hierarchyMaxList = new ArrayList<Integer>();
+				for (Long vmid:vmChildren)
+				{
+					hierarchyMaxList.add(getHierarchy(virtualEnergyMeterContextMap.get(vmid), hierarchy, virtualEnergyMeterContextMap,  childMeterIdMap));
+				}
+				return Collections.max(hierarchyMaxList);				 
+			}
+		}
+		return hierarchy;
+	}
+	
+//		else {
+//			return hierarchy; //check if no children for that VM, return hierarchy, if(childMeterIds==null || childMeterIds.isEmpty())
+//		}
+
 	private int getDefaultDataInterval() throws Exception {
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
 		String defaultIntervalProp = orgInfo.get(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
@@ -108,16 +160,6 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 		else {
 			return Integer.parseInt(defaultIntervalProp);
 		}
-	}
-	
-	private List<Long> getVmList(List<EnergyMeterContext> virtualMeters){
-		
-		List<Long> vmList= new ArrayList<Long>();
-		for(EnergyMeterContext meter:virtualMeters) {
-			
-			vmList.add( meter.getId());
-		}
-		return vmList;
 	}
 	
 	private List<Long> getVmChildren(List<Long> vmList, List<Long> children) {
@@ -130,16 +172,5 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 			}
 		}
 		return childrenVms;
-	}
-	
-	private boolean isCompleted(List<Long> completedList, List<Long> children) {
-		
-		for (Long id: children) {
-			
-			if(!completedList.contains(id)) {
-				return false;
-			}
-		}
-		return true;
 	}
 }
