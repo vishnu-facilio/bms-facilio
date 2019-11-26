@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -119,7 +120,11 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(workPermitRecords)) {
 			FacilioChain c = TransactionChainFactory.addWorkPermitRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, workPermitRecords);
+			if (workPermit != null) {
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(workPermit));
+			}else {
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, workPermitRecords);
+			}
 			c.execute();
 			setResult(FacilioConstants.ContextNames.WORKPERMIT_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
