@@ -3760,7 +3760,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
-			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
+			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
@@ -3782,7 +3782,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SchedulePreOpenVisitorLogsCreateCommand(false));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
-			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
+			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
@@ -3798,7 +3798,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
+			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
@@ -3817,7 +3817,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new SchedulePreOpenVisitorLogsCreateCommand(true));
 			c.addCommand(new ChangeVisitorInviteStateCommand());
-			c.addCommand(new SetInvitationStatusForVisitorLogCommand());
+			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		

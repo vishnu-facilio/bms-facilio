@@ -217,6 +217,8 @@ private static final long serialVersionUID = 1L;
 				
 			}
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(parentLog));
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(parentLog.getId()));
+			
 			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -256,6 +258,7 @@ private static final long serialVersionUID = 1L;
 				c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
 				c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(visitorLoggingRecords.get(0).getId()));
 				c.execute();
 				setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 			}
@@ -502,11 +505,17 @@ private static final long serialVersionUID = 1L;
 			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(recordId, false);
 			if(vLog != null) {
 				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(vLog.getStateFlowId(), vLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOGGING, vLog, c.getContext());
-				vLog.setCheckInTime(System.currentTimeMillis());
-				long nextTransitionId = nextStateRule.get(0).getId();
-				c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
-				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(vLog));
-				c.execute();
+				if(CollectionUtils.isNotEmpty(nextStateRule)) {
+					vLog.setCheckInTime(System.currentTimeMillis());
+					long nextTransitionId = nextStateRule.get(0).getId();
+					c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, nextTransitionId);
+					c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(vLog.getId()));
+					c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(vLog));
+					c.execute();
+				}
+				else {
+					throw new IllegalArgumentException("Invalid log id");
+				}
 			}
 			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
