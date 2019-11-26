@@ -111,12 +111,13 @@ public class KinesisProcessor implements IRecordProcessor {
                 }*/
                 try{
 
-                    if(dataProcessorUtil.processRecord(facilioRecord)){
-                        try {
+                    if( ! dataProcessorUtil.processRecord(facilioRecord)){
+                        LOGGER.info(" processing record failed "+getString(record.getData()));
+                       /* try {
                             LOGGER.info(record.getSequenceNumber()+" Exception while processing kinesis record -> " + getString(record.getData()));
                         }catch (Exception e){
                             LOGGER.info(" exception while parsing failed record "+record.getSequenceNumber());
-                        }
+                        }*/
                     }
                     processRecordsInput.getCheckpointer().checkpoint(DataProcessorUtil.getLastRecordChecked());
                 } catch (Exception e) {
