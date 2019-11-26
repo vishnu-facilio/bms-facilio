@@ -162,10 +162,14 @@ private static final long serialVersionUID = 1L;
 	}
 	public String addVisitorLogging() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(visitorLoggingRecords)) {
+		if(!CollectionUtils.isEmpty(visitorLoggingRecords) || visitorLogging != null) {
 			FacilioChain c = TransactionChainFactory.addVisitorLoggingRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
+			if (visitorLogging != null) {
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLogging));
+			}else {
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
+			}
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
