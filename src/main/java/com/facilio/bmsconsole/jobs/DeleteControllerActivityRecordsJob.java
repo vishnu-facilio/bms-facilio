@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,13 +40,16 @@ public class DeleteControllerActivityRecordsJob extends FacilioJob {
 	
 	private List<Long> getControllerActivityIds (JobContext jc) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerActivityModule();
-		List<FacilioField> fields = FieldFactory.getControllerActivityFields();
+		FacilioModule recordModule = ModuleFactory.getControllerActivityRecordsModule();
+		List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField(module));
 		FacilioField createdTimeField = FieldFactory.getAsMap(fields).get("createdTime");
 		
 		long lastweek = DateTimeUtil.getDateTime(jc.getExecutionTime(), true).minusDays(7).toInstant().toEpochMilli();
 		
 		List<Map<String, Object>> props = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
+														.innerJoin(recordModule.getTableName())
+														.on(module.getTableName()+".ID = "+recordModule.getTableName()+".ID")
 														.select(fields)
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(createdTimeField, String.valueOf(lastweek), DateOperators.IS_BEFORE))
