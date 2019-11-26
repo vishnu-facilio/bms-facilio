@@ -86,10 +86,6 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 							hierarchyVMMap.put(hierarchy, groupedVMList);
 						}		
 					}
-					else
-					{
-						LOGGER.info("Hierarchy null for -- " + vm.getId() + " Job Id --" + jc.getJobId());
-					}
 					
 				}
 				
@@ -97,9 +93,6 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 				{
 
 					Map<Integer,List<EnergyMeterContext>> sortedHierarchyVMMap = new TreeMap<Integer,List<EnergyMeterContext>>(hierarchyVMMap); 
-					
-					LOGGER.info("hierarchyVMMapValues Size -- " + hierarchyVMMap.values().size() + " Job Id --" + jc.getJobId());
-					LOGGER.info("sortedHierarchyVMMapValues Size -- " + sortedHierarchyVMMap.values().size() + " Job Id --" + jc.getJobId());
 										
 					for(Integer hierarchy:sortedHierarchyVMMap.keySet())
 					{		
