@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ViolationAlarmContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
@@ -29,7 +27,6 @@ import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class GetKPIViewListCommand extends FacilioCommand {
@@ -42,6 +39,11 @@ public class GetKPIViewListCommand extends FacilioCommand {
 		long buildingId = (long) context.get(ContextNames.BUILDING_ID);
 		long floorId = (long) context.get(ContextNames.FLOOR_ID);
 		long assetCategoryId = (long) context.get(ContextNames.CATEGORY_ID);
+		
+		List<Long> siteIds = (List<Long>) context.get(ContextNames.SITE_LIST);
+		List<Long> buildingIds = (List<Long>) context.get(ContextNames.BUILDING_LIST);
+		List<Long> floorIds = (List<Long>) context.get(ContextNames.FLOOR_LIST);
+		List<Long> assetCategoryIds = (List<Long>) context.get(ContextNames.PARENT_CATEGORY_IDS);
 		String groupBy = (String) context.get("groupBy");
 		FacilioFrequency frequency = (FacilioFrequency) context.get(ContextNames.FREQUENCY);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
@@ -95,6 +97,26 @@ public class GetKPIViewListCommand extends FacilioCommand {
 		if (assetCategoryId > 0) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetCategoryId"), String.valueOf(assetCategoryId), NumberOperators.EQUALS));
 		}
+		
+		if (CollectionUtils.isNotEmpty(siteIds)) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("siteId"), siteIds, NumberOperators.EQUALS));
+		}
+		
+		List<Long> spaceIds = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(buildingIds)) {
+			spaceIds.addAll(buildingIds);
+		}
+		if (CollectionUtils.isNotEmpty(floorIds)) {
+			spaceIds.addAll(floorIds);
+		}
+		if (!spaceIds.isEmpty()) {
+			builder.andCondition(CriteriaAPI.getCondition(resourceFieldMap.get("space"), spaceIds, BuildingOperator.BUILDING_IS));
+		}
+		
+		if (CollectionUtils.isNotEmpty(assetCategoryIds)) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetCategoryId"), assetCategoryIds, NumberOperators.EQUALS));
+		}
+		
 		if (CollectionUtils.isNotEmpty(resourceIds)) {
 			builder.andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("resourceId"), resourceIds, PickListOperators.IS));
 		}
@@ -142,51 +164,10 @@ public class GetKPIViewListCommand extends FacilioCommand {
 			}
 		}
 		else {
-			fetchOccurrences(kpis, modBean);
 			context.put(ContextNames.KPI_LIST, kpis);
 		}
 		
 		return false;
-	}
-	
-	private void fetchOccurrences(List<Map<String, Object>> kpis, ModuleBean modBean) throws Exception {
-		if (CollectionUtils.isEmpty(kpis)) {
-			return;
-		}
-		
-		List<FacilioField> fields = modBean.getAllFields(ContextNames.VIOLATION_ALARM);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
-		SelectRecordsBuilder<ViolationAlarmContext> selectBuilder = new SelectRecordsBuilder<ViolationAlarmContext>()
-				.moduleName(ContextNames.VIOLATION_ALARM).beanClass(ViolationAlarmContext.class)
-				.select(fields)
-				;
-		
-		Criteria criteriaList = new Criteria();
-		for(Map<String, Object> kpi: kpis) {
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("formulaField"), String.valueOf(kpi.get("id")), PickListOperators.IS));
-			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(kpi.get("resourceId")), PickListOperators.IS));
-			criteriaList.orCriteria(criteria);
-		}
-		selectBuilder.andCriteria(criteriaList);
-		
-		List<ViolationAlarmContext> alarmList = selectBuilder.get();
-		if (CollectionUtils.isNotEmpty(alarmList)) {
-			Map<String, Long> occurrenceMap = new HashMap<>();
-			for(ViolationAlarmContext alarm: alarmList) {
-				occurrenceMap.put(alarm.getFormulaField().getId()+"_"+alarm.getResource().getId(), alarm.getNoOfOccurrences());
-			}
-			for(Map<String, Object> kpi: kpis) {
-				long count = 0;
-				String key = kpi.get("id")+"_"+kpi.get("resourceId");
-				if (occurrenceMap.containsKey(key)) {
-					count = occurrenceMap.get(key);
-				}
-				kpi.put("noOfViolations", count);
-			}
-		}
-		
 	}
 
 }

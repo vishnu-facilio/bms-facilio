@@ -1,8 +1,15 @@
 package com.facilio.constants;
 
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+
 import com.facilio.activity.ActivityContext;
 import com.facilio.agentv2.bacnet.BacnetIpController;
-import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuController;
 import com.facilio.agentv2.modbustcp.ModbusTcpController;
 import com.facilio.agentv2.niagara.NiagaraController;
@@ -21,13 +28,6 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
-import org.json.simple.JSONObject;
-
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public class FacilioConstants {
 	
@@ -866,7 +866,9 @@ public class FacilioConstants {
 		public static final String READING_DATA_META_TYPE = "readingDataMetaType";
 		public static final String FORMULA_FIELD = "formulaField";
 		public static final String SKIP_FORMULA_HISTORICAL_SCHEDULING = "skipFormulaHistoricalScheduling";
-		public static final String FORMULA_UNIT_STRING = "formulaUnit";
+		public static final String FORMULA_UNIT_STRING = "formulaUnitString";
+		public static final String FORMULA_UNIT = "formulaUnit";
+		public static final String FORMULA_METRIC = "formulaMetric";
 		public static final String FORMULA_FIELD_TYPE = "formulaFieldType";
 		public static final String FORMULA_LIST = "formulaList";
 		public static final String HISTORY_READINGS = "historyReadings";

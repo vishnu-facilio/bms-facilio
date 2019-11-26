@@ -28,15 +28,22 @@ public class CreateFormulaFieldDependenciesCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FormulaFieldContext formulaField = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
-		String formulaUnit = (String) context.get(FacilioConstants.ContextNames.FORMULA_UNIT_STRING);
+		String formulaUnitString = (String) context.get(FacilioConstants.ContextNames.FORMULA_UNIT_STRING);
+		int formulaUnit = (int) context.getOrDefault(FacilioConstants.ContextNames.FORMULA_UNIT, -1);
 		if (formulaField != null) {
 			formulaField.setInterval(FormulaFieldAPI.getDataInterval(formulaField));
 			FormulaFieldAPI.validateFormula(formulaField, false);
 			
 			FacilioField field = FieldFactory.getField(null, formulaField.getName(), null, null, formulaField.getResultDataTypeEnum() == null? FieldType.DECIMAL : formulaField.getResultDataTypeEnum());
 			field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
-			if(formulaUnit != null && field instanceof NumberField) {
-				((NumberField) field).setUnit(formulaUnit);
+			if(field instanceof NumberField) {
+				if (formulaUnitString != null) {
+					((NumberField) field).setUnit(formulaUnitString);
+				}
+				else if (formulaUnit > 0) {
+					((NumberField) field).setUnitId(formulaUnit);
+					((NumberField) field).setMetric((int)context.get(FacilioConstants.ContextNames.FORMULA_METRIC));
+				}
 			}
 
 			formulaField.setReadingField(field);

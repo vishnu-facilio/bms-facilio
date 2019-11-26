@@ -767,14 +767,28 @@ public class ReadingAction extends FacilioAction {
 	}
 	
 	private String formulaFieldUnit;
-
 	public String getFormulaFieldUnit() {
 		return formulaFieldUnit;
 	}
-
 	public void setFormulaFieldUnit(String formulaFieldUnit) {
 		this.formulaFieldUnit = formulaFieldUnit;
 	}
+	
+	private int unitId = -1;
+	public int getUnitId() {
+		return unitId;
+	}
+	public void setUnitId(int unitId) {
+		this.unitId = unitId;
+	}
+	private int metricId = -1;
+	public int getMetricId() {
+		return metricId;
+	}
+	public void setMetricId(int metricId) {
+		this.metricId = metricId;
+	}
+	
 	
 	private List<ReadingRuleContext> readingRules;
 	public List<ReadingRuleContext> getReadingRules() {
@@ -800,6 +814,8 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
+		context.put(FacilioConstants.ContextNames.FORMULA_UNIT, unitId);
+		context.put(FacilioConstants.ContextNames.FORMULA_METRIC, metricId);
 		context.put(FacilioConstants.ContextNames.READING_RULES_LIST,readingRules);
 		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, getFieldReadingRules());
 
@@ -817,6 +833,8 @@ public class ReadingAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
+		context.put(FacilioConstants.ContextNames.FORMULA_UNIT, unitId);
+		context.put(FacilioConstants.ContextNames.FORMULA_METRIC, metricId);
 			
 	    List<List<ReadingRuleContext>> readingRules = getFieldReadingRules();
 	    List<List<List<ActionContext>>> actionsList = new ArrayList<>();

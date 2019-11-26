@@ -107,10 +107,14 @@ public class KPIAction extends FacilioAction {
 		constructListContext(context);
 		context.put(ContextNames.MODULE_NAME, ContextNames.FORMULA_FIELD);
 		context.put(ContextNames.SITE_ID, siteId);
+		context.put(ContextNames.SITE_LIST, siteIds);
 		context.put(ContextNames.BUILDING_ID, buildingId);
+		context.put(ContextNames.BUILDING_LIST, buildingIds);
 		context.put(ContextNames.FLOOR_ID, floorId);
+		context.put(ContextNames.FLOOR_LIST, floorIds);
 		context.put(ContextNames.RESOURCE_LIST, resourceIds);
 		context.put(ContextNames.CATEGORY_ID, categoryId);
+		context.put(ContextNames.PARENT_CATEGORY_IDS, categoryIds);
 		context.put(ContextNames.FREQUENCY, getFrequencyEnum());
 		context.put("groupBy", getGroupBy());
 		chain.execute();
@@ -133,7 +137,14 @@ public class KPIAction extends FacilioAction {
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
-	
+	private List<Long> siteIds;
+	public List<Long> getSiteIds() {
+		return siteIds;
+	}
+	public void setSiteIds(List<Long> siteIds) {
+		this.siteIds = siteIds;
+	}
+
 	private long buildingId = -1;
 	public long getBuildingId() {
 		return buildingId;
@@ -141,7 +152,14 @@ public class KPIAction extends FacilioAction {
 	public void setBuildingId(long buildingId) {
 		this.buildingId = buildingId;
 	}
-	
+	private List<Long> buildingIds;
+	public List<Long> getBuildingIds() {
+		return buildingIds;
+	}
+	public void setBuildingIds(List<Long> buildingIds) {
+		this.buildingIds = buildingIds;
+	}
+
 	private long floorId = -1;
 	public long getFloorId() {
 		return floorId;
@@ -149,7 +167,14 @@ public class KPIAction extends FacilioAction {
 	public void setFloorId(long floorId) {
 		this.floorId = floorId;
 	}
-	
+	private List<Long> floorIds;
+	public List<Long> getFloorIds() {
+		return floorIds;
+	}
+	public void setFloorIds(List<Long> floorIds) {
+		this.floorIds = floorIds;
+	}
+
 	private long categoryId = -1;
 	public long getCategoryId() {
 		return categoryId;
@@ -157,7 +182,14 @@ public class KPIAction extends FacilioAction {
 	public void setCategoryId(long categoryId) {
 		this.categoryId = categoryId;
 	}
-	
+	private List<Long> categoryIds;
+	public List<Long> getCategoryIds() {
+		return categoryIds;
+	}
+	public void setCategoryIds(List<Long> categoryIds) {
+		this.categoryIds = categoryIds;
+	}
+
 	private String groupBy; // Can have values kpi, asset
 	public String getGroupBy() {
 		if (groupBy == null) {

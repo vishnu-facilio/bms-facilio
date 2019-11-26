@@ -40,6 +40,7 @@ public class UpdateFormulaCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		FormulaFieldContext newFormula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		String formulaFieldUnit = (String) context.get(FacilioConstants.ContextNames.FORMULA_UNIT_STRING);
+		int formulaUnit = (int) context.getOrDefault(FacilioConstants.ContextNames.FORMULA_UNIT, -1);
 		validateUpdate(newFormula);
 		FormulaFieldContext oldFormula = FormulaFieldAPI.getFormulaField(newFormula.getId());
 		context.put(FacilioConstants.ContextNames.READING_FIELD_ID,oldFormula.getReadingFieldId());
@@ -48,7 +49,7 @@ public class UpdateFormulaCommand extends FacilioCommand {
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = null;
-		if ((newFormula.getName() != null && !newFormula.getName().isEmpty()) || (formulaFieldUnit != null)) {
+		if ((newFormula.getName() != null && !newFormula.getName().isEmpty()) || (formulaFieldUnit != null || formulaUnit > 0)) {
 			FacilioField field = new NumberField();
 			
 			if((newFormula.getName() != null && !newFormula.getName().isEmpty())) {
@@ -56,6 +57,10 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			}
 			if(formulaFieldUnit != null) {
 				((NumberField)field).setUnit(formulaFieldUnit);
+			}
+			else if (formulaUnit > 0) {
+				((NumberField) field).setUnitId(formulaUnit);
+				((NumberField) field).setMetric((int)context.get(FacilioConstants.ContextNames.FORMULA_METRIC));
 			}
 			
 			field.setId(oldFormula.getReadingFieldId());
