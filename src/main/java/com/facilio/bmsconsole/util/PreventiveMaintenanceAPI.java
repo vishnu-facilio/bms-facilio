@@ -440,7 +440,7 @@ public class PreventiveMaintenanceAPI {
 		return startTime + (maxSchedulingDays * 24 * 60 * 60);
 	}
 
-	public static BulkWorkOrderContext createBulkWoContextsFromPM(Context context, PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime, WorkorderTemplate woTemplate) throws Exception {
+	public static BulkWorkOrderContext createBulkWoContextsFromPM(Context context, PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, long endTime, long minTime, WorkorderTemplate woTemplate) throws Exception {
 		Pair<Long, Integer> nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(Pair.of(startTime, 0));
 		int currentCount = pm.getCurrentExecutionCount();
 		long currentTime = System.currentTimeMillis();
@@ -448,7 +448,7 @@ public class PreventiveMaintenanceAPI {
 		List<Long> nextExecutionTimes = new ArrayList<>();
 		LOGGER.log(Level.ERROR, "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId() + " next exec time " + nextExecutionTime.getLeft() + " end time " + endTime);
 		while (nextExecutionTime.getLeft() <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime.getLeft() <= pm.getEndTime())) {
-			if ((nextExecutionTime.getLeft() * 1000) < currentTime) {
+			if ((nextExecutionTime.getLeft() * 1000) < currentTime || nextExecutionTime.getLeft() < minTime) {
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 				if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
 					break;

@@ -170,17 +170,21 @@ public class PMNewScheduler extends FacilioJob {
 						LOGGER.error("work order not generated PMID: " + pm.getId() + "ResourceId: " + resourceId);
 						CommonCommandUtil.emailAlert("work order not generated", "PMID: " + pm.getId() + "ResourceId: " + resourceId);
 					}
-
-					bulkWorkOrderContexts.addAll(generateBulkWoContext(pm, context, workorderTemplate, triggers));
+					List<BulkWorkOrderContext> bulkWorkOrderContextList = generateBulkWoContext(pm, context, workorderTemplate, triggers);
+					if (!bulkWorkOrderContextList.isEmpty()) {
+						bulkWorkOrderContexts.addAll(bulkWorkOrderContextList);
+					}
 				}
 			}
 		}
 		else {
 			long templateId = pm.getTemplateId();
 			WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
-			bulkWorkOrderContexts.addAll(generateBulkWoContext(pm, context, workorderTemplate, pm.getTriggers()));
+			List<BulkWorkOrderContext> bulkWorkOrderContextList = generateBulkWoContext(pm, context, workorderTemplate, pm.getTriggers());
+			if (!bulkWorkOrderContextList.isEmpty()) {
+				bulkWorkOrderContexts.addAll(bulkWorkOrderContextList);
+			}
 		}
-
 		return bulkWorkOrderContexts;
 	}
 
@@ -207,10 +211,11 @@ public class PMNewScheduler extends FacilioJob {
 	private List<BulkWorkOrderContext> generateBulkWoContext(PreventiveMaintenance pm, FacilioContext context, WorkorderTemplate workorderTemplate, List<PMTriggerContext> triggers) throws Exception {
 		List<BulkWorkOrderContext> bulkWorkOrderContexts = new ArrayList<>();
 		long endTime = getEndTime(pm);
-		long maxTime = pm.getWoGeneratedUpto();
+		long minTime = pm.getWoGeneratedUpto();
 		for (PMTriggerContext trigger: triggers) {
 			if (trigger.getSchedule() != null) {
-				BulkWorkOrderContext bulkWoContextsFromTrigger = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, maxTime, endTime, workorderTemplate);
+				long startTimeInSecond = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+				BulkWorkOrderContext bulkWoContextsFromTrigger = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTimeInSecond, endTime, minTime, workorderTemplate);
 				bulkWorkOrderContexts.add(bulkWoContextsFromTrigger);
 			}
 		}
