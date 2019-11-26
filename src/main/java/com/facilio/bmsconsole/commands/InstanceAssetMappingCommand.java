@@ -24,6 +24,7 @@ public class InstanceAssetMappingCommand extends FacilioCommand implements PostT
 	public boolean executeCommand(Context context) throws Exception {
 		
 		Long controllerId = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
+		boolean skipValidation = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_VALIDATION, false);
 //		Integer unit= (Integer) context.get(FacilioConstants.ContextNames.UNIT_POINTS);
 		List<Map<String, Object>> instances = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.INSTANCE_INFO);
 		Set<Long> assetIds = new HashSet<>();
@@ -35,7 +36,7 @@ public class InstanceAssetMappingCommand extends FacilioCommand implements PostT
 			long fieldId = (long) instanceMap.get("fieldId");
 			long categoryId = (long) instanceMap.get("categoryId");
 			
-			insertOrUpdateInstance(deviceName, assetId, categoryId, controllerId, instanceName, fieldId, null);
+			insertOrUpdateInstance(deviceName, assetId, categoryId, controllerId, instanceName, fieldId, null, skipValidation);
 			
 		}
 		AssetsAPI.updateAssetConnectionStatus(assetIds, true);
@@ -43,7 +44,7 @@ public class InstanceAssetMappingCommand extends FacilioCommand implements PostT
 		return false;
 	}
 	
-	public static void insertOrUpdateInstance(String deviceName, long assetId, long categoryId, long controllerId, String instance, long fieldId ,Integer unit) throws Exception {
+	public static void insertOrUpdateInstance(String deviceName, long assetId, long categoryId, long controllerId, String instance, long fieldId ,Integer unit, boolean skipValidation) throws Exception {
 		Map<String, Object> modeledData = TimeSeriesAPI.getMappedInstance(deviceName, instance, controllerId);
 		if (modeledData == null) {
 			TimeSeriesAPI.insertInstanceAssetMapping(deviceName, assetId, categoryId, controllerId, instance, fieldId,unit);	
@@ -61,7 +62,7 @@ public class InstanceAssetMappingCommand extends FacilioCommand implements PostT
 			unmodelledHistoricalContexts.add(context);
 		}
 		else {
-			TimeSeriesAPI.updateInstanceAssetMapping(deviceName, assetId, categoryId, instance, fieldId, modeledData, unit);
+			TimeSeriesAPI.updateInstanceAssetMapping(deviceName, assetId, categoryId, instance, fieldId, modeledData, unit, skipValidation);
 			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.RECORD, modeledData);

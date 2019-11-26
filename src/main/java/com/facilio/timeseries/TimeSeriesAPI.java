@@ -360,7 +360,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		builderPoints.update(pointsRecord);
 	}
 	
-	public static int updateInstanceAssetMapping(String deviceName, long assetId, long categoryId, String instanceName, long fieldId, Map<String, Object> oldData,Integer unit) throws Exception {
+	public static int updateInstanceAssetMapping(String deviceName, long assetId, long categoryId, String instanceName, long fieldId, Map<String, Object> oldData,Integer unit,boolean skipValidation) throws Exception {
 		long oldFieldId = (long) oldData.get("fieldId");
 		long oldAssetId = (long) oldData.get("resourceId");
 		
@@ -375,7 +375,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		ReadingDataMeta meta = metaMap.get(getRDMKey(oldAssetId, oldFieldId));
 		long lastMappedTime = (long) oldData.get("mappedTime");
 		// Checking if the data is coming for more than a month
-		if (meta.getActualValue() != null && !meta.getActualValue().equals("-1") && ((meta.getTtime()-lastMappedTime) > (30 * 24 * 60 * 60000L) ) ) {
+		if (!skipValidation && meta.getActualValue() != null && !meta.getActualValue().equals("-1") && ((meta.getTtime()-lastMappedTime) > (30 * 24 * 60 * 60000L) ) ) {
 			throw new IllegalArgumentException("Field cannot be changed. Please contact the support");
 		}
 		Map<String, Object> prop=(Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);

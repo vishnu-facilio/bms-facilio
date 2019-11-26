@@ -122,11 +122,20 @@ public class TimeSeries extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instances);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
+		context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, skipValidation);
 		FacilioChain mappingChain = TransactionChainFactory.getInstanceAssetMappingChain();
 		mappingChain.execute(context);
 		
 		setResult("result", "success");
 		return SUCCESS;
+	}
+	
+	private boolean skipValidation;
+	public boolean getSkipValidation() {
+		return skipValidation;
+	}
+	public void setSkipValidation(boolean skipValidation) {
+		this.skipValidation = skipValidation;
 	}
 	
 	public String migrateUnmodelledData() throws Exception {
