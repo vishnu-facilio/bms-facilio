@@ -605,5 +605,31 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		this.requestedBy = requestedBy;
 	}
 	
+	private long actualVisitDuration;
+
+	public long getActualVisitDuration() {
+		return actualVisitDuration;
+	}
+
+	public void setActualVisitDuration(long actualVisitDuration) {
+		this.actualVisitDuration = actualVisitDuration;
+	}
+	
+	private Boolean isReturningVisitor;
+
+	public Boolean getIsReturningVisitor() {
+		return isReturningVisitor;
+	}
+
+	public void setIsReturningVisitor(Boolean isReturning) {
+		this.isReturningVisitor = isReturning;
+	}
+
+	public boolean isReturningVisitor() {
+		if (isReturningVisitor != null) {
+			return isReturningVisitor.booleanValue();
+		}
+		return false;
+	}
 	
 }

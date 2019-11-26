@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -231,12 +232,23 @@ private static final long serialVersionUID = 1L;
 	public String updateVisitorLogging() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(visitorLoggingRecords)) {
-			FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
-			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
-			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
-			c.execute();
-			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+			Boolean canCreateNewLog = VisitorManagementAPI.checkExistingVisitorLogging(visitorLoggingRecords.get(0).getId());
+			if(canCreateNewLog != null) {
+				if(canCreateNewLog) {
+					addVisitorLogging();
+				}
+				else {
+					throw new IllegalArgumentException("Invalid Re checkin");
+				}
+			}
+			else {
+				FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
+				c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
+				c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
+				c.execute();
+				setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+			}
 		}
 		return SUCCESS;
 	}

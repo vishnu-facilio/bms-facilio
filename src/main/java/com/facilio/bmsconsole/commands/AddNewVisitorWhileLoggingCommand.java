@@ -38,6 +38,14 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 				if(vL.getRequestedBy() == null || vL.getRequestedBy().getId() <= 0) {
 					vL.setRequestedBy(AccountUtil.getCurrentUser());
 				}
+				if(vL.getVisitor() != null && vL.getVisitor().getId() > 0) {
+					vL.setIsReturningVisitor(true);
+					vL.getVisitor().setIsReturningVisitor(true);
+				}
+				else {
+					vL.setIsReturningVisitor(false);
+					vL.getVisitor().setIsReturningVisitor(false);
+				}
 				VisitorSettingsContext setting = settingsMap.get(vL.getVisitorType().getId());
 				if(setting != null) {
 					JSONObject hostSetting = setting.getHostSettings();
@@ -91,6 +99,9 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 				}
 				if(vL.getVisitor() != null && vL.getVisitor().getId() <= 0) {
 					RecordAPI.addRecord(true, Collections.singletonList(vL.getVisitor()) , module, fields);
+				}
+				else {
+					RecordAPI.updateRecord(vL.getVisitor(), module, fields);
 				}
 				if(vL.getInvite() != null) {
 					VisitorInviteContext visitorInvite = VisitorManagementAPI.getVisitorInvite(vL.getInvite().getId());

@@ -43,7 +43,7 @@
                 
                         <tr>
                               <td>
-                                    <div style="color: #8e8c97;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;font-size: 14px;padding-bottom: 30px;letter-spacing: 0.5px;">Skip the line on arrival - here’s QR code for quick access</div>
+                                    <div style="color: #8e8c97;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;font-size: 14px;padding-bottom: 30px;letter-spacing: 0.5px;">Skip the line on arrival - here is QR code for quick access</div>
                               </td>
                         </tr>
                         <tr>

@@ -212,6 +212,21 @@ public class VisitorContext extends ModuleBaseWithCustomFields{
 		this.firstVisitedTime = firstVisitedTime;
 	}
 	
-	
+	private Boolean isReturningVisitor;
+
+	public Boolean getIsReturningVisitor() {
+		return isReturningVisitor;
+	}
+
+	public void setIsReturningVisitor(Boolean isReturning) {
+		this.isReturningVisitor = isReturning;
+	}
+
+	public boolean isReturningVisitor() {
+		if (isReturningVisitor != null) {
+			return isReturningVisitor.booleanValue();
+		}
+		return false;
+	}
 	
 }
