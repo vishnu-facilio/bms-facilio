@@ -513,6 +513,8 @@
 	</package>
 	<package name="vendorVisitorLog" namespace="/api/service/v2/visitorLogging"
 		extends="newServicePortalApiV2">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
 		<action name="*"
@@ -885,6 +887,11 @@
 			</result>
 		</action>
 		</package>
+		<package name="TenantvisitorSettings" namespace="/api/service/v2/visitorSettings"
+		extends="newServicePortalApiV2">	
+		<action name="get"
+			class="com.facilio.bmsconsole.actions.VisitorSettingsAction" method="fetchVisitorSettings" />
+	</package>
 	<!-- Tenant apis end -->
 	<!-- end -->
 </struts>
