@@ -117,7 +117,7 @@ private static final long serialVersionUID = 1L;
 	}
 	public String addWorkPermit() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(workPermitRecords)) {
+		if(!CollectionUtils.isEmpty(workPermitRecords) || workPermit != null) {
 			FacilioChain c = TransactionChainFactory.addWorkPermitRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			if (workPermit != null) {
