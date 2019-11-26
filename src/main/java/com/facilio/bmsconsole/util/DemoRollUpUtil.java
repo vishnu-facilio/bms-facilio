@@ -94,7 +94,6 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Energy_Data" , Arrays.asList("ACTUAL_TTIME","TTIME"));
-		tablesContainsDateField.put("ImportProcessLog" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Formula_Field_Resource_Jobs" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("Workflow_Rule" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Preventive_Maintenance" , Arrays.asList("CREATION_TIME","LAST_MODIFIED_TIME","END_TIME"));
