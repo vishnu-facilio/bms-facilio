@@ -167,8 +167,10 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.addVisitorLoggingRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			if (visitorLogging != null) {
+				visitorLogging.parseFormData();
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLogging));
 			}else {
+				parseFormData(visitorLoggingRecords);
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
 			}
 			c.execute();
@@ -177,12 +179,19 @@ private static final long serialVersionUID = 1L;
 		return SUCCESS;
 	}
 	
+	private void parseFormData(List<VisitorLoggingContext> logs) {
+		if(CollectionUtils.isNotEmpty(logs)) {
+			for(VisitorLoggingContext log : logs) {
+				log.parseFormData();
+			}
+		}
+	}
 	public String addRecurringVisitorLogging() throws Exception {
 		
 		if(parentLog != null) {
 			FacilioChain c = TransactionChainFactory.addRecurringVisitorLoggingRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
-			
+			parentLog.parseFormData();
 			if(triggerString != null) {
 				setTriggerContext(triggerString);
 				parentLog.setTrigger(this.getTrigger());
@@ -201,7 +210,7 @@ private static final long serialVersionUID = 1L;
 		if(parentLog != null) {
 			FacilioChain c = TransactionChainFactory.updateRecurringVisitorLoggingRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
-			
+			parentLog.parseFormData();
 			if(triggerString != null) {
 				setTriggerContext(triggerString);
 				parentLog.setTrigger(this.getTrigger());
@@ -232,6 +241,7 @@ private static final long serialVersionUID = 1L;
 	public String updateVisitorLogging() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(visitorLoggingRecords)) {
+			parseFormData(visitorLoggingRecords);
 			Boolean canCreateNewLog = VisitorManagementAPI.checkExistingVisitorLogging(visitorLoggingRecords.get(0).getId());
 			if(canCreateNewLog != null) {
 				if(canCreateNewLog) {
