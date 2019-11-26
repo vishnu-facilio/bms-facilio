@@ -6488,6 +6488,8 @@ public class FieldFactory {
  		fields.add(getField("upperBound","upperBoundLog","DECIMAL_CF15",module,FieldType.DECIMAL));
  		fields.add(getField("upperGAM","upperGAMLog","DECIMAL_CF16",module,FieldType.DECIMAL));
  		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.DECIMAL));
+ 		fields.add(getField("mlRunning","ML_RUNNING",module,FieldType.BOOLEAN));
+ 		fields.add(getField("errorCode","ERROR_CODE",module,FieldType.NUMBER));
 
  		return fields;
 	}
@@ -6499,7 +6501,8 @@ public class FieldFactory {
  		fields.add(getField("daywiseenergy","daywiseenergyLog","DECIMAL_CF1",module,FieldType.DECIMAL));
  		fields.add(getField("endofmonthenergy","endofmonthenergyLog","DECIMAL_CF2",module,FieldType.DECIMAL));
   		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
-
+  		fields.add(getField("mlRunning","ML_RUNNING",module,FieldType.BOOLEAN));
+ 		fields.add(getField("errorCode","ERROR_CODE",module,FieldType.NUMBER));
  		return fields;
 	}
 
@@ -6509,7 +6512,8 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getMLReadingModule();
 		fields.add(getField("daywiseenergy","DECIMAL_CF1",module,FieldType.DECIMAL));
 		fields.add(getField("endofmonthenergy","DECIMAL_CF2",module,FieldType.DECIMAL));
-
+		fields.add(getField("mlRunning","ML_RUNNING",module,FieldType.BOOLEAN));
+ 		fields.add(getField("errorCode","ERROR_CODE",module,FieldType.NUMBER));
 		return fields;
 	}
 	
@@ -6519,7 +6523,8 @@ public class FieldFactory {
  		FacilioModule module = ModuleFactory.getMLLogReadingModule();
  		fields.add(getField("daywiseload","daywiseloadLog","DECIMAL_CF3",module,FieldType.DECIMAL));
   		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
-
+  		fields.add(getField("mlRunning","ML_RUNNING",module,FieldType.BOOLEAN));
+ 		fields.add(getField("errorCode","ERROR_CODE",module,FieldType.NUMBER));
  		return fields;
 	}
 
@@ -6528,7 +6533,8 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getMLReadingModule();
 		fields.add(getField("daywiseload","DECIMAL_CF3",module,FieldType.DECIMAL));
-
+		fields.add(getField("mlRunning","ML_RUNNING",module,FieldType.BOOLEAN));
+ 		fields.add(getField("errorCode","ERROR_CODE",module,FieldType.NUMBER));
 		return fields;
 	}
 	
@@ -6552,7 +6558,8 @@ public class FieldFactory {
 		fields.add(getField("upperAnomaly","DECIMAL_CF14",module,FieldType.DECIMAL));
 		fields.add(getField("upperBound","DECIMAL_CF15",module,FieldType.DECIMAL));
 		fields.add(getField("upperGAM","DECIMAL_CF16",module,FieldType.DECIMAL));
-
+		fields.add(getField("mlRunning","ML_RUNNING",module,FieldType.BOOLEAN));
+ 		fields.add(getField("errorCode","ERROR_CODE",module,FieldType.NUMBER));
 		return fields;
 	}
 
@@ -6566,7 +6573,8 @@ public class FieldFactory {
 //		fields.add(getField("upperAnomaly","upperAnomalyLog","DECIMAL_CF4",module,FieldType.NUMBER));
 //		fields.add(getField("lowerAnomaly","lowerAnomalyLog","DECIMAL_CF5",module,FieldType.NUMBER));
 		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
-
+		fields.add(getField("mlRunning","ML_RUNNING",module,FieldType.BOOLEAN));
+ 		fields.add(getField("errorCode","ERROR_CODE",module,FieldType.NUMBER));
 		return fields;
 	}
 
@@ -6579,8 +6587,8 @@ public class FieldFactory {
 		fields.add(getField("ratio","DECIMAL_CF3",module,FieldType.DECIMAL));
 		fields.add(getField("upperAnomaly","DECIMAL_CF4",module,FieldType.DECIMAL));
 		fields.add(getField("lowerAnomaly","DECIMAL_CF5",module,FieldType.DECIMAL));
-		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.DECIMAL));
-
+		fields.add(getField("mlRunning","ML_RUNNING",module,FieldType.BOOLEAN));
+ 		fields.add(getField("errorCode","ERROR_CODE",module,FieldType.NUMBER));
 		return fields;
  	}
 
