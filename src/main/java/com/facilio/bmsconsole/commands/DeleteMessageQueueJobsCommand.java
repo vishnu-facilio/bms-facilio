@@ -1,25 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.jobs.DeleteInstantJobQueue;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.service.FacilioService;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 
 public class DeleteMessageQueueJobsCommand extends FacilioCommand{
 
@@ -31,7 +28,7 @@ public class DeleteMessageQueueJobsCommand extends FacilioCommand{
 
         int customDaysToDelete = (int) context.get("NO_OF_DAYS");
         String tableName = (String) context.get("TABLE_NAME");
-        String deleteCondition = "< NOW() - INTERVAL "+ customDaysToDelete+" DAY";
+        String deleteCondition = "  NOW() - INTERVAL "+ customDaysToDelete+" DAY";
         try{
         	int count = deleteQueue(tableName,deleteCondition);
         	System.out.println("Facilio Queue Deleted rows count is "+ count +" in table : " +tableName);
