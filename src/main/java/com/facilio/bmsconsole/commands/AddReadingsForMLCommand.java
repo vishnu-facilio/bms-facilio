@@ -65,26 +65,6 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 				 logReadingList.add(newReading);
 				 predictReadingList.add(newUpdatedReading);
 			}
-			else if(!StringUtils.isEmpty(new JSONObject(mlContext.getResult()).get("error").toString())){
-				 ReadingContext newReading = new ReadingContext();
-				 ReadingContext newUpdatedReading = new ReadingContext();
-				 		
-				 newReading.setParentId(parentID);
-				 newUpdatedReading.setParentId(parentID);
-				 
-				 newReading.setTtime(mlContext.getPredictionTime());
-				 newUpdatedReading.setTtime(mlContext.getPredictionTime());
-				 
-				 newReading.addReading("mlRunning", true);
-				 newUpdatedReading.addReading("mlRunning", true);
-				 newReading.addReading("errorCode", new JSONObject(mlContext.getResult()).get("error").toString());
-				 newUpdatedReading.addReading("errorCode", new JSONObject(mlContext.getResult()).get("error").toString());
-				 
-				 newReading.addReading("predictedTime", mlContext.getPredictionTime());
-
-				 logReadingList.add(newReading);
-				 predictReadingList.add(newUpdatedReading);
-			}
 			else{
 				JSONArray mlArray = (JSONArray) new JSONObject(mlContext.getResult()).get("data");
 				if(mlArray.length()>0)
@@ -114,6 +94,10 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 								 mlContext.getAssetDetails().put(field.getName(),readingObj.get(field.getName()));
 								 newReading.addReading(field.getName(), readingObj.get(field.getName()));
 								 newUpdatedReading.addReading(field.getName(), readingObj.get(field.getName()));
+							 }else if(!readingObj.has(field.getName()) && field.getName().equalsIgnoreCase("errorCode")){
+								 mlContext.getAssetDetails().put(field.getName(),-1);
+								 newReading.addReading(field.getName(), -1);
+								 newUpdatedReading.addReading(field.getName(), -1);
 							 }
 						 }
 						 LOGGER.info("Asset Details are "+mlContext.getAssetDetails());
