@@ -1,55 +1,34 @@
 package com.facilio.bmsconsole.view;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.MapUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
-import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.EnumOperators;
-import com.facilio.db.criteria.operators.LookupOperator;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
+import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.time.DateTimeUtil;
+import org.apache.commons.collections4.MapUtils;
+
+import java.util.*;
 
 public class ViewFactory {
 
@@ -553,6 +532,9 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("todayvisits", getVisitorsCheckedInTodayView().setOrder(order++));
+		views.put("current", getVisitorsCheckedInCurrentlyView().setOrder(order++));
+		views.put("pending", getPendingVisitorsView().setOrder(order++));
 		views.put("all", getAllVisitorLogsView().setOrder(order++));
 		views.put("myInvites", getMyVisitorInvites().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
@@ -583,6 +565,8 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("blocked", getBlockedWatchListView().setOrder(order++));
+		views.put("vip", getVipWatchListView().setOrder(order++));
 		views.put("all", getAllWatchListView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WATCHLIST, views);
 
@@ -4891,6 +4875,32 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioView getBlockedWatchListView() {
+		FacilioView view = new FacilioView();
+		view.setDisplayName("Blocked Watchlist");
+		view.setName("blocked");
+		FacilioField blockedField = FieldFactory.getField("isBlocked", "IS_BLOCKED", FieldType.BOOLEAN);
+		Condition blockedCondition = CriteriaAPI.getCondition(blockedField, String.valueOf(true), BooleanOperators.IS);
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(blockedCondition);
+		view.setCriteria(criteria);
+
+		return view;
+	}
+
+	private static FacilioView getVipWatchListView() {
+		FacilioView view = new FacilioView();
+		view.setDisplayName("VIP Watchlist");
+		view.setName("vip");
+		FacilioField vipField = FieldFactory.getField("isVip", "IS_VIP", FieldType.BOOLEAN);
+		Condition vipCondition = CriteriaAPI.getCondition(vipField, String.valueOf(true), BooleanOperators.IS);
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(vipCondition);
+		view.setCriteria(criteria);
+
+		return view;
+	}
+
 	private static FacilioView getAllContactView() {
 
 		FacilioView allView = new FacilioView();
@@ -4898,5 +4908,68 @@ public class ViewFactory {
 		allView.setDisplayName("All Contact");
 		return allView;
 	}
+
+	private static FacilioView getVisitorsCheckedInTodayView() {
+
+		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
+		FacilioView view = new FacilioView();
+		view.setName("todayvisits");
+		view.setDisplayName("Today Visits");
+		Criteria criteria = new Criteria();
+		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
+		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, DateOperators.TODAY));
+		view.setCriteria(criteria);
+		view.setSortFields(Arrays.asList(new SortField(checkInTime, false)));
+
+		return view;
+	}
+
+	private static FacilioView  getVisitorsCheckedInCurrentlyView() {
+
+		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
+		FacilioView view = new FacilioView();
+		view.setName("current");
+		view.setDisplayName("Currently Checked-in");
+		Criteria criteria = new Criteria();
+		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
+		FacilioField checkOutTime = FieldFactory.getField("checkOutTime", "CHECKOUT_TIME", visitorLoggingModule,FieldType.DATE_TIME);
+		criteria.addAndCondition(CriteriaAPI.getCondition(checkOutTime, CommonOperators.IS_EMPTY));
+		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_NOT_EMPTY));
+
+		view.setCriteria(criteria);
+		view.setSortFields(Arrays.asList(new SortField(checkInTime, false)));
+
+		return view;
+	}
+
+	private static FacilioView  getPendingVisitorsView() {
+
+		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
+		FacilioView view = new FacilioView();
+		view.setName("pending");
+		view.setDisplayName("Pending Approval");
+
+		try {
+			FacilioStatus checkedIn = VisitorManagementAPI.getLogStatus("CheckedIn");
+			FacilioStatus checkedOut = VisitorManagementAPI.getLogStatus("CheckedOut");
+			FacilioStatus requested = VisitorManagementAPI.getLogStatus("Requested");
+			FacilioStatus approved = VisitorManagementAPI.getLogStatus("Approved");
+			FacilioStatus rejected = VisitorManagementAPI.getLogStatus("Rejected");
+			FacilioStatus waiting = VisitorManagementAPI.getLogStatus("Waiting");
+			FacilioStatus blocked = VisitorManagementAPI.getLogStatus("Blocked");
+
+			FacilioStatus upcoming = VisitorManagementAPI.getLogStatus("Upcoming");
+
+			Criteria statusCriteria = new Criteria();
+			statusCriteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedIn.getId()) + ","  + String.valueOf(checkedOut.getId()) + "," +  String.valueOf(requested.getId()) + "," +  String.valueOf(approved.getId()) + "," +  String.valueOf(rejected.getId()) + "," +  String.valueOf(blocked.getId()) + "," +  String.valueOf(waiting.getId()) + "," +  String.valueOf(upcoming.getId()), NumberOperators.NOT_EQUALS));
+			view.setCriteria(statusCriteria);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return view;
+	}
+
 
 }
