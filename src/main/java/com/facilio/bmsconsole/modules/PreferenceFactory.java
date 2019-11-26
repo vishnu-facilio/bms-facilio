@@ -102,8 +102,8 @@ public class PreferenceFactory {
 		visitorLogPreferences.add(VisitorManagementAPI.getThanksSmsNotificationsPref());
 	//	visitorLogPreferences.add(VisitorManagementAPI.getThanksWhatsappNotificationsPref());
 		
-	//	visitorLogPreferences.add(VisitorManagementAPI.getInviteMailNotificationsPref());
-	//	visitorLogPreferences.add(VisitorManagementAPI.getInviteSmsNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getInviteMailNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getInviteSmsNotificationsPref());
 	//	visitorLogPreferences.add(VisitorManagementAPI.getInviteWhatsappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getApprovalMailNotificationsPref());

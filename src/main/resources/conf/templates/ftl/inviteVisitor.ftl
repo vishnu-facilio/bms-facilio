@@ -27,11 +27,11 @@
                                       </div>
                                         <#if (vLog.visitedSpace) ?? >
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          You have been invited to ${vLog.visitedSpace.name} by ${vLog.host.name} on ${(vLog.expectedStartTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} ! 
+                                          You have been invited to ${vLog.visitedSpace.name} by ${vLog.host.name} on ${(vLog.expectedCheckInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} ! 
                                     </div>
                                      <#else>
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          You have been invited by ${vLog.host.name} on ${(vLog.expectedStartTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} ! 
+                                          You have been invited by ${vLog.host.name} on ${(vLog.expectedCheckInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} ! 
                                     </div>
                                    
                                    </#if>

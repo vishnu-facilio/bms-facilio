@@ -848,7 +848,7 @@ public class VisitorManagementAPI {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
+				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
 				Long ruleId = saveInviteEmailNotificationPrefs(map, module.getName());
 				List<Long> ruleIdList = new ArrayList<>();
 				ruleIdList.add(ruleId);
@@ -872,7 +872,7 @@ public class VisitorManagementAPI {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
+				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
 				Long ruleId = saveInviteSmsNotificationPrefs(map, module.getName());
 				List<Long> ruleIdList = new ArrayList<>();
 				ruleIdList.add(ruleId);
@@ -895,7 +895,7 @@ public class VisitorManagementAPI {
 				@Override
 				public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_INVITE_REL);
+					FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
 					Long ruleId = saveInviteWhatsappNotificationPrefs(map, module.getName());
 					List<Long> ruleIdList = new ArrayList<>();
 					ruleIdList.add(ruleId);
