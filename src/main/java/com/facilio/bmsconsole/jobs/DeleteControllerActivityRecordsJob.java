@@ -41,8 +41,9 @@ public class DeleteControllerActivityRecordsJob extends FacilioJob {
 	private List<Long> getControllerActivityIds (JobContext jc) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerActivityModule();
 		FacilioModule recordModule = ModuleFactory.getControllerActivityRecordsModule();
-		List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField(module));
-		FacilioField createdTimeField = FieldFactory.getAsMap(fields).get("createdTime");
+		List<FacilioField> fields = FieldFactory.getControllerActivityFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField createdTimeField = fieldMap.get("createdTime");
 		
 		long lastweek = DateTimeUtil.getDateTime(jc.getExecutionTime(), true).minusDays(7).toInstant().toEpochMilli();
 		
@@ -50,7 +51,7 @@ public class DeleteControllerActivityRecordsJob extends FacilioJob {
 														.table(module.getTableName())
 														.innerJoin(recordModule.getTableName())
 														.on(module.getTableName()+".ID = "+recordModule.getTableName()+".ID")
-														.select(fields)
+														.select(Collections.singletonList(fieldMap.get("id")))
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(createdTimeField, String.valueOf(lastweek), DateOperators.IS_BEFORE))
 														.get()
