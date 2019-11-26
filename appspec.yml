@@ -11,8 +11,6 @@ files:
     destination: /home/ubuntu
   - source: /move_logs.sh
     destination: /home/ubuntu
-  - source: /start_xvfb.sh
-    destination: /home/ubuntu
   - source: /setenv.sh
     destination: /home/ubuntu
   - source: /oom.sh
