@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -43,6 +44,8 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 
 	private static final Logger LOGGER = LogManager.getLogger(VirtualMeterEnergyDataCalculator.class.getName());
 	
+	private boolean timedOut = false;
+	
 	public void execute(JobContext jc) throws Exception {
 		try {	
 			if(AccountUtil.getCurrentOrg().getId() == 78)
@@ -69,51 +72,60 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 				for(EnergyMeterContext vm:virtualMeters)
 				{			
 					Integer hierarchy = getHierarchy(vm, 0, virtualEnergyMeterContextMap, childMeterIdMap);
-					if(hierarchyVMMap.containsKey(hierarchy))
+					if(hierarchy != null)
 					{
-						List<EnergyMeterContext> groupedVMList = hierarchyVMMap.get(hierarchy);
-						groupedVMList.add(vm);
+						if(hierarchyVMMap.containsKey(hierarchy))
+						{
+							List<EnergyMeterContext> groupedVMList = hierarchyVMMap.get(hierarchy);
+							groupedVMList.add(vm);
+						}
+						else
+						{
+							List<EnergyMeterContext> groupedVMList = new ArrayList<EnergyMeterContext>();
+							groupedVMList.add(vm);
+							hierarchyVMMap.put(hierarchy, groupedVMList);
+						}		
+					}			
+				}
+				
+				if(MapUtils.isNotEmpty(hierarchyVMMap))
+				{
+
+					Map<Integer,List<EnergyMeterContext>> sortedHierarchyVMMap = new TreeMap<Integer,List<EnergyMeterContext>>(hierarchyVMMap); 
+					
+					for(Integer hierarchy:sortedHierarchyVMMap.keySet()) {
+						List<EnergyMeterContext> vmList = sortedHierarchyVMMap.get(hierarchy);
+						System.out.println(" Hierarchy -- " + hierarchy + " VMs --" + vmList);
+						LOGGER.info(" VM Job Hierarchy -- " + hierarchy + " VMs --" + vmList + " Job Id --" + jc.getJobId());
 					}
-					else
+					
+					for(List<EnergyMeterContext> groupedVMList:sortedHierarchyVMMap.values())
 					{
-						List<EnergyMeterContext> groupedVMList = new ArrayList<EnergyMeterContext>();
-						groupedVMList.add(vm);
-						hierarchyVMMap.put(hierarchy, groupedVMList);
+						List<ReadingContext> hierarchicalVMReadings = new ArrayList<ReadingContext>();
+						List<MarkedReadingContext> hierarchicalMarkedList = new ArrayList<MarkedReadingContext>();
+						
+						for(EnergyMeterContext vm:groupedVMList)
+						{		
+							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(vm.getId(), deltaField); //childrenVM not VM as well as all VMChildren has completed insertion
+							long startTime = meta.getTtime()+1;
+							List<ReadingContext> vmReadings = DeviceAPI.getandDeleteDuplicateVirtualMeterReadings(vm,childMeterIdMap.get(vm.getId()),startTime,endTime,minutesInterval,true, false);
+							if (vmReadings != null) {
+								hierarchicalVMReadings.addAll(vmReadings); 		
+							}
+							List<MarkedReadingContext> markedList= DeviceAPI.validatedataGapCountForVMReadings(vmReadings, vm, false);										
+							if (vmReadings != null && markedList != null) {
+								hierarchicalMarkedList.addAll(markedList); //Grouping readings for all the meters in the same hierarchy	
+							}										
+						}
+						
+						DeviceAPI.insertVMReadingsBasedOnHierarchy(hierarchicalVMReadings,endTime,minutesInterval,true, false, hierarchicalMarkedList);						
 					}
+					
+					System.out.println(" VM Job Timetaken -- " + (System.currentTimeMillis()-jobStartTime));
+					LOGGER.info(" VM Job Timetaken -- " + (System.currentTimeMillis()-jobStartTime) + " Job Id --" + jc.getJobId());
+					
 				}
 			
-				Map<Integer,List<EnergyMeterContext>> sortedHierarchyVMMap = new TreeMap<Integer,List<EnergyMeterContext>>(hierarchyVMMap); 
-				
-				for(Integer hierarchy:sortedHierarchyVMMap.keySet()) {
-					List<EnergyMeterContext> vmList = sortedHierarchyVMMap.get(hierarchy);
-					System.out.println(" Hierarchy -- " + hierarchy + " VMs --" + vmList);
-					LOGGER.info(" VM Job Hierarchy -- " + hierarchy + " VMs --" + vmList + " Job Id --" + jc.getJobId());
-				}
-				
-				for(List<EnergyMeterContext> groupedVMList:sortedHierarchyVMMap.values())
-				{
-					List<ReadingContext> hierarchicalVMReadings = new ArrayList<ReadingContext>();
-					List<MarkedReadingContext> hierarchicalMarkedList = new ArrayList<MarkedReadingContext>();
-					
-					for(EnergyMeterContext vm:groupedVMList)
-					{		
-						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(vm.getId(), deltaField); //childrenVM not VM as well as all VMChildren has completed insertion
-						long startTime = meta.getTtime()+1;
-						List<ReadingContext> vmReadings = DeviceAPI.getandDeleteDuplicateVirtualMeterReadings(vm,childMeterIdMap.get(vm.getId()),startTime,endTime,minutesInterval,true, false);
-						if (vmReadings != null) {
-							hierarchicalVMReadings.addAll(vmReadings); 		
-						}
-						List<MarkedReadingContext> markedList= DeviceAPI.validatedataGapCountForVMReadings(vmReadings, vm, false);										
-						if (vmReadings != null && markedList != null) {
-							hierarchicalMarkedList.addAll(markedList); //Grouping readings for all the meters in the same hierarchy	
-						}										
-					}
-					
-					DeviceAPI.insertVMReadingsBasedOnHierarchy(hierarchicalVMReadings,endTime,minutesInterval,true, false, hierarchicalMarkedList);						
-				}
-				
-				System.out.println(" VM Job Timetaken -- " + (System.currentTimeMillis()-jobStartTime));
-				LOGGER.info(" VM Job Timetaken -- " + (System.currentTimeMillis()-jobStartTime) + " Job Id --" + jc.getJobId());
 			}
 			else
 			{
@@ -184,6 +196,9 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 	private Integer getHierarchy(EnergyMeterContext vm, Integer hierarchy, Map<Long,EnergyMeterContext> virtualEnergyMeterContextMap, 
 			 Map <Long, List<Long>> childMeterIdMap) throws Exception {
 		
+		if(timedOut) {
+			return null;
+		}
 		hierarchy++;
 		long vmId = vm.getId();
 		
@@ -258,5 +273,11 @@ private List<Long> getVmList(List<EnergyMeterContext> virtualMeters){
 			}
 		}
 		return true;
+	}
+	
+	public void handleTimeOut() {
+		LOGGER.info("VM Energy Job calculator timed out!!");
+		timedOut = true;
+		super.handleTimeOut();
 	}
 }
