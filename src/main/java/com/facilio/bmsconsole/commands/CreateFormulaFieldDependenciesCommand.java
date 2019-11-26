@@ -34,24 +34,27 @@ public class CreateFormulaFieldDependenciesCommand extends FacilioCommand {
 			formulaField.setInterval(FormulaFieldAPI.getDataInterval(formulaField));
 			FormulaFieldAPI.validateFormula(formulaField, false);
 			
-			FacilioField field = FieldFactory.getField(null, formulaField.getName(), null, null, formulaField.getResultDataTypeEnum() == null? FieldType.DECIMAL : formulaField.getResultDataTypeEnum());
-			field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
-			if(field instanceof NumberField) {
-				if (formulaUnitString != null) {
-					((NumberField) field).setUnit(formulaUnitString);
+			Boolean isFromulaFieldIOpperationFromMAndV = (Boolean) context.get(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V);
+			
+			if(isFromulaFieldIOpperationFromMAndV == null || !isFromulaFieldIOpperationFromMAndV) {
+				FacilioField field = FieldFactory.getField(null, formulaField.getName(), null, null, formulaField.getResultDataTypeEnum() == null? FieldType.DECIMAL : formulaField.getResultDataTypeEnum());
+				field.setDisplayType(FacilioField.FieldDisplayType.ENPI);
+				if(field instanceof NumberField) {
+					if (formulaUnitString != null) {
+						((NumberField) field).setUnit(formulaUnitString);
+					}
+					else if (formulaUnit > 0) {
+						((NumberField) field).setUnitId(formulaUnit);
+						((NumberField) field).setMetric((int)context.get(FacilioConstants.ContextNames.FORMULA_METRIC));
+					}
 				}
-				else if (formulaUnit > 0) {
-					((NumberField) field).setUnitId(formulaUnit);
-					((NumberField) field).setMetric((int)context.get(FacilioConstants.ContextNames.FORMULA_METRIC));
-				}
+				formulaField.setReadingField(field);
 			}
-
-			formulaField.setReadingField(field);
 			
 			if (formulaField.getTriggerTypeEnum() == TriggerType.PRE_LIVE_READING) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				List<FacilioField> existingFields = modBean.getAllFields(formulaField.getModuleName());
-				List<FacilioField> newFields = Collections.singletonList(field);
+				List<FacilioField> newFields = Collections.singletonList(formulaField.getReadingField());
 				context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, existingFields);
 				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, newFields);
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formulaField.getModuleName());

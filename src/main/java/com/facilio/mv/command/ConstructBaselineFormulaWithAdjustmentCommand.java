@@ -1,5 +1,6 @@
 package com.facilio.mv.command;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -112,10 +113,17 @@ public class ConstructBaselineFormulaWithAdjustmentCommand extends FacilioComman
 				FormulaFieldContext formulaFieldContext = new FormulaFieldContext();
 				formulaFieldContext.setWorkflow(newBaselineWorkflow);
 				
+				formulaFieldContext.setModule(MVUtil.getMVBaselineAdjustmentReadingField().getModule());
+				formulaFieldContext.setReadingField(MVUtil.getMVBaselineAdjustmentReadingField());
+				
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD,formulaFieldContext);
 				formulaFieldContext.setName(baseLine.getName()+"WithAjustment");
+				context.put(FacilioConstants.ContextNames.MODULE,MVUtil.getMVBaselineAdjustmentReadingField().getModule());
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST,Collections.singletonList(MVUtil.getMVBaselineAdjustmentReadingField()));
+				context.put(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V,true);
 				MVUtil.fillFormulaFieldDetailsForAdd(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
-				FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+				
+				FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain(true);
 				addEnpiChain.execute(context);
 				
 				baseLine.setFormulaFieldWithAjustment(formulaFieldContext);

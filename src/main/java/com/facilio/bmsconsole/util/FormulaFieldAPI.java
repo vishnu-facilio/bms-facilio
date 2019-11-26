@@ -790,7 +790,7 @@ public class FormulaFieldAPI {
 						LOGGER.error("optimisedWorkflow to String -- "+ WorkflowUtil.getXmlStringFromWorkflow(optimisedWorkflow));
 					}
 					LOGGER.debug("Time taken to generate optimised workflow : "+(System.currentTimeMillis() - workflowStarttime));
-					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField().getModule().getName());
+					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField());
 					LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 					Set<Object> xValues = new TreeSet<>(); 
 					long independentDataStarttime = System.currentTimeMillis();
@@ -804,7 +804,7 @@ public class FormulaFieldAPI {
 			}
 			else {
 				OptimisedFormulaCalculationWorkflow optimisedWorkflow = constructOptimisedWorkflowForHistoricalCalculation(formula.getWorkflow());
-				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField().getModule().getName());
+				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField());
 				LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 				Set<Object> xValues = new TreeSet<>(); 
 				Map<String,Object> wfParams = fetchIndependentParams(optimisedWorkflow.getMetas(), range, modBean, xValues);
@@ -1040,7 +1040,7 @@ public class FormulaFieldAPI {
 				LOGGER.debug("Gonna calculate historical formula of : "+formula.getId()+" for resource : "+singleResourceId);
 				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
 					LOGGER.debug("Matched");
-					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField().getModule().getName());
+					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField());
 					LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 					
 					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, isSelfDependent);
@@ -1050,7 +1050,7 @@ public class FormulaFieldAPI {
 				}
 			}
 			else {
-				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField().getModule().getName());
+				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField());
 				LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 				
 				for (Long resourceId : formula.getMatchedResourcesIds()) {
@@ -1063,14 +1063,16 @@ public class FormulaFieldAPI {
 			
 			LOGGER.debug("Historical Data to be added for formula "+readings.size());
 			if (!isSelfDependent && !readings.isEmpty()) {
-				FacilioContext context = new FacilioContext();
+				
+				
+				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+				FacilioContext context = addReadingChain.getContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 				context.put(FacilioConstants.ContextNames.READINGS, readings);
 				context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
 				context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
 				
-				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
-				addReadingChain.execute(context);
+				addReadingChain.execute();
 			}
 			
 			if (formula.getTriggerTypeEnum() == TriggerType.SCHEDULE) {
@@ -1097,7 +1099,9 @@ public class FormulaFieldAPI {
 		}
 	}
 	
-	private static int deleteOlderData(long startTime, long endTime, List<Long> parentIds, String moduleName) throws Exception {
+	private static int deleteOlderData(long startTime, long endTime, List<Long> parentIds, FacilioField readingField) throws Exception {
+		
+		String moduleName = readingField.getModule().getName();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(moduleName));
@@ -1107,6 +1111,7 @@ public class FormulaFieldAPI {
 																.module(module)
 																.andCondition(CriteriaAPI.getCondition(parentId, parentIds, PickListOperators.IS))
 																.andCondition(CriteriaAPI.getCondition(ttime, startTime+","+endTime, DateOperators.BETWEEN))
+																.andCondition(CriteriaAPI.getCondition(readingField, "", CommonOperators.IS_NOT_EMPTY))
 																;
 		return deleteBuilder.delete();
 	}

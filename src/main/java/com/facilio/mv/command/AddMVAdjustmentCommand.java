@@ -9,6 +9,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -36,14 +37,27 @@ public class AddMVAdjustmentCommand extends FacilioCommand {
 			adjustments = Collections.singletonList(adjustment);
 		}
 		
+		int count = 0;
+		
 		for(MVAdjustment adjustment1 :adjustments) {
+			
+			count++;
 			adjustment1.setProject(mvProjectWrapper.getMvProject());
 			adjustment1.setOrgId(AccountUtil.getCurrentOrg().getId());
 			if(adjustment1.getFormulaField() != null) {
+				
+				FormulaFieldContext formulaField = adjustment1.getFormulaField();
+				
+				formulaField.setModule(MVUtil.getMVAdjustmentReadingField(count).getModule());
+				formulaField.setReadingField(MVUtil.getMVAdjustmentReadingField(count));
+				
 				MVUtil.fillFormulaFieldDetailsForAdd(adjustment1.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment1,context);
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment1.getFormulaField());
+				context.put(FacilioConstants.ContextNames.MODULE,MVUtil.getMVAdjustmentReadingField(count).getModule());
+				context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST,Collections.singletonList(MVUtil.getMVAdjustmentReadingField(count)));
+				context.put(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V,true);
 
-				FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+				FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain(true);
 				addEnpiChain.execute(context);
 			}
 		}

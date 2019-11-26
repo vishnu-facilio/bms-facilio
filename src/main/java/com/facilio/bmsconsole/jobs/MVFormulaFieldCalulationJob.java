@@ -36,21 +36,21 @@ public class MVFormulaFieldCalulationJob extends FacilioJob{
 					for(MVBaseline baseline :projectWrapper.getBaselines()) {
 						
 						DateRange range = new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
-						FormulaFieldAPI.historicalCalculation(baseline.getFormulaField(), range, false);
+						FormulaFieldAPI.historicalCalculation(baseline.getFormulaField(), range, baseline.getFormulaField().getResourceId(), true, false);
 					}
 				}
 				if(projectWrapper.getAdjustments() != null) {
 					for( MVAdjustment adjustment :projectWrapper.getAdjustments()) {
 						if(adjustment.getFormulaField() != null) {
 							DateRange range =  new DateRange(adjustment.getStartTime(),  DateTimeUtil.getCurrenTime() <  adjustment.getEndTime() ? DateTimeUtil.getCurrenTime() : adjustment.getEndTime());
-							FormulaFieldAPI.historicalCalculation(adjustment.getFormulaField(), range, false);
+							FormulaFieldAPI.historicalCalculation(adjustment.getFormulaField(), range, adjustment.getFormulaField().getResourceId(), true, false);
 						}
 					}
 				}
 				if(projectWrapper.getBaselines() != null) {
 					for(MVBaseline baseline :projectWrapper.getBaselines()) {
 						DateRange range = new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
-						FormulaFieldAPI.historicalCalculation(baseline.getFormulaFieldWithAjustment(), range, false);
+						FormulaFieldAPI.historicalCalculation(baseline.getFormulaFieldWithAjustment(), range, baseline.getFormulaFieldWithAjustment().getResourceId(), true, false);
 					}
 				}
 				mvProject.setIsLocked(Boolean.FALSE);

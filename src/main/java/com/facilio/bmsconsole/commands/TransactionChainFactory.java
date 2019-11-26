@@ -932,11 +932,17 @@ public class TransactionChainFactory {
 		}
 		
 		public static FacilioChain addFormulaFieldChain() {
+			return addFormulaFieldChain(false);
+		}
+		
+		public static FacilioChain addFormulaFieldChain(boolean isModuleAlreadyCreated) {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new CreateFormulaFieldDependenciesCommand());
 			c.addCommand(new GetCategoryModuleCommand());
 			c.addCommand(new SetFormulaReadingsTableNameCommand());
-			c.addCommand(getAddReadingsChain());
+			if(!isModuleAlreadyCreated) {
+				c.addCommand(getAddReadingsChain());
+			}
 			c.addCommand(new AddResourceReadingRelCommand());
 			c.addCommand(new AddCategoryReadingRelCommand());
 			c.addCommand(new GetCategoryResourcesCommand());
@@ -2789,6 +2795,10 @@ public class TransactionChainFactory {
 			c.addCommand(new AddMVBaselineCommand());
 			c.addCommand(new AddMVAdjustmentCommand());
 			c.addCommand(new ConstructBaselineFormulaWithAdjustmentCommand());
+			c.addCommand(new ConstructTargetedConsumptionCommand());
+			c.addCommand(new ConstructSavedConsumptionCommand());
+			c.addCommand(new ConstructCumulativeConsumptionCommand());
+			c.addCommand(new ConstructPercentageSavingCommand());
 			c.addCommand(new ScheduleMVFormulaCalculationJob());					// always have this as last command
 			return c;
 		}
@@ -2800,6 +2810,10 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateMVBaselineCommand());
 			c.addCommand(new UpdateMVAdjustmentCommand());
 			c.addCommand(new ConstructBaselineFormulaWithAdjustmentCommand());
+			c.addCommand(new ConstructTargetedConsumptionCommand());
+			c.addCommand(new ConstructSavedConsumptionCommand());
+			c.addCommand(new ConstructCumulativeConsumptionCommand());
+			c.addCommand(new ConstructPercentageSavingCommand());
 			c.addCommand(new ScheduleMVFormulaCalculationJob());					// always have this as last command
 			return c;
 		}

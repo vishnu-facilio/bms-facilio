@@ -51,22 +51,72 @@ public class MVUtil {
 	
 	public static String RESULT_JSON = "resultJSON";
 	
+	public static String MV_BASELINE_READINGS_MODULE = "mvbaselinereading";
+	
+	public static String MV_BASELINE_WITH_AJUSTMENT_READINGS_MODULE = "mvbaselinewithadjustmentreading";
+	
+	public static String MV_AJUSTMENT_READINGS_MODULE = "mvadjustmentreading";
+	
+	public static String MV_READINGS_BASELINE_FIELD = "baseline";
+	public static String MV_READINGS_BASELINE_ADJUSTMENT_FIELD = "adjustedBaseline";
+	public static String MV_READINGS_ADJUSTMENT_FIELD = "adjustment";
+	
     public static String WORKLFOW_MODULE_INITITALIZATION_STMT = "module = Module(\"${moduleName}\");";
     public static String WORKLFOW_VALUE_FETCH_STMT = "module.fetch({criteria : [parentId == ${parentId} && ttime>=startTime && ttime <endTime],field : \"${fieldName}\",aggregation : \"sum\"});";
     public static String WORKLFOW_VALUE_NULL_CHECK_STMT = "if(${var} == null) { ${var} = 0; }";
     public static String WORKLFOW_ADJ_DATE_RANGE_CHECK = "if(startTime >= ${startTime} && endTime < ${endTime}){";
+    
+    
+    public static FacilioField getMVBaselineReadingField() throws Exception {
+    	
+    	ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	FacilioModule module = modbean.getModule(MV_BASELINE_READINGS_MODULE);
+    	
+    	FacilioField field = modbean.getField(MV_READINGS_BASELINE_FIELD, MV_BASELINE_READINGS_MODULE);
+    	
+    	field.setModule(module);
+    	
+    	return field;
+    }
+    
+    public static FacilioField getMVAdjustmentReadingField(int count) throws Exception {
+    	
+    	ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	FacilioModule module = modbean.getModule(MV_AJUSTMENT_READINGS_MODULE);
+    	
+    	FacilioField field = modbean.getField(MV_READINGS_ADJUSTMENT_FIELD+count, MV_AJUSTMENT_READINGS_MODULE);
+    	
+    	field.setModule(module);
+    	
+    	return field;
+    }
+    
+    public static FacilioField getMVBaselineAdjustmentReadingField() throws Exception {
+    	
+    	ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	FacilioModule module = modbean.getModule(MV_BASELINE_WITH_AJUSTMENT_READINGS_MODULE);
+    	
+    	FacilioField field = modbean.getField(MV_READINGS_BASELINE_ADJUSTMENT_FIELD, MV_BASELINE_WITH_AJUSTMENT_READINGS_MODULE);
+    	
+    	field.setModule(module);
+    	
+    	return field;
+    }
 	
 	public static void fillFormulaFieldDetailsForAdd(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment, Context context) throws Exception {
 		
 		formulaFieldContext.setFormulaFieldType(FormulaFieldType.M_AND_V_ENPI);
 		formulaFieldContext.setTriggerType(TriggerType.SCHEDULE);
-		formulaFieldContext.setResourceId(mvProject.getMeter().getId());
+		formulaFieldContext.setResourceId(mvProject.getId());
 		
-		AssetContext asset = AssetsAPI.getAssetInfo(mvProject.getMeter().getId());
-		formulaFieldContext.setAssetCategoryId(asset.getCategory().getId());
-		formulaFieldContext.setIncludedResources(Collections.singletonList(mvProject.getMeter().getId()));
+//		AssetContext asset = AssetsAPI.getAssetInfo(mvProject.getMeter().getId());
+//		formulaFieldContext.setAssetCategoryId(asset.getCategory().getId());
+//		formulaFieldContext.setIncludedResources(Collections.singletonList(mvProject.getMeter().getId()));
 		
-		formulaFieldContext.setResourceType(ResourceType.ASSET_CATEGORY);
+		formulaFieldContext.setResourceType(ResourceType.ONE_RESOURCE);
 		formulaFieldContext.setFrequency(mvProject.getFrequency());
 		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING, Boolean.TRUE);
 		if(baseline != null) {
