@@ -462,7 +462,7 @@ public class VisitorManagementAPI {
 			//	updatedfields.add(actualVisitdurationField);
 				
 				vLog.setCheckOutTime(time);
-				vLog.setActualVisitDuration(actualVisitDuration);
+			//	vLog.setActualVisitDuration(actualVisitDuration);
 				vLog.setIsOverStay(isOverStay);
 			}
 			else {
