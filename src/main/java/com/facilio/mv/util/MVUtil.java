@@ -51,6 +51,21 @@ public class MVUtil {
 	
 	public static String RESULT_JSON = "resultJSON";
 	
+	public static String MV_TARGET_CONSUMPUTION_MODULE = "mvtargetsaving";
+	public static String MV_SAVED_CONSUMPUTION_MODULE = "mvactualsaving";
+	public static String MV_SAVED_CUMULATIVE_MODULE = "mvcumulativesaving";
+	public static String MV_SAVED_PERCENTAGE_MODULE = "mvsavingpercentage";
+	
+	public static String MV_TARGET_CONSUMPUTION_FIELD = "targetsaving";
+	public static String MV_SAVED_CONSUMPPTION_FIELD = "actualsaving";
+	public static String MV_SAVED_CUMULATIVE_FIELD = "cumulativesaving";
+	public static String MV_SAVED_PERCENTAGE_FIELD = "savingpercentage";
+	
+	
+	public static String MV_SAVE_GOAL_MODULE = "mvsavegoalreading";
+	
+	public static String MV_SAVE_GOAL_FIELD = "mvsavegoal";
+	
 	public static String MV_BASELINE_READINGS_MODULE = "mvbaselinereading";
 	
 	public static String MV_BASELINE_WITH_AJUSTMENT_READINGS_MODULE = "mvbaselinewithadjustmentreading";
@@ -63,9 +78,76 @@ public class MVUtil {
 	
     public static String WORKLFOW_MODULE_INITITALIZATION_STMT = "module = Module(\"${moduleName}\");";
     public static String WORKLFOW_VALUE_FETCH_STMT = "module.fetch({criteria : [parentId == ${parentId} && ttime>=startTime && ttime <endTime],field : \"${fieldName}\",aggregation : \"sum\"});";
+    
+    public static String WORKLFOW_VALUE_FETCH_STMT_WITHOUT_START_TIME = "module.fetch({criteria : [parentId == ${parentId} && ttime <endTime],field : \"${fieldName}\",aggregation : \"sum\"});";
     public static String WORKLFOW_VALUE_NULL_CHECK_STMT = "if(${var} == null) { ${var} = 0; }";
     public static String WORKLFOW_ADJ_DATE_RANGE_CHECK = "if(startTime >= ${startTime} && endTime < ${endTime}){";
     
+    
+    public static FacilioField getMVSaveGoalReadingField() throws Exception {
+    	
+    	ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	FacilioModule module = modbean.getModule(MV_SAVE_GOAL_MODULE);
+    	
+    	FacilioField field = modbean.getField(MV_SAVE_GOAL_FIELD, MV_SAVE_GOAL_MODULE);
+    	
+    	field.setModule(module);
+    	
+    	return field;
+    }
+    
+    public static FacilioField getMVTargetConsumptionField() throws Exception {
+    	
+    	ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	FacilioModule module = modbean.getModule(MV_TARGET_CONSUMPUTION_MODULE);
+    	
+    	FacilioField field = modbean.getField(MV_TARGET_CONSUMPUTION_FIELD, MV_TARGET_CONSUMPUTION_MODULE);
+    	
+    	field.setModule(module);
+    	
+    	return field;
+    }
+
+    public static FacilioField getMVSavedConsumptionField() throws Exception {
+    	
+    	ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	FacilioModule module = modbean.getModule(MV_SAVED_CONSUMPUTION_MODULE);
+    	
+    	FacilioField field = modbean.getField(MV_SAVED_CONSUMPPTION_FIELD, MV_SAVED_CONSUMPUTION_MODULE);
+    	
+    	field.setModule(module);
+    	
+    	return field;
+    }
+    
+    public static FacilioField getMVCumulativeSavedConsumptionField() throws Exception {
+    	
+    	ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	FacilioModule module = modbean.getModule(MV_SAVED_CUMULATIVE_MODULE);
+    	
+    	FacilioField field = modbean.getField(MV_SAVED_CUMULATIVE_FIELD, MV_SAVED_CUMULATIVE_MODULE);
+    	
+    	field.setModule(module);
+    	
+    	return field;
+    }
+    
+    public static FacilioField getMVSavedPercentageField() throws Exception {
+    	
+    	ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	FacilioModule module = modbean.getModule(MV_SAVED_PERCENTAGE_MODULE);
+    	
+    	FacilioField field = modbean.getField(MV_SAVED_PERCENTAGE_FIELD, MV_SAVED_PERCENTAGE_MODULE);
+    	
+    	field.setModule(module);
+    	
+    	return field;
+    }
     
     public static FacilioField getMVBaselineReadingField() throws Exception {
     	
@@ -231,6 +313,22 @@ public class MVUtil {
 			mvBaseline.setFormulaField(formula);
 			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getFormulaFieldWithAjustment().getId());
 			mvBaseline.setFormulaFieldWithAjustment(formula);
+			
+			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getTargetConsumption().getId());
+			
+			mvBaseline.setTargetConsumption(formula);
+			
+			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getSavedConsumption().getId());
+			
+			mvBaseline.setSavedConsumption(formula);
+			
+			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getCumulativeSavedConsumption().getId());
+			
+			mvBaseline.setCumulativeSavedConsumption(formula);
+			
+			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getPercentageSavedConsumption().getId());
+			
+			mvBaseline.setPercentageSavedConsumption(formula);
 		}
 		
 		mvProjectWrapper.setBaselines(mvBaselines);

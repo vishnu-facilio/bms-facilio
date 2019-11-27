@@ -1,5 +1,6 @@
 package com.facilio.mv.command;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
@@ -8,8 +9,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -35,21 +38,40 @@ public class AddMVProjectCommand extends FacilioCommand {
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		if(mvProject.getMeter().getId() == -1l) {
-			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			context.put(FacilioConstants.ContextNames.RECORD, mvProject.getMeter());
+			
 			FacilioChain addAssetChain = FacilioChainFactory.getAddEnergyMeterChain();
-			addAssetChain.execute(context);
+			
+			FacilioContext context1 = addAssetChain.getContext();
+			
+			context1.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+			context1.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			context1.put(FacilioConstants.ContextNames.RECORD, mvProject.getMeter());
+			addAssetChain.execute();
 			
 			mvProject.setAutoGenVmMeter(true);
 		}
 		
 		if(mvProject.getSaveGoalFormulaField() != null) {
+			
+			FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain(true);
+			
+			FacilioContext context1 = addEnpiChain.getContext();
+			
+			context1.put(FacilioConstants.ContextNames.FORMULA_FIELD, mvProject.getSaveGoalFormulaField());
+			context1.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST,Collections.singletonList(MVUtil.getMVSaveGoalReadingField()));
+			context1.put(FacilioConstants.ContextNames.MODULE,MVUtil.getMVSaveGoalReadingField().getModule());
+			context1.put(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V,true);
+			
+			FormulaFieldContext formulaField = mvProject.getSaveGoalFormulaField();
+			
+			formulaField.setModule(MVUtil.getMVSaveGoalReadingField().getModule());
+			formulaField.setReadingField(MVUtil.getMVSaveGoalReadingField());
+			
 			MVUtil.fillFormulaFieldDetailsForAdd(mvProject.getSaveGoalFormulaField(), mvProjectWrapper.getMvProject(),null,null,context);
-			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, mvProject.getSaveGoalFormulaField());
-
-			FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
-			addEnpiChain.execute(context);
+			
+			addEnpiChain.execute();
+			
+			
 		}
 		
 		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_PROJECT_MODULE);

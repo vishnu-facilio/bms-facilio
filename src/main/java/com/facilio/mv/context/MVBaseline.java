@@ -14,6 +14,34 @@ public class MVBaseline extends ModuleBaseWithCustomFields {
 	String name;
 	FormulaFieldContext formulaField;
 	FormulaFieldContext formulaFieldWithAjustment;
+	FormulaFieldContext targetConsumption;
+	FormulaFieldContext savedConsumption;
+	FormulaFieldContext cumulativeSavedConsumption;
+	FormulaFieldContext percentageSavedConsumption;
+	public FormulaFieldContext getTargetConsumption() {
+		return targetConsumption;
+	}
+	public void setTargetConsumption(FormulaFieldContext targetConsumption) {
+		this.targetConsumption = targetConsumption;
+	}
+	public FormulaFieldContext getSavedConsumption() {
+		return savedConsumption;
+	}
+	public void setSavedConsumption(FormulaFieldContext savedConsumption) {
+		this.savedConsumption = savedConsumption;
+	}
+	public FormulaFieldContext getCumulativeSavedConsumption() {
+		return cumulativeSavedConsumption;
+	}
+	public void setCumulativeSavedConsumption(FormulaFieldContext cumulativeSavedConsumption) {
+		this.cumulativeSavedConsumption = cumulativeSavedConsumption;
+	}
+	public FormulaFieldContext getPercentageSavedConsumption() {
+		return percentageSavedConsumption;
+	}
+	public void setPercentageSavedConsumption(FormulaFieldContext percentageSavedConsumption) {
+		this.percentageSavedConsumption = percentageSavedConsumption;
+	}
 	long startTime;
 	long endTime;
 	public FormulaFieldContext getFormulaField() {

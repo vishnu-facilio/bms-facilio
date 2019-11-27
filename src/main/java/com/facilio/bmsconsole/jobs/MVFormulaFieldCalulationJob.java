@@ -53,6 +53,35 @@ public class MVFormulaFieldCalulationJob extends FacilioJob{
 						FormulaFieldAPI.historicalCalculation(baseline.getFormulaFieldWithAjustment(), range, baseline.getFormulaFieldWithAjustment().getResourceId(), true, false);
 					}
 				}
+				
+				if(projectWrapper.getBaselines() != null) {
+					for(MVBaseline baseline :projectWrapper.getBaselines()) {
+						DateRange range = new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
+						FormulaFieldAPI.historicalCalculation(baseline.getTargetConsumption(), range, baseline.getTargetConsumption().getResourceId(), true, false);
+					}
+				}
+				
+				if(projectWrapper.getBaselines() != null) {
+					for(MVBaseline baseline :projectWrapper.getBaselines()) {
+						DateRange range = new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
+						FormulaFieldAPI.historicalCalculation(baseline.getSavedConsumption(), range, baseline.getSavedConsumption().getResourceId(), true, false);
+					}
+				}
+				
+				if(projectWrapper.getBaselines() != null) {
+					for(MVBaseline baseline :projectWrapper.getBaselines()) {
+						DateRange range = new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
+						FormulaFieldAPI.historicalCalculation(baseline.getCumulativeSavedConsumption(), range, baseline.getCumulativeSavedConsumption().getResourceId(), true, false);
+					}
+				}
+				
+				if(projectWrapper.getBaselines() != null) {
+					for(MVBaseline baseline :projectWrapper.getBaselines()) {
+						DateRange range = new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
+						FormulaFieldAPI.historicalCalculation(baseline.getPercentageSavedConsumption(), range, baseline.getPercentageSavedConsumption().getResourceId(), true, false);
+					}
+				}
+				
 				mvProject.setIsLocked(Boolean.FALSE);
 				MVUtil.updateMVProject(mvProject);
 			}
