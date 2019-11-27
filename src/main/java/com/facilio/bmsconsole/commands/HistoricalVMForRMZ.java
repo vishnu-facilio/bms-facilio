@@ -30,21 +30,20 @@ public class HistoricalVMForRMZ {
 
 	private static final Logger LOGGER = LogManager.getLogger(VirtualMeterEnergyDataCalculator.class.getName());
 	
-    public static void runHistoricalForRMZ() throws Exception{
+    public static void runHistoricalForRMZ(List<String> VMstoRun) throws Exception{
     	
     	try {
     		    	
-	    	List<Integer> VMstoRun = Arrays.asList(81474, 81475, 81476, 81477, 81478, 81479, 81480, 81481, 275426, 275427, 275428, 275429, 275430, 275431, 275432, 275433, 275434, 275435, 275436, 275437, 275439, 275440, 275441, 586168, 586169, 882581, 882582, 882583, 882584, 882585, 882587, 882589, 882649, 882650, 882651, 882652, 882653, 882654, 882656, 882657, 882658, 882659, 882667, 882668, 890168, 1067295, 1067296, 1105910, 1105911, 1110741);
-						
-			long startTime = 1573324201000L;
+	    	long startTime = 1573324201000L;
 			long endTime = 1574706599000L;
 	
 			int noOfVms = VMstoRun.size();
 			LOGGER.info("VM Mig Start --------------- No.of VMs --- "+noOfVms);
 			
 			List<Long> vmList = new ArrayList<Long>(noOfVms);
+		
 			for (int i=0;i<noOfVms;++i) {
-				vmList.add(VMstoRun.get(i).longValue());
+				vmList.add(Long.parseLong(VMstoRun.get(i).trim()));
 			}
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
