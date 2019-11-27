@@ -58,8 +58,6 @@ public String validateCode() {
 				Long connectedDeviceId = (Long) codeObj.get("connectedDeviceId");
 				//connected Device has been added user side.
 				if (connectedDeviceId != null && connectedDeviceId > 0) {
-					setResponseCode(0);
-					setResult("status", "connected");
 					
 					String jwt = UserUtil.createJWT("id", "auth0", connectedDeviceId + "", System.currentTimeMillis() + 24 * 60 * 60000);
 
@@ -73,6 +71,10 @@ public String validateCode() {
 	             //   cookie.setSecure(true);
 	                response.addCookie(cookie);
 	                FacilioService.runAsService(() ->  DevicesUtil.deleteDevicePasscode(getCode()));
+	                
+	                setResponseCode(0);
+					setResult("status", "connected");
+					setResult("token", jwt);
 	               
 					return SUCCESS;
 				}
