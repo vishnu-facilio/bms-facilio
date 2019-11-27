@@ -627,6 +627,7 @@ public class FacilioConstants {
 		public static final String ITEM_TYPES_ATTACHMENTS = "itemTypesAttachments";
 		public static final String TOOL_TYPES_ATTACHMENTS = "toolTypesattachments";
 		public static final String STORE_ROOM_ATTACHMENTS = "storeRoomAttachments";
+		public static final String VISITOR_LOGGING_ATTACHMENTS = "visitorloggingattachments";
 
 		public static final String MV_PROJECT_MODULE = "mvproject";
 		public static final String MV_BASELINE_MODULE = "mvbaseline";

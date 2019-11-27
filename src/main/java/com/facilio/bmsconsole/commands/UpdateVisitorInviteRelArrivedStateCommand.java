@@ -10,6 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -35,12 +36,7 @@ public class UpdateVisitorInviteRelArrivedStateCommand extends FacilioCommand{
 				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
 				long fieldId = modBean.getField("moduleState", module.getName()).getFieldId();
 				
-				SelectRecordsBuilder<VisitorLoggingContext> builder = new SelectRecordsBuilder<VisitorLoggingContext>()
-						.moduleName(FacilioConstants.ContextNames.VISITOR_LOGGING)
-						.beanClass(VisitorLoggingContext.class)
-						.select(modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING))
-						.andCondition(CriteriaAPI.getIdCondition(vl.getId(), module));
-				VisitorLoggingContext visitorLogging = builder.fetchFirst();
+				VisitorLoggingContext visitorLogging = VisitorManagementAPI.getVisitorLoggingTriggers(vl.getId(), false);
 						
 				if(visitorLogging != null) {
 					updateChangeState.setFieldId(fieldId);

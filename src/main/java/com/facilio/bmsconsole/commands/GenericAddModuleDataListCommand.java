@@ -47,9 +47,12 @@ public class GenericAddModuleDataListCommand extends FacilioCommand{
 			List<Long> ids = new ArrayList<>();
 			for(ModuleBaseWithCustomFields rec : record) {
 				insertRecordBuilder.addRecord(rec);
-				ids.add(rec.getId());
 			}
 			insertRecordBuilder.save();
+			for(ModuleBaseWithCustomFields rec : record) {
+				ids.add(rec.getId());
+			}
+			
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 			if (withChangeSet != null && withChangeSet) {
 				context.put(FacilioConstants.ContextNames.CHANGE_SET, insertRecordBuilder.getChangeSet());

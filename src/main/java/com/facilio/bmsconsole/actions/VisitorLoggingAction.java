@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
@@ -162,6 +164,41 @@ private static final long serialVersionUID = 1L;
 	public void setTriggerString(String triggerString) {
 		this.triggerString = triggerString;
 	}
+	
+	private List<File> attachedFiles;
+	private List<String> attachedFilesFileName;
+	private List<String> attachedFilesContentType;
+	private AttachmentType attachmentType;
+	
+	public int getAttachmentType() {
+		if(attachmentType != null) {
+			return attachmentType.getIntVal();
+		}
+		return -1;
+	}
+	public void setAttachmentType(int attachmentType) {
+		this.attachmentType = AttachmentType.getType(attachmentType);
+	}
+	
+	public List<File> getAttachedFiles() {
+		return attachedFiles;
+	}
+	public void setAttachedFiles(List<File> attachedFiles) {
+		this.attachedFiles = attachedFiles;
+	}
+	public List<String> getAttachedFilesFileName() {
+		return attachedFilesFileName;
+	}
+	public void setAttachedFilesFileName(List<String> attachedFilesFileName) {
+		this.attachedFilesFileName = attachedFilesFileName;
+	}
+	public List<String> getAttachedFilesContentType() {
+		return attachedFilesContentType;
+	}
+	public void setAttachedFilesContentType(List<String> attachedFilesContentType) {
+		this.attachedFilesContentType = attachedFilesContentType;
+	}
+	
 	public String addVisitorLogging() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(visitorLoggingRecords) || visitorLogging != null) {
@@ -174,6 +211,12 @@ private static final long serialVersionUID = 1L;
 				parseFormData(visitorLoggingRecords);
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
 			}
+			c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
+			c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
+			c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+			c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
+			c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.VISITOR_LOGGING_ATTACHMENTS);
+			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
@@ -260,6 +303,14 @@ private static final long serialVersionUID = 1L;
 				c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(visitorLoggingRecords.get(0).getId()));
+				
+				c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
+				c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
+				c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+				c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
+				c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.VISITOR_LOGGING_ATTACHMENTS);
+				
+				
 				c.execute();
 				setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 			}

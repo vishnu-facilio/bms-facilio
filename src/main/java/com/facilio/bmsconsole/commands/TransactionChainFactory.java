@@ -3755,6 +3755,9 @@ public class TransactionChainFactory {
 			c.addCommand(new CheckForWatchListRecordCommand());
 			c.addCommand(new AddNewVisitorWhileLoggingCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
+//			c.addCommand(new AddAttachmentCommand());
+//			c.addCommand(new AttachmentContextCommand());
+//			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new AddNdaForVisitorLogCommand());
 			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
@@ -3794,6 +3797,9 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
 			c.addCommand(new GenericUpdateListModuleDataCommand());
+//			c.addCommand(new AddAttachmentCommand());
+//			c.addCommand(new AttachmentContextCommand());
+//			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));

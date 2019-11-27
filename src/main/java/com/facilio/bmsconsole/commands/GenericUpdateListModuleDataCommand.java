@@ -40,6 +40,7 @@ public class GenericUpdateListModuleDataCommand extends FacilioCommand {
 				recordIds.add(record.getId());
 			}	
 			context.put(FacilioConstants.ContextNames.RECORD_ID, recordIds);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		}
 		
 		return false;

@@ -38,6 +38,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.UserUtil;
+import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.actions.FacilioAction;
@@ -677,7 +678,11 @@ public class FacilioAuthAction extends FacilioAction {
 			Map<String, Object> userMap = UserUtil.getUserFromEmailOrPhone(getEmailaddress(), portalDomain);
 			if(MapUtils.isNotEmpty(userMap)) {
 				user = FieldUtil.getAsBeanFromMap(userMap, User.class);
-			}
+				if(!user.getDomainName().equals("app")) {
+					PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
+					user.setPortalId(portalInfo.getPortalId());
+				}
+			} 
 			if (user != null) {
 				AccountUtil.getUserBean().sendResetPasswordLinkv2(user);
 				invitation.put("status", "success");
