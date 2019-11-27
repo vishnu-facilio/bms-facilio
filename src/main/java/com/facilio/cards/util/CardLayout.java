@@ -485,6 +485,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			result[\"minValue\"] = valueMap;"
 					+ "		}"
+					+ "}"
 					+ "else {"
 					+ "		result[\"minValue\"] = null;"
 					+ "}"
@@ -518,6 +519,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			result[\"maxValue\"] = valueMap;"
 					+ "		}"
+					+ "}"
 					+ "else {"
 					+ "		result[\"maxValue\"] = null;"
 					+ "}"
@@ -627,6 +629,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			result[\"minValue\"] = valueMap;"
 					+ "		}"
+					+ "}"
 					+ "else {"
 					+ "		result[\"minValue\"] = null;"
 					+ "}"
@@ -660,6 +663,295 @@ public enum CardLayout {
 					+ "			}"
 					+ "			result[\"maxValue\"] = valueMap;"
 					+ "		}"
+					+ "}"
+					+ "else {"
+					+ "		result[\"maxValue\"] = null;"
+					+ "}"
+					+ "result[\"title\"] = params.title;"
+					+ "result[\"period\"] = period;");
+					
+			
+			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
+		}
+	},
+	
+	GAUGE_LAYOUT_3 ("gauge_layout_3") {
+		
+		public JSONObject getParameters () {
+			JSONObject params = new JSONObject();
+			params.put("title", true);
+			params.put("reading", true);
+			params.put("minSafeLimitType", true);
+			params.put("minSafeLimitConstant", true);
+			params.put("minSafeLimitReading", true);
+			params.put("maxSafeLimitType", true);
+			params.put("maxSafeLimitConstant", true);
+			params.put("maxSafeLimitReading", true);
+			params.put("dateRange", false);
+			return params;
+		}
+		
+		public JSONObject getReturnValue () {
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", true);
+			returnValue.put("currentValue", true);
+			returnValue.put("minValue", true);
+			returnValue.put("maxValue", true);
+			returnValue.put("period", true);
+			return returnValue;
+		}
+		
+		public String getScript () {
+			StringBuilder sb = new StringBuilder();
+			
+			sb.append("date = NameSpace(\"date\");"
+					+ "dateRangeObj = null;"
+					+ "period = null;"
+					+ "if (params.dateRange != null) {"
+					+ "		dateRangeObj = date.getDateRange(params.dateRange);"
+					+ "		period = params.dateRange;"
+					+ "} else {"
+					+ "		dateRangeObj = date.getDateRange(\"Current Month\");"
+					+ "		period = \"Last Value\";"
+					+ "}"
+					+ "fieldObj = NameSpace(\"module\").getField(params.reading.fieldName, params.reading.moduleName);\n"
+					+ "if (fieldObj != null) {"
+					+ "		fieldid = fieldObj.id();"
+					+ "		fieldMapInfo = fieldObj.asMap();"
+					+ "		db = {"
+					+ "			criteria : [parentId == (params.reading.parentId) && ttime == dateRangeObj],"
+					+ "			field : params.reading.fieldName,"
+					+ "			aggregation : params.reading.yAggr"
+					+ "		};"
+					+ "		fetchModule = Module(params.reading.moduleName);"
+					+ "		cardValue = fetchModule.fetch(db);"
+					+ "		enumMap = Reading(fieldid, params.reading.parentId).getEnumMap();"
+					+ "		valueMap = {};"
+					+ "		valueMap[\"value\"] = cardValue;"
+					+ "		if (enumMap != null) {"
+					+ "			if (cardValue != null) {"
+					+ "				valueMap[\"value\"] = enumMap[cardValue];"
+					+ "			}"
+					+ "		}"
+					+ "		if (fieldMapInfo != null) {"
+					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "		}"
+					+ "		result[\"value\"] = valueMap;"
+					+ "}"
+					+ "else {"
+					+ "		valueMap = {};"
+					+ "		valueMap[\"value\"] = null;"
+					+ "		result[\"value\"] = valueMap;"
+					+ "}"
+					+ "if (params.minSafeLimitType != null) {"
+					+ "		if (params.minSafeLimitType == \"constant\") {"
+					+ "			targetValueMap = {};"
+					+ "			targetValueMap[\"value\"] = params.minSafeLimitConstant;"
+					+ "			result[\"minValue\"] = targetValueMap;"
+					+ "		}"
+					+ "		else {"
+					+ "			targetFieldObj = NameSpace(\"module\").getField(params.minSafeLimitReading.fieldName, params.minSafeLimitReading.moduleName);\n"
+					+ "			targetFieldId = targetFieldObj.id();"
+					+ "			targetFieldMap = targetFieldObj.asMap();"
+					+ "			db = {"
+					+ "				criteria : [parentId == (params.minSafeLimitReading.parentId) && ttime == dateRangeObj],"
+					+ "				field : params.minSafeLimitReading.fieldName,"
+					+ "				aggregation : params.minSafeLimitReading.yAggr"
+					+ "			};"
+					+ "			fetchModule = Module(params.minSafeLimitReading.moduleName);"
+					+ "			cardValue = fetchModule.fetch(db);"
+					+ "			enumMap = Reading(targetFieldId, params.minSafeLimitReading.parentId).getEnumMap();"
+					+ "			valueMap = {};"
+					+ "			valueMap[\"value\"] = cardValue;"
+					+ "			if (enumMap != null) {"
+					+ "				if (cardValue != null) {"
+					+ "					valueMap[\"value\"] = enumMap[cardValue];"
+					+ "				}"
+					+ "			}"
+					+ "			if (fieldMapInfo != null) {"
+					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "			}"
+					+ "			result[\"minValue\"] = valueMap;"
+					+ "		}"
+					+ "}"
+					+ "else {"
+					+ "		result[\"minValue\"] = null;"
+					+ "}"
+					+ "if (params.maxSafeLimitType != null) {"
+					+ "		if (params.maxSafeLimitType == \"constant\") {"
+					+ "			targetValueMap = {};"
+					+ "			targetValueMap[\"value\"] = params.maxSafeLimitConstant;"
+					+ "			result[\"maxValue\"] = targetValueMap;"
+					+ "		}"
+					+ "		else {"
+					+ "			targetFieldObj = NameSpace(\"module\").getField(params.maxSafeLimitReading.fieldName, params.maxSafeLimitReading.moduleName);\n"
+					+ "			targetFieldId = targetFieldObj.id();"
+					+ "			targetFieldMap = targetFieldObj.asMap();"
+					+ "			db = {"
+					+ "				criteria : [parentId == (params.maxSafeLimitReading.parentId) && ttime == dateRangeObj],"
+					+ "				field : params.maxSafeLimitReading.fieldName,"
+					+ "				aggregation : params.maxSafeLimitReading.yAggr"
+					+ "			};"
+					+ "			fetchModule = Module(params.maxSafeLimitReading.moduleName);"
+					+ "			cardValue = fetchModule.fetch(db);"
+					+ "			enumMap = Reading(targetFieldId, params.maxSafeLimitReading.parentId).getEnumMap();"
+					+ "			valueMap = {};"
+					+ "			valueMap[\"value\"] = cardValue;"
+					+ "			if (enumMap != null) {"
+					+ "				if (cardValue != null) {"
+					+ "					valueMap[\"value\"] = enumMap[cardValue];"
+					+ "				}"
+					+ "			}"
+					+ "			if (fieldMapInfo != null) {"
+					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "			}"
+					+ "			result[\"maxValue\"] = valueMap;"
+					+ "		}"
+					+ "}"
+					+ "else {"
+					+ "		result[\"maxValue\"] = null;"
+					+ "}"
+					+ "result[\"title\"] = params.title;"
+					+ "result[\"period\"] = period;");
+					
+			
+			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
+		}
+	},
+	
+	GAUGE_LAYOUT_4 ("gauge_layout_4") {
+		
+		public JSONObject getParameters () {
+			JSONObject params = new JSONObject();
+			params.put("title", true);
+			params.put("reading", true);
+			params.put("minSafeLimitType", true);
+			params.put("minSafeLimitConstant", true);
+			params.put("minSafeLimitReading", true);
+			params.put("maxSafeLimitType", true);
+			params.put("maxSafeLimitConstant", true);
+			params.put("maxSafeLimitReading", true);
+			params.put("dateRange", false);
+			return params;
+		}
+		
+		public JSONObject getReturnValue () {
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", true);
+			returnValue.put("currentValue", true);
+			returnValue.put("minValue", true);
+			returnValue.put("maxValue", true);
+			returnValue.put("period", true);
+			return returnValue;
+		}
+		
+		public String getScript () {
+			StringBuilder sb = new StringBuilder();
+			
+			sb.append("date = NameSpace(\"date\");"
+					+ "dateRangeObj = null;"
+					+ "period = null;"
+					+ "if (params.dateRange != null) {"
+					+ "		dateRangeObj = date.getDateRange(params.dateRange);"
+					+ "		period = params.dateRange;"
+					+ "} else {"
+					+ "		dateRangeObj = date.getDateRange(\"Current Month\");"
+					+ "		period = \"Last Value\";"
+					+ "}"
+					+ "fieldObj = NameSpace(\"module\").getField(params.reading.fieldName, params.reading.moduleName);\n"
+					+ "if (fieldObj != null) {"
+					+ "		fieldid = fieldObj.id();"
+					+ "		fieldMapInfo = fieldObj.asMap();"
+					+ "		db = {"
+					+ "			criteria : [parentId == (params.reading.parentId) && ttime == dateRangeObj],"
+					+ "			field : params.reading.fieldName,"
+					+ "			aggregation : params.reading.yAggr"
+					+ "		};"
+					+ "		fetchModule = Module(params.reading.moduleName);"
+					+ "		cardValue = fetchModule.fetch(db);"
+					+ "		enumMap = Reading(fieldid, params.reading.parentId).getEnumMap();"
+					+ "		valueMap = {};"
+					+ "		valueMap[\"value\"] = cardValue;"
+					+ "		if (enumMap != null) {"
+					+ "			if (cardValue != null) {"
+					+ "				valueMap[\"value\"] = enumMap[cardValue];"
+					+ "			}"
+					+ "		}"
+					+ "		if (fieldMapInfo != null) {"
+					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "		}"
+					+ "		result[\"value\"] = valueMap;"
+					+ "}"
+					+ "else {"
+					+ "		valueMap = {};"
+					+ "		valueMap[\"value\"] = null;"
+					+ "		result[\"value\"] = valueMap;"
+					+ "}"
+					+ "if (params.minSafeLimitType != null) {"
+					+ "		if (params.minSafeLimitType == \"constant\") {"
+					+ "			targetValueMap = {};"
+					+ "			targetValueMap[\"value\"] = params.minSafeLimitConstant;"
+					+ "			result[\"minValue\"] = targetValueMap;"
+					+ "		}"
+					+ "		else {"
+					+ "			targetFieldObj = NameSpace(\"module\").getField(params.minSafeLimitReading.fieldName, params.minSafeLimitReading.moduleName);\n"
+					+ "			targetFieldId = targetFieldObj.id();"
+					+ "			targetFieldMap = targetFieldObj.asMap();"
+					+ "			db = {"
+					+ "				criteria : [parentId == (params.minSafeLimitReading.parentId) && ttime == dateRangeObj],"
+					+ "				field : params.minSafeLimitReading.fieldName,"
+					+ "				aggregation : params.minSafeLimitReading.yAggr"
+					+ "			};"
+					+ "			fetchModule = Module(params.minSafeLimitReading.moduleName);"
+					+ "			cardValue = fetchModule.fetch(db);"
+					+ "			enumMap = Reading(targetFieldId, params.minSafeLimitReading.parentId).getEnumMap();"
+					+ "			valueMap = {};"
+					+ "			valueMap[\"value\"] = cardValue;"
+					+ "			if (enumMap != null) {"
+					+ "				if (cardValue != null) {"
+					+ "					valueMap[\"value\"] = enumMap[cardValue];"
+					+ "				}"
+					+ "			}"
+					+ "			if (fieldMapInfo != null) {"
+					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "			}"
+					+ "			result[\"minValue\"] = valueMap;"
+					+ "		}"
+					+ "}"
+					+ "else {"
+					+ "		result[\"minValue\"] = null;"
+					+ "}"
+					+ "if (params.maxSafeLimitType != null) {"
+					+ "		if (params.maxSafeLimitType == \"constant\") {"
+					+ "			targetValueMap = {};"
+					+ "			targetValueMap[\"value\"] = params.maxSafeLimitConstant;"
+					+ "			result[\"maxValue\"] = targetValueMap;"
+					+ "		}"
+					+ "		else {"
+					+ "			targetFieldObj = NameSpace(\"module\").getField(params.maxSafeLimitReading.fieldName, params.maxSafeLimitReading.moduleName);\n"
+					+ "			targetFieldId = targetFieldObj.id();"
+					+ "			targetFieldMap = targetFieldObj.asMap();"
+					+ "			db = {"
+					+ "				criteria : [parentId == (params.maxSafeLimitReading.parentId) && ttime == dateRangeObj],"
+					+ "				field : params.maxSafeLimitReading.fieldName,"
+					+ "				aggregation : params.maxSafeLimitReading.yAggr"
+					+ "			};"
+					+ "			fetchModule = Module(params.maxSafeLimitReading.moduleName);"
+					+ "			cardValue = fetchModule.fetch(db);"
+					+ "			enumMap = Reading(targetFieldId, params.maxSafeLimitReading.parentId).getEnumMap();"
+					+ "			valueMap = {};"
+					+ "			valueMap[\"value\"] = cardValue;"
+					+ "			if (enumMap != null) {"
+					+ "				if (cardValue != null) {"
+					+ "					valueMap[\"value\"] = enumMap[cardValue];"
+					+ "				}"
+					+ "			}"
+					+ "			if (fieldMapInfo != null) {"
+					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "			}"
+					+ "			result[\"maxValue\"] = valueMap;"
+					+ "		}"
+					+ "}"
 					+ "else {"
 					+ "		result[\"maxValue\"] = null;"
 					+ "}"
@@ -676,6 +968,7 @@ public enum CardLayout {
 		public JSONObject getParameters () {
 			JSONObject params = new JSONObject();
 			params.put("title", true);
+			params.put("imageSpaceId", true);
 			params.put("reading", true);
 			params.put("dateRange", false);
 			return params;
@@ -730,6 +1023,23 @@ public enum CardLayout {
 					+ "		valueMap = {};"
 					+ "		valueMap[\"value\"] = null;"
 					+ "		result[\"value\"] = valueMap;"
+					+ "}"
+					+ "if (params.imageSpaceId != null) {"
+					+ "		basespaceModule = Module(\"basespace\");"
+					+ "		basespaceDb = {"
+					+ "			criteria : [id == params.imageSpaceId]"
+					+ "		};"
+					+ "		baseSpaceList = basespaceModule.fetch(basespaceDb);"
+					+ "		baseSpace = baseSpaceList[0];"
+					+ "		if (baseSpace != null && baseSpace.photoId != null) {"
+					+ "			result[\"image\"] = \"/api/v2/files/preview/\" + baseSpace.photoId;"
+					+ "		}"
+					+ "		else {"
+					+ "			result[\"image\"] = null;"
+					+ "		}"
+					+ "}"
+					+ "else {"
+					+ "		result[\"image\"] = null;"
 					+ "}"
 					+ "result[\"title\"] = params.title;"
 					+ "result[\"period\"] = period;");
@@ -744,6 +1054,7 @@ public enum CardLayout {
 		public JSONObject getParameters () {
 			JSONObject params = new JSONObject();
 			params.put("title", true);
+			params.put("multiplier", true);
 			params.put("reading", true);
 			params.put("dateRange", false);
 			return params;
@@ -799,6 +1110,10 @@ public enum CardLayout {
 					+ "		valueMap[\"value\"] = null;"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
+					+ "if (params.multiplier != null && result.value.value != null) {"
+					+ "		result.value.value = result.value.value * params.multiplier;"
+					+ "}"
+					+ "result.value.unit = \"$\";"
 					+ "result[\"title\"] = params.title;"
 					+ "result[\"period\"] = period;");
 					
@@ -812,6 +1127,7 @@ public enum CardLayout {
 		public JSONObject getParameters () {
 			JSONObject params = new JSONObject();
 			params.put("title", true);
+			params.put("multiplier", true);
 			params.put("reading", true);
 			params.put("dateRange", false);
 			return params;
@@ -867,6 +1183,10 @@ public enum CardLayout {
 					+ "		valueMap[\"value\"] = null;"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
+					+ "if (params.multiplier != null && result.value.value != null) {"
+					+ "		result.value.value = result.value.value * params.multiplier;"
+					+ "}"
+					+ "result.value.unit = \"kg\";"
 					+ "result[\"title\"] = params.title;"
 					+ "result[\"period\"] = period;");
 					
@@ -880,8 +1200,7 @@ public enum CardLayout {
 		public JSONObject getParameters () {
 			JSONObject params = new JSONObject();
 			params.put("title", true);
-			params.put("reading", true);
-			params.put("dateRange", false);
+			params.put("baseSpaceId", true);
 			return params;
 		}
 		
@@ -889,41 +1208,30 @@ public enum CardLayout {
 			JSONObject returnValue = new JSONObject();
 			returnValue.put("title", true);
 			returnValue.put("value", true);
-			returnValue.put("period", true);
 			return returnValue;
 		}
 		
 		public String getScript () {
 			StringBuilder sb = new StringBuilder();
 			
-			sb.append("fieldObj = NameSpace(\"module\").getField(params.reading.fieldName, params.reading.moduleName);\n"
+			sb.append("fieldObj = NameSpace(\"module\").getField(\"temperature\", \"weather\");\n"
 					+ "if (fieldObj != null) {"
 					+ "		fieldid = fieldObj.id();"
 					+ "		fieldMapInfo = fieldObj.asMap();"
 					+ "		date = NameSpace(\"date\");"
-					+ "		dateRangeObj = null;"
-					+ "		period = null;"
-					+ "		if (params.dateRange != null) {"
-					+ "			dateRangeObj = date.getDateRange(params.dateRange);"
-					+ "			period = params.dateRange;"
-					+ "		} else {"
-					+ "			dateRangeObj = date.getDateRange(\"Current Month\");"
-					+ "			period = \"Last Value\";"
-					+ "		}"
+					+ "		dateRangeObj = date.getDateRange(\"Current Month\");"
 					+ "		db = {"
-					+ "			criteria : [parentId == (params.reading.parentId) && ttime == dateRangeObj],"
-					+ "			field : params.reading.fieldName,"
-					+ "			aggregation : params.reading.yAggr"
+					+ "			criteria : [parentId == params.baseSpaceId && ttime == dateRangeObj],"
+					+ "			limit : 1,"
+					+ "			orderBy : \"ttime\" desc"
 					+ "		};"
-					+ "		fetchModule = Module(params.reading.moduleName);"
+					+ "		fetchModule = Module(\"weather\");"
 					+ "		cardValue = fetchModule.fetch(db);"
-					+ "		enumMap = Reading(fieldid, params.reading.parentId).getEnumMap();"
 					+ "		valueMap = {};"
-					+ "		valueMap[\"value\"] = cardValue;"
-					+ "		if (enumMap != null) {"
-					+ "			if (cardValue != null) {"
-					+ "				valueMap[\"value\"] = enumMap[cardValue];"
-					+ "			}"
+					+ "		if (cardValue != null) {"
+					+ "			valueMap[\"value\"] = cardValue[0];"
+					+ "		} else {"
+					+ "			valueMap[\"value\"] = null;"
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
@@ -935,8 +1243,7 @@ public enum CardLayout {
 					+ "		valueMap[\"value\"] = null;"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
-					+ "result[\"title\"] = params.title;"
-					+ "result[\"period\"] = period;");
+					+ "result[\"title\"] = params.title;");
 					
 			
 			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
