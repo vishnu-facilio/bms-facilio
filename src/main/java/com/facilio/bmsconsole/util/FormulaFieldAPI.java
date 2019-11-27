@@ -6,16 +6,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -46,6 +49,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
@@ -329,10 +333,11 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	public static List<FormulaFieldContext> getAllFormulaFieldsOfType(FormulaFieldType type, boolean fetchResources) throws Exception {
+	public static List<FormulaFieldContext> getAllFormulaFieldsOfType(FormulaFieldType type, boolean fetchResources, JSONObject pagination) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
-		FacilioField formulaType = FieldFactory.getAsMap(fields).get("formulaFieldType");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField formulaType = fieldMap.get("formulaFieldType");
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
@@ -340,7 +345,40 @@ public class FormulaFieldAPI {
 														.andCondition(CriteriaAPI.getCondition(formulaType, String.valueOf(type.getValue()), NumberOperators.EQUALS))
 														;
 		
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			
+			selectBuilder.offset(offset);
+			selectBuilder.limit(perPage);
+		}
+		
+		
 		return getFormulaFieldsFromProps(selectBuilder.get(), fetchResources);
+	}
+	
+	public static long getFormulaFieldCount(FormulaFieldType type) throws Exception {
+		FacilioModule module = ModuleFactory.getFormulaFieldModule();
+		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField formulaType = fieldMap.get("formulaFieldType");
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(new HashSet<>()).aggregate(CommonAggregateOperator.COUNT, fieldMap.get("id"))
+														.table(module.getTableName())
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(formulaType, String.valueOf(type.getValue()), NumberOperators.EQUALS))
+														;
+		int count = 0;
+		Map<String, Object> props = selectBuilder.fetchFirst();
+		if (MapUtils.isNotEmpty(props)) {
+			return (long) props.get("id");
+		}
+		return count;
 	}
 	
 	public static List<FormulaFieldContext> getActiveScheduledFormulasOfFrequencyType(List<Integer> types) throws Exception {
@@ -522,6 +560,10 @@ public class FormulaFieldAPI {
 	}
 	
 	private static List<FormulaFieldContext> getFormulaFieldsFromProps (List<Map<String, Object>> props, boolean fetchResources) throws Exception {
+		return getFormulaFieldsFromProps(props, false, fetchResources);
+	}
+	
+	private static List<FormulaFieldContext> getFormulaFieldsFromProps (List<Map<String, Object>> props, boolean fetchFormulaOnly, boolean fetchResources) throws Exception {
 		if( props != null && !props.isEmpty()) {
 			List<FormulaFieldContext> formulaList = new ArrayList<>();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -530,12 +572,13 @@ public class FormulaFieldAPI {
 			for (Map<String, Object> prop : props) {
 				FormulaFieldContext formula = FieldUtil.getAsBeanFromMap(prop, FormulaFieldContext.class);
 				formula.setReadingField(modBean.getField(formula.getReadingFieldId()));
+				FacilioModule module = modBean.getModule(formula.getModuleId());
+				formula.setModule(module);
+				
 				formulaList.add(formula);
 				workflowIds.add(formula.getWorkflowId());
 				fetchInclusions(formula);
 				fetchMatchedResources(formula, fetchResources);
-				FacilioModule module = modBean.getModule(formula.getModuleId());
-				formula.setModule(module);
 				setKPITarget(formula, modBean);
 				if (fetchResources && formula.getResourceId() != -1) {
 					resourceIds.add(formula.getResourceId());

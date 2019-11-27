@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.FacilioModule;
 
 public class GetAllFormulasOfTypeCommand extends FacilioCommand {
@@ -18,7 +20,15 @@ public class GetAllFormulasOfTypeCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		FormulaFieldType type = (FormulaFieldType) context.get(FacilioConstants.ContextNames.FORMULA_FIELD_TYPE);
 		if (type != null) {
-			List<FormulaFieldContext> formulas = FormulaFieldAPI.getAllFormulaFieldsOfType(type, true);
+			
+			JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+			boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
+			if (fetchCount) {
+				context.put(ContextNames.COUNT, FormulaFieldAPI.getFormulaFieldCount(type));
+				return false;
+			}
+			
+			List<FormulaFieldContext> formulas = FormulaFieldAPI.getAllFormulaFieldsOfType(type, true, pagination);
 			if (formulas == null) {
 				return false;
 			}

@@ -696,7 +696,9 @@ public class ReadingAction extends FacilioAction {
 	}
 	
 	public String v2getAllAssetReadings() throws Exception {
-		FacilioContext context = constructListContext();
+		FacilioChain getCategoryReadingChain = ReadOnlyChainFactory.getAllAssetReadingsChain();
+		FacilioContext context = getCategoryReadingChain.getContext();
+		constructListContext(context);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, parentCategoryIds);
 		
 		if (getSearch() != null) {
@@ -707,8 +709,7 @@ public class ReadingAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
 		}
 
-		FacilioChain getCategoryReadingChain = ReadOnlyChainFactory.getAllAssetReadingsChain();
-		getCategoryReadingChain.execute(context);
+		getCategoryReadingChain.execute();
 		
 		if (isFetchCount()) {
 			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
@@ -902,14 +903,23 @@ public class ReadingAction extends FacilioAction {
 	}
 
 	public String allFormulasOfType() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.FORMULA_FIELD_TYPE, type);
 		
 		FacilioChain getAllENPIsChain = FacilioChainFactory.getAllFormulasOfTypeChain();
-		getAllENPIsChain.execute(context);
 		
-		formulaList = (List<FormulaFieldContext>) context.get(FacilioConstants.ContextNames.FORMULA_LIST);
-		fieldVsRules = (Map<Long, List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.VALIDATION_RULES);
+		FacilioContext context = getAllENPIsChain.getContext();
+		constructListContext(context);
+		context.put(FacilioConstants.ContextNames.FORMULA_FIELD_TYPE, type);
+		
+		getAllENPIsChain.execute();
+		
+		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
+		}
+		else {
+			formulaList = (List<FormulaFieldContext>) context.get(FacilioConstants.ContextNames.FORMULA_LIST);
+			fieldVsRules = (Map<Long, List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.VALIDATION_RULES);
+			setResult(ContextNames.FORMULA_LIST, CollectionUtils.isNotEmpty(formulaList) ? formulaList : Collections.EMPTY_LIST);
+		}
 
 		return SUCCESS;
 	}
