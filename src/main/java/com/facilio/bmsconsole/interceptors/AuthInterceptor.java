@@ -104,12 +104,16 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 	private boolean isRemoteScreenMode(HttpServletRequest request) {
 		String remoteScreenHeader = request.getHeader("X-Remote-Screen");
+		String deviceHeader = request.getHeader("X-Device");
 		String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");
 		String deviceTokenNew = FacilioCookie.getUserCookie(request, "fc.deviceTokenNew");
 		String facilioToken1 = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
 		String facilioToken2 = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
 		
 		if ( remoteScreenHeader != null && "true".equalsIgnoreCase(remoteScreenHeader.trim())) {
+			return true;
+		}
+		if ( deviceHeader != null && "true".equalsIgnoreCase(deviceHeader.trim())) {
 			return true;
 		}
 		else if ((deviceToken != null && !"".equals(deviceToken))||(deviceTokenNew != null && !"".equals(deviceTokenNew))  && facilioToken1 == null && facilioToken2 == null) {
@@ -145,6 +149,18 @@ public class AuthInterceptor extends AbstractInterceptor {
 			}
 			
 			String deviceTokenNew = FacilioCookie.getUserCookie(request, "fc.deviceTokenNew");
+			
+			String headerToken = request.getHeader("Authorization");
+
+	        if (deviceTokenNew != null || headerToken != null) {
+	        	if (headerToken != null && headerToken.trim().length() > 0) {
+	                if (headerToken.startsWith("Bearer device ")) {
+	                	deviceTokenNew = headerToken.replace("Bearer device ", "");
+	                } else {
+	                	deviceTokenNew = request.getHeader("Authorization").replace("Bearer ", "");
+	                }
+	            }
+	        }
 			if (deviceTokenNew != null && !"".equals(deviceTokenNew)) {
 				
 				long connectedDeviceId = Long.parseLong(IAMUserBeanImpl.validateJWT(deviceTokenNew, "auth0").getSubject().split(IAMUserBeanImpl.JWT_DELIMITER)[0]);
