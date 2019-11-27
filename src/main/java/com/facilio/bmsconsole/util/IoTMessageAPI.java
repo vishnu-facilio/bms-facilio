@@ -1,8 +1,31 @@
 package com.facilio.bmsconsole.util;
 
-import com.amazonaws.services.iot.client.*;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.amazonaws.services.iot.client.AWSIotConnectionStatus;
+import com.amazonaws.services.iot.client.AWSIotException;
+import com.amazonaws.services.iot.client.AWSIotMessage;
+import com.amazonaws.services.iot.client.AWSIotMqttClient;
+import com.amazonaws.services.iot.client.AWSIotQos;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.*;
+import com.facilio.agent.AgentKeys;
+import com.facilio.agent.AgentUtil;
+import com.facilio.agent.CommandStatus;
+import com.facilio.agent.FacilioAgent;
+import com.facilio.agent.PublishType;
 import com.facilio.agent.protocol.ProtocolUtil;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.aws.util.FacilioProperties;
@@ -29,15 +52,6 @@ import com.facilio.wms.message.WmsPublishResponse;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
-import java.util.*;
 
 public class IoTMessageAPI {
 	private static final Logger LOGGER = LogManager.getLogger(IoTMessageAPI.class.getName());
@@ -274,14 +288,13 @@ public class IoTMessageAPI {
 		}
 	}
 	
+	// Get called after setting
 	private static void publishGetData(long controllerId, PublishMessage message) throws Exception {
 		JSONObject msg = message.getData();
 		JSONArray points = (JSONArray) msg.get("points");
 		JSONObject pointInstance = (JSONObject) points.get(0);
 		
-		Map<String, Object> instance = new HashMap<>();
-		instance.put("instanceType", pointInstance.get("instanceType"));
-		instance.put("objectInstanceNumber", pointInstance.get("objectInstanceNumber"));
+		Map<String, Object> instance = new HashMap<>(pointInstance);
 		instance.put("controllerId", controllerId);
 		
 		IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.GET);
