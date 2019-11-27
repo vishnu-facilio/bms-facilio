@@ -51,6 +51,16 @@ public class AddMVProjectCommand extends FacilioCommand {
 			mvProject.setAutoGenVmMeter(true);
 		}
 		
+		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
+		List<FacilioField> fields = modbean.getAllFields(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
+		
+		InsertRecordBuilder<MVProjectContext> insert = new InsertRecordBuilder<MVProjectContext>()
+				.module(module)
+				.fields(fields)
+				.addRecord(mvProject);
+		
+		insert.save();
+		
 		if(mvProject.getSaveGoalFormulaField() != null) {
 			
 			FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain(true);
@@ -66,23 +76,17 @@ public class AddMVProjectCommand extends FacilioCommand {
 			
 			formulaField.setModule(MVUtil.getMVSaveGoalReadingField().getModule());
 			formulaField.setReadingField(MVUtil.getMVSaveGoalReadingField());
+			formulaField.setName("Save Goals");
 			
-			MVUtil.fillFormulaFieldDetailsForAdd(mvProject.getSaveGoalFormulaField(), mvProjectWrapper.getMvProject(),null,null,context);
+			MVUtil.fillFormulaFieldDetailsForAdd(mvProject.getSaveGoalFormulaField(), mvProjectWrapper.getMvProject(),null,null,context1);
 			
 			addEnpiChain.execute();
 			
+			mvProject.setSaveGoalFormulaField(formulaField);
 			
+			MVUtil.updateMVProject(mvProject);
 		}
 		
-		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
-		List<FacilioField> fields = modbean.getAllFields(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
-		
-		InsertRecordBuilder<MVProjectContext> insert = new InsertRecordBuilder<MVProjectContext>()
-				.module(module)
-				.fields(fields)
-				.addRecord(mvProject);
-		
-		insert.save();
 		return false;
 	}
 
