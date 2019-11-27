@@ -499,7 +499,6 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorInviteList">
 			<param name="viewName">{1}</param>
-			<param name="tenantPortal">true</param>
 		</action>
 	</package>
 	<package name="vendorVisitorInvite" namespace="/api/service/v2/visitorInvite"
@@ -511,16 +510,19 @@
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
 	</package>
-	<package name="vendorVisitorLog" namespace="/api/service/v2/visitorLogging"
+	<package name="vendorVisitorLog" namespace="/api/service/v2/visitorLogging/logs"
 		extends="newServicePortalApiV2">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" >
-			<param name="vendorPortal">true</param>
-		</action>
+	</package>
+	<package name="serviceVisitorLoggingLogs" namespace="/api/service/v2/visitorlogging/view"
+		extends="newServicePortalApiV2">
+		<action name="*" class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList">
+			<param name="viewName">{1}</param>
+			<param name="tenantPortal">true</param>
+			</action>
 	</package>
 	<package name="vendorWorkorder" namespace="/api/service/workorder/summary" extends="newServicePortalApiV2">
 		<action name="*"

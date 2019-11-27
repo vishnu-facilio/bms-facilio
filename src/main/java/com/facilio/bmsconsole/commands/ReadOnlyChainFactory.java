@@ -1580,11 +1580,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
-		chain.addCommand(new AddVisitorLogStatesCommand());
+//		chain.addCommand(new AddVisitorLogStatesCommand());
 		chain.addCommand(new AddVendorScopeForPortalCommand());
 		//chain.addCommand(new AddTenantScopeForVisitorLoggingListCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new LoadVisitorLoggingLookUpCommand());
+		chain.addCommand(new AddTenantFilterForVisitsListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new GetStateflowsForModuleDataListCommand());
 		return chain;

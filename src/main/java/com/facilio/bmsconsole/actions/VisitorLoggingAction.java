@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
@@ -285,17 +286,24 @@ private static final long serialVersionUID = 1L;
 		chain.getContext().put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "visitorlogging");
 		chain.getContext().put(FacilioConstants.ContextNames.IS_VENDOR_PORTAL, getVendorPortal());
+		chain.getContext().put(FacilioConstants.ContextNames.IS_TENANT_PORTAL, getTenantPortal());
 		chain.getContext().put("logType", 1);
 		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Visitor_Logging.SYS_CREATED_TIME desc");
  		
 		String filters = getFilters();
 		JSONObject json = new JSONObject();
+		JSONObject checkinTime = new JSONObject();
+		checkinTime.put("operatorId", (long)CommonOperators.IS_NOT_EMPTY.getOperatorId());
+		JSONArray array = new JSONArray();
+		array.add("-1");
+		
+		checkinTime.put("value", array);
 		
 		if(StringUtils.isNotEmpty(filters)) {
 			JSONParser parser = new JSONParser();
 	 		json = (JSONObject) parser.parse(getFilters());
 	 	}
-		
+		json.put("checkInTime", checkinTime);
 		chain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
  		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
  		
