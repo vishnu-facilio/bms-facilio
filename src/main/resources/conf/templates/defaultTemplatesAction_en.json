@@ -960,13 +960,13 @@
 	"109": {
 		"name": "VISITOR_WELCOME_WHATSAPP_NOTIFICATION",
 		"to": "${vLog.visitor.phone}",
-		"isHtmlContent": true,
+		"isHtmlContent": "true",
 		"message_ftl": "welcomeVisitor"
 	},
 	"110": {
 		"name": "VISITOR_HOST_WHATSAPP_NOTIFICATION",
 		"to": "${vLog.host.phone}",
-		"isHtmlContent": true,
+		"isHtmlContent": "true",
 		"message_ftl": "notifyHost"
 	},
 	"111": {
@@ -978,13 +978,13 @@
 	"112": {
 		"name": "VISITOR_INVITE_WHATSAPP_NOTIFICATION",
 		"to": "${vLog.visitor.phone}",
-		"isHtmlContent": true,
+		"isHtmlContent": "true",
 		"message_ftl": "inviteVisitor"
 	},
 	"113": {
 		"name": "VISITOR_APPROVAL_WHATSAPP_NOTIFICATION",
 		"to": "${vLog.host.phone}",
-		"isHtmlContent": true,
+		"isHtmlContent": "true",
 		"message_ftl": "approveVisitor"
 	}		
 }
