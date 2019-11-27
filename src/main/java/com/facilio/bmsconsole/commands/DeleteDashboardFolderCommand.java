@@ -17,7 +17,7 @@ public class DeleteDashboardFolderCommand extends FacilioCommand {
 		DashboardFolderContext folders = (DashboardFolderContext) context.get(FacilioConstants.ContextNames.DASHBOARD_FOLDER);
 		if(folders != null) {
 			List<DashboardContext> dbs = DashboardUtil.getDashboardFromFolderId(folders.getId());
-			if(dbs != null) {
+			if(dbs != null && !dbs.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.DASHBOARD_ERROR_MESSAGE, "Folder contains dashboard");
 			}
 			else {
