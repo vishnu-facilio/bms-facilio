@@ -117,6 +117,9 @@ public class WorkflowRuleAPI {
 			case SLA_RULE:
 				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
 				break;
+			case SLA_WORKFLOW_RULE:
+				addExtendedProps(ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields(), ruleProps);
+				break;
 			case APPROVAL_RULE:
 			case CHILD_APPROVAL_RULE:
 				ApprovalRulesAPI.validateApprovalRule((ApprovalRuleContext) rule);
@@ -559,6 +562,9 @@ public class WorkflowRuleAPI {
 				case SLA_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), entry.getValue()));
 					break;
+				case SLA_WORKFLOW_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields(), entry.getValue()));
+					break;
 				case READING_ALARM_RULE:
 				case CONTROL_ACTION_READING_ALARM_RULE:
 				case REPORT_DOWNTIME_RULE:
@@ -682,6 +688,10 @@ public class WorkflowRuleAPI {
 						case SLA_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = SLARuleAPI.constructSLARuleFromProps(prop, modBean);
+							break;
+						case SLA_WORKFLOW_RULE:
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+							rule = FieldUtil.getAsBeanFromMap(prop, SLAWorkflowRuleContext.class);
 							break;
 						case APPROVAL_RULE:
 						case CHILD_APPROVAL_RULE:

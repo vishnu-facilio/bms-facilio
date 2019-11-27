@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowRuleContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
@@ -62,6 +63,10 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.Workflow.WORKFLOW.equals(specialType)
 				|| FacilioConstants.ContextNames.KPI_CATEGORY.equals(specialType)
 				|| FacilioConstants.ModuleNames.PRINTERS.equals(specialType)
+				|| "trigger".equals(specialType)
+				|| "connectedApps".equals(specialType)
+				|| ContextNames.FORMULA_FIELD.equals(specialType)
+				|| ContextNames.SLA_RULE_MODULE.equals(specialType)
 				|| FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)
 				|| FacilioConstants.ContextNames.CONNECTED_APPS.equals(specialType)
 				;
@@ -118,6 +123,12 @@ public class LookupSpecialTypeUtil {
 		}
 		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)){
 			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.READING_RULE, false,false);
+			if (workflowRules != null){
+				return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, WorkflowRuleContext::getName));
+			}
+		}
+		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.SLA_RULE, false,false);
 			if (workflowRules != null){
 				return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, WorkflowRuleContext::getName));
 			}
@@ -179,7 +190,7 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.Workflow.WORKFLOW.equals(specialType)) {
 			return WorkflowUtil.getWorkflowContext(id);
 		}
-		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType) || ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 			return WorkflowRuleAPI.getWorkflowRule(id);
 		}
 		else if(FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
@@ -237,6 +248,9 @@ public class LookupSpecialTypeUtil {
         else if (FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)) {
             return WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.READING_RULE, true ,criteria, null, null);
         }
+		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+			return WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.SLA_RULE, true, criteria, null, null);
+		}
 		else if (FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPMTriggers(criteria);
 		}
@@ -292,7 +306,7 @@ public class LookupSpecialTypeUtil {
 				return triggers.stream().collect(Collectors.toMap(PMTriggerContext::getId, Function.identity()));
 			}
 		}
-		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType) || ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 			if (!(ids instanceof List)) {
 				ids = new ArrayList<>(ids);
 			}
@@ -332,7 +346,7 @@ public class LookupSpecialTypeUtil {
 		else if (FacilioConstants.ContextNames.PM_TRIGGER.equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(ids);
 		}
-		else if ((FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType))) {
+		else if ((FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) || ContextNames.SLA_RULE_MODULE.equals(specialType)) {
 			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids);
 		}
 		return null;
@@ -394,6 +408,11 @@ public class LookupSpecialTypeUtil {
 			readingRuleContext.setId(id);
 			return readingRuleContext;
 		}
+		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+			SLAWorkflowRuleContext slaWorkflowRuleContext = new SLAWorkflowRuleContext();
+			slaWorkflowRuleContext.setId(id);
+			return slaWorkflowRuleContext;
+		}
 		return null;
 	}
 
@@ -433,7 +452,7 @@ public class LookupSpecialTypeUtil {
 		}
 		return -1;
 	}
-	
+
 	public static String getWhereClause(String specialType, FacilioField field, Criteria value) {
 		return null;
 	}
@@ -481,7 +500,7 @@ public class LookupSpecialTypeUtil {
 				return event.toString();
 			}
 		}
-        else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+        else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType) || ContextNames.SLA_RULE_MODULE.equals(specialType)) {
             WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(id);
             if (rule != null) {
                 return  rule.toString();
@@ -555,10 +574,10 @@ public class LookupSpecialTypeUtil {
 				}
 			}
 		}
-        else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+        else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType) || ContextNames.SLA_RULE_MODULE.equals(specialType)) {
             for(Object obj:listObjects) {
 
-                WorkflowRuleContext workflowRule = (WorkflowRuleContext)obj;
+                WorkflowRuleContext workflowRule = (WorkflowRuleContext) obj;
                 if (workflowRule != null) {
                     idVsKey.put(workflowRule.getId(), workflowRule.toString());
                 }
@@ -590,6 +609,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 			return ModuleFactory.getReadingRuleModule();
+		}
+		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+			return ModuleFactory.getSLAWorkflowRuleModule();
 		}
 		else if(FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)) {
 			return ModuleFactory.getWorkflowRuleModule();
@@ -658,6 +680,11 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 			List<FacilioField> fields = FieldFactory.getReadingRuleFields();
+			fields.addAll(FieldFactory.getWorkflowRuleFields());
+			return fields;
+		}
+		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+			List<FacilioField> fields = FieldFactory.getSLAWorkflowRuleFields();
 			fields.addAll(FieldFactory.getWorkflowRuleFields());
 			return fields;
 		}

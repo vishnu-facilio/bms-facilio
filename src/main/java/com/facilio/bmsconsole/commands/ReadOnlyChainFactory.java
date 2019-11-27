@@ -44,7 +44,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetSubModulesRelModuleAndFields());
 		return c;
 	}
-	
+
 	public static FacilioChain getRelationshipChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetRelationshipCommand());
@@ -390,7 +390,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
-		
+
 		return c;
 	}
 	
@@ -1022,7 +1022,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetModuleListCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain getModulesList() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetModulesListCommand());
@@ -1595,7 +1595,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain getSearchVisitorByPhotoChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVisitor());
@@ -1661,13 +1661,13 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new QrScanVisitorLogCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain passCodeScanVisitorLogChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetVisitorDetailAndLogCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain getVisitorInviteRelContextChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetVisitorInviteRelContextCommand());
@@ -1683,7 +1683,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new KPIListGroupingCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getAllFormulasOfTypeChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
@@ -1848,7 +1848,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new VerifyTransitionAccessFromPermalinkCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getVisitorDetailAndLogForPhoneNumberChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetVisitorDetailAndLogCommand());
@@ -1860,7 +1860,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetServiceCatalogModulesCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getV3FilePreview() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new V3FilePreviewCommad());
@@ -1887,7 +1887,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetPrintersListCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain getOccupantsListChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForOccupants());
@@ -1899,20 +1899,20 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getDocumentListChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetDocumentsListCommand());
 		return chain;
 	}
-	
-	
+
+
 	public static FacilioChain getOccupantDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForOccupants());
 		c.addCommand(new LoadOccupantLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		
+
 		return c;
 	}
 
@@ -1921,13 +1921,13 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAllApplicationCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getApplicationDetails() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetApplicationDetails());
 		return chain;
 	}
-	
+
 	public static FacilioChain getAllWebTabGroupChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllWebTabGroupCommand());
@@ -1939,13 +1939,13 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAllWebTabCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getTabPermissionChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetTabPermissionsCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getServiceRequestsListChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForServiceRequests());
@@ -1958,13 +1958,13 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetStateflowsForModuleDataListCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getServcieRequestDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForServiceRequests());
 		c.addCommand(new LoadServiceRequestLookupCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		
+
 		return c;
 	}
 
@@ -1973,17 +1973,29 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new copyAssetReadingCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getKPIMetricsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetKPIMetricsCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain getKPIListChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GetKPIListCommand());
 		return c;
+	}
+
+	public static FacilioChain getAllSLAChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllSLACommand());
+		return chain;
+	}
+
+	public static FacilioChain getSLAChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSLACommand());
+		return chain;
 	}
 }

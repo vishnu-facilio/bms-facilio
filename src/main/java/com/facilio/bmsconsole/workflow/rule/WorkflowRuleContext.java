@@ -522,11 +522,11 @@ public class WorkflowRuleContext implements Serializable {
 		ASSIGNMENT_RULE (true), //6
 		
 		PM_READING_RULE,
-		IMPACT_RULE(false),		// Do not use
+		IMPACT_RULE(false),
 		VALIDATION_RULE, //9
 		
 		ASSET_ACTION_RULE,
-		CUSTOM_WORKORDER_NOTIFICATION_RULE,		// Do not use
+		SLA_WORKFLOW_RULE,
 		SCHEDULED_RULE, //12 //Do not use
 		
 		APPROVAL_RULE(true, true),

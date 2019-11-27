@@ -61,7 +61,7 @@ public class TransactionChainFactory {
 //			c.addCommand(getpopulateDefaultChatBotIntnetChain());
 			return c;
 		}
-		
+
 		public static FacilioChain getpopulateDefaultChatBotIntentChain() {
 			FacilioChain c = getDefaultChain();
 
@@ -216,7 +216,8 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-			
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_WORKFLOW_RULE));
+
 			if (sendNotification) {
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
 					c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION));
@@ -968,7 +969,7 @@ public class TransactionChainFactory {
 			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 			return c;
 		}
-		
+
 		public static FacilioChain getAddFieldsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new SetColumnNameForNewCFsCommand());
@@ -979,7 +980,7 @@ public class TransactionChainFactory {
 		public static FacilioChain addFormulaFieldChain() {
 			return addFormulaFieldChain(false);
 		}
-		
+
 		public static FacilioChain addFormulaFieldChain(boolean isModuleAlreadyCreated) {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new CreateFormulaFieldDependenciesCommand());
@@ -2187,7 +2188,7 @@ public class TransactionChainFactory {
 			chain.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
 			chain.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		
+
 			return chain;
 		}
 
@@ -2197,7 +2198,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new UpdateBulkPurchaseRequestStatusCommand());
 			chain.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		
+
 			return chain;
 		}
 
@@ -2234,8 +2235,8 @@ public class TransactionChainFactory {
 			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			chain.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		
-			
+
+
 			return chain;
 		}
 
@@ -2261,7 +2262,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new UpdateBulkPurchaseOrderStatusCommand());
 			chain.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		
+
 			return chain;
 		}
 
@@ -2391,7 +2392,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddSystemFieldsCommand());
 			c.addCommand(new AddFormForCustomModuleCommand());
 			c.addCommand(new AddFormSiteRelationCommand());
-			
+
 			return c;
 		}
 
@@ -2603,7 +2604,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddConnectionCommand());
 			return c;
 		}
-		
+
 		public static FacilioChain getUpdateConnectionChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UpdateConnectionCommand());
@@ -3703,13 +3704,13 @@ public class TransactionChainFactory {
 			c.addCommand(new HistoricalVMCalculationCommand());
 			return c;
 		}
-		
+
 		public static FacilioChain getExecuteHistoricalFormulaFieldCalculation() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new HistoricalFormulaFieldCalculationCommand());
 			return c;
 		}
-		
+
 		public static FacilioChain getExecuteHistoricalRuleCalculation() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new HistoricalRunForReadingRuleCommand());
@@ -3859,7 +3860,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateListModuleDataCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		
+
 
 			return c;
 		}
@@ -3926,7 +3927,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new AddNdaForVisitorLogCommand());
 			c.addCommand(new GenerateQrInviteUrlCommand());
-			c.addCommand(new ExecuteStateFlowCommand()); 
+			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
@@ -3949,7 +3950,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new AddOrUpdateVisitorLogTriggerCommand());
-			c.addCommand(new ExecuteStateFlowCommand()); 
+			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new SchedulePreOpenVisitorLogsCreateCommand(false));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
@@ -3993,7 +3994,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		
+
 			return c;
 		}
 
@@ -4065,7 +4066,7 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateContactsRequesterCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdateVendorPrimaryContactLookUpCommand());
-		
+
 		return c;
 	}
 
@@ -4201,7 +4202,7 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 		c.addCommand(new RollUpWorkOrderFieldOnWorkPermitApprovalCommand());
-	
+
 		return c;
 	}
 
@@ -4217,6 +4218,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new RollUpWorkOrderFieldOnWorkPermitApprovalCommand());
+
 		return c;
 	}
 
@@ -4254,11 +4256,11 @@ public class TransactionChainFactory {
 		return chain;
 	}
 	public static FacilioChain getDeletePrinterChain() {
-		FacilioChain c = getDefaultChain();		
+		FacilioChain c = getDefaultChain();
 		//for delete sending message before actual delete as ,printer ID will not be in db on delete
 		c.addCommand(new SendMessageOnPrinterChangeCommand());
 		c.addCommand(new DeletePrinterCommand());
-		
+
 		return c;
 	}
 
@@ -4315,7 +4317,7 @@ public class TransactionChainFactory {
 		chain.addCommand(new UpdatePointsConfiguredCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain addOccupantsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForOccupants());
@@ -4325,14 +4327,14 @@ public class TransactionChainFactory {
 
 		return c;
 	}
-	
+
 	public static FacilioChain updateOccupantsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForOccupants());
 		c.addCommand(new CheckForOccupantDuplicationCommand());
 		c.addCommand(new UpdateOccupantsRequestercommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
-		
+
 		return c;
 	}
 
@@ -4341,19 +4343,19 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateApplicationCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain markApplicationAsDefault() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new MarkApplicationAsDefaultCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getDeleteApplicationsChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteApplicationCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getAddOrUpdateTabGroup() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateTabGroupCommand());
@@ -4378,7 +4380,7 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddNewPermissionCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain getDeleteNewPermissionChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteNewPermissionCommand());
@@ -4401,7 +4403,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		return c;
 	}
-	
+
 	public static FacilioChain getAddRequesterChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddRequesterCommand());
@@ -4442,13 +4444,13 @@ public class TransactionChainFactory {
 		//chain.addCommand();
 		return chain;
 	}
-	
+
 	public static FacilioChain HandleChatBotMessageChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new HandleChatBotMessageCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain HandleChatBotSessionChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetOrAddCurrentActiveModel());
@@ -4458,7 +4460,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteActionAndSetResponseForSessionCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain HandleChatBotSessionConversationChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetOrAddCurrentActiveModel());
@@ -4469,20 +4471,20 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteActionAndSetResponseForConversationCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain getAddChatBotIntentChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetOrAddCurrentActiveModel());
 		c.addCommand(new AddChatBotIntentCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain getAddOrUpdateChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddChatBotIntentCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain getUpdateVisitorFormsChain()
 	{
 		FacilioChain c=getDefaultChain();
@@ -4496,19 +4498,25 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddBulkWOCommand());
 		return chain;
 	}
-	
+
 	public static FacilioChain addDocumentsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddDocumentCommand());
 
 		return c;
 	}
-	
+
 	public static FacilioChain updateDocumentsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new UpdateDocumentsCommand());
-		
+
 		return c;
+	}
+
+	public static FacilioChain getAddSLAChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateSLACommand());
+		return chain;
 	}
 }
 

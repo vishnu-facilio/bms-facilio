@@ -348,6 +348,15 @@
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
 				method="getTransitionDetailsFromPermalink" />
 	</package>
+
+	<package name="sla" namespace="/api/v2/sla" extends="v2Api">
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="getAllSLA" />
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="addOrUpdateSLA" />
+		<action name="view"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="getSLA" />
+	</package>
 	
 	<package name="automation" namespace="/api/v2/automation" extends="v2Api">
 		<action name="module"

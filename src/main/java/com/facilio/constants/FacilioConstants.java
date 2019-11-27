@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowRuleContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -96,7 +97,7 @@ public class FacilioConstants {
 		public static final String PRINTERS ="printers";
 		public static final String VISITOR_KIOSK_CONFIG ="visitorKioskConfig";
 		public static final String FEEDBACK_KIOSK_CONFIG = "feedbackKioskConfig";
-		
+
 	}
 
 	public static class ContextNames {
@@ -129,10 +130,10 @@ public class FacilioConstants {
 		public static final String FACE_COLLECTIONS = "faceCollections";
 		public static final String VISITOR_FACES = "visitorFaces";
 		public static final String VISITOR_PHOTO = "visitorPhoto";
-		
+
 		public static final String APPLICATION = "application";
 		public static final String APPLICATION_ID = "applicationId";
-			
+
 		public static final String APP_ID = "appId";
 		public static final String FETCH_FULL_FORM = "fetchFullForm";
 
@@ -419,7 +420,7 @@ public class FacilioConstants {
 		public static final String META = "meta";
 		public static final String SET_LOCAL_MODULE_ID = "setLocalModuleId";
 		public static final String FETCH_EXTENDED_MODULE_FORMS = "fetchExtendedModuleForms";
-		
+
 		public static final String READINGS_MAP = "readingsMap";
 		public static final String READINGS = "readings";
 		public static final String READING = "reading";
@@ -756,7 +757,7 @@ public class FacilioConstants {
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";
 		public static final String PM_TRIGGER = "trigger";
-		
+
 		public static final String JOB_PLAN = "jobPlan";
 		public static final String JOB_PLAN_LIST = "jobPlans";
 		
@@ -835,7 +836,12 @@ public class FacilioConstants {
 		public static final String NEXT_EXECUTION_TIMES = "nextexecutiontimes";
 		public static final String PM_JOBS = "pmjobs";
 		public static final String GROUP_STATUS = "groupStatus";
-		
+
+		public static final String SLA_RULE_MODULE = "slaRuleModule";
+		public static final String SLA_MODULE = "sla";
+		public static final String SLA_LIST = "sla_list";
+		public static final String SLA = "sla";
+
 		public static final String TECH_COUNT_GROUP_DIGEST = "techCountGroupDigest";
 		public static final String SITE_ROLE_WISE_COUNT= "siteRoleWiseCount";
 		public static final String SITE_ROLE_WO_COUNT= "siteRoleWoCount";
@@ -1251,8 +1257,8 @@ public class FacilioConstants {
 		public static final String DEVICE_DETAILS="deviceDetails";
 		public static final String CONNECTED_DEVICE_ID="connectedDeviceId";
 		public static final String DEVICE_ID="deviceId";
-		
-		
+
+
 		
 		
 		
@@ -1398,32 +1404,32 @@ public class FacilioConstants {
 		public static final String FILE_URL_STRING = "fileUrlString";
 		public static final String FILE_TOKEN_STRING = "fileTokenString";
 		public static final String IS_DOWNLOAD = "isDownload";
-		
+
 		public static final Object TIME_FILTER = "timeFilter";
 		public static final Object DATA_FILTER = "dataFilter";
 		public static final String PRINTERS = "printers";
 		public static final String VISITOR_KIOSKS = "visitorKiosks";
-		
+
 		public static final String OCCUPANT = "occupant";
 		public static final String OCCUPANTS = "occupants";
 	
 		public static final String DOCUMENT = "document";
 		public static final String DOCUMENTS = "documents";
-		
+
 		public static final String VENDOR_DOCUMENTS = "vendorDocuments";
-		
+
 		public static final String COPY_SOURCE_ORG_ID = "sourceOrgId";
 		public static final String COPY_TARGET_ORG_ID = "targetOrgId";
 		public static final String COPY_START_TIME = "startTime";
 		public static final String COPY_END_TIME = "endTime";
 		public static final String COPY_ASSET_LIST = "assetList";
 		public static final String COPY_TIME_DIFF = "timeDiff";
-		
+
 		public static final String SERVICE_REQUEST_PRIORITY = "servicerequestpriority";
 		public static final String SERVICE_REQUESTS = "serviceRequests";
 		public static final String SERVICE_REQUEST = "serviceRequest";
 		public static final String SERVICE_REQUEST_ATTACHMENT = "servicerequestsattachments";
-				
+
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1600,14 +1606,19 @@ public class FacilioConstants {
 			classMap.put(WATCHLIST, WatchListContext.class);
 			classMap.put(WORKPERMIT, WorkPermitContext.class);
 			classMap.put(PRINTERS,PrinterContext.class);
-			
+
 			classMap.put(OCCUPANT, OccupantsContext.class);
 			classMap.put(WEB_TAB_GROUP, WebTabGroupContext.class);
 
 			classMap.put(SERVICE_REQUEST, ServiceRequestContext.class);
 			classMap.put(SERVICE_REQUEST_PRIORITY, ServiceRequestPriorityContext.class);
+			classMap.put(DOCUMENT, DocumentContext.class);
+
+			classMap.put(SLA_MODULE, SLAContext.class);
+			classMap.put(SLA_RULE_MODULE, SLAWorkflowRuleContext.class);
+
 			classMap.put(VENDOR_DOCUMENTS, DocumentContext.class);
-			
+
 			return classMap;
 		}
 		

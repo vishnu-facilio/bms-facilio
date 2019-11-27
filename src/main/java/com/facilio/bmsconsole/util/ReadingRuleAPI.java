@@ -789,7 +789,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		updateWorkflowRuleWithChildren(rule);
 		WorkflowRuleAPI.updateExtendedRule(rule, ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields());
-		return null;
+		return rule;
 	}
 
 	public static List<WorkflowRuleContext> getAlarmWorkflowRules(long ruleId) throws Exception {

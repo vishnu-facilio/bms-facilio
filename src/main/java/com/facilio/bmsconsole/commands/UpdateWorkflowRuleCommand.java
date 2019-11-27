@@ -69,6 +69,9 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 		else if (rule instanceof AlarmWorkflowRuleContext) {
 			rule = ReadingRuleAPI.updateAlarmWorkflowRule((AlarmWorkflowRuleContext) rule);
 		}
+		else if (rule instanceof SLAWorkflowRuleContext) {
+			WorkflowRuleAPI.updateExtendedRule(rule, ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields());
+		}
 		else {
 			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
 		}

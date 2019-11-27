@@ -42,7 +42,10 @@ enums:
 
   - name: VendorSource
     enumClassName: com.facilio.bmsconsole.context.VendorContext$VendorSource
-  
+
+  - name: SLAType
+    enumClassName: com.facilio.bmsconsole.context.SLAContext$Type
+
   - name: TimeFormat
     enumClassName: com.facilio.time.TimeFormat
 
