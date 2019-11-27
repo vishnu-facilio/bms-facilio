@@ -944,7 +944,7 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "Visitor Approval Needed!",
-		"to": "${visitorlogging.email}",
+		"to": "${vLog.visitor.email}",
 		"message_ftl": "approveVisitor"
 	},
 	"107": {

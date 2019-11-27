@@ -105,5 +105,7 @@ public interface IAMUserBean {
 	
 	public List<Map<String, Object>> getMobileInstanceIds(List<Long> uIds) throws Exception;
 	
+	public Object getPermalinkDetails(String token) throws Exception;
+	
 
 }

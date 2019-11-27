@@ -343,18 +343,12 @@ private static final long serialVersionUID = 1L;
  		
 		String filters = getFilters();
 		JSONObject json = new JSONObject();
-		JSONObject checkinTime = new JSONObject();
-		checkinTime.put("operatorId", (long)CommonOperators.IS_NOT_EMPTY.getOperatorId());
-		JSONArray array = new JSONArray();
-		array.add("-1");
 		
-		checkinTime.put("value", array);
 		
 		if(StringUtils.isNotEmpty(filters)) {
 			JSONParser parser = new JSONParser();
 	 		json = (JSONObject) parser.parse(getFilters());
 	 	}
-		json.put("checkInTime", checkinTime);
 		chain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
  		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
  		

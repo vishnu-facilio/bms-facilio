@@ -224,4 +224,8 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getOrgv2(currentOrgDomain, uId));
 	}
 	
+	public static Object getPermalinkDetails(String token) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getPermalinkDetails(token));
+	}
+	
 }

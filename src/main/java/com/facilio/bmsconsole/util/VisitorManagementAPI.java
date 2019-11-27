@@ -1621,7 +1621,7 @@ public class VisitorManagementAPI {
 		isPreregistered.setFieldName("isPreregistered");
 		isPreregistered.setOperator(BooleanOperators.IS);
 		isPreregistered.setValue("false");
-		isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED IS NULL OR VisitorLogging.IS_PREREGISTERED IS FALSE");
+		isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
@@ -1676,7 +1676,7 @@ public class VisitorManagementAPI {
 		isPreregistered.setFieldName("isPreregistered");
 		isPreregistered.setOperator(BooleanOperators.IS);
 		isPreregistered.setValue("false");
-		isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED IS NULL OR VisitorLogging.IS_PREREGISTERED IS FALSE");
+		isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED");
 		
 		
 		Criteria criteria = new Criteria();
@@ -1731,7 +1731,7 @@ public class VisitorManagementAPI {
 		isPreregistered.setFieldName("isPreregistered");
 		isPreregistered.setOperator(BooleanOperators.IS);
 		isPreregistered.setValue("false");
-		isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED IS NULL OR VisitorLogging.IS_PREREGISTERED IS FALSE");
+		isPreregistered.setColumnName("VisitorLogging.IS_PREREGISTERED");
 				
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);

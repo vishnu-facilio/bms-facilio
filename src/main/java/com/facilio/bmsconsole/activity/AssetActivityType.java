@@ -101,7 +101,7 @@ public enum AssetActivityType implements ActivityType {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return " used in WO #" + json.get("woId");
+			return " used the asset in WO #" + json.get("woId");
 		}
 	},
 	ADDED_TO_INVENTORY(46) {

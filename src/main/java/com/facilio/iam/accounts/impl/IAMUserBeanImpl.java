@@ -1441,6 +1441,28 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		return null;
 	}
+
+
+	@Override
+	public Object getPermalinkDetails(String token) throws Exception {
+		// TODO Auto-generated method stub
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(IAMAccountConstants.getUserSessionFields())
+                .table("UserSessions");
+
+        selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
+        selectBuilder.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "email", "1", NumberOperators.EQUALS));
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if (props != null && !props.isEmpty()) {
+            Map<String, Object> session = props.get(0);
+            Object sessionInfo = session.get("sessionInfo");
+            return sessionInfo;
+        }
+        return null;
+
+
+	}
 	
 	
 }
