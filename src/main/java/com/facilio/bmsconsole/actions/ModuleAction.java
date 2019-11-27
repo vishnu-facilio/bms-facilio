@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.chain.FacilioChain;
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -520,11 +518,12 @@ public class ModuleAction extends FacilioAction {
 	}
 	
 	public String getModuleDataList() throws Exception {
-		FacilioContext context = constructListContext();
+		FacilioChain dataList = ReadOnlyChainFactory.fetchModuleDataListChain();
+		FacilioContext context = dataList.getContext();
+		constructListContext(context);
  		
  		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
- 		FacilioChain dataList = ReadOnlyChainFactory.fetchModuleDataListChain();
- 		dataList.execute(context);
+ 		dataList.execute();
  		
  		moduleDatas = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
  		

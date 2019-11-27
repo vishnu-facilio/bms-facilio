@@ -121,13 +121,14 @@ public class ControlActionAction extends FacilioAction {
 			setPage(1);
 		}
 		
-		FacilioContext constructListContext = constructListContext();
+		FacilioChain rdmChain = ReadOnlyChainFactory.getRDMChain();
+		FacilioContext constructListContext = rdmChain.getContext();
+		constructListContext(constructListContext);
 		
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getReadingDataMetaModule().getName());
 		
-		FacilioChain rdmChain = ReadOnlyChainFactory.getRDMChain();
 		
-		rdmChain.execute(constructListContext);
+		rdmChain.execute();
 		
 		setResult(ControlActionUtil.CONTROL_ACTION_CONTROLLABLE_POINTS, constructListContext.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
 		setResult(FacilioConstants.ContextNames.READING_DATA_META_COUNT, constructListContext.get(FacilioConstants.ContextNames.READING_DATA_META_COUNT));
@@ -136,13 +137,14 @@ public class ControlActionAction extends FacilioAction {
 	
 	public String getControlGroups() throws Exception {
 		
-		FacilioContext constructListContext = constructListContext();
+		FacilioChain rdmChain = ReadOnlyChainFactory.fetchControlGroupsChain();
+		FacilioContext constructListContext = rdmChain.getContext();
+		constructListContext(constructListContext);
 		
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getControlGroupModule().getName());
 		
-		FacilioChain rdmChain = ReadOnlyChainFactory.fetchControlGroupsChain();
 		
-		rdmChain.execute(constructListContext);
+		rdmChain.execute();
 		
 		setResult(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXTS, constructListContext.get(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXTS));
 		setResult(ControlActionUtil.CONTROL_ACTION_GROUP_COUNT, constructListContext.get(ControlActionUtil.CONTROL_ACTION_GROUP_COUNT));
@@ -199,13 +201,14 @@ public class ControlActionAction extends FacilioAction {
 			setPage(1);
 		}
 		
-		FacilioContext constructListContext = constructListContext();
+		FacilioChain commandChain = ReadOnlyChainFactory.getControlActionCommandsChain();
+		FacilioContext constructListContext = commandChain.getContext();
+		constructListContext(constructListContext);
 		
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
 		
-		FacilioChain commandChain = ReadOnlyChainFactory.getControlActionCommandsChain();
 		
-		commandChain.execute(constructListContext);
+		commandChain.execute();
 		
 		setResult(ControlActionUtil.CONTROL_ACTION_COMMANDS, constructListContext.get(ControlActionUtil.CONTROL_ACTION_COMMANDS));
 		setResult(ControlActionUtil.CONTROL_ACTION_COMMANDS_COUNT, constructListContext.get(ControlActionUtil.CONTROL_ACTION_COMMANDS_COUNT));
@@ -403,13 +406,14 @@ public class ControlActionAction extends FacilioAction {
 			setPage(1);
 		}
 		
-		FacilioContext constructListContext = constructListContext();
+		FacilioChain commandChain = ReadOnlyChainFactory.getControlActionRulesChain();
+		FacilioContext constructListContext = commandChain.getContext();
+		constructListContext(constructListContext);
 		
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME,ModuleFactory.getWorkflowRuleModule().getName());
 		
-		FacilioChain commandChain = ReadOnlyChainFactory.getControlActionRulesChain();
 		
-		commandChain.execute(constructListContext);
+		commandChain.execute();
 		
 		setResult(FacilioConstants.ContextNames.WORKFLOW_RULES, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULES));
 		setResult(FacilioConstants.ContextNames.WORKFLOW_RULES_COUNT, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULES_COUNT));

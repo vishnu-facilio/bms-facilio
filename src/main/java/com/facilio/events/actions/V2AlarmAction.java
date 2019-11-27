@@ -83,11 +83,13 @@ public class V2AlarmAction extends FacilioAction {
 	}
 	
 	public String alarmList() throws Exception {
- 		FacilioContext context = constructListContext();
+		FacilioChain alarmListChain = ReadOnlyChainFactory.getV2AlarmListChain();
+		
+ 		FacilioContext context = alarmListChain.getContext();
+ 		constructListContext(context);
  		context.put(ContextNames.MODULE_NAME, alarmModule);
  		
- 		FacilioChain alarmListChain = ReadOnlyChainFactory.getV2AlarmListChain();
-		alarmListChain.execute(context);
+		alarmListChain.execute();
 		
 		if (isFetchCount()) {
 			setResult(ContextNames.COUNT, context.get(ContextNames.RECORD_COUNT));
@@ -102,12 +104,13 @@ public class V2AlarmAction extends FacilioAction {
 	
 	public String occurrenceList() throws Exception {
 		
-		FacilioContext context = constructListContext();
+		FacilioChain occurrenceListChain = ReadOnlyChainFactory.getV2OccurrenceListChain();
+		FacilioContext context = occurrenceListChain.getContext();
+		constructListContext(context);
  		context.put(ContextNames.MODULE_NAME, occurrenceModule != null ? occurrenceModule : FacilioConstants.ContextNames.ALARM_OCCURRENCE);
  		context.put(ContextNames.RECORD_ID, getId());
  		context.put(ContextNames.FETCH_LOOKUPS, occurrenceModule != null);
- 		FacilioChain occurrenceListChain = ReadOnlyChainFactory.getV2OccurrenceListChain();
- 		occurrenceListChain.execute(context);
+ 		occurrenceListChain.execute();
 		
 		if (isFetchCount()) {
 			setResult(ContextNames.COUNT, context.get(ContextNames.RECORD_COUNT));
@@ -121,11 +124,12 @@ public class V2AlarmAction extends FacilioAction {
 	
 	
 	public String eventList () throws Exception {
-		FacilioContext context = constructListContext();
+		FacilioChain occurrenceListChain = ReadOnlyChainFactory.getV2EventListChain();
+		FacilioContext context = occurrenceListChain.getContext();
+		constructListContext(context);
  		context.put(ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ALARM_OCCURRENCE);
  		context.put(ContextNames.RECORD_ID, getId());
- 		FacilioChain occurrenceListChain = ReadOnlyChainFactory.getV2EventListChain();
- 		occurrenceListChain.execute(context);
+ 		occurrenceListChain.execute();
 		
 		if (isFetchCount()) {
 			setResult(ContextNames.COUNT, context.get(ContextNames.RECORD_COUNT));

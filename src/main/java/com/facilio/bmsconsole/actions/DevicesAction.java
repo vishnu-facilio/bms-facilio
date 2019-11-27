@@ -86,12 +86,13 @@ public class DevicesAction extends FacilioAction{
             setOrderType("DESC");
         }
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioContext context = constructListContext();
+        FacilioChain fetchList = ReadOnlyChainFactory.fetchModuleDataListChain();
+        FacilioContext context = fetchList.getContext();
+        constructListContext(context);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ModuleNames.DEVICES);
         context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST, Collections.singletonList(modBean.getField("associatedResource", FacilioConstants.ModuleNames.DEVICES)));
 
-        FacilioChain fetchList = ReadOnlyChainFactory.fetchModuleDataListChain();
-        fetchList.execute(context);
+        fetchList.execute();
 
         if (isFetchCount()) {
             setResult(FacilioConstants.ContextNames.COUNT, context.get(FacilioConstants.ContextNames.RECORD_COUNT));
