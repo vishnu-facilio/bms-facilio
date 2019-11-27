@@ -46,6 +46,12 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 				readingAlarm.setLastOccurrence(latestAlarmOccurance);
 				context.put(ContextNames.RECORD, readingAlarm);
 				break;
+			case ContextNames.WORKPERMIT:
+				FacilioChain facilioChain = ReadOnlyChainFactory.getWorkPermitDetailsChain();
+				facilioChain.execute(context);
+				context.put(ContextNames.RECORD, context.get(ContextNames.RECORD));
+				break;
+				
 		}
 
 		if (context.containsKey(ContextNames.RECORD)) {
