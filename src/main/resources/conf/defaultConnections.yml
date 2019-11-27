@@ -22,3 +22,74 @@
    accessTokenUrl: "https://www.googleapis.com/oauth2/v4/token"
    refreshTokenUrl: "https://www.googleapis.com/oauth2/v4/token"
    revokeTokenUrl: null
+   connectionParams:
+      - 
+         key: "test1"
+         value: "value1"
+      -
+         key: "test2"
+         value: "value2"
+   connectionApis:
+      - 
+         name: "api1"
+         url: "http1"
+         connectionParams:
+         - 
+            key: "test1"
+            value: "value1"
+         -
+            key: "test2"
+            value: "value2"
+      -
+         name: "api2"
+         url: "http2"
+         connectionParams:
+         - 
+            key: "test12"
+            value: "value12"
+         -
+            key: "test22"
+            value: "value22"
+            
+- 
+   serviceName: "Google Calender"
+   name: "googleCalender"
+   authType: 1
+   state: 2
+   clientId: "27556013480-5rlh5la1e86qhkjd5a3jro1vl31up24o.apps.googleusercontent.com"
+   clientSecretId: "Hkbh6CUZ0UhOha_J1PCl4-3d"
+   scope: "https://www.googleapis.com/auth/calendar.events"
+   authorizeUrl: "https://accounts.google.com/o/oauth2/auth"
+   accessTokenUrl: "https://www.googleapis.com/oauth2/v4/token"
+   refreshTokenUrl: "https://www.googleapis.com/oauth2/v4/token"
+   revokeTokenUrl: null
+   connectionParams:
+      - 
+         key: "test1"
+         value: "value1"
+      -
+         key: "test2"
+         value: "value2"
+   connectionApis:
+      - 
+         name: "api1"
+         url: "http1"
+         connectionParams:
+         - 
+            key: "test1"
+            value: "value1"
+         -
+            key: "test2"
+            value: "value2"
+      -
+         name: "api2"
+         url: "http2"
+         connectionParams:
+         - 
+            key: "test12"
+            value: "value12"
+         -
+            key: "test22"
+            value: "value22"
+   
+   
