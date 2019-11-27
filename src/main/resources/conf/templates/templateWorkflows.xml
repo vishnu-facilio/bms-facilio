@@ -1333,10 +1333,8 @@
 				type="String" />
 			<parameter name="visitorlogging.id"
 				type="String" />	
-			<expression name="vLog">
-				<function>resource.getVisitorLog(visitorlogging.id)
-				</function>
-			</expression>			
+			<parameter name="visitorlogging.visitor.phone"
+				type="String" />	
 		</workflow>
 	</template>
 	<template id="112">
