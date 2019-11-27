@@ -121,7 +121,7 @@ public class KinesisProcessor implements IRecordProcessor {
                     }
                     processRecordsInput.getCheckpointer().checkpoint(DataProcessorUtil.getLastRecordChecked());
                 } catch (Exception e) {
-                    LOGGER.info("Exception occurred in changing checkpoint ");
+                    LOGGER.info("Exception occurred in changing checkpoint ",e);
                 }
             }
 
