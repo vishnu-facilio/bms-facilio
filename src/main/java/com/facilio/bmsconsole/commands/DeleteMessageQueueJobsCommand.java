@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -28,7 +29,8 @@ public class DeleteMessageQueueJobsCommand extends FacilioCommand{
 
         int customDaysToDelete = (int) context.get("NO_OF_DAYS");
         String tableName = (String) context.get("TABLE_NAME");
-        String deleteCondition = "  NOW() - INTERVAL "+ customDaysToDelete+" DAY";
+		long startTime = (System.currentTimeMillis() -(customDaysToDelete * 24 * 60 * 60 * 1000));
+        String deleteCondition = String.valueOf(startTime);
         try{
         	int count = deleteQueue(tableName,deleteCondition);
         	System.out.println("Facilio Queue Deleted rows count is "+ count +" in table : " +tableName);
@@ -43,7 +45,9 @@ public class DeleteMessageQueueJobsCommand extends FacilioCommand{
     //Delete Message Queue for Both ExceptionQueue  and InstantJobQueue if do any modification please careful...
     public static int deleteQueue(String tableName, String deleteCondition) throws Exception {
         GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-                .table(tableName).andCondition(CriteriaAPI.getCondition(FIELD_MAP.get("deletedTime"),deleteCondition, DateOperators.IS_BEFORE));
+                .table(tableName)
+                .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get("deletedTime"), CommonOperators.IS_NOT_EMPTY))
+                .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get("deletedTime"),deleteCondition, DateOperators.IS_BEFORE));
         return builder.delete();
     }
     private static List<FacilioField> getFileds(){
