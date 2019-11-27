@@ -76,7 +76,6 @@ public class AddMVProjectCommand extends FacilioCommand {
 			
 			formulaField.setModule(MVUtil.getMVSaveGoalReadingField().getModule());
 			formulaField.setReadingField(MVUtil.getMVSaveGoalReadingField());
-			formulaField.setName("Save Goals");
 			
 			MVUtil.fillFormulaFieldDetailsForAdd(mvProject.getSaveGoalFormulaField(), mvProjectWrapper.getMvProject(),null,null,context1);
 			

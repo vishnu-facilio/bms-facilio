@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -26,6 +25,12 @@ public class ConstructSavedConsumptionCommand extends FacilioCommand {
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		MVProjectWrapper mvProjectWrapper = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER);
+		
+		MVProjectWrapper mvProjectWrapperold = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER_OLD);
+		
+		if(mvProjectWrapperold != null) {
+			return false;
+		}
 		
 		List<MVBaseline> baseLines = mvProjectWrapper.getBaselines();
 		
@@ -61,40 +66,27 @@ public class ConstructSavedConsumptionCommand extends FacilioCommand {
 			newBaselineWorkflow.setWorkflowV2String(workflowString.toString());
 			newBaselineWorkflow.setIsV2Script(true);
 			
-			if(baseLine.getSavedConsumption() != null) {
-				
-				FormulaFieldContext formulaFieldContext = baseLine.getSavedConsumption();
-				formulaFieldContext.setWorkflow(newBaselineWorkflow);
-				MVUtil.fillFormulaFieldDetailsForUpdate(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
-				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaFieldContext);
-				
-				FacilioChain updateEnPIChain = TransactionChainFactory.updateFormulaChain();
-				updateEnPIChain.execute(context);
-				
-			}
-			else {
-				FormulaFieldContext formulaFieldContext = new FormulaFieldContext();
-				formulaFieldContext.setWorkflow(newBaselineWorkflow);
-				
-				formulaFieldContext.setModule(MVUtil.getMVSavedConsumptionField().getModule());
-				formulaFieldContext.setReadingField(MVUtil.getMVSavedConsumptionField());
-				
-				FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain(true);
-				
-				FacilioContext context1 = addEnpiChain.getContext();
-				
-				context1.put(FacilioConstants.ContextNames.FORMULA_FIELD,formulaFieldContext);
-				formulaFieldContext.setName(baseLine.getName()+" saved consumption");
-				context1.put(FacilioConstants.ContextNames.MODULE,MVUtil.getMVSavedConsumptionField().getModule());
-				context1.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST,Collections.singletonList(MVUtil.getMVSavedConsumptionField()));
-				context1.put(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V,true);
-				MVUtil.fillFormulaFieldDetailsForAdd(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context1);
-				
-				addEnpiChain.execute();
-				
-				baseLine.setSavedConsumption(formulaFieldContext);
-				MVUtil.updateMVBaseline(baseLine);
-			}
+			FormulaFieldContext formulaFieldContext = new FormulaFieldContext();
+			formulaFieldContext.setWorkflow(newBaselineWorkflow);
+			
+			formulaFieldContext.setModule(MVUtil.getMVSavedConsumptionField().getModule());
+			formulaFieldContext.setReadingField(MVUtil.getMVSavedConsumptionField());
+			
+			FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain(true);
+			
+			FacilioContext context1 = addEnpiChain.getContext();
+			
+			context1.put(FacilioConstants.ContextNames.FORMULA_FIELD,formulaFieldContext);
+			formulaFieldContext.setName(baseLine.getName()+" saved consumption");
+			context1.put(FacilioConstants.ContextNames.MODULE,MVUtil.getMVSavedConsumptionField().getModule());
+			context1.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST,Collections.singletonList(MVUtil.getMVSavedConsumptionField()));
+			context1.put(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V,true);
+			MVUtil.fillFormulaFieldDetailsForAdd(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context1);
+			
+			addEnpiChain.execute();
+			
+			baseLine.setSavedConsumption(formulaFieldContext);
+			MVUtil.updateMVBaseline(baseLine);
 		}
 		
 		return false;

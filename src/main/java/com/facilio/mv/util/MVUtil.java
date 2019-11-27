@@ -233,8 +233,8 @@ public class MVUtil {
 		formulaFieldContext.setTriggerType(-1);
 		formulaFieldContext.setResourceId(-1);
 		
-		formulaFieldContext.setAssetCategoryId(-1l);
-		formulaFieldContext.setIncludedResources(Collections.singletonList(mvProject.getMeter().getId()));
+//		formulaFieldContext.setAssetCategoryId(-1l);
+//		formulaFieldContext.setIncludedResources(Collections.singletonList(mvProject.getMeter().getId()));
 		
 		formulaFieldContext.setResourceType(null);
 		formulaFieldContext.setFrequency(mvProject.getFrequency());

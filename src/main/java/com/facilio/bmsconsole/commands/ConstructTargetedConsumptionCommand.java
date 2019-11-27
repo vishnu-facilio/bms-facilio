@@ -75,15 +75,20 @@ public class ConstructTargetedConsumptionCommand extends FacilioCommand {
 			newBaselineWorkflow.setWorkflowV2String(workflowString.toString());
 			newBaselineWorkflow.setIsV2Script(true);
 			
-			if(baseLine.getTargetConsumption() != null) {
-				
-				FormulaFieldContext formulaFieldContext = baseLine.getFormulaFieldWithAjustment();
-				formulaFieldContext.setWorkflow(newBaselineWorkflow);
-				MVUtil.fillFormulaFieldDetailsForUpdate(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
-				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaFieldContext);
+			MVBaseline oldBaseline = MVUtil.getMVBaseline(baseLine.getId());
+			
+			if(oldBaseline != null && oldBaseline.getTargetConsumption() != null) {
 				
 				FacilioChain updateEnPIChain = TransactionChainFactory.updateFormulaChain();
-				updateEnPIChain.execute(context);
+				
+				FacilioContext context1 = updateEnPIChain.getContext();
+				
+				FormulaFieldContext formulaFieldContext = oldBaseline.getTargetConsumption();
+				formulaFieldContext.setWorkflow(newBaselineWorkflow);
+				MVUtil.fillFormulaFieldDetailsForUpdate(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context1);
+				context1.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaFieldContext);
+				
+				updateEnPIChain.execute();
 				
 			}
 			else {
