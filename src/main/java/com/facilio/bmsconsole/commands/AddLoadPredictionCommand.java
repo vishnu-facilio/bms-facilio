@@ -56,7 +56,6 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 				if (!moduleNames.contains("loadpredictionmlreadings")) {
 					MLAPI.addReading(categoryId,"LoadPredictionMLReadings", FieldFactory.getMLLoadPredictFields(),ModuleFactory.getMLReadingModule().getTableName());
 				}
-                LOGGER.info("After adding Reading");
 				
 				checkGamModel(energyMeterID,assetContext, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),(String) jc.get("modelPath"));
 				LOGGER.info("After check Gam Model");

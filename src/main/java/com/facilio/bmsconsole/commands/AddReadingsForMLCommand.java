@@ -128,7 +128,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 		}
 		catch(Exception e)
 		{
-			LOGGER.fatal("Error while updating Result in DB", e);
+			LOGGER.fatal("Error in AddReadingsForMLCommand", e);
 //			AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), e.toString());
 			throw e;
 		}

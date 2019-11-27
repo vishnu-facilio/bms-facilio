@@ -43,8 +43,8 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 	@Override
 	public boolean executeCommand(Context context) throws Exception 
 	{
+		LOGGER.info("Inside EnableAnomalyDetectionCommand");
 		
-		//Get All Assets
 		LinkedList<AssetContext> assetContextList = new LinkedList<>();
 		String[] assetID = context.get("TreeHierarchy").toString().split(",");
 		
@@ -82,15 +82,9 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		
         long ratioCheckMLid = 0L;
 		
-		LOGGER.info("Additional Context "+context.containsKey("ratioHierarchy")+"::"+context.containsKey("meterInterval")+"::"+context.containsKey("TreeHierarchy"));
-		for(Object key:context.keySet())
-		{
-			LOGGER.info("Key is "+(String)key);
-		}
 		if(context.containsKey("ratioHierarchy"))
 		{
 			JSONArray ratioHierachy = new JSONArray((String)context.get("ratioHierarchy"));
-			LOGGER.info("Ratio Hierachy is "+ratioHierachy);
 			ratioCheckMLid = addMultipleRatioCheckModel(categoryId,assetContextList,ratioHierachy,moduleNames,(JSONObject)((JSONObject)context.get("mlVariables")).get("ratioCheck"),energyField.getId());
 		}
 		else
@@ -98,6 +92,8 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			ratioCheckMLid = addRatioCheckModel(categoryId,assetContextList,(String)context.get("TreeHierarchy"),moduleNames,(JSONObject)((JSONObject)context.get("mlVariables")).get("ratioCheck"),energyField.getId());
 		}
 		checkGamModel(ratioCheckMLid,assetContextList,(JSONObject)((JSONObject)context.get("mlVariables")).get("checkGam"),(JSONObject)context.get("mlModelVariables"),energyField,markedField,energyParentField);
+		
+		LOGGER.info("Finished EnableAnomalyDetectionCommand");
 		
 		return false;
 	}

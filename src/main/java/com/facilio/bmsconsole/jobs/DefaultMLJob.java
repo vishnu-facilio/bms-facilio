@@ -20,7 +20,7 @@ public class DefaultMLJob extends FacilioJob
 	@Override
 	public void execute(JobContext jc) throws Exception 
 	{	
-		LOGGER.info("Inside DefaultMLJob");
+		LOGGER.info("Inside DefaultMLJob, JOB ID :"+jc.getJobId());
 		List<MLContext> mlContextList = MLUtil.getMlContext(jc);
 		for(MLContext mlContext:mlContextList)
 		{
@@ -36,6 +36,7 @@ public class DefaultMLJob extends FacilioJob
 			FacilioChain c = FacilioChainFactory.getMLModelBuildingChain();
 			c.execute(context);
 		}
+		LOGGER.info("Finished DefaultMLJob, JOB ID :"+jc.getJobId());
 	}
 
 }
