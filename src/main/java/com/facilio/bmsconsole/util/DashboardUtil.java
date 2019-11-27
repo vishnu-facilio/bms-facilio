@@ -2718,12 +2718,11 @@ public class DashboardUtil {
 	
 	public static void deleteDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
 		
-		DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>();
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		
-		delete.module(ModuleFactory.getDashboardFolderModule())
-		.andCustomWhere("ID = ?", dashboardFolder.getId());
-		
-		delete.delete();
+		deleteRecordBuilder.table(ModuleFactory.getDashboardFolderModule().getTableName())
+		.andCondition(CriteriaAPI.getIdCondition(dashboardFolder.getId(), ModuleFactory.getDashboardFolderModule()));
+		deleteRecordBuilder.delete();
 	}
 	
 	public static void updateDashboardFolder(List<DashboardFolderContext> dashboardFolders) throws Exception {

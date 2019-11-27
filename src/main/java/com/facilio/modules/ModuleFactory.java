@@ -1084,6 +1084,8 @@ public class ModuleFactory {
 	public static FacilioModule getDashboardFolderModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Dashboard_Folder");
+		dashboardWigetModule.setName("dashboardFolder");
+		dashboardWigetModule.setDisplayName("Dashboard Folder");
 		return dashboardWigetModule;
 	}
 	public static FacilioModule getDashboardModule() {
