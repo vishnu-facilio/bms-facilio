@@ -104,19 +104,19 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 	private boolean isRemoteScreenMode(HttpServletRequest request) {
 		String remoteScreenHeader = request.getHeader("X-Remote-Screen");
-		String deviceHeader = request.getHeader("X-Device");
 		String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");
 		String deviceTokenNew = FacilioCookie.getUserCookie(request, "fc.deviceTokenNew");
 		String facilioToken1 = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
 		String facilioToken2 = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
+		String headerToken = request.getHeader("Authorization");
 		
 		if ( remoteScreenHeader != null && "true".equalsIgnoreCase(remoteScreenHeader.trim())) {
 			return true;
 		}
-		if ( deviceHeader != null && "true".equalsIgnoreCase(deviceHeader.trim())) {
+		else if ((deviceToken != null && !"".equals(deviceToken))||(deviceTokenNew != null && !"".equals(deviceTokenNew))  && facilioToken1 == null && facilioToken2 == null) {
 			return true;
 		}
-		else if ((deviceToken != null && !"".equals(deviceToken))||(deviceTokenNew != null && !"".equals(deviceTokenNew))  && facilioToken1 == null && facilioToken2 == null) {
+		else if (headerToken != null && headerToken.startsWith("Bearer device ")) {
 			return true;
 		}
 		return false;
