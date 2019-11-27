@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioStatus;
 
@@ -33,18 +34,24 @@ public class AddVisitorLogStatesCommand extends FacilioCommand{
 			filterCriteria = new Criteria();
 		}
 		
-		if(logType == 1) { // checkedin log list
+		if(logType == 1) { //  log list
 			Criteria statusCriteria = new Criteria();
 			statusCriteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedIn.getId()) + ","  + String.valueOf(checkedOut.getId()) + "," +  String.valueOf(requested.getId()) + "," +  String.valueOf(approved.getId()) + "," +  String.valueOf(rejected.getId()) + "," +  String.valueOf(blocked.getId()) + "," +  String.valueOf(waiting.getId()), NumberOperators.EQUALS));
+			statusCriteria.addAndCondition(CriteriaAPI.getCondition("CHECKIN_TIME", "checkInTime", "-1", CommonOperators.IS_NOT_EMPTY));
+			
 			filterCriteria.andCriteria(statusCriteria);
 		}
-		else if(logType == 2) { // invite with requested
+		else if(logType == 2) { // invites
 			Criteria statusCriteria = new Criteria();
-			statusCriteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedIn.getId()) + ","  + String.valueOf(checkedOut.getId()) + "," +  String.valueOf(requested.getId()) + "," +  String.valueOf(approved.getId()) + "," +  String.valueOf(rejected.getId()) + "," +  String.valueOf(blocked.getId()) + "," +  String.valueOf(waiting.getId()) + "," +  String.valueOf(upcoming.getId()), NumberOperators.NOT_EQUALS));
+			statusCriteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedIn.getId()) + ","  + String.valueOf(checkedOut.getId()) + "," +  String.valueOf(requested.getId()) + "," +  String.valueOf(approved.getId()) + "," +  String.valueOf(rejected.getId()) + "," +  String.valueOf(blocked.getId()) + "," +  String.valueOf(waiting.getId()) , NumberOperators.NOT_EQUALS));
+			statusCriteria.addOrCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(upcoming.getId()) , NumberOperators.NOT_EQUALS));
+			statusCriteria.addAndCondition(CriteriaAPI.getCondition("CHECKIN_TIME", "checkInTime", "-1", CommonOperators.IS_EMPTY));
+				
 			filterCriteria.andCriteria(statusCriteria);
+			
 		}
 		//3 - upcoming
-		
+		context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, filterCriteria);
 		return false;
 	}
 

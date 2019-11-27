@@ -335,6 +335,8 @@ private static final long serialVersionUID = 1L;
 		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "visitorlogging");
 		chain.getContext().put(FacilioConstants.ContextNames.IS_VENDOR_PORTAL, getVendorPortal());
 		chain.getContext().put(FacilioConstants.ContextNames.IS_TENANT_PORTAL, getTenantPortal());
+		chain.getContext().put("logType", 2);
+		
 			
 		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Visitor_Logging.SYS_CREATED_TIME desc");
 		

@@ -1577,10 +1577,10 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getVisitorLoggingListChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForVisitorLogging());
-		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
-		//chain.addCommand(new AddVisitorLogStatesCommand());
+		chain.addCommand(new AddVisitorLogStatesCommand());
 		chain.addCommand(new AddVendorScopeForPortalCommand());
 		//chain.addCommand(new AddTenantScopeForVisitorLoggingListCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
