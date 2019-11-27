@@ -136,12 +136,15 @@ public class GetFormMetaCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private FacilioForm getChildForm(FacilioModule childModule) {
+	private FacilioForm getChildForm(FacilioModule childModule) throws Exception {
 		FacilioForm form = null;
 		if (childModule != null && childModule.getExtendModule() != null) {
 			String extendedModName = childModule.getExtendModule().getName();
-			// TODO get with type
-			form = new FacilioForm(FormFactory.getForm("default_" +extendedModName));
+			String formName = FormFactory.getDefaultFormName(extendedModName, FormType.WEB.getStringVal());
+			form = FormsAPI.getFormFromDB(formName, childModule.getExtendModule());
+			if (form == null) {
+				form = new FacilioForm(FormFactory.getDefaultForm(extendedModName, FormType.WEB.getStringVal()));
+			}
 			form.setDisplayName(childModule.getDisplayName());
 		}
 		return form;
