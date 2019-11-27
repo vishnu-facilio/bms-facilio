@@ -1049,7 +1049,7 @@ public enum CardLayout {
 		}
 	},
 	
-	COSTCARD_LAYOUT_1 ("costcard_layout_1") {
+	ENERGYCOST_LAYOUT_1 ("energycost_layout_1") {
 		
 		public JSONObject getParameters () {
 			JSONObject params = new JSONObject();
@@ -1122,7 +1122,7 @@ public enum CardLayout {
 		}
 	},
 
-	CORBONCARD_LAYOUT_1 ("corboncard_layout_1") {
+	CARBONCARD_LAYOUT_1 ("carboncard_layout_1") {
 		
 		public JSONObject getParameters () {
 			JSONObject params = new JSONObject();
