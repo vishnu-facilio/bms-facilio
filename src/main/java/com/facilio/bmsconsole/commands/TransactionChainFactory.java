@@ -3761,7 +3761,7 @@ public class TransactionChainFactory {
 //			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new AddNdaForVisitorLogCommand());
 			c.addCommand(new GenerateQrInviteUrlCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateFlowCommand()); 
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
@@ -3781,7 +3781,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new AddOrUpdateVisitorLogTriggerCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateFlowCommand()); 
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new SchedulePreOpenVisitorLogsCreateCommand(false));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
@@ -3803,7 +3803,6 @@ public class TransactionChainFactory {
 //			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
@@ -3820,7 +3819,6 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new AddOrUpdateVisitorLogTriggerCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new SchedulePreOpenVisitorLogsCreateCommand(true));
 			c.addCommand(new ChangeVisitorInviteStateCommand());

@@ -1,15 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 
 public class GetSubFormModulesCommand extends FacilioCommand {
 
@@ -35,10 +37,13 @@ public class GetSubFormModulesCommand extends FacilioCommand {
         return false;
     }
 
-    private List<FacilioModule> getSystemDefinedSubModules(ModuleBean modBean, FacilioModule module) {
+    private List<FacilioModule> getSystemDefinedSubModules(ModuleBean modBean, FacilioModule module) throws Exception{
         switch (module.getName()) {
 //            case FacilioConstants.ContextNames.WORK_ORDER:
 //                return Arrays.asList(modBean.getModule());
+        
+        case FacilioConstants.ContextNames.VENDORS:
+          return Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.INSURANCE));
         }
         return null;
     }

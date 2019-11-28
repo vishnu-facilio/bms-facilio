@@ -586,5 +586,16 @@ private static final long serialVersionUID = 1L;
 		setResult(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get(FacilioConstants.ContextNames.TRANSITION_ID));
 		return SUCCESS;
 	}
-
+	
+	public String getVisitorLogDetailsforPhoneNumber() throws Exception {
+	
+		FacilioChain c = ReadOnlyChainFactory.getVisitorDetailAndLogForPhoneNumberChain();
+		c.getContext().put(FacilioConstants.ContextNames.PHONE_NUMBER, contactNumber);
+		c.execute();
+		setResult(FacilioConstants.ContextNames.VISITOR, c.getContext().get(FacilioConstants.ContextNames.VISITOR));
+		setResult(FacilioConstants.ContextNames.VISITOR_LOGGING, c.getContext().get(FacilioConstants.ContextNames.VISITOR_LOGGING));
+	
+		return SUCCESS;
+	}
+	
 }

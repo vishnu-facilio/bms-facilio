@@ -9,6 +9,8 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 public class ExecuteStateFlowCommand extends ExecuteAllWorkflowsCommand {
 
     public ExecuteStateFlowCommand() {
@@ -18,17 +20,20 @@ public class ExecuteStateFlowCommand extends ExecuteAllWorkflowsCommand {
     @Override
     protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
         List<WorkflowRuleContext> workflowRules = super.getWorkflowRules(module, activities, records);
-        List<WorkflowRuleContext> newWorkflowRules = new ArrayList<>();
+        List<WorkflowRuleContext> newWorkflowRules = null;
 
         // Re-arrange execution order
-        for (WorkflowRuleContext workflowRuleContext : workflowRules) {
-            StateFlowRuleContext stateFlowRuleContext = (StateFlowRuleContext) workflowRuleContext;
-            if (stateFlowRuleContext.isFormLevel()) {
-                newWorkflowRules.add(0, workflowRuleContext);
-            }
-            else {
-                newWorkflowRules.add(workflowRuleContext);
-            }
+        if (CollectionUtils.isNotEmpty(workflowRules)) {
+        	newWorkflowRules = new ArrayList<WorkflowRuleContext>();
+	        for (WorkflowRuleContext workflowRuleContext : workflowRules) {
+	            StateFlowRuleContext stateFlowRuleContext = (StateFlowRuleContext) workflowRuleContext;
+	            if (stateFlowRuleContext.isFormLevel()) {
+	                newWorkflowRules.add(0, workflowRuleContext);
+	            }
+	            else {
+	                newWorkflowRules.add(workflowRuleContext);
+	            }
+	        }
         }
         return newWorkflowRules;
     }

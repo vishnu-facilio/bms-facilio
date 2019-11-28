@@ -235,19 +235,28 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static VisitorLoggingContext getValidChildLogForToday(long parentLogId, long currentTime) throws Exception {
+	public static VisitorLoggingContext getValidChildLogForToday(long parentLogId, long currentTime, boolean fetchUpcoming, long visitorId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		FacilioStatus status = TicketAPI.getStatus(module, "Upcoming");		
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
 		SelectRecordsBuilder<VisitorLoggingContext> builder = new SelectRecordsBuilder<VisitorLoggingContext>()
 														.module(module)
 														.beanClass(VisitorLoggingContext.class)
 														.select(fields)
-														.andCondition(CriteriaAPI.getCondition("PARENT_LOG_ID", "parentLogId", String.valueOf(parentLogId), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition("EXPECTED_CHECKIN_TIME", "expectedCheckInTime", String.valueOf(currentTime) , DateOperators.IS_BEFORE))
 														.andCondition(CriteriaAPI.getCondition("EXPECTED_CHECKOUT_TIME", "expectedCheckOutnTime", String.valueOf(currentTime) , DateOperators.IS_AFTER));
 		
+		if(parentLogId > 0) {
+			builder.andCondition(CriteriaAPI.getCondition("PARENT_LOG_ID", "parentLogId", String.valueOf(parentLogId), NumberOperators.EQUALS));
+		}
+		if(visitorId > 0) {
+			builder.andCondition(CriteriaAPI.getCondition("VISITOR", "visitor", String.valueOf(visitorId), NumberOperators.EQUALS));
+		}
+		if(fetchUpcoming) {
+			builder.andCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(status.getId()), NumberOperators.EQUALS));
+		}
 		VisitorLoggingContext records = builder.fetchFirst();
 		return records;
 	

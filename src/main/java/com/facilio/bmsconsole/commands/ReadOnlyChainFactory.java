@@ -1784,4 +1784,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new VerifyTransitionAccessFromPermalinkCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getVisitorDetailAndLogForPhoneNumberChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetVisitorDetailAndLogCommand());
+		return c;
+	}
 }

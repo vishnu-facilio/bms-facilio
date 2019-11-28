@@ -42,7 +42,7 @@ public class QrScanVisitorLogCommand extends FacilioCommand{
 						validChildLog = vLog;
 					}
 					else {
-						validChildLog = VisitorManagementAPI.getValidChildLogForToday(recordId, currentTime);
+						validChildLog = VisitorManagementAPI.getValidChildLogForToday(recordId, currentTime, false, -1);
 					}
 					if(validChildLog == null) {
 						throw new IllegalArgumentException("No valid invite log found for the day");

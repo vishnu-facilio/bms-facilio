@@ -1304,6 +1304,7 @@ public class FacilioConstants {
 		public static final String VISITOR_ID = "visitorId";
 		public static final String VISITOR_TYPE = "visitorType";
 		public static final String IS_EDIT = "isEdit";
+		public static final String PHONE_NUMBER = "phoneNumber";
 		
 		
 		

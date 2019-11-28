@@ -4561,7 +4561,8 @@
 		<action name="getVisitorInviteRel"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="vistorInviteRelContext" />
 		<action name="qrScanVisitor"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="qrScanVisitor" />				
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="qrScanVisitor" />
+							
 	</package>
 	
 	<package name="visitorLoggingInvites" namespace="/api/v2/visitorLogging/invites/view"
@@ -4611,6 +4612,9 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkOutVisitorLogging" />
 		<action name="qrScanLog"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="qrScanLog" />
+		<action name="getVisitorLogforPhoneNumber"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLogDetailsforPhoneNumber" />
+		
 		<action name="*" class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList">
 			<param name="viewName">{1}</param>
 		</action>
