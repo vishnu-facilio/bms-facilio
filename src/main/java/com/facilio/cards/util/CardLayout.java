@@ -60,6 +60,7 @@ public enum CardLayout {
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "		}"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
@@ -135,7 +136,9 @@ public enum CardLayout {
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "			baselineValueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			baselineValueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "		}"
 					+ "		result[\"value\"] = valueMap;"
 					+ "		result[\"baselineValue\"] = baselineValueMap;"
@@ -227,6 +230,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			if (fieldMapInfo != null) {"
 					+ "				valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "			}"
 					+ "			values.push(valueMap);"
 					+ "		}"
@@ -302,6 +306,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			if (fieldMapInfo != null) {"
 					+ "				valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "			}"
 					+ "			values.push(valueMap);"
 					+ "		}"
@@ -372,6 +377,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			if (fieldMapInfo != null) {"
 					+ "				valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "			}"
 					+ "			values.push(valueMap);"
 					+ "		}"
@@ -447,6 +453,7 @@ public enum CardLayout {
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "		}"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
@@ -482,6 +489,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			if (fieldMapInfo != null) {"
 					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = targetFieldMap.get(\"dataTypeEnum\");"
 					+ "			}"
 					+ "			result[\"minValue\"] = valueMap;"
 					+ "		}"
@@ -516,6 +524,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			if (fieldMapInfo != null) {"
 					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = targetFieldMap.get(\"dataTypeEnum\");"
 					+ "			}"
 					+ "			result[\"maxValue\"] = valueMap;"
 					+ "		}"
@@ -591,6 +600,7 @@ public enum CardLayout {
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "		}"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
@@ -626,6 +636,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			if (fieldMapInfo != null) {"
 					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = targetFieldMap.get(\"dataTypeEnum\");"
 					+ "			}"
 					+ "			result[\"minValue\"] = valueMap;"
 					+ "		}"
@@ -660,6 +671,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			if (fieldMapInfo != null) {"
 					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = targetFieldMap.get(\"dataTypeEnum\");"
 					+ "			}"
 					+ "			result[\"maxValue\"] = valueMap;"
 					+ "		}"
@@ -735,6 +747,7 @@ public enum CardLayout {
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "		}"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
@@ -770,6 +783,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			if (fieldMapInfo != null) {"
 					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = targetFieldMap.get(\"dataTypeEnum\");"
 					+ "			}"
 					+ "			result[\"minValue\"] = valueMap;"
 					+ "		}"
@@ -804,6 +818,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			if (fieldMapInfo != null) {"
 					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = targetFieldMap.get(\"dataTypeEnum\");"
 					+ "			}"
 					+ "			result[\"maxValue\"] = valueMap;"
 					+ "		}"
@@ -879,6 +894,7 @@ public enum CardLayout {
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "		}"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
@@ -914,6 +930,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			if (fieldMapInfo != null) {"
 					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = targetFieldMap.get(\"dataTypeEnum\");"
 					+ "			}"
 					+ "			result[\"minValue\"] = valueMap;"
 					+ "		}"
@@ -948,6 +965,7 @@ public enum CardLayout {
 					+ "			}"
 					+ "			if (fieldMapInfo != null) {"
 					+ "				valueMap[\"unit\"] = targetFieldMap.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = targetFieldMap.get(\"dataTypeEnum\");"
 					+ "			}"
 					+ "			result[\"maxValue\"] = valueMap;"
 					+ "		}"
@@ -971,6 +989,7 @@ public enum CardLayout {
 			params.put("imageSpaceId", true);
 			params.put("reading", true);
 			params.put("dateRange", false);
+			params.put("baseline", false);
 			return params;
 		}
 		
@@ -978,6 +997,7 @@ public enum CardLayout {
 			JSONObject returnValue = new JSONObject();
 			returnValue.put("title", true);
 			returnValue.put("value", true);
+			returnValue.put("baselineValue", false);
 			returnValue.put("period", true);
 			return returnValue;
 		}
@@ -1016,6 +1036,7 @@ public enum CardLayout {
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "		}"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
@@ -1102,6 +1123,7 @@ public enum CardLayout {
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "		}"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
@@ -1175,6 +1197,7 @@ public enum CardLayout {
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "		}"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
@@ -1235,6 +1258,134 @@ public enum CardLayout {
 					+ "		}"
 					+ "		if (fieldMapInfo != null) {"
 					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
+					+ "		}"
+					+ "		result[\"value\"] = valueMap;"
+					+ "}"
+					+ "else {"
+					+ "		valueMap = {};"
+					+ "		valueMap[\"value\"] = null;"
+					+ "		result[\"value\"] = valueMap;"
+					+ "}"
+					+ "result[\"title\"] = params.title;");
+					
+			
+			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
+		}
+	},
+	
+	GRAPHICALCARD_LAYOUT_1 ("graphicalcard_layout_1") {
+		
+		public JSONObject getParameters () {
+			JSONObject params = new JSONObject();
+			params.put("title", true);
+			params.put("readings", true);
+			return params;
+		}
+		
+		public JSONObject getReturnValue () {
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", true);
+			returnValue.put("values", true);
+			return returnValue;
+		}
+		
+		public String getScript () {
+			StringBuilder sb = new StringBuilder();
+			
+			sb.append("values = [];"
+					+ "for each index, readingEntry in params.readings {"
+					+ "		reading = readingEntry.reading;"
+					+ "		valueMap = {};"
+					+ "		valueMap[\"label\"] = readingEntry.label;"
+					+ "		valueMap[\"icon\"] = readingEntry.icon;"
+					+ "		fieldObj = NameSpace(\"module\").getField(reading.fieldName, reading.moduleName);\n"
+					+ "		if (fieldObj != null) {"
+					+ "			fieldid = fieldObj.id();"
+					+ "			fieldMapInfo = fieldObj.asMap();"
+					+ "			date = NameSpace(\"date\");"
+					+ "			dateRangeObj = null;"
+					+ "			period = null;"
+					+ "			if (params.dateRange != null) {"
+					+ "				dateRangeObj = date.getDateRange(params.dateRange);"
+					+ "				period = params.dateRange;"
+					+ "			} else {"
+					+ "				dateRangeObj = date.getDateRange(\"Current Month\");"
+					+ "				period = \"Last Value\";"
+					+ "			}"
+					+ "			db = {"
+					+ "				criteria : [parentId == (reading.parentId) && ttime == dateRangeObj],"
+					+ "				field : reading.fieldName,"
+					+ "				aggregation : reading.yAggr"
+					+ "			};"
+					+ "			fetchModule = Module(reading.moduleName);"
+					+ "			cardValue = fetchModule.fetch(db);"
+					+ "			enumMap = Reading(fieldid, reading.parentId).getEnumMap();"
+					+ "			valueMap[\"value\"] = cardValue;"
+					+ "			if (enumMap != null) {"
+					+ "				if (cardValue != null) {"
+					+ "					valueMap[\"value\"] = enumMap[cardValue];"
+					+ "				}"
+					+ "			}"
+					+ "			if (fieldMapInfo != null) {"
+					+ "				valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "				valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
+					+ "			}"
+					+ "			values.push(valueMap);"
+					+ "		}"
+					+ "		else {"
+					+ "			valueMap[\"value\"] = null;"
+					+ "			values.push(valueMap);"
+					+ "		}"
+					+ "}"
+					+ "result[\"title\"] = params.title;"
+					+ "result[\"values\"] = values;");
+			
+			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
+		}
+	},
+	
+	MAPCARD_LAYOUT_1 ("mapcard_layout_1") {
+		
+		public JSONObject getParameters () {
+			JSONObject params = new JSONObject();
+			params.put("title", true);
+			params.put("baseSpaceId", true);
+			return params;
+		}
+		
+		public JSONObject getReturnValue () {
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", true);
+			returnValue.put("value", true);
+			return returnValue;
+		}
+		
+		public String getScript () {
+			StringBuilder sb = new StringBuilder();
+			
+			sb.append("fieldObj = NameSpace(\"module\").getField(\"temperature\", \"weather\");\n"
+					+ "if (fieldObj != null) {"
+					+ "		fieldid = fieldObj.id();"
+					+ "		fieldMapInfo = fieldObj.asMap();"
+					+ "		date = NameSpace(\"date\");"
+					+ "		dateRangeObj = date.getDateRange(\"Current Month\");"
+					+ "		db = {"
+					+ "			criteria : [parentId == params.baseSpaceId && ttime == dateRangeObj],"
+					+ "			limit : 1,"
+					+ "			orderBy : \"ttime\" desc"
+					+ "		};"
+					+ "		fetchModule = Module(\"weather\");"
+					+ "		cardValue = fetchModule.fetch(db);"
+					+ "		valueMap = {};"
+					+ "		if (cardValue != null) {"
+					+ "			valueMap[\"value\"] = cardValue[0];"
+					+ "		} else {"
+					+ "			valueMap[\"value\"] = null;"
+					+ "		}"
+					+ "		if (fieldMapInfo != null) {"
+					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
 					+ "		}"
 					+ "		result[\"value\"] = valueMap;"
 					+ "}"
