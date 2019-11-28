@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.actions;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
@@ -36,9 +45,12 @@ import org.json.simple.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.EncodeException;
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -55,6 +67,10 @@ public class AdminAction extends ActionSupport {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(AdminAction.class.getName());
 	private static org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(AdminAction.class.getName());
+	private static String bucket_name="credentials";
+	private static String obj_key_name ="credentials_key";
+	private String file_obj_key_name = "credentials_obj";
+	private String file_name = "app.json";
 
 	public String show() {
 		return SUCCESS;
@@ -520,6 +536,80 @@ public class AdminAction extends ActionSupport {
 		IAMUserUtil.clearUserSessions(uid, email);
 		return SUCCESS;
 
+	}
+	private File file;
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public void uploadGoogleCredential(){
+		logger.info("Uploading Google credentials");
+		Bucket b=createBucket();
+
+		try {
+			AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+					.withRegion(Regions.DEFAULT_REGION)
+					.build();
+
+			// Upload a text string as a new object.
+			StringBuilder content = new StringBuilder();
+			List<String> list = Files.readAllLines(file.toPath());
+			for (String line:list){
+				content.append(line);
+			}
+			s3Client.putObject(bucket_name, obj_key_name, content.toString());
+
+			// Upload a file as a new object with ContentType and title specified.
+			PutObjectRequest request = new PutObjectRequest(bucket_name, file_obj_key_name, new File(file_name));
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentType("plain/text");
+			metadata.addUserMetadata("x-amz-meta-title", "someTitle");
+			request.setMetadata(metadata);
+			s3Client.putObject(request);
+		} catch (IOException | SdkClientException e) {
+			// The call was transmitted successfully, but Amazon S3 couldn't process
+			// it, so it returned an error response.
+			logger.info("Error occ");
+		}
+	}
+	public static Bucket getBucket(String bucket_name) {
+
+		final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
+		Bucket named_bucket = null;
+		try {
+			List<Bucket> buckets = s3.listBuckets();
+			logger.info("buckets.size() = " + buckets.size());
+			for (Bucket b : buckets) {
+				if (b.getName().equals(bucket_name)) {
+					named_bucket = b;
+				}
+			}
+		}catch (Exception ex){
+			logger.info("Error while getting bucket");
+			logger.info(ex.getMessage());
+		}
+		return named_bucket;
+	}
+
+	private static Bucket createBucket() {
+		final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
+		Bucket b = null;
+		if (s3.doesBucketExist(bucket_name)) {
+			logger.info("Bucket already exists");
+			b = getBucket(bucket_name);
+		} else {
+			try {
+				b = s3.createBucket(bucket_name);
+			} catch (AmazonS3Exception e) {
+				logger.info("Error occured while creating bucket");
+			}
+		}
+		return b;
 	}
 
 }

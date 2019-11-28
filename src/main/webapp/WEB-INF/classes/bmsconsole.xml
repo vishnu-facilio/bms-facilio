@@ -1138,6 +1138,12 @@
 			</action>
 			<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method ="addAgentVersion">
 			</action>
+			<action name="upload" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/upload.jsp</result>
+			</action>
+		<action name="uploadGoogleCredential" class="com.facilio.bmsconsole.actions.AdminAction" method ="uploadGoogleCredential">
+			<result   type="tiles">adminpage/upload.jsp</result>
+		</action>
 	</package>
 
 	<package name="viewApi" namespace="/api/view" extends="homeApi">

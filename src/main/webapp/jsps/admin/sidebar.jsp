@@ -111,7 +111,14 @@ if (buildinfo == null) {
               <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
                <span class="nav-title">DeleteMessageQueue</span>
                </a>
-           </li> 
+           </li>
+           <li>
+                <a href="upload">
+                <span class="nav-icon">
+                <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+                <span class="nav-title">Upload credentials</span>
+                 </a>
+           </li>
 
          </ul>
         
