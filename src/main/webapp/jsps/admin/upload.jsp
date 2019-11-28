@@ -10,7 +10,7 @@
 <body>
 <%= "GOOGLE_APPLICATION_CREDENTIALS" %>
 <div class = "admin-data-grey">
- <form action = "http://localhost:8080/admin/uploadGoogleCredential" method = "post"
+ <form action = "https://stage.facilio.in/admin/uploadGoogleCredential" method = "post"
          enctype = "multipart/form-data">
          <input type = "file" accept=".json" name = "file" />
          <br />
