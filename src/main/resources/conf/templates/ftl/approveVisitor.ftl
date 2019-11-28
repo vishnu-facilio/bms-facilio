@@ -43,9 +43,16 @@
                         </tr>
                         <tr>
                               <td>
+                              		<#if (getVisitorLogPermaLink[0]) ?? >
+                                    <a href="${getVisitorLogPermaLink[0]}" style="border-radius: 3px; background-color: #5bc293;font-size: 14px;font-weight: 600;border: none;text-decoration: none;color: #fff;padding: 10px 20px;letter-spacing: 0.5px;cursor: pointer !important;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;">Approve</a>
+                                    <#else>
                                     <a href="https://app.facilio.com/app/home/visitor/logs/all" style="border-radius: 3px; background-color: #5bc293;font-size: 14px;font-weight: 600;border: none;text-decoration: none;color: #fff;padding: 10px 20px;letter-spacing: 0.5px;cursor: pointer !important;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;">Approve</a>
-                                    <a href="https://app.facilio.com/app/home/visitor/logs/all" style="border-radius: 3px; background-color: #f66a6a;font-size: 14px;font-weight: 600;border: none;text-decoration: none;color: #fff;padding: 10px 27px;letter-spacing: 0.5px;cursor: pointer !important;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;margin-left: 20px;">Reject</a>
-                                    <a href="https://app.facilio.com/app/home/visitor/logs/all" style="border-radius: 3px; background-color: #fdbd39;font-size: 14px;font-weight: 600;border: none;text-decoration: none;color: #fff;padding: 10px 33px;letter-spacing: 0.5px;cursor: pointer !important;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;margin-left: 20px;">Wait</a>
+                                    </#if>
+                                    <#if (getVisitorLogPermaLink[1]) ?? >
+                                    <a href="${getVisitorLogPermaLink[1]}" style="border-radius: 3px; background-color: #f66a6a;font-size: 14px;font-weight: 600;border: none;text-decoration: none;color: #fff;padding: 10px 27px;letter-spacing: 0.5px;cursor: pointer !important;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;margin-left: 20px;">Reject</a>
+                                    <#else>
+                                    <a href="https://app.facilio.com/app/home/visitor/logs/all" style="border-radius: 3px; background-color: #5bc293;font-size: 14px;font-weight: 600;border: none;text-decoration: none;color: #fff;padding: 10px 20px;letter-spacing: 0.5px;cursor: pointer !important;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;">Approve</a>
+                                    </#if>
                               </td>
                         </tr>
                         <!-- <tr>

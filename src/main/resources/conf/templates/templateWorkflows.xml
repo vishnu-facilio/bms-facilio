@@ -1172,9 +1172,8 @@
 		
 			<parameter name="visitorlogging"
 				type="String" />
-				<parameter name="visitorlogging.id"
+			<parameter name="visitorlogging.id"
 				type="String" />
-			
 			 <expression name="vLog">
 				<function>resource.getVisitorLog(visitorlogging.id)
 				</function>
@@ -1252,11 +1251,14 @@
 			<parameter name="org.name" type="String" />
 			<parameter name="visitorlogging"
 				type="String" />
-				<parameter name="visitorlogging.id"
+			<parameter name="visitorlogging.id"
 				type="String" />
-			
 			 <expression name="vLog">
 				<function>resource.getVisitorLog(visitorlogging.id)
+				</function>
+			</expression>
+			 <expression name="getVisitorLogPermaLink">
+				<function>default.getTransitionPermaLink('https://app.facilio.com', visitorlogging.id, '/link/1' , 'vandhana@gmail.com', 'visitorlogging')
 				</function>
 			</expression>
 			
@@ -1370,5 +1372,6 @@
 				</function>
 			</expression>			
 		</workflow>
+		
 	</template>
 </workflows>

@@ -1,8 +1,5 @@
 package com.facilio.workflows.functions;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -23,8 +20,12 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.BitlyUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.cards.util.CardUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -33,10 +34,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileInfo.FileFormat;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -44,6 +42,8 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.pdf.PdfUtil;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
@@ -563,6 +563,41 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			
 			return BitlyUtil.getSmallUrl(longUrl);
 			
+		}
+		
+	},
+	GET_TRANSITION_PERMALINK_URL(19, "getTransitionPermaLink") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects == null || objects.length < 1) {
+				return null;
+			}
+			
+			User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), (String) objects[3]);
+			JSONObject jObj = new JSONObject();
+			jObj.put("recordId", (long)objects[1]);
+			jObj.put("allowUrls",(String)objects[2]);
+			ModuleBaseWithCustomFields record = RecordAPI.getRecord((String)objects[4], (long)objects[1]);
+			
+			List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), record.getModuleState().getId(), (String)objects[4], record, new FacilioContext());
+			jObj.put("moduleId", record.getModuleId());
+			ArrayList<String> permalinks = new ArrayList<String>();
+			
+			if(CollectionUtils.isNotEmpty(nextStateRule) && nextStateRule.size() >= 2){
+				for(WorkflowRuleContext rule : nextStateRule) {
+					long transitionId = rule.getId();
+					jObj.put("transitionId", transitionId);
+					String token = AccountUtil.getUserBean().generatePermalink(user, jObj);
+					String permalLinkURL = objects[0].toString()+objects[2].toString()+"?token=" + token;
+					permalinks.add(permalLinkURL);
+				}
+				return permalinks;
+			}
+			return null;
+			
+				
 		}
 		
 	},
