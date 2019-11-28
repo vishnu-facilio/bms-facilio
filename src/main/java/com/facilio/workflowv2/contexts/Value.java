@@ -66,14 +66,16 @@ public class Value {
     	if(value instanceof Integer) {
     		return (Integer)value;
     	}
-        return ((Double)value).intValue();
+    	Double d = Double.parseDouble(value.toString());
+        return d.intValue();
     }
     
     public Long asLong() {
     	if(value instanceof Long) {
     		return (Long)value;
     	}
-        return ((Double)value).longValue();
+    	Double d = Double.parseDouble(value.toString());
+        return d.longValue();
     }
 
     public String asString() {
