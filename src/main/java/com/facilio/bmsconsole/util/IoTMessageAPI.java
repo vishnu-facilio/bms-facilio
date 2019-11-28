@@ -317,14 +317,22 @@ public class IoTMessageAPI {
 				.table(ModuleFactory.getPublishMessageModule().getTableName())
 				.fields(FieldFactory.getPublishMessageFields())
 				;
+		List<Map<String, Object>> records = new ArrayList<>();
 		for (PublishMessage msg : messages) {
 			msg.setOrgId(AccountUtil.getCurrentOrg().getId());
 			msg.setSentTime(System.currentTimeMillis());
 			msg.setParentId(parentId);
 			
-			msgBuilder.addRecord(FieldUtil.getAsProperties(msg));
+			Map<String, Object> record = FieldUtil.getAsProperties(msg);
+			records.add(record);
+			
 		}
+		msgBuilder.addRecords(records);
 		msgBuilder.save();
+		 
+		for(int i = 0; i < records.size(); i++) {
+			messages.get(i).setId((long)records.get(0).get("id"));
+		}
 	}
 	
 	public static PublishData publishIotMessage(List<Map<String, Object>> instances, IotCommandType command) throws Exception {
