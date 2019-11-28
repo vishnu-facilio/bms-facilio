@@ -104,6 +104,8 @@ public class FacilioConstants {
 		public static final String SERVICE_CATALOGS = "serviceCatalogs";
 		public static final String SERVICE_CATALOG_GROUP = "serviceCatalogGroup";
 		public static final String SERVICE_CATALOG_GROUPS = "serviceCatalogGroups";
+		
+		public static final String SUB_MODULES = "submodules";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";

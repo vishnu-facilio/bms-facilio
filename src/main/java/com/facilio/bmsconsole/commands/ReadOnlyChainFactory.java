@@ -39,6 +39,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain getSubModuleRelChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetSubModulesRelModuleAndFields());
+		return c;
+	}
+	
 	public static FacilioChain getRelationshipChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetRelationshipCommand());

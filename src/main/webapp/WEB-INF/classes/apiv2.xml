@@ -1664,7 +1664,7 @@
 			method="getResetReadings">
 		</action>
 	</package>
-	<package name="readingsApiv2" namespace="/api/v2/readings/asset" extends="v2Api">
+	<package name="assetReadingsApiv2" namespace="/api/v2/readings/asset" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReadingData">
 			<param name="moduleName">asset</param>
 			<param name="permission">ADD_READING</param>
@@ -1672,6 +1672,10 @@
 		<action name="all" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getAllAssetReadings">
 			<param name="moduleName">setup</param>
 			<param name="permission">ASSET_SETTINGS</param>
+		</action>
+	</package>
+	<package name="readingsApiv2" namespace="/api/v2/readings" extends="v2Api">
+		<action name="getSubModuleRel" class="com.facilio.bmsconsole.actions.ReadingAction" method="getSubModuleRel">
 		</action>
 	</package>
 	<package name="dashboardApiv2" namespace="/api/v2/dashboard"

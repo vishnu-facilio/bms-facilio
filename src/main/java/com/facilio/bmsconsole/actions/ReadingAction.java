@@ -74,6 +74,22 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getSubModuleRel() throws Exception {
+		
+		FacilioChain addReadingChain = ReadOnlyChainFactory.getSubModuleRelChain();
+		FacilioContext context = addReadingChain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.ContextNames.MODULE_ID, getModuleId());
+		
+		addReadingChain.execute();
+		
+		
+		List<FacilioModule> modules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.SUB_MODULES);
+
+		setResult(FacilioConstants.ContextNames.SUB_MODULES, modules);
+		return SUCCESS;
+	}
+	
 
 	String resourceType;
 	
