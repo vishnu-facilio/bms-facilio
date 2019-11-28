@@ -42,6 +42,8 @@ public class ViewFactory {
 		String moduleName;
 		if (viewName.contains("approval_")) {
 			moduleName = FacilioConstants.ContextNames.APPROVAL;
+		} else if (viewName.contains("invite_")) {
+			moduleName = FacilioConstants.ContextNames.VISITOR_INVITE;
 		} else {
 			moduleName = module.getName();
 		}
@@ -534,14 +536,17 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("todayvisits", getVisitorsCheckedInTodayView().setOrder(order++));
 		views.put("current", getVisitorsCheckedInCurrentlyView().setOrder(order++));
-		views.put("pending", getPendingVisitorsView().setOrder(order++));
+		views.put("pending", getPendingVisitsView().setOrder(order++));
+		views.put("upcoming", getUpcomingVisitsView().setOrder(order++));
 		views.put("all", getAllVisitorLogsView().setOrder(order++));
 		views.put("myInvites", getMyVisitorInvites().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("all", getAllVisitorInvitesView().setOrder(order++));
+		views.put("invite_today", getTodayVisitorInvitesView().setOrder(order++));
+		views.put("invite_pending", getPendingVisitorInvitesView().setOrder(order++));
+		views.put("invite_all", getAllVisitorInvitesView().setOrder(order++));
 		views.put("myInvites", getMyVisitorInvites().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
 		
@@ -4813,7 +4818,7 @@ public class ViewFactory {
 	private static FacilioView getAllVisitorInvitesView() {
 
 		FacilioView allView = new FacilioView();
-		allView.setName("all");
+		allView.setName("invite_all");
 		allView.setDisplayName("All Invites");
 		return allView;
 	}
@@ -4924,6 +4929,20 @@ public class ViewFactory {
 		return view;
 	}
 
+	private static FacilioView getTodayVisitorInvitesView() {
+
+		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
+		FacilioView view = new FacilioView();
+		view.setName("invite_today");
+		view.setDisplayName("Today Invites");
+		Criteria criteria = new Criteria();
+		FacilioField expCheckInTime = FieldFactory.getField("expectedCheckInTime", "EXPECTED_CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
+		criteria.addAndCondition(CriteriaAPI.getCondition(expCheckInTime, DateOperators.TODAY));
+		view.setCriteria(criteria);
+
+		return view;
+	}
+
 	private static FacilioView  getVisitorsCheckedInCurrentlyView() {
 
 		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
@@ -4942,31 +4961,67 @@ public class ViewFactory {
 		return view;
 	}
 
-	private static FacilioView  getPendingVisitorsView() {
+	private static FacilioView  getPendingVisitsView() {
 
-		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
 		FacilioView view = new FacilioView();
 		view.setName("pending");
 		view.setDisplayName("Pending Approval");
+		Criteria criteria = new Criteria();
+		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
+
+		FacilioField preRegisterField = FieldFactory.getField("isPreregistered", "IS_PREREGISTERED", visitorLoggingModule,FieldType.BOOLEAN);
+		FacilioField hostApprovalField = FieldFactory.getField("approvalNeeded", "IS_APPROVAL_NEEDED", visitorLoggingModule,FieldType.BOOLEAN);
+		criteria.addAndCondition(CriteriaAPI.getCondition(preRegisterField, String.valueOf(true),BooleanOperators.IS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(hostApprovalField, String.valueOf(true),BooleanOperators.IS));
+		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
+		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_EMPTY));
+		view.setCriteria(criteria);
+
+		return view;
+	}
+
+	private static FacilioView  getUpcomingVisitsView() {
+
+		FacilioView view = new FacilioView();
+		view.setName("upcoming");
+		view.setDisplayName("Upcoming Visits");
+		Criteria criteria = new Criteria();
+		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
+
+		FacilioField preRegisterField = FieldFactory.getField("isPreregistered", "IS_PREREGISTERED", visitorLoggingModule,FieldType.BOOLEAN);
+		criteria.addAndCondition(CriteriaAPI.getCondition(preRegisterField, String.valueOf(true),BooleanOperators.IS));
 
 		try {
-			FacilioStatus checkedIn = VisitorManagementAPI.getLogStatus("CheckedIn");
-			FacilioStatus checkedOut = VisitorManagementAPI.getLogStatus("CheckedOut");
-			FacilioStatus requested = VisitorManagementAPI.getLogStatus("Requested");
-			FacilioStatus approved = VisitorManagementAPI.getLogStatus("Approved");
-			FacilioStatus rejected = VisitorManagementAPI.getLogStatus("Rejected");
-			FacilioStatus waiting = VisitorManagementAPI.getLogStatus("Waiting");
-			FacilioStatus blocked = VisitorManagementAPI.getLogStatus("Blocked");
-
 			FacilioStatus upcoming = VisitorManagementAPI.getLogStatus("Upcoming");
-
-			Criteria statusCriteria = new Criteria();
-			statusCriteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedIn.getId()) + ","  + String.valueOf(checkedOut.getId()) + "," +  String.valueOf(requested.getId()) + "," +  String.valueOf(approved.getId()) + "," +  String.valueOf(rejected.getId()) + "," +  String.valueOf(blocked.getId()) + "," +  String.valueOf(waiting.getId()) + "," +  String.valueOf(upcoming.getId()), NumberOperators.NOT_EQUALS));
-			view.setCriteria(statusCriteria);
-
+			criteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(upcoming.getId()), NumberOperators.EQUALS));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		view.setCriteria(criteria);
+
+		return view;
+	}
+
+	private static FacilioView  getPendingVisitorInvitesView() {
+
+		FacilioView view = new FacilioView();
+		view.setName("invite_pending");
+		view.setDisplayName("Pending Approval");
+		Criteria criteria = new Criteria();
+		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
+
+		FacilioField preRegisterField = FieldFactory.getField("isInviteApprovalNeeded", "IS_INVITE_APPROVAL_NEEDED", visitorLoggingModule,FieldType.BOOLEAN);
+		criteria.addAndCondition(CriteriaAPI.getCondition(preRegisterField, String.valueOf(true),BooleanOperators.IS));
+		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
+		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_EMPTY));
+		try {
+			FacilioStatus invited = VisitorManagementAPI.getLogStatus("Invited");
+			criteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(invited.getId()), NumberOperators.EQUALS));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		view.setCriteria(criteria);
 
 		return view;
 	}

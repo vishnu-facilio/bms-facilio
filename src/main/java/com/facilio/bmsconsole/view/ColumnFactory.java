@@ -82,6 +82,7 @@ public class ColumnFactory {
 		columnMap.put("visitor-default", getDefaultVisitorColumns());
 		columnMap.put("visitorlogging-default", getDefaultVisitorLoggingColumns());
 		columnMap.put("visitorinvite-default", getDefaultVisitorInvitesColumns());
+		columnMap.put("visitorlogging-invite_all", getDefaultVisitorInvitesColumns());
 		columnMap.put("insurance-default", getDefaultInsuranceColumns());
 		columnMap.put("watchlist-default", getDefaultWatchListColumns());
 		columnMap.put("workpermit-default", getDefaultWorkPermitColumns());
@@ -658,14 +659,14 @@ public class ColumnFactory {
 		return columns;
 	}
 
+
 	public static List<ViewField> getDefaultVisitorInvitesColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("inviteName", "Name"));
+		columns.add(new ViewField("visitor", "Visitor"));
 		columns.add(new ViewField("visitorType", "Type"));
-		columns.add(new ViewField("inviteHost", "Host"));
-		columns.add(new ViewField("expectedStartTime", "Expected Start Time"));
-		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
-//		columns.add(new ViewField("requestedBy", "Requested By"));
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
+		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
 		return columns;
 	}
 	
