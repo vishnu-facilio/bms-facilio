@@ -343,7 +343,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			else if(dbParamContext.getAggregateString() == null || dbParamContext.getAggregateString().equals("")) {
 				List<Object> returnList = new ArrayList<>(); 
 				for(Map<String, Object> prop:props) {
-					returnList.add(prop.get(RESULT_STRING));
+					String fieldName = !LookupSpecialTypeUtil.isSpecialType(module.getName()) ? RESULT_STRING : dbParamContext.getFieldName();
+					returnList.add(prop.get(fieldName));
 				}
 				result = returnList;
 			}
