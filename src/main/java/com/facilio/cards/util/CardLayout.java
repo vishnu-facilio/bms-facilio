@@ -1350,51 +1350,75 @@ public enum CardLayout {
 		public JSONObject getParameters () {
 			JSONObject params = new JSONObject();
 			params.put("title", true);
-			params.put("baseSpaceId", true);
+			params.put("module", true);
+			params.put("field", true);
+			params.put("criteria", true);
+			params.put("marker", true);
 			return params;
 		}
 		
 		public JSONObject getReturnValue () {
 			JSONObject returnValue = new JSONObject();
 			returnValue.put("title", true);
-			returnValue.put("value", true);
+			returnValue.put("values", true);
 			return returnValue;
 		}
 		
 		public String getScript () {
 			StringBuilder sb = new StringBuilder();
 			
-			sb.append("fieldObj = NameSpace(\"module\").getField(\"temperature\", \"weather\");\n"
-					+ "if (fieldObj != null) {"
-					+ "		fieldid = fieldObj.id();"
-					+ "		fieldMapInfo = fieldObj.asMap();"
-					+ "		date = NameSpace(\"date\");"
-					+ "		dateRangeObj = date.getDateRange(\"Current Month\");"
-					+ "		db = {"
-					+ "			criteria : [parentId == params.baseSpaceId && ttime == dateRangeObj],"
-					+ "			limit : 1,"
-					+ "			orderBy : \"ttime\" desc"
-					+ "		};"
-					+ "		fetchModule = Module(\"weather\");"
-					+ "		cardValue = fetchModule.fetch(db);"
-					+ "		valueMap = {};"
-					+ "		if (cardValue != null) {"
-					+ "			valueMap[\"value\"] = cardValue[0];"
-					+ "		} else {"
-					+ "			valueMap[\"value\"] = null;"
-					+ "		}"
-					+ "		if (fieldMapInfo != null) {"
-					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
-					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
-					+ "		}"
-					+ "		result[\"value\"] = valueMap;"
+			sb.append("fetchModule = Module(params.module);"
+					+ "records = [];"
+					+ "if (params.module == \"asset\") {"
+					+ "		records = fetchModule.fetch([geoLocation != null]);"
+					+ "} else {"
+					+ "		records = fetchModule.fetch([location != null]);"
 					+ "}"
-					+ "else {"
-					+ "		valueMap = {};"
-					+ "		valueMap[\"value\"] = null;"
-					+ "		result[\"value\"] = valueMap;"
+					+ "values = [];"
+					+ "if (records != null) {"
+					+ "		for each index, record in records {"
+					+ "			 locationEntry = {};"
+					+ "			 locationEntry[\"id\"] = record.id;"
+					+ "			 locationEntry[\"name\"] = record.name;"
+					+ "			 if (record.photoId != null && record.photoId > 0) {"
+					+ "			 	locationEntry[\"image\"] = \"/api/v2/files/preview/\" + record.photoId;"
+					+ "			 } else {"
+					+ "			 	locationEntry[\"image\"] = null;"
+					+ "			 }"
+					+ "			 if (params.module == \"asset\") {"
+					+ "			 	locationEntry[\"location\"] = record.geoLocation;"
+					+ "			 }"
+					+ "			 else {"
+					+ "			 	locationObj = Module(\"location\").fetch([id == record.location.id])[0];"
+					+ "			 	if (locationObj != null && locationObj.lat != null && locationObj.lng != null) {"
+					+ "			 		locationEntry[\"location\"] = locationObj.lat + \",\" + locationObj.lng;"
+					+ "			 	}"
+					+ "			 	else {"
+					+ "			 		locationEntry[\"location\"] = null;"
+					+ "			 	}"
+					+ "			 }"
+					+ "			 locationEntry[\"icon\"] = params.marker.icon;"
+					+ "			 if (params.marker.type == \"noOfAlarms\") {"
+					+ "			 	occurenceCount = {"
+					+ "			 		criteria: [resource == record.id],"
+		            + "			 		field: \"id\","
+		            + "			 		aggregation: \"count\""
+		            + "			 	};"
+		            + "			 	locationEntry[\"value\"] = Module(\"alarm\").fetch(occurenceCount);"
+					+ "			 }"
+					+ "			 else if (params.marker.type == \"noOfWorkorders\") {"
+					+ "			 	woCount = {"
+					+ "			 		criteria: [resource == record.id],"
+		            + "			 		field: \"id\","
+		            + "			 		aggregation: \"count\""
+		            + "			 	};"
+		            + "			 	locationEntry[\"value\"] = Module(\"workorder\").fetch(woCount);"
+					+ "			 }"
+					+ "			 values.push(locationEntry);"
+					+ "		}"
 					+ "}"
-					+ "result[\"title\"] = params.title;");
+					+ "result[\"title\"] = params.title;"
+					+ "result[\"values\"] = values;");
 					
 			
 			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
