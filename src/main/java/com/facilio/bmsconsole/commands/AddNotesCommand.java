@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.facilio.activity.AlarmActivityType;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -95,7 +96,10 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 	     		}
 	     		else if(moduleName.equals(FacilioConstants.ContextNames.ASSET_NOTES)) {
 	     			CommonCommandUtil.addActivityToContext(note.getParentId(), -1, AssetActivityType.ASSET_NOTES, info, (FacilioContext) context);
-	     		}
+	     		} else if (moduleName.equals(FacilioConstants.ContextNames.BASE_ALARM_NOTES)) {
+	     			long occurrenceId = (long) context.get(FacilioConstants.ContextNames.ALARM_OCCURRENCE_ID);
+					CommonCommandUtil.addAlarmActivityToContext(note.getParentId(), -1, AlarmActivityType.ADD_COMMENT, info, (FacilioContext) context, occurrenceId);
+				}
 				
 				noteBuilder.addRecord(note);
 				if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {

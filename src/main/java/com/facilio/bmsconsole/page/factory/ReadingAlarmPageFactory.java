@@ -35,7 +35,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         page.addTab(tab1);
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
-        if (alarms.getLastOccurrence().getWoId() > 0) {
+        if (alarms.getLastOccurrence().getWoId() > 0 || alarms.getAcknowledged()) {
             addTimeLineWidget(tab1Sec1, alarms);
         }
         addAlarmDetailsWidget(tab1Sec1);
@@ -71,18 +71,31 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         tab3.addSection(tab3Sec1);
 
         addOccurrenceHistoryWidget(tab3Sec1);
+//        Page.Tab tab5 = page.new Tab("activity", "activity");
+//        page.addTab(tab5);
+//
+//        Section tab5Sec1 = page.new Section();
+//        tab5.addSection(tab5Sec1);
+//
+//        addActivityWidget(tab5Sec1);
         return  page;
     }
     protected  static  void  addTimeLineWidget(Page.Section section, ReadingAlarm alarms) throws Exception {
         JSONObject activities = new JSONObject();
+        int widgetHeight = 1;
         if (alarms.getLastOccurrence() != null) {
             if (alarms.getLastOccurrence().getWoId() > 0) {
                 WorkOrderContext wo = WorkOrderAPI.getWorkOrder(alarms.getLastOccurrence().getWoId());
                 activities.put("workOrder", wo);
+                widgetHeight = widgetHeight + 1;
+            }
+            if (alarms.getAcknowledged()) {
+                activities.put("acknowledge", alarms.getAcknowledgedBy());
+                widgetHeight = widgetHeight + 1;
             }
         }
         PageWidget pageWidget = new PageWidget(PageWidget.WidgetType.ALARM_TIME_LINE);
-        pageWidget.addToLayoutParams(section, 24, 2);
+        pageWidget.addToLayoutParams(section, 24, widgetHeight);
         pageWidget.setRelatedList(activities);
         section.addWidget(pageWidget);
     }
@@ -131,6 +144,11 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         section.addWidget(occurrenceListWidget);
         return occurrenceListWidget;
     }
+//    private static PageWidget addActivityWidget (Section section) {
+//        PageWidget activityWidget = new PageWidget(PageWidget.WidgetType.ACTIVITY_WIDGET);
+//        section.addWidget(activityWidget);
+//        return activityWidget;
+//    }
 
     private static PageWidget addAlarmRankCard(Section section) {
         PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD);

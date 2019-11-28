@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.activity.AlarmActivityContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -803,6 +804,26 @@ public class CommonCommandUtil {
 		activities.add(activity);
 		context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
 	}
+    public static void addAlarmActivityToContext(long parentId, long ttime, ActivityType type, JSONObject info, FacilioContext context, long lastOccurrenceId) {
+        AlarmActivityContext activity = new AlarmActivityContext();
+        activity.setParentId(parentId);
+        activity.setOccurrenceId(lastOccurrenceId);
+        if (ttime == -1) {
+            activity.setTtime(System.currentTimeMillis());
+        }
+        else {
+            activity.setTtime(ttime);
+        }
+        activity.setType(type);
+        activity.setInfo(info);
+        activity.setDoneBy(AccountUtil.getCurrentUser());
+        List<AlarmActivityContext> activities = (List<AlarmActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);
+        if (activities == null) {
+            activities = new ArrayList<>();
+        }
+        activities.add(activity);
+        context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
+    }
 	
 	public static void addEventType (EventType type, FacilioContext context) {
 		List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);

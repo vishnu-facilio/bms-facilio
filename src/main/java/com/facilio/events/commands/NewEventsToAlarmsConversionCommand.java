@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.activity.AlarmActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.chain.FacilioContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -21,6 +24,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
+import org.json.simple.JSONObject;
 
 public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 
@@ -72,7 +76,12 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 					if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
 						BaseAlarmContext alarm = alarmOccurrence.getAlarm();
 						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(),
-								AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getLastOccurredTime() + 1000);
+						AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getLastOccurredTime() + 1000);
+						JSONObject info = new JSONObject();
+						info.put("field", "Severity");
+						info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
+						info.put("oldValue", AlarmAPI.getAlarmSeverity(alarmOccurrence.getPreviousSeverity().getId()).getDisplayName());
+						CommonCommandUtil.addAlarmActivityToContext(alarm.getId(),-1, AlarmActivityType.CLEAR_ALARM, info, (FacilioContext) context, alarmOccurrence.getId());
 						baseEvents.add(createdEvent);
 						processEventToAlarm(createdEvent, context, additionEventsCreated);
 					}

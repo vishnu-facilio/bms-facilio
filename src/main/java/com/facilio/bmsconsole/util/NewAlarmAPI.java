@@ -10,6 +10,9 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.activity.AlarmActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.chain.FacilioContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -59,6 +62,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.json.simple.JSONObject;
 
 public class NewAlarmAPI {
 
@@ -336,14 +340,14 @@ public class NewAlarmAPI {
 		AlarmOccurrenceContext alarmOccurrence = baseEvent.updateAlarmOccurrenceContext(null, context, true);
 
 		BaseAlarmContext baseAlarm = baseEvent.updateAlarmContext(null, true);
-		updateAlarmSystemFields(baseAlarm, alarmOccurrence);
+		updateAlarmSystemFields(baseAlarm, alarmOccurrence, context);
 
 		baseAlarm.setSeverity(alarmOccurrence.getSeverity());
 		baseAlarm.setType(baseEvent.getEventTypeEnum());
 
 		alarmOccurrence.setAlarm(baseAlarm);
 
-		addAlarmOccurrence(alarmOccurrence, baseEvent, true);
+		addAlarmOccurrence(alarmOccurrence, baseEvent, true, context);
 		return alarmOccurrence;
 	}
 
@@ -352,24 +356,24 @@ public class NewAlarmAPI {
 		AlarmOccurrenceContext alarmOccurrence = baseEvent.updateAlarmOccurrenceContext(null, context, true);
 		alarmOccurrence.setAlarm(baseAlarm);
 
-		addAlarmOccurrence(alarmOccurrence, baseEvent, mostRecent);
+		addAlarmOccurrence(alarmOccurrence, baseEvent, mostRecent, context);
 		return alarmOccurrence;
 	}
 
 	private static void addAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent,
-										   boolean mostRecent) throws Exception {
-		rollUpAlarm(alarmOccurrence, baseEvent, mostRecent);
+										   boolean mostRecent, Context context) throws Exception {
+		rollUpAlarm(alarmOccurrence, baseEvent, mostRecent, context);
 	}
 
 	public static void updateAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent,
 											 boolean mostRecent, Context context) throws Exception {
 		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, context, false);
 
-		rollUpAlarm(alarmOccurrence, baseEvent, mostRecent);
+		rollUpAlarm(alarmOccurrence, baseEvent, mostRecent, context);
 	}
 
 	private static void rollUpAlarm(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent,
-									boolean mostRecent) throws Exception {
+									boolean mostRecent, Context context) throws Exception {
 		if (!mostRecent) {
 			return;
 		}
@@ -378,14 +382,19 @@ public class NewAlarmAPI {
 		baseEvent.updateAlarmContext(baseAlarm, false);
 		alarmOccurrence.updateAlarm(baseAlarm);
 
-		updateAlarmSystemFields(baseAlarm, alarmOccurrence);
+		updateAlarmSystemFields(baseAlarm, alarmOccurrence,context );
 	}
 
-	private static void updateAlarmSystemFields(BaseAlarmContext baseAlarm, AlarmOccurrenceContext alarmOccurrence)
+	private static void updateAlarmSystemFields(BaseAlarmContext baseAlarm, AlarmOccurrenceContext alarmOccurrence, Context context)
 			throws Exception {
 		baseAlarm.setLastOccurredTime(alarmOccurrence.getLastOccurredTime());
 		baseAlarm.setLastCreatedTime(alarmOccurrence.getCreatedTime());
 		if (alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
+			JSONObject info = new JSONObject();
+			info.put("field", "Severity");
+			info.put("oldValue", baseAlarm.getSeverity().getDisplayName());
+			info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
+			CommonCommandUtil.addAlarmActivityToContext(baseAlarm.getId(), -1, AlarmActivityType.CLEAR_ALARM, info, (FacilioContext) context, alarmOccurrence.getId());
 			baseAlarm.setLastClearedTime(alarmOccurrence.getLastOccurredTime());
 		}
 	}

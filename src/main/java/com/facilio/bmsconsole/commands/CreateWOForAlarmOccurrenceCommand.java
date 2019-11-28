@@ -3,8 +3,11 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.activity.AlarmActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Context;
 
@@ -21,6 +24,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.json.simple.JSONObject;
 
 public class CreateWOForAlarmOccurrenceCommand extends FacilioCommand {
 
@@ -63,7 +67,11 @@ public class CreateWOForAlarmOccurrenceCommand extends FacilioCommand {
 				workorder.setResource(baseAlarm.getResource());
 				workorder.setScheduledStart(baseAlarm.getLastOccurredTime());
 				workorder.setSiteId(baseAlarm.getSiteId());
-				
+				JSONObject info = new JSONObject();
+				info.put("field", "workOrder");
+				info.put("oldValue", workorder);
+				CommonCommandUtil.addAlarmActivityToContext(baseAlarm.getId(), -1, AlarmActivityType.CREATE_WORKORDER, info , (FacilioContext) context, alarmOccurrenceContext.getId() );
+
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			}
 		}

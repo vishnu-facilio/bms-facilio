@@ -275,6 +275,7 @@ public class FacilioConstants {
 		public static final String ALARM_LIST = "alarms";
 		public static final String ALARM_ENTITY_ID = "alarmentityid";
 		public static final String ALARM_OCCURRENCE = "alarmoccurrence";
+		public static final String ALARM_OCCURRENCE_ID = "alarmoccurrenceId";
 		public static final String RCA_ALARMS = "rcaAlarm";
 		public static final String ANOMALY_ALARM_OCCURRENCE = "anomalyalarmoccurrence";
 		public static final String READING_ALARM_OCCURRENCE = "readingalarmoccurrence";
@@ -615,6 +616,7 @@ public class FacilioConstants {
 		public static final String ITEM_NOTES = "itemNotes";
 		public static final String TOOL_NOTES = "toolNotes";
 		public static final String TOOL_TYPES_NOTES = "toolTypesNotes";
+		public static final String BASE_ALARM_NOTES = "basealarmnotes";
 
 
 		public static final String STORE_ROOM_NOTES = "storeRoomNotes";

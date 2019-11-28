@@ -82,6 +82,10 @@ public class NoteAction extends FacilioAction {
 		else if (moduleName.equals(FacilioConstants.ContextNames.ASSET_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 			}
+		else if (moduleName.equals(FacilioConstants.ContextNames.BASE_ALARM_NOTES)) {
+			context.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE_ID, alarmOccurrenceId);
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ALARM_ACTIVITY);
+		}
 		FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
 		addNote.execute(context);
 		
@@ -144,7 +148,16 @@ public class NoteAction extends FacilioAction {
 	public String getTicketNotes() throws Exception {
 		return getNotesList(FacilioConstants.ContextNames.TICKET_NOTES);
 	}
-	
+
+	public long getAlarmOccurrenceId() {
+		return alarmOccurrenceId;
+	}
+
+	public void setAlarmOccurrenceId(long alarmOccurrenceId) {
+		this.alarmOccurrenceId = alarmOccurrenceId;
+	}
+
+	private long alarmOccurrenceId = -1;
 	public String getSpaceNotes() throws Exception {
 		return getNotesList(FacilioConstants.ContextNames.BASE_SPACE_NOTES);
 	}

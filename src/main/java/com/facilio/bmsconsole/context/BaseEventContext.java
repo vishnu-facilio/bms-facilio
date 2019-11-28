@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.activity.AlarmActivityType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -304,6 +305,11 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 		else {
 			if (!previousSeverity.equals(getSeverity())) {
 				if (!getSeverity().equals(clearSeverity)) {
+					JSONObject info = new JSONObject();
+					info.put("field", "Severity");
+					info.put("newValue", getSeverity().getDisplayName());
+					info.put("oldValue", previousSeverity.getDisplayName());
+					CommonCommandUtil.addAlarmActivityToContext(alarmOccurrence.getAlarm().getId(),-1, AlarmActivityType.SEVERITY_CHANGE, info, (FacilioContext) context, alarmOccurrence.getId());
 					CommonCommandUtil.addEventType(EventType.UPDATED_ALARM_SEVERITY, (FacilioContext) context);
 					alarmOccurrence.setAcknowledged(false);
 					alarmOccurrence.setAcknowledgedBy(null);

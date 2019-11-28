@@ -851,7 +851,7 @@ public class TransactionChainFactory {
 			);
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
-			// c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 			return c;
 		}
 		
@@ -860,6 +860,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddWOFromAlarmCommand());
 			c.addCommand(getAddWorkOrderChain());
 			c.addCommand(new UpdateWoIdInAlarmCommand());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 			return c;
 		}
 		
@@ -3053,7 +3054,7 @@ public class TransactionChainFactory {
 		c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
 		);
-		//c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
+		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 		return c;
 	}
 
@@ -3391,7 +3392,7 @@ public class TransactionChainFactory {
 			c.addCommand(new CreateWOForAlarmOccurrenceCommand());
 			c.addCommand(getAddWorkOrderChain());
 			c.addCommand(new UpdateWoIdInNewAlarmCommand());
-			// c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 			return c;
 		}
 

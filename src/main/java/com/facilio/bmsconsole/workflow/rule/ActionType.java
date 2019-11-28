@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import com.facilio.activity.AlarmActivityType;
+import com.facilio.bmsconsole.commands.UpdateWoIdInNewAlarmCommand;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -630,6 +631,7 @@ public enum ActionType {
 							Context woContext = c.getContext();
 							if (obj != null) {
 								workOrder = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+								CommonCommandUtil.addAlarmActivityToContext(baseAlarm.getId(), -1, AlarmActivityType.CREATE_WORKORDER, obj, (FacilioContext) context, lastOccurrence.getId() );
 								woContext.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 							}
 							woContext.put(FacilioConstants.ContextNames.RECORD_ID, lastOccurrence.getId());

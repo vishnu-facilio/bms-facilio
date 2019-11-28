@@ -1,10 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.activity.AlarmActivityType;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +26,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.json.simple.JSONObject;
 
 public class UpdateAlarmOccurrenceCommand extends FacilioCommand {
 
@@ -50,12 +49,21 @@ public class UpdateAlarmOccurrenceCommand extends FacilioCommand {
 			updateOnlyOccurrenceFields.add(occurrenceFieldMap.get("duration"));
 			
 			long currentTimeMillis = System.currentTimeMillis();
+			JSONObject info = new JSONObject();
+
 			if (alarmOccurrence.isAcknowledged()) {
 				alarmOccurrence.setAcknowledgedTime(currentTimeMillis);
 				alarmOccurrence.setAcknowledgedBy(AccountUtil.getCurrentUser());
+				info.put("field", "Acknowledge");
+				info.put("newValue", "true");
+				info.put("acknowledgedBy", alarmOccurrence.getAcknowledgedBy().getId());
+				info.put("acknowledgedTime", alarmOccurrence.getAcknowledgedTime());
 			}
 			if (alarmOccurrence.getSeverity() != null && alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
 				alarmOccurrence.setClearedTime(currentTimeMillis);
+				info.put("field", "Severity");
+				info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
+				info.put("clearedBy", AccountUtil.getCurrentUser().getId());
 				CommonCommandUtil.addEventType(EventType.ALARM_CLEARED, (FacilioContext) context);
 			}
 
@@ -93,6 +101,7 @@ public class UpdateAlarmOccurrenceCommand extends FacilioCommand {
 
 			List<AlarmOccurrenceContext> alarmOccurrences = NewAlarmAPI.getAlarmOccurrences(recordIds);
 			if (CollectionUtils.isNotEmpty(alarmOccurrences)) {
+
 				Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = new HashMap<>();
 				Map<String, List> recordMap = new HashMap<>();
 				for (AlarmOccurrenceContext occurrence: alarmOccurrences) {
@@ -110,6 +119,8 @@ public class UpdateAlarmOccurrenceCommand extends FacilioCommand {
 						changeSetMap.put(moduleName, longListMap);
 					}
 					longListMap.put(occurrence.getAlarm().getId(), changeSet.get(occurrence.getAlarm().getId()));
+					CommonCommandUtil.addAlarmActivityToContext(occurrence.getAlarm().getId(),-1, AlarmActivityType.CLEAR_ALARM, info, (FacilioContext) context, occurrence.getId());
+
 				}
 				context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
 				context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, changeSetMap);

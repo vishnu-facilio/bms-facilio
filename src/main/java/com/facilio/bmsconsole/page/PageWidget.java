@@ -226,7 +226,8 @@ public class PageWidget {
 		IMPACTS("impactsWidget"),
 		ALARM_TIME_LINE("alarmTimeLine"),
 		INSURANCE("insurance"),
-		RECURRING_INFO("recurringInfo")
+		RECURRING_INFO("recurringInfo"),
+		ACTIVITY_WIDGET("activityWidget"),
  		;
 		
 		private String name;
