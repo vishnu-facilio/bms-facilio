@@ -1290,9 +1290,7 @@ public class FormFactory {
 
 	private static List<FormField> getVisitorFormFields() {
 		List<FormField> fields = new ArrayList<>();
-		FormField avatarField = new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1);
-		avatarField.setShowField(true);
-		fields.add(avatarField);
+		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.REQUIRED, 3, 1));
 		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 4, 1));
@@ -1370,10 +1368,7 @@ public class FormFactory {
 		fields.add(new FormField("host",FieldDisplayType.LOOKUP_SIMPLE,"Who do you want to meet",Required.OPTIONAL, "user",1,1));
 		fields.add(new FormField("purposeOfVisit",FieldDisplayType.TEXTBOX,"What is the purpose of visit",Required.OPTIONAL,1,1));
 		fields.add(new FormField("visitor", FieldDisplayType.LOOKUP_SIMPLE, "Visitor", Required.OPTIONAL, "visitor", 1, 1));
-//		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.REQUIRED,1,1));
-		FormField avatarField = new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1);
-		avatarField.setShowField(true);
-		fields.add(avatarField);
+		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1));
 		return fields;
 	}
 	
@@ -1394,10 +1389,7 @@ public class FormFactory {
 		List<FormField> fields=new ArrayList<>();
 		fields.add(new FormField("purposeOfVisit",FieldDisplayType.TEXTBOX,"What is the purpose of visit",Required.OPTIONAL,1,1));
 		fields.add(new FormField("host",FieldDisplayType.LOOKUP_SIMPLE,"Who do you want to meet",Required.OPTIONAL, "user",1,1));
-//		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.REQUIRED,1,1));
-		FormField avatarField = new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1);
-		avatarField.setShowField(true);
-		fields.add(avatarField);
+		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1));
 		fields.add(new FormField("visitor", FieldDisplayType.LOOKUP_SIMPLE, "Visitor", Required.OPTIONAL, "visitor", 1, 1));
 
 		return fields;
@@ -1418,10 +1410,7 @@ public class FormFactory {
 	{
 		List<FormField> fields=new ArrayList<>();
 		fields.add(new FormField("visitor", FieldDisplayType.LOOKUP_SIMPLE, "Visitor", Required.OPTIONAL, "visitor", 1, 1));
-//		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.REQUIRED,1,1));
-		FormField avatarField = new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1);
-		avatarField.setShowField(true);
-		fields.add(avatarField);
+		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1));
 		
 		return fields;
 	}
@@ -1458,9 +1447,7 @@ public class FormFactory {
 
 	private static List<FormField> getWatchListFormFields() {
 		List<FormField> fields = new ArrayList<>();
-		FormField avatarField = new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1);
-		avatarField.setShowField(true);
-		fields.add(avatarField);
+		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.REQUIRED, 3, 2));
 		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 4, 3));
@@ -1502,10 +1489,10 @@ public class FormFactory {
 		fields.add(new FormField("isRecurring", FieldDisplayType.DECISION_BOX, "Is Recurring", Required.OPTIONAL, 3, 2));
 		fields.add(new FormField("recurringInfo", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
 		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
-		ticketField.setShowField(false);
+		ticketField.setHideField(true);
 		fields.add(ticketField);
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 3, 2);
-		vendorField.setShowField(false);
+		vendorField.setHideField(true);
 		fields.add(vendorField);
 		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1));
@@ -1519,14 +1506,13 @@ public class FormFactory {
 		fields.add(new FormField("isRecurring", FieldDisplayType.DECISION_BOX, "Is Recurring", Required.OPTIONAL, 3, 2));
 		fields.add(new FormField("recurringInfo", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
 		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
-		ticketField.setShowField(false);
+		ticketField.setHideField(true);
 		fields.add(ticketField);
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 3, 2);
-		vendorField.setShowField(false);
+		vendorField.setHideField(true);
 		fields.add(vendorField);
 		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 5, 1));
 //		FormField requestedByField = new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1);
-//		requestedByField.setShowField(false);
 //		fields.add(requestedByField);
 		return fields;
 	}
@@ -1559,11 +1545,9 @@ public class FormFactory {
 		fields.add(new FormField("validFrom", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("validTill", FieldDisplayType.DATE, "Valid Till", Required.OPTIONAL, 3, 1));
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 3, 2);
-		vendorField.setShowField(false);
+		vendorField.setHideField(true);
 		fields.add(vendorField);
-		FormField fileField= new FormField("insurance", FieldDisplayType.IMAGE, "File", Required.OPTIONAL, 1, 1);
-		fileField.setShowField(true);
-		fields.add(fileField);
+		fields.add(new FormField("insurance", FieldDisplayType.IMAGE, "File", Required.OPTIONAL, 1, 1));
 		return fields;
 	}
 	
@@ -1572,9 +1556,7 @@ public class FormFactory {
 		fields.add(new FormField("companyName", FieldDisplayType.TEXTBOX, "Company Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("validFrom", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("validTill", FieldDisplayType.DATE, "Valid Till", Required.OPTIONAL, 3, 1));
-		FormField fileField= new FormField("insurance", FieldDisplayType.IMAGE, "File", Required.OPTIONAL, 1, 1);
-		fileField.setShowField(true);
-		fields.add(fileField);
+		fields.add(new FormField("insurance", FieldDisplayType.IMAGE, "File", Required.OPTIONAL, 1, 1));
 		return fields;
 	}
 

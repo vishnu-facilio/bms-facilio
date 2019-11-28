@@ -2,14 +2,15 @@ package com.facilio.bmsconsole.forms;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.util.FacilioUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
 public class FormField implements Serializable {
 	private static final long serialVersionUID = 4252438995947509456L;
@@ -193,17 +194,25 @@ public class FormField implements Serializable {
 		return displayType;
 	}
 	
-	
-	
-	private Boolean showField;
-	
-
-	public Boolean getShowField() {
-		return showField;
+	@JsonIgnore
+	public boolean getShowField() {
+		if (getHideField() != null) {
+			return !getHideField();
+		}
+		return true;
 	}
-
-	public void setShowField(Boolean showField) {
-		this.showField = showField;
+	
+	@JsonIgnore
+	public void setShowField(boolean showField) {
+		setHideField(!showField);
+	}
+	
+	private Boolean hideField;
+	public Boolean getHideField() {
+		return hideField;
+	}
+	public void setHideField(Boolean hideField) {
+		this.hideField = hideField;
 	}
 
 	private Boolean allowCreate = false;
