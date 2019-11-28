@@ -392,7 +392,9 @@ public class NewAlarmAPI {
 		if (alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
 			JSONObject info = new JSONObject();
 			info.put("field", "Severity");
-			info.put("oldValue", baseAlarm.getSeverity().getDisplayName());
+			if (baseAlarm.getSeverity() != null) {
+				info.put("oldValue", baseAlarm.getSeverity().getDisplayName());
+			}
 			info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
 			CommonCommandUtil.addAlarmActivityToContext(baseAlarm.getId(), -1, AlarmActivityType.CLEAR_ALARM, info, (FacilioContext) context, alarmOccurrence.getId());
 			baseAlarm.setLastClearedTime(alarmOccurrence.getLastOccurredTime());
