@@ -20,23 +20,27 @@ public class DefaultMLJob extends FacilioJob
 	@Override
 	public void execute(JobContext jc) throws Exception 
 	{	
-		LOGGER.info("Inside DefaultMLJob, JOB ID :"+jc.getJobId());
-		List<MLContext> mlContextList = MLUtil.getMlContext(jc);
-		for(MLContext mlContext:mlContextList)
-		{
-			LOGGER.info("mlContext"+mlContext.getId());
-			if(mlContext==null)
+		try{
+			LOGGER.info("Inside DefaultMLJob, JOB ID :"+jc.getJobId());
+			List<MLContext> mlContextList = MLUtil.getMlContext(jc);
+			for(MLContext mlContext:mlContextList)
 			{
-				continue;
+				LOGGER.info("mlContext"+mlContext.getId());
+				if(mlContext==null)
+				{
+					continue;
+				}
+				mlContext.setPredictionTime(jc.getExecutionTime());
+				Context context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.ML, mlContext);
+				
+				FacilioChain c = FacilioChainFactory.getMLModelBuildingChain();
+				c.execute(context);
 			}
-			mlContext.setPredictionTime(jc.getExecutionTime());
-			Context context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ML, mlContext);
-			
-			FacilioChain c = FacilioChainFactory.getMLModelBuildingChain();
-			c.execute(context);
+			LOGGER.info("Finished DefaultMLJob, JOB ID :"+jc.getJobId());
+		}catch(Exception e){
+			LOGGER.fatal("Error in DefaultMLJob"+e);
 		}
-		LOGGER.info("Finished DefaultMLJob, JOB ID :"+jc.getJobId());
 	}
 
 }
