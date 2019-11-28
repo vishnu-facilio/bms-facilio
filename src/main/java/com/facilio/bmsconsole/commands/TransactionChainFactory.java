@@ -3756,9 +3756,9 @@ public class TransactionChainFactory {
 			c.addCommand(new CheckForWatchListRecordCommand());
 			c.addCommand(new AddNewVisitorWhileLoggingCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
-//			c.addCommand(new AddAttachmentCommand());
-//			c.addCommand(new AttachmentContextCommand());
-//			c.addCommand(new AddAttachmentRelationshipCommand());
+			c.addCommand(new AddAttachmentCommand());
+			c.addCommand(new AttachmentContextCommand());
+			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new AddNdaForVisitorLogCommand());
 			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new ExecuteStateFlowCommand()); 
