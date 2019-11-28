@@ -69,6 +69,7 @@ import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.context.WorkflowFunctionContext;
+import com.facilio.workflows.functions.FacilioAnalyticsFunctions;
 import com.facilio.workflows.functions.FacilioAssetFunctions;
 import com.facilio.workflows.functions.FacilioConnectionFunctions;
 import com.facilio.workflows.functions.FacilioConsumptionFunctions;
@@ -1901,6 +1902,9 @@ public class WorkflowUtil {
 				case CRITERIA:
 					facilioWorkflowFunction = FacilioCriteriaFunctions.getFacilioCriteriaFunction(functionName);
 					break;
+				case ANALYTICS:
+					facilioWorkflowFunction = FacilioAnalyticsFunctions.getFacilioAnalyticsFunction(functionName);
+					break;
 					
 			}
 		}
@@ -1981,6 +1985,9 @@ public class WorkflowUtil {
 					break;
 				case CRITERIA:
 					facilioWorkflowFunction = new ArrayList<>( FacilioCriteriaFunctions.getAllFunctions().values());
+					break;
+				case ANALYTICS:
+					facilioWorkflowFunction = new ArrayList<>( FacilioAnalyticsFunctions.getAllFunctions().values());
 					break;
 			}
 		}

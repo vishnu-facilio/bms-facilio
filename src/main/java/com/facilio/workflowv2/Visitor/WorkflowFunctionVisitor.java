@@ -409,7 +409,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 
     @Override
     public Value visitNumberAtom(WorkflowV2Parser.NumberAtomContext ctx) {
-        return new Value(Double.valueOf(ctx.getText()));
+    	if(ctx.getText().contains(".")) {
+    		return new Value(Double.valueOf(ctx.getText()));
+    	}
+        return new Value(Long.valueOf(ctx.getText()));
     }
 
     @Override

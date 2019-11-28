@@ -2,6 +2,7 @@ package com.facilio.report.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,12 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.CommonReportUtil;
 import com.facilio.bmsconsole.commands.GetAllFieldsCommand;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.SharingAPI;
@@ -33,6 +37,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
@@ -46,6 +51,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
@@ -59,9 +65,12 @@ import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
+import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
+import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.google.gson.JsonObject;
 
 public class ReportUtil {
 	private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(ReportUtil.class.getName());
@@ -149,6 +158,63 @@ public class ReportUtil {
 		
 		return report;
 	}
+	
+	
+	public static FacilioContext getReportData(Map<String,Object> params) throws Exception {
+		
+		FacilioChain fetchReadingDataChain = ReadOnlyChainFactory.newFetchReadingReportChain();
+		
+		FacilioContext context = fetchReadingDataChain.getContext();
+		
+		List<ReadingAnalysisContext> metrics = new ArrayList<>();
+		if(params != null) {
+			
+			int xAggrInt = params.get("xAggr") != null ? Integer.parseInt(params.get("xAggr").toString()) : 0;
+			
+			AggregateOperator xAggr = AggregateOperator.getAggregateOperator(xAggrInt);
+			
+			DateOperators dateOperator = (DateOperators) Operator.getOperator(Integer.parseInt(params.get("dateOperator").toString()));
+			
+			ReportYAxisContext reportaxisContext = new ReportYAxisContext();
+			reportaxisContext.setFieldId((Long)params.get("fieldId"));
+			reportaxisContext.setAggr(Integer.parseInt(params.get("aggregateFunc").toString()));
+			
+			Map<String, String> aliases = new HashMap<>();
+			aliases.put("actual", "A");
+			
+			ReadingAnalysisContext readingAnalysisContext = new ReadingAnalysisContext();
+			readingAnalysisContext.setParentId(Collections.singletonList((Long)params.get("parentId")));
+			readingAnalysisContext.setType(1);
+			readingAnalysisContext.setAliases(aliases);
+			readingAnalysisContext.setyAxis(reportaxisContext);
+			
+			metrics.add(readingAnalysisContext);
+			
+			if(params.get("startTime") != null && params.get("endTime") != null) {
+				
+				context.put(FacilioConstants.ContextNames.START_TIME, params.get("startTime"));
+				context.put(FacilioConstants.ContextNames.END_TIME, params.get("endTime"));
+			}
+			else {
+				
+				context.put(FacilioConstants.ContextNames.START_TIME, dateOperator.getRange(null).getStartTime());
+				context.put(FacilioConstants.ContextNames.END_TIME, dateOperator.getRange(null).getEndTime());
+			}
+			
+			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
+			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, metrics);
+			context.put(FacilioConstants.ContextNames.REPORT_MODE, ReportMode.TIMESERIES);
+			context.put(FacilioConstants.ContextNames.REPORT_CALLING_FROM, "card");
+			context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, Boolean.TRUE);
+			context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, AnalyticsType.READINGS.getIntVal());
+			
+			fetchReadingDataChain.execute();
+			
+			return context;
+		}
+		return null;
+	}
+	
 
 	public static String getAggrFieldName (FacilioField field, AggregateOperator aggr) {
 		return aggr == null || aggr == CommonAggregateOperator.ACTUAL ? field.getName() : field.getName()+"_"+aggr.getStringValue();

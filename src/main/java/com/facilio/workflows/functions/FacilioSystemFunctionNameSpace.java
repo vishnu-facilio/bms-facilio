@@ -29,6 +29,7 @@ public enum FacilioSystemFunctionNameSpace {
 	FIELD(21,"field"),
 	CONNECTION(22,"connection"),
 	CRITERIA(23,"criteria"),
+	ANALYTICS(24,"analytics"),
 	;
 	
 	
