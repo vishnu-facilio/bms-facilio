@@ -1236,7 +1236,7 @@ public class ModuleFactory {
 
 	public static FacilioModule getPMTriggersModule() {
 		FacilioModule pmTriggers = new FacilioModule();
-		pmTriggers.setName("pmtrigger");
+		pmTriggers.setName("trigger");
 		pmTriggers.setDisplayName("Preventive Maintenance Triggers");
 		pmTriggers.setTableName("PM_Triggers");
 		return pmTriggers;
