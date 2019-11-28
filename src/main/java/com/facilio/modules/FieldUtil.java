@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
 import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -61,6 +62,7 @@ public class FieldUtil {
 		nonModuleClasses.add(SortField.class);
 		nonModuleClasses.add(FacilioView.class);
 		nonModuleClasses.add(FacilioForm.class);
+		nonModuleClasses.add(SLAWorkflowEscalationContext.class);
 		nonModuleClasses.add(FormField.class);
 		return nonModuleClasses;
 	}

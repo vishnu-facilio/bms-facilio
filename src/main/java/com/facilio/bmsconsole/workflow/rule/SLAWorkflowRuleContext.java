@@ -1,7 +1,14 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.SLAWorkflowAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -11,8 +18,10 @@ import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class SLAWorkflowRuleContext extends WorkflowRuleContext {
@@ -59,12 +68,21 @@ public class SLAWorkflowRuleContext extends WorkflowRuleContext {
         this.addDuration = addDuration;
     }
 
+    private List<SLAWorkflowEscalationContext> escalations;
+    public List<SLAWorkflowEscalationContext> getEscalations() {
+        return escalations;
+    }
+    public void setEscalations(List<SLAWorkflowEscalationContext> escalations) {
+        this.escalations = escalations;
+    }
+
     @Override
     public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioField baseField = modBean.getField(baseFieldId);
         FacilioField dueField = modBean.getField(dueFieldId);
+        FacilioField compareField = modBean.getField(compareFieldId);
 
         Long timeValue;
         if (baseField.isDefault()) {
@@ -92,6 +110,58 @@ public class SLAWorkflowRuleContext extends WorkflowRuleContext {
                 .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
         update.update(moduleRecord);
 
+        if (CollectionUtils.isEmpty(getEscalations())) {
+            setEscalations(SLAWorkflowAPI.getEscalations(getId()));
+        }
+
+        addEscalationJobs(module, dueField, compareField, moduleRecord);
+
         super.executeTrueActions(record, context, placeHolders);
+    }
+
+    private void addEscalationJobs(FacilioModule module, FacilioField dueField, FacilioField compareField, ModuleBaseWithCustomFields moduleRecord) throws Exception {
+        if (CollectionUtils.isNotEmpty(getEscalations())) {
+            SLAWorkflowAPI.getActions(getEscalations());
+            int count = 0;
+            for (SLAWorkflowEscalationContext escalation : getEscalations()) {
+                count++;
+
+                WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+                workflowRuleContext.setName(getName() + "_Escalation_" + count);
+                workflowRuleContext.setRuleType(RuleType.RECORD_SPECIFIC_RULE);
+                workflowRuleContext.setActivityType(EventType.SCHEDULED);
+                workflowRuleContext.setModule(module);
+                workflowRuleContext.setParentId(moduleRecord.getId());
+
+                Criteria criteria = new Criteria();
+                criteria.addAndCondition(CriteriaAPI.getCondition(compareField, CommonOperators.IS_EMPTY));
+                workflowRuleContext.setCriteria(criteria);
+                workflowRuleContext.setDateFieldId(dueField.getFieldId());
+
+                workflowRuleContext.setInterval(escalation.getInterval());
+                workflowRuleContext.setScheduleType(escalation.getTypeEnum());
+
+//            ActionContext action = new ActionContext();
+//            action.setActionType(ActionType.FIELD_CHANGE);
+//            JSONObject json = new JSONObject();
+//            JSONArray jsonArray = new JSONArray();
+//            JSONObject fieldJSON = new JSONObject();
+//            fieldJSON.put("field", "priority");
+//            Map<String, Object> map = new HashMap<>();
+//            map.put("id", 1);
+//            fieldJSON.put("value", map);
+//            jsonArray.add(fieldJSON);
+//            json.put("fieldMatcher", jsonArray);
+//
+//            action.setTemplateJson(json);
+//            workflowRuleContext.addAction(action);
+
+                FacilioChain recordRuleChain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+                FacilioContext recordRuleContext = recordRuleChain.getContext();
+                recordRuleContext.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+//            recordRuleContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(action));
+                recordRuleChain.execute();
+            }
+        }
     }
 }

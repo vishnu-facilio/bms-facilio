@@ -119,6 +119,7 @@ public class WorkflowRuleAPI {
 				break;
 			case SLA_WORKFLOW_RULE:
 				addExtendedProps(ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields(), ruleProps);
+				SLAWorkflowAPI.addEscalations((SLAWorkflowRuleContext) rule, ((SLAWorkflowRuleContext) rule).getEscalations());
 				break;
 			case APPROVAL_RULE:
 			case CHILD_APPROVAL_RULE:

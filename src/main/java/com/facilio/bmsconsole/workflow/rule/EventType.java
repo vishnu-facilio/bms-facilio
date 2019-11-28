@@ -229,6 +229,12 @@ public enum EventType {
 		public String getMessage(JSONObject json) {
 			return null;
 		}
+	},
+	SLA (1 << 25) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
 	}
 	;
 

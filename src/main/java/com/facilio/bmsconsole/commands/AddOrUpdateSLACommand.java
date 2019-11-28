@@ -2,13 +2,16 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SLAContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,22 +25,31 @@ public class AddOrUpdateSLACommand extends FacilioCommand {
             validateSLA(slaContext);
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
+            if (StringUtils.isEmpty(moduleName)) {
+                throw new IllegalArgumentException("Invalid module");
+            }
+            FacilioModule module = modBean.getModule(moduleName);
+            if (module == null) {
+                throw new IllegalArgumentException("Invalid module");
+            }
+            slaContext.setSlaModuleId(module.getModuleId());
+
+            SLAWorkflowRuleContext slaRule = slaContext.getSlaRule();
+            slaRule.setActivityType(EventType.SLA);
             if (slaContext.getId() > 0) {
-                // edit
+                FacilioChain chain = TransactionChainFactory.updateWorkflowRuleChain();
+                FacilioContext updateWorkflowContext = chain.getContext();
+                updateWorkflowContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, slaContext);
+                chain.execute();
+
+                FacilioModule slaModule = modBean.getModule(FacilioConstants.ContextNames.SLA_MODULE);
+                UpdateRecordBuilder<SLAContext> builder = new UpdateRecordBuilder<SLAContext>()
+                        .module(slaModule)
+                        .fields(modBean.getAllFields(FacilioConstants.ContextNames.SLA_MODULE))
+                        .andCondition(CriteriaAPI.getIdCondition(slaContext.getId(), slaModule));
+                builder.update(slaContext);
             }
             else {
-                if (StringUtils.isEmpty(moduleName)) {
-                    throw new IllegalArgumentException("Invalid module");
-                }
-                FacilioModule module = modBean.getModule(moduleName);
-                if (module == null) {
-                    throw new IllegalArgumentException("Invalid module");
-                }
-
-                slaContext.setSlaModuleId(module.getModuleId());
-
-                SLAWorkflowRuleContext slaRule = slaContext.getSlaRule();
-
                 FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
                 FacilioContext addWorkflowContext = chain.getContext();
                 addWorkflowContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, slaRule);

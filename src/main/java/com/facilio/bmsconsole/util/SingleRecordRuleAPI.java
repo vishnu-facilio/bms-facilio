@@ -48,30 +48,30 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 					case ON:
 						break;
 				}
-			if (rule.getDateFieldId() != -1) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField field = modBean.getField(rule.getDateFieldId());
-				switch (field.getDataTypeEnum()) {
-					case DATE:
-						if (rule.getTimeObj() == null) {
-							throw new IllegalArgumentException("Time is mandatory for DATE field");
-						}
-						if (rule.getInterval() % 86400 != 0) {
-							throw new IllegalArgumentException("Interval should be in multiples of days for DATE field");
-						}
-						break;
-					case DATE_TIME:
-						if (rule.getTimeObj() != null) {
-							throw new IllegalArgumentException("Time is not required for DATE_TIME field");
-						}
-						if (rule.getInterval() % (DATE_TIME_RULE_INTERVAL * 60) != 0) {
-							throw new IllegalArgumentException("Interval should be in multiples of "+DATE_TIME_RULE_INTERVAL+" min for DATE_TIME field");
-						}
-						break;
-					default:
-						throw new IllegalArgumentException("Only DATE/ DATE_TIME field can be used for Record specific Scheduled Rules");
-				   }
-			   }
+				if (rule.getDateFieldId() != -1) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioField field = modBean.getField(rule.getDateFieldId());
+					switch (field.getDataTypeEnum()) {
+						case DATE:
+							if (rule.getTimeObj() == null) {
+								throw new IllegalArgumentException("Time is mandatory for DATE field");
+							}
+							if (rule.getInterval() % 86400 != 0) {
+								throw new IllegalArgumentException("Interval should be in multiples of days for DATE field");
+							}
+							break;
+						case DATE_TIME:
+							if (rule.getTimeObj() != null) {
+								throw new IllegalArgumentException("Time is not required for DATE_TIME field");
+							}
+							if (rule.getInterval() % (DATE_TIME_RULE_INTERVAL * 60) != 0) {
+								throw new IllegalArgumentException("Interval should be in multiples of "+DATE_TIME_RULE_INTERVAL+" min for DATE_TIME field");
+							}
+							break;
+						default:
+							throw new IllegalArgumentException("Only DATE/ DATE_TIME field can be used for Record specific Scheduled Rules");
+					}
+				}
 			}
 			else {
 				if(rule.getSchedule() == null) {
