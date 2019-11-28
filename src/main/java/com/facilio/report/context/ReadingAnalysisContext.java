@@ -157,7 +157,8 @@ public class ReadingAnalysisContext {
 		BUILDING,
 		RESOURCE,
 		FLOOR,
-		SPACE
+		SPACE,
+		TIME_DURATION
 		;
 		
 		public int getValue() {

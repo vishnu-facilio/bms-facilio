@@ -59,6 +59,7 @@ import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.context.ReportUserFilterContext;
+import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 
@@ -86,7 +87,6 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 		
 		calculateBaseLineRange(report);
-
 		if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
 			DateRange dateRange = report.getDateRange();
 			if (dateRange != null) {

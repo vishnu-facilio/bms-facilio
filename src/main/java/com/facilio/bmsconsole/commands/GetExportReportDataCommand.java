@@ -277,6 +277,7 @@ public class GetExportReportDataCommand extends FacilioCommand {
 				String firstCol;
 				switch (mode) {
 				case TIMESERIES:
+				case TIME_DURATION:
 				case TIME_CONSOLIDATED:
 				case TIME_SPLIT:
 					firstCol =  DateTimeUtil.getFormattedTime((long)xValue, format);

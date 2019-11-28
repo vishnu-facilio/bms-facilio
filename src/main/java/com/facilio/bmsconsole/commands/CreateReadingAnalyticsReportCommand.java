@@ -221,6 +221,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 			case CONSOLIDATED:
 			case TIME_CONSOLIDATED:
 			case TIME_SPLIT:
+			case TIME_DURATION:
 				return FieldFactory.getField("ttime", "Timestamp", "TTIME", null, FieldType.DATE_TIME);
 		}
 		return null;
@@ -244,6 +245,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 			case CONSOLIDATED:
 			case TIME_CONSOLIDATED:
 			case TIME_SPLIT:
+			case TIME_DURATION:
 				xField = fieldMap.get("ttime");
 				break;
 		}
