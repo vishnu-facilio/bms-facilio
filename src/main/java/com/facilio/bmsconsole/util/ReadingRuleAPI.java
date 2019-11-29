@@ -255,9 +255,9 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	protected static ReadingRuleContext constructReadingRuleFromProps(Map<String, Object> prop, ModuleBean modBean, boolean fetchChildren) throws Exception {
 		ReadingRuleContext readingRule = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
 		readingRule.setReadingField(modBean.getField(readingRule.getReadingFieldId()));
-		setMatchedResources(readingRule);
 		fetchReadingRuleMetricList(readingRule);
 		if (fetchChildren) {
+			setMatchedResources(readingRule);
 			fetchAlarmMeta(readingRule);
 		}
 		
