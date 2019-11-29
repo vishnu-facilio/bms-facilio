@@ -4,11 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ZoneContext;
-import com.facilio.bmsconsole.context.VisitorLoggingContext.Source;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -192,19 +190,19 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 	}
 	
 	private TenantType tenantType;
-	public int gettenantType() {
+	public int getTenantType() {
 		if (tenantType != null) {
 			return tenantType.getIndex();
 		}
 		return -1;
 	}
-	public void settenantType(int tenantType) {
+	public void setTenantType(int tenantType) {
 		this.tenantType = TenantType.valueOf(tenantType);
 	}
-	public TenantType getTypeEnum() {
+	public TenantType getTenantTypeEnum() {
 		return tenantType;
 	}
-	public void setType(TenantType tenantType) {
+	public void setTenantType(TenantType tenantType) {
 		this.tenantType = tenantType;
 	}
 	

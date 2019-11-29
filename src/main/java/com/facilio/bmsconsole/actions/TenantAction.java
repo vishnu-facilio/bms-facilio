@@ -1,15 +1,17 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -19,6 +21,7 @@ import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantUserContext;
+import com.facilio.bmsconsole.tenant.UtilityAsset;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -393,6 +396,10 @@ private Map<String, Double> readingData;
 		try {
 			
 			FacilioContext context = new FacilioContext();
+			if(CollectionUtils.isNotEmpty(utilityAssets)) {
+				tenant.setUtilityAssets(utilityAssets);
+			}
+			tenant.parseFormData();
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
 			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			context.put(FacilioConstants.ContextNames.RECORD, tenant);
@@ -404,6 +411,9 @@ private Map<String, Double> readingData;
 			
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
 			tenant.setZone(zone);
+			if(tenantLogo != null) {
+				tenant.setTenantLogo(tenantLogo);
+			}
 			
 			FacilioChain addZone = FacilioChainFactory.getAddZoneChain();
 			addZone.addCommand(FacilioChainFactory.addTenantChain());
@@ -425,8 +435,22 @@ private Map<String, Double> readingData;
 	public void setContact(ContactsContext contact) {
 		this.contact = contact;
 	}
+	
+	private File tenantLogo;
+	
+	public File getTenantLogo() {
+		return tenantLogo;
+	}
+	public void setTenantLogo(File tenantLogo) {
+		this.tenantLogo = tenantLogo;
+	}
 	public String updateTenant() {
 		try {
+			if(CollectionUtils.isNotEmpty(utilityAssets)) {
+				tenant.setUtilityAssets(utilityAssets);
+			}
+			
+			tenant.parseFormData();
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
 			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
@@ -436,6 +460,9 @@ private Map<String, Double> readingData;
 			context.put(FacilioConstants.ContextNames.ZONE, zone);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
 			tenant.setZone(zone);
+			if(tenantLogo != null) {
+				tenant.setTenantLogo(tenantLogo);
+			}
 		
 			context.put(TenantsAPI.TENANT_CONTEXT, tenant);
 			FacilioChain updateZone = FacilioChainFactory.getUpdateZoneChain();
@@ -782,6 +809,15 @@ private Map<String, Double> readingData;
 	public void setAssetId(long assetId) {
 		this.assetId = assetId;
 	}
+	
+	private List<UtilityAsset> utilityAssets;
+	public List<UtilityAsset> getUtilityAssets() {
+		return utilityAssets;
+	}
+	public void setUtilityAssets(List<UtilityAsset> utilityAssets) {
+		this.utilityAssets = utilityAssets;
+	}
+	
 	
 	
 }
