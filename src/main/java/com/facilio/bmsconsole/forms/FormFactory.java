@@ -1531,7 +1531,7 @@ public class FormFactory {
 
 	public static FacilioForm getInsuranceForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("INSURACNE");
+		form.setDisplayName("INSURANCE");
 		form.setName("default_insurance_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INSURANCE));
 		form.setLabelPosition(LabelPosition.TOP);
@@ -1542,7 +1542,7 @@ public class FormFactory {
 	
 	public static FacilioForm getPortalInsuranceForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("INSURACNE");
+		form.setDisplayName("INSURANCE");
 		form.setName("default_insurance_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INSURANCE));
 		form.setLabelPosition(LabelPosition.TOP);
