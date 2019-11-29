@@ -28,7 +28,11 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         	modules.add(modBean.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
         	modules.add(modBean.getModule(FacilioConstants.ContextNames.WARRANTY_CONTRACTS));
         }
+       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.HUDSON_YARDS)) {
+    	   modules.add(modBean.getModule(FacilioConstants.ContextNames.WORKPERMIT));
+       }
 
+       
         if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM));
         }
