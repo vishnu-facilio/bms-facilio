@@ -206,24 +206,6 @@ public class TenantsAPI {
 }
 	
 	
-	public static void updatePortalUserAccess(ContactsContext contact) throws Exception {
-		
-		
-		if(contact != null && contact.getRequester() != null && contact.getRequester().getOuid() > 0) {
-			if(!contact.isPortalAccessNeeded()) {
-				AccountUtil.getUserBean().disableUser(contact.getRequester().getOuid());
-			}
-			else {
-				User user = AccountUtil.getUserBean().getPortalUser(contact.getRequester().getOuid());
-				AccountUtil.getUserBean().resendInvite(user.getOuid());
-			}
-		}
-		else {
-			addTenantUserAsRequester(contact);
-		}
-		
-	}
-	 
 	public static TenantContext getTenant(long id, Boolean...fetchTenantOnly) throws Exception {
 		
 		if (id <= 0) {
@@ -752,36 +734,6 @@ public class TenantsAPI {
 		
 		return count;
 	}
-	
-	private static void updateContactDetails(ContactsContext contact,Long tenantId) throws Exception {
-		String email = contact.getEmail();
-		String name = contact.getName();
-		long id = contact.getId();
-		User oldUser = AccountUtil.getUserBean().getUser(id, true);
-		if (oldUser.getName().contentEquals(name) == false && oldUser.getEmail().contentEquals(email)) {
-		  oldUser.setName(name);
-		  AccountUtil.getUserBean().updateUser(oldUser);
-		}
-		else if (oldUser.getEmail().contentEquals(email) == false) {
-			long orgid = AccountUtil.getCurrentOrg().getOrgId();
-			contact.setOrgId(orgid);
-			if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
-				contact.setEmail(contact.getPhone());
-			}
-			addTenantUserAsRequester(contact);
-		}
-	}
-	
-	public static void addTenantUserAsRequester(ContactsContext contact) throws Exception {
-		User user = new User();
-		user.setEmail(contact.getEmail());
-		user.setPhone(contact.getPhone());
-		user.setName(contact.getName());
-		user.setAppType(AppType.TENANT_PORTAL);
-		long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false);
-		contact.setId(userId);
-	}
-	
 	
 	private static int deleteUtilityMapping(TenantContext tenant) throws Exception {
 		FacilioModule module = ModuleFactory.getTenantsUtilityMappingModule();

@@ -178,7 +178,7 @@ private static final long serialVersionUID = 1L;
 	}
 	
 	public String updatePortalAccess() throws Exception {
-		ContactsAPI.updatePortalUserAccess(contact);
+		ContactsAPI.updatePortalUserAccess(contact, true);
 		return SUCCESS;
 	}
 	

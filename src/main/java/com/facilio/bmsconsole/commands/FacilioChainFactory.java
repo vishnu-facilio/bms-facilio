@@ -1919,6 +1919,7 @@ public class FacilioChainFactory {
 	public static FacilioChain updateTenantChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UpdateTenantCommand());
+		c.addCommand(new AddTenantUserCommand());
 		return c;
 	}
 	

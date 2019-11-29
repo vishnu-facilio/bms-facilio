@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantUserContext;
 import com.facilio.bmsconsole.tenant.UtilityAsset;
+import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -463,7 +464,7 @@ private Map<String, Double> readingData;
 			if(tenantLogo != null) {
 				tenant.setTenantLogo(tenantLogo);
 			}
-		
+			context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
 			context.put(TenantsAPI.TENANT_CONTEXT, tenant);
 			FacilioChain updateZone = FacilioChainFactory.getUpdateZoneChain();
 			updateZone.addCommand(FacilioChainFactory.updateTenantChain());
@@ -595,7 +596,7 @@ private Map<String, Double> readingData;
 	}
 	
 	public String updatePortalAccess() throws Exception {
-		TenantsAPI.updatePortalUserAccess(contact);
+		ContactsAPI.updatePortalUserAccess(contact, true);
 		return SUCCESS;
 	}
 	

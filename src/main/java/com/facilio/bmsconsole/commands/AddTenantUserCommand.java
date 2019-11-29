@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
@@ -25,26 +26,25 @@ public class AddTenantUserCommand extends FacilioCommand {
 		TenantContext tenant = (TenantContext) context.get(FacilioConstants.ContextNames.RECORD);
 		List<ContactsContext> contacts = (List<ContactsContext>) context.get(FacilioConstants.ContextNames.CONTACTS);
 		if(tenant != null && CollectionUtils.isNotEmpty(contacts)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			for(ContactsContext contact : contacts)	{
 				contact.setTenant(tenant);
 				contact.setContactType(ContactType.TENANT);
 			
-				if(contact.isPortalAccessNeeded()) {
-					ContactsAPI.addUserAsRequester(contact);
+				ContactsAPI.updatePortalUserAccess(contact, false);
+				if(contact.getId() > 0) {
+					RecordAPI.updateRecord(contact, module, fields);
+				}
+				else {
+					RecordAPI.addRecord(true, Collections.singletonList(contact), module, fields);
 				}
 			
 			}
 			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
-			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			RecordAPI.addRecord(true, contacts, module, fields);
 		}
-		
 		return false;
-		
-		
-		
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,20 +27,24 @@ public class AddVendorContactsCommand extends FacilioCommand{
 		VendorContext vendor = (VendorContext) context.get(FacilioConstants.ContextNames.RECORD);
 		List<ContactsContext> contacts = (List<ContactsContext>)context.get(FacilioConstants.ContextNames.CONTACTS);
 		if(vendor != null && CollectionUtils.isNotEmpty(contacts)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
+			ArrayList<ContactsContext> contactsToBeUpdated = new ArrayList<ContactsContext>();
 			for(ContactsContext contact : contacts) {
+				
 				if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
 					contact.setEmail(contact.getPhone());
 				}
 				contact.setVendor(vendor);
 				contact.setContactType(ContactType.VENDOR);
-				
-				if(contact.isPortalAccessNeeded()) {
-					ContactsAPI.addUserAsRequester(contact);
+				ContactsAPI.updatePortalUserAccess(contact, false);
+				if(contact.getId() > 0) {
+					RecordAPI.updateRecord(contact, module, fields);
 				}
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
-				List<FacilioField> fields = modBean.getAllFields(module.getName());
-				RecordAPI.addRecord(true, Collections.singletonList(contact), module, fields);
+				else {
+					RecordAPI.addRecord(true, Collections.singletonList(contact), module, fields);
+				}
 			}
 		}
 		

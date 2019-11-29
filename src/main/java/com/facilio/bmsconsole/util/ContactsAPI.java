@@ -72,20 +72,33 @@ public class ContactsAPI {
 		
 	}
 	
-	public static void updatePortalUserAccess(ContactsContext contact) throws Exception {
-		
+	public static void updatePortalUserAccess(ContactsContext contact, boolean updateContactRecord) throws Exception {
 		
 		if(contact != null && contact.getRequester() != null && contact.getRequester().getOuid() > 0) {
 			if(!contact.isPortalAccessNeeded()) {
 				AccountUtil.getUserBean().disableUser(contact.getRequester().getOuid());
 			}
 			else {
-				User user = AccountUtil.getUserBean().getPortalUser(contact.getRequester().getOuid());
-				AccountUtil.getUserBean().resendInvite(user.getOuid());
+				User user = AccountUtil.getUserBean().getPortalUser(contact.getRequester().getUid());
+				if(!user.isUserVerified() || !user.isInviteAcceptStatus() ) {
+					AccountUtil.getUserBean().resendInvite(user.getOuid());
+				}
+				else {
+					AccountUtil.getUserBean().enableUser(contact.getRequester().getOuid());
+				}
 			}
 		}
 		else {
-			addUserAsRequester(contact);
+			if(contact.getIsPortalAccessNeeded()) {
+				addUserAsRequester(contact);
+			}
+		}
+		if(updateContactRecord) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.CONTACT);
+		
+			RecordAPI.updateRecord(contact, module, fields);
 		}
 		
 	}
