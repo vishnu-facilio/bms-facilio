@@ -33,7 +33,7 @@ public class EditFormCommand extends FacilioCommand {
 					.andCondition(CriteriaAPI.getIdCondition(editedForm.getId(), formModule));
 			Map<String, Object> map = builder.fetchFirst();
 			Long stateFlowId = (Long) map.get("stateFlowId");
-			if (stateFlowId > 0) {
+			if (stateFlowId != null && stateFlowId > 0) {
 				boolean stateFlowUsedInAnyForm = FormsAPI.isStateFlowUsedInAnyForm(stateFlowId, editedForm.getId());
 				if (!stateFlowUsedInAnyForm) {
 					StateFlowRulesAPI.updateFormLevel(stateFlowId, false);
