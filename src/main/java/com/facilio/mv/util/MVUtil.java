@@ -313,22 +313,26 @@ public class MVUtil {
 			mvBaseline.setFormulaField(formula);
 			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getFormulaFieldWithAjustment().getId());
 			mvBaseline.setFormulaFieldWithAjustment(formula);
-			
-			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getTargetConsumption().getId());
-			
-			mvBaseline.setTargetConsumption(formula);
-			
-			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getSavedConsumption().getId());
-			
-			mvBaseline.setSavedConsumption(formula);
-			
-			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getCumulativeSavedConsumption().getId());
-			
-			mvBaseline.setCumulativeSavedConsumption(formula);
-			
-			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getPercentageSavedConsumption().getId());
-			
-			mvBaseline.setPercentageSavedConsumption(formula);
+			if (mvBaseline.getTargetConsumption() != null) {
+				formula = FormulaFieldAPI.getFormulaField(mvBaseline.getTargetConsumption().getId());
+
+				mvBaseline.setTargetConsumption(formula);
+			}
+			if (mvBaseline.getSavedConsumption() != null) {
+				formula = FormulaFieldAPI.getFormulaField(mvBaseline.getSavedConsumption().getId());
+
+				mvBaseline.setSavedConsumption(formula);
+			}
+			if (mvBaseline.getCumulativeSavedConsumption() != null) {
+				formula = FormulaFieldAPI.getFormulaField(mvBaseline.getCumulativeSavedConsumption().getId());
+
+				mvBaseline.setCumulativeSavedConsumption(formula);
+			}
+			if (mvBaseline.getPercentageSavedConsumption() != null) {
+				formula = FormulaFieldAPI.getFormulaField(mvBaseline.getPercentageSavedConsumption().getId());
+
+				mvBaseline.setPercentageSavedConsumption(formula);
+			}
 		}
 		
 		mvProjectWrapper.setBaselines(mvBaselines);

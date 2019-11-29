@@ -35,7 +35,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         page.addTab(tab1);
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
-        if (alarms.getLastOccurrence().getWoId() > 0 || alarms.getAcknowledged()) {
+        if (alarms.getLastOccurrence().getWoId() > 0 || (alarms.getLastOccurrence().getAcknowledged() != null && alarms.getLastOccurrence().getAcknowledged())) {
             addTimeLineWidget(tab1Sec1, alarms);
         }
         addAlarmDetailsWidget(tab1Sec1);
@@ -89,7 +89,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
                 activities.put("workOrder", wo);
                 widgetHeight = widgetHeight + 1;
             }
-            if (alarms.getAcknowledged()) {
+            if (alarms.getLastOccurrence().getAcknowledged()) {
                 activities.put("acknowledge", alarms.getAcknowledgedBy());
                 widgetHeight = widgetHeight + 1;
             }
