@@ -126,4 +126,13 @@ public class ServiceCatalogAction extends FacilioAction {
 
         return SUCCESS;
     }
+
+    public String getModules() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getServiceCatalogModuleList();
+        FacilioContext context = chain.getContext();
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.MODULE_LIST, context.get(FacilioConstants.ContextNames.MODULE_LIST));
+        return SUCCESS;
+    }
 }

@@ -27,7 +27,6 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
         ServiceCatalogContext serviceCatalog = (ServiceCatalogContext) context.get(FacilioConstants.ContextNames.SERVICE_CATALOG);
         if (serviceCatalog != null && StringUtils.isNotEmpty(moduleName)) {
             if (serviceCatalog.getId() > 0) {
-                serviceCatalog.setFormId(-1);
                 updateServiceCatalog(serviceCatalog);
             }
             else {
@@ -38,7 +37,6 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
                 }
 
                 serviceCatalog.setModuleId(module.getModuleId());
-                validateForm(serviceCatalog.getForm());
                 addServiceCatalog(serviceCatalog);
             }
         }
@@ -46,8 +44,6 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
     }
 
     private void updateServiceCatalog(ServiceCatalogContext serviceCatalog) throws Exception {
-        StateFlowRulesAPI.addOrUpdateFormDetails(serviceCatalog);
-
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getServiceCatalogModule().getTableName())
                 .fields(FieldFactory.getServiceCatalogFields())
@@ -65,14 +61,14 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
         builder.insert(map);
         serviceCatalog.setId((long) map.get("id"));
 
-        StateFlowRulesAPI.addOrUpdateFormDetails(serviceCatalog);
-        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getServiceCatalogModule().getTableName())
-                .fields(Collections.singletonList(FieldFactory.getField("formId", "FORM_ID", ModuleFactory.getServiceCatalogModule(), FieldType.NUMBER)))
-                .andCondition(CriteriaAPI.getIdCondition(serviceCatalog.getId(), ModuleFactory.getServiceCatalogModule()));
-        Map<String, Object> updateMap = new HashMap<>();
-        updateMap.put("formId", serviceCatalog.getFormId());
-        updateBuilder.update(updateMap);
+//        StateFlowRulesAPI.addOrUpdateFormDetails(serviceCatalog);
+//        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+//                .table(ModuleFactory.getServiceCatalogModule().getTableName())
+//                .fields(Collections.singletonList(FieldFactory.getField("formId", "FORM_ID", ModuleFactory.getServiceCatalogModule(), FieldType.NUMBER)))
+//                .andCondition(CriteriaAPI.getIdCondition(serviceCatalog.getId(), ModuleFactory.getServiceCatalogModule()));
+//        Map<String, Object> updateMap = new HashMap<>();
+//        updateMap.put("formId", serviceCatalog.getFormId());
+//        updateBuilder.update(updateMap);
     }
 
     private void validateForm(FacilioForm form) {

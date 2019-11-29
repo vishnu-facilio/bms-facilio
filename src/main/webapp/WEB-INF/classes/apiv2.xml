@@ -1073,6 +1073,9 @@
 				method="getServiceCatalogList" />
 		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogDetails" />
+
+		<action name="modules" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+				method="getModules" />
 	</package>
 
 	<package name="serviceCatalogGroup" namespace="/api/v2/servicecataloggroup" extends="v2Api">

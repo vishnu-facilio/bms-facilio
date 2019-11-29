@@ -1797,4 +1797,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetVisitorDetailAndLogCommand());
 		return c;
 	}
+
+	public static FacilioChain getServiceCatalogModuleList() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetServiceCatalogModulesCommand());
+		return chain;
+	}
 }
