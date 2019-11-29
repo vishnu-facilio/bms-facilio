@@ -594,7 +594,8 @@ private static final long serialVersionUID = 1L;
 		c.execute();
 		setResult(FacilioConstants.ContextNames.VISITOR, c.getContext().get(FacilioConstants.ContextNames.VISITOR));
 		setResult(FacilioConstants.ContextNames.VISITOR_LOGGING, c.getContext().get(FacilioConstants.ContextNames.VISITOR_LOGGING));
-	
+		setResult(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get(FacilioConstants.ContextNames.TRANSITION_ID));
+		
 		return SUCCESS;
 	}
 	
