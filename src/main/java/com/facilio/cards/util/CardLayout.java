@@ -162,15 +162,84 @@ public enum CardLayout {
 	READINGCARD_LAYOUT_3 ("readingcard_layout_3") {
 		
 		public JSONObject getParameters () {
-			return null;
+			JSONObject params = new JSONObject();
+			params.put("title", true);
+			params.put("reading", true);
+			params.put("dateRange", false);
+			params.put("trend", false);
+			return params;
 		}
 		
 		public JSONObject getReturnValue () {
-			return null;
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", true);
+			returnValue.put("value", true);
+			returnValue.put("period", true);
+			returnValue.put("trend", true);
+			return returnValue;
 		}
 		
 		public String getScript () {
-			return null;
+			StringBuilder sb = new StringBuilder();
+			
+			sb.append("fieldObj = NameSpace(\"module\").getField(params.reading.fieldName, params.reading.moduleName);\n"
+					+ "if (fieldObj != null) {"
+					+ "		fieldid = fieldObj.id();"
+					+ "		fieldMapInfo = fieldObj.asMap();"
+					+ "		date = NameSpace(\"date\");"
+					+ "		dateRangeObj = null;"
+					+ "		period = null;"
+					+ "		if (params.dateRange != null) {"
+					+ "			dateRangeObj = date.getDateRange(params.dateRange);"
+					+ "			period = params.dateRange;"
+					+ "		} else {"
+					+ "			dateRangeObj = date.getDateRange(\"Current Month\");"
+					+ "			period = \"Last Value\";"
+					+ "		}"
+					+ "		db = {"
+					+ "			criteria : [parentId == (params.reading.parentId) && ttime == dateRangeObj],"
+					+ "			field : params.reading.fieldName,"
+					+ "			aggregation : params.reading.yAggr"
+					+ "		};"
+					+ "		fetchModule = Module(params.reading.moduleName);"
+					+ "		cardValue = fetchModule.fetch(db);"
+					+ "		enumMap = Reading(fieldid, params.reading.parentId).getEnumMap();"
+					+ "		valueMap = {};"
+					+ "		valueMap[\"value\"] = cardValue;"
+					+ "		if (enumMap != null) {"
+					+ "			if (cardValue != null) {"
+					+ "				valueMap[\"value\"] = enumMap[cardValue];"
+					+ "			}"
+					+ "		}"
+					+ "		if (fieldMapInfo != null) {"
+					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
+					+ "		}"
+					+ "		result[\"value\"] = valueMap;"
+					+ "		dataPoint = {};"
+					+ "		dataPoint.fieldId = fieldid;"
+					+ "		dataPoint.parentId = params.reading.parentId;"
+					+ "		dataPoint.xAggr = 12;"
+					+ "		dataPoint.aggregateFunc = 3;"
+					+ "		dataPoint.dateOperator = 28;"
+					+ "		trendData = analytics().getData(dataPoint);"
+					+ "		if (trendData != null) {"
+					+ "			result[\"trend\"] = trendData;"
+					+ "		}"
+					+ "		else {"
+					+ "			result[\"trend\"] = null;"
+					+ "		}"
+					+ "}"
+					+ "else {"
+					+ "		valueMap = {};"
+					+ "		valueMap[\"value\"] = null;"
+					+ "		result[\"value\"] = valueMap;"
+					+ "}"
+					+ "result[\"title\"] = params.title;"
+					+ "result[\"period\"] = period;");
+					
+			
+			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
 		}
 	},
 	
