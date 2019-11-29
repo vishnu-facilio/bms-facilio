@@ -452,8 +452,15 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 		public Object execute(Object... objects) throws Exception {
 			
 			String name = objects[0].toString();
-			Map<String, Operator> operators = DateOperators.getAllOperators();
-			DateOperators operator = (DateOperators) operators.get(name);
+			DateOperators operator = null;
+			if(FacilioUtil.isNumeric(name)) {
+				operator = (DateOperators) Operator.getOperator(Integer.parseInt(name));
+			}
+			else {
+				Map<String, Operator> operators = DateOperators.getAllOperators();
+				operator = (DateOperators) operators.get(name);
+			}
+			
 			
 			if(operator == null) {
 				throw new RuntimeException("No Such Date Operator -- "+name);
