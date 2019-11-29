@@ -1594,7 +1594,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForVendors());
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new AddVendorContactsCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
@@ -1607,7 +1607,6 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			
@@ -4009,7 +4008,7 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForWorkPermit());
 		c.addCommand(new ComputeScheduleForWorkPermitCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
@@ -4023,9 +4022,8 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 		
 		return c;
 	}
