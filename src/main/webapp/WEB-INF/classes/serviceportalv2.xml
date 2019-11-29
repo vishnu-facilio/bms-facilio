@@ -850,6 +850,11 @@
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="vendorDetails">
 		</action>
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VendorAction"
+			method="vendorDetails">
+			<param name="vendorId">{1}</param>
+		</action>
 		<action name="count"
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="vendorsCount">
