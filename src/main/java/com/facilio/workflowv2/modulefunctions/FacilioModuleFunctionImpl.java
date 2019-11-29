@@ -10,11 +10,16 @@ import java.util.logging.Logger;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -32,6 +37,7 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -47,30 +53,59 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
-				.module(module)
-				.fields(modBean.getAllFields(module.getName()));
-		
 		Object insertObject = objects.get(1);
 		
-		if(insertObject instanceof Map) {
-			ModuleBaseWithCustomFields moBaseWithCustomFields = new ModuleBaseWithCustomFields();
-			moBaseWithCustomFields.setData((Map<String, Object>) insertObject);
-			insertRecordBuilder.addRecord(moBaseWithCustomFields);
-		}
-		else if (insertObject instanceof Collection) {
-			List<Object> insertList = (List<Object>)insertObject;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		if(module.getTypeEnum() == ModuleType.READING) {
 			
-			for(Object insert :insertList) {
+			List<ReadingContext> readings = new ArrayList<>();
+			
+			if(insertObject instanceof Map) {
+				
+				ReadingContext reading = FieldUtil.getAsBeanFromMap(((Map<String, Object>) insertObject), ReadingContext.class);
+				readings.add(reading);
+			}
+			else if (insertObject instanceof Collection) {
+				List<Map<String,Object>> insertList = (List<Map<String,Object>>)insertObject;
+				
+				readings = FieldUtil.getAsBeanListFromMapList(insertList, ReadingContext.class);
+			}
+			
+			FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+			FacilioContext context = addReadingChain.getContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+			context.put(FacilioConstants.ContextNames.READINGS, readings);
+//			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
+			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+			
+			addReadingChain.execute();
+			
+		}
+		else {
+			
+			InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>()
+					.module(module)
+					.fields(modBean.getAllFields(module.getName()));
+			
+			if(insertObject instanceof Map) {
 				ModuleBaseWithCustomFields moBaseWithCustomFields = new ModuleBaseWithCustomFields();
-				moBaseWithCustomFields.setData((Map<String, Object>) insert);
+				moBaseWithCustomFields.setData((Map<String, Object>) insertObject);
 				insertRecordBuilder.addRecord(moBaseWithCustomFields);
 			}
+			else if (insertObject instanceof Collection) {
+				List<Object> insertList = (List<Object>)insertObject;
+				
+				for(Object insert :insertList) {
+					ModuleBaseWithCustomFields moBaseWithCustomFields = new ModuleBaseWithCustomFields();
+					moBaseWithCustomFields.setData((Map<String, Object>) insert);
+					insertRecordBuilder.addRecord(moBaseWithCustomFields);
+				}
+			}
+			
+			insertRecordBuilder.save();
+			
 		}
-		
-		insertRecordBuilder.save();
 		
 	}
 
