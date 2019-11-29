@@ -459,7 +459,7 @@ public class BmsDBConf extends DBConf {
     }
 
 	@Override
-	public AccountsInterface getCurrentAccount() throws Exception {
+	public Account getCurrentAccount() throws Exception {
 		return AccountUtil.getCurrentAccount();
 	}
 
@@ -467,6 +467,11 @@ public class BmsDBConf extends DBConf {
 	public void setNewAccount(long orgId) throws Exception {
 		AccountUtil.setCurrentAccount(orgId);
 	}
+
+	@Override
+    public void setNewAccount(AccountsInterface account) throws Exception {
+        AccountUtil.setCurrentAccount((Account)account);
+    }
 	
 	@Override
 	public void removeOrgCache(long currentOrgId) {

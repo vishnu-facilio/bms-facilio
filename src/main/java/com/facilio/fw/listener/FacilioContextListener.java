@@ -77,9 +77,6 @@ public class FacilioContextListener implements ServletContextListener {
 			InstantJobExecutor.INSTANCE.stopExecutor();
 		}
 		FacilioInstantJobExecutor.INSTANCE.stopExecutor();
-		
-		
-		FacilioService.shutDown();
 		timer.cancel();
 		FacilioConnectionPool.INSTANCE.close();
 	}
