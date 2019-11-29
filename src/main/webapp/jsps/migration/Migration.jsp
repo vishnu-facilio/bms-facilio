@@ -7,13 +7,11 @@
 
 try
 {
-	String VMstoRun = request.getParameter("vmId");
-	
-	if (VMstoRun != null) {
-		AccountUtil.setCurrentAccount(78);
-		HistoricalVMForRMZ.runHistoricalForRMZ(Arrays.asList(VMstoRun.split(",")));
-	}
+	out.println("STARTED");
 
+	AccountUtil.setCurrentAccount(78);
+	HistoricalVMForRMZ.getDataGapCount();
+	
 	out.println("UPDATED");
 }
 catch(Exception e)

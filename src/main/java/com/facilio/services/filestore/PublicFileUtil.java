@@ -20,12 +20,15 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fs.FileInfo;
+import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.pdf.PdfUtil;
 import com.facilio.service.FacilioService;
 import com.facilio.services.CryptoUtils;
 import com.facilio.services.factory.FacilioFactory;
@@ -58,7 +61,7 @@ public class PublicFileUtil {
 	
 	public static PublicFileContext createPublicFile(String content,String fileName,String fileType,String contentType) throws Exception {
 		
-		long fileID = createFile(content, fileName, fileType, contentType);
+		long fileID = NewTransactionService.newTransactionWithReturn(() -> createFile(content, fileName, fileType, contentType));
 		
 		PublicFileContext publicFileContext = new PublicFileContext();
 		

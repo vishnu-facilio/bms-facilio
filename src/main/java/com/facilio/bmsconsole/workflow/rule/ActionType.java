@@ -73,6 +73,7 @@ import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -91,6 +92,7 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.pdf.PdfUtil;
+import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.PublicFileUtil;
 import com.facilio.tasker.FacilioTimer;
@@ -1210,23 +1212,23 @@ public enum ActionType {
 		}
 		
 	},
-	WHATSAPP_MESSAGE(26) {
+	WHATSAPP_MESSAGE(26) {		
+		
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
 			if (obj != null) {  //&& FacilioProperties.isProduction() add this on commit
 				try {
 					String to = (String) obj.get("to");
-					String isHtmlContentStr = (String)obj.get("isHtmlContent");
-					Boolean isHtmlContent = Boolean.parseBoolean(isHtmlContentStr);
-					String htmlContentString = (String) obj.get("message");
+					Boolean isHtmlContent =  Boolean.parseBoolean((String)obj.get("isHtmlContent"));
+					String html = (String) obj.get("message");
 					
 					if (to != null && !to.isEmpty()) {
 						List<String> sms = new ArrayList<>();
 					
-						if(isHtmlContent != null && htmlContentString != null && isHtmlContent)
+						if(isHtmlContent != null && html != null && isHtmlContent)
 						{						
-							htmlContentString = "\'" + htmlContentString+ "\'";
-							Long fileId = PdfUtil.exportUrlAsPdf("http://www.facilio.com", null, htmlContentString, null, FileFormat.IMAGE);
+							final String htmlContentString = "\'" + html+ "\'";							
+							Long fileId = NewTransactionService.newTransactionWithReturn(() -> PdfUtil.exportUrlAsPdf("http://www.facilio.com", null, htmlContentString, null, FileFormat.IMAGE));
 							
 							if(fileId !=null )
 							{
@@ -1236,7 +1238,7 @@ public enum ActionType {
 								{
 									String htmlContentPublicUrl = publicFileContext.getPublicUrl();
 								    
-									//htmlContentPublicUrl = htmlContentPublicUrl.replace("http://localhost:8080/", "https://40cdd0fb.ngrok.io/ROOT/");
+									//htmlContentPublicUrl = htmlContentPublicUrl.replace("http://localhost:8080/", "https://093373e1.ngrok.io/ROOT/");
 									obj.put("htmlContentPublicUrl", htmlContentPublicUrl);	
 									obj.put("message", "");
 								}
@@ -1253,6 +1255,7 @@ public enum ActionType {
 					}
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
+					
 				}
 			}
 		}

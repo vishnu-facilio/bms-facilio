@@ -97,8 +97,6 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 					for(Integer hierarchy:sortedHierarchyVMMap.keySet())
 					{		
 						List<EnergyMeterContext> groupedVMList = sortedHierarchyVMMap.get(hierarchy);
-						
-						System.out.println(" Hierarchy -- " + hierarchy + " VMs --" + groupedVMList);
 						LOGGER.info(" VM Job Hierarchy -- " + hierarchy + " VMs --" + groupedVMList + " Job Id --" + jc.getJobId());
 						
 						List<ReadingContext> hierarchicalVMReadings = new ArrayList<ReadingContext>();
@@ -123,8 +121,6 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 						
 						DeviceAPI.insertVMReadingsBasedOnHierarchy(hierarchicalVMReadings,endTime,minutesInterval,true, false, hierarchicalMarkedList);						
 					}
-					
-					System.out.println(" VM Job Timetaken -- " + (System.currentTimeMillis()-jobStartTime));
 					LOGGER.info(" VM Job Timetaken -- " + (System.currentTimeMillis()-jobStartTime) + " Job Id --" + jc.getJobId());
 					
 				}
@@ -136,6 +132,10 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 				if(virtualMeters == null || virtualMeters.isEmpty()) {
 					return;
 				}
+				
+				long jobStartTime = System.currentTimeMillis();
+				LOGGER.info("VirtualMetersList Old Size -- " + virtualMeters.size() + " Job Id --" + jc.getJobId());
+				
 				int minutesInterval = getDefaultDataInterval();
 				long endTime = DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(minutesInterval * 60)).toInstant().toEpochMilli();
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -189,6 +189,8 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 						itr.remove();
 					}
 				}
+				
+				LOGGER.info(" VM Job Old Timetaken -- " + (System.currentTimeMillis()-jobStartTime) + " Job Id --" + jc.getJobId());
 			}
 		} catch (Exception e) {
 			LOGGER.error("Exception occurred ", e);
