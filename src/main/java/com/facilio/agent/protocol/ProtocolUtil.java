@@ -32,7 +32,6 @@ public class ProtocolUtil {
 			case BACNET_MSTP:
 				point.put("instanceType", instance.get("instanceType"));
 				point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
-				point.put("instance", instance.get("instance"));
 				break;
 				
 			case NIAGARA:
@@ -40,10 +39,10 @@ public class ProtocolUtil {
 				break;
 				
 			default:
-				point.put("instance", instance.get("instance"));
 				break;
 		}
 
+		point.put("instance", instance.get("instance"));
 		point.put("pointId", instance.get("id"));
 		
 		setCommandData(command, controllerType, instance, point, modBean);
