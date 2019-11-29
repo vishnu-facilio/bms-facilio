@@ -104,7 +104,15 @@
         <filter-name>CorsFilter</filter-name>
         <url-pattern>/service/*</url-pattern>
     </filter-mapping>
-
+	<filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/tenant/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/vendor/*</url-pattern>
+    </filter-mapping>
+	
 
 <filter-mapping>
     <filter-name>struts2</filter-name>
@@ -158,6 +166,14 @@
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>
         <url-pattern>/service/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>clientapp</servlet-name>
+        <url-pattern>/tenant/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>clientapp</servlet-name>
+        <url-pattern>/vendor/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>sandbox</servlet-name>
