@@ -258,10 +258,24 @@ public class FormsAPI {
 		
 		long id = insertBuilder.insert(props);
 		form.setId(id);
+
+		if (form.getStateFlowId() > 0) {
+			StateFlowRulesAPI.updateFormLevel(form.getStateFlowId(), true);
+		}
 		
 		addFormFields(id, form);
 		
 		return id;
+	}
+
+	public static boolean isStateFlowUsedInAnyForm(long stateFlowId, Long formId) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getFormModule().getTableName())
+				.select(FieldFactory.getFormFields())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getFormModule()), String.valueOf(formId), NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition("STATE_FLOW_ID", "stateFlowId", String.valueOf(stateFlowId), NumberOperators.EQUALS));
+		List<Map<String, Object>> maps = builder.get();
+		return (CollectionUtils.isNotEmpty(maps));
 	}
 	
 	public static void addFormFields (long formId, FacilioForm form) throws Exception {

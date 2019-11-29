@@ -24,7 +24,7 @@ public class ExecuteStateFlowCommand extends ExecuteAllWorkflowsCommand {
 
         // Re-arrange execution order
         if (CollectionUtils.isNotEmpty(workflowRules)) {
-        	newWorkflowRules = new ArrayList<WorkflowRuleContext>();
+        	newWorkflowRules = new ArrayList<>();
 	        for (WorkflowRuleContext workflowRuleContext : workflowRules) {
 	            StateFlowRuleContext stateFlowRuleContext = (StateFlowRuleContext) workflowRuleContext;
 	            if (stateFlowRuleContext.isFormLevel()) {

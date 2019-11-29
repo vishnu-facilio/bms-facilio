@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -704,5 +705,15 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			return (StateFlowRuleContext) workflowRules.get(0);
 		}
 		return null;
+	}
+
+	public static void updateFormLevel(long stateFlowId, boolean formLevel) throws Exception {
+		GenericUpdateRecordBuilder stateUpdate = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getStateFlowModule().getTableName())
+				.fields(FieldFactory.getStateFlowFields())
+				.andCondition(CriteriaAPI.getIdCondition(stateFlowId, ModuleFactory.getStateFlowModule()));
+		Map<String, Object> map = new HashMap<>();
+		map.put("formLevel", formLevel);
+		stateUpdate.update(map);
 	}
 }

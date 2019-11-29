@@ -91,6 +91,17 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		this.formLevel = formLevel;
 	}
 
+	private boolean matchedFormLevel;
+
+	@Override
+	public boolean evaluateCriteria(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		if (matchedFormLevel) {
+			matchedFormLevel = false;
+			return true;
+		}
+		return super.evaluateCriteria(moduleName, record, placeHolders, context);
+	}
+
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// Don't evaluate draft stateflow in the workflow evaluation.
@@ -107,6 +118,10 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 				if (CollectionUtils.isNotEmpty(dbFormList)) {
 					FacilioForm facilioForm = dbFormList.get(0);
 					long stateFlowId = facilioForm.getStateFlowId();
+
+					if (stateFlowId == getId()) {
+						matchedFormLevel = true;
+					}
 
 					return stateFlowId == getId();
 				}
