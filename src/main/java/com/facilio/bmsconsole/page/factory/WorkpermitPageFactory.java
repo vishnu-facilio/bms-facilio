@@ -14,7 +14,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
 public class WorkpermitPageFactory extends PageFactory {
-	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(WorkpermitPageFactory.class.getName());
 
 	public static Page getWorkPermitPage(WorkPermitContext workpermit) throws Exception {
 		Page page = new Page();

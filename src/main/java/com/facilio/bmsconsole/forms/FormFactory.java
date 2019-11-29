@@ -70,6 +70,7 @@ public class FormFactory {
 		forms.put("devicesForm",getDevicesForm());
 		forms.put("kioskForm", getVisitorKioskForm());
 		forms.put("visitorForm", getVisitorForm());
+		forms.put("portalVisitorForm", getPortalVisitorForm());
 		forms.put("visitorPreRegisterForm", getVisitorPreRegisterForm());
 		forms.put("portalVisitorPreRegisterForm", getPortalVisitorPreRegisterForm());
 		forms.put("vendor_contact_form", getVendorContactForm());
@@ -263,7 +264,7 @@ public class FormFactory {
 		List<FacilioForm> poForm = Arrays.asList(getPurchaseOrderForm());
 		List<FacilioForm> prForm = Arrays.asList(getPurchaseRequestForm());
 		List<FacilioForm> visitorTypeForms = Arrays.asList(getGuestForm(),getEmployeeForm(),getVendorForm());
-		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm());
+		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm(), getPortalVisitorForm());
 		List<FacilioForm> vendorsForms = Arrays.asList(getVendorsForm());
 		
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
@@ -1280,11 +1281,22 @@ public class FormFactory {
 	public static FacilioForm getVisitorForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("VISITOR");
-		form.setName("default_visitor_web");
+		form.setName("portal_visitor_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVisitorFormFields());
 		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	public static FacilioForm getPortalVisitorForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("VISITOR");
+		form.setName("default_visitor_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getVisitorFormFields());
+		form.setFormType(FormType.PORTAL);
 		return form;
 	}
 
@@ -1485,7 +1497,7 @@ public class FormFactory {
 	private static List<FormField> getWorkPermitFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTBOX, "Descritption", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("isRecurring", FieldDisplayType.DECISION_BOX, "Is Recurring", Required.OPTIONAL, 3, 2));
 		fields.add(new FormField("recurringInfo", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
 		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
@@ -1502,7 +1514,7 @@ public class FormFactory {
 	private static List<FormField> getPortalWorkPermitFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTBOX, "Descritption", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("isRecurring", FieldDisplayType.DECISION_BOX, "Is Recurring", Required.OPTIONAL, 3, 2));
 		fields.add(new FormField("recurringInfo", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
 		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
