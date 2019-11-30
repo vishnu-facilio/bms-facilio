@@ -38,9 +38,9 @@ public class WorkpermitPageFactory extends PageFactory {
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleGroup(tab1Sec3);
 
-		Tab tab2 = page.new Tab("insurance");
+		Tab tab2 = page.new Tab("related list");
 		page.addTab(tab2);
-		Section tab2Sec1 = page.new Section();
+		Section tab2Sec1 = page.new Section("Insurance");
 		tab2.addSection(tab2Sec1);
 		addInsuranceWidget(tab2Sec1);
 

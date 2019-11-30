@@ -41,29 +41,38 @@ public class VendorPageFactory extends PageFactory{
 		tab1.addSection(tab1Sec2);
 		addCommonSubModuleGroup(tab1Sec2);
 		
-		Tab tab2 = page.new Tab("contacts");
+		Tab tab2 = page.new Tab("related list");
 		page.addTab(tab2);
 		Section tab2Sec1 = page.new Section();
 		tab2.addSection(tab2Sec1);
 		addRelatedListWidget(tab2Sec1, "contact", vendor.getModuleId());
+		Section tab2Sec2 = page.new Section();
+		tab2.addSection(tab2Sec2);
+		addRelatedListWidget(tab2Sec2, "insurance", vendor.getModuleId());
+		Section tab2Sec3 = page.new Section();
+		tab2.addSection(tab2Sec3);
+		addRelatedListWidget(tab2Sec3, "workorder", vendor.getModuleId());
+		Section tab2Sec4 = page.new Section();
+		tab2.addSection(tab2Sec4);
+		addRelatedListWidget(tab2Sec4, "workpermit", vendor.getModuleId());
 		
-		Tab tab3 = page.new Tab("insurance");
-		page.addTab(tab3);
-		Section tab3Sec1 = page.new Section();
-		tab3.addSection(tab3Sec1);
-		addRelatedListWidget(tab3Sec1, "insurance", vendor.getModuleId());
+//		Tab tab3 = page.new Tab("insurance");
+//		page.addTab(tab3);
+//		Section tab3Sec1 = page.new Section();
+//		tab3.addSection(tab3Sec1);
+//		addRelatedListWidget(tab3Sec1, "insurance", vendor.getModuleId());
 
-		Tab tab4 = page.new Tab("work orders");
-		page.addTab(tab4);
-		Section tab4Sec1 = page.new Section();
-		tab4.addSection(tab4Sec1);
-		addRelatedListWidget(tab4Sec1, "workorder", vendor.getModuleId());
+//		Tab tab4 = page.new Tab("work orders");
+//		page.addTab(tab4);
+//		Section tab4Sec1 = page.new Section();
+//		tab4.addSection(tab4Sec1);
+//		addRelatedListWidget(tab4Sec1, "workorder", vendor.getModuleId());
 
-		Tab tab5 = page.new Tab("work permits");
-		page.addTab(tab5);
-		Section tab5Sec1 = page.new Section();
-		tab5.addSection(tab5Sec1);
-		addRelatedListWidget(tab5Sec1, "workpermit", vendor.getModuleId());
+//		Tab tab5 = page.new Tab("work permits");
+//		page.addTab(tab5);
+//		Section tab5Sec1 = page.new Section();
+//		tab5.addSection(tab5Sec1);
+//		addRelatedListWidget(tab5Sec1, "workpermit", vendor.getModuleId());
 		
 		return page;
 	}
@@ -98,7 +107,7 @@ public class VendorPageFactory extends PageFactory{
 				relatedList.put("module", module);
 				relatedList.put("field", field);
 				relatedListWidget.setRelatedList(relatedList);
-				relatedListWidget.addToLayoutParams(section, 24, 12);
+				relatedListWidget.addToLayoutParams(section, 24, 10);
 				section.addWidget(relatedListWidget);
 			}
 		}
