@@ -434,6 +434,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain fetchTenantDetails() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTenants());
+		c.addCommand(new AssociateTenantToContactCommand());
 		c.addCommand(new GetTenantDetailCommand());
 //		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
@@ -1616,6 +1617,12 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain qrScanVisitorLogChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new QrScanVisitorLogCommand());
+		return c;
+	}
+	
+	public static FacilioChain otpScanVisitorLogChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetVisitorDetailAndLogCommand());
 		return c;
 	}
 	

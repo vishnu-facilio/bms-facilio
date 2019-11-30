@@ -53,6 +53,17 @@ public class TenantAction extends FacilioAction {
 		this.message = message;
 	}
 	
+	private Boolean tenantPortal;
+	public Boolean getTenantPortal() {
+		if (tenantPortal == null) {
+			return false;
+		}
+		return tenantPortal;
+	}
+	public void setTenantPortal(Boolean tenantPortal) {
+		this.tenantPortal = tenantPortal;
+	}
+	
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -515,7 +526,8 @@ private Map<String, Double> readingData;
 	public String fetchTenant() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getId());
-	
+		context.put(FacilioConstants.ContextNames.IS_TENANT_PORTAL, getTenantPortal());
+		
 		FacilioChain tenantDetailChain = ReadOnlyChainFactory.fetchTenantDetails();
 		tenantDetailChain.execute(context);
 		tenant = (TenantContext )context.get(FacilioConstants.ContextNames.TENANT);

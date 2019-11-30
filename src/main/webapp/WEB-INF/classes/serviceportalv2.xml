@@ -811,6 +811,13 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteVisitorInvites" />
 	</package>
+	<package name="TenantDetails" namespace="/api/service/v2/tenant"
+		extends="newServicePortalApiV2">
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.TenantAction" method="fetchTenant" >
+			<param name="tenantPortal">true</param>
+			</action>
+		</package>
 	
 	<package name="TenantVisitorInviteList" namespace="/api/service/v2/visitorinvite" extends="newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" >
