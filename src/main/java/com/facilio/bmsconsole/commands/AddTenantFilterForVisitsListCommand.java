@@ -18,6 +18,9 @@ public class AddTenantFilterForVisitsListCommand extends FacilioCommand{
 		Boolean isFromTenantPortal = (Boolean) context.get(FacilioConstants.ContextNames.IS_TENANT_PORTAL);
 		if(isFromTenantPortal) {
 			Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+			if(filterCriteria == null) {
+				filterCriteria = new Criteria();
+			}
 			ContactsContext contact = ContactsAPI.getContactsIdForUser(AccountUtil.getCurrentUser().getOuid());
 			if(contact!=null) {
 				filterCriteria.addAndCondition(CriteriaAPI.getCondition("HOST", "host", contact.getId()+"", PickListOperators.IS));
