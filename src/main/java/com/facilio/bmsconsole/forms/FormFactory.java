@@ -1557,7 +1557,7 @@ public class FormFactory {
 		fields.add(new FormField("validFrom", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("validTill", FieldDisplayType.DATE, "Valid Till", Required.OPTIONAL, 3, 1));
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 3, 2);
-		vendorField.setHideField(true);
+	//	vendorField.setHideField(true);
 		fields.add(vendorField);
 		fields.add(new FormField("insurance", FieldDisplayType.IMAGE, "File", Required.OPTIONAL, 1, 1));
 		return fields;

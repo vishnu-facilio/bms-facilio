@@ -9,6 +9,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 
 public class AddVendorScopeForPortalCommand extends FacilioCommand{
@@ -19,23 +20,27 @@ public class AddVendorScopeForPortalCommand extends FacilioCommand{
 		Boolean isVendorPortal = (Boolean)context.get(FacilioConstants.ContextNames.IS_VENDOR_PORTAL);
 		if(isVendorPortal != null && isVendorPortal) {
 			long currentUserId = AccountUtil.getCurrentUser().getOuid();
+			Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+			
+			if(filterCriteria == null) {
+				filterCriteria = new Criteria();
+			}
 			ContactsContext userContact = ContactsAPI.getContactsIdForUser(currentUserId);
 			if(userContact != null) {
 				if(userContact.getContactType() == ContactsContext.ContactType.VENDOR.getIndex()) {
-					Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 					Condition condition = CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(userContact.getVendor().getId()), NumberOperators.EQUALS);
-					if(filterCriteria != null) {
-						filterCriteria.addAndCondition(condition);
-					}
-					else {
-						filterCriteria = new Criteria();
-						filterCriteria.addAndCondition(condition);
-					}
-					context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, filterCriteria);
-					
+					filterCriteria.addAndCondition(condition);
 				}
 				
 			}
+			else {
+				throw new IllegalArgumentException("No Valid Vendor Contact Found for this user");
+			}
+			
+			Condition notEmtpyCondition = CriteriaAPI.getCondition("VENDOR_ID", "vendor", "-1", CommonOperators.IS_NOT_EMPTY);
+			filterCriteria.addAndCondition(notEmtpyCondition);
+			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, filterCriteria);
+			
 		}
 		return false;
 	}

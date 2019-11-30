@@ -1708,7 +1708,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new AddVendorScopeForPortalCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
-//		chain.addCommand(new LoadInsuranceLookUpCommand());
+		chain.addCommand(new LoadInsuranceLookUpCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
@@ -1716,7 +1716,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getInsuranceDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForInsurance());
-//		c.addCommand(new LoadInsuranceLookUpCommand());
+		c.addCommand(new LoadInsuranceLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		
 		return c;
