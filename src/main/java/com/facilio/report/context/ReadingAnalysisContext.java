@@ -144,7 +144,15 @@ public class ReadingAnalysisContext {
 	public void setMetaData(Map<String, Object> metaData) {
 		this.metaData = metaData;
 	}
-
+	
+	private String moduleName;
+	public String getModuleName(){
+		return this.moduleName;
+	}
+	public void setModuleName(String moduleName){
+		this.moduleName = moduleName;
+	}
+	
 	public static enum ReportMode {
 		TIMESERIES,
 		SERIES,

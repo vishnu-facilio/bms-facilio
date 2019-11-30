@@ -318,6 +318,14 @@ public class ReportDataPointContext {
 		}
 		return metaData.get(key);
 	}
+	
+	private String moduleName;
+	public String getModuleName(){
+		return this.moduleName;
+	}
+	public void setModuleName(String moduleName){
+		this.moduleName = moduleName;
+	}
 
 	public static enum OrderByFunction {
 		NONE (null),
