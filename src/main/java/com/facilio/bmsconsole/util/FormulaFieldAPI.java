@@ -24,7 +24,10 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
+import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
@@ -462,101 +465,9 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	public static void recalculateHistoricalData(long formulaId, DateRange range) throws Exception {
-		BmsJobUtil.deleteJobWithProps(formulaId, "HistoricalFormulaFieldCalculator");
-		BmsJobUtil.scheduleOneTimeJobWithProps(formulaId, "HistoricalFormulaFieldCalculator", 30, "history", FieldUtil.getAsJSON(range));
-	}
-	
-	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range, boolean isSystem, boolean historicalAlarm) throws Exception {
-		calculateHistoricalDataForSingleResource(formulaId, resourceId, range, isSystem, historicalAlarm,false);
-	}
-	
-	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range, boolean isSystem, boolean historicalAlarm,boolean skipOptimisedWorkflow) throws Exception {
-		Map<String, Object> prop = getFormulaFieldResourceJob(formulaId, resourceId, isSystem);
-		long id = -1;
-		if (prop == null) {
-			prop = new HashMap<>();
-			prop.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
-			prop.put("formulaId", formulaId);
-			prop.put("resourceId", resourceId);
-			prop.put("startTime", range.getStartTime());
-			prop.put("endTime", range.getEndTime());
-			prop.put("isSystem", isSystem);
-			prop.put("historicalAlarm", historicalAlarm);
-			prop.put("skipOptimisedWorkflow", skipOptimisedWorkflow);
-			id = addFormulaFieldResourceJob(prop);
-		}
-		else {
-			id = (long) prop.get("id");
-			updateFormulaFieldResourceJob(id, range.getStartTime(), range.getEndTime(), historicalAlarm);
-			FacilioTimer.deleteJob(id, "SingleResourceHistoricalFormulaFieldCalculator");
-		}
-		FacilioTimer.scheduleOneTimeJobWithDelay(id, "SingleResourceHistoricalFormulaFieldCalculator", 30, "history");
-	}
-	
-	private static long addFormulaFieldResourceJob(Map<String, Object> prop) throws Exception {
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-														.table(ModuleFactory.getFormulaFieldResourceJobModule().getTableName())
-														.fields(FieldFactory.getFormulaFieldResourceJobFields())
-														;
-		return insertBuilder.insert(prop);
-	}
-	
-	private static void updateFormulaFieldResourceJob (long id, long startTime, long endTime, boolean historicalAlarm) throws Exception {
-		FacilioModule module = ModuleFactory.getFormulaFieldResourceJobModule();
-		Map<String, Object> prop = new HashMap<>();
-		prop.put("startTime", startTime);
-		prop.put("endTime", endTime);
-		prop.put("historicalAlarm", historicalAlarm);
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.table(module.getTableName())
-														.fields(FieldFactory.getFormulaFieldResourceJobFields())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(id, module))
-														;
-		updateBuilder.update(prop);
-	}
-	
-	private static Map<String, Object> getFormulaFieldResourceJob(long formulaId, long resourceId, boolean isSystem) throws Exception {
-		FacilioModule module = ModuleFactory.getFormulaFieldResourceJobModule();
-		List<FacilioField> fields = FieldFactory.getFormulaFieldResourceJobFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		FacilioField formulaIdField = fieldMap.get("formulaId");
-		FacilioField resourceIdField = fieldMap.get("resourceId");
-		FacilioField isSystemField = fieldMap.get("isSystem");
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.table(module.getTableName())
-														.select(fields)
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(formulaIdField, String.valueOf(formulaId), PickListOperators.IS))
-														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), PickListOperators.IS))
-														.andCondition(CriteriaAPI.getCondition(isSystemField, String.valueOf(isSystem), BooleanOperators.IS))
-														;
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			return props.get(0);
-		}
-		return null;
-	}
-	
-	public static Map<String, Object> getFormulaFieldResourceJob(long id) throws Exception {
-		FacilioModule module = ModuleFactory.getFormulaFieldResourceJobModule();
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.table(module.getTableName())
-														.select(FieldFactory.getFormulaFieldResourceJobFields())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(id, module))
-														;
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			return props.get(0);
-		}
-		return null;
+	public static void calculateHistoricalDataForSingleResource(long formulaLoggerId) throws Exception {	
+		FacilioTimer.deleteJob(formulaLoggerId, "SingleResourceHistoricalFormulaFieldCalculator");		
+		FacilioTimer.scheduleOneTimeJobWithDelay(formulaLoggerId, "SingleResourceHistoricalFormulaFieldCalculator", 30, "history");			
 	}
 	
 	private static List<FormulaFieldContext> getFormulaFieldsFromProps (List<Map<String, Object>> props, boolean fetchResources) throws Exception {
@@ -1114,31 +1025,11 @@ public class FormulaFieldAPI {
 				context.put(FacilioConstants.ContextNames.READINGS, readings);
 				context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
 				context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
-				
-				addReadingChain.execute();
-			}
-			
-			if (formula.getTriggerTypeEnum() == TriggerType.SCHEDULE) {
-				List<FormulaFieldContext> dependentFormulas = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.SCHEDULE, Collections.singletonList(formula.getReadingField().getId()));
-				if (dependentFormulas != null && !dependentFormulas.isEmpty()) {
-					for (FormulaFieldContext currentFormula : dependentFormulas) {
-						if (singleResourceId != -1 ) {
-							if (currentFormula.getMatchedResourcesIds().contains(singleResourceId)) {
-								List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
-								if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
-									calculateHistoricalDataForSingleResource(currentFormula.getId(), singleResourceId, range, isSystem, historicalAlarm);
-								}
-							}
-						}
-						else{
-							List<Long> dependentFieldIds = currentFormula.getWorkflow().getDependentFieldIds();
-							if (dependentFieldIds.contains(formula.getReadingField().getFieldId())) {
-								recalculateHistoricalData(currentFormula.getId(), range);
-							}
-						}
-					}
-				}
-			}
+
+				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+				addReadingChain.execute(context);
+			}				
+
 		}
 	}
 	

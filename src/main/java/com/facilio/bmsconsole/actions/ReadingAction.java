@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
+import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
@@ -33,6 +34,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
+import com.facilio.bmsconsole.util.LoggerAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -43,6 +45,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -835,6 +838,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORMULA_METRIC, metricId);
 		context.put(FacilioConstants.ContextNames.READING_RULES_LIST,readingRules);
 		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, getFieldReadingRules());
+		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING,true);
 
 		FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 		addEnpiChain.execute(context);
@@ -852,7 +856,9 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT, unitId);
 		context.put(FacilioConstants.ContextNames.FORMULA_METRIC, metricId);
-			
+
+		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING,true);
+		
 	    List<List<ReadingRuleContext>> readingRules = getFieldReadingRules();
 	    List<List<List<ActionContext>>> actionsList = new ArrayList<>();
 	    if (CollectionUtils.isNotEmpty(readingRules)) {
@@ -1049,19 +1055,43 @@ public class ReadingAction extends FacilioAction {
 	}
 
 	public String calculateHistoryForFormula() throws Exception {
+		
+		if(startTime >= endTime)
+		{
+			throw new Exception("Start time should be less than the Endtime");
+		}
+		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, id);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
-		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
+		context.put(FacilioConstants.ContextNames.IS_INCLUDE,isInclude);
 		context.put(FacilioConstants.ContextNames.HISTORY_ALARM, historicalAlarm);
 		context.put(FacilioConstants.ContextNames.SKIP_OPTIMISED_WF, skipOptimisedWorkflow);
 		
 		FacilioChain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
 		historicalCalculation.execute(context);
 		
-		setResult("success", "Historical Calculation is started and will be notified when done");
+		setResult("success", "Historical Formula Calculation is started and will be notified when done");
 		
 		return SUCCESS;
+	}
+	
+	public String getHistoricalFormulaFieldParentLoggers() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> loggerfields = modBean.getAllFields(ModuleFactory.getFormulaFieldHistoricalLoggerModule().getName());		
+		Collection<LoggerContext> historicalFormulaFieldParentLoggerList = LoggerAPI.getAllParentLoggerAPI(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, getId());
+		setResult("historicalFormulaFieldParentLoggers", historicalFormulaFieldParentLoggerList);
+		return SUCCESS;		
+	}
+	
+	public String getHistoricalFormulaFieldChildLoggers() throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> loggerfields = modBean.getAllFields(ModuleFactory.getFormulaFieldHistoricalLoggerModule().getName());		
+		List<LoggerContext> historicalFormulaFieldChildLoggerList = LoggerAPI.getGroupedLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, getLoggerGroupId());
+		setResult("historicalFormulaFieldChildLoggers", historicalFormulaFieldChildLoggerList);
+		return SUCCESS;	
 	}
 	
 	private long ruleId;
@@ -1072,6 +1102,16 @@ public class ReadingAction extends FacilioAction {
 
 	public void setRuleId(long ruleId) {
 		this.ruleId = ruleId;
+	}
+	
+	private long formulaId;
+
+	public long getFormulaId() {
+		return formulaId;
+	}
+
+	public void setFormulaId(long formulaId) {
+		this.formulaId = formulaId;
 	}
 
 	private long loggerGroupId;

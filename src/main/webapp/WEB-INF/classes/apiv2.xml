@@ -1624,6 +1624,14 @@
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getWorkflowRuleChildLoggers">
 		</action>
+		<action name="formulaFieldParentLoggers"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getHistoricalFormulaFieldParentLoggers">
+		</action>
+		<action name="formulaFieldChildLoggers"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getHistoricalFormulaFieldChildLoggers">
+		</action>
 	</package>
 	<package name="virtualMeters"
 		namespace="/api/v2/virtualMeter"

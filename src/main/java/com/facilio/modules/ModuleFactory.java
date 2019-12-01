@@ -1081,6 +1081,14 @@ public class ModuleFactory {
 		return workflowRuleHistoricalLoggerModule;
 	}
 	
+	public static FacilioModule getFormulaFieldHistoricalLoggerModule() {
+		FacilioModule formulaFieldHistoricalLoggerModule = new FacilioModule();
+		formulaFieldHistoricalLoggerModule.setName("formulaFieldHistoricalLoggerModule");
+		formulaFieldHistoricalLoggerModule.setDisplayName("Formula Field Historical Logger Module");
+		formulaFieldHistoricalLoggerModule.setTableName("Formula_Field_Historical_Logger");
+		return formulaFieldHistoricalLoggerModule;
+	}
+	
 	public static FacilioModule getDashboardFolderModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Dashboard_Folder");

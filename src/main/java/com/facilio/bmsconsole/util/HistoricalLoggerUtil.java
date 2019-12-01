@@ -104,22 +104,6 @@ public class HistoricalLoggerUtil {
 		return null;
 	}
 	
-	public static HistoricalLoggerContext getActiveParentHistoricalLogger(long parentassetId) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getHistoricalLoggerFields())
-				.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", ""+parentassetId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ HistoricalLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {			
-			HistoricalLoggerContext historicalLogger = FieldUtil.getAsBeanFromMap(props.get(0), HistoricalLoggerContext.class);
-			return historicalLogger;
-		}
-		return null;
-	}
-	
 	public static List<HistoricalLoggerContext> getParentHistoricalLogger() throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -195,7 +179,7 @@ public class HistoricalLoggerUtil {
 				return null;
 	}
 	
-	public static List<HistoricalLoggerContext> getInProgressHistoricalLogger() throws Exception {
+	public static List<HistoricalLoggerContext> getAllInProgressHistoricalLogger() throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getHistoricalLoggerFields())
@@ -240,15 +224,15 @@ public class HistoricalLoggerUtil {
 		
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		
-		deleteRecordBuilder.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
-		.andCondition(CriteriaAPI.getCondition("ID", "id", ""+id, NumberOperators.EQUALS));
-		
+		deleteRecordBuilder
+			.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
+			.andCondition(CriteriaAPI.getCondition("ID", "id", ""+id, NumberOperators.EQUALS));
 	}
 	
 	public static List<EnergyMeterContext> getVirtualMeterStatusInfo() throws Exception
 	{
 		List<EnergyMeterContext> virtualMeters = DeviceAPI.getVirtualMeters(null, null);
-		List<HistoricalLoggerContext> activeVirtualMeters = HistoricalLoggerUtil.getInProgressHistoricalLogger();
+		List<HistoricalLoggerContext> activeVirtualMeters = HistoricalLoggerUtil.getAllInProgressHistoricalLogger();
 		
 		if(activeVirtualMeters != null && !activeVirtualMeters.isEmpty())
 		{

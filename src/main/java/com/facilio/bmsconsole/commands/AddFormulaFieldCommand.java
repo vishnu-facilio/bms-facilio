@@ -6,6 +6,8 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.time.DateRange;
@@ -28,7 +30,13 @@ public class AddFormulaFieldCommand extends FacilioCommand {
 		}
 		Boolean skipFromulaCalculation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING);
 		if(skipFromulaCalculation == null || skipFromulaCalculation.equals(Boolean.FALSE)) {
-			BmsJobUtil.scheduleOneTimeJobWithProps(formulaId, "HistoricalFormulaFieldCalculator", 30, "priority", props);
+			
+			FacilioChain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
+			FacilioContext formulaFieldcontext = historicalCalculation.getContext();
+			
+			formulaFieldcontext.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaId);
+			formulaFieldcontext.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);	
+			historicalCalculation.execute();
 		}
 		return false;
 	}

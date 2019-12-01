@@ -16,6 +16,8 @@ import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -121,7 +123,12 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			Boolean skipFromulaCalculation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING);
 			if(skipFromulaCalculation == null || skipFromulaCalculation.equals(Boolean.FALSE)) {
 				
-				FormulaFieldAPI.recalculateHistoricalData(newFormula.getId(), dateRange);
+				FacilioChain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
+				FacilioContext formulaFieldcontext = historicalCalculation.getContext();
+				
+				formulaFieldcontext.put(FacilioConstants.ContextNames.FORMULA_FIELD, newFormula.getId());
+				formulaFieldcontext.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);	
+				historicalCalculation.execute();
 			}
 		}
 		

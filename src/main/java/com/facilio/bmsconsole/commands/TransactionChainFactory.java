@@ -122,7 +122,7 @@ public class TransactionChainFactory {
 	
 		public static FacilioChain historicalFormulaCalculationChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new HistoricalFormulaCalculationCommand());
+			c.addCommand(new HistoricalFormulaRunCalculationCommand());
 			return c;
 		}
 		
@@ -3595,6 +3595,12 @@ public class TransactionChainFactory {
 		public static FacilioChain getExecuteHistoricalVMCalculation() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new HistoricalVMCalculationCommand());
+			return c;
+		}
+		
+		public static FacilioChain getExecuteHistoricalFormulaFieldCalculation() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new HistoricalFormulaFieldCalculationCommand());
 			return c;
 		}
 
