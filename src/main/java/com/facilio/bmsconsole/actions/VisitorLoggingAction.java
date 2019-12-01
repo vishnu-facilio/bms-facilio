@@ -342,15 +342,15 @@ private static final long serialVersionUID = 1L;
 		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Visitor_Logging.SYS_CREATED_TIME desc");
  		
 		String filters = getFilters();
-		JSONObject json = new JSONObject();
 		
-		
+
 		if(StringUtils.isNotEmpty(filters)) {
+			JSONObject json = new JSONObject();
 			JSONParser parser = new JSONParser();
 	 		json = (JSONObject) parser.parse(getFilters());
+	 		chain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
 	 	}
-		chain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
- 		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
  		
 		
  		if (getSearch() != null) {
