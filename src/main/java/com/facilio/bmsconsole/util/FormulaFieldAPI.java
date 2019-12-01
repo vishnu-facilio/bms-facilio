@@ -1025,8 +1025,6 @@ public class FormulaFieldAPI {
 				context.put(FacilioConstants.ContextNames.READINGS, readings);
 				context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
 				context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
-
-				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 				addReadingChain.execute(context);
 			}				
 
