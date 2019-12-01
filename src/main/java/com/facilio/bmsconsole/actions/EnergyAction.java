@@ -10,11 +10,15 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
+import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -56,7 +60,7 @@ public class EnergyAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
-	
+
 	public String insertVirtualMeterReadings() throws Exception {	
 		try 
 		{
@@ -154,6 +158,28 @@ public class EnergyAction extends FacilioAction {
 		return getHierarchy(childIdMap.get(historicalLogger.getDependentId()), hierarchy, childIdMap);
 	}
 	
+	public String runHistoricalBasedOnHierarchy() throws Exception
+	{
+		if(startTime >= endTime)
+		{
+			throw new Exception("Start time should be less than the Endtime");
+		}
+		DeviceAPI.runHistoricalVMBasedonHierarchyWithoutLoggers(startTime, endTime, vmList);
+		setResult("Result", "Historical Calculation for the given interval has been started based on hierarchy");
+		return SUCCESS;	
+	}
+	
+	public String markDataGap() throws Exception
+	{
+		if(startTime >= endTime)
+		{
+			throw new Exception("Start time should be less than the Endtime");
+		}
+		DeviceAPI.markDataGapforHistoricalPeriod(startTime, endTime, vmList);
+		setResult("Result", "Data gap for the given interval will be marked");
+		
+		return SUCCESS;	
+	}
 	
 	public String addEnergyMeterPurpose() throws Exception {
 		FacilioContext context = new FacilioContext();

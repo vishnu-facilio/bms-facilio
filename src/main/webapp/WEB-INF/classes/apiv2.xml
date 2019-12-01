@@ -1622,6 +1622,14 @@
 			class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="getVirtualMeterList">
 		</action>
+		<action name="runHistoricalBasedOnHierarchy"
+			class="com.facilio.bmsconsole.actions.EnergyAction"
+			method="runHistoricalBasedOnHierarchy">
+		</action>
+		<action name="markEnergyDataGap"
+			class="com.facilio.bmsconsole.actions.EnergyAction"
+			method="markDataGap">
+		</action>
 	</package>
 	<package name="assetLatestDataApiv2"
 		namespace="/api/v2/reading/latestdata" extends="v2Api">
