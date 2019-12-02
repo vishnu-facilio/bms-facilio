@@ -540,7 +540,7 @@ public class ViewFactory {
 		views.put("pending", getPendingVisitsView().setOrder(order++));
 		views.put("upcoming", getUpcomingVisitsView().setOrder(order++));
 		views.put("all", getAllVisitorLogsView().setOrder(order++));
-		views.put("vendorVisits", getVendorVisitorLogsView().setOrder(order++));
+		views.put("vendorVisits", getAllVisitsView().setOrder(order++));
 		views.put("vendorVisitors", getVendorVisitorLogsView().setOrder(order++));
 		views.put("myInvites", getMyVisitorInvites().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
@@ -3072,6 +3072,14 @@ public class ViewFactory {
 			
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(getMyVistorInvitesCondition());
+			FacilioStatus upcoming;
+			try {
+				upcoming = VisitorManagementAPI.getLogStatus("Upcoming");
+				criteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(upcoming.getId()) , NumberOperators.EQUALS));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			FacilioModule visitorInvitesModule = ModuleFactory.getVisitorLoggingModule();
 
@@ -4841,12 +4849,32 @@ public class ViewFactory {
 		return allView;
 	}
 	
-	private static FacilioView getVendorVisitorLogsView() {
+	private static FacilioView getAllVisitsView() {
 
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Visits");
+		allView.setHidden(true);
+		return allView;
+	}
+	
+	private static FacilioView getVendorVisitorLogsView() {
+		
+		Criteria criteria = new Criteria();
+		FacilioStatus upcoming;
+		try {
+			upcoming = VisitorManagementAPI.getLogStatus("Upcoming");
+			criteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(upcoming.getId()) , NumberOperators.EQUALS));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorVisitors");
 		allView.setDisplayName("All Visits");
 		allView.setHidden(true);
+		allView.setCriteria(criteria);
 		return allView;
 	}
 
