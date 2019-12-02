@@ -74,36 +74,38 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 					 for(int i=0; i<mlArray.length(); i++)
 					 {
 						 JSONObject readingObj = (JSONObject) mlArray.get(i);
-						 
-						 ReadingContext newReading = new ReadingContext();
-						 ReadingContext newUpdatedReading = new ReadingContext();
-						 
-						 newReading.setParentId(parentID);
-						 newUpdatedReading.setParentId(parentID);
-						 
-						 newReading.setTtime((long)readingObj.get("ttime"));
-						 newUpdatedReading.setTtime((long)readingObj.get("ttime"));
-						 
-						 newReading.addReading("mlRunning", true);
-						 newUpdatedReading.addReading("mlRunning", true);
-	
-						 for(FacilioField field:fields)
-						 {
-							 if(readingObj.has(field.getName()) && !field.getName().equalsIgnoreCase("ttime"))
+						 if((!readingObj.has("upperAnomaly")) || (int)readingObj.get("upperAnomaly") == 1 ){
+							 ReadingContext newReading = new ReadingContext();
+							 ReadingContext newUpdatedReading = new ReadingContext();
+							 
+							 newReading.setParentId(parentID);
+							 newUpdatedReading.setParentId(parentID);
+							 
+							 newReading.setTtime((long)readingObj.get("ttime"));
+							 newUpdatedReading.setTtime((long)readingObj.get("ttime"));
+							 
+							 newReading.addReading("mlRunning", true);
+							 newUpdatedReading.addReading("mlRunning", true);
+
+							 for(FacilioField field:fields)
 							 {
-								 mlContext.getAssetDetails().put(field.getName(),readingObj.get(field.getName()));
-								 newReading.addReading(field.getName(), readingObj.get(field.getName()));
-								 newUpdatedReading.addReading(field.getName(), readingObj.get(field.getName()));
-							 }else if(!readingObj.has(field.getName()) && field.getName().equalsIgnoreCase("errorCode")){
-								 mlContext.getAssetDetails().put(field.getName(),-1);
-								 newReading.addReading(field.getName(), -1);
-								 newUpdatedReading.addReading(field.getName(), -1);
+								 if(readingObj.has(field.getName()) && !field.getName().equalsIgnoreCase("ttime"))
+								 {
+									 mlContext.getAssetDetails().put(field.getName(),readingObj.get(field.getName()));
+									 newReading.addReading(field.getName(), readingObj.get(field.getName()));
+									 newUpdatedReading.addReading(field.getName(), readingObj.get(field.getName()));
+								 }else if(!readingObj.has(field.getName()) && field.getName().equalsIgnoreCase("errorCode")){
+									 mlContext.getAssetDetails().put(field.getName(),-1);
+									 newReading.addReading(field.getName(), -1);
+									 newUpdatedReading.addReading(field.getName(), -1);
+								 }
 							 }
+							 LOGGER.info("Asset Details are "+mlContext.getAssetDetails());
+							 
+							 newReading.addReading("predictedTime", mlContext.getPredictionTime());
+							 logReadingList.add(newReading);
+							 predictReadingList.add(newUpdatedReading);
 						 }
-						 LOGGER.info("Asset Details are "+mlContext.getAssetDetails());
-						 newReading.addReading("predictedTime", mlContext.getPredictionTime());
-						 logReadingList.add(newReading);
-						 predictReadingList.add(newUpdatedReading);
 						 
 					 }
 				}
