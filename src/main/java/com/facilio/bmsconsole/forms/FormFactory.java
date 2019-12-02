@@ -1463,7 +1463,7 @@ public class FormFactory {
 		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 4, 3));
 		fields.add(new FormField("aliases", FieldDisplayType.LONG_DESC, "Aliases", Required.OPTIONAL, 5, 2));
 		fields.add(new FormField("physicalDescription", FieldDisplayType.LONG_DESC, "Physical Description", Required.OPTIONAL, 6, 2));
-		fields.add(new FormField("isBlocked", FieldDisplayType.DECISION_BOX, "Visitor Entry", Required.OPTIONAL, 7, 2));
+		fields.add(new FormField("isBlocked", FieldDisplayType.DECISION_BOX, "Blocked Entry", Required.OPTIONAL, 7, 2));
 		fields.add(new FormField("isVip", FieldDisplayType.DECISION_BOX, "VIP", Required.OPTIONAL, 8, 3));
 		fields.add(new FormField("remarks", FieldDisplayType.LONG_DESC, "Remarks", Required.OPTIONAL, 9, 2));
 		

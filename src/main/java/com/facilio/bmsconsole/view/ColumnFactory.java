@@ -817,7 +817,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("phone", "PHONE"));
 		columns.add(new ViewField("email", "Email"));
-		columns.add(new ViewField("isBlocked", "Visitor Entry"));
+		columns.add(new ViewField("isBlocked", "Blocked Entry"));
 		columns.add(new ViewField("isVip", "VIP"));
 		return columns;
 	}
