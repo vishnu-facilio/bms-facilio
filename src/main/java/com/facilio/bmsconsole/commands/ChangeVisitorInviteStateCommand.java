@@ -25,6 +25,8 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		Map<String, Map<Long, List<UpdateChangeSet>>> changeSet = (Map<String, Map<Long, List<UpdateChangeSet>>>)context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
 		List<VisitorLoggingContext> records = (List<VisitorLoggingContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		List<VisitorLoggingContext> oldRecords = (List<VisitorLoggingContext>) context.get(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS);
+		
 		if(CollectionUtils.isNotEmpty(records) && changeSet != null && !changeSet.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if(MapUtils.isNotEmpty(changeSet)) {
@@ -45,7 +47,7 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 										else if(status.getStatus().toString().trim().equals("CheckedIn")) {
 											if(record.getCheckInTime() <= 0) { 
 												VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, true, time);
-												VisitorManagementAPI.updateVisitorRollUps(record);
+												VisitorManagementAPI.updateVisitorRollUps(record, oldRecords.get(0));
 												VisitorManagementAPI.updateVisitorLastVisitRollUps(record);
 	//											if(record.getInvite() != null) {
 	//												VisitorManagementAPI.updateVisitorInviteStateToArrived(record.getVisitor().getId(), record.getInvite().getId(), "Arrived");

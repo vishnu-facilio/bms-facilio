@@ -594,7 +594,7 @@ public class VisitorManagementAPI {
 		
 	}
 	
-	public static void updateVisitorRollUps(VisitorLoggingContext visitorLog) throws Exception {
+	public static void updateVisitorRollUps(VisitorLoggingContext visitorLog, VisitorLoggingContext oldRecord) throws Exception {
 		
 		if(visitorLog != null) {
 			VisitorLoggingContext updatedVisitorLog = getVisitorLoggingTriggers(visitorLog.getId(), false);
@@ -609,7 +609,7 @@ public class VisitorManagementAPI {
 			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 			if(updatedVisitorLog.getAvatarId() > 0) {
 				updatedfields.add(avatarId);
-				updateMap.put("avatar", visitorLog.getAvatar());
+				updateMap.put("avatar", oldRecord.getAvatar());
 			}
 			
 			updatedfields.add(visitorType);

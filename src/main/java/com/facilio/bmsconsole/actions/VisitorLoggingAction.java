@@ -261,6 +261,7 @@ private static final long serialVersionUID = 1L;
 				
 			}
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(parentLog));
+			c.getContext().put(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, Collections.singletonList(parentLog));
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(parentLog.getId()));
 			
 			
@@ -302,6 +303,8 @@ private static final long serialVersionUID = 1L;
 				c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
 				c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
+				c.getContext().put(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, visitorLoggingRecords);
+				
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(visitorLoggingRecords.get(0).getId()));
 				
 				c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
