@@ -647,7 +647,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 		
 	},
-	GET_ORG_INFO (20, "getOrgInfo") {
+	GET_ORG_INFO (22, "getOrgInfo") {
 
 		@Override
 		public Object execute(Object... objects) throws Exception {
