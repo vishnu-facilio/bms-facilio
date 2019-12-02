@@ -142,13 +142,13 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 	
 	private void updateReading(FacilioModule module,List<ReadingContext> readings) throws Exception
 	{
-		FacilioContext context = new FacilioContext();
+		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.READINGS, readings);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.ML);
 		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
-		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
-		chain.execute(context);
+		chain.execute();
 	}
 	
 	private void updateExistingPredictReading(long assetID,FacilioModule module,List<ReadingContext> readingList) throws Exception
@@ -180,13 +180,12 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 				reading.setId(ttimeReading!=null ? ttimeReading.getId() : -1);
 			}
 		}
-		
-		FacilioContext context = new FacilioContext();
+		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.READINGS, readingList);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.ML);
-		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
-		chain.execute(context);
+		chain.execute();
 	}
 	
 	private static String getTtimeList(List<ReadingContext> readingList) 
