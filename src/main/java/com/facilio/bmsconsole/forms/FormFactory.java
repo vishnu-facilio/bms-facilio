@@ -263,7 +263,6 @@ public class FormFactory {
 		List<FacilioForm> assetForms = Arrays.asList(getAssetForm(), getMobileAssetForm());
 		List<FacilioForm> poForm = Arrays.asList(getPurchaseOrderForm());
 		List<FacilioForm> prForm = Arrays.asList(getPurchaseRequestForm());
-		List<FacilioForm> visitorTypeForms = Arrays.asList(getGuestForm(),getEmployeeForm(),getVendorForm());
 		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm(), getPortalVisitorForm());
 		List<FacilioForm> vendorsForms = Arrays.asList(getVendorsForm());
 		
@@ -276,7 +275,6 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
 				.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getFormMap(poForm))
 				.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getFormMap(prForm))
-				.put(FacilioConstants.ContextNames.VISITOR_LOGGING,getFormMap(visitorTypeForms))
 				.put(FacilioConstants.ContextNames.VISITOR,getFormMap(visitorForms))
 				.put(FacilioConstants.ContextNames.WORKPERMIT, getFormMap(workPermitForm))
 				.put(FacilioConstants.ContextNames.INSURANCE, getFormMap(insuranceForm))
@@ -1559,7 +1557,7 @@ public class FormFactory {
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 3, 2);
 	//	vendorField.setHideField(true);
 		fields.add(vendorField);
-		fields.add(new FormField("insurance", FieldDisplayType.IMAGE, "File", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("insurance", FieldDisplayType.FILE, "File", Required.OPTIONAL, 1, 1));
 		return fields;
 	}
 	
@@ -1568,7 +1566,7 @@ public class FormFactory {
 		fields.add(new FormField("companyName", FieldDisplayType.TEXTBOX, "Company Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("validFrom", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("validTill", FieldDisplayType.DATE, "Valid Till", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("insurance", FieldDisplayType.IMAGE, "File", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("insurance", FieldDisplayType.FILE, "File", Required.OPTIONAL, 1, 1));
 		return fields;
 	}
 
