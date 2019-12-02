@@ -40,6 +40,7 @@ public class ColumnFactory {
 		
 		// For getting default columns for a module
 		columnMap.put("workorder-default", getDefaultViewColumns());
+		columnMap.put("workorder-vendorWorkorder", getVendorWorkorderColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
 		columnMap.put("energy-default", getDefaultEnergyColumns());
 		columnMap.put("asset-default", getDefaultAssetsColumns());
@@ -85,11 +86,13 @@ public class ColumnFactory {
 		columnMap.put("visitorlogging-invite_all", getDefaultVisitorInvitesColumns());
 		columnMap.put("visitorlogging-myInvites", getmyInvitesVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorVisitors", getVendorVisitorInvitesColumns());
+		columnMap.put("visitorlogging-vendorVisits", getVendorVisitsInvitesColumns());
 		columnMap.put("visitorlogging-all", getAllVisitsColumns());
 		columnMap.put("insurance-default", getDefaultInsuranceColumns());
 		columnMap.put("watchlist-default", getDefaultWatchListColumns());
 		columnMap.put("workpermit-default", getDefaultWorkPermitColumns());
 		columnMap.put("workpermit-myWorkpermits", getMyWorkWorkPermitColumns());
+		columnMap.put("workpermit-vendorWorkpermits", getVendorWorkWorkPermitColumns());
 		columnMap.put("vendors-myVendors", getMyVendorsColumns());
 		columnMap.put("contact-default", getDefaultContactColumns());
 	
@@ -164,7 +167,18 @@ public class ColumnFactory {
 		return columns;
 	}
 	
-	
+	private static List<ViewField> getVendorWorkorderColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("subject", "Subject"));
+//		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("priority", "Priority"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("createdTime", "Created Time"));
+		return columns;
+	}	
 	
 	private static List<ViewField> getMyWorkorderColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
@@ -703,6 +717,18 @@ public class ColumnFactory {
 		return columns;
 	}
 	
+	public static List<ViewField> getVendorVisitsInvitesColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("visitedSpace", "Visiting Space"));
+		columns.add(new ViewField("moduleState", "Status"));
+		columns.add(new ViewField("checkInTime", "Check-in Time"));
+		columns.add(new ViewField("checkOutTime", "Check-out Time"));
+		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
+	
+		return columns;
+	}
+	
 	public static List<ViewField> getVendorVisitorInvitesColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("host", "Host"));
@@ -732,7 +758,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("companyName", "Company Name"));
 		columns.add(new ViewField("validFrom", "Valid From"));
 		columns.add(new ViewField("validTill", "Valid Till"));
-		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("insurance", "Insurance"));
 		return columns;
 	}
@@ -754,12 +779,26 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("workType", "Work Type"));
+		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("expectedStartTime", "Expected Start Time"));
 		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
-		columns.add(new ViewField("workType", "Work Type"));
 		columns.add(new ViewField("isRecurring", "Recurring"));
 		columns.add(new ViewField("requestedBy", "Requested By"));
+		
+		return columns;
+	}
+	
+	public static List<ViewField> getVendorWorkWorkPermitColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("requestedBy", "Requested By"));
+		columns.add(new ViewField("workType", "Work Type"));
 		columns.add(new ViewField("moduleState", "Status"));
+		columns.add(new ViewField("expectedStartTime", "Expected Start Time"));
+		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
+		columns.add(new ViewField("isRecurring", "Recurring"));
+		
 		return columns;
 	}
 

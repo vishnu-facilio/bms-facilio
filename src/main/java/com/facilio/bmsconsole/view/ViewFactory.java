@@ -168,6 +168,7 @@ public class ViewFactory {
 		views.put("myrequests", getMyRequestWorkorders().setOrder(order++));
 		views.put("upcomingThisWeek", getUpcomingWorkOrdersThisWeek().setOrder(order++));
 		views.put("upcomingNextWeek", getUpcomingWorkOrdersNextWeek().setOrder(order++));
+		views.put("vendorWorkorder", getVendorWorkOrders().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
 
 		order = 1;
@@ -539,6 +540,7 @@ public class ViewFactory {
 		views.put("pending", getPendingVisitsView().setOrder(order++));
 		views.put("upcoming", getUpcomingVisitsView().setOrder(order++));
 		views.put("all", getAllVisitorLogsView().setOrder(order++));
+		views.put("vendorVisits", getVendorVisitorLogsView().setOrder(order++));
 		views.put("vendorVisitors", getVendorVisitorLogsView().setOrder(order++));
 		views.put("myInvites", getMyVisitorInvites().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
@@ -559,6 +561,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllWorkPermitView().setOrder(order++));
+		views.put("vendorWorkpermits", getVendorWorkPermitView().setOrder(order++));
 		views.put("myWorkpermits", getMyWorkPermits().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORKPERMIT, views);
 
@@ -2414,6 +2417,27 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Workorders");
 		allView.setSortFields(sortFields);
+
+		return allView;
+	}
+	
+	private static FacilioView getVendorWorkOrders() {
+
+		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(workOrdersModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Workorders");
+		allView.setSortFields(sortFields);
+		allView.setHidden(true);
 
 		return allView;
 	}
@@ -4846,6 +4870,15 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Work Permit");
+		return allView;
+	}
+	
+	private static FacilioView getVendorWorkPermitView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Work Permit");
+		allView.setHidden(true);
 		return allView;
 	}
 
