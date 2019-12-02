@@ -592,7 +592,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				jObj.put("moduleId", record.getModuleId());
 				ArrayList<String> permalinks = new ArrayList<String>();
 				
-				if(CollectionUtils.isNotEmpty(nextStateRule) && nextStateRule.size() >= 2){
+				if(CollectionUtils.isNotEmpty(nextStateRule)){
 					for(WorkflowRuleContext rule : nextStateRule) {
 						long transitionId = rule.getId();
 						jObj.put("transitionId", transitionId);
