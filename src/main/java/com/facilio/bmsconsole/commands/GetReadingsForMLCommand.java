@@ -18,8 +18,10 @@ import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -42,8 +44,6 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			currentTime = 1536300000000L;
 		}
 		
-		
-		SortedMap<Long,Hashtable<String,Object>> variableData = new TreeMap<Long,Hashtable<String,Object>>();
 		SortedMap<Long,Hashtable<String,Object>> criteriavariableData = new TreeMap<Long,Hashtable<String,Object>>();
 		
 		
@@ -58,7 +58,8 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			SortedMap<Long,Object> data = new TreeMap<Long,Object>();
             FacilioField variableField = modBean.getField(variables.getFieldID());
             FacilioField parentField = modBean.getField(variables.getParentFieldID());
-            FacilioField ttimeField = FieldFactory.getField("ttime", "TTIME", variableField.getModule(), FieldType.NUMBER);
+            FacilioModule module = modBean.getModule(variableField.getModuleId());
+            FacilioField ttimeField = modBean.getField("ttime", module.getName());
             List<FacilioField> fieldList = new ArrayList<FacilioField>(2);
             fieldList.add(variableField);
             fieldList.add(ttimeField);
@@ -67,12 +68,10 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 																	.module(variableField.getModule())
 																	.beanClass(ReadingContext.class)
 																	.orderBy("TTIME ASC")
-																	.andCustomWhere("TTIME >= ? AND TTIME < ? AND "+parentField.getColumnName()+"=? ",
-																			startTime, currentTime,variables.getParentID());
-			if(mlContext.getOrgId()==232 && mlContext.getId()==83)
-			{
-				LOGGER.info("JAVEED"+selectBuilder.toString()+"::"+startTime+"::"+currentTime);
-			}
+																	.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
+																	.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(currentTime), NumberOperators.LESS_THAN))
+																	.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(variables.getParentID()), NumberOperators.EQUALS));
+			
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
 			
 			for(Map<String,Object> prop : props)
@@ -115,11 +114,6 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 				}
 			}
 			
-			if(mlContext.getOrgId()==232 && mlContext.getId()==83)
-			{
-				
-				LOGGER.info("Javeed"+data+"::"+selectBuilder.toString());
-			}
 			mlContext.setMlVariablesDataMap(variables.getParentID(), variableField.getName(), data);
 		}
 		
@@ -130,7 +124,9 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			{
 				long startTime = currentTime-variables.getMaxSamplingPeriod();
 	            FacilioField variableField = modBean.getField(variables.getFieldID());
-	            FacilioField ttimeField = FieldFactory.getField("ttime", "TTIME", variableField.getModule(), FieldType.NUMBER);
+	            FacilioField parentField = modBean.getField(variables.getParentFieldID());
+	            FacilioModule module = modBean.getModule(variableField.getModuleId());
+	            FacilioField ttimeField = modBean.getField("ttime", module.getName());
 	            List<FacilioField> fieldList = new ArrayList<FacilioField>(2);
 	            fieldList.add(variableField);
 	            fieldList.add(ttimeField);
@@ -139,8 +135,10 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 																		.module(variableField.getModule())
 																		.beanClass(ReadingContext.class)
 																		.orderBy("TTIME ASC")
-																		.andCustomWhere("TTIME >= ? AND TTIME < ? AND PARENT_ID=? ",
-																				startTime, currentTime, variables.getParentID());
+																		.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
+																		.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(currentTime), NumberOperators.LESS_THAN))
+																		.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(variables.getParentID()), NumberOperators.EQUALS));
+																		
 				List<Map<String, Object>> props = selectBuilder.getAsProps();
 				for(Map<String,Object> prop : props)
 				{
