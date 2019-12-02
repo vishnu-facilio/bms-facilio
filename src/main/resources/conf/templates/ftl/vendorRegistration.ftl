@@ -52,7 +52,7 @@
                                     <a href="${getVendorPermaLink[0]}" style="border-radius: 3px; background-color: #ff3184;font-size: 14px;font-weight: 600;border: none;text-decoration: none;color: #fff;padding: 18px 50px;letter-spacing: 0.5px;cursor: pointer !important;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;margin-left: 20px;">Upload COI</a>
                                <#else>
                                     <a href="https://app.facilio.com/app/at/vendors/list/all" style="border-radius: 3px; background-color: #ff3184;font-size: 14px;font-weight: 600;border: none;text-decoration: none;color: #fff;padding: 18px 50px;letter-spacing: 0.5px;cursor: pointer !important;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;margin-left: 20px;">Upload COI</a>
-                                    
+                                </#if>
                               </td>
                         </tr>
                         <tr>
