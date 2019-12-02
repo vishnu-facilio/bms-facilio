@@ -83,10 +83,15 @@ public class ColumnFactory {
 		columnMap.put("visitorlogging-default", getDefaultVisitorLoggingColumns());
 		columnMap.put("visitorinvite-default", getDefaultVisitorInvitesColumns());
 		columnMap.put("visitorlogging-invite_all", getDefaultVisitorInvitesColumns());
+		columnMap.put("visitorlogging-myInvites", getmyInvitesVisitorInvitesColumns());
+		columnMap.put("visitorlogging-all", getAllVisitsColumns());
 		columnMap.put("insurance-default", getDefaultInsuranceColumns());
 		columnMap.put("watchlist-default", getDefaultWatchListColumns());
 		columnMap.put("workpermit-default", getDefaultWorkPermitColumns());
+		columnMap.put("workpermit-myWorkpermits", getMyWorkWorkPermitColumns());
+		columnMap.put("vendors-myVendors", getMyVendorsColumns());
 		columnMap.put("contact-default", getDefaultContactColumns());
+	
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -313,6 +318,18 @@ public class ColumnFactory {
 		
 		return columns;
 	}
+	
+	private static List<ViewField> getMyVendorsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("email", "E-Mail"));
+		columns.add(new ViewField("phone", "Phone"));
+		columns.add(new ViewField("website", "Website"));
+		
+		return columns;
+	}
+	
 	
 	private static List<ViewField> getDefaultItemColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
@@ -672,6 +689,31 @@ public class ColumnFactory {
 		return columns;
 	}
 	
+	public static List<ViewField> getmyInvitesVisitorInvitesColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("visitor", "Visitor"));
+		columns.add(new ViewField("visitorType", "Type"));
+		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
+		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
+		columns.add(new ViewField("moduleState", "Status"));
+	
+		return columns;
+	}
+	
+	public static List<ViewField> getAllVisitsColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("visitor", "Visitor"));
+		columns.add(new ViewField("visitorType", "Type"));
+		columns.add(new ViewField("checkInTime", "Check-in Time"));
+		columns.add(new ViewField("checkOutTime", "Check-out Time"));
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
+		columns.add(new ViewField("moduleState", "Status"));
+		return columns;
+	}
+	
 	public static List<ViewField> getDefaultInsuranceColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("companyName", "Company Name"));
@@ -692,6 +734,19 @@ public class ColumnFactory {
 		columns.add(new ViewField("requestedBy", "Requested By"));
 		columns.add(new ViewField("isRecurring", "Is Recurring"));
 		columns.add(new ViewField("moduleState", "State"));
+		return columns;
+	}
+	
+	public static List<ViewField> getMyWorkWorkPermitColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("expectedStartTime", "Expected Start Time"));
+		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
+		columns.add(new ViewField("workType", "Work Type"));
+		columns.add(new ViewField("isRecurring", "Recurring"));
+		columns.add(new ViewField("requestedBy", "Requested By"));
+		columns.add(new ViewField("moduleState", "Status"));
 		return columns;
 	}
 
