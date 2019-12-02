@@ -78,7 +78,7 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		FacilioModule logReadingModule = modBean.getModule("loadpredictionmllogreadings");
 		FacilioModule readingModule = modBean.getModule("loadpredictionmlreadings");
 		
-		FacilioField energyField = modBean.getField("totalDemand", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		FacilioField powerField = modBean.getField("totalDemand", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
@@ -88,6 +88,8 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 		
 		Map<String,Long> maxSamplingPeriodMap = new HashMap<String, Long>();
 		Map<String,Long> futureSamplingPeriodMap = new HashMap<String, Long>();
+		Map<String,String> aggregationMap = new HashMap<String, String>();
+		
 		if (mlVariables != null) {
 			for(Object entry:mlVariables.entrySet()){
 				Map.Entry en = (Map.Entry) entry;
@@ -97,11 +99,14 @@ public class AddLoadPredictionCommand extends FacilioCommand {
 				if(((JSONObject)en.getValue()).containsKey("futureSamplingPeriod")){
 					futureSamplingPeriodMap.put(en.getKey().toString(), Long.parseLong(((JSONObject)en.getValue()).get("futureSamplingPeriod").toString()));
 				}
+				if(((JSONObject)en.getValue()).containsKey("aggregation")){
+					aggregationMap.put(en.getKey().toString(), ((JSONObject)en.getValue()).get("aggregation").toString());
+				}
 			}
 		}
 		
-		MLAPI.addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),maxSamplingPeriodMap.containsKey(energyField.getName())? maxSamplingPeriodMap.get(energyField.getName()):7776000000l,futureSamplingPeriodMap.containsKey(energyField.getName())? futureSamplingPeriodMap.get(energyField.getName()):0,true);
-		MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),maxSamplingPeriodMap.containsKey(temperatureField.getName())? maxSamplingPeriodMap.get(temperatureField.getName()):7776000000l,futureSamplingPeriodMap.containsKey(temperatureField.getName())? futureSamplingPeriodMap.get(temperatureField.getName()):172800000l,false);
+		MLAPI.addMLVariables(mlID,powerField.getModuleId(),powerField.getFieldId(),energyParentField.getFieldId(),context.getId(),maxSamplingPeriodMap.containsKey(powerField.getName())? maxSamplingPeriodMap.get(powerField.getName()):7776000000l,futureSamplingPeriodMap.containsKey(powerField.getName())? futureSamplingPeriodMap.get(powerField.getName()):0,true,aggregationMap.containsKey(powerField.getName())? aggregationMap.get(powerField.getName()):"SUM");
+		MLAPI.addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),maxSamplingPeriodMap.containsKey(temperatureField.getName())? maxSamplingPeriodMap.get(temperatureField.getName()):7776000000l,futureSamplingPeriodMap.containsKey(temperatureField.getName())? futureSamplingPeriodMap.get(temperatureField.getName()):172800000l,false,aggregationMap.containsKey(temperatureField.getName())? aggregationMap.get(temperatureField.getName()):"SUM");
 		
 		MLAPI.addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 		MLAPI.addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");

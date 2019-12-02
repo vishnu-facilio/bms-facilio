@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
@@ -72,9 +74,11 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 				LOGGER.info("JAVEED"+selectBuilder.toString()+"::"+startTime+"::"+currentTime);
 			}
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
+			
 			for(Map<String,Object> prop : props)
 			{
 					long ttime = (long) prop.get(ttimeField.getName());
+					
 					if(data.containsKey(ttime) && variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
 						Double previousValue = (Double) FacilioUtil.castOrParseValueAsPerType(variableField, data.get(ttime));
 						Double currentValue = (Double) FacilioUtil.castOrParseValueAsPerType(variableField, prop.get(variableField.getName()));
@@ -95,6 +99,22 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 						}
 					}
 			}
+			
+			if("AVG".equalsIgnoreCase(variables.getAggregation())){
+
+				Map<Long, Long> timeOccurenceMap = props.stream().collect(Collectors.groupingBy(prop -> (long) prop.get(ttimeField.getName()), Collectors.counting()));
+				
+				for(Entry<Long,Object> en:data.entrySet()){
+					if(variableField.getDataTypeEnum().equals(FieldType.DECIMAL)){
+						Double tot = (Double) FacilioUtil.castOrParseValueAsPerType(variableField, en.getValue());
+						data.put(en.getKey(), tot/timeOccurenceMap.get(en.getKey()));
+					}else if(variableField.getDataTypeEnum().equals(FieldType.NUMBER)){
+						Long tot = (Long) FacilioUtil.castOrParseValueAsPerType(variableField, en.getValue());
+						data.put(en.getKey(), tot/timeOccurenceMap.get(en.getKey()));
+					}
+				}
+			}
+			
 			if(mlContext.getOrgId()==232 && mlContext.getId()==83)
 			{
 				
@@ -102,9 +122,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			}
 			mlContext.setMlVariablesDataMap(variables.getParentID(), variableField.getName(), data);
 		}
-		if(mlContext.getOrgId()==210 && mlContext.getId()==4){
-			LOGGER.info("ML variables Data map"+mlContext.getMlVariablesDataMap());
-		}
+		
 		List<MLVariableContext> mlCriteriaVariable = mlContext.getMLCriteriaVariables();
 		if(mlCriteriaVariable!=null)
 		{

@@ -215,7 +215,7 @@ public class MLAPI {
 		builder.insert(FieldUtil.getAsProperties(context));
 	}
 	
-	public static void addMLVariables(long mlID,long moduleid,long fieldid,long parentFieldid,long parentid,long maxSamplingPeriod,long futureSamplingPeriod,boolean isSource) throws Exception
+	public static void addMLVariables(long mlID,long moduleid,long fieldid,long parentFieldid,long parentid,long maxSamplingPeriod,long futureSamplingPeriod,boolean isSource,String aggregation) throws Exception
 	{
 		MLVariableContext variableContext = new MLVariableContext();
 		variableContext.setMlID(mlID);
@@ -226,6 +226,7 @@ public class MLAPI {
 		variableContext.setMaxSamplingPeriod(maxSamplingPeriod);
 		variableContext.setFutureSamplingPeriod(futureSamplingPeriod);
 		variableContext.setIsSource(isSource);
+		variableContext.setAggregation(aggregation);
 		
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 											.table(ModuleFactory.getMLVariablesModule().getTableName())

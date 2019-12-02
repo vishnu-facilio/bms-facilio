@@ -15,6 +15,7 @@ public class MLVariableContext extends ModuleBaseWithCustomFields
 	private long maxSamplingPeriod;
 	private long futureSamplingPeriod;
 	private int sequence;
+	private String aggregation;
 	
 	public long getMlID()
 	{
@@ -93,4 +94,11 @@ public class MLVariableContext extends ModuleBaseWithCustomFields
 	{
 		return sequence;
 	}
+	public String getAggregation() {
+		return aggregation;
+	}
+	public void setAggregation(String aggregation) {
+		this.aggregation = aggregation;
+	}
+	
 }
