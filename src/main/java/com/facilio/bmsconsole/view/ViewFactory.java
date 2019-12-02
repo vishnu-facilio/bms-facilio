@@ -539,6 +539,7 @@ public class ViewFactory {
 		views.put("pending", getPendingVisitsView().setOrder(order++));
 		views.put("upcoming", getUpcomingVisitsView().setOrder(order++));
 		views.put("all", getAllVisitorLogsView().setOrder(order++));
+		views.put("vendorVisitors", getVendorVisitorLogsView().setOrder(order++));
 		views.put("myInvites", getMyVisitorInvites().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
 
@@ -4812,6 +4813,15 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Visits");
+		return allView;
+	}
+	
+	private static FacilioView getVendorVisitorLogsView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("vendorVisitors");
+		allView.setDisplayName("All Visits");
+		allView.setHidden(true);
 		return allView;
 	}
 
