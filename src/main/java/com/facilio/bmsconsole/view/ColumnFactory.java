@@ -667,6 +667,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
 		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
+		columns.add(new ViewField("Purpose Of Visit", "State"));
 		return columns;
 	}
 	
@@ -682,11 +683,14 @@ public class ColumnFactory {
 	
 	public static List<ViewField> getDefaultWorkPermitColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("ticket", "Ticket"));
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("vendor", "Vendor"));
-		columns.add(new ViewField("isRecurring", "Recurring"));
-//		columns.add(new ViewField("requestedBy", "Requested By"));
+		columns.add(new ViewField("expectedStartTime", "Expected Start Time"));
+		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
+		columns.add(new ViewField("workType", "Work Type"));
+		columns.add(new ViewField("requestedBy", "Requested By"));
+		columns.add(new ViewField("isRecurring", "Is Recurring"));
+		columns.add(new ViewField("moduleState", "State"));
 		return columns;
 	}
 
