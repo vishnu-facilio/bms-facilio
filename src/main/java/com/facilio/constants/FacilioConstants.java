@@ -1554,6 +1554,8 @@ public class FacilioConstants {
 		public static final String USE_CONTROLLER_DATA_INTERVAL = "useControllerDataInterval";
 		public static final String DEFAULT_DATA_INTERVAL = "defaultDataInterval";
 		public static final String MODULE_EXPORT_LIMIT = "moduleExportLimit";
+		public static final String ENERGY_COST_CONSTANT = "energyCostConstant";
+		public static final String ENERGY_CARBON_CONSTANT = "energyCarbonConstant";
 	}
 	
 	public static class Alarm {

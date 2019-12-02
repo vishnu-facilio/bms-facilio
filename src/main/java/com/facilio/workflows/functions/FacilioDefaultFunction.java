@@ -15,6 +15,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -642,6 +643,17 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			
 			String permaLink = (String) context.get(FacilioConstants.ContextNames.PERMALINK_TOKEN_FOR_URL);
 			return permaLink;
+			
+		}
+		
+	},
+	GET_ORG_INFO (20, "getOrgInfo") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			String[] names = objects[0].toString().split(",");
+			return CommonCommandUtil.getOrgInfo(names);
 			
 		}
 		
