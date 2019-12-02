@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.List;
 
-import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -31,11 +30,10 @@ public class DefaultMLJob extends FacilioJob
 					continue;
 				}
 				mlContext.setPredictionTime(jc.getExecutionTime());
-				Context context = new FacilioContext();
+				FacilioChain chain = FacilioChainFactory.getMLModelBuildingChain();
+				FacilioContext context = chain.getContext();
 				context.put(FacilioConstants.ContextNames.ML, mlContext);
-				
-				FacilioChain c = FacilioChainFactory.getMLModelBuildingChain();
-				c.execute(context);
+				chain.execute();
 			}
 			LOGGER.info("Finished DefaultMLJob, JOB ID :"+jc.getJobId());
 		}catch(Exception e){
