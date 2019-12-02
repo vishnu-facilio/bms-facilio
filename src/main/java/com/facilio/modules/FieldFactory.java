@@ -3640,7 +3640,6 @@ public class FieldFactory {
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
 		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
 		fields.add(getField("dependentId", "DEPENDENT_FORMULA_ID", module, FieldType.NUMBER));
-		fields.add(getField("actionCount", "ACTION_COUNT", module, FieldType.NUMBER));
 		fields.add(getField("loggerGroupId", "LOGGER_GROUP_ID", module, FieldType.NUMBER));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
 		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));

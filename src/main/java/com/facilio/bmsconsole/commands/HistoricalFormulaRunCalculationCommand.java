@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.LoggerAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -95,9 +96,7 @@ public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 			throw new IllegalArgumentException("The given formula : "+formulaId+" is not defined for the given resource");
 		}
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> loggerfields = modBean.getAllFields(ModuleFactory.getFormulaFieldHistoricalLoggerModule().getName());
-		
+		List<FacilioField> loggerfields = FieldFactory.getFormulaFieldHistoricalLoggerFields();
 		List<LoggerContext> activeDependentFormulaLoggerList = LoggerAPI.getActiveParentAndResourceLoggers(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, formulaId, finalResourceIds);
 		if(activeDependentFormulaLoggerList != null && !activeDependentFormulaLoggerList.isEmpty())
 		{

@@ -1078,17 +1078,14 @@ public class ReadingAction extends FacilioAction {
 	}
 	
 	public String getHistoricalFormulaFieldParentLoggers() throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> loggerfields = modBean.getAllFields(ModuleFactory.getFormulaFieldHistoricalLoggerModule().getName());		
-		Collection<LoggerContext> historicalFormulaFieldParentLoggerList = LoggerAPI.getAllParentLoggerAPI(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, getId());
+		List<FacilioField> loggerfields = FieldFactory.getFormulaFieldHistoricalLoggerFields();	
+		Collection<LoggerContext> historicalFormulaFieldParentLoggerList = LoggerAPI.getAllParentLoggerAPI(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, getFormulaId());
 		setResult("historicalFormulaFieldParentLoggers", historicalFormulaFieldParentLoggerList);
 		return SUCCESS;		
 	}
 	
 	public String getHistoricalFormulaFieldChildLoggers() throws Exception {
-
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> loggerfields = modBean.getAllFields(ModuleFactory.getFormulaFieldHistoricalLoggerModule().getName());		
+		List<FacilioField> loggerfields = FieldFactory.getFormulaFieldHistoricalLoggerFields();		
 		List<LoggerContext> historicalFormulaFieldChildLoggerList = LoggerAPI.getGroupedLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, getLoggerGroupId());
 		setResult("historicalFormulaFieldChildLoggers", historicalFormulaFieldChildLoggerList);
 		return SUCCESS;	

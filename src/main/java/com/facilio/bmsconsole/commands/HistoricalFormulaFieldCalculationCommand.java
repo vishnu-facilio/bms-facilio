@@ -94,8 +94,7 @@ private static final Logger LOGGER = Logger.getLogger(SingleResourceHistoricalFo
 	public boolean postExecute() throws Exception {
 		if(historicalFormulaFieldLogger != null )
 		{
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<FacilioField> loggerfields = modBean.getAllFields(ModuleFactory.getFormulaFieldHistoricalLoggerModule().getName());
+			List<FacilioField> loggerfields = FieldFactory.getFormulaFieldHistoricalLoggerFields();
 			historicalFormulaFieldLogger.setStatus(LoggerContext.Status.RESOLVED.getIntVal());
 			historicalFormulaFieldLogger.setCalculationEndTime(DateTimeUtil.getCurrenTime());
 			LoggerAPI.updateLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, historicalFormulaFieldLogger);	
@@ -138,8 +137,7 @@ private static final Logger LOGGER = Logger.getLogger(SingleResourceHistoricalFo
 			if(historicalFormulaFieldLogger != null )
 			{
 
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				List<FacilioField> loggerfields = modBean.getAllFields(ModuleFactory.getFormulaFieldHistoricalLoggerModule().getName());				
+				List<FacilioField> loggerfields = FieldFactory.getFormulaFieldHistoricalLoggerFields();				
 
 				historicalFormulaFieldLogger.setStatus(LoggerContext.Status.FAILED.getIntVal());
 				historicalFormulaFieldLogger.setCalculationEndTime(DateTimeUtil.getCurrenTime());
