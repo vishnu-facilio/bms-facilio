@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
@@ -70,7 +72,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 				if(mlArray.length()>0)
 				{
 					List<FacilioField> fields = modBean.getAllFields(logModule.getName());
-					
+					Set<String> fieldNames = fields.stream().map(FacilioField::getName).collect(Collectors.toSet());
 					 for(int i=0; i<mlArray.length(); i++)
 					 {
 						 JSONObject readingObj = (JSONObject) mlArray.get(i);
@@ -87,19 +89,20 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 							 newReading.addReading("mlRunning", true);
 							 newUpdatedReading.addReading("mlRunning", true);
 
-							 for(FacilioField field:fields)
+							 for(String field:fieldNames)
 							 {
-								 if(readingObj.has(field.getName()) && !field.getName().equalsIgnoreCase("ttime"))
+								 if(readingObj.has(field) && !field.equalsIgnoreCase("ttime"))
 								 {
-									 mlContext.getAssetDetails().put(field.getName(),readingObj.get(field.getName()));
-									 newReading.addReading(field.getName(), readingObj.get(field.getName()));
-									 newUpdatedReading.addReading(field.getName(), readingObj.get(field.getName()));
-								 }else if(!readingObj.has(field.getName()) && field.getName().equalsIgnoreCase("errorCode")){
-									 mlContext.getAssetDetails().put(field.getName(),-1);
-									 newReading.addReading(field.getName(), -1);
-									 newUpdatedReading.addReading(field.getName(), -1);
+									 mlContext.getAssetDetails().put(field,readingObj.get(field));
+									 newReading.addReading(field, readingObj.get(field));
+									 newUpdatedReading.addReading(field, readingObj.get(field));
+								 }else if(!readingObj.has(field) && field.equalsIgnoreCase("errorCode")){
+									 mlContext.getAssetDetails().put(field,-1);
+									 newReading.addReading(field, -1);
+									 newUpdatedReading.addReading(field, -1);
 								 }
 							 }
+							 
 							 LOGGER.info("Asset Details are "+mlContext.getAssetDetails());
 							 
 							 newReading.addReading("predictedTime", mlContext.getPredictionTime());
