@@ -4037,6 +4037,12 @@ public class TransactionChainFactory {
         c.addCommand(new EditPointCommand());
         return c;
 	}
+
+	public static FacilioChain getDeleteServiceCatalogChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteServiceCatalogCommand());
+		return chain;
+	}
 }
 
 

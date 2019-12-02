@@ -1,11 +1,15 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -540,9 +544,9 @@ public class ModuleAction extends FacilioAction {
 	public String addModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		
+
 		setModuleData();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.RECORD, moduleData);
 		
 		// TODO.... Temporary. Will be changed to counter field soon
@@ -554,7 +558,15 @@ public class ModuleAction extends FacilioAction {
 		setId(moduleData.getId());
 		return moduleDataDetails();
 	}
-	
+
+	private String moduleDataString;
+	public String getModuleDataString() {
+		return moduleDataString;
+	}
+	public void setModuleDataString(String moduleDataString) {
+		this.moduleDataString = moduleDataString;
+	}
+
 	private String dataString;
 	public String getDataString() {
 		return dataString;
@@ -577,6 +589,14 @@ public class ModuleAction extends FacilioAction {
 	}
 	public void setStateTransitionId(long stateTransitionId) {
 		this.stateTransitionId = stateTransitionId;
+	}
+
+	private Map<String, Object> subFormFiles;
+	public Map<String, Object> getSubFormFiles() {
+		return subFormFiles;
+	}
+	public void setSubFormFiles(Map<String, Object> subFormFiles) {
+		this.subFormFiles = subFormFiles;
 	}
 
 	public String updateModuleData() throws Exception {
@@ -623,8 +643,28 @@ public class ModuleAction extends FacilioAction {
 			}
 			moduleData.getData().putAll(data);
 		}
+		else if (StringUtils.isNotEmpty(moduleDataString)) {
+			JSONParser parser = new JSONParser();
+			Map<String, Object> data = (Map<String, Object>) parser.parse(moduleDataString);
+			if (MapUtils.isNotEmpty(data)) {
+				String moduleName = (String) data.get("moduleName");
+				if (StringUtils.isNotEmpty(moduleName)) {
+					setModuleName(moduleName);
+				}
+				if (data.containsKey("withLocalId")) {
+					setWithLocalId((Boolean) data.get("withLocalId"));
+				}
+				if (data.containsKey("moduleData")) {
+					moduleData = (CustomModuleData) FieldUtil.getAsBeanFromMap((Map<String, Object>) data.get("moduleData"), CustomModuleData.class);
+				}
+			}
+		}
+
+		if (MapUtils.isNotEmpty(subFormFiles) && moduleData != null && MapUtils.isNotEmpty(moduleData.getSubForm())) {
+			moduleData.addSubFormFiles(subFormFiles);
+		}
 	}
-	
+
 	private List<ModuleBaseWithCustomFields> moduleDatas;
 	public List<ModuleBaseWithCustomFields> getModuleDatas() {
 		return moduleDatas;

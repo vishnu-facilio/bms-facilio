@@ -1073,6 +1073,8 @@
 				method="getServiceCatalogList" />
 		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogDetails" />
+		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+				method="deleteServiceCatalog" />
 
 		<action name="modules" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getModules" />

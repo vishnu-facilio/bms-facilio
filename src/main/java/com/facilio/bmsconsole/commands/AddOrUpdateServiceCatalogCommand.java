@@ -7,8 +7,11 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
@@ -44,6 +47,8 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
     }
 
     private void updateServiceCatalog(ServiceCatalogContext serviceCatalog) throws Exception {
+        checkForDuplicateName(serviceCatalog.getName(), serviceCatalog.getId());
+
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getServiceCatalogModule().getTableName())
                 .fields(FieldFactory.getServiceCatalogFields())
@@ -52,7 +57,23 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
         builder.update(FieldUtil.getAsProperties(serviceCatalog));
     }
 
+    private void checkForDuplicateName(String name, long id) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getServiceCatalogModule().getTableName())
+                .select(FieldFactory.getServiceCatalogFields())
+                .andCondition(CriteriaAPI.getCondition("NAME", "name", name, StringOperators.IS));
+        if (id > 0) {
+            builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(id), NumberOperators.NOT_EQUALS));
+        }
+        Map<String, Object> map = builder.fetchFirst();
+        if (map != null) {
+            throw new IllegalArgumentException("Name cannot be duplicated");
+        }
+    }
+
     private void addServiceCatalog(ServiceCatalogContext serviceCatalog) throws Exception {
+        checkForDuplicateName(serviceCatalog.getName(), -1);
+
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getServiceCatalogModule().getTableName())
                 .fields(FieldFactory.getServiceCatalogFields())
@@ -60,15 +81,6 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
         Map<String, Object> map = FieldUtil.getAsProperties(serviceCatalog);
         builder.insert(map);
         serviceCatalog.setId((long) map.get("id"));
-
-//        StateFlowRulesAPI.addOrUpdateFormDetails(serviceCatalog);
-//        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-//                .table(ModuleFactory.getServiceCatalogModule().getTableName())
-//                .fields(Collections.singletonList(FieldFactory.getField("formId", "FORM_ID", ModuleFactory.getServiceCatalogModule(), FieldType.NUMBER)))
-//                .andCondition(CriteriaAPI.getIdCondition(serviceCatalog.getId(), ModuleFactory.getServiceCatalogModule()));
-//        Map<String, Object> updateMap = new HashMap<>();
-//        updateMap.put("formId", serviceCatalog.getFormId());
-//        updateBuilder.update(updateMap);
     }
 
     private void validateForm(FacilioForm form) {
