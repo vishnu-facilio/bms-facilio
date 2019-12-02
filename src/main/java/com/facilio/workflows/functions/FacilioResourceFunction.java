@@ -59,7 +59,7 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(Long.valueOf(objects[0].toString()), false);
+			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(Long.valueOf(objects[0].toString()), null, false);
 			return vLog;
 		
 		};

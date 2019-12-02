@@ -90,7 +90,7 @@ public class ScheduleNewVisitorLogCommand extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		FacilioContext context = new FacilioContext();
-		VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(jc.getJobId(), true);
+		VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(jc.getJobId(), null, true);
 		 JSONObject jobProps = BmsJobUtil.getJobProps(jc.getJobId(), "ScheduleNewVisitorLogs");
 	     Boolean isEdit = (Boolean) jobProps.getOrDefault("isEdit", true);
 	     context.put(FacilioConstants.ContextNames.IS_EDIT, isEdit);

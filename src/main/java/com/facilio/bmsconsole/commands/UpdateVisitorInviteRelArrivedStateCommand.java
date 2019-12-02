@@ -36,7 +36,7 @@ public class UpdateVisitorInviteRelArrivedStateCommand extends FacilioCommand{
 				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
 				long fieldId = modBean.getField("moduleState", module.getName()).getFieldId();
 				
-				VisitorLoggingContext visitorLogging = VisitorManagementAPI.getVisitorLoggingTriggers(vl.getId(), false);
+				VisitorLoggingContext visitorLogging = VisitorManagementAPI.getVisitorLoggingTriggers(vl.getId(), null, false);
 						
 				if(visitorLogging != null) {
 					updateChangeState.setFieldId(fieldId);

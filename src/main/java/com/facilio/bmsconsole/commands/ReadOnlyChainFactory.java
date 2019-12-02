@@ -1621,7 +1621,7 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain otpScanVisitorLogChain() {
+	public static FacilioChain passCodeScanVisitorLogChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetVisitorDetailAndLogCommand());
 		return c;

@@ -4635,8 +4635,8 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="checkOutVisitorLogging" />
 		<action name="qrScanLog"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="qrScanLog" />
-		<action name="getVisitorLogforPhoneNumber"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLogDetailsforPhoneNumber" />
+		<action name="getVisitorLogforPassCode"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="passCodeScanLog" />
 		
 		<action name="*" class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList">
 			<param name="viewName">{1}</param>

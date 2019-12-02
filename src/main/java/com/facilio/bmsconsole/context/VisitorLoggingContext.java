@@ -1,17 +1,10 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.File;
-import java.util.List;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.VisitorInviteContext.InviteSource;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -631,5 +624,17 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		}
 		return false;
 	}
+	
+	private String passCode;
+
+	public String getPassCode() {
+		return passCode;
+	}
+
+	public void setPassCode(String passCode) {
+		this.passCode = passCode;
+	}
+
+	
 	
 }

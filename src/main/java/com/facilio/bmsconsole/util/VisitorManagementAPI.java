@@ -8,33 +8,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import com.chargebee.internal.StringJoiner;
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
+import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.Preference;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.WatchListContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI.ScheduleActions;
-import com.facilio.bmsconsole.templates.Template;
-import com.facilio.bmsconsole.templates.WhatsappMessageTemplate;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
+import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.ScheduledRuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -46,6 +52,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -62,7 +69,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.workflows.context.ParameterContext;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class VisitorManagementAPI {
 
@@ -175,7 +185,7 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static VisitorLoggingContext getVisitorLoggingTriggers(long logId, boolean fetchTriggers) throws Exception {
+	public static VisitorLoggingContext getVisitorLoggingTriggers(long logId, String passCode, boolean fetchTriggers) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
@@ -184,10 +194,19 @@ public class VisitorManagementAPI {
 														.module(module)
 														.beanClass(VisitorLoggingContext.class)
 														.select(fields)
-														.andCondition(CriteriaAPI.getIdCondition(logId, module))
+														
 														;
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
+		
+		if(logId > 0) {
+			builder.andCondition(CriteriaAPI.getIdCondition(logId, module));
+		}
+		
+		if(StringUtils.isNotEmpty(passCode)) {
+			builder.andCondition(CriteriaAPI.getCondition("PASSCODE", "passcode", passCode, StringOperators.IS));
+		}
+		
 		LookupField contactField = (LookupField) fieldsAsMap.get("visitor");
 		LookupField hostField = (LookupField) fieldsAsMap.get("host");
 		LookupField visitedSpacefield = (LookupField) fieldsAsMap.get("visitedSpace");
@@ -257,6 +276,14 @@ public class VisitorManagementAPI {
 		if(fetchUpcoming) {
 			builder.andCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(status.getId()), NumberOperators.EQUALS));
 		}
+		
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitor"));
+		List<LookupField> additionaLookups = new ArrayList<LookupField>();
+		additionaLookups.add(visitorField);
+		builder.fetchLookups(additionaLookups);
+		
+		
 		VisitorLoggingContext records = builder.fetchFirst();
 		return records;
 	
@@ -597,7 +624,7 @@ public class VisitorManagementAPI {
 	public static void updateVisitorRollUps(VisitorLoggingContext visitorLog, VisitorLoggingContext oldRecord) throws Exception {
 		
 		if(visitorLog != null) {
-			VisitorLoggingContext updatedVisitorLog = getVisitorLoggingTriggers(visitorLog.getId(), false);
+			VisitorLoggingContext updatedVisitorLog = getVisitorLoggingTriggers(visitorLog.getId(), null, false);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
 			Map<String, Object> updateMap = new HashMap<>();
@@ -1903,4 +1930,24 @@ public class VisitorManagementAPI {
 		return typeSettingsMap;
 
 	}
+	
+	private static boolean passcodeExists(String passCode) throws Exception{
+		
+		VisitorLoggingContext vLog = getVisitorLoggingTriggers(-1, passCode, false);
+		return !(vLog == null);
+	}
+	
+	public static String generatePassCode() throws Exception {
+		String passCode = null;
+		Random random = new Random();
+		while(true) {
+			passCode = String.format("%04d", random.nextInt(10000));
+			if(!passcodeExists(passCode)) {
+				break;
+			}
+		}
+		return passCode;
+	} 
+	
+	    
 }

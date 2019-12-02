@@ -31,7 +31,7 @@ public class VisitorLogScheduler extends FacilioJob {
 			for (PMTriggerContext vLogTriggerContext : neverEndingTriggers) {
 				long lastGeneratedTime = vLogTriggerContext.getLastGeneratedTime() / 1000;			
 				long endTime = VisitorManagementAPI.getEndTime(-1, Collections.singletonList(vLogTriggerContext));
-				VisitorLoggingContext parentLog = VisitorManagementAPI.getVisitorLoggingTriggers(vLogTriggerContext.getPmId(), false);
+				VisitorLoggingContext parentLog = VisitorManagementAPI.getVisitorLoggingTriggers(vLogTriggerContext.getPmId(), null, false);
 				
 				if (lastGeneratedTime < endTime) {
 					long startTime = vLogTriggerContext.getSchedule().nextExecutionTime(lastGeneratedTime);

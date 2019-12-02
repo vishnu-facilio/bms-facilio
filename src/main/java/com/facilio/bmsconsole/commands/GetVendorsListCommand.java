@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.PermissionUtil;
@@ -22,6 +23,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class GetVendorsListCommand extends FacilioCommand {
 
@@ -77,6 +79,11 @@ public class GetVendorsListCommand extends FacilioCommand {
 		if ((filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
 			Criteria criteria = view.getCriteria();
 			builder.andCriteria(criteria);
+		}
+		
+		List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
+		if (CollectionUtils.isNotEmpty(fetchLookup) && !getCount) {
+			builder.fetchLookups(fetchLookup);
 		}
 
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);

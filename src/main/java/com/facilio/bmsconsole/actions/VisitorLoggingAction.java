@@ -107,6 +107,14 @@ private static final long serialVersionUID = 1L;
 		this.recordId = recordId;
 	}
 	
+	private String passCode;
+	
+	public String getPassCode() {
+		return passCode;
+	}
+	public void setPassCode(String passCode) {
+		this.passCode = passCode;
+	}
 	private boolean includeParentFilter;
 
 	public boolean getIncludeParentFilter() {
@@ -560,7 +568,7 @@ private static final long serialVersionUID = 1L;
 		
 		if(recordId > 0) {
 			FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
-			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(recordId, false);
+			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(recordId, null, false);
 			if(vLog != null) {
 				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(vLog.getStateFlowId(), vLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOGGING, vLog, c.getContext());
 				if(CollectionUtils.isNotEmpty(nextStateRule)) {
@@ -590,12 +598,11 @@ private static final long serialVersionUID = 1L;
 		return SUCCESS;
 	}
 	
-	public String getVisitorLogDetailsforPhoneNumber() throws Exception {
+	public String passCodeScanLog() throws Exception {
 	
-		FacilioChain c = ReadOnlyChainFactory.getVisitorDetailAndLogForPhoneNumberChain();
-		c.getContext().put(FacilioConstants.ContextNames.PHONE_NUMBER, contactNumber);
+		FacilioChain c = ReadOnlyChainFactory.passCodeScanVisitorLogChain();
+		c.getContext().put(FacilioConstants.ContextNames.PASSCODE, passCode);
 		c.execute();
-		setResult(FacilioConstants.ContextNames.VISITOR, c.getContext().get(FacilioConstants.ContextNames.VISITOR));
 		setResult(FacilioConstants.ContextNames.VISITOR_LOGGING, c.getContext().get(FacilioConstants.ContextNames.VISITOR_LOGGING));
 		setResult(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get(FacilioConstants.ContextNames.TRANSITION_ID));
 		

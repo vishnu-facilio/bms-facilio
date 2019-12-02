@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.VisitorInviteContext.InviteSource;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class VendorContext extends ModuleBaseWithCustomFields {
@@ -102,6 +104,70 @@ public class VendorContext extends ModuleBaseWithCustomFields {
 	public void setRegisteredBy(User registeredBy) {
 		this.registeredBy = registeredBy;
 	}
+	
+	
+	private Boolean hasInsurance;
+
+	public Boolean getHasInsurance() {
+		if (hasInsurance != null) {
+			return hasInsurance.booleanValue();
+		}
+		return false;
+	}
+
+	public void setHasInsurance(Boolean hasInsurance) {
+		this.hasInsurance = hasInsurance;
+	}
+	
+	private VendorSource vendorSource;
+	public int getInviteSource() {
+		if (vendorSource != null) {
+			return vendorSource.getIndex();
+		}
+		return -1;
+	}
+	public void setVendorSource(int vendorSource) {
+		this.vendorSource = VendorSource.valueOf(vendorSource);
+	}
+	public VendorSource getVendorSourceEnum() {
+		return vendorSource;
+	}
+	public void setVendorSource(VendorSource vendorSource) {
+		this.vendorSource = vendorSource;
+	}
+
+	public static enum VendorSource implements FacilioEnum {
+		TENANT, SELF;
+
+		@Override
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name();
+		}
+
+		public static VendorSource valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	private long sourceId;
+
+
+	public long getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(long sourceId) {
+		this.sourceId = sourceId;
+	}
+
 	
 	
 }

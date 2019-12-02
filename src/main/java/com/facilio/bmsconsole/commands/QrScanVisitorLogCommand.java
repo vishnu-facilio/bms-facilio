@@ -21,7 +21,7 @@ public class QrScanVisitorLogCommand extends FacilioCommand{
 		long currentTime = System.currentTimeMillis();
 		
 		if(recordId > 0) {
-			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(recordId, false);
+			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(recordId, null, false);
 			if(vLog != null) {
 				if(!vLog.isRecurring()) {
 					if(vLog.getExpectedCheckInTime() > 0 && vLog.getExpectedCheckOutTime() > 0 && (currentTime < vLog.getExpectedCheckInTime() || currentTime > vLog.getExpectedCheckOutTime())) {
