@@ -2115,7 +2115,7 @@ public class VisitorManagementAPI {
 		JSONObject blockedVisitorMailJson = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION, defaultTempId).getOriginalTemplate(); 
 		WorkflowContext wf = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION, defaultTempId).getWorkflow();
 		smsTemplate.setName("Name");
-		smsTemplate.setType(Template.Type.EMAIL);
+		smsTemplate.setType(Template.Type.SMS);
 		smsTemplate.setFrom((String) blockedVisitorMailJson.get("sender"));
 		smsTemplate.setTo(phoneNumbers);
 		smsTemplate.setMessage((String) blockedVisitorMailJson.get("message"));

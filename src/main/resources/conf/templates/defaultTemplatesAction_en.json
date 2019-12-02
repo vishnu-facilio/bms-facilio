@@ -1000,5 +1000,13 @@
 		"to": "${vLog.host.phone}",
 		"message": "${visitorlogging.visitor.name} tried checking in and the acess is resctricted as due to a watchlist record match.\nAdmin Team."
 	
+	},
+	"116": {
+		"name": "VENDOR_REGISTRATION_MAIL_NOTIFICATION",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"mailType": "html",
+		"subject": "Welcome! A final step to get registered",
+		"to": "${fetchVendor.email}",
+		"message_ftl": "vendorRegistration"
 	}
 }

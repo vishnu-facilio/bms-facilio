@@ -8,7 +8,9 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.workflows.exceptions.FunctionParamException;
@@ -84,7 +86,22 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
-	}
+	},
+	GET_VENDOR(4,"getVendor") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			VendorContext vendor = InventoryApi.getVendor(Long.valueOf(objects[0].toString()));
+			return vendor;
+		
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	
 	private Integer value;

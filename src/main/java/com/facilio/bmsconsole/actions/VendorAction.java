@@ -3,7 +3,10 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -17,6 +20,8 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
+import com.google.gson.JsonObject;
 
 public class VendorAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
@@ -61,9 +66,36 @@ public class VendorAction extends FacilioAction{
 		this.stateTransitionId = stateTransitionId;
 	}
 	
+	private String vendorString;
+	public String getVendorString() {
+		return vendorString;
+	}
+	public void setVendorString(String vendorString) {
+		this.vendorString = vendorString;
+	}
+	
+	private Map<String, Object> subFormFiles;
+	public Map<String, Object> getSubFormFiles() {
+		return subFormFiles;
+	}
+	public void setSubFormFiles(Map<String, Object> subFormFiles) {
+		this.subFormFiles = subFormFiles;
+	}
+	
 	
 	public String addVendor() throws Exception {
 		FacilioContext context = new FacilioContext();
+		if (StringUtils.isNotEmpty(vendorString)) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(vendorString);
+			vendor = FieldUtil.getAsBeanFromJson(json, VendorContext.class);
+			
+			if (vendor != null && MapUtils.isNotEmpty(subFormFiles)) {
+				vendor.addSubFormFiles(subFormFiles);
+			}
+		}
+		
+		vendor.parseFormData();
 		LocationContext location = vendor.getAddress();
 		
 		if(location!=null)
@@ -97,8 +129,17 @@ public class VendorAction extends FacilioAction{
 	
 	public String updateVendor() throws Exception {
 		FacilioContext context = new FacilioContext();
+		if (StringUtils.isNotEmpty(vendorString)) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(vendorString);
+			vendor = FieldUtil.getAsBeanFromJson(json, VendorContext.class);
+			
+			if (vendor != null && MapUtils.isNotEmpty(subFormFiles)) {
+				vendor.addSubFormFiles(subFormFiles);
+			}
+		}
 		LocationContext location = vendor.getAddress();
-		
+		vendor.parseFormData();
 		
 		if(location != null && location.getLat() != -1 && location.getLng() != -1)
 		{

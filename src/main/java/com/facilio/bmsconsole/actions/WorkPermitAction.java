@@ -121,8 +121,12 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.addWorkPermitRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			if (workPermit != null) {
+				workPermit.parseFormData();
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(workPermit));
 			}else {
+				for(WorkPermitContext wp : workPermitRecords) {
+					wp.parseFormData();
+				}
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, workPermitRecords);
 			}
 			c.execute();
@@ -134,6 +138,9 @@ private static final long serialVersionUID = 1L;
 	public String updateWorkPermit() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(workPermitRecords)) {
+			for(WorkPermitContext wp: workPermitRecords) {
+				wp.parseFormData();
+			}
 			FacilioChain c = TransactionChainFactory.updateWorkPermitRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());

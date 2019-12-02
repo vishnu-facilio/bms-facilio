@@ -1593,11 +1593,13 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVendors());
 			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new GenericAddSubModuleDataCommand());
 			c.addCommand(new AddVendorContactsCommand());
 			c.addCommand(new AddInsuranceVendorRollUpsCommand());
 			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			return c;
 		}
@@ -1606,12 +1608,14 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVendors());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new GenericAddSubModuleDataCommand());
 			c.addCommand(new AddVendorContactsCommand());
 			c.addCommand(new AddInsuranceVendorRollUpsCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 			
 			return c;
 		}

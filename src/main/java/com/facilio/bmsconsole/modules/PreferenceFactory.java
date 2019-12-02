@@ -36,6 +36,8 @@ public class PreferenceFactory {
 	//	modulePrefMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModulePrefList());
 		modulePrefMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, getVisitorLogModulePrefList());
 		modulePrefMap.put(FacilioConstants.ContextNames.WATCHLIST, getWatchListModulePrefList());
+		modulePrefMap.put(FacilioConstants.ContextNames.VENDORS, getVendorModulePrefList());
+		
 	}
 	
 	public static List<Preference> getAllPreferencesForModuleRecord(String moduleName) {
@@ -125,6 +127,14 @@ public class PreferenceFactory {
 //		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeSmsNotificationsPref());
 		
 		return visitorLogPreferences;
+	}
+	
+	private static List<Preference> getVendorModulePrefList() {
+		
+		List<Preference> vendorPreferences = new ArrayList<Preference>();
+		
+		vendorPreferences.add(InventoryApi.getRegisterVendorMailNotificationsPref());
+		return vendorPreferences;
 	}
 
 }

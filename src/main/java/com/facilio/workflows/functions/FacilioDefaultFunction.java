@@ -580,25 +580,28 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				return null;
 			}
 			
-			User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), (String) objects[3]);
+			User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 			JSONObject jObj = new JSONObject();
 			jObj.put("recordId", (long)objects[1]);
 			jObj.put("allowUrls",(String)objects[2]);
-			ModuleBaseWithCustomFields record = RecordAPI.getRecord((String)objects[4], (long)objects[1]);
+			ModuleBaseWithCustomFields record = RecordAPI.getRecord((String)objects[3], (long)objects[1]);
 			
-			List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), record.getModuleState().getId(), (String)objects[4], record, new FacilioContext());
-			jObj.put("moduleId", record.getModuleId());
-			ArrayList<String> permalinks = new ArrayList<String>();
-			
-			if(CollectionUtils.isNotEmpty(nextStateRule) && nextStateRule.size() >= 2){
-				for(WorkflowRuleContext rule : nextStateRule) {
-					long transitionId = rule.getId();
-					jObj.put("transitionId", transitionId);
-					String token = AccountUtil.getUserBean().generatePermalink(user, jObj);
-					String permalLinkURL = objects[0].toString()+objects[2].toString()+"?token=" + token;
-					permalinks.add(permalLinkURL);
+			if(record.getStateFlowId() > 0 && record.getModuleState() != null) {
+						
+				List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), record.getModuleState().getId(), (String)objects[3], record, new FacilioContext());
+				jObj.put("moduleId", record.getModuleId());
+				ArrayList<String> permalinks = new ArrayList<String>();
+				
+				if(CollectionUtils.isNotEmpty(nextStateRule) && nextStateRule.size() >= 2){
+					for(WorkflowRuleContext rule : nextStateRule) {
+						long transitionId = rule.getId();
+						jObj.put("transitionId", transitionId);
+						String token = AccountUtil.getUserBean().generatePermalink(user, jObj);
+						String permalLinkURL = objects[0].toString()+objects[2].toString()+"?token=" + token;
+						permalinks.add(permalLinkURL);
+					}
+					return permalinks;
 				}
-				return permalinks;
 			}
 			return null;
 			

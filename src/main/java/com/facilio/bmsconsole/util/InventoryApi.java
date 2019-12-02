@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolStatusContext;
 import com.facilio.bmsconsole.context.ToolTypesCategoryContext;
 import com.facilio.bmsconsole.context.ToolTypesStatusContext;
+import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField;
@@ -40,10 +41,13 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.ScheduledRuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
@@ -52,6 +56,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -76,6 +81,28 @@ public class InventoryApi {
 			return inventories.get(0);
 		}
 		return null;
+	}
+	
+	public static VendorContext getVendor(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDORS);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.VENDORS);
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		
+		
+		SelectRecordsBuilder<VendorContext> selectBuilder = new SelectRecordsBuilder<VendorContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.beanClass(VendorContext.class)
+																	.andCustomWhere(module.getTableName()+".ID = ?", id);
+		
+		LookupField registeredBy = (LookupField) fieldsAsMap.get("registeredBy");
+		selectBuilder.fetchLookup(registeredBy);
+		
+		VendorContext vendor = selectBuilder.fetchFirst();
+		
+		return vendor;
 	}
 	
 	public static Map<Long, InventoryVendorContext> getInventoryVendorMap(Collection<Long> idList) throws Exception
@@ -834,6 +861,81 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 	
 		return (Long) chain.getContext().get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 	}
+	
+
+	public static Preference getRegisterVendorMailNotificationsPref() {
+		
+		FacilioForm form = new FacilioForm();
+		return new Preference("registerVendor_MailNotification", "Register Vendor_Email", form, "Notify Vendor to upload COI when they are registered") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveRegisterVendorMailNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+	
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+	
+		};
+	
+	}
+	
+	public static Long saveRegisterVendorMailNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Vendor Registration Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE);
+		
+		Condition hasInsurance = new Condition();
+		hasInsurance.setFieldName("hasInsurance");
+		hasInsurance.setOperator(BooleanOperators.IS);
+		hasInsurance.setValue("false");
+		hasInsurance.setColumnName("Vendors.HAS_INSURANCE");
+		
+		
+		Condition email = new Condition();
+		email.setFieldName("email");
+		email.setOperator(CommonOperators.IS_NOT_EMPTY);
+		email.setValue("");
+		email.setColumnName("Vendors.EMAIL");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(hasInsurance);
+		criteria.addConditionMap(email);
+		
+		criteria.setPattern("(1 and 2)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
+		
+		emailAction.setDefaultTemplateId(116);
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
 	
 	
 }

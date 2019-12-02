@@ -35,16 +35,23 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	}
 
 	public static enum WorkType implements FacilioEnum {
-		MAINTENANCE, AUDIT, INSPECTION, MEETING, WORK;
+		HOT_WORK_PERMIT("Hot Work Permit"), COLD_WORK_PERMIT("Cold Work Permit"), EXCAVATION_WORK_PERMIT("Excavation Work Permit"), CONFINED_SPACE_WORK_PERMIT("Confined Space Work Permit"), EARTHMOVING_EQUIPMENT_VEHICULAR_WORK_PERMIT("EarthMoving Equipment/Vehicular Work Permit");
 
 		@Override
 		public int getIndex() {
 			return ordinal() + 1;
 		}
+		
+		private String name;
+		
+		WorkType(String name) {
+			
+			this.name = name;
+		}
 
 		@Override
 		public String getValue() {
-			return name();
+			return name;
 		}
 
 		public static WorkType valueOf(int value) {

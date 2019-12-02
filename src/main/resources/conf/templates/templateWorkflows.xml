@@ -1258,7 +1258,7 @@
 				</function>
 			</expression>
 			 <expression name="getVisitorLogPermaLink">
-				<function>default.getTransitionPermaLink('https://app.facilio.com', visitorlogging.id, '/link/1' , 'vandhana@gmail.com', 'visitorlogging')
+				<function>default.getTransitionPermaLink('https://app.facilio.com', visitorlogging.id, '/link/1' , 'visitorlogging')
 				</function>
 			</expression>
 			
@@ -1404,6 +1404,27 @@
 				type="String" />
 			<parameter name="visitorlogging.visitor.name"
 				type="String" />
+		</workflow>
+	</template>
+		<template id="116">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org" type="String" />
+			<parameter name="org.name" type="String" />
+			<parameter name="org.timezone" type="String" />
+		
+			<parameter name="vendors.id"
+				type="String" />
+			 <expression name="fetchVendor">
+				<function>resource.getVendor(vendors.id)
+				</function>
+			</expression>
+			 <expression name="getVendorPermaLink">
+				<function>default.getTransitionPermaLink('https://app.facilio.com', vendors.id, '/link/1' , 'vendors')
+				</function>
+			</expression>
+			
+		
 		</workflow>
 	</template>
 		
