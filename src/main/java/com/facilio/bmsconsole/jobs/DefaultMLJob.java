@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -22,13 +23,11 @@ public class DefaultMLJob extends FacilioJob
 		try{
 			LOGGER.info("Inside DefaultMLJob, JOB ID :"+jc.getJobId());
 			List<MLContext> mlContextList = MLUtil.getMlContext(jc);
-			for(MLContext mlContext:mlContextList)
+			List<MLContext> filteredmlContextList = mlContextList.stream().filter(ml->ml!=null).collect(Collectors.toList());
+			
+			for(MLContext mlContext:filteredmlContextList)
 			{
 				LOGGER.info("mlContext"+mlContext.getId());
-				if(mlContext==null)
-				{
-					continue;
-				}
 				mlContext.setPredictionTime(jc.getExecutionTime());
 				FacilioChain chain = FacilioChainFactory.getMLModelBuildingChain();
 				FacilioContext context = chain.getContext();
