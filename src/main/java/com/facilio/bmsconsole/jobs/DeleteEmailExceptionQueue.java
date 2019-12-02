@@ -4,6 +4,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.DeleteMessageQueueJobsCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
@@ -20,7 +21,8 @@ public class DeleteEmailExceptionQueue extends FacilioJob {
             int count =  DeleteMessageQueueJobsCommand.deleteQueue(TABLE_NAME, deleteCondition);
             LOGGER.info("FacilioExceptionQueue deleted queue count is  : "+count);
         }catch(Exception e){
-            LOGGER.info("Exception occurred in FacilioExceptionQueue deletedJob  :  ",e);
+        	CommonCommandUtil.emailException("DeleteEmailExceptionQueue", "DeleteEmailExceptionQueue Failed - orgid -- "+jc.getJobId(), e);
+        	LOGGER.info("Exception occurred in FacilioExceptionQueue deletedJob  :  ",e);
         }
 
     }
