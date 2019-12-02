@@ -1843,6 +1843,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new SetLocalIDCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new GenericAddSubModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		return c;
 	}

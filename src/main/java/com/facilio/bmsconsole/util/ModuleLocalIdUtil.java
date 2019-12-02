@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -157,11 +159,19 @@ public class ModuleLocalIdUtil {
 		
 	}
 	
-	public static boolean isModuleWithLocalId(FacilioModule module) {
+	public static boolean isModuleWithLocalId(FacilioModule module) throws Exception {
 		
 		if(AccountUtil.getCurrentOrg().getId() == 92l && module.getName().equals("kdm")) {
 			return true;
 		}
+		if (module.getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField localIdField = modBean.getField("localId", module.getName());
+			if (localIdField != null) {
+				return true;
+			}
+		}
+
 		if (MODULES_WITH_LOCAL_ID.contains(module.getName())) {
 			return true;
 		} else if (module.getExtendModule() != null)  {
