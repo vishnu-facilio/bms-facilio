@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.activity.AlarmActivityType;
+import com.facilio.chain.FacilioContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -113,17 +115,25 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 				InsertRecordBuilder<AlarmOccurrenceContext> builder = new InsertRecordBuilder<AlarmOccurrenceContext>()
 						.moduleName(NewAlarmAPI.getOccurrenceModuleName(type))
 						.fields(allFields);
-
 				List<AlarmOccurrenceContext> records = new ArrayList<>();
 				FacilioModule module = modBean.getModule(NewAlarmAPI.getOccurrenceModuleName(type));
 				for (AlarmOccurrenceContext alarmOccurrenceContext : occurrenceMap.get(type)) {
+					JSONObject addOccurrenceInfo = new JSONObject();
+					JSONObject info = new JSONObject();
+					info.put("createdTime", alarmOccurrenceContext.getCreatedTime());
+					info.put("subject", alarmOccurrenceContext.getSubject());
+					info.put("severity", alarmOccurrenceContext.getSeverity());
+					addOccurrenceInfo.put("addOccurrence", info);
 					if (alarmOccurrenceContext.getId() > 0) {
 						UpdateRecordBuilder<AlarmOccurrenceContext> updateBuilder = new UpdateRecordBuilder<AlarmOccurrenceContext>()
 								.moduleName(NewAlarmAPI.getOccurrenceModuleName(type))
 								.andCondition(CriteriaAPI.getIdCondition(alarmOccurrenceContext.getId(), module))
 								.fields(allFields);
 						updateBuilder.update(alarmOccurrenceContext);
+						CommonCommandUtil.addAlarmActivityToContext(alarmOccurrenceContext.getAlarm().getId(), -1, AlarmActivityType.ALARM_OCCURRENCE_UPDATED, addOccurrenceInfo, (FacilioContext) context, alarmOccurrenceContext.getId() );
+
 					} else {
+						CommonCommandUtil.addAlarmActivityToContext(alarmOccurrenceContext.getAlarm().getId(), -1, AlarmActivityType.ALARM_OCCURRENCE_CREATED, addOccurrenceInfo, (FacilioContext) context, alarmOccurrenceContext.getId() );
 						records.add(alarmOccurrenceContext);
 					}
 				}

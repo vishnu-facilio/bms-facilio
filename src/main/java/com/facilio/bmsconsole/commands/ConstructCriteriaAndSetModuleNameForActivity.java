@@ -30,7 +30,8 @@ public class ConstructCriteriaAndSetModuleNameForActivity extends FacilioCommand
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Long parentId = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
-		if (parentId != null && parentId != -1) {
+		Long occurrenceId = (Long) context.get(FacilioConstants.ContextNames.ALARM_OCCURRENCE_ID);
+		if ((parentId != null && parentId != -1) || (occurrenceId != null && occurrenceId != -1)) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			FacilioModule activityModule = null;
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -69,8 +70,13 @@ public class ConstructCriteriaAndSetModuleNameForActivity extends FacilioCommand
 			}
 
 			}
-			filterCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("parentId", activityModule.getName()), String.valueOf(parentId), PickListOperators.IS));
-			
+			if (parentId != null && parentId != -1) {
+				filterCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("parentId", activityModule.getName()), String.valueOf(parentId), PickListOperators.IS));
+			}
+			if (occurrenceId != null && occurrenceId != -1) {
+				filterCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("occurrenceId", activityModule.getName()), String.valueOf(occurrenceId), PickListOperators.IS));
+			}
+
 			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, filterCriteria);
 			context.put(FacilioConstants.ContextNames.SORTING_QUERY, modBean.getField("ttime", activityModule.getName()).getCompleteColumnName()+" DESC");
 		}

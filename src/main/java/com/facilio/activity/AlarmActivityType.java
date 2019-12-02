@@ -5,11 +5,11 @@ import org.json.simple.JSONObject;
 
 public enum AlarmActivityType implements ActivityType {
 
-    ALARM_CREATED(50) {
+    ALARM_OCCURRENCE_CREATED(50) {
         @Override
         public String constructMessage(JSONObject json) {
             // TODO Auto-generated method stub
-            return "Alarm created  ";
+            return "Alarm occurrence created  ";
         }
     },
     CREATE_WORKORDER(51) {
@@ -55,8 +55,21 @@ public enum AlarmActivityType implements ActivityType {
             // TODO Auto-generated method stub
             return "Alarm cleared";
         }
+    },
+    AUTO_CLEARED (57) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            // TODO Auto-generated method stub
+            return "Alarm was auto cleared";
+        }
+    },
+    ALARM_OCCURRENCE_UPDATED (58) {
+        @Override
+        public String constructMessage(JSONObject json) {
+            // TODO Auto-generated method stub
+            return "Alarm occurrence was updated";
+        }
     }
-
     ;
 
 

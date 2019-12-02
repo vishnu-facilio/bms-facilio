@@ -1,27 +1,58 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class ActivityAction extends FacilioAction {
 
 
-    private long parentId;
+    private Long parentId;
 
-    public long getParentId() {
+    public Long getParentId() {
         return parentId;
     }
 
-    public void setParentId(long parentId) {
+    public void setParentId(Long parentId) {
         this.parentId = parentId;
     }
 
-    private String getActivityList(String moduleName) throws Exception {
+
+    public Long getOccurrenceId() {
+        return occurrenceId;
+    }
+
+    public void setOccurrenceId(Long occurrenceId) {
+        this.occurrenceId = occurrenceId;
+    }
+
+    private Long occurrenceId;
+
+    public String getActivityModule() {
+        return activityModule;
+    }
+
+    public void setActivityModule(String activityModule) {
+        this.activityModule = activityModule;
+    }
+
+    private String activityModule;
+
+    public String getActivityList() throws Exception {
 
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, activityModule);
         context.put(FacilioConstants.ContextNames.PARENT_ID, this.parentId);
+        if (!activityModule.isEmpty()) {
+            if (this.occurrenceId != null && this.occurrenceId > 0) {
+                context.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE_ID, this.occurrenceId);
+            }
+            FacilioChain activitives = ReadOnlyChainFactory.getActivitiesChain();
+            activitives.execute(context);
+            setResult("activity", context.get(FacilioConstants.ContextNames.RECORD_LIST));
 
+        }
         return SUCCESS;
     }
 }

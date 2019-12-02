@@ -1271,6 +1271,14 @@
 		</action>
 	</package>
 
+	<package name="activityApiListv2" namespace="/api/v2/activity"
+			 extends="v2Api">
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.ActivityAction" method="getActivityList">
+			<param name="activityModule">{1}</param>
+		</action>
+	</package>
+
 	<package name="picklistApiv2" namespace="/api/v2/picklist"
 		extends="v2Api">
 
