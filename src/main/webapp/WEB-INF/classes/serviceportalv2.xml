@@ -905,6 +905,11 @@
 		<action name="get"
 			class="com.facilio.bmsconsole.actions.VisitorSettingsAction" method="fetchVisitorSettings" />
 	</package>
+	<package name="TenantVisitorlogging" namespace="/api/service/v2/visitorLogging"
+		extends="newServicePortalApiV2">
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
+	</package>
 	<!-- Tenant apis end -->
 	<!-- end -->
 </struts>
