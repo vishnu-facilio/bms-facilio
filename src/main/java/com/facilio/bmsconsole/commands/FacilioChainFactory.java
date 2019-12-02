@@ -1853,6 +1853,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericUpdateModuleDataCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new GenericAddSubModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		return c;
 	}
