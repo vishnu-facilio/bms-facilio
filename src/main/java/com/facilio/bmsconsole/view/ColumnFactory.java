@@ -830,8 +830,8 @@ public class ColumnFactory {
 		columns.add(new ViewField("contactType", "Contact Type"));
 		columns.add(new ViewField("tenant", "Tenant"));
 		columns.add(new ViewField("vendor", "Vendor"));
-		columns.add(new ViewField("isPortalAccessNeeded", "Is Portal Access Needed"));
-		columns.add(new ViewField("isPrimaryContact", "Is Primary Contact"));
+		columns.add(new ViewField("isPortalAccessNeeded", "Portal Access"));
+		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
 		return columns;
 	}
 
