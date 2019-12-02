@@ -212,12 +212,18 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(visitorLoggingRecords) || visitorLogging != null) {
 			FacilioChain c = TransactionChainFactory.addVisitorLoggingRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
+			
 			if (visitorLogging != null) {
 				visitorLogging.parseFormData();
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLogging));
+				c.getContext().put(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, Collections.singletonList(visitorLogging));
+				
 			}else {
 				parseFormData(visitorLoggingRecords);
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, visitorLoggingRecords);
+				c.getContext().put(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, visitorLoggingRecords);
+				
 			}
 			c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
 			c.getContext().put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
@@ -250,6 +256,7 @@ private static final long serialVersionUID = 1L;
 				
 			}
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(parentLog));
+			c.getContext().put(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, Collections.singletonList(parentLog));
 			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.VISITOR_LOGGING_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
