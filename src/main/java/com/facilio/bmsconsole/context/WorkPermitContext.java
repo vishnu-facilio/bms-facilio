@@ -35,7 +35,7 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	}
 
 	public static enum WorkType implements FacilioEnum {
-		MAINTENANCE, AUDIT, INSPECTION, MEETING;
+		MAINTENANCE, AUDIT, INSPECTION, MEETING, WORK;
 
 		@Override
 		public int getIndex() {
