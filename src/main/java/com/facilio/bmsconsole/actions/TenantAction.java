@@ -532,6 +532,8 @@ private Map<String, Double> readingData;
 		tenantDetailChain.execute(context);
 		tenant = (TenantContext )context.get(FacilioConstants.ContextNames.TENANT);
 		setResult("tenant", tenant);
+		setResult(FacilioConstants.ContextNames.SPACE_LIST, context.get(FacilioConstants.ContextNames.SPACE_LIST));
+		
 		return SUCCESS;
 	}
 	
