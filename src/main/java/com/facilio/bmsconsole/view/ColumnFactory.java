@@ -89,6 +89,7 @@ public class ColumnFactory {
 		columnMap.put("visitorlogging-vendorVisits", getVendorVisitsInvitesColumns());
 		columnMap.put("visitorlogging-all", getAllVisitsColumns());
 		columnMap.put("insurance-default", getDefaultInsuranceColumns());
+		columnMap.put("insurance-vendor", getVendorInsuranceColumns());
 		columnMap.put("watchlist-default", getDefaultWatchListColumns());
 		columnMap.put("workpermit-default", getDefaultWorkPermitColumns());
 		columnMap.put("workpermit-myWorkpermits", getMyWorkWorkPermitColumns());
@@ -760,6 +761,14 @@ public class ColumnFactory {
 		columns.add(new ViewField("validFrom", "Valid From"));
 		columns.add(new ViewField("validTill", "Valid Till"));
 		columns.add(new ViewField("insurance", "Insurance"));
+		return columns;
+	}
+	
+	public static List<ViewField> getVendorInsuranceColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("companyName", "Company Name"));
+		columns.add(new ViewField("validFrom", "Valid From"));
+		columns.add(new ViewField("validTill", "Valid Till"));
 		return columns;
 	}
 	

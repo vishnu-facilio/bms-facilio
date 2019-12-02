@@ -479,6 +479,10 @@
 		extends="newServicePortalApiV2">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.InsuranceAction" method="addInsurances" />
+			<action name="update"
+			class="com.facilio.bmsconsole.actions.InsuranceAction" method="updateInsurances" />
+			<action name="delete"
+			class="com.facilio.bmsconsole.actions.InsuranceAction" method="deleteInsurances" />
 		<action name="details" class="com.facilio.bmsconsole.actions.InsuranceAction"
 			method="getInsuranceDetails" />
 		<action name="*" class="com.facilio.bmsconsole.actions.InsuranceAction"

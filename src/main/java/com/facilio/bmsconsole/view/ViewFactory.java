@@ -556,6 +556,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInsuranceView().setOrder(order++));
+		views.put("vendor", getVendorInsuranceView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INSURANCE, views);
 
 		order = 1;
@@ -4864,6 +4865,16 @@ public class ViewFactory {
 		allView.setDisplayName("All Insurance");
 		return allView;
 	}
+	
+	private static FacilioView getVendorInsuranceView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Insurance");
+		allView.setHidden(true);
+		return allView;
+	}
+	
 	
 	private static FacilioView getAllWorkPermitView() {
 
