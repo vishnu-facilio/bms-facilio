@@ -667,7 +667,8 @@ public class ColumnFactory {
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
 		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
-		columns.add(new ViewField("Purpose Of Visit", "State"));
+		columns.add(new ViewField("moduleState", "State"));
+		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
 		return columns;
 	}
 	
