@@ -216,7 +216,8 @@ public class ReadingAnalysisContext {
 		NONE,
 		ALL_ASSET_CATEGORY,
 		SPECIFIC_ASSETS_OF_CATEGORY,
-		SPACE
+		SPACE,
+		SITE
 		;
 		
 		public int getValue() {

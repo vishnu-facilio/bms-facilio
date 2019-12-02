@@ -73,11 +73,6 @@ public class PythonAIAction extends FacilioAction {
 	
 			
 	public String getTrendLine() throws Exception {
-		LOGGER.severe("trendLine AI called and trendlineObj..........."+trendLineObj);
-		LOGGER.severe("trendLine AI called and xaxis..........."+xaxis);
-		LOGGER.severe("trendLine AI called and yaxis..........."+yaxis);
-		LOGGER.severe("trendLine AI called and reportData..........."+reportData);
-		LOGGER.severe("trendLine AI called and orgId..........."+orgId);
 		if(trendLineObj != null && !trendLineObj.isEmpty() && (boolean) trendLineObj.get("enable")){
 			String degree = "1";
 			if(trendLineObj.get("type").equals("2")){

@@ -1,20 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.RegressionContext;
@@ -31,14 +29,11 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
@@ -68,16 +63,10 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		List<RegressionContext> regressionConfig = (ArrayList<RegressionContext>) context.get(FacilioConstants.ContextNames.REGRESSION_CONFIG);
 		
 		if (metrics != null && !metrics.isEmpty() && startTime != -1 && endTime != -1) {
-			Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>> dataMap = new HashMap();
-			
-//			Map<Long, ResourceContext> resourceMap = null;
-//			Map<Long, ModuleBaseWithCustomFields> moduleDataMap = null;
+			Map<Long, ResourceContext> resourceMap = null;
 			if (filterMode == null || filterMode == ReportFilterMode.NONE) { //Resource map is needed only when there is no filters. For now
-//				resourceMap = getResourceMap(metrics);
-				dataMap = getModuleDataMap(metrics);
+				resourceMap = getResourceMap(metrics);
 			}
-			
-			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			ReportContext report = ReportUtil.constructReport((FacilioContext) context, startTime, endTime);
@@ -100,11 +89,8 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 			}
 			
 			List<ReportDataPointContext> dataPoints = new ArrayList<>();
-			Set<String> resourceAlias = new HashSet<>();
+			JSONObject resourceAlias = new JSONObject();
 			for (ReadingAnalysisContext metric : metrics) {
-				String moduleName = metric.getModuleName();
-				Map<Long, ? extends ModuleBaseWithCustomFields> map = dataMap.get(moduleName);
-				
 				ReportDataPointContext dataPoint = null;
 				switch (metric.getTypeEnum()) {
 					case MODULE:
@@ -115,14 +101,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 						break;
 				}
 				
-				FacilioModule module = modBean.getModule(moduleName);
-				String name;
-//				if (module.getParentModule().equals(FacilioConstants.ContextNames.RESOURCE)) {
-					name = getName(dataPoint.getyAxis(), mode, filterMode,  map, metric, (FacilioContext) context);
-//				}
-//				else {
-//					name = getName();
-//				}
+				String name = getName(dataPoint.getyAxis(), mode, filterMode, resourceMap, metric, (FacilioContext) context);
 				dataPoint.setName(name);
 				dataPoint.setBuildingId(metric.getBuildingId());
 				dataPoint.setType(metric.getTypeEnum());
@@ -148,9 +127,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 			report.setDataPoints(dataPoints);
 			
 			if (!resourceAlias.isEmpty()) {
-				JSONArray resourceAliases = new JSONArray();
-				resourceAliases.addAll(resourceAlias);
-				report.addToReportState(FacilioConstants.ContextNames.REPORT_RESOURCE_ALIASES, resourceAliases);
+				report.addToReportState(FacilioConstants.ContextNames.REPORT_RESOURCE_ALIASES, (JSONObject) resourceAlias);
 			}
 
 			context.put(FacilioConstants.ContextNames.REPORT, report);
@@ -190,7 +167,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		}
 	}
 	
-	private ReportDataPointContext getModuleDataPoint(ReportContext report, ReadingAnalysisContext metric, ReportMode mode, ModuleBean modBean, Set<String> resourceAlias) throws Exception {
+	private ReportDataPointContext getModuleDataPoint(ReportContext report, ReadingAnalysisContext metric, ReportMode mode, ModuleBean modBean, JSONObject resourceAlias) throws Exception {
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
 		dataPoint.setMetaData(metric.getMetaData());
 		dataPoint.setDefaultSortPoint(metric.isDefaultSortPoint());
@@ -204,17 +181,20 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		if(metric.isxDataPoint()) {
 			dataPoint.setxDataPoint(metric.isxDataPoint());
 		}
-		if(metric.getModuleName() != null) {
-			dataPoint.setModuleName(metric.getModuleName());
+		String moduleName = metric.getModuleName();
+		if (moduleName == null) {
+			moduleName = FacilioConstants.ContextNames.RESOURCE;
+			metric.setModuleName(moduleName);
 		}
 		if (dataPoint.isFetchResource()) {
-			resourceAlias.add(report.getxAlias());
+			resourceAlias.put(report.getxAlias(), moduleName);
 		}
+		dataPoint.setModuleName(moduleName);
 		
 		return dataPoint;
 	}
 	
-	private ReportDataPointContext getDerivedDataPoint(ReportContext report, ReadingAnalysisContext metric, ReportMode mode, Set<String> resourceAlias) {
+	private ReportDataPointContext getDerivedDataPoint(ReportContext report, ReadingAnalysisContext metric, ReportMode mode, JSONObject resourceAlias) {
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
 		dataPoint.setMetaData(metric.getMetaData());
 		ReportFieldContext xAxis = new ReportFieldContext();
@@ -226,12 +206,15 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		if(metric.isxDataPoint()) {
 			dataPoint.setxDataPoint(metric.isxDataPoint());
 		}
-		if(metric.getModuleName() != null) {
-			dataPoint.setModuleName(metric.getModuleName());
+		String moduleName = metric.getModuleName();
+		if (moduleName == null) {
+			moduleName = FacilioConstants.ContextNames.RESOURCE;
+			metric.setModuleName(moduleName);
 		}
 		if (dataPoint.isFetchResource()) {
-			resourceAlias.add(report.getxAlias());
+			resourceAlias.put(report.getxAlias(), moduleName);
 		}
+		dataPoint.setModuleName(moduleName);
 		return dataPoint;
 	}
 	
@@ -287,7 +270,8 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		dataPoint.setDateField(dateField);
 	}
 	
-	private String getName(ReportYAxisContext yField, ReportMode mode, ReportFilterMode filterMode,  Map<Long, ? extends ModuleBaseWithCustomFields> resourceMap, ReadingAnalysisContext metric, FacilioContext context) throws Exception {
+	private String getName(ReportYAxisContext yField, ReportMode mode, ReportFilterMode filterMode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric, FacilioContext context) throws Exception {
+		
 		if (filterMode == null || filterMode == ReportFilterMode.NONE) {
 			if(metric.getName() != null && !metric.getName().isEmpty()) {
 				return metric.getName();
@@ -300,16 +284,12 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 					StringJoiner joiner = new StringJoiner(", ");
 					Boolean isGetReportFromAlarm =  (Boolean) context.get(FacilioConstants.ContextNames.REPORT_FROM_ALARM);
 					ResourceContext alarmResource =  (ResourceContext) context.get(FacilioConstants.ContextNames.ALARM_RESOURCE);
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					for (Long parentId : metric.getParentId()) {
 						if(isGetReportFromAlarm != null && isGetReportFromAlarm && alarmResource != null && alarmResource.getId() == parentId) {
 							continue;
 						}
-						ModuleBaseWithCustomFields resource = resourceMap.get(parentId);
-						FacilioField primaryField = modBean.getPrimaryField(metric.getModuleName());
-						Object property = PropertyUtils.getProperty(resource, primaryField.getName());
-						PropertyUtils.setProperty(resource, "primaryValue", property);
-						joiner.add(resource.getPrimaryValue().toString());
+						ResourceContext resource = resourceMap.get(parentId);
+						joiner.add(resource.getName());
 					}
 					if(joiner.length() > 0) {
 						return joiner.toString()+" ("+ yField.getLabel()+(metric.getPredictedTime() == -1 ? "" : (" @ "+DateTimeUtil.getDateTimeFormat("yyyy-MM-dd HH:mm").format(DateTimeUtil.getDateTime(metric.getPredictedTime()))))+")";
@@ -327,6 +307,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 			case ALL_ASSET_CATEGORY: //Assuming there'll be only one datapoint
 			case SPECIFIC_ASSETS_OF_CATEGORY:
 			case SPACE:
+			case SITE:
 				return  yField.getLabel();
 		}
 		return null;
@@ -367,66 +348,6 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 			}
 		}
 		return ResourceAPI.getResourceAsMapFromIds(resourceIds);
-	}
-	
-	private Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>> getModuleDataMap(List<ReadingAnalysisContext> metrics) throws Exception {
-		Map<String, Set<Long>> map = new HashMap<>();
-		for (ReadingAnalysisContext metric : metrics) {
-			if (metric.getyAxis().getFieldId() != -1 && metric.getParentId() != null) {
-				String moduleName = metric.getModuleName();
-				if (moduleName == null) {
-					moduleName = FacilioConstants.ContextNames.RESOURCE;
-					metric.setModuleName(moduleName);
-				}
-				Set<Long> list = map.get(moduleName);
-				if (list == null) {
-					list = new HashSet<>();
-					map.put(moduleName, list);
-				}
-				
-				for (Long parentId : metric.getParentId()) {
-					list.add(parentId);
-				}
-			}
-			else if(metric.getType() != DataPointType.DERIVATION.getValue()) {
-				throw new IllegalArgumentException("In sufficient params for Reading Analysis for one of the metrics");
-			}
-		}
-		return getModuleDataFromIds(map);
-	}
-	
-	private Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>> getModuleDataFromIds(Map<String, Set<Long>> map) throws Exception {
-
-		if ((map == null || map.isEmpty())) {
-			return Collections.EMPTY_MAP;
-		}
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		Map<String, Map<Long, ? extends ModuleBaseWithCustomFields>> dataMap = new HashMap<>();
-		for (String moduleName : map.keySet()) {
-			FacilioModule module = modBean.getModule(moduleName);
-			if (module.getParentModule().equals(FacilioConstants.ContextNames.RESOURCE)) {
-				Map<Long, ? extends ModuleBaseWithCustomFields> resourceAsMapFromIds = ResourceAPI.getResourceAsMapFromIds(map.get(moduleName));
-				if (MapUtils.isNotEmpty(resourceAsMapFromIds)) {
-					dataMap.put(moduleName, resourceAsMapFromIds);
-				}
-			}
-			else {
-				Map<Long, ? extends ModuleBaseWithCustomFields> moduleData = getModuleData(modBean, module, map.get(moduleName));
-				dataMap.put(moduleName, moduleData);
-			}
-		}
-		return dataMap;
-	}
-	
-	private <E extends ModuleBaseWithCustomFields> Map<Long, E> getModuleData(ModuleBean modBean, FacilioModule module, Set<Long> parentIds) throws Exception {
-		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		Class<E> moduleClass = FacilioConstants.ContextNames.getClassFromModule(module);
-
-		SelectRecordsBuilder<E> selectBuilder = new SelectRecordsBuilder<E>().select(fields)
-				.module(module).beanClass(moduleClass)
-				.andCondition(CriteriaAPI.getIdCondition(parentIds, module));
-		return selectBuilder.getAsMap();
 	}
 	
 	private ReportFilterContext getBasicReadingReportFilter(ModuleBean modBean) throws Exception {
@@ -483,6 +404,8 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 					
 					filter.setCriteria(criteria);
 					return Collections.singletonList(filter);
+				case SITE:
+					return null;
 			}
 		}
 		return null;
