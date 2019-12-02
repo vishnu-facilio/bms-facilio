@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -25,6 +26,7 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.cards.util.CardUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -44,11 +46,13 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 
 ;
 
@@ -598,6 +602,47 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			return null;
 			
 				
+		}
+		
+	},
+	GET_TIME_INTERVALS(20, "getTimeIntervals") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			long startTime = (long) Double.parseDouble(objects[0].toString());
+			long endTime = (long) Double.parseDouble(objects[1].toString());
+			int interval = (int) Double.parseDouble(objects[2].toString());
+			
+			return DateTimeUtil.getTimeIntervals(startTime, endTime, interval);
+		}
+		
+	},
+	GET_PERMA_LINK_TOKEN(21, "getPermaLinkToken") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			
+			FacilioChain chain = FacilioChainFactory.getPermaLinkTokenChain();
+			
+			FacilioContext context = chain.getContext();
+			
+			String url = objects[0].toString();
+			Map<String,Object> sessionObjectMap = (Map<String,Object>) objects[1];
+			
+			JSONObject sessionObjectJson = WorkflowV2Util.getAsJSONObject(sessionObjectMap);
+			String email = objects[2].toString();
+			
+			context.put(FacilioConstants.ContextNames.PERMALINK_FOR_URL,url);
+			context.put(FacilioConstants.ContextNames.SESSION,sessionObjectJson);
+			context.put(FacilioConstants.ContextNames.USER_EMAIL,email);
+			chain.execute();
+			
+			String permaLink = (String) context.get(FacilioConstants.ContextNames.PERMALINK_TOKEN_FOR_URL);
+			return permaLink;
+			
 		}
 		
 	},
