@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+    <!-- API with custom interceptor to handle tokens -->
+    <package name="agentDownloadApi" namespace="/api/agent/download" extends="json-default" >
+
+        <interceptors>
+            <interceptor name="agentDownloadInterceptor" class="com.facilio.bmsconsole.interceptors.AgentDownloadInterceptor">
+            </interceptor>
+
+            <interceptor-stack name="downloadInterceptorStack">
+                <interceptor-ref name="agentDownloadInterceptor" />
+                <interceptor-ref name="defaultStack" />
+            </interceptor-stack>
+        </interceptors>
+
+        <action name="downloadAgent" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method ="testMethod">
+            <interceptor-ref name="downloadInterceptorStack"/>
+            <result name="success" type="stream">
+                <param name="contentType">application/octet-stream</param>
+                <param name="inputName">fileInputStream</param>
+                <param name="contentDisposition">attachment;filename="FacilioAgent.exe"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="invalidToken" type="json">
+                <param name="includeProperties">errorStatus</param>
+            </result>
+        </action>
+
+    </package>
+
+<!--    <package name="agentVersionApi" namespace="/api/agent/version" extends="homeApi">-->
+<!--        <action name="addVersionLog" class="com.facilio.bmsconsole.actions.AgentVersionAction"-->
+<!--            method="addVersionLog">-->
+<!--            -->
+<!--        </action>-->
+<!--    </package>-->
+
+</struts>
+<!--
+<interceptors>
+            <interceptor name="agentUpdateInterceptor" class="com.facilio.bmsconsole.interceptors.AgentDownloadInterceptor"/>
+        </interceptors>
+-->
