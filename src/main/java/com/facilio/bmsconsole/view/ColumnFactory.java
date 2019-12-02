@@ -697,9 +697,9 @@ public class ColumnFactory {
 		columns.add(new ViewField("visitor", "Visitor"));
 		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("moduleState", "State"));
 		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
 		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
-		columns.add(new ViewField("moduleState", "State"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
 		return columns;
 	}
@@ -708,11 +708,11 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("visitor", "Visitor"));
 		columns.add(new ViewField("visitorType", "Type"));
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
 		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
-		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
-		columns.add(new ViewField("moduleState", "Status"));
 	
 		return columns;
 	}
@@ -745,11 +745,12 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("visitor", "Visitor"));
 		columns.add(new ViewField("visitorType", "Type"));
+		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("checkInTime", "Check-in Time"));
 		columns.add(new ViewField("checkOutTime", "Check-out Time"));
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
-		columns.add(new ViewField("moduleState", "Status"));
+		
 		return columns;
 	}
 	
