@@ -949,13 +949,13 @@
 	},
 	"107": {
 		"name": "NOTIFY_HOST_SMS",
-		"to": "${visitorlogging.host.phone:-}",
+		"to": "${visitorlogging.host.phone}",
 		"message": "${visitorlogging.visitor.name} has checked in and is on the way to visit you.\nAdmin Team."
 	},
 	"108": {
 		"name": "INVITE_VISITOR_SMS",
-		"to": "${visitorinviterel.visitorId.phone:-}",
-		"message": "You have been invited for ${visitorinviterel.inviteId.inviteName} on ${visitorinviterel.inviteId.expectedStartTimeString}. Meet you there !\nAdmin Team."
+		"to": "${visitorlogging.visitor.phone}",
+		"message": "You have been invited by ${visitorlogging.host.name} on ${visitorlogging.expectedCheckInTimeString}. Meet you there !\nAdmin Team."
 	},
 	"109": {
 		"name": "VISITOR_WELCOME_WHATSAPP_NOTIFICATION",
@@ -994,5 +994,11 @@
 		"subject": "Attention Please ! Blocked Visitor on Watchlist Arrived!",
 		"to": "${vLog.host.email}",
 		"message_ftl": "notifyBlockedVisitor"
+	},
+	"115": {
+		"name": "BLOCKED_VISITOR_SMS_NOTIFICATION",
+		"to": "${vLog.host.phone}",
+		"message": "${visitorlogging.visitor.name} tried checking in and the acess is resctricted as due to a watchlist record match.\nAdmin Team."
+	
 	}
 }

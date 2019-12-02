@@ -78,6 +78,9 @@ public class VendorAction extends FacilioAction{
 		vendor.setTtime(System.currentTimeMillis());
 		vendor.setModifiedTime(System.currentTimeMillis());
 		vendor.setSysCreatedTime(System.currentTimeMillis());
+		if(vendor.getRegisteredBy() != null && vendor.getRegisteredBy().getId() > 0) {
+			vendor.setVendorSource(1);
+		}
 		FacilioContext context1 = new FacilioContext();
 		context1.put(FacilioConstants.ContextNames.RECORD, vendor);
 		context1.put(FacilioConstants.ContextNames.CONTACTS, vendorContacts);
@@ -119,6 +122,9 @@ public class VendorAction extends FacilioAction{
 			vendor.setAddress(null);
 		}
 		
+		if(vendor.getRegisteredBy() != null && vendor.getRegisteredBy().getId() > 0) {
+			vendor.setVendorSource(1);
+		}
 		vendor.setModifiedTime(System.currentTimeMillis());
 		FacilioContext context1 = new FacilioContext();
 		context1.put(FacilioConstants.ContextNames.RECORD, vendor);

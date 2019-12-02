@@ -1281,12 +1281,14 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
 			
-			<parameter name="visitorinviterel.inviteId.name"
+			<parameter name="visitorlogging.inviteId.name"
 				type="String" />
-			<parameter name="visitorinviterel.inviteId.expectedStartTime"
+			<parameter name="visitorlogging.expectedCheckInTime"
 				type="String" />
 			
-			<parameter name="visitorinviterel.visitorId.name"
+			<parameter name="visitorlogging.visitor.phone"
+				type="String" />
+			<parameter name="visitorlogging.host.name"
 				type="String" />
 		</workflow>
 	</template>
@@ -1393,4 +1395,16 @@
 		
 		</workflow>
 	</template>
+		<template id="115">
+		<workflow>
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			
+			<parameter name="visitorlogging.host.phone"
+				type="String" />
+			<parameter name="visitorlogging.visitor.name"
+				type="String" />
+		</workflow>
+	</template>
+		
 </workflows>

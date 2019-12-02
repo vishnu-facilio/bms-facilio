@@ -1594,6 +1594,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForVendors());
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new AddVendorContactsCommand());
+			c.addCommand(new AddInsuranceVendorRollUpsCommand());
 			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
@@ -1606,6 +1607,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForVendors());
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(new AddVendorContactsCommand());
+			c.addCommand(new AddInsuranceVendorRollUpsCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));

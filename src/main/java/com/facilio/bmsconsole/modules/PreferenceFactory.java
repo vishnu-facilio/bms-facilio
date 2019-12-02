@@ -35,7 +35,7 @@ public class PreferenceFactory {
 		
 	//	modulePrefMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModulePrefList());
 		modulePrefMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, getVisitorLogModulePrefList());
-	//	modulePrefMap.put(FacilioConstants.ContextNames.WATCHLIST, getWatchListModulePrefList());
+		modulePrefMap.put(FacilioConstants.ContextNames.WATCHLIST, getWatchListModulePrefList());
 	}
 	
 	public static List<Preference> getAllPreferencesForModuleRecord(String moduleName) {
@@ -118,11 +118,11 @@ public class PreferenceFactory {
 		
 		List<Preference> visitorLogPreferences = new ArrayList<Preference>();
 		
-		visitorLogPreferences.add(VisitorManagementAPI.getHostMailNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getHostSmsNotificationsPref());
-		
-		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeMailNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeSmsNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getBlockedMailNotificationPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getBlockedSmsNotificationPref());
+//		
+//		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeMailNotificationsPref());
+//		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeSmsNotificationsPref());
 		
 		return visitorLogPreferences;
 	}

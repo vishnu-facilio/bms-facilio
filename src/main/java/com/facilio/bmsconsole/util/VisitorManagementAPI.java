@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,10 +17,10 @@ import org.json.simple.JSONObject;
 import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
-import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.Preference;
@@ -31,16 +30,19 @@ import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.WatchListContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
+import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
+import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.SMSTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.ScheduledRuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -52,7 +54,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -68,10 +69,9 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 
 public class VisitorManagementAPI {
@@ -1948,6 +1948,219 @@ public class VisitorManagementAPI {
 		}
 		return passCode;
 	} 
+	
+	public static Long saveBlockedVisitorMailNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Blocked Visitor Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE);
+		
+		Condition isBlocked = new Condition();
+		isBlocked.setFieldName("isBlocked");
+		isBlocked.setOperator(BooleanOperators.IS);
+		isBlocked.setValue("true");
+		isBlocked.setColumnName("VisitorLogging.IS_BLOCKED");
+		
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(isBlocked);
+		
+		criteria.setPattern("(1)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
+		
+		List<String> ouIdList = (List<String>)map.get("to");
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		
+		StringJoiner userEmailStr = new StringJoiner(",");
+		for(String ouId : ouIdList) {
+			User user = userBean.getUser(Long.parseLong(ouId), false);
+			if(user != null) {
+				userEmailStr.add(user.getEmail());
+			}
+		}
+		
+		EMailTemplate temp = addTemplate("Blocked Email Template", userEmailStr.toString(), 114);
+		emailAction.setTemplateId(temp.getId());
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
+	
+	public static Long saveBlockedVisitorSmsNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Blocked Visitor Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE);
+		
+		Condition isBlocked = new Condition();
+		isBlocked.setFieldName("isBlocked");
+		isBlocked.setOperator(BooleanOperators.IS);
+		isBlocked.setValue("true");
+		isBlocked.setColumnName("VisitorLogging.IS_BLOCKED");
+		
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(isBlocked);
+		
+		criteria.setPattern("(1)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.SMS_NOTIFICATION);
+		
+		List<String> ouIdList = (List<String>)map.get("to");
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		
+		StringJoiner userEmailStr = new StringJoiner(",");
+		for(String ouId : ouIdList) {
+			User user = userBean.getUser(Long.parseLong(ouId), false);
+			if(user != null) {
+				userEmailStr.add(user.getMobile());
+			}
+		}
+		
+		SMSTemplate temp = addSmsTemplate("Blocked SMS Template", userEmailStr.toString(), 115);
+		emailAction.setTemplateId(temp.getId());
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
+	
+	public static Preference getBlockedMailNotificationPref() {
+		FacilioForm form = new FacilioForm();
+		List<FormSection> sections = new ArrayList<FormSection>();
+		FormSection formSection = new FormSection();
+		formSection.setName("Blocked Visitor Notification Preference");
+		List<FormField> fields = new ArrayList<FormField>();
+		fields.add(new FormField("to", FieldDisplayType.MULTI_USER_LIST, "Select User(s)", Required.REQUIRED,"users", 1, 1));
+		
+		formSection.setFields(fields);
+		sections.add(formSection);
+		form.setSections(sections);
+		form.setFields(fields);
+		form.setLabelPosition(LabelPosition.TOP);
+		return new Preference("notifyBlocked_MailNotification", "Notify Blocked Visitor On Arrival_Email", form, " Notify hosts when blocked visitors arrive") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveBlockedVisitorMailNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+
+		};
+		
+	}
+	
+	private static EMailTemplate addTemplate(String name, String email, int defaultTempId) throws Exception {
+		EMailTemplate emailTemplate = new EMailTemplate();
+		JSONObject blockedVisitorMailJson = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION, defaultTempId).getOriginalTemplate(); 
+		WorkflowContext wf = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION, defaultTempId).getWorkflow();
+		emailTemplate.setName("Name");
+		emailTemplate.setType(Template.Type.EMAIL);
+		emailTemplate.setFrom((String) blockedVisitorMailJson.get("sender"));
+		emailTemplate.setTo(email);
+		emailTemplate.setSubject((String) blockedVisitorMailJson.get("subject"));
+		emailTemplate.setMessage((String) blockedVisitorMailJson.get("message"));
+		emailTemplate.setFtl(true);
+		emailTemplate.setWorkflow(wf);
+		
+		long id = TemplateAPI.addEmailTemplate(AccountUtil.getCurrentOrg().getOrgId(), emailTemplate);
+		emailTemplate.setId(id);
+		
+		return emailTemplate;
+	}
+	
+	private static SMSTemplate addSmsTemplate(String name, String phoneNumbers, int defaultTempId) throws Exception {
+		SMSTemplate smsTemplate = new SMSTemplate();
+		JSONObject blockedVisitorMailJson = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION, defaultTempId).getOriginalTemplate(); 
+		WorkflowContext wf = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION, defaultTempId).getWorkflow();
+		smsTemplate.setName("Name");
+		smsTemplate.setType(Template.Type.EMAIL);
+		smsTemplate.setFrom((String) blockedVisitorMailJson.get("sender"));
+		smsTemplate.setTo(phoneNumbers);
+		smsTemplate.setMessage((String) blockedVisitorMailJson.get("message"));
+		smsTemplate.setFtl(true);
+		smsTemplate.setWorkflow(wf);
+		
+		long id = TemplateAPI.addSMSTemplate(AccountUtil.getCurrentOrg().getOrgId(), smsTemplate);
+		smsTemplate.setId(id);
+		
+		return smsTemplate;
+	}
+	
+	public static Preference getBlockedSmsNotificationPref() {
+		FacilioForm form = new FacilioForm();
+		List<FormSection> sections = new ArrayList<FormSection>();
+		FormSection formSection = new FormSection();
+		formSection.setName("Blocked Visitor SMS Notification Preference");
+		List<FormField> fields = new ArrayList<FormField>();
+		fields.add(new FormField("to", FieldDisplayType.MULTI_USER_LIST, "Select User(s)", Required.REQUIRED,"users", 1, 1));
+		
+		formSection.setFields(fields);
+		sections.add(formSection);
+		form.setSections(sections);
+		form.setFields(fields);
+		form.setLabelPosition(LabelPosition.TOP);
+		return new Preference("notifyBlocked_SmsNotification", "Notify Blocked Visitor On Arrival_SMS", form, " Notify hosts when blocked visitors arrive") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveBlockedVisitorSmsNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+
+		};
+		
+	}
 	
 	    
 }
