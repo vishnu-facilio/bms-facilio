@@ -1,16 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.Preference;
-import com.facilio.bmsconsole.context.PreferenceMetaContext;
 import com.facilio.bmsconsole.modules.PreferenceFactory;
-import com.facilio.bmsconsole.util.PreferenceAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class GetAllPreferencesCommand extends FacilioCommand{
@@ -26,22 +21,22 @@ public class GetAllPreferencesCommand extends FacilioCommand{
 			throw new IllegalArgumentException("Module name is mandatory");
 		}
 		List<Preference> prefs = moduleSpecific ? PreferenceFactory.getAllPreferencesForModule(modName) : PreferenceFactory.getAllPreferencesForModuleRecord(modName);
-		List<PreferenceMetaContext> enabledPreferences = new ArrayList<PreferenceMetaContext>();
-		if(moduleSpecific) {
-			enabledPreferences = PreferenceAPI.getEnabledPreference(modName);
-		}
-		else {
-			enabledPreferences = PreferenceAPI.getEnabledPreference(recordId, modName);
-		}
-		if(CollectionUtils.isNotEmpty(enabledPreferences) && CollectionUtils.isNotEmpty(prefs)) {
-			for(PreferenceMetaContext enabledPref : enabledPreferences) {
-				List<Preference> pref = prefs.stream().filter(a -> a.getName().equals(enabledPref.getPreferenceName())).collect(Collectors.toList());
-				if(CollectionUtils.isNotEmpty(pref)) {
-					pref.get(0).setEnabled(true);
-					pref.get(0).setPrefMeta(enabledPref);
-				}
-			}
-		}
+//		List<PreferenceMetaContext> enabledPreferences = new ArrayList<PreferenceMetaContext>();
+//		if(moduleSpecific) {
+//			enabledPreferences = PreferenceAPI.getEnabledPreference(modName);
+//		}
+//		else {
+//			enabledPreferences = PreferenceAPI.getEnabledPreference(recordId, modName);
+//		}
+//		if(CollectionUtils.isNotEmpty(enabledPreferences) && CollectionUtils.isNotEmpty(prefs)) {
+//			for(PreferenceMetaContext enabledPref : enabledPreferences) {
+//				List<Preference> pref = prefs.stream().filter(a -> a.getName().equals(enabledPref.getPreferenceName())).collect(Collectors.toList());
+//				if(CollectionUtils.isNotEmpty(pref)) {
+//					pref.get(0).setEnabled(true);
+//					pref.get(0).setPrefMeta(enabledPref);
+//				}
+//			}
+//		}
 		context.put(FacilioConstants.ContextNames.PREFERENCE_LIST, prefs);
 		return false;
 	}

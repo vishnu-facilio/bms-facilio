@@ -40,7 +40,7 @@ enums:
   - name: Source
     enumClassName: com.facilio.bmsconsole.context.VisitorLoggingContext$Source
 
-    - name: VendorSource
+  - name: VendorSource
     enumClassName: com.facilio.bmsconsole.context.VendorContext$VendorSource
   
   
