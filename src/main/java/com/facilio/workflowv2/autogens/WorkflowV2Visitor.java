@@ -47,6 +47,24 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlock(WorkflowV2Parser.BlockContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link WorkflowV2Parser#try_catch}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTry_catch(WorkflowV2Parser.Try_catchContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link WorkflowV2Parser#try_statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTry_statement(WorkflowV2Parser.Try_statementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link WorkflowV2Parser#catch_statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCatch_statement(WorkflowV2Parser.Catch_statementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link WorkflowV2Parser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

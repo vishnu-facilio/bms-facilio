@@ -19,6 +19,18 @@ data_type
  block
  : statement*
  ;
+ 
+try_catch
+ : TRY OPEN_BRACE try_statement* CLOSE_BRACE CATCH OPEN_BRACE catch_statement* CLOSE_BRACE
+ ; 
+ 
+try_statement
+ :statement
+ ;
+ 
+catch_statement
+ :statement
+ ;
 
 statement
  : assignment
@@ -27,6 +39,7 @@ statement
  | log
  | stand_alone_expr SEMICOLON
  | function_return
+ | try_catch
  | OTHER {System.err.println("unknown char: " + $OTHER.text);}
  ;
 
@@ -184,6 +197,9 @@ DATA_TYPE_BOOLEAN : 'Boolean';
 DATA_TYPE_MAP : 'Map';
 DATA_TYPE_LIST : 'List';
 RETURN : 'return';
+
+TRY : 'try';
+CATCH : 'catch';
   
 OR : '||';
 SINGLE_OR : '|';

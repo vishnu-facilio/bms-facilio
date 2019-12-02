@@ -68,6 +68,36 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitBlock(WorkflowV2Parser.BlockContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link WorkflowV2Parser#try_catch}.
+	 * @param ctx the parse tree
+	 */
+	void enterTry_catch(WorkflowV2Parser.Try_catchContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link WorkflowV2Parser#try_catch}.
+	 * @param ctx the parse tree
+	 */
+	void exitTry_catch(WorkflowV2Parser.Try_catchContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link WorkflowV2Parser#try_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterTry_statement(WorkflowV2Parser.Try_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link WorkflowV2Parser#try_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitTry_statement(WorkflowV2Parser.Try_statementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link WorkflowV2Parser#catch_statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterCatch_statement(WorkflowV2Parser.Catch_statementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link WorkflowV2Parser#catch_statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitCatch_statement(WorkflowV2Parser.Catch_statementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link WorkflowV2Parser#statement}.
 	 * @param ctx the parse tree
 	 */

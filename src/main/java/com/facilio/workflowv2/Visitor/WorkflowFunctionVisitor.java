@@ -42,6 +42,7 @@ import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.autogens.WorkflowV2BaseVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.Catch_statementContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_aggrContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_fieldContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_groupContext;
@@ -51,6 +52,9 @@ import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_rangeContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_sortContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionContext;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.StatementContext;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.Try_catchContext;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.Try_statementContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
@@ -327,33 +331,6 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	this.assignmentValue = value;
     	this.visit(ctx.assignment_var());
     	
-//    	String varName = ctx.VAR().getText();
-//    	
-//    	if (ctx.expr(1) != null) {
-//        	
-//        	Value parentValue = varMemoryMap.get(varName);
-//        	
-//        	if(parentValue.asObject() instanceof List) {
-//        		
-//        		Value index = this.visit(ctx.expr(0));
-//        		
-//        		WorkflowV2Util.checkForNullAndThrowException(index, ctx.expr(0).getText());
-//        		
-//        		Value value = this.visit(ctx.expr(1));
-//        		
-//        		parentValue.asList().add(index.asInt(), value.asObject());
-//        	}
-//        	else if (parentValue.asObject() instanceof Map) {
-//        		Value key = this.visit(ctx.expr(0));
-//        		WorkflowV2Util.checkForNullAndThrowException(key, ctx.expr(0).getText());
-//        		Value value = this.visit(ctx.expr(1));
-//        		parentValue.asMap().put(key.asObject(), value.asObject());
-//        	}
-//        }
-//        else {
-//        	Value value = this.visit(ctx.expr(0));
-//        	return varMemoryMap.put(varName, value);
-//        }
         return Value.VOID;
     }
     
@@ -385,7 +362,29 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	return visitChildren(ctx); 
     }
     
-
+    
+    @Override
+    public Value visitTry_catch(Try_catchContext ctx) {
+    	
+    	List<Try_statementContext> tryStatements = ctx.try_statement();
+    	List<Catch_statementContext> catchStatements = ctx.catch_statement();
+    	
+    	try {
+    		if(tryStatements != null) {
+    			for(Try_statementContext tryStatement :tryStatements) {
+    				visit(tryStatement);
+        		}
+    		}
+    	}
+    	catch (Exception e) {
+    		if(catchStatements != null) {
+    			for(Catch_statementContext catchStatement :catchStatements) {
+    				visit(catchStatement);
+        		}
+    		}
+		}
+    	return Value.VOID;
+    }
     @Override
     public Value visitVarAtom(WorkflowV2Parser.VarAtomContext ctx) {
         String varName = ctx.getText();
