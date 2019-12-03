@@ -27,11 +27,11 @@
                                       </div>
                                       <#if (vLog.visitedSpace) ??>
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          A Watchlist - Blocked Visitor - ${vLog.visitor.name}  tried to check in at ${vLog.visitedSpace.name} on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} and is restricted from visiting you!
+                                          A Watchlist - Blocked Visitor - ${vLog.visitor.name}  tried to check in at ${vLog.visitedSpace.name} now and is restricted from visiting you!
                                       </div>
                                       <#else>
                                        <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                           A Watchlist - Blocked Visitor - ${vLog.visitor.name}  tried to check in on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} and is restricted from visiting you!
+                                           A Watchlist - Blocked Visitor - ${vLog.visitor.name}  tried to check in now and is restricted from visiting you!
                                        </div>
                                      </#if>
                                     </div>
@@ -56,10 +56,6 @@
                   <tr>
                         <td style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;border-bottom: 1px solid #eaeaec; padding-bottom: 15px;padding-top: 15px; color: #7f8498; padding-left: 10px;padding-right: 10px;font-size: 14px;letter-spacing: 0.9px;">Email id</td>
                         <td style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;border-bottom: 1px solid #eaeaec; padding-bottom: 15px;padding-top: 15px; padding-left: 10px;padding-right: 10px;color: #000;font-weight: 600;letter-spacing: 0.9px;">${vLog.visitor.email}</td>
-                  </tr>
-                  <tr>
-                        <td style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;border-bottom: 1px solid #eaeaec; padding-bottom: 15px;padding-top: 15px; color: #7f8498; padding-left: 10px;padding-right: 10px;font-size: 14px;letter-spacing: 0.9px;">Date / Time</td>
-                        <td style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;border-bottom: 1px solid #eaeaec; padding-bottom: 15px;padding-top: 15px; padding-left: 10px;padding-right: 10px;color: #000;font-weight: 600;letter-spacing: 0.9px;">${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}</td>
                   </tr>
                   
                   </table>
