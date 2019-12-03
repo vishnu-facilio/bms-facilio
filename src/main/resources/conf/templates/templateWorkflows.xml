@@ -1288,6 +1288,8 @@
 			
 			<parameter name="visitorlogging.visitor.phone"
 				type="String" />
+			<parameter name="visitorlogging.passCode"
+				type="String" />
 			<parameter name="visitorlogging.host.name"
 				type="String" />
 		</workflow>

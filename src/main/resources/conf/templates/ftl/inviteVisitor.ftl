@@ -44,7 +44,7 @@
                         <tr>
                               <td>
                                     <div style="color: #8e8c97;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;font-size: 14px;padding-bottom: 30px;letter-spacing: 0.5px;">
-                                          Please show the QR code attached to this invite at the time of entry.
+                                          Please show the QR code attached to this invite at the time of entry or use the invite code - ${vLog.passCode}.
                                     </div>
                               </td>
                         </tr>

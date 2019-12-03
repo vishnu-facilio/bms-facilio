@@ -955,7 +955,7 @@
 	"108": {
 		"name": "INVITE_VISITOR_SMS",
 		"to": "${visitorlogging.visitor.phone}",
-		"message": "You have been invited by ${visitorlogging.host.name} on ${visitorlogging.expectedCheckInTimeString}. Meet you there !\nAdmin Team."
+		"message": "You have been invited by ${visitorlogging.host.name} on ${visitorlogging.expectedCheckInTimeString}. Your invite passcode is ${visitorlogging.passCode}. Meet you there !\nAdmin Team."
 	},
 	"109": {
 		"name": "VISITOR_WELCOME_WHATSAPP_NOTIFICATION",
