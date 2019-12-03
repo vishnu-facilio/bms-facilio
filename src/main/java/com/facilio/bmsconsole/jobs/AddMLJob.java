@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.jobs;
 
-import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
@@ -15,18 +14,17 @@ public class AddMLJob extends FacilioJob {
 
 	private static final Logger LOGGER = Logger.getLogger(AddMLJob.class.getName());
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		// TODO Auto-generated method stub
 		JSONObject props=BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
 		
-		Context context = new FacilioContext();
 		LOGGER.info("ML JOB name : "+props.get("name").toString().toUpperCase());
 		switch(props.get("name").toString().toUpperCase()){
 			case "ANOMALY":{
 				if(!props.containsKey("parentHierarchy") || (props.containsKey("parentHierarchy") && props.get("parentHierarchy").toString().equalsIgnoreCase("true"))){
-					FacilioChain c = FacilioChainFactory.enableAnomalyDetectionChain();
+					FacilioChain chain = FacilioChainFactory.enableAnomalyDetectionChain();
+					FacilioContext context = chain.getContext();
 					context.put("TreeHierarchy", props.get("TreeHierarchy"));
 					context.put("energyDeltaField", props.get("energyDeltaField"));
 					context.put("markedField", props.get("markedField"));
@@ -37,38 +35,41 @@ public class AddMLJob extends FacilioJob {
 					{
 						context.put("ratioHierarchy", props.get("ratioHierarchy"));
 					}
-					c.execute(context);
+					chain.execute();
 				}else if(props.get("parentHierarchy").toString().equalsIgnoreCase("false")){
 					 String[] ids = props.get("assetIds").toString().split(",");
 					for (int i = 0; i < ids.length; i++) {
-						FacilioChain c = FacilioChainFactory.enableAnomalyDetectionChain();
+						FacilioChain chain = FacilioChainFactory.enableAnomalyDetectionChain();
+						FacilioContext context = chain.getContext();
 						context.put("TreeHierarchy", ids[i]);
 						context.put("energyDeltaField", props.get("energyDeltaField"));
 						context.put("markedField", props.get("markedField"));
 						context.put("parentIdField", props.get("parentIdField"));
 						context.put("mlVariables", props.get("mlVariables"));
 						context.put("mlModelVariables", props.get("mlModelVariables"));
-						c.execute(context);
+						chain.execute();
 					}
 				}
 				break;
 			}
 			case "ENERGY":{
-				FacilioChain c = FacilioChainFactory.addEnergyPredictionchain();
+				FacilioChain chain = FacilioChainFactory.addEnergyPredictionchain();
+				FacilioContext context = chain.getContext();
 				context.put("energyMeterID",props.get("energyMeterId"));
 				context.put("mlModelVariables", props.get("mlModelVariables"));
 				context.put("mlVariables", props.get("mlVariables"));
 				context.put("modelPath", props.get("modelPath"));
-				c.execute(context);		
+				chain.execute();
 				break;
 			}
 			case "LOAD":{
-				FacilioChain c = FacilioChainFactory.addLoadPredictionchain();
+				FacilioChain chain = FacilioChainFactory.addLoadPredictionchain();
+				FacilioContext context = chain.getContext();
 				context.put("energyMeterID",props.get("energyMeterId"));
 				context.put("mlModelVariables", props.get("mlModelVariables"));
 				context.put("mlVariables", props.get("mlVariables"));
 				context.put("modelPath", props.get("modelPath"));
-				c.execute(context);
+				chain.execute();
 				break;
 			}
 			default :{

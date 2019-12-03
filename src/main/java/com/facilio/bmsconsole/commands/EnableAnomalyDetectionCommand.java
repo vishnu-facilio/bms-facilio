@@ -25,6 +25,9 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
@@ -175,7 +178,11 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 	{
 		FacilioModule module = ModuleFactory.getMLModule();
         List< FacilioField> updateFields = FieldFactory.getMLFields();
-        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName()).andCustomWhere("ID = ?", mlID).fields(updateFields);
+        
+        FacilioField idField = updateFields.stream().filter(f -> f.getName().equalsIgnoreCase("id")).findFirst().get();
+        Condition idCondition = CriteriaAPI.getCondition(idField, String.valueOf(mlID), NumberOperators.EQUALS);
+        
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName()).andCondition(idCondition).fields(updateFields);
 
         Map<String,Object> prop = new HashMap<String,Object>(1);
         prop.put("sequence", mlIDList);
