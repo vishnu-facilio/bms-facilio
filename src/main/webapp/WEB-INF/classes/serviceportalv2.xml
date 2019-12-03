@@ -816,15 +816,6 @@
 		</package>
 	<!-- Vendor apis end -->
 	<!-- Tenant apis start -->
-	<package name="filePreviewApiv2"
-		namespace="/api/service/v2/files/preview" extends="newServicePortalApiV2">
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.FileAction"
-			method="previewFile">
-			<param name="permission">READ</param>
-			<param name="fileID">{1}</param>
-		</action>
-	</package>
 	<package name="TenantVisitorInvite" namespace="/api/service/v2/visitorinvite"
 		extends="newServicePortalApiV2">
 		<action name="update"
