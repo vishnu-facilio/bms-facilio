@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 
@@ -16,6 +17,16 @@ public class MVAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 	MVProjectWrapper mvProjectWrapper;
 	
+	Criteria criteria;
+	
+	public Criteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+
 	int widgetId;
 	public int getWidgetId() {
 		return widgetId;
@@ -120,7 +131,7 @@ public class MVAction extends FacilioAction {
 	
 	public String getMVProjectList() throws Exception {
 		
-		setResult(MVUtil.MV_PROJECTS, MVUtil.getMVProjects(isOpen));
+		setResult(MVUtil.MV_PROJECTS, MVUtil.getMVProjects(isOpen,criteria));
 		return SUCCESS;
 	}
 	

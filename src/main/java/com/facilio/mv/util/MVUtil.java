@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -420,7 +421,7 @@ public class MVUtil {
 		return null;
 	}
 
-	public static List<MVProjectContext> getMVProjects(Boolean isOpen) throws Exception {
+	public static List<MVProjectContext> getMVProjects(Boolean isOpen,Criteria criteria) throws Exception {
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -433,6 +434,10 @@ public class MVUtil {
 				.module(mvProjectModule)
 				.select(mvProjectFields)
 				.beanClass(MVProjectContext.class);
+		
+		if(criteria != null) {
+			selectProject.andCriteria(criteria);
+		}
 
 		if(isOpen != null) {
 			selectProject.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), isOpen.toString(), BooleanOperators.IS));
