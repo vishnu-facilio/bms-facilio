@@ -13,10 +13,6 @@ import com.facilio.time.DateRange;
 
 public class MLAnomalyAction extends FacilioAction {
 
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private MLContext mlContext;
 	
@@ -39,20 +35,19 @@ public class MLAnomalyAction extends FacilioAction {
 	}
 	
 	public String fetchSubMeterHierarchy() throws Exception {
-		FacilioContext context = new FacilioContext();
 		MLAPI.getSubMeterDetails(mlAnomalyAlarmId);
 		return SUCCESS;
 	}
 	
 	public String fetchRcaAnomaly() throws Exception {
-		FacilioContext context = new FacilioContext();
+		FacilioChain mlDetailsChain = ReadOnlyChainFactory.fetchMLSummaryDetailsChain();
+		FacilioContext context = mlDetailsChain.getContext();
 		context.put(FacilioConstants.ContextNames.ALARM_ID, mlAnomalyAlarmId);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
-		FacilioChain mlDetailsChain = ReadOnlyChainFactory.fetchMLSummaryDetailsChain();
-		mlDetailsChain.execute(context);
-		setResult(FacilioConstants.ContextNames.ML_RCA_ALARMS, context.get(FacilioConstants.ContextNames.ML_RCA_ALARMS));
+		mlDetailsChain.execute();
+		setResult(FacilioConstants.ContextNames.ML_RCA_ALARMS, mlDetailsChain.getContext().get(FacilioConstants.ContextNames.ML_RCA_ALARMS));
 		return SUCCESS;
 	}
 	
@@ -62,7 +57,6 @@ public class MLAnomalyAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
-		MLAPI.getAlarmInsight(context);
 		setResult(FacilioConstants.ContextNames.ALARM, MLAPI.getAlarmInsight(context));
 		return SUCCESS;
 	}
@@ -130,7 +124,8 @@ private long ruleId = -1;
 
 
 	public String fetchRelatedAssetAlarms() throws Exception {
-		FacilioContext context = new FacilioContext();
+		FacilioChain rAssetChain = ReadOnlyChainFactory.fetchRelatedAssetAlarms();
+		FacilioContext context = rAssetChain.getContext();
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
 		context.put(FacilioConstants.ContextNames.IS_RCA, false);
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
@@ -139,13 +134,12 @@ private long ruleId = -1;
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
-		FacilioChain rAssetChain = ReadOnlyChainFactory.fetchRelatedAssetAlarms();
-		rAssetChain.execute(context);
-		List<Long> relatedAsset = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
+		rAssetChain.execute();
+		List<Long> relatedAsset = (List<Long>) rAssetChain.getContext().get(FacilioConstants.ContextNames.RESOURCE_LIST);
 		if (relatedAsset != null && relatedAsset.size() > 0) {
-			setResult(ContextNames.ALARM_LIST, context.get(ContextNames.ALARM_LIST));
+			setResult(ContextNames.ALARM_LIST, rAssetChain.getContext().get(ContextNames.ALARM_LIST));
 		} else {
-			setResult(ContextNames.ALARM_LIST, context.get(FacilioConstants.ContextNames.RESOURCE_LIST));
+			setResult(ContextNames.ALARM_LIST, rAssetChain.getContext().get(FacilioConstants.ContextNames.RESOURCE_LIST));
 		}
 //		setResult(FacilioConstants.ContextNames.RESOURCE_LIST, context.get(FacilioConstants.ContextNames.RESOURCE_LIST));
 		return SUCCESS;
@@ -172,7 +166,7 @@ private long ruleId = -1;
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
 		chain.execute();
 		
-		setResult("metrics", context.get(ContextNames.RESULT));
+		setResult("metrics", chain.getContext().get(ContextNames.RESULT));
 		return SUCCESS;
 	}
 	

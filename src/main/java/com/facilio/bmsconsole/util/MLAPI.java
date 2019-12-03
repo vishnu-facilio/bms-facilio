@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -44,7 +42,7 @@ import com.facilio.tasker.ScheduleInfo;
 import com.facilio.time.DateRange;
 
 public class MLAPI {
-	private static final Logger LOGGER = LogManager.getLogger(MLAPI.class.getName());
+
 	public static MLContext getSubMeterDetails (long mlAnomalyAlarmId) throws Exception {
 		
 			return null;
@@ -170,7 +168,8 @@ public class MLAPI {
 	
 	public static Long addReadingEveryTime(Long parentCategoryID, String readingName,List<FacilioField> fields,String tableName,ModuleType moduleType) throws Exception 
 	{
-         FacilioContext context = new FacilioContext();
+    	 FacilioChain chain = TransactionChainFactory.getAddCategoryReadingChain();
+         FacilioContext context = chain.getContext();
          context.put(FacilioConstants.ContextNames.READING_NAME,readingName);
          context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
          context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
@@ -180,14 +179,14 @@ public class MLAPI {
 		 if (moduleType != null) {
 			context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		 }
-         FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
-         addReadingChain.execute(context);
-        return (Long) context.get(FacilioConstants.ContextNames.MODULE_ID);
+         chain.execute();
+         return (Long) chain.getContext().get(FacilioConstants.ContextNames.MODULE_ID);
 	}
 
 	public static void addReading(Long parentCategoryID,String readingName,List<FacilioField> fields,String tableName,ModuleType moduleType) throws Exception 
 	{
-         FacilioContext context = new FacilioContext();
+		 FacilioChain chain = TransactionChainFactory.getAddCategoryReadingChain();
+		 FacilioContext context = chain.getContext();
          context.put(FacilioConstants.ContextNames.READING_NAME,readingName);
          context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
          context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
@@ -197,8 +196,7 @@ public class MLAPI {
 		 if (moduleType != null) {
 			context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		 }
-         FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
-         addReadingChain.execute(context);
+         chain.execute();
 	}
 	
 	public static void addMLModelVariables(long mlId,String Key,String value) throws Exception
