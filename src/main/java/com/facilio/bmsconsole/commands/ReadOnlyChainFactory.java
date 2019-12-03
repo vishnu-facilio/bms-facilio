@@ -588,6 +588,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new LoadVendorLookUpCommand());
 		c.addCommand(new GetVendorsListCommand());
+		c.addCommand(new GetStateflowsForModuleDataListCommand());
 		return c;
 	}
 	

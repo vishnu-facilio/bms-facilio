@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -39,6 +40,15 @@ public class VendorAction extends FacilioAction{
 	}
 	public void setVendorId(long vendorId) {
 		this.vendorId = vendorId;
+	}
+	
+	
+	private Map<String, List<WorkflowRuleContext>> stateFlows;
+	public Map<String, List<WorkflowRuleContext>> getStateFlows() {
+		return stateFlows;
+	}
+	public void setStateFlows(Map<String, List<WorkflowRuleContext>> stateFlows) {
+		this.stateFlows = stateFlows;
 	}
 	
 	private List<ContactsContext> vendorContacts;
@@ -238,6 +248,8 @@ public class VendorAction extends FacilioAction{
 				vendors = new ArrayList<>();
 			}
 			setResult(FacilioConstants.ContextNames.VENDORS, vendors);
+			setStateFlows((Map<String, List<WorkflowRuleContext>>) vendorListChain.getContext().get("stateFlows"));
+			setResult("stateFlows", getStateFlows());
 		}
 		return SUCCESS;
 	}
