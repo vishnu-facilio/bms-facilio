@@ -124,6 +124,10 @@ public class WorkorderTemplate extends Template {
 	public void setDuration(long duration) {
 		this.duration = duration;
 	}
+
+	private long estimatedWorkDuration = -1;
+	public long getEstimatedWorkDuration() { return estimatedWorkDuration; }
+	public void setEstimatedWorkDuration(long estimatedWorkDuration) { this.estimatedWorkDuration = estimatedWorkDuration; }
 	
 	private JSONObject additionInfo;
 	public JSONObject getAdditionInfo() {
@@ -192,6 +196,7 @@ public class WorkorderTemplate extends Template {
 			woProp.put("description", description);
 			woProp.put("duration", duration);
 			woProp.put("siteId", siteId);
+			woProp.put("estimatedWorkDuration", estimatedWorkDuration);
 			if (statusId != -1) {
 				woProp.put("status", FieldUtil.getEmptyLookedUpProp(statusId));
 			}
@@ -252,6 +257,7 @@ public class WorkorderTemplate extends Template {
 			subject = workorder.getSubject();
 			description = workorder.getDescription();
 			duration = workorder.getDuration();
+			estimatedWorkDuration = workorder.getEstimatedWorkDuration();
 			if (workorder.getStatus() != null) {
 				statusId = workorder.getStatus().getId();
 			}
