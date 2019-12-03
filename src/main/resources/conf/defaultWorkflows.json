@@ -220,7 +220,6 @@
 			"usage" : "total consumption,baseline consumption,carbon saved for MV summary",
 			"workflow" : "Map mvsummary(Number projectId) 
 				{ 
-				  	projectId = 44;
 				    resultMap = {};
 				    carbonConstant = 0.41;
 				    costConstant = 0.44;
