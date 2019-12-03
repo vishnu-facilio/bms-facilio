@@ -55,6 +55,7 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 				return false;
 			}
 			for (ModuleBaseWithCustomFields wo : wos) {
+				wo.setSubForm(null); // temp fix
 				Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, wo, WorkflowRuleAPI.getOrgPlaceHolders());
 				/*if (wo.getModuleState().getId() != stateflowTransition.getFromStateId()) {
 					throw new IllegalArgumentException("Invalid transition");
