@@ -9,11 +9,15 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.struts2.dispatcher.multipart.StrutsUploadedFile;
 
+import java.io.File;
 import java.util.*;
 
 public class GenericAddSubModuleDataCommand extends FacilioCommand {
@@ -52,12 +56,29 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
                         insertRecordBuilder.withLocalId();
                     }
 
+                    List<String> fileFields = new ArrayList<>();
+                    for (FacilioField f : fields) {
+                        if (f instanceof FileField) {
+                            fileFields.add(f.getName());
+                        }
+                    }
+
                     List<Map<String, Object>> maps = subForm.get(moduleName);
                     List<ModuleBaseWithCustomFields> beanList = new ArrayList<>();
                     Class contextClass = FacilioConstants.ContextNames.getClassFromModule(module);
                     for (Map<String, Object> map : maps) {
                         map.put(lookupField.getName(), parentObject);
+                        Map<String, StrutsUploadedFile> fileMap = new HashMap<>();
+                        for (String s : fileFields) {
+                            Object remove = map.remove(s);
+                            if (remove != null) {
+                                fileMap.put(s, (StrutsUploadedFile) remove);
+                            }
+                        }
                         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(map, contextClass);
+                        for (String key : fileMap.keySet()) {
+                            PropertyUtils.setProperty(moduleRecord, key, fileMap.get(key).getContent());
+                        }
                         moduleRecord.parseFormData();
                         beanList.add(moduleRecord);
                     }
