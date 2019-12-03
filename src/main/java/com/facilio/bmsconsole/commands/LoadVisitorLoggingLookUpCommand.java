@@ -37,6 +37,7 @@ public class LoadVisitorLoggingLookUpCommand extends FacilioCommand{
 		LookupField visitedSpaceField = (LookupField) fieldsAsMap.get("visitedSpace");
 		LookupField moduleStateField = (LookupField)fieldsAsMap.get("moduleState");
 		LookupField visitorTypefield = (LookupField)fieldsAsMap.get("visitorType");
+		LookupField tenant = (LookupField)fieldsAsMap.get("tenant");
 		
 		additionaLookups.add(eventField);
 		additionaLookups.add(visitorField);
@@ -44,6 +45,7 @@ public class LoadVisitorLoggingLookUpCommand extends FacilioCommand{
 		additionaLookups.add(visitedSpaceField);
 		additionaLookups.add(moduleStateField);
 		additionaLookups.add(visitorTypefield);
+		additionaLookups.add(tenant);
 		
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
 	
