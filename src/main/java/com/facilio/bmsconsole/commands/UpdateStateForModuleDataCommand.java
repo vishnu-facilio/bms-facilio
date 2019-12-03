@@ -15,18 +15,29 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class UpdateStateForModuleDataCommand extends FacilioCommand {
+	private static final Logger LOGGER = Logger.getLogger(UpdateStateForModuleDataCommand.class);
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
 		Long currentTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		
+
+		if ("vendors".equalsIgnoreCase(moduleName)) {
+			LOGGER.error("record map: " + recordMap);
+		}
+
 		List<? extends ModuleBaseWithCustomFields> wos = null;
 		if (MapUtils.isNotEmpty(recordMap)) {
 			wos = recordMap.get(moduleName);
+		}
+
+		if ("vendors".equalsIgnoreCase(moduleName)) {
+			LOGGER.error("records: " + wos);
 		}
 
 		// there is no transition info
@@ -36,6 +47,10 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 		
 		if (CollectionUtils.isNotEmpty(wos)) {
 			StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId);
+			if ("vendors".equalsIgnoreCase(moduleName)) {
+				LOGGER.error("State flow transition: " + stateflowTransition);
+			}
+
 			if (stateflowTransition == null) {
 				return false;
 			}
@@ -45,6 +60,9 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 					throw new IllegalArgumentException("Invalid transition");
 				}*/
 				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransition, moduleName, wo, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, wo.getId()), recordPlaceHolders, (FacilioContext) context, false);
+				if ("vendors".equalsIgnoreCase(moduleName)) {
+					LOGGER.error("SHOULD CHANGE: " + shouldChangeState);
+				}
 				if (shouldChangeState) {
 					FacilioStatus newState = StateFlowRulesAPI.getStateContext(stateflowTransition.getToStateId());
 					if (newState == null) {
