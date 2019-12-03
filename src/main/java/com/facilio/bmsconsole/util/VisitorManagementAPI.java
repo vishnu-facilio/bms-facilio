@@ -2123,7 +2123,7 @@ public class VisitorManagementAPI {
 		form.setSections(sections);
 		form.setFields(fields);
 		form.setLabelPosition(LabelPosition.TOP);
-		return new Preference("notifyBlocked_MailNotification", "Notify Blocked Visitor On Arrival_Email", form, " Notify hosts when blocked visitors arrive") {
+		return new Preference("notifyBlocked_MailNotification", "Notify on Blocked visitor checkin_Email", form, "Define who needs to be notified when a visitor matches a blocked record in watchlist") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -2157,7 +2157,7 @@ public class VisitorManagementAPI {
 		form.setSections(sections);
 		form.setFields(fields);
 		form.setLabelPosition(LabelPosition.TOP);
-		return new Preference("notifyVip_MailNotification", "Notify VIP Visitor On Arrival_Email", form, " Notify hosts when VIP visitors arrive") {
+		return new Preference("notifyVip_MailNotification", "Notify on VIP visitor checkin_Email", form, "Define who needs to be notified when a visitor matches a VIP record in watchlist") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -2227,7 +2227,7 @@ public class VisitorManagementAPI {
 		form.setSections(sections);
 		form.setFields(fields);
 		form.setLabelPosition(LabelPosition.TOP);
-		return new Preference("notifyBlocked_SmsNotification", "Notify Blocked Visitor On Arrival_SMS", form, " Notify hosts when blocked visitors arrive") {
+		return new Preference("notifyBlocked_SmsNotification", "Notify on Blocked visitor checkin_SMS", form, " Define who needs to be notified when a visitor matches a blocked record in watchlist") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -2261,7 +2261,7 @@ public class VisitorManagementAPI {
 		form.setSections(sections);
 		form.setFields(fields);
 		form.setLabelPosition(LabelPosition.TOP);
-		return new Preference("notifyVip_SmsNotification", "Notify VIP Visitor On Arrival_SMS", form, " Notify hosts when VIP visitors arrive") {
+		return new Preference("notifyVip_SmsNotification", "Notify on VIP visitor checkin_SMS", form, "Define who needs to be notified when a visitor matches a VIP record in watchlist") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
