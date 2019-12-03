@@ -521,6 +521,13 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
 	</package>
+	<package name="vendirVisitorLoggingLogs" namespace="/api/service/v2/visitorLogging/view"
+	extends="newServicePortalApiV2">
+		<action name="*" class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList">
+			<param name="viewName">{1}</param>
+			<param name="vendorPortal">true</param>
+			</action>
+	</package>
 	<package name="serviceVisitorLoggingLogs" namespace="/api/service/v2/visitorlogging/view"
 		extends="newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList">
