@@ -696,6 +696,11 @@
 			method="moduleDataDetails">
 			<param name="id">{1}</param>
 		</action>
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="updateModuleData">
+		</action>
+		
 	</package>
 	<package name="VendorWorkorderItemsList"
 		namespace="/api/service/v2/workorderItemsList/parent" extends="newServicePortalApiV2">
