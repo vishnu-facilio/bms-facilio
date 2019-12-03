@@ -3,11 +3,9 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.LookupField;
@@ -34,9 +32,16 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
             if (MapUtils.isNotEmpty(subForm)) {
                 Map<String, List> recordMap = new HashMap<>();
                 String mainModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-                recordMap.put(mainModuleName, Collections.singletonList(record));
-
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule mainModule = modBean.getModule(mainModuleName);
+                SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+                        .module(mainModule)
+                        .select(modBean.getAllFields(mainModuleName))
+                        .beanClass(FacilioConstants.ContextNames.getClassFromModule(mainModule))
+                        .andCondition(CriteriaAPI.getIdCondition(record.getId(), mainModule));
+                ModuleBaseWithCustomFields updatedRecord = builder.fetchFirst();
+                recordMap.put(mainModuleName, Collections.singletonList(updatedRecord));
+
 
                 for (String moduleName : subForm.keySet()) {
                     FacilioModule module = modBean.getModule(moduleName);
