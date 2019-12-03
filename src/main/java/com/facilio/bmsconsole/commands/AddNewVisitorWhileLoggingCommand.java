@@ -10,10 +10,12 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
+import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.chain.FacilioChain;
@@ -38,6 +40,11 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 				if(vL.getRequestedBy() == null || vL.getRequestedBy().getId() <= 0) {
 					vL.setRequestedBy(AccountUtil.getCurrentUser());
 				}
+				ContactsContext contact = ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
+				if(contact != null && contact.getTenant() != null) {
+					vL.setTenant(contact.getTenant());
+				}
+			
 				if(vL.getVisitor() != null && vL.getVisitor().getId() > 0) {
 					vL.setIsReturningVisitor(true);
 					vL.getVisitor().setIsReturningVisitor(true);

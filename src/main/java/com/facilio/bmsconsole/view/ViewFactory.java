@@ -1,34 +1,55 @@
 package com.facilio.bmsconsole.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
+import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.*;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.LookupOperator;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.collections4.MapUtils;
-
-import java.util.*;
 
 public class ViewFactory {
 
@@ -3072,15 +3093,7 @@ public class ViewFactory {
 			
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(getMyVistorInvitesCondition());
-			FacilioStatus upcoming;
-			try {
-				upcoming = VisitorManagementAPI.getLogStatus("Upcoming");
-				criteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(upcoming.getId()) , NumberOperators.EQUALS));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			criteria.addAndCondition(getVisitorLogStatusCriteria("Upcoming"));
 			FacilioModule visitorInvitesModule = ModuleFactory.getVisitorLoggingModule();
 
 			FacilioField createdTime = new FacilioField();
@@ -4863,15 +4876,7 @@ public class ViewFactory {
 	private static FacilioView getVendorVisitorLogsView() {
 		
 		Criteria criteria = new Criteria();
-		FacilioStatus upcoming;
-		try {
-			upcoming = VisitorManagementAPI.getLogStatus("Upcoming");
-			criteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(upcoming.getId()) , NumberOperators.EQUALS));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		criteria.addAndCondition(getVisitorLogStatusCriteria("Upcoming"));
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorVisitors");
 		allView.setDisplayName("All Visits");
@@ -5074,13 +5079,7 @@ public class ViewFactory {
 
 		FacilioField preRegisterField = FieldFactory.getField("isPreregistered", "IS_PREREGISTERED", visitorLoggingModule,FieldType.BOOLEAN);
 		criteria.addAndCondition(CriteriaAPI.getCondition(preRegisterField, String.valueOf(true),BooleanOperators.IS));
-
-		try {
-			FacilioStatus upcoming = VisitorManagementAPI.getLogStatus("Upcoming");
-			criteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(upcoming.getId()), NumberOperators.EQUALS));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		criteria.addAndCondition(getVisitorLogStatusCriteria("Upcoming"));
 		view.setCriteria(criteria);
 
 		return view;
@@ -5098,16 +5097,42 @@ public class ViewFactory {
 		criteria.addAndCondition(CriteriaAPI.getCondition(preRegisterField, String.valueOf(true),BooleanOperators.IS));
 		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
 		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_EMPTY));
-		try {
-			FacilioStatus invited = VisitorManagementAPI.getLogStatus("Invited");
-			criteria.addAndCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(invited.getId()), NumberOperators.EQUALS));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		criteria.addAndCondition(getVisitorLogStatusCriteria("Invited"));
 
 		view.setCriteria(criteria);
 
 		return view;
+	}
+	
+	public static Condition getVisitorLogStatusCriteria(String status) {
+
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("status");
+		statusTypeField.setColumnName("STATUS");
+		statusTypeField.setDataType(FieldType.STRING);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition statusCondition = new Condition();
+		statusCondition.setField(statusTypeField);
+		statusCondition.setOperator(StringOperators.IS);
+		statusCondition.setValue(status);
+
+		Criteria statusCriteria = new Criteria() ;
+		statusCriteria.addAndCondition(statusCondition);
+
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(ModuleFactory.getVisitorLoggingModule());
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition condition = new Condition();
+		condition.setField(statusField);
+		condition.setOperator(LookupOperator.LOOKUP);
+		condition.setCriteriaValue(statusCriteria);
+
+		return condition;
 	}
 
 

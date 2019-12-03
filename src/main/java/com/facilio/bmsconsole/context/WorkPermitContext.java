@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -142,6 +143,13 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 		this.expectedEndTime = expectedEndTime;
 	}
 	
+	private TenantContext tenant;
+	public TenantContext getTenant() {
+		return tenant;
+	}
+	public void setTenant(TenantContext tenant) {
+		this.tenant = tenant;
+	}
 	
 	
 	

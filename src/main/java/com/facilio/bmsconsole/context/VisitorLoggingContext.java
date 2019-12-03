@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.io.File;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioStatus;
@@ -635,6 +636,12 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		this.passCode = passCode;
 	}
 
-	
+	private TenantContext tenant;
+	public TenantContext getTenant() {
+		return tenant;
+	}
+	public void setTenant(TenantContext tenant) {
+		this.tenant = tenant;
+	}
 	
 }

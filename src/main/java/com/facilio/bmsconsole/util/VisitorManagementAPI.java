@@ -38,6 +38,7 @@ import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -1119,7 +1120,7 @@ public class VisitorManagementAPI {
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		criteria.addConditionMap(isApprovalNeeded);
-		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("CheckedIn"));
 		
 		criteria.setPattern("(1 and 2 and 3)");
 		
@@ -1170,7 +1171,7 @@ public class VisitorManagementAPI {
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		criteria.addConditionMap(isApprovalNeeded);
-		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("CheckedIn"));
 		criteria.setPattern("(1 and 2 and 3)");
 		
 		workflowRuleContext.setCriteria(criteria);
@@ -1218,7 +1219,7 @@ public class VisitorManagementAPI {
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		criteria.addConditionMap(isApprovalNeeded);
-		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("CheckedIn"));
 		criteria.setPattern("(1 and 2 and 3)");
 		
 		workflowRuleContext.setCriteria(criteria);
@@ -1260,7 +1261,7 @@ public class VisitorManagementAPI {
 		criteria.addConditionMap(condition);
 		
 		criteria.setPattern("(1 and 2)");
-		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("CheckedIn"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1301,7 +1302,7 @@ public class VisitorManagementAPI {
 		criteria.addConditionMap(condition);
 		
 		criteria.setPattern("(1 and 2)");
-		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("CheckedIn"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1342,7 +1343,7 @@ public class VisitorManagementAPI {
 		criteria.addConditionMap(condition);
 		
 		criteria.setPattern("(1 and 2)");
-		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedIn"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("CheckedIn"));
 		
 		workflowRuleContext.setCriteria(criteria);		
 		
@@ -1382,7 +1383,7 @@ public class VisitorManagementAPI {
 		criteria.addConditionMap(condition);
 		
 		criteria.setPattern("(1 and 2)");
-		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedOut"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("CheckedOut"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1423,7 +1424,7 @@ public class VisitorManagementAPI {
 		criteria.addConditionMap(condition);
 		
 		criteria.setPattern("(1 and 2)");
-		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedOut"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("CheckedOut"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1464,7 +1465,7 @@ public class VisitorManagementAPI {
 		criteria.addConditionMap(condition);
 		
 		criteria.setPattern("(1 and 2)");
-		criteria.addConditionMap(getVisitorLogStatusCriteria("CheckedOut"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("CheckedOut"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1510,7 +1511,7 @@ public class VisitorManagementAPI {
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		criteria.addConditionMap(preregisteredCondition);
-		criteria.addConditionMap(getVisitorLogStatusCriteria("Upcoming"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Upcoming"));
 		
 		
 		criteria.setPattern("(1 and 2 and 3)");
@@ -1560,7 +1561,7 @@ public class VisitorManagementAPI {
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		criteria.addConditionMap(preregisteredCondition);
-		criteria.addConditionMap(getVisitorLogStatusCriteria("Upcoming"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Upcoming"));
 		
 		
 		criteria.setPattern("(1 and 2 and 3)");
@@ -1609,7 +1610,7 @@ public class VisitorManagementAPI {
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(condition);
 		criteria.addConditionMap(preregisteredCondition);
-		criteria.addConditionMap(getVisitorLogStatusCriteria("Upcoming"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Upcoming"));
 		
 		
 		criteria.setPattern("(1 and 2 and 3)");
@@ -1665,7 +1666,7 @@ public class VisitorManagementAPI {
 		criteria.addConditionMap(isPreregistered);
 		
 		criteria.setPattern("(1 and 2 and 3 and 4)");
-		criteria.addConditionMap(getVisitorLogStatusCriteria("Requested"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Requested"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1721,7 +1722,7 @@ public class VisitorManagementAPI {
 		criteria.addConditionMap(isPreregistered);
 		
 		criteria.setPattern("(1 and 2 and 3 and 4)");
-		criteria.addConditionMap(getVisitorLogStatusCriteria("Requested"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Requested"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1775,7 +1776,7 @@ public class VisitorManagementAPI {
 		criteria.addConditionMap(isPreregistered);
 		
 		criteria.setPattern("(1 and 2 and 3 and 4)");
-		criteria.addConditionMap(getVisitorLogStatusCriteria("Requested"));
+		criteria.addConditionMap(ViewFactory.getVisitorLogStatusCriteria("Requested"));
 		
 		workflowRuleContext.setCriteria(criteria);
 		
@@ -1793,37 +1794,6 @@ public class VisitorManagementAPI {
 		chain.execute(context);
 	
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
-	}
-	
-	private static Condition getVisitorLogStatusCriteria(String status) {
-
-		FacilioField statusTypeField = new FacilioField();
-		statusTypeField.setName("status");
-		statusTypeField.setColumnName("STATUS");
-		statusTypeField.setDataType(FieldType.STRING);
-		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
-
-		Condition statusCondition = new Condition();
-		statusCondition.setField(statusTypeField);
-		statusCondition.setOperator(StringOperators.IS);
-		statusCondition.setValue(status);
-
-		Criteria statusCriteria = new Criteria() ;
-		statusCriteria.addAndCondition(statusCondition);
-
-		LookupField statusField = new LookupField();
-		statusField.setName("moduleState");
-		statusField.setColumnName("MODULE_STATE");
-		statusField.setDataType(FieldType.LOOKUP);
-		statusField.setModule(ModuleFactory.getVisitorLoggingModule());
-		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
-
-		Condition condition = new Condition();
-		condition.setField(statusField);
-		condition.setOperator(LookupOperator.LOOKUP);
-		condition.setCriteriaValue(statusCriteria);
-
-		return condition;
 	}
 	
 	public static void scheduleVisitorLog(long visitorLogId, ScheduleActions action, long endTime) throws Exception {
