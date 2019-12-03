@@ -342,7 +342,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("email", "E-Mail"));
 		columns.add(new ViewField("phone", "Phone"));
 		columns.add(new ViewField("website", "Website"));
-		
+		columns.add(new ViewField("moduleState", "State"));
 		return columns;
 	}
 	
