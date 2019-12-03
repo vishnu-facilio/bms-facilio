@@ -3224,7 +3224,7 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
-		fields.add(getField("fileId", "FILEID", module, FieldType.FILE));
+		fields.add(getField("fileId", "FILEID", module, FieldType.NUMBER));
 		fields.add(getField("key", "FILE_KEY", module, FieldType.STRING));
 		fields.add(getField("expiresOn", "EXPIRES_ON", module, FieldType.NUMBER));
 
