@@ -23,84 +23,70 @@ public class SentryUtil {
     private static final SentryClient SENTRY_SLOWNESS_CLIENT = SentryClientFactory.sentryClient(FacilioProperties.getSentryslownessdsn());
     private static final SentryClient SENTRY_SCHEDULER_CLIENT = SentryClientFactory.sentryClient(FacilioProperties.getSentryschedulerdsn());
     private static final Logger LOGGER = LogManager.getLogger(SentryUtil.class.getName());
-
-    public static void sendToSentry(Map<String, String> contextMap, HttpServletRequest request) {
-
-        if (FacilioProperties.isSentryEnabled()) {
-            Context context = SENTRY_CLIENT.getContext();
-            context.clear();
-            //context.setUser(new UserBuilder().setId(userId).build());
-            //context.addTag
-            if (request != null) {
-                context.setHttp(new HttpInterface(request));
-            }
-            for (Map.Entry<String, String> entry : contextMap.entrySet()) {
-                try {
-                    if (contextMap.containsKey("graylogurl")) {
-                        context.addExtra("graylogurl", contextMap.get("graylogurl"));
-                    } else {
+    private static void sendToSentryCommon(Map<String, String> contextMap, HttpServletRequest request,SentryClient sentryClient) {
+        try {
+            if (FacilioProperties.isSentryEnabled()) {
+                Context context = sentryClient.getContext();
+                context.clear();
+                if (request != null) {
+                    context.setHttp(new HttpInterface(request));
+                }
+                if (contextMap.containsKey("graylogurl")) {
+                    context.addExtra("graylogurl", contextMap.remove("graylogurl"));
+                }
+                for (Map.Entry<String, String> entry : contextMap.entrySet()) {
+                    try {
                         context.addTag(entry.getKey(), entry.getValue());
+                        if (contextMap.containsKey("url")) {
+                            sentryClient.sendMessage(contextMap.get("url"));
+                        } else {
+                            LOGGER.log(Level.ERROR, "url is not present");
+                        }
+                    } catch (Exception e) {
+                        LOGGER.log(Level.ERROR, "Cannot log to sentry");
                     }
-                    if (contextMap.containsKey("url")) {
-                        SENTRY_CLIENT.sendMessage(contextMap.get("url"));
-                    } else {
-                        LOGGER.log(Level.ERROR, "url is not present");
-                    }
-                } catch (Exception e) {
-                    LOGGER.log(Level.ERROR, "Cannot log to sentry");
                 }
             }
+        } catch (Exception e) {
+            LOGGER.log(Level.ERROR, "Cannot log to sentry server project");
         }
+    }
+
+    public static void sendToSentry(Map<String, String> contextMap, HttpServletRequest request) {
+        sendToSentryCommon(contextMap,request,SENTRY_CLIENT);
     }
 
     public static void sendSlowresponseToSentry(Map<String, String> contextMap, HttpServletRequest request) {
-        if (FacilioProperties.isSentryEnabled()) {
-            Context context = SENTRY_SLOWNESS_CLIENT.getContext();
-            context.clear();
-            if (request != null) {
-                context.setHttp(new HttpInterface(request));
-            }
-            for (Map.Entry<String, String> entry : contextMap.entrySet()) {
-                try {
-                    if (contextMap.containsKey("graylogurl")) {
-                        context.addExtra("graylogurl", contextMap.get("graylogurl"));
-                    } else {
-                        context.addTag(entry.getKey(), entry.getValue());
-                    }
-                    if (contextMap.containsKey("url")) {
-                        SENTRY_SLOWNESS_CLIENT.sendMessage(contextMap.get("url"));
-                    } else {
-                        LOGGER.log(Level.ERROR, "url is not present");
-                    }
-                } catch (Exception e) {
-                    LOGGER.log(Level.ERROR, "Cannot log to sentry");
-                }
-            }
-        }
+        sendToSentryCommon(contextMap,request,SENTRY_SLOWNESS_CLIENT);
     }
 
-    public static void sendSchedulerErrorsToSentry(Map<String, String> contextMap) {
-        if (FacilioProperties.isSentryEnabled()) {
-            Context context = SENTRY_SCHEDULER_CLIENT.getContext();
-            context.clear();
-            for (Map.Entry<String, String> entry : contextMap.entrySet()) {
-                try {
-                    if (contextMap.containsKey("graylogurl") ) {
-                        context.addExtra("graylogurl", contextMap.get("graylogurl"));
-                    } else if (contextMap.containsKey("exceptionStackTrace")) {
-                        context.addExtra("exceptionStackTrace", contextMap.get("exceptionStackTrace"));
-                    } else {
+    private static void sendSchedulerErrorsToSentry(Map<String, String> contextMap) {
+        try {
+            if (FacilioProperties.isSentryEnabled()) {
+                Context context = SENTRY_SCHEDULER_CLIENT.getContext();
+                context.clear();
+                if (contextMap.containsKey("graylogurl")) {
+                    context.addExtra("graylogurl", contextMap.remove("graylogurl"));
+                }
+                if (contextMap.containsKey("exceptionStackTrace")) {
+                    context.addExtra("exceptionStackTrace", contextMap.remove("exceptionStackTrace"));
+                }
+
+                for (Map.Entry<String, String> entry : contextMap.entrySet()) {
+                    try {
                         context.addTag(entry.getKey(), entry.getValue());
+                        if (contextMap.containsKey("JobDetail")) {
+                            SENTRY_SCHEDULER_CLIENT.sendMessage(contextMap.get("JobDetail"));
+                        } else {
+                            LOGGER.log(Level.ERROR, "JobDetail is not present");
+                        }
+                    } catch (Exception e) {
+                        LOGGER.log(Level.ERROR, "Cannot log to sentry");
                     }
-                    if (contextMap.containsKey("JobDetail")) {
-                        SENTRY_SCHEDULER_CLIENT.sendMessage(contextMap.get("JobDetail"));
-                    } else {
-                        LOGGER.log(Level.ERROR, "JobDetail is not present");
-                    }
-                } catch (Exception e) {
-                    LOGGER.log(Level.ERROR, "Cannot log to sentry");
                 }
             }
+        } catch (Exception e) {
+            LOGGER.log(Level.ERROR, "Cannot log to sentry scheduler project");
         }
     }
     public static void handleSchedulerExceptions(JobContext jc, Exception e){
