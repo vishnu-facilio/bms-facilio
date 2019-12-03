@@ -10,9 +10,11 @@ import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
@@ -23,6 +25,7 @@ import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -564,6 +567,7 @@ public class ViewFactory {
 		views.put("vendorVisits", getAllVisitsView().setOrder(order++));
 		views.put("vendorVisitors", getVendorVisitorLogsView().setOrder(order++));
 		views.put("myInvites", getMyVisitorInvites().setOrder(order++));
+		views.put("myPendingVisits", getMyPendingVisitsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
 
 		order = 1;
@@ -5069,6 +5073,19 @@ public class ViewFactory {
 		return view;
 	}
 
+	private static FacilioView  getMyPendingVisitsView() {
+		
+		Criteria criteria = new Criteria();		
+		criteria.addAndCondition(getVisitorLogStatusCriteria("Requested"));
+		FacilioView view = new FacilioView();
+		view.setName("myPendingVisits");
+		view.setDisplayName("My Pending Visits");
+		view.setCriteria(criteria);
+		view.setHidden(true);
+
+		return view;
+	}
+	
 	private static FacilioView  getUpcomingVisitsView() {
 
 		FacilioView view = new FacilioView();

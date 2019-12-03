@@ -87,6 +87,7 @@ public class ColumnFactory {
 		columnMap.put("visitorlogging-myInvites", getmyInvitesVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorVisitors", getVendorVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorVisits", getVendorVisitsInvitesColumns());
+		columnMap.put("visitorlogging-myPendingVisits", getDefaultVisitorLoggingColumns());
 		columnMap.put("visitorlogging-all", getAllVisitsColumns());
 		columnMap.put("insurance-default", getDefaultInsuranceColumns());
 		columnMap.put("insurance-vendor", getVendorInsuranceColumns());
