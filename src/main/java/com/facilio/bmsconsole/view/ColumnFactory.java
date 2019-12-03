@@ -726,7 +726,8 @@ public class ColumnFactory {
 		columns.add(new ViewField("checkInTime", "Check-in Time"));
 		columns.add(new ViewField("checkOutTime", "Check-out Time"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
-	
+		columns.add(new ViewField("tenant", "Tenant"));
+		
 		return columns;
 	}
 	
@@ -738,6 +739,8 @@ public class ColumnFactory {
 		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
 		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
+		columns.add(new ViewField("tenant", "Tenant"));
+		
 	
 		return columns;
 	}
@@ -807,6 +810,8 @@ public class ColumnFactory {
 		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("expectedStartTime", "Expected Start Time"));
 		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
+		columns.add(new ViewField("tenant", "Tenant"));
+		
 		columns.add(new ViewField("isRecurring", "Recurring"));
 		
 		return columns;
