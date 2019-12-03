@@ -36,9 +36,11 @@ public class VendorPageFactory extends PageFactory{
 		tab1.addSection(tab1Sec1);
 		// addPrimaryDetailsWidget(tab1Sec1);
 		addSecondaryDetailsWidget(tab1Sec1);
-		Section tab1Sec2 = page.new Section();
-		tab1.addSection(tab1Sec2);
-		addAddressInfoWidget(tab1Sec2);
+		if(vendor.getAddress()!=null) {
+			Section tab1Sec2 = page.new Section();
+			tab1.addSection(tab1Sec2);
+			addAddressInfoWidget(tab1Sec2);
+		}
 		
 		Section tab1Sec3 = page.new Section();
 		tab1.addSection(tab1Sec3);
