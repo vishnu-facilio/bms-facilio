@@ -70,6 +70,8 @@ public class FacilioProperties {
     private static String iotExchange;
     private static String bridgeUrl;
     private static String sentrydsn;
+    private static String sentryslownessdsn;
+    private static String sentryschedulerdsn;
     private static String pythonAI;
     private static String pythonPath;
 
@@ -134,6 +136,8 @@ public class FacilioProperties {
                 iotExchange = PROPERTIES.getProperty("iot.exchange");
                 bridgeUrl = PROPERTIES.getProperty("bridge.url");
                 sentrydsn = PROPERTIES.getProperty("sentry.dsn");
+                sentryslownessdsn = PROPERTIES.getProperty("sentry.slowness.dsn");
+                sentryschedulerdsn=PROPERTIES.getProperty("sentry.scheduler.dsn");
                 pythonAI = PROPERTIES.getProperty("pythonai.url");
                 pythonPath = PROPERTIES.getProperty("pythonPath");
                 if(PROPERTIES.containsKey("iot.endpoint.port")) {
@@ -396,6 +400,8 @@ public class FacilioProperties {
         return bridgeUrl;
     }
     public static String getsentrydsn() {return sentrydsn; }
+    public static String getSentryslownessdsn() {return sentryslownessdsn;}
+    public static String getSentryschedulerdsn() {return sentryschedulerdsn;}
     
     public static String getPythonAI() {
         return pythonAI;

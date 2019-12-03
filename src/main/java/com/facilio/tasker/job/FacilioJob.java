@@ -1,17 +1,17 @@
 package com.facilio.tasker.job;
 
-import java.sql.SQLException;
-import java.time.Instant;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.executor.Executor;
+import com.facilio.util.SentryUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.sql.SQLException;
+import java.time.Instant;
 
 public abstract class FacilioJob implements Runnable {
 
@@ -67,7 +67,8 @@ public abstract class FacilioJob implements Runnable {
 		catch(Exception e) {
 			status = 2;
 			LOGGER.error("Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(),e);
-			CommonCommandUtil.emailException("FacilioJob", "Job execution failed for Job : "+jc.getJobId()+" : "+ jc.getJobName(), e);
+			SentryUtil.handleSchedulerExceptions(jc,e);
+			// CommonCommandUtil.emailException("FacilioJob", "Job execution failed for Job : "+jc.getJobId()+" : "+ jc.getJobName(), e);
 //			reschedule();
 		} finally {
 			long timeTaken = (System.currentTimeMillis()-startTime);

@@ -198,9 +198,13 @@ public class AccessLogFilter implements Filter {
             contextMap.put("timeTaken", String.valueOf(timeTaken));
             contextMap.put("thread", thread.getName());
             contextMap.put("graylogurl", grayLogSearchUrl);
-            contextMap.put("test","testing_context");
 
-            SentryUtil.sendToSentry(contextMap, request );
+            if (timeTaken > TIME_THRESHOLD){
+                SentryUtil.sendSlowresponseToSentry(contextMap, request );
+            }
+            else {
+                SentryUtil.sendToSentry(contextMap, request);
+            }
         }
         if(appender != null) {
             appender.doAppend(event);
