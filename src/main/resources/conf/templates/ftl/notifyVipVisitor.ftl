@@ -27,11 +27,11 @@
                                       </div>
                                       <#if (vLog.visitedSpace) ??>
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          A Blocked Visitor - ${vLog.visitor.name}  has checked in at ${vLog.visitedSpace.name} on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} and on the way to visit you!
+                                         A VIP Visitor - ${vLog.visitor.name}  has tried to check in at ${vLog.visitedSpace.name} on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} and is provided hassle free entry!
                                       </div>
                                       <#else>
                                        <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                           A Blocked Visitor - ${vLog.visitor.name}  has checked in on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} and is on the way to visit you!
+                                          A VIP Visitor - ${vLog.visitor.name}  has tried to check in on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}  and is provided hassle free entry!
                                        </div>
                                      </#if>
                                     </div>

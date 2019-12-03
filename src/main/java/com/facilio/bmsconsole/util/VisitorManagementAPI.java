@@ -2002,6 +2002,59 @@ public class VisitorManagementAPI {
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 	}
 	
+	public static Long saveVipVisitorMailNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Blocked Visitor Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE);
+		
+		Condition isVip = new Condition();
+		isVip.setFieldName("isVip");
+		isVip.setOperator(BooleanOperators.IS);
+		isVip.setValue("true");
+		isVip.setColumnName("VisitorLogging.IS_VIP");
+		
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(isVip);
+		
+		criteria.setPattern("(1)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
+		
+		List<String> ouIdList = (List<String>)map.get("to");
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		
+		StringJoiner userEmailStr = new StringJoiner(",");
+		for(String ouId : ouIdList) {
+			User user = userBean.getUser(Long.parseLong(ouId), false);
+			if(user != null) {
+				userEmailStr.add(user.getEmail());
+			}
+		}
+		
+		EMailTemplate temp = addTemplate("Vip Email Template", userEmailStr.toString(), 118);
+		emailAction.setTemplateId(temp.getId());
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
 	
 	public static Long saveBlockedVisitorSmsNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -2091,6 +2144,39 @@ public class VisitorManagementAPI {
 		
 	}
 	
+	public static Preference getVipVisitorMailNotificationPref() {
+		FacilioForm form = new FacilioForm();
+		List<FormSection> sections = new ArrayList<FormSection>();
+		FormSection formSection = new FormSection();
+		formSection.setName("VIP Visitor Notification Preference");
+		List<FormField> fields = new ArrayList<FormField>();
+		fields.add(new FormField("to", FieldDisplayType.MULTI_USER_LIST, "Select User(s)", Required.REQUIRED,"users", 1, 1));
+		
+		formSection.setFields(fields);
+		sections.add(formSection);
+		form.setSections(sections);
+		form.setFields(fields);
+		form.setLabelPosition(LabelPosition.TOP);
+		return new Preference("notifyVip_MailNotification", "Notify VIP Visitor On Arrival_Email", form, " Notify hosts when VIP visitors arrive") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveBlockedVisitorMailNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+
+		};
+		
+	}
 	private static EMailTemplate addTemplate(String name, String email, int defaultTempId) throws Exception {
 		EMailTemplate emailTemplate = new EMailTemplate();
 		JSONObject blockedVisitorMailJson = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION, defaultTempId).getOriginalTemplate(); 
@@ -2162,5 +2248,92 @@ public class VisitorManagementAPI {
 		
 	}
 	
-	    
+	public static Preference getVipSmsNotificationPref() {
+		FacilioForm form = new FacilioForm();
+		List<FormSection> sections = new ArrayList<FormSection>();
+		FormSection formSection = new FormSection();
+		formSection.setName("VIP Visitor SMS Notification Preference");
+		List<FormField> fields = new ArrayList<FormField>();
+		fields.add(new FormField("to", FieldDisplayType.MULTI_USER_LIST, "Select User(s)", Required.REQUIRED,"users", 1, 1));
+		
+		formSection.setFields(fields);
+		sections.add(formSection);
+		form.setSections(sections);
+		form.setFields(fields);
+		form.setLabelPosition(LabelPosition.TOP);
+		return new Preference("notifyVip_SmsNotification", "Notify VIP Visitor On Arrival_SMS", form, " Notify hosts when VIP visitors arrive") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveVipVisitorSmsNotificationPrefs(map, module.getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+			}
+
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+
+		};
+		
+	}
+	
+
+	public static Long saveVipVisitorSmsNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("VIP Visitor Notification");
+		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
+		
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.CREATE);
+		
+		Condition isVip = new Condition();
+		isVip.setFieldName("isVip");
+		isVip.setOperator(BooleanOperators.IS);
+		isVip.setValue("true");
+		isVip.setColumnName("VisitorLogging.IS_VIP");
+		
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(isVip);
+		
+		criteria.setPattern("(1)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.SMS_NOTIFICATION);
+		
+		List<String> ouIdList = (List<String>)map.get("to");
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		
+		StringJoiner userEmailStr = new StringJoiner(",");
+		for(String ouId : ouIdList) {
+			User user = userBean.getUser(Long.parseLong(ouId), false);
+			if(user != null) {
+				userEmailStr.add(user.getMobile());
+			}
+		}
+		
+		SMSTemplate temp = addSmsTemplate("VIP SMS Template", userEmailStr.toString(), 117);
+		emailAction.setTemplateId(temp.getId());
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+        
+		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
+	
 }

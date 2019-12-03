@@ -123,8 +123,8 @@ public class PreferenceFactory {
 		visitorLogPreferences.add(VisitorManagementAPI.getBlockedMailNotificationPref());
 		visitorLogPreferences.add(VisitorManagementAPI.getBlockedSmsNotificationPref());
 //		
-//		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeMailNotificationsPref());
-//		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeSmsNotificationsPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getVipVisitorMailNotificationPref());
+		visitorLogPreferences.add(VisitorManagementAPI.getVipSmsNotificationPref());
 		
 		return visitorLogPreferences;
 	}

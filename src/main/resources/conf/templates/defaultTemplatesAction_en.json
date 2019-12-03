@@ -998,7 +998,7 @@
 	"115": {
 		"name": "BLOCKED_VISITOR_SMS_NOTIFICATION",
 		"to": "${vLog.host.phone}",
-		"message": "${visitorlogging.visitor.name} tried checking in and the acess is resctricted as due to a watchlist record match.\nAdmin Team."
+		"message": "A Blocked visitor ${visitorlogging.visitor.name} has checked in (A blocked watchlist record match found).\nAdmin Team."
 	
 	},
 	"116": {
@@ -1008,5 +1008,19 @@
 		"subject": "Welcome! A final step to get registered",
 		"to": "${fetchVendor.email}",
 		"message_ftl": "vendorRegistration"
+	},
+	"117": {
+		"name": "VIP_VISITOR_SMS_NOTIFICATION",
+		"to": "${vLog.host.phone}",
+		"message": "A VIP Visitor - ${visitorlogging.visitor.name} has checked in and the access is made hassle free due to a VIP watchlist record match.\nAdmin Team."
+	
+	},
+	"118": {
+		"name": "VIP_VISITOR_MAIL_NOTIFICATION",
+		"sender": "noreply@${org.domain}.facilio.com",
+		"mailType": "html",
+		"subject": "Attention Please ! VIP Visitor on Watchlist Arrived!",
+		"to": "${vLog.host.email}",
+		"message_ftl": "notifyVipVisitor"
 	}
 }
