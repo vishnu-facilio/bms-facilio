@@ -228,6 +228,7 @@ public class PageWidget {
 		INSURANCE("insurance"),
 		RECURRING_INFO("recurringInfo"),
 		ACTIVITY_WIDGET("activityWidget"),
+		ADDRESS("addressLocation"),
  		;
 		
 		private String name;

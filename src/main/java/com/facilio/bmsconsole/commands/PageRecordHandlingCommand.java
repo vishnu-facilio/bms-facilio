@@ -51,6 +51,11 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 				facilioChain.execute(context);
 				context.put(ContextNames.RECORD, context.get(ContextNames.RECORD));
 				break;
+			case ContextNames.VENDORS:
+				FacilioChain VendorChain = ReadOnlyChainFactory.fetchVendorDetails();
+				VendorChain.execute(context);
+				context.put(ContextNames.RECORD, context.get(ContextNames.RECORD));
+				break;
 				
 		}
 

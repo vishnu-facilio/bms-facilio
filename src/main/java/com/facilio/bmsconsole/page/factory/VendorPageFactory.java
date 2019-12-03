@@ -36,10 +36,13 @@ public class VendorPageFactory extends PageFactory{
 		tab1.addSection(tab1Sec1);
 		// addPrimaryDetailsWidget(tab1Sec1);
 		addSecondaryDetailsWidget(tab1Sec1);
-		
 		Section tab1Sec2 = page.new Section();
 		tab1.addSection(tab1Sec2);
-		addCommonSubModuleGroup(tab1Sec2);
+		addAddressInfoWidget(tab1Sec2);
+		
+		Section tab1Sec3 = page.new Section();
+		tab1.addSection(tab1Sec3);
+		addCommonSubModuleGroup(tab1Sec3);
 		
 		Tab tab2 = page.new Tab("related list");
 		page.addTab(tab2);
@@ -93,6 +96,12 @@ public class VendorPageFactory extends PageFactory{
 		PageWidget plannedWidget = new PageWidget(WidgetType.INSURANCE, "insurance");
 		plannedWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(plannedWidget);
+	}
+
+	private static void addAddressInfoWidget(Section section) {
+		PageWidget recurringInfoWidget = new PageWidget(WidgetType.ADDRESS, "addressLocation");
+		recurringInfoWidget.addToLayoutParams(section, 24, 6);
+		section.addWidget(recurringInfoWidget);
 	}
 	
 	private static void addRelatedListWidget(Section section, String moduleName, long parenModuleId) throws Exception {
