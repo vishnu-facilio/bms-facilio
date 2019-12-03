@@ -56,28 +56,28 @@ public class MVFormulaFieldCalulationJob extends FacilioJob{
 				
 				if(projectWrapper.getBaselines() != null) {
 					for(MVBaseline baseline :projectWrapper.getBaselines()) {
-						DateRange range = new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
+						DateRange range = new DateRange(mvProject.getReportingPeriodStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
 						FormulaFieldAPI.historicalCalculation(baseline.getTargetConsumption(), range, baseline.getTargetConsumption().getResourceId(), true, false);
 					}
 				}
 				
 				if(projectWrapper.getBaselines() != null) {
 					for(MVBaseline baseline :projectWrapper.getBaselines()) {
-						DateRange range = new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
+						DateRange range = new DateRange(mvProject.getReportingPeriodStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
 						FormulaFieldAPI.historicalCalculation(baseline.getSavedConsumption(), range, baseline.getSavedConsumption().getResourceId(), true, false);
 					}
 				}
 				
 				if(projectWrapper.getBaselines() != null) {
 					for(MVBaseline baseline :projectWrapper.getBaselines()) {
-						DateRange range = new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
+						DateRange range = new DateRange(mvProject.getReportingPeriodStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
 						FormulaFieldAPI.historicalCalculation(baseline.getCumulativeSavedConsumption(), range, baseline.getCumulativeSavedConsumption().getResourceId(), true, false);
 					}
 				}
 				
 				if(projectWrapper.getBaselines() != null) {
 					for(MVBaseline baseline :projectWrapper.getBaselines()) {
-						DateRange range = new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
+						DateRange range = new DateRange(mvProject.getReportingPeriodStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
 						FormulaFieldAPI.historicalCalculation(baseline.getPercentageSavedConsumption(), range, baseline.getPercentageSavedConsumption().getResourceId(), true, false);
 					}
 				}
