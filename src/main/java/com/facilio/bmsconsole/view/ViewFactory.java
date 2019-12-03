@@ -4850,11 +4850,13 @@ public class ViewFactory {
 	}
 	
 	private static FacilioView getAllVisitsView() {
-
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("CHECKIN_TIME", "checkInTime", "-1", CommonOperators.IS_NOT_EMPTY));
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Visits");
 		allView.setHidden(true);
+		allView.setCriteria(criteria);
 		return allView;
 	}
 	
