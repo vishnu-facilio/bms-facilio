@@ -189,8 +189,12 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 				}
 			}
 			boolean fetchTriggers = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_TRIGGERS, false);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			if(fieldMap.get("vendor") != null) {
+				selectBuilder.fetchLookup((LookupField) fieldMap.get("vendor"));
+			}
 			if (fetchTriggers) {
-				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+				
 				selectBuilder.fetchLookup((LookupField) fieldMap.get("trigger"));
 			}
 		}
