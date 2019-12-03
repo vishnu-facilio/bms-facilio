@@ -95,7 +95,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 											.append(" for this.ruleTypes "+Arrays.toString(ruleTypes))
 											;
 			LOGGER.error(builder.toString(), e);
-			CommonCommandUtil.emailException("RULE EXECUTION FAILED - "+AccountUtil.getCurrentOrg().getId(),builder.toString(), e);
+//			CommonCommandUtil.emailException("RULE EXECUTION FAILED - "+AccountUtil.getCurrentOrg().getId(),builder.toString(), e);
 			if (propagateError) {
 				throw e;
 			}
