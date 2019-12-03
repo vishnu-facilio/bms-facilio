@@ -22,6 +22,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -161,19 +162,40 @@ public class MLAPI {
 		return insertBuilder.insert(FieldUtil.getAsProperties(mlContext));
 	}
 	
-	public static void addReading(Long parentCategoryID, String readingName,List<FacilioField> fields,String tableName) throws Exception 
+	public static void addReading(List<Long> assetIds, String readingName,List<FacilioField> fields,String tableName,FacilioModule module) throws Exception 
 	{
-		addReading(parentCategoryID,readingName,fields,tableName,null);
+		addReading(assetIds,readingName,fields,tableName,null,module);
 	}
 	
-	public static Long addReadingEveryTime(Long parentCategoryID, String readingName,List<FacilioField> fields,String tableName,ModuleType moduleType) throws Exception 
+	public static Long addReading(List<Long> assetIds,String readingName,List<FacilioField> fields,String tableName,ModuleType moduleType,FacilioModule module) throws Exception 
 	{
-    	 FacilioChain chain = TransactionChainFactory.getAddCategoryReadingChain();
-         FacilioContext context = chain.getContext();
+		if(module != null){
+			//to remove if reading fields already added for the resource in ReadingDataMeta
+		    List<FacilioField> rdmFields = FieldFactory.getReadingDataMetaFields();
+		    FacilioField resourceField = rdmFields.stream().filter(f->f.getName().equalsIgnoreCase("resourceId")).findFirst().get();
+		    FacilioField fieldIdField = rdmFields.stream().filter(f->f.getName().equalsIgnoreCase("fieldId")).findFirst().get();
+			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder().table(ModuleFactory.getReadingDataMetaModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(resourceField, assetIds, NumberOperators.EQUALS)) 
+					.andCondition(CriteriaAPI.getCondition(fieldIdField, fields.stream().map(FacilioField::getId).collect(Collectors.toList()), NumberOperators.EQUALS));
+			deleteRecordBuilder.delete();
+			
+			//to remove if reading module added for the resource in ResourceReading
+			List<FacilioField> rrFields = FieldFactory.getResourceReadingsFields();
+		    FacilioField resField = rrFields.stream().filter(f->f.getName().equalsIgnoreCase("resourceId")).findFirst().get();
+		    FacilioField readingField = rrFields.stream().filter(f->f.getName().equalsIgnoreCase("readingId")).findFirst().get();
+			deleteRecordBuilder = new GenericDeleteRecordBuilder().table(ModuleFactory.getResourceReadingsModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(resField, assetIds, NumberOperators.EQUALS)) 
+					.andCondition(CriteriaAPI.getCondition(readingField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+			deleteRecordBuilder.delete();
+			
+		}
+		
+		 FacilioChain chain = TransactionChainFactory.addResourceReadingChain(module != null);
+		 FacilioContext context = chain.getContext();
          context.put(FacilioConstants.ContextNames.READING_NAME,readingName);
+         context.put(FacilioConstants.ContextNames.MODULE,module);
          context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
-         context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
-         context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, parentCategoryID);
+         context.put(FacilioConstants.ContextNames.PARENT_ID_LIST,assetIds);
          context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, tableName);
          context.put(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT, true);
 		 if (moduleType != null) {
@@ -181,22 +203,6 @@ public class MLAPI {
 		 }
          chain.execute();
          return (Long) chain.getContext().get(FacilioConstants.ContextNames.MODULE_ID);
-	}
-
-	public static void addReading(Long parentCategoryID,String readingName,List<FacilioField> fields,String tableName,ModuleType moduleType) throws Exception 
-	{
-		 FacilioChain chain = TransactionChainFactory.getAddCategoryReadingChain();
-		 FacilioContext context = chain.getContext();
-         context.put(FacilioConstants.ContextNames.READING_NAME,readingName);
-         context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
-         context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
-         context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, parentCategoryID);
-         context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, tableName);
-         context.put(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT, true);
-		 if (moduleType != null) {
-			context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
-		 }
-         chain.execute();
 	}
 	
 	public static void addMLModelVariables(long mlId,String Key,String value) throws Exception

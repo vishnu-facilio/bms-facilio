@@ -27,7 +27,10 @@ public class AddMLJob extends FacilioJob {
 					FacilioContext context = chain.getContext();
 					context.put("TreeHierarchy", props.get("TreeHierarchy"));
 					context.put("energyDeltaField", props.get("energyDeltaField"));
-					context.put("markedField", props.get("markedField"));
+					if(props.containsKey("markedField"))
+					{
+						context.put("markedField", props.get("markedField"));
+					}
 					context.put("parentIdField", props.get("parentIdField"));
 					context.put("mlVariables", props.get("mlVariables"));
 					context.put("mlModelVariables", props.get("mlModelVariables"));
@@ -43,7 +46,10 @@ public class AddMLJob extends FacilioJob {
 						FacilioContext context = chain.getContext();
 						context.put("TreeHierarchy", ids[i]);
 						context.put("energyDeltaField", props.get("energyDeltaField"));
-						context.put("markedField", props.get("markedField"));
+						if(props.containsKey("markedField"))
+						{
+							context.put("markedField", props.get("markedField"));
+						}
 						context.put("parentIdField", props.get("parentIdField"));
 						context.put("mlVariables", props.get("mlVariables"));
 						context.put("mlModelVariables", props.get("mlModelVariables"));

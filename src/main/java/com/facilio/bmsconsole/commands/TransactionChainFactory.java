@@ -925,6 +925,16 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain addResourceReadingChain(boolean isModuleAlreadyCreated) {
+			FacilioChain c = getDefaultChain();
+			if(!isModuleAlreadyCreated){
+				c.addCommand(getAddReadingsChain());
+			}
+			c.addCommand(new AddResourceReadingRelCommand());
+			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
+			return c;
+		}
+		
 		public static FacilioChain getAddFieldsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new SetColumnNameForNewCFsCommand());

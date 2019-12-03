@@ -1,11 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
@@ -13,9 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.constants.FacilioConstants;
@@ -42,21 +38,14 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 			EnergyMeterContext assetContext = DeviceAPI.getEnergyMeter(energyMeterID);
 			if(assetContext != null){
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                Long categoryId=assetContext.getCategory().getId();
-				AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
-				long assetModuleID = assetCategory.getAssetModuleID();
-				List<FacilioModule> modules = modBean.getAllSubModules(assetModuleID);
-				Set<String> moduleNames = new HashSet<>();
-				if(modules !=null){
-					moduleNames = modules.stream().filter(m-> m != null && m.getName() != null).map(FacilioModule::getName).collect(Collectors.toSet());
-				}
 				
-				if(!moduleNames.contains("energypredictionmllogreadings")){
-    				MLAPI.addReading(categoryId,"EnergyPredictionMLLogReadings",FieldFactory.getMLLogPredictCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING);
-                }
-				if (!moduleNames.contains("energypredictionmlreadings")) {
-					MLAPI.addReading(categoryId,"EnergyPredictionMLReadings", FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
-				}
+				FacilioModule module = modBean.getModule("energypredictionmllogreadings");
+				List<FacilioField> fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLLogPredictCheckGamFields();
+				MLAPI.addReading(Collections.singletonList(energyMeterID),"EnergyPredictionMLLogReadings",fields,ModuleFactory.getMLLogReadingModule().getTableName(),ModuleType.PREDICTED_READING,module);
+				
+				module = modBean.getModule("energypredictionmlreadings");
+				fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLPredictCheckGamFields();
+				MLAPI.addReading(Collections.singletonList(energyMeterID),"EnergyPredictionMLReadings", fields,ModuleFactory.getMLReadingModule().getTableName(),module);
 				
 				checkGamModel(energyMeterID,assetContext, (JSONObject) jc.get("mlModelVariables"), (JSONObject) jc.get("mlVariables"),(String) jc.get("modelPath"));
 				LOGGER.info("After check Gam Model");
