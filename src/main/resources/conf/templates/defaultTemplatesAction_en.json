@@ -998,7 +998,7 @@
 	"115": {
 		"name": "BLOCKED_VISITOR_SMS_NOTIFICATION",
 		"to": "${vLog.host.phone}",
-		"message": "A Blocked visitor ${visitorlogging.visitor.name} has checked in (A blocked watchlist record match found).\nAdmin Team."
+		"message": "A watchlist blocked visitor ${visitorlogging.visitor.name} tried to check in and is restricted from visiting you.\nAdmin Team."
 	
 	},
 	"116": {
