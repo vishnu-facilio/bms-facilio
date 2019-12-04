@@ -109,6 +109,7 @@ public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 			
 		for(Long finalResourceId:finalResourceIds)
 		{
+			Map<Long,LoggerContext> uniqueFormulaIdvsHistoricalLoggerMap = new HashMap<Long,LoggerContext>();
 			LoggerContext formulaFieldHistoricalLoggerContext = new LoggerContext();
 			if(isFirst) {
 				formulaFieldHistoricalLoggerContext = setLoggerContext(formulaId, range, finalResourceId, -1);
@@ -125,26 +126,30 @@ public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 			}
 
 			formulaLoggerIdvsHistoricalLoggerMap.put(formulaFieldHistoricalLoggerContext.getId(), formulaFieldHistoricalLoggerContext);
-			checkDependentFormulae (formula, formulaFieldHistoricalLoggerContext.getId(), finalResourceId, range, loggerGroupId, formulaLoggerIdvsHistoricalLoggerMap);
+			uniqueFormulaIdvsHistoricalLoggerMap.put(formulaFieldHistoricalLoggerContext.getParentId(), formulaFieldHistoricalLoggerContext);
+			checkDependentFormulae (formula, formulaFieldHistoricalLoggerContext.getId(), finalResourceId, range, loggerGroupId, formulaLoggerIdvsHistoricalLoggerMap, uniqueFormulaIdvsHistoricalLoggerMap);
 			
 			FormulaFieldAPI.calculateHistoricalDataForSingleResource(formulaFieldHistoricalLoggerContext.getId());
-		}		
+			System.out.println("uniqueFormulaIdvsHistoricalLoggerMap"+ uniqueFormulaIdvsHistoricalLoggerMap);
+		}
+		
+		
+		System.out.println("formulaLoggerIdvsHistoricalLoggerMap"+ formulaLoggerIdvsHistoricalLoggerMap);
 		
 		return false;
 	}
 	
 	public static void checkDependentFormulae (FormulaFieldContext formula, long formulaLoggerId, long singleResourceId, DateRange range, long loggerGroupId, 
-			 Map<Long,LoggerContext> formulaLoggerIdvsHistoricalLoggerMap) throws Exception {
+			 Map<Long,LoggerContext> formulaLoggerIdvsHistoricalLoggerMap, Map<Long,LoggerContext> uniqueFormulaIdvsHistoricalLoggerMap) throws Exception {
 		
 		
 		List<FacilioField> loggerfields = FieldFactory.getFormulaFieldHistoricalLoggerFields();
-		List<FormulaFieldContext> dependentFormulae = FormulaFieldAPI.getActiveFormulasDependingOnFields(TriggerType.SCHEDULE, Collections.singletonList(formula.getReadingField().getId()));
+		List<FormulaFieldContext> dependentFormulae = FormulaFieldAPI.getActiveFormulasDependingOnFields(formula.getTriggerTypeEnum(), Collections.singletonList(formula.getReadingField().getId()));
 		if (dependentFormulae == null || dependentFormulae.isEmpty()) 
 		{
 			return;
 		}
 		
-		TreeMap<Long,LoggerContext> uniqueFormulaIdvsHistoricalLoggerMap = new TreeMap<Long,LoggerContext>();
 		for (FormulaFieldContext dependentFormula : dependentFormulae) 
 		{
 			if (singleResourceId != -1 && dependentFormula.getMatchedResourcesIds().contains(singleResourceId)) 
@@ -158,23 +163,23 @@ public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 					if(!uniqueFormulaIdvsHistoricalLoggerMap.containsKey(dependentFormula.getId()))
 					{
 						dependentFormulaLoggerContext.setDependentId(parentFormulaLoggerContext.getId());
-						uniqueFormulaIdvsHistoricalLoggerMap.put(dependentFormula.getId(), dependentFormulaLoggerContext);		
+						uniqueFormulaIdvsHistoricalLoggerMap.put(dependentFormula.getId(), dependentFormulaLoggerContext);	
+						LoggerAPI.addHistoricalLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, dependentFormulaLoggerContext);	
 					}
 					else
 					{
 						dependentFormulaLoggerContext = uniqueFormulaIdvsHistoricalLoggerMap.get(dependentFormula.getId());
 						dependentFormulaLoggerContext.setDependentId(parentFormulaLoggerContext.getId());
-						uniqueFormulaIdvsHistoricalLoggerMap.put(dependentFormula.getId(), dependentFormulaLoggerContext);					
+						uniqueFormulaIdvsHistoricalLoggerMap.put(dependentFormula.getId(), dependentFormulaLoggerContext);	
+						LoggerAPI.updateLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, dependentFormulaLoggerContext);;
 					}
 					
 					formulaLoggerIdvsHistoricalLoggerMap.put(dependentFormulaLoggerContext.getId(), dependentFormulaLoggerContext);	
-					checkDependentFormulae (dependentFormula, dependentFormulaLoggerContext.getId(), singleResourceId, range, loggerGroupId, formulaLoggerIdvsHistoricalLoggerMap);
+					checkDependentFormulae(dependentFormula, dependentFormulaLoggerContext.getId(), singleResourceId, range, loggerGroupId, formulaLoggerIdvsHistoricalLoggerMap, uniqueFormulaIdvsHistoricalLoggerMap);
 
 				}
 			}				
 		}
-		
-		LoggerAPI.addHistoricalLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, new ArrayList<LoggerContext>(uniqueFormulaIdvsHistoricalLoggerMap.values()));		
 	}
 
 

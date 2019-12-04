@@ -63,22 +63,23 @@ private static final Logger LOGGER = Logger.getLogger(SingleResourceHistoricalFo
 			if(formula.getWorkflow().isV2Script()){
 				skipOptimisedWorkflow = true;
 			}
-			
+		
 			switch (formula.getTriggerTypeEnum()) {
 				case POST_LIVE_READING:
-					if(skipOptimisedWorkflow) {
-						FormulaFieldAPI.historicalCalculation(formula, range, resourceId, false, false);
+					if(skipOptimisedWorkflow) {						
+						FormulaFieldAPI.historicalCalculation(formula, range, resourceId, false, false);				
 					}
 					else {
 						FormulaFieldAPI.optimisedHistoricalCalculation(formula, range, resourceId, false, false);
 					}
 					break;
-				default:
-					FormulaFieldAPI.historicalCalculation(formula, range, resourceId, false, false);
+				default:				
+					FormulaFieldAPI.historicalCalculation(formula, range, resourceId, false, false);			
 			}
 			
 			String msg = "Time taken for Historical Formula calculation of formula : "+formulaId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime);
-			LOGGER.info(msg);					
+			LOGGER.info(msg);
+			
 		}
 		
 		catch (Exception formulaFieldException) {
@@ -99,7 +100,7 @@ private static final Logger LOGGER = Logger.getLogger(SingleResourceHistoricalFo
 			historicalFormulaFieldLogger.setCalculationEndTime(DateTimeUtil.getCurrenTime());
 			LoggerAPI.updateLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, historicalFormulaFieldLogger);	
 
-			List<LoggerContext> dependentFormulaLoggers = LoggerAPI.getActiveDependentParentAndResourceLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, historicalFormulaFieldLogger.getParentId(), historicalFormulaFieldLogger.getResourceId());
+			List<LoggerContext> dependentFormulaLoggers = LoggerAPI.getActiveDependentParentAndResourceLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, historicalFormulaFieldLogger.getId(), historicalFormulaFieldLogger.getResourceId());
 
 			if(dependentFormulaLoggers != null && !dependentFormulaLoggers.isEmpty())
 			{

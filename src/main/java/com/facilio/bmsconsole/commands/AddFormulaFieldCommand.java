@@ -11,6 +11,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 
 public class AddFormulaFieldCommand extends FacilioCommand {
 
@@ -23,11 +24,9 @@ public class AddFormulaFieldCommand extends FacilioCommand {
 		}
 		long formulaId = FormulaFieldAPI.addFormulaField(formula);
 		
-		JSONObject props = null;
-		DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
-		if (dateRange != null) {
-			props = FieldUtil.getAsJSON(dateRange);
-		}
+		DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE); //From UI, Run history	
+		dateRange = getRange(formula,FieldUtil.getAsJSON(dateRange));
+		
 		Boolean skipFromulaCalculation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING);
 		if(skipFromulaCalculation == null || skipFromulaCalculation.equals(Boolean.FALSE)) {
 			
@@ -39,6 +38,43 @@ public class AddFormulaFieldCommand extends FacilioCommand {
 			historicalCalculation.execute();
 		}
 		return false;
+	}
+	
+	private DateRange getRange(FormulaFieldContext formula, JSONObject props) throws Exception {
+		long currentTime = DateTimeUtil.getCurrenTime();
+		DateRange range = null;
+		switch (formula.getTriggerTypeEnum()) {
+			case PRE_LIVE_READING:
+				return null;
+			case POST_LIVE_READING:
+				if (props == null || props.isEmpty()) {
+					return null;
+				}
+				range = FieldUtil.getAsBeanFromJson(props, DateRange.class);
+				if (range.getStartTime() == -1) {
+					return null;
+				}
+				if (range.getEndTime() == -1) {
+					range.setEndTime(currentTime);
+				}
+				break;
+			case SCHEDULE:
+				if (props == null || props.isEmpty()) {
+					range = new DateRange(FormulaFieldAPI.getStartTimeForHistoricalCalculation(formula), currentTime);
+					range.setEndTime(currentTime);
+				}
+				else {
+					range = FieldUtil.getAsBeanFromJson(props, DateRange.class);
+					if (range.getStartTime() == -1) {
+						range = new DateRange(FormulaFieldAPI.getStartTimeForHistoricalCalculation(formula), currentTime);
+					}
+					if (range.getEndTime() == -1) {
+						range.setEndTime(currentTime);
+					}
+				}
+				break;
+		}
+		return range;
 	}
 
 }

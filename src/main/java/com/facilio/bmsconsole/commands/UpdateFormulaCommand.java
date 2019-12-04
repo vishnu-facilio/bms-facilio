@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -31,6 +32,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -119,6 +121,7 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			WorkflowUtil.deleteWorkflow(oldFormula.getWorkflowId());
 			
 			DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
+			dateRange = getRange(newFormula,FieldUtil.getAsJSON(dateRange));
 			
 			Boolean skipFromulaCalculation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING);
 			if(skipFromulaCalculation == null || skipFromulaCalculation.equals(Boolean.FALSE)) {
@@ -216,5 +219,42 @@ public class UpdateFormulaCommand extends FacilioCommand {
 		WorkflowRuleAPI.updateWorkflowRule(newRule);
 		
 		CriteriaAPI.deleteCriteria(oldCriteriaId);
+	}
+	
+	private DateRange getRange(FormulaFieldContext formula, JSONObject props) throws Exception {
+		long currentTime = DateTimeUtil.getCurrenTime();
+		DateRange range = null;
+		switch (formula.getTriggerTypeEnum()) {
+			case PRE_LIVE_READING:
+				return null;
+			case POST_LIVE_READING:
+				if (props == null || props.isEmpty()) {
+					return null;
+				}
+				range = FieldUtil.getAsBeanFromJson(props, DateRange.class);
+				if (range.getStartTime() == -1) {
+					return null;
+				}
+				if (range.getEndTime() == -1) {
+					range.setEndTime(currentTime);
+				}
+				break;
+			case SCHEDULE:
+				if (props == null || props.isEmpty()) {
+					range = new DateRange(FormulaFieldAPI.getStartTimeForHistoricalCalculation(formula), currentTime);
+					range.setEndTime(currentTime);
+				}
+				else {
+					range = FieldUtil.getAsBeanFromJson(props, DateRange.class);
+					if (range.getStartTime() == -1) {
+						range = new DateRange(FormulaFieldAPI.getStartTimeForHistoricalCalculation(formula), currentTime);
+					}
+					if (range.getEndTime() == -1) {
+						range.setEndTime(currentTime);
+					}
+				}
+				break;
+		}
+		return range;
 	}
 }

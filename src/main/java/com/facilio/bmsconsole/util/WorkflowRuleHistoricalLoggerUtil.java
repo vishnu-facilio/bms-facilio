@@ -160,7 +160,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", "id", NumberOperators.EQUALS))
-				.orderBy("STATUS");
+				.orderBy("STATUS,CREATED_TIME DESC");
 				
 				List<Map<String, Object>> props = selectBuilder.get();
 				List<WorkflowRuleHistoricalLoggerContext> workflowRuleParentHistoricalLoggerContextList = new ArrayList<WorkflowRuleHistoricalLoggerContext>();

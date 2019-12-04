@@ -111,7 +111,7 @@ public class HistoricalLoggerUtil {
 				.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", "", CommonOperators.IS_EMPTY))
 				.andCondition(CriteriaAPI.getCondition("DEPENDENT_ID", "dependentId", "", CommonOperators.IS_EMPTY))
-				.orderBy("STATUS");
+				.orderBy("STATUS,CREATED_TIME DESC");
 		
 				List<Map<String, Object>> props = selectBuilder.get();
 				

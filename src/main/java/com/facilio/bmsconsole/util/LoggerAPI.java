@@ -4,8 +4,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
@@ -189,7 +192,7 @@ public class LoggerAPI {
 					.table(loggerModule.getTableName())
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), ""+ parentId, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", "id", NumberOperators.EQUALS))
-					.orderBy("STATUS");
+					.orderBy("STATUS,CREATED_TIME DESC");
 					
 					List<Map<String, Object>> props = selectBuilder.get();
 					List<LoggerContext> parentHistoricalLoggerContextList = new ArrayList<LoggerContext>();
@@ -197,7 +200,7 @@ public class LoggerAPI {
 						parentHistoricalLoggerContextList = FieldUtil.getAsBeanListFromMapList(props, LoggerContext.class);
 					}
 					
-					Map<Long, LoggerContext> parentHistoricalLoggerContextMap = new HashMap <Long, LoggerContext>();
+					LinkedHashMap<Long, LoggerContext> parentHistoricalLoggerContextMap = new LinkedHashMap <Long, LoggerContext>();
 					for(LoggerContext parentHistoricalLoggerContext :parentHistoricalLoggerContextList)
 					{
 						parentHistoricalLoggerContextMap.put(parentHistoricalLoggerContext.getLoggerGroupId(), parentHistoricalLoggerContext);
@@ -220,38 +223,56 @@ public class LoggerAPI {
 					selectBuilder = new GenericSelectRecordBuilder()
 							.select(selectFields)
 							.table(loggerModule.getTableName())
-							.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), ""+ parentId, NumberOperators.EQUALS))
+//							.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), ""+ parentId, NumberOperators.EQUALS))
 							.groupBy("LOGGER_GROUP_ID");
 					
 					
 					List<Map<String, Object>> propsList = selectBuilder.get();
+					Map<Long, Long> loggerGroupCountMap = new HashMap <Long, Long>();
+					
+					for(Map<String, Object> prop : propsList ) {
+						long loggerGroupId = (long) prop.get("loggerGroupId");
+						if(prop.get("count") != null) {
+							loggerGroupCountMap.put(loggerGroupId, (long) prop.get("count"));
+						}
+					}
+					
+					
+//					if(propsList != null && !propsList.isEmpty())
+//					{
+//						for(Map<String, Object> prop :propsList)
+//						{
+//							LoggerContext parentHistoricalLoggerContext = parentHistoricalLoggerContextMap.get((long) prop.get("loggerGroupId"));
+//							if(prop.get("count") != null) {
+//								parentHistoricalLoggerContext.setResourceLogCount((long) prop.get("count"));
+//								
+//							}
+//							if(prop.get("sum") != null)
+//							{
+//								parentHistoricalLoggerContext.setTotalChildActionCount(Integer.valueOf(String.valueOf(prop.get("sum"))));
+//							}			
+//						}		
+//					}	
 					
 					if(propsList != null && !propsList.isEmpty())
 					{
-						for(Map<String, Object> prop :propsList)
+						for(Long loggerGroupId:parentHistoricalLoggerContextMap.keySet())
 						{
-							LoggerContext parentHistoricalLoggerContext = parentHistoricalLoggerContextMap.get((long) prop.get("loggerGroupId"));
-							if(prop.get("count") != null) {
-								parentHistoricalLoggerContext.setResourceLogCount((long) prop.get("count"));
-								
+							Long loggerCount = loggerGroupCountMap.get(loggerGroupId);
+							LoggerContext parentLoggerContext = parentHistoricalLoggerContextMap.get(loggerGroupId);
+							if(loggerCount !=null) {
+								parentLoggerContext.setResourceLogCount(loggerCount);
 							}
-							if(prop.get("sum") != null)
-							{
-								parentHistoricalLoggerContext.setTotalChildActionCount(Integer.valueOf(String.valueOf(prop.get("sum"))));
-							}
-							
-							parentHistoricalLoggerContext.setStatus(LoggerContext.Status.IN_PROGRESS.getIntVal());
-							
-							long loggerGroupId = (long) prop.get("loggerGroupId");
+						
+							parentLoggerContext.setStatus(LoggerContext.Status.IN_PROGRESS.getIntVal());
+	
 							List<LoggerContext> activeChildLoggers = getGroupedInProgressLoggers(loggerModule, loggerFields, loggerGroupId);
 							if(activeChildLoggers == null || activeChildLoggers.isEmpty())
 							{
-								parentHistoricalLoggerContext.setStatus(LoggerContext.Status.RESOLVED.getIntVal());
+								parentLoggerContext.setStatus(LoggerContext.Status.RESOLVED.getIntVal());
 							}
-					
-						}		
-					}			
-					
+						}
+					}				
 					return parentHistoricalLoggerContextMap.values();				
 		}
 
@@ -260,7 +281,8 @@ public class LoggerAPI {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(loggerModule.getTableName())
-				.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", ""+loggerGroupId, NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", ""+loggerGroupId, NumberOperators.EQUALS))
+				.orderBy("STATUS,CREATED_TIME DESC");
 	
 				List<Map<String, Object>> props = selectBuilder.get();
 				List<LoggerContext> LoggerContexts = new ArrayList<LoggerContext>();
