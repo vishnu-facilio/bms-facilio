@@ -2811,18 +2811,18 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
            }
 
            for (WorkOrderContext workOrderContext: workOrderContexts) {
-               if (workOrderContext.getEstimatedEnd() > 0) {
+               if (workOrderContext.getDueDate() > 0) {
                    continue;
                }
 
-               LOGGER.log(Level.ERROR, "Migrating work order id " + workOrderContext.getId() + " existing value " + workOrderContext.getEstimatedEnd());
+               LOGGER.log(Level.ERROR, "Migrating work order id " + workOrderContext.getId() + " existing value " + workOrderContext.getDueDate());
 
                Map<String, Object> updateMap = new HashMap<>();
-               updateMap.put("estimatedEnd", workOrderContext.getScheduledStart() + (5 * 24 * 60 * 60 * 1000));
+               updateMap.put("dueDate", workOrderContext.getScheduledStart() + (5 * 24 * 60 * 60 * 1000));
 
                if (doMigration) {
                    GenericUpdateRecordBuilder recordBuilder = new GenericUpdateRecordBuilder()
-                           .table("Tickets").fields(Collections.singletonList(ticketFieldMap.get("estimatedEnd")))
+                           .table("Tickets").fields(Collections.singletonList(ticketFieldMap.get("dueDate")))
                            .andCondition(CriteriaAPI.getIdCondition(workOrderContext.getId(), ticketModule));
                    recordBuilder.update(updateMap);
                }
