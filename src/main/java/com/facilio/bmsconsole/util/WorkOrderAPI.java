@@ -11,9 +11,11 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.chargebee.internal.StringJoiner;
@@ -51,13 +53,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -2779,4 +2775,58 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
       return finalResult;
 
    }
+
+   public static void historicalSLA(long accountId, boolean doMigration) throws Exception {
+       long[] orgs = new long[]{accountId};
+
+       for (long orgId: orgs) {
+           AccountUtil.setCurrentAccount(orgId);
+           if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+               LOGGER.log(Level.WARN, "Org is missing");
+               return;
+           }
+
+           ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+           FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+           List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
+           Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
+
+           FacilioModule ticketModule = modBean.getModule("ticket");
+           List<FacilioField> ticketFields = modBean.getAllFields(ticketModule.getName());
+           Map<String, FacilioField> ticketFieldMap = FieldFactory.getAsMap(ticketFields);
+
+           SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+                   .select(workorderFields)
+                   .module(workOrderModule)
+                   .beanClass(WorkOrderContext.class)
+                   .andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("createdTime"), 1564617600000L+"", NumberOperators.GREATER_THAN))
+                   .andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("priority"), CommonOperators.IS_NOT_EMPTY))
+                   .andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("jobStatus"), 3+"",NumberOperators.EQUALS));
+
+           List<WorkOrderContext> workOrderContexts = selectRecordsBuilder.get();
+
+           if (CollectionUtils.isEmpty(workOrderContexts)) {
+               continue;
+           }
+
+           for (WorkOrderContext workOrderContext: workOrderContexts) {
+               if (workOrderContext.getEstimatedEnd() > 0) {
+                   continue;
+               }
+
+               LOGGER.log(Level.WARN, "Migrating work order id " + workOrderContext.getId() + " existing value " + workOrderContext.getEstimatedEnd());
+
+               Map<String, Object> updateMap = new HashMap<>();
+               updateMap.put("estimatedEnd", workOrderContext.getScheduledStart() + (5 * 24 * 60 * 60 * 1000));
+
+               if (doMigration) {
+                   GenericUpdateRecordBuilder recordBuilder = new GenericUpdateRecordBuilder()
+                           .table("Tickets").fields(Collections.singletonList(ticketFieldMap.get("estimatedEnd")))
+                           .andCondition(CriteriaAPI.getIdCondition(workOrderContext.getId(), ticketModule));
+                   recordBuilder.update(updateMap);
+               }
+           }
+       }
+   }
+
  }
