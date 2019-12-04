@@ -36,14 +36,13 @@ public class MLJobReportPreparationJob extends FacilioJob
 				fs.getFileInfo(fileId);
 				sendMail(new JSONObject());
 				fs.deleteFile(fileId);
-			}else{
-				File file = File.createTempFile("ML_JOB_REPORT", ".txt");
-				fileId = fs.addFile("ML_JOB_REPORT", file, "application/text");
-				props.put("fileId", fileId);
-				Map<String,Object> prop=new HashMap<String, Object>();
-				prop.put("props", props.toString());
-				updateCommonJob(jc.getJobId(),jc.getJobName(),prop);
 			}
+			File file = File.createTempFile("ML_JOB_REPORT", ".txt");
+			fileId = fs.addFile("ML_JOB_REPORT", file, "application/text");
+			props.put("fileId", fileId);
+			Map<String,Object> prop=new HashMap<String, Object>();
+			prop.put("props", props.toString());
+			updateCommonJob(jc.getJobId(),jc.getJobName(),prop);
 			
 			LOGGER.info("Finished MLJobReportPreparationJob");
 		}catch(Exception e){
