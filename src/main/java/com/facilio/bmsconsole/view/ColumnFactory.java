@@ -86,6 +86,8 @@ public class ColumnFactory {
 		columnMap.put("visitorinvite-default", getDefaultVisitorInvitesColumns());
 		columnMap.put("visitorlogging-invite_all", getDefaultVisitorInvitesColumns());
 		columnMap.put("visitorlogging-myInvites", getmyInvitesVisitorInvitesColumns());
+		columnMap.put("visitorlogging-myUpcoming", getmyInvitesVisitorInvitesColumns());
+		columnMap.put("visitorlogging-myAll", getmyInvitesVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorVisitors", getVendorVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorVisits", getVendorVisitsInvitesColumns());
 		columnMap.put("visitorlogging-myPendingVisits", getDefaultVisitorLoggingColumns());
@@ -95,6 +97,8 @@ public class ColumnFactory {
 		columnMap.put("watchlist-default", getDefaultWatchListColumns());
 		columnMap.put("workpermit-default", getDefaultWorkPermitColumns());
 		columnMap.put("workpermit-myWorkpermits", getMyWorkWorkPermitColumns());
+		columnMap.put("workpermit-myActive", getMyWorkWorkPermitColumns());
+		columnMap.put("workpermit-myExpired", getMyWorkWorkPermitColumns());
 		columnMap.put("workpermit-vendorWorkpermits", getVendorWorkWorkPermitColumns());
 		columnMap.put("vendors-myVendors", getMyVendorsColumns());
 		columnMap.put("contact-default", getDefaultContactColumns());

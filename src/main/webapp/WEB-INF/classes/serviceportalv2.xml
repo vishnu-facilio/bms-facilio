@@ -926,6 +926,13 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
 	</package>
+	<package name="tenantworkorders"
+		namespace="/api/service/v2/workorders/view" extends="newServicePortalApiV2">
+	<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
+			<param name="viewName">{1}</param>
+			<param name="approval">true</param>
+		</action>
+		</package>
 	<!-- Tenant apis end -->
 	<!-- end -->
 </struts>
