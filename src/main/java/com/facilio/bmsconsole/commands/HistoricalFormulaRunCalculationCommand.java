@@ -9,6 +9,8 @@ import java.util.TreeMap;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -17,6 +19,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
+import com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.LoggerAPI;
 import com.facilio.constants.FacilioConstants;
@@ -30,6 +33,7 @@ import com.facilio.time.DateTimeUtil;
 
 public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 
+	private static final Logger LOGGER = LogManager.getLogger(HistoricalFormulaRunCalculationCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -130,10 +134,13 @@ public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 			checkDependentFormulae (formula, formulaFieldHistoricalLoggerContext.getId(), finalResourceId, range, loggerGroupId, formulaLoggerIdvsHistoricalLoggerMap, uniqueFormulaIdvsHistoricalLoggerMap);
 			
 			FormulaFieldAPI.calculateHistoricalDataForSingleResource(formulaFieldHistoricalLoggerContext.getId());
+
+			LOGGER.info("Historical formula Job uniqueFormulaIdvsHistoricalLoggerMap --" + uniqueFormulaIdvsHistoricalLoggerMap + "--formulaId--"+formulaId+ " --formulaLoggerJobId--"+formulaFieldHistoricalLoggerContext.getId());
 			System.out.println("uniqueFormulaIdvsHistoricalLoggerMap"+ uniqueFormulaIdvsHistoricalLoggerMap);
 		}
 		
-		
+
+		LOGGER.info("Historical formula Job formulaLoggerIdvsHistoricalLoggerMap --" + formulaLoggerIdvsHistoricalLoggerMap + "--formulaId--"+formulaId);
 		System.out.println("formulaLoggerIdvsHistoricalLoggerMap"+ formulaLoggerIdvsHistoricalLoggerMap);
 		
 		return false;

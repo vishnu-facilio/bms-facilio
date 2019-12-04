@@ -63,6 +63,8 @@ private static final Logger LOGGER = Logger.getLogger(SingleResourceHistoricalFo
 			if(formula.getWorkflow().isV2Script()){
 				skipOptimisedWorkflow = true;
 			}
+			
+			LOGGER.info("Historical formula Job started with Job Logger Id --" +jobId);
 		
 			switch (formula.getTriggerTypeEnum()) {
 				case POST_LIVE_READING:

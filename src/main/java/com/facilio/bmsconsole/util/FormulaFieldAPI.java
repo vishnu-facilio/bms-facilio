@@ -1015,10 +1015,9 @@ public class FormulaFieldAPI {
 				}
 			}
 			
-			LOGGER.debug("Historical Data to be added for formula "+readings.size());
+			LOGGER.debug("Historical Data to be added for formula with readings size"+readings.size());
 			if (!isSelfDependent && !readings.isEmpty()) {
-				
-				
+						
 				FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 				FacilioContext context = addReadingChain.getContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
