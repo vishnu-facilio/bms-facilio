@@ -44,22 +44,6 @@ public class VendorContext extends ModuleBaseWithCustomFields {
 		this.name = name;
 	}
 
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
 	private LocationContext address;
 
 	public LocationContext getAddress() {
@@ -168,6 +152,37 @@ public class VendorContext extends ModuleBaseWithCustomFields {
 		this.sourceId = sourceId;
 	}
 
+	private String primaryContactName;
+
+	public String getPrimaryContactName() {
+		return primaryContactName;
+	}
+
+	public void setPrimaryContactName(String primaryContactName) {
+		this.primaryContactName = primaryContactName;
+	}
+	
+	private String primaryContactEmail;
+	private String primaryContactPhone;
+
+	public String getPrimaryContactEmail() {
+		return primaryContactEmail;
+	}
+
+	public void setPrimaryContactEmail(String primaryContactEmail) {
+		this.primaryContactEmail = primaryContactEmail;
+	}
+
+	public String getPrimaryContactPhone() {
+		return primaryContactPhone;
+	}
+
+	public void setPrimaryContactPhone(String primaryContactPhone) {
+		this.primaryContactPhone = primaryContactPhone;
+	}
+	
+	
+	
 	
 	
 }

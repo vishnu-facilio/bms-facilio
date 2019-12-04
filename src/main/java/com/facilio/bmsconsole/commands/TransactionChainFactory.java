@@ -3923,7 +3923,9 @@ public class TransactionChainFactory {
 	public static FacilioChain updateContactsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForContacts());
+		c.addCommand(new PrimaryContactHandlingForVendorCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new UpdateVendorPrimaryContactLookUpCommand());
 		
 		return c;
 	}

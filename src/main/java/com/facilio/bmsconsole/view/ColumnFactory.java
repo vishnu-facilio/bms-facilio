@@ -351,8 +351,9 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Name"));
-		columns.add(new ViewField("email", "E-Mail"));
-		columns.add(new ViewField("phone", "Phone"));
+		columns.add(new ViewField("website", "Website"));
+		columns.add(new ViewField("primaryContactEmail", "Primary Contact E-Mail"));
+		columns.add(new ViewField("primaryContactPhone", "Primary Contact Phone"));
 		columns.add(new ViewField("registeredBy", "Registered By"));
 		
 		return columns;
@@ -362,9 +363,9 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Name"));
-		columns.add(new ViewField("email", "E-Mail"));
-		columns.add(new ViewField("phone", "Phone"));
 		columns.add(new ViewField("website", "Website"));
+		columns.add(new ViewField("primaryContactEmail", "Primary Contact E-Mail"));
+		columns.add(new ViewField("primaryContactPhone", "Primary Contact Phone"));
 		columns.add(new ViewField("moduleState", "State"));
 		return columns;
 	}

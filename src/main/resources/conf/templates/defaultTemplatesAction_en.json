@@ -1006,7 +1006,7 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "Welcome! A final step to get registered",
-		"to": "${fetchVendor.email}",
+		"to": "${fetchVendor.primaryContactEmail}",
 		"message_ftl": "vendorRegistration"
 	},
 	"117": {
