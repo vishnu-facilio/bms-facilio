@@ -2806,6 +2806,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
            List<WorkOrderContext> workOrderContexts = selectRecordsBuilder.get();
 
            if (CollectionUtils.isEmpty(workOrderContexts)) {
+               LOGGER.log(Level.ERROR, "Work order is empty for the org");
                continue;
            }
 
@@ -2814,7 +2815,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
                    continue;
                }
 
-               LOGGER.log(Level.WARN, "Migrating work order id " + workOrderContext.getId() + " existing value " + workOrderContext.getEstimatedEnd());
+               LOGGER.log(Level.ERROR, "Migrating work order id " + workOrderContext.getId() + " existing value " + workOrderContext.getEstimatedEnd());
 
                Map<String, Object> updateMap = new HashMap<>();
                updateMap.put("estimatedEnd", workOrderContext.getScheduledStart() + (5 * 24 * 60 * 60 * 1000));
