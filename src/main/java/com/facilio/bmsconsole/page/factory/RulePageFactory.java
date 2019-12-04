@@ -55,6 +55,14 @@ public class RulePageFactory extends PageFactory {
 		
 		addHistoryLogWidget(tab4Sec1);
 
+//		Tab tab5 = page.new Tab("actions", "actions");
+//		page.addTab(tab5);
+//
+//		Section tab5Sec1 = page.new Section();
+//		tab4.addSection(tab5Sec1);
+//
+//		addActionsWidget(tab5Sec1);
+
 		return page;
 	}
 	private static void addRuleDetailsWidget(Section section) {
@@ -110,6 +118,11 @@ public class RulePageFactory extends PageFactory {
 	private static void addHistoryLogWidget(Section section) {
 		PageWidget historyLogWidget = new PageWidget(WidgetType.HISTORY_LOG);
 		section.addWidget(historyLogWidget);
+	}
+
+	private static void addActionsWidget(Section section) {
+		PageWidget actionWidget = new PageWidget(WidgetType.RULE_ACTION_WIDGET);
+		section.addWidget(actionWidget);
 	}
 	
 

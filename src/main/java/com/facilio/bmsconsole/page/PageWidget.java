@@ -229,6 +229,7 @@ public class PageWidget {
 		RECURRING_INFO("recurringInfo"),
 		ACTIVITY_WIDGET("activityWidget"),
 		ADDRESS("addressLocation"),
+		RULE_ACTION_WIDGET("ruleActionWidget")
  		;
 		
 		private String name;

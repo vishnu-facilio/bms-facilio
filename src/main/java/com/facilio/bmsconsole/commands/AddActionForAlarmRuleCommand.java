@@ -4,14 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.bmsconsole.workflow.rule.*;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ActionType;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 
 public class AddActionForAlarmRuleCommand extends FacilioCommand {
@@ -43,6 +39,13 @@ public class AddActionForAlarmRuleCommand extends FacilioCommand {
 //				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
 //			}
 //		}
+
+		if (alarmRule.getWorkflowRulesForAlarms() != null) {
+			for( AlarmWorkflowRuleContext workflowRulesForAlarm :alarmRule.getWorkflowRulesForAlarms()) {
+				actions = ActionAPI.addActions(workflowRulesForAlarm.getActions(), workflowRulesForAlarm);
+				ActionAPI.addWorkflowRuleActionRel(workflowRulesForAlarm.getId(), actions);
+			}
+		}
 		
 		if(!alarmRule.isAutoClear()) {
 			ActionContext actionContext = new ActionContext();
