@@ -602,10 +602,10 @@ public class ModuleAction extends FacilioAction {
 	public String updateModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 
 		setModuleData();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.RECORD, moduleData);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));
