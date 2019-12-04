@@ -91,7 +91,23 @@ public class FieldFactory {
 		return  fields;
 	}
 
-    public static class Fields {
+	public static Collection<FacilioField> getAgentVersionLogFields() {
+		FacilioModule module = ModuleFactory.getAgentVersionLogModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		//fields.add(getField("orgId","ORGID",module,FieldType.NUMBER));
+		fields.add(getField("agentId","AGENT_ID",module,FieldType.NUMBER));
+		fields.add(getField("versionId","VERSION_ID",module,FieldType.NUMBER));
+		fields.add(getField("updatedTime","UPDATED_TIME",module,FieldType.NUMBER));
+		fields.add(getField("authKey","AUTH_KEY",module,FieldType.STRING));
+		fields.add(getField("createdTime","CREATED_TIME",module,FieldType.NUMBER));
+
+
+		return  fields;
+
+	}
+
+	public static class Fields {
 		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
 		static {
 			alarmsFieldsInclude.add("isAcknowledged");
@@ -454,6 +470,9 @@ public class FieldFactory {
 		fields.add(getCreatedTime(module));
 		fields.add(getField(AgentConstants.CREATED_BY,"CREATED_BY",FieldType.STRING));
 		return fields;
+	}
+	public static FacilioField getAuthKeyField(FacilioModule agentVersionModule) {
+		return getField(AgentKeys.AUTH_KEY,"AUTH_KEY",FieldType.STRING);
 	}
 
 	public static FacilioField getWritableField(FacilioModule module) {

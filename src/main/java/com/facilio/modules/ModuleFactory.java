@@ -2960,4 +2960,12 @@ public class ModuleFactory {
 		pmTriggers.setTableName("VisitorLog_Triggers");
 		return pmTriggers;
 	}
+
+	public static FacilioModule getAgentVersionLogModule() {
+		FacilioModule agentVersionLogModule = new FacilioModule();
+		agentVersionLogModule.setName("agentVersionLog");
+		agentVersionLogModule.setDisplayName("Agent Version Log Module");
+		agentVersionLogModule.setTableName("Agent_VersionLog");
+		return agentVersionLogModule;
+	}
 }

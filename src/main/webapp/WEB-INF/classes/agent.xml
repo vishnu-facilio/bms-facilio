@@ -17,7 +17,7 @@
             </interceptor-stack>
         </interceptors>
 
-        <action name="downloadAgent" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method ="testMethod">
+        <action name="downloadAgent" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method ="downloadAgent">
             <interceptor-ref name="downloadInterceptorStack"/>
             <result name="success" type="stream">
                 <param name="contentType">application/octet-stream</param>

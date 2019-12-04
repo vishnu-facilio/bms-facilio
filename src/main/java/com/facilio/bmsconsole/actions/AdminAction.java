@@ -67,9 +67,9 @@ public class AdminAction extends ActionSupport {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(AdminAction.class.getName());
 	private static org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(AdminAction.class.getName());
-	private static String bucket_name="credentials";
-	private static String obj_key_name ="credentials_key";
-	private String file_obj_key_name = "credentials_obj";
+	private static String bucket_name="facilio-admin-files";
+	private static String obj_key_name ="facilio-admin-files-obj-key";
+	private String file_obj_key_name = "facilio-admin-file-obj-key-name";
 	private String file_name = "app.json";
 
 	public String show() {
@@ -558,6 +558,9 @@ public class AdminAction extends ActionSupport {
 
 			// Upload a text string as a new object.
 			StringBuilder content = new StringBuilder();
+			System.out.println("999427" +getFile());
+			System.out.println(getFile().toPath());
+			System.out.println(getFile().toString());
 			List<String> list = Files.readAllLines(file.toPath());
 			for (String line:list){
 				content.append(line);
@@ -574,7 +577,8 @@ public class AdminAction extends ActionSupport {
 		} catch (IOException | SdkClientException e) {
 			// The call was transmitted successfully, but Amazon S3 couldn't process
 			// it, so it returned an error response.
-			logger.info("Error occ");
+			logger.info("Error occ " + e.getMessage() );
+			e.printStackTrace();
 		}
 	}
 	public static Bucket getBucket(String bucket_name) {

@@ -61,5 +61,6 @@ public class AgentKeys
     public static final String FINISH_TIME = "finishTime";
 
     public static final String STATUS = "status";
+    public static final String AUTH_KEY = "authKey";
 }
 
