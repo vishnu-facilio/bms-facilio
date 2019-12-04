@@ -89,17 +89,22 @@ public class ColumnFactory {
 		columnMap.put("visitorlogging-myUpcoming", getmyInvitesVisitorInvitesColumns());
 		columnMap.put("visitorlogging-myAll", getmyInvitesVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorVisitors", getVendorVisitorInvitesColumns());
+		columnMap.put("visitorlogging-vendorUpcomingVisitors", getVendorVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorVisits", getVendorVisitsInvitesColumns());
 		columnMap.put("visitorlogging-myPendingVisits", getDefaultVisitorLoggingColumns());
 		columnMap.put("visitorlogging-all", getAllVisitsColumns());
 		columnMap.put("insurance-default", getDefaultInsuranceColumns());
 		columnMap.put("insurance-vendor", getVendorInsuranceColumns());
+		columnMap.put("insurance-vendorActive", getVendorInsuranceColumns());
+		columnMap.put("insurance-vendorExpired", getVendorInsuranceColumns());
 		columnMap.put("watchlist-default", getDefaultWatchListColumns());
 		columnMap.put("workpermit-default", getDefaultWorkPermitColumns());
 		columnMap.put("workpermit-myWorkpermits", getMyWorkWorkPermitColumns());
 		columnMap.put("workpermit-myActive", getMyWorkWorkPermitColumns());
 		columnMap.put("workpermit-myExpired", getMyWorkWorkPermitColumns());
 		columnMap.put("workpermit-vendorWorkpermits", getVendorWorkWorkPermitColumns());
+		columnMap.put("workpermit-vendorActiveWorkpermits", getVendorWorkWorkPermitColumns());
+		columnMap.put("workpermit-vendorExpiredWorkpermits", getVendorWorkWorkPermitColumns());
 		columnMap.put("vendors-myVendors", getMyVendorsColumns());
 		columnMap.put("contact-default", getDefaultContactColumns());
 	

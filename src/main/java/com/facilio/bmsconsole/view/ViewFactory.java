@@ -566,7 +566,8 @@ public class ViewFactory {
 		views.put("upcoming", getUpcomingVisitsView().setOrder(order++));
 		views.put("all", getAllVisitorLogsView().setOrder(order++));
 		views.put("vendorVisits", getAllVisitsView().setOrder(order++));
-		views.put("vendorVisitors", getVendorVisitorLogsView().setOrder(order++));
+		views.put("vendorVisitors", getAllVisitsView().setOrder(order++));
+		views.put("vendorUpcomingVisitors", getVendorUpcomingVisitorLogsView().setOrder(order++));
 		views.put("myUpcoming", getMyUpcomingVisitorInvites().setOrder(order++));
 		views.put("myAll", getMyAllVisitorInvites().setOrder(order++));
 		views.put("myPendingVisits", getMyPendingVisitsView().setOrder(order++));
@@ -584,15 +585,19 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInsuranceView().setOrder(order++));
 		views.put("vendor", getVendorInsuranceView().setOrder(order++));
+		views.put("vendorActive", getVendorInsuranceView().setOrder(order++));
+		views.put("vendorExpired", getVendorExpiredInsuranceView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INSURANCE, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllWorkPermitView().setOrder(order++));
 		views.put("vendorWorkpermits", getVendorWorkPermitView().setOrder(order++));
+		views.put("vendorActiveWorkpermits", getVendorWorkPermitView().setOrder(order++));
+		views.put("vendorExpiredWorkpermits", getExpiredWorkPermitView().setOrder(order++));
 		views.put("myWorkpermits", getMyWorkPermits().setOrder(order++));
 		views.put("myActive", getActiveWorkPermitView().setOrder(order++));
-		views.put("myExpired", getExpiredWorkPermitView().setOrder(order++));
+		views.put("myExpired", getMyExpiredWorkPermitView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORKPERMIT, views);
 
 		order = 1;
@@ -3114,7 +3119,7 @@ public class ViewFactory {
 
 			FacilioView myVisitorInvitesView = new FacilioView();
 			myVisitorInvitesView.setName("myUpcoming");
-			myVisitorInvitesView.setDisplayName("My Upcoming Visitor Invites");
+			myVisitorInvitesView.setDisplayName("My Upcoming Invites");
 			myVisitorInvitesView.setCriteria(criteria);
 			myVisitorInvitesView.setSortFields(sortFields);
 			myVisitorInvitesView.setHidden(true);
@@ -4905,7 +4910,7 @@ public class ViewFactory {
 		return allView;
 	}
 	
-	private static FacilioView getVendorVisitorLogsView() {
+	private static FacilioView getVendorUpcomingVisitorLogsView() {
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getVisitorLogStatusCriteria("Upcoming"));
@@ -4939,6 +4944,36 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Insurance");
 		allView.setHidden(true);
+		return allView;
+	}
+	
+	private static Condition getExpiredInsuranceCondition(){
+		
+		FacilioField validTillField = new LookupField();
+		validTillField.setName("validTill");
+		validTillField.setColumnName("VALID_TILL");
+		validTillField.setDataType(FieldType.DATE_TIME);
+		validTillField.setModule(ModuleFactory.getInsuranceModule());
+
+		Condition expiredCondition = new Condition();
+		expiredCondition.setField(validTillField);
+		long CurrentTime = DateTimeUtil.getCurrenTime();
+		expiredCondition.setOperator(NumberOperators.LESS_THAN);
+		expiredCondition.setValue(CurrentTime + "");
+		return expiredCondition;
+	}
+	
+	private static FacilioView getVendorExpiredInsuranceView() {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getExpiredInsuranceCondition());
+		FacilioModule insuranceModule = ModuleFactory.getInsuranceModule();
+		FacilioField validTill = FieldFactory.getField("validTill", "VALID_TILL", insuranceModule,FieldType.DATE_TIME);
+		criteria.addAndCondition(CriteriaAPI.getCondition(validTill, CommonOperators.IS_NOT_EMPTY));
+		FacilioView allView = new FacilioView();
+		allView.setName("vendorExpired");
+		allView.setDisplayName("Expired");
+		allView.setHidden(true);
+		allView.setCriteria(criteria);
 		return allView;
 	}
 	
@@ -4979,12 +5014,29 @@ public class ViewFactory {
 		return allView;
 	}
 	
-	private static FacilioView getExpiredWorkPermitView() {
+	private static FacilioView getMyExpiredWorkPermitView() {
 		Criteria expiredCriteria = new Criteria();
 		expiredCriteria.addAndCondition(getMyWorkPermitsCondition());
 		expiredCriteria.addAndCondition(getExpiredWorkPermitCondition());
+		FacilioModule workpermitmodule = ModuleFactory.getWorkPermitModule();
+		FacilioField expectedEndtime = FieldFactory.getField("expectedEndTime", "EXPECTED_END_TIME", workpermitmodule,FieldType.DATE_TIME);
+		expiredCriteria.addAndCondition(CriteriaAPI.getCondition(expectedEndtime, CommonOperators.IS_NOT_EMPTY));
 		FacilioView allView = new FacilioView();
 		allView.setName("myExpired");
+		allView.setDisplayName("Expired Work Permit");
+		allView.setHidden(true);
+		allView.setCriteria(expiredCriteria);
+		return allView;
+	}
+	
+	private static FacilioView getExpiredWorkPermitView() {
+		Criteria expiredCriteria = new Criteria();
+		expiredCriteria.addAndCondition(getExpiredWorkPermitCondition());
+		FacilioModule workpermitmodule = ModuleFactory.getWorkPermitModule();
+		FacilioField expectedEndtime = FieldFactory.getField("expectedEndTime", "EXPECTED_END_TIME", workpermitmodule,FieldType.DATE_TIME);
+		expiredCriteria.addAndCondition(CriteriaAPI.getCondition(expectedEndtime, CommonOperators.IS_NOT_EMPTY));
+		FacilioView allView = new FacilioView();
+		allView.setName("vendorExpiredWorkpermits");
 		allView.setDisplayName("Expired Work Permit");
 		allView.setHidden(true);
 		allView.setCriteria(expiredCriteria);

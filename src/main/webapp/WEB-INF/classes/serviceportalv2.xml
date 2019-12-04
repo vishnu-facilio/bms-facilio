@@ -487,6 +487,7 @@
 			method="getInsuranceDetails" />
 		<action name="*" class="com.facilio.bmsconsole.actions.InsuranceAction"
 			method="getInsuranceList" >
+			<param name="viewName">{1}</param>
 			<param name="vendorPortal">true</param>
 		</action>
 	</package>
@@ -766,6 +767,7 @@
 		namespace="/api/service/v2/vendorworkpermit" extends="newServicePortalApiV2">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList" >
+			<param name="viewName">{1}</param>
 			<param name="vendorPortal">true</param>
 	</action>
 	</package>
