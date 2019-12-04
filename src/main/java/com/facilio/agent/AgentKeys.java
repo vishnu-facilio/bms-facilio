@@ -62,5 +62,6 @@ public class AgentKeys
 
     public static final String STATUS = "status";
     public static final String AUTH_KEY = "authKey";
+    public static final String URL = "url";
 }
 

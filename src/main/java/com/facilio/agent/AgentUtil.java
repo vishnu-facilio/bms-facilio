@@ -17,17 +17,16 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.bouncycastle.math.raw.Mod;
 import org.json.simple.JSONObject;
 
+import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Function;
@@ -41,6 +40,11 @@ public  class AgentUtil
     private long orgId ;
     private String orgDomainName;
     private static final long DEFAULT_TIME = 10L;
+
+    private static final SecureRandom secureRandom = new SecureRandom(); //threadsafe
+    private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder(); //threadsafe
+
+
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
     public Map<String, FacilioAgent> getAgentMap() { return agentMap; }
 
@@ -599,6 +603,42 @@ public  class AgentUtil
     	 		return agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
     	 	}
     	 	return null;
+    }
+    //untested
+    public String addVersionLog(long newVersionId,long agentId) throws Exception {
+        try{
+            Map<String, Object> row = new HashMap<>();
+        row.put("orgId",this.orgId);
+        row.put("versionId",newVersionId);
+        row.put("agentId",agentId);
+        String token = null;
+        for (int i = 0; i < 5; i++) {
+            token  = generateNewToken();
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .table(ModuleFactory.getAgentVersionLogModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getAuthKeyField(ModuleFactory.getAgentVersionLogModule()),token,StringOperators.IS));
+            List<Map<String, Object>> maps = selectRecordBuilder.get();
+            if (maps.size()==0) {
+                row.put("authKey", token);
+                GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+                        .table(ModuleFactory.getAgentVersionLogModule().getTableName());
+                insertRecordBuilder.insert(row);
+
+            }
+        }
+
+
+        return token;
+        }catch (Exception ex){
+            LOGGER.error("Exception while creating token");
+            return null;
+        }
+    }
+
+    public static String generateNewToken() {
+        byte[] randomBytes = new byte[24];
+        secureRandom.nextBytes(randomBytes);
+        return base64Encoder.encodeToString(randomBytes);
     }
 
 }

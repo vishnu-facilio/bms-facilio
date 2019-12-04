@@ -214,7 +214,7 @@ public class ModuleFactory {
 		FacilioModule agentVersionModule = new FacilioModule();
 		agentVersionModule.setDisplayName("agentVersion");
 		agentVersionModule.setDisplayName("agentVersion");
-		agentVersionModule.setTableName(AgentConstants.AGENT_VERSION);
+		agentVersionModule.setTableName("Agent_Version");
 		return agentVersionModule;
 	}
 

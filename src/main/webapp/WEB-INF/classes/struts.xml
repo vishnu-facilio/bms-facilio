@@ -26,7 +26,7 @@
 	<include file="eventconsole.xml" />
 	<include file="public.xml" />
 	<include file="vendorportalv2.xml"/>
-	
+	<include file="agent.xml"/>
 	
 	
 	<!-- Add packages here -->

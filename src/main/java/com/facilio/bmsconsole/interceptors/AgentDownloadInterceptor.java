@@ -37,9 +37,9 @@ public class AgentDownloadInterceptor implements Interceptor {
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getAgentVersionLogModule().getTableName())
-                .select(FieldFactory.getAgentVersionLogFields());
+                .select(FieldFactory.getAgentVersionLogFields())
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAuthKeyField(ModuleFactory.getAgentVersionLogModule()),auth_key,StringOperators.IS));
         List<Map<String, Object>> row = selectRecordBuilder.get();
-        LOGGER.info("query : "+ selectRecordBuilder.toString());
         return row;
     }
 
@@ -53,29 +53,24 @@ public class AgentDownloadInterceptor implements Interceptor {
     }
     @Override
     public void destroy() {
-        System.out.println("Destroy called");
+        LOGGER.info("Destroy called");
     }
 
     @Override
     public void init() {
-        System.out.println("Init Called");
+        LOGGER.info("Init Called");
     }
 
     @Override
     public String intercept(ActionInvocation actionInvocation) throws Exception {
 
-        System.out.println("Intercept called ");
+        LOGGER.info("Intercept called ");
         HttpParameters parameters = ActionContext.getContext().getParameters();
         String auth_key = parameters.get("token").toString();
-        long orgId = Long.parseLong(parameters.get("orgId").toString());
 
-        System.out.println("AgentVersionLogRow->service");
         List<Map<String, Object>> res = getAgentVersionLogRow(auth_key);
 
-
-        System.out.println("AgentVerisonLogEntry : "+res);
         if(res.size()!=0) {
-            Map<String, Object> map = new HashMap<>();
             if (res.get(0).containsKey(AgentConstants.CREATED_TIME)) {
                 long createdTime = (long) res.get(0).get(AgentConstants.CREATED_TIME);
                 if (System.currentTimeMillis() - createdTime < 3_600_000L) {

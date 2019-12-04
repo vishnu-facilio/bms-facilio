@@ -469,12 +469,18 @@ public class FieldFactory {
 		fields.add(getField(AgentConstants.DESCRIPTION,"DESCRIPTION",FieldType.STRING));
 		fields.add(getCreatedTime(module));
 		fields.add(getField(AgentConstants.CREATED_BY,"CREATED_BY",FieldType.STRING));
+		fields.add(getField(AgentKeys.URL,"URL",FieldType.STRING));
 		return fields;
 	}
 	public static FacilioField getAuthKeyField(FacilioModule agentVersionModule) {
 		return getField(AgentKeys.AUTH_KEY,"AUTH_KEY",FieldType.STRING);
 	}
-
+	public static FacilioField getAgentUpdateUrlField(FacilioModule agentVersionModule) {
+		return getField(AgentKeys.URL,"URL",FieldType.STRING);
+	}
+	public static FacilioField getVersionIdField(FacilioModule agentVersionModule) {
+		return getField(AgentKeys.URL,"VERSION",FieldType.STRING);
+	}
 	public static FacilioField getWritableField(FacilioModule module) {
 		return getField(AgentKeys.WRITABLE,"WRITABLE",module,FieldType.BOOLEAN);
 	}
