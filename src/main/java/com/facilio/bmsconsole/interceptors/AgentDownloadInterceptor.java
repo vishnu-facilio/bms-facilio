@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.interceptors;
 
+import com.facilio.agentIntegration.AgentIntegrationQueue.AgentIntegrationQueueFactory;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -11,6 +12,8 @@ import com.facilio.service.FacilioService;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.struts2.dispatcher.HttpParameters;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,22 +27,19 @@ import static com.amazonaws.services.kinesis.metrics.impl.MetricsHelper.SUCCESS;
 
 public class AgentDownloadInterceptor implements Interceptor {
 
+    private static final Logger LOGGER = LogManager.getLogger(AgentDownloadInterceptor.class.getName());
+
     JSONObject errorStatus = (JSONObject) new JSONParser().parse(" { \"contentType\": \"text/plain\", \"status\": \"500\" }");
 
     public AgentDownloadInterceptor() throws ParseException {
     }
     public List<Map<String, Object>> getAgentVersionLogRow(String auth_key) throws Exception {
-        GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getAgentMessageIntegrationModule().getTableName())
-                .select(FieldFactory.getAgentMessageIntegrationFields()). limit(100);
-        List<Map<String, Object>> rows = select.get();
-        System.out.println(select.toString());
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getAgentVersionLogModule().getTableName())
                 .select(FieldFactory.getAgentVersionLogFields());
         List<Map<String, Object>> row = selectRecordBuilder.get();
-        System.out.println(selectRecordBuilder.toString());
+        LOGGER.info("query : "+ selectRecordBuilder.toString());
         return row;
     }
 

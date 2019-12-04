@@ -110,7 +110,7 @@ public class DeviceAction extends ActionSupport
 		if (getSubscription() == null){
 			return "subscription is null";
 		}
-		LOGGER.info("anand.h@facilio.com ") ;
+
 		LOGGER.info("message : "+ getMessage() );
 		LOGGER.info("subscription : "+getMessage());
 

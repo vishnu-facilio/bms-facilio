@@ -13,7 +13,6 @@ public class AltairSmartEdge implements AgentIntegrationPreprocessor {
 
     @Override
     public JSONObject preProcess(Object o)  {
-        LOGGER.info("anand.h 2002");
         JSONObject timeSeriesData = new JSONObject();
         timeSeriesData.put("agent", AgentMessageIntegrationProcessorType.ALTAIR.getLabel());
         timeSeriesData.put("PUBLISH_TYPE","timeseries");
@@ -25,7 +24,7 @@ public class AltairSmartEdge implements AgentIntegrationPreprocessor {
             data.put(((JSONObject)array.get(i)).get("label"),((JSONObject)array.get(i)).get("value"));
         }
         timeSeriesData.put(((JSONObject)array.get(0)).get("deviceCd"),data);
-        LOGGER.info("anand.h 2003 "+timeSeriesData);
+        LOGGER.info("Timeseries Data :"+timeSeriesData);
         return timeSeriesData;
     }
 

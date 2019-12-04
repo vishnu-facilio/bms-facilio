@@ -53,7 +53,6 @@ public class GooglePubSub extends AgentIntegrationQueue{
                             JSONParser parser = new JSONParser();
                             JSONObject jsonObject = (JSONObject)parser.parse(message.getData().toStringUtf8());
                             if (jsonObject.containsKey("events")&&(((JSONArray)jsonObject.get("events")).size()>0)) {
-                                LOGGER.info("anand.h 2000" + getPreProcessor().preProcess(jsonObject));
                                 TimeSeriesAPI.processPayLoad(0,getPreProcessor().preProcess(jsonObject), null);
                             }
                         } catch (Exception e) {

@@ -25,9 +25,7 @@ public class AgentIntegrationQueueFactory {
                 .select(FieldFactory.getAgentMessageIntegrationFields()). limit(100);
         List<Map<String, Object>> rows = select.get();
 
-        LOGGER.info("anand.h 999"+ select.toString());
         for (Map<String,Object> row: rows ){
-            LOGGER.info("anand.h "+1001);
             int queueType = (int)row.get("queueType");
             int preProcessorType = (int)row.get("preProcessorType");
             long orgId = 100;
@@ -49,7 +47,7 @@ public class AgentIntegrationQueueFactory {
                 list.add(integrationQueue);
             }
         }
-        LOGGER.info("anand.h 900"+ list.size());
+
         return list;
     }
     /**
