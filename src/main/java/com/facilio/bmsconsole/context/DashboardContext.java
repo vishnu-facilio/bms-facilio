@@ -22,6 +22,15 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 
 	private String dashboardName;
 	
+	private String clientMetaJsonString;
+	
+	public String getClientMetaJsonString() {
+		return clientMetaJsonString;
+	}
+	public void setClientMetaJsonString(String clientMetaJsonString) {
+		this.clientMetaJsonString = clientMetaJsonString;
+	}
+
 	private Long dashboardFolderId = -1l;
 	
 	public Object clone() throws CloneNotSupportedException { 

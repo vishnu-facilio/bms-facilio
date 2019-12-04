@@ -3721,7 +3721,7 @@ public class FieldFactory {
 		fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
 		fields.add(getField("tabEnabled", "IS_TAB_ENABLED", module, FieldType.BOOLEAN));
 		fields.add(getField("dashboardTabPlacement", "DASHBOARD_TAB_PLACEMENT", module, FieldType.NUMBER));
-		
+		fields.add(getField("clientMetaJsonString", "CLIENT_META_JSON", module, FieldType.STRING));
 		return fields;
 	}
 	

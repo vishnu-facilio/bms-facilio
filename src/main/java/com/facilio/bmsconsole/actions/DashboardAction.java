@@ -6769,6 +6769,11 @@ public class DashboardAction extends FacilioAction {
 		}
 		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
 		
+		if(dashboardMeta.get("clientMetaJsonString") != null) {
+			
+			this.dashboard.setClientMetaJsonString(dashboardMeta.get("clientMetaJsonString").toString());
+		}
+		
 		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
 		
 		List<DashboardWidgetContext> widgets = getDashboardWidgetsFromWidgetMeta(dashboardWidgets);
