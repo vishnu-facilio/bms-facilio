@@ -123,15 +123,17 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 			dateRange = getRange(newFormula,FieldUtil.getAsJSON(dateRange));
 			
-			Boolean skipFromulaCalculation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING);
-			if(skipFromulaCalculation == null || skipFromulaCalculation.equals(Boolean.FALSE)) {
-				
-				FacilioChain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
-				FacilioContext formulaFieldcontext = historicalCalculation.getContext();
-				
-				formulaFieldcontext.put(FacilioConstants.ContextNames.FORMULA_FIELD, newFormula.getId());
-				formulaFieldcontext.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);	
-				historicalCalculation.execute();
+			Boolean skipFormulaCalculation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING);
+			if(skipFormulaCalculation == null || skipFormulaCalculation.equals(Boolean.FALSE)) {
+				if(dateRange != null)
+				{
+					FacilioChain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
+					FacilioContext formulaFieldcontext = historicalCalculation.getContext();
+					
+					formulaFieldcontext.put(FacilioConstants.ContextNames.FORMULA_FIELD, newFormula.getId());
+					formulaFieldcontext.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);	
+					historicalCalculation.execute();					
+				}
 			}
 		}
 		

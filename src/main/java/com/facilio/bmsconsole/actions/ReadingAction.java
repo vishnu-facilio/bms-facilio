@@ -838,7 +838,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORMULA_METRIC, metricId);
 		context.put(FacilioConstants.ContextNames.READING_RULES_LIST,readingRules);
 		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, getFieldReadingRules());
-		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING,true);
+//		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING,true);
 
 		FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 		addEnpiChain.execute(context);
@@ -856,8 +856,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT, unitId);
 		context.put(FacilioConstants.ContextNames.FORMULA_METRIC, metricId);
-
-		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING,true);
+//		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING,true);
 		
 	    List<List<ReadingRuleContext>> readingRules = getFieldReadingRules();
 	    List<List<List<ActionContext>>> actionsList = new ArrayList<>();
