@@ -40,6 +40,7 @@ public class ColumnFactory {
 		
 		// For getting default columns for a module
 		columnMap.put("workorder-default", getDefaultViewColumns());
+		columnMap.put("workorder-tenantWorkorder", getTenantWorkorderColumns());
 		columnMap.put("workorder-vendorWorkorder", getVendorWorkorderColumns());
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
 		columnMap.put("energy-default", getDefaultEnergyColumns());
@@ -178,6 +179,18 @@ public class ColumnFactory {
 		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("priority", "Priority"));
 		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("createdTime", "Created Time"));
+		return columns;
+	}	
+	
+	private static List<ViewField> getTenantWorkorderColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("subject", "Subject"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("urgency", "Urgency"));
+		columns.add(new ViewField("assignedTo", "Assigned To"));
+		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("createdTime", "Created Time"));
 		return columns;
 	}	

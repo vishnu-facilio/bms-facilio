@@ -193,6 +193,7 @@ public class ViewFactory {
 		views.put("upcomingThisWeek", getUpcomingWorkOrdersThisWeek().setOrder(order++));
 		views.put("upcomingNextWeek", getUpcomingWorkOrdersNextWeek().setOrder(order++));
 		views.put("vendorWorkorder", getVendorWorkOrders().setOrder(order++));
+		views.put("tenantWorkorder", getMyRequestWorkorders().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
 
 		order = 1;
