@@ -106,6 +106,7 @@ public class ColumnFactory {
 		columnMap.put("workpermit-vendorActiveWorkpermits", getVendorWorkWorkPermitColumns());
 		columnMap.put("workpermit-vendorExpiredWorkpermits", getVendorWorkWorkPermitColumns());
 		columnMap.put("vendors-myVendors", getMyVendorsColumns());
+		columnMap.put("vendors-myNonInsuredVendors", getMyVendorsColumns());
 		columnMap.put("contact-default", getDefaultContactColumns());
 	
 

@@ -10,11 +10,9 @@ import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
@@ -25,7 +23,6 @@ import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -309,6 +306,7 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVendors().setOrder(order++));
 		views.put("myVendors", getMyVendors().setOrder(order++));
+		views.put("myNonInsuredVendors", getMyNonInsuredVendors().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VENDORS, views);
 		
 		order = 1;
@@ -3095,6 +3093,47 @@ public class ViewFactory {
 			FacilioView myVendorView = new FacilioView();
 			myVendorView.setName("myVendors");
 			myVendorView.setDisplayName("My Vendors");
+			myVendorView.setCriteria(criteria);
+			myVendorView.setSortFields(sortFields);
+			myVendorView.setHidden(true);
+
+			return myVendorView;
+		}
+		
+		public static Condition getMyNonInsuredVendorsCondition() {
+			FacilioField hasInsuranceField = new LookupField();
+			hasInsuranceField.setName("hasInsurance");
+			hasInsuranceField.setColumnName("HAS_INSURANCE");
+			hasInsuranceField.setDataType(FieldType.BOOLEAN);
+			hasInsuranceField.setModule(ModuleFactory.getVendorsModule());
+
+			Condition hasInsuranceCondition = new Condition();
+			hasInsuranceCondition.setField(hasInsuranceField);
+			hasInsuranceCondition.setOperator(BooleanOperators.IS);
+			hasInsuranceCondition.setValue(String.valueOf(false));
+
+			return hasInsuranceCondition;
+		}
+		
+		private static FacilioView getMyNonInsuredVendors() {
+			
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(getMyVendorsCondition());
+			criteria.addAndCondition(getMyNonInsuredVendorsCondition());
+
+			FacilioModule vendorModule = ModuleFactory.getVendorsModule();
+
+			FacilioField createdTime = new FacilioField();
+			createdTime.setName("sysCreatedTime");
+			createdTime.setDataType(FieldType.NUMBER);
+			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setModule(vendorModule);
+
+			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+			FacilioView myVendorView = new FacilioView();
+			myVendorView.setName("getMyNonInsuredVendors");
+			myVendorView.setDisplayName("My Non-Insured Vendors");
 			myVendorView.setCriteria(criteria);
 			myVendorView.setSortFields(sortFields);
 			myVendorView.setHidden(true);
