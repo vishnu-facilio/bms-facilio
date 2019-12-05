@@ -3917,6 +3917,8 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForContacts());
 		c.addCommand(new AddContactsAsRequesterCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new UpdateVendorPrimaryContactLookUpCommand());
+
 		return c;
 	}
 	
