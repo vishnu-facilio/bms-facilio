@@ -450,6 +450,7 @@
 	<package name="newServiceFormApiv2" namespace="/api/service/v2/forms" extends="newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
+			<param name="formType">3</param>
 		</action>
 	</package>
 	<package name="assetLatestDataApiv2"
