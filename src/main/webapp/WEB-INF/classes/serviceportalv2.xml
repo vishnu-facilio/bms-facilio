@@ -103,6 +103,12 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2viewWorkOrder">
 			<param name="workOrderId">{1}</param>
 		</action>
+		<action name="close"
+			class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2closeWorkorder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action> 
 	</package>
 	<package name="servicePreviewApiV2" namespace="/api/v2/service/files/preview" extends="servicePortalApiV2">
 		<global-results>
@@ -321,6 +327,12 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
+		<action name="close"
+			class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2closeWorkorder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action> 
 		<action name="workOrderCount" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="workOrderList">
 			<param name="moduleName">workorder</param>
