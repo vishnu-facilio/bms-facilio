@@ -907,10 +907,10 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		
 		
 		Condition email = new Condition();
-		email.setFieldName("email");
+		email.setFieldName("primaryContactEmail");
 		email.setOperator(CommonOperators.IS_NOT_EMPTY);
 		email.setValue("");
-		email.setColumnName("Vendors.EMAIL");
+		email.setColumnName("Vendors.PRIMARY_CONTACT_EMAIL");
 		
 		Criteria criteria = new Criteria();
 		criteria.addConditionMap(hasInsurance);

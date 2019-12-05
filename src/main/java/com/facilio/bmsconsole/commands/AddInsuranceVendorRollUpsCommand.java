@@ -33,31 +33,10 @@ public class AddInsuranceVendorRollUpsCommand extends FacilioCommand{
 			InsuranceContext ins = InsuranceAPI.getInsurancesForVendor(vendor.getId());
 			if(ins != null && !vendor.getHasInsurance()) {
 				vendor.setHasInsurance(true);
-				updateVendorRollUp(vendor.getId());
+				InsuranceAPI.updateVendorRollUp(vendor.getId());
 			}
 		}
 		return false;
 	}
 	
-	private void updateVendorRollUp(long vendorId) throws Exception{
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VENDORS);
-		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VENDORS);
-		
-		
-		UpdateRecordBuilder<VendorContext> updateBuilder = new UpdateRecordBuilder<VendorContext>()
-				.module(module)
-				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(String.valueOf(vendorId), module))
-			;
-		Map<String, Object> updateMap = new HashMap<>();
-		FacilioField hasInsurance = modBean.getField("hasInsurance", module.getName());
-		updateMap.put("hasInsurance", true);
-		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-		updatedfields.add(hasInsurance);
-	
-		updateBuilder.updateViaMap(updateMap);
-	
-	}
-
 }

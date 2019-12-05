@@ -9,6 +9,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.InsuranceContext;
 import com.facilio.bmsconsole.util.ContactsAPI;
+import com.facilio.bmsconsole.util.InsuranceAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class AssociateVendorToInsuranceFromRequesterCommand extends FacilioCommand{
@@ -23,6 +24,7 @@ public class AssociateVendorToInsuranceFromRequesterCommand extends FacilioComma
 					ContactsContext contact = ContactsAPI.getContactsIdForUser(ins.getAddedBy().getId());
 					ins.setVendor(contact.getVendor());
 				}
+				InsuranceAPI.updateVendorRollUp(ins.getVendor().getId());
 			}
 		}
 		return false;

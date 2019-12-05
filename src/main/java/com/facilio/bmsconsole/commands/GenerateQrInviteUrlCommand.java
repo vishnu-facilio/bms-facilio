@@ -37,6 +37,7 @@ public class GenerateQrInviteUrlCommand extends FacilioCommand {
 				size.put("height", 200);
 				String originalUrl = PdfUtil.exportUrlAsPdf("https://app.facilio.com/app/qr?code=" + qrCode, true, null, size, FileFormat.IMAGE);
 				inviteVisitor.setQrUrl(originalUrl);
+				inviteVisitor.setPassCode(passCode);
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);

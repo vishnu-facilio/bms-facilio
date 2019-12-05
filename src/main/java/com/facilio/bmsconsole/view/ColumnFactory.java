@@ -353,6 +353,7 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("website", "Website"));
+		columns.add(new ViewField("primaryContactName", "Primary Contact Name"));
 		columns.add(new ViewField("primaryContactEmail", "Primary Contact E-Mail"));
 		columns.add(new ViewField("primaryContactPhone", "Primary Contact Phone"));
 		columns.add(new ViewField("registeredBy", "Registered By"));
@@ -365,6 +366,7 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("website", "Website"));
+		columns.add(new ViewField("primaryContactName", "Primary Contact Name"));
 		columns.add(new ViewField("primaryContactEmail", "Primary Contact E-Mail"));
 		columns.add(new ViewField("primaryContactPhone", "Primary Contact Phone"));
 		columns.add(new ViewField("moduleState", "State"));
