@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,11 +9,13 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fs.FileInfo;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.services.factory.FacilioFactory;
@@ -37,9 +36,14 @@ public class MLJobReportPreparationJob extends FacilioJob
 			long fileId = Long.parseLong(props.get("fileId").toString());
 			LOGGER.info("MLJobReport fileId : "+fileId);
 			if(fileId > 0){
-				InputStream is = fs.readFile(fileId);
-				LOGGER.info("MLJobReport Reading Successfully completed");
-				sendMail(is);
+				
+				FileInfo file = fs.getFileInfo(fileId);
+				String name = file.getFileName();
+				String url = fs.getPrivateUrl(fileId);
+				Map<String, String> files = new HashMap<>();
+				files.put(name, url);
+				LOGGER.info("MLJobReport File : "+files);
+				sendMail(files);
 				LOGGER.info("MLJobReport Mail Successfully sent");
 				fs.deleteFile(fileId);
 				LOGGER.info("MLJobReport Successfully deleted");
@@ -69,31 +73,22 @@ public class MLJobReportPreparationJob extends FacilioJob
 		updateBuilder.update(prop);
 	}
 	
-	private void sendMail(InputStream is) throws Exception {
+	private void sendMail(Map<String, String> files) throws Exception {
 		// TODO Auto-generated method stub
 		StringBuffer sb = new StringBuffer("\n Report : \n");
 		if (FacilioProperties.isProduction()) {
 
-			sb.append(is.toString()).append("\nOrgId: ")
+			sb.append("\nOrgId: ")
 			.append(AccountUtil.getCurrentOrg().getOrgId())
 			.append("\n\n-----------------\n\n");
-
-			InputStreamReader isReader = new InputStreamReader(is);
-			// Creating a BufferedReader object
-			BufferedReader reader = new BufferedReader(isReader);
-			String str;
-			while ((str = reader.readLine()) != null) {
-				sb.append(str);
-			}
 
 			JSONObject mailJson = new JSONObject();
 			mailJson.put("sender", "noreply@facilio.com");
 			mailJson.put("to", "anupriya@facilio.com");
 			mailJson.put("subject", "ML job report");
 			mailJson.put("message", sb.toString());
-			mailJson.put("mailType", "html");
-
-			FacilioFactory.getEmailClient().sendEmail(mailJson);
+			
+			AwsUtil.sendEmail(mailJson,files);
 		}
 	}
 }
