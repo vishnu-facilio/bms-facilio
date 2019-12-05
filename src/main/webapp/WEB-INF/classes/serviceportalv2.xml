@@ -524,6 +524,8 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
+			<action name="details"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingDetails" />
 	</package>
 	<package name="vendirVisitorLoggingLogs" namespace="/api/service/v2/visitorLogging/view"
 	extends="newServicePortalApiV2">
