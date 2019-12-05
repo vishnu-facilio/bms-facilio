@@ -54,13 +54,6 @@
                               </td>
                         </tr>
                         </#if>
-                        <tr>
-                              <td>
-                                    <div style="color: #8e8c97;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;font-size: 14px;padding-bottom: 30px;letter-spacing: 0.5px;padding-top: 30px;line-height: 23px;">
-                                          You will find copies of the signed legal documents attached. Please keep these copies for your records.
-                                    </div>
-                              </td>
-                        </tr>
                   </table>
                   
             </div>
