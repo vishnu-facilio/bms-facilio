@@ -33,13 +33,18 @@ public class MLJobReportPreparationJob extends FacilioJob
 			JSONObject props=BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
 			FileStore fs = FacilioFactory.getFileStore();
 			long fileId = Long.parseLong(props.get("fileId").toString());
+			LOGGER.info("MLJobReport fileId : "+fileId);
 			if(fileId > 0){
 				InputStream is = fs.readFile(fileId);
+				LOGGER.info("MLJobReport Reading Successfully completed");
 				sendMail(new JSONObject());
+				LOGGER.info("MLJobReport Mail Successfully sent");
 				fs.deleteFile(fileId);
+				LOGGER.info("MLJobReport Successfully deleted");
 			}
 			File file = File.createTempFile("ML_JOB_REPORT", ".txt");
 			fileId = fs.addFile("ML_JOB_REPORT", file, "application/text");
+			LOGGER.info("MLJobReport Successfully added");
 			props.put("fileId", fileId);
 			Map<String,Object> prop=new HashMap<String, Object>();
 			prop.put("props", props.toString());
