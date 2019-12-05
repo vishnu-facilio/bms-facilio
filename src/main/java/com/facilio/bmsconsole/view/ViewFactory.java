@@ -3149,12 +3149,12 @@ public class ViewFactory {
 			FacilioModule visitorInvitesModule = ModuleFactory.getVisitorLoggingModule();
 
 			FacilioField createdTime = new FacilioField();
-			createdTime.setName("sysCreatedTime");
+			createdTime.setName("expectedCheckInTime");
 			createdTime.setDataType(FieldType.NUMBER);
-			createdTime.setColumnName("SYS_CREATED_TIME");
+			createdTime.setColumnName("EXPECTED_CHECKIN_TIME");
 			createdTime.setModule(visitorInvitesModule);
 
-			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 			FacilioView myVisitorInvitesView = new FacilioView();
 			myVisitorInvitesView.setName("myUpcoming");
@@ -3170,6 +3170,7 @@ public class ViewFactory {
 			
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(getMyVistorInvitesCondition());
+			criteria.addAndCondition(getPastVisitorLogStatusCriteria("Upcoming"));
 			FacilioModule visitorInvitesModule = ModuleFactory.getVisitorLoggingModule();
 
 			FacilioField createdTime = new FacilioField();
@@ -4941,6 +4942,7 @@ public class ViewFactory {
 	private static FacilioView getAllVisitsView() {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("CHECKIN_TIME", "checkInTime", "-1", CommonOperators.IS_NOT_EMPTY));
+		criteria.addAndCondition(getPastVisitorLogStatusCriteria("Upcoming"));
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Visits");
@@ -4953,11 +4955,22 @@ public class ViewFactory {
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getVisitorLogStatusCriteria("Upcoming"));
+		
+		FacilioModule visitorInvitesModule = ModuleFactory.getVisitorLoggingModule();
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("expectedCheckInTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("EXPECTED_CHECKIN_TIME");
+		createdTime.setModule(visitorInvitesModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
+		
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorVisitors");
 		allView.setDisplayName("All Visits");
 		allView.setHidden(true);
 		allView.setCriteria(criteria);
+		allView.setSortFields(sortFields);
 		return allView;
 	}
 
@@ -5317,6 +5330,37 @@ public class ViewFactory {
 		Condition statusCondition = new Condition();
 		statusCondition.setField(statusTypeField);
 		statusCondition.setOperator(StringOperators.IS);
+		statusCondition.setValue(status);
+
+		Criteria statusCriteria = new Criteria() ;
+		statusCriteria.addAndCondition(statusCondition);
+
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(ModuleFactory.getVisitorLoggingModule());
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition condition = new Condition();
+		condition.setField(statusField);
+		condition.setOperator(LookupOperator.LOOKUP);
+		condition.setCriteriaValue(statusCriteria);
+
+		return condition;
+	}
+
+	public static Condition getPastVisitorLogStatusCriteria(String status) {
+
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("status");
+		statusTypeField.setColumnName("STATUS");
+		statusTypeField.setDataType(FieldType.STRING);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition statusCondition = new Condition();
+		statusCondition.setField(statusTypeField);
+		statusCondition.setOperator(StringOperators.ISN_T);
 		statusCondition.setValue(status);
 
 		Criteria statusCriteria = new Criteria() ;

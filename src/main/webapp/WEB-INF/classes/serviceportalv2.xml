@@ -937,7 +937,7 @@
 		namespace="/api/service/v2/workorders/view" extends="newServicePortalApiV2">
 	<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
 			<param name="viewName">{1}</param>
-			<param name="approval">true</param>
+			<param name="includeParentFilter">true</param>
 		</action>
 		</package>
 	<!-- Tenant apis end -->
