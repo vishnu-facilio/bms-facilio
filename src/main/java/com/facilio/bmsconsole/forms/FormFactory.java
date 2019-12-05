@@ -826,7 +826,7 @@ public class FormFactory {
 		
 		fields.add(new FormField("address", FieldDisplayType.ADDRESS, "Address", Required.OPTIONAL, 7, 1));
 		
-		fields.add(new FormField("vendorContacts", FieldDisplayType.VENDOR_CONTACTS, "Contacts", Required.OPTIONAL, 8, 1));
+	//	fields.add(new FormField("vendorContacts", FieldDisplayType.VENDOR_CONTACTS, "Contacts", Required.OPTIONAL, 8, 1));
 		return fields;
 	}
 
