@@ -278,10 +278,13 @@ public class LoggerAPI {
 
 		public static List<LoggerContext> getGroupedLogger(FacilioModule loggerModule, List<FacilioField> fields,Long loggerGroupId) throws Exception {
 	
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(loggerModule.getTableName())
 				.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", ""+loggerGroupId, NumberOperators.EQUALS))
+//				.andCondition(CriteriaAPI.getCondition(fieldMap.get("dependentId"), "", CommonOperators.IS_EMPTY))
 				.orderBy("STATUS,CREATED_TIME DESC");
 	
 				List<Map<String, Object>> props = selectBuilder.get();
