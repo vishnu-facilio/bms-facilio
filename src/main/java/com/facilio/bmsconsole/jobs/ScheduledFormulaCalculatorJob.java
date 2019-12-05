@@ -59,12 +59,12 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 					while (it.hasNext()) {
 						FormulaFieldContext formula = it.next();
 						if(isCalculatable(formula, calculatedFieldIds)) {
-							if (AccountUtil.getCurrentOrg().getId() == 88) {
+							if (AccountUtil.getCurrentOrg().getId() == 78l) {
 								LOGGER.info("Gonna execute scheduled formula : "+formula.getName());
 							}
 							try {
 								List<ReadingContext> readings = new ArrayList<>();
-								if (AccountUtil.getCurrentOrg().getId() == 186l) {
+								if (AccountUtil.getCurrentOrg().getId() == 78l) {
 									LOGGER.info("Formula matched resources : "+StringUtils.join(formula.getMatchedResourcesIds(), ","));
 								}
 								for (Long resourceId : formula.getMatchedResourcesIds()) {
@@ -74,7 +74,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									List<DateRange> intervals = schedule.getTimeIntervals(startTime, endTime);
 									List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);
 									
-									if (AccountUtil.getCurrentOrg().getId() == 88) {
+									if (AccountUtil.getCurrentOrg().getId() == 78l) {
 										LOGGER.info("Readings to be added for Formula : "+formula.getName()+" between the intervals ("+intervals+") is "+currentReadings);
 									}
 									
@@ -82,16 +82,21 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 										readings.addAll(currentReadings);
 									}
 								}
-								
+								if (AccountUtil.getCurrentOrg().getId() == 78l) {
+									LOGGER.info("Readings Calculated for : "+formula.getName());
+								}
 								if (!readings.isEmpty()) {
-									FacilioContext context = new FacilioContext();
+									FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+									FacilioContext context = addReadingChain.getContext();
 									context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
 									context.put(FacilioConstants.ContextNames.READINGS, readings);
 									context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
 									
-									FacilioChain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
-									addReadingChain.execute(context);
+									addReadingChain.execute();
 									
+								}
+								if (AccountUtil.getCurrentOrg().getId() == 78l) {
+									LOGGER.info("Readings Added for : "+formula.getName());
 								}
 							}
 							catch (Exception e) {
