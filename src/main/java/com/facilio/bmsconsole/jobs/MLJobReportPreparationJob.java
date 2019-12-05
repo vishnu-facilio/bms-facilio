@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.io.File;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class MLJobReportPreparationJob extends FacilioJob
 			FileStore fs = FacilioFactory.getFileStore();
 			long fileId = Long.parseLong(props.get("fileId").toString());
 			if(fileId > 0){
-				fs.getFileInfo(fileId);
+				InputStream is = fs.readFile(fileId);
 				sendMail(new JSONObject());
 				fs.deleteFile(fileId);
 			}
@@ -46,8 +47,8 @@ public class MLJobReportPreparationJob extends FacilioJob
 			
 			LOGGER.info("Finished MLJobReportPreparationJob");
 		}catch(Exception e){
-			LOGGER.fatal("Error in MLJobReportPreparationJob"+e);
-			e.printStackTrace();
+			LOGGER.fatal("Error in MLJobReportPreparationJob "+e);
+			throw e;
 		}
 	}
 	
@@ -65,7 +66,7 @@ public class MLJobReportPreparationJob extends FacilioJob
 		// TODO Auto-generated method stub
 		String errorTrace = null;
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
-		if (FacilioProperties.isDevelopment() ) {
+		if (FacilioProperties.isProduction()) {
 				body.append(inComingDetails.toString())
 				.append("\nOrgId: ")
 				.append(AccountUtil.getCurrentOrg().getOrgId())
@@ -83,9 +84,6 @@ public class MLJobReportPreparationJob extends FacilioJob
 				mailJson.put("message", body.toString());
 				
 				FacilioFactory.getEmailClient().sendEmail(mailJson);
-			}
-			else {
-//				CommonCommandUtil.emailException(WorkOrderAction.class.getName(), "Error in Workorder api", e, inComingDetails.toString());
 			}
 	}
 }
