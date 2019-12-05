@@ -48,150 +48,78 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 	
 	public void execute(JobContext jc) throws Exception {
 		try {	
-			if(AccountUtil.getCurrentOrg().getId() == 78)
-			{
-				long jobStartTime = System.currentTimeMillis();
-				
-				List<EnergyMeterContext> virtualMeters = DeviceAPI.getAllVirtualMeters();
-				if(virtualMeters == null || virtualMeters.isEmpty()) {
-					return;
-				}
-				int minutesInterval = getDefaultDataInterval();
-				long endTime = DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(minutesInterval * 60)).toInstant().toEpochMilli();
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-				
-				Map<Long,EnergyMeterContext> virtualEnergyMeterContextMap = new HashMap<Long,EnergyMeterContext>();
-				for(EnergyMeterContext vm:virtualMeters) {
-					virtualEnergyMeterContextMap.put(vm.getId(), vm);
-				}
-				LOGGER.info("VirtualMetersList Size -- " + virtualMeters.size() + " Job Id --" + jc.getJobId());
-				Map <Long, List<Long>> childMeterIdMap= new HashMap<Long,List<Long>>();
-				Map<Integer,List<EnergyMeterContext>> hierarchyVMMap = new HashMap<Integer, List<EnergyMeterContext>>();
-						
-				for(EnergyMeterContext vm:virtualMeters)
-				{			
-					Integer hierarchy = getHierarchy(vm, 0, virtualEnergyMeterContextMap, childMeterIdMap);
-					if(hierarchy != null)
-					{
-						if(hierarchyVMMap.containsKey(hierarchy))
-						{
-							List<EnergyMeterContext> groupedVMList = hierarchyVMMap.get(hierarchy);
-							groupedVMList.add(vm);
-						}
-						else
-						{
-							List<EnergyMeterContext> groupedVMList = new ArrayList<EnergyMeterContext>();
-							groupedVMList.add(vm);
-							hierarchyVMMap.put(hierarchy, groupedVMList);
-						}		
-					}
-					
-				}
-				
-				if(MapUtils.isNotEmpty(hierarchyVMMap))
-				{
-
-					Map<Integer,List<EnergyMeterContext>> sortedHierarchyVMMap = new TreeMap<Integer,List<EnergyMeterContext>>(hierarchyVMMap); 
-										
-					for(Integer hierarchy:sortedHierarchyVMMap.keySet())
-					{		
-						List<EnergyMeterContext> groupedVMList = sortedHierarchyVMMap.get(hierarchy);
-						LOGGER.info(" VM Job Hierarchy -- " + hierarchy + " VMs --" + groupedVMList + " Job Id --" + jc.getJobId());
-						
-						List<ReadingContext> hierarchicalVMReadings = new ArrayList<ReadingContext>();
-						List<MarkedReadingContext> hierarchicalMarkedList = new ArrayList<MarkedReadingContext>();
-						
-						for(EnergyMeterContext vm:groupedVMList)
-						{						
-							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(vm.getId(), deltaField); //childrenVM not VM as well as all VMChildren has completed insertion
-							long startTime = meta.getTtime()+1;
-							List<ReadingContext> vmReadings = DeviceAPI.getandDeleteDuplicateVirtualMeterReadings(vm,childMeterIdMap.get(vm.getId()),startTime,endTime,minutesInterval,true, false);
-							if (vmReadings != null) {
-								hierarchicalVMReadings.addAll(vmReadings); 		
-							}
-							List<MarkedReadingContext> markedList= DeviceAPI.validatedataGapCountForVMReadings(vmReadings, vm, false);										
-							if (vmReadings != null && markedList != null) {
-								hierarchicalMarkedList.addAll(markedList); //Grouping readings for all the meters in the same hierarchy	
-							}										
-						}
-						
-						LOGGER.info(" GroupedVMList Size -- " + groupedVMList.size() + " Job Id --" + jc.getJobId());
-						LOGGER.info(" hierarchicalVMReadings Size -- " + hierarchicalVMReadings.size() + " Job Id --" + jc.getJobId());
-						
-						DeviceAPI.insertVMReadingsBasedOnHierarchy(hierarchicalVMReadings,endTime,minutesInterval,true, false, hierarchicalMarkedList);						
-					}
-					LOGGER.info(" VM Job Timetaken -- " + (System.currentTimeMillis()-jobStartTime) + " Job Id --" + jc.getJobId());
-					
-				}
+			long jobStartTime = System.currentTimeMillis();			
+			List<EnergyMeterContext> virtualMeters = DeviceAPI.getAllVirtualMeters();
+			if(virtualMeters == null || virtualMeters.isEmpty()) {
+				return;
+			}
+			int minutesInterval = getDefaultDataInterval();
+			long endTime = DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(minutesInterval * 60)).toInstant().toEpochMilli();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 			
+			Map<Long,EnergyMeterContext> virtualEnergyMeterContextMap = new HashMap<Long,EnergyMeterContext>();
+			for(EnergyMeterContext vm:virtualMeters) {
+				virtualEnergyMeterContextMap.put(vm.getId(), vm);
 			}
-			else
-			{
-				List<EnergyMeterContext> virtualMeters = DeviceAPI.getAllVirtualMeters();
-				if(virtualMeters == null || virtualMeters.isEmpty()) {
-					return;
-				}
-				
-				long jobStartTime = System.currentTimeMillis();
-				LOGGER.info("VirtualMetersList Old Size -- " + virtualMeters.size() + " Job Id --" + jc.getJobId());
-				
-				int minutesInterval = getDefaultDataInterval();
-				long endTime = DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(minutesInterval * 60)).toInstant().toEpochMilli();
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-				
-				List<Long> completedVms= new ArrayList<Long>();
-				List<Long> vmList=getVmList(virtualMeters);
-//				if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-//					LOGGER.info("Calculating VM for Meters : "+vmList);
-//				}
-				Map <Long, List<Long>> childMeterMap= new HashMap<Long,List<Long>> ();
-				
-				while (!virtualMeters.isEmpty()) {
-					Iterator<EnergyMeterContext> itr = virtualMeters.iterator();
-					while (itr.hasNext()) {
-						EnergyMeterContext meter = itr.next();
-						long meterId=meter.getId();
-						try {
-							List<Long> childMeterIds=childMeterMap.get(meterId);
-							if(childMeterIds==null) {
-								childMeterIds=DeviceAPI.getChildrenMeters(meter);
-							}
-//							if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-//								LOGGER.info("Child meter IDS for meter : "+meter.getId()+" is : "+childMeterIds);
-//							}
-							if(childMeterIds!=null) {
-
-								//check any childMeter is a VM..
-								List<Long> vmChildren= getVmChildren(vmList,childMeterIds);
-								if(!vmChildren.isEmpty() && !isCompleted(completedVms,vmChildren)) {
-									childMeterMap.put(meterId, childMeterIds);
-//									if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-//										LOGGER.info("Not calculating for meter : "+meterId+". Since it has a VM child and it's not calculated yet.");
-//									}
-									continue;
-								}
-								ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(meterId, deltaField);
-								long startTime = meta.getTtime()+1;
-								List<ReadingContext> readings = DeviceAPI.insertVirtualMeterReadings(meter,childMeterIds,startTime,endTime,minutesInterval,true, false);
-//								if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-//									LOGGER.info("Calculation completed for VM : "+meter.getId()+". Readings : "+readings);
-//								}
-							}
-
-						}
-						catch (Exception e) {
-							LOGGER.info("Exception occurred ", e);
-							CommonCommandUtil.emailException("VMEnergyDataCalculatorForMeter", "VM Calculation failed for meter : "+meterId, e);
-						}
-						completedVms.add(meter.getId());
-						itr.remove();
+			LOGGER.info("VirtualMetersList Size -- " + virtualMeters.size() + " Job Id --" + jc.getJobId());
+			Map <Long, List<Long>> childMeterIdMap= new HashMap<Long,List<Long>>();
+			Map<Integer,List<EnergyMeterContext>> hierarchyVMMap = new HashMap<Integer, List<EnergyMeterContext>>();
+					
+			for(EnergyMeterContext vm:virtualMeters)
+			{			
+				Integer hierarchy = getHierarchy(vm, 0, virtualEnergyMeterContextMap, childMeterIdMap);
+				if(hierarchy != null)
+				{
+					if(hierarchyVMMap.containsKey(hierarchy))
+					{
+						List<EnergyMeterContext> groupedVMList = hierarchyVMMap.get(hierarchy);
+						groupedVMList.add(vm);
 					}
+					else
+					{
+						List<EnergyMeterContext> groupedVMList = new ArrayList<EnergyMeterContext>();
+						groupedVMList.add(vm);
+						hierarchyVMMap.put(hierarchy, groupedVMList);
+					}		
 				}
 				
-				LOGGER.info(" VM Job Old Timetaken -- " + (System.currentTimeMillis()-jobStartTime) + " Job Id --" + jc.getJobId());
 			}
+			
+			if(MapUtils.isNotEmpty(hierarchyVMMap))
+			{
+				Map<Integer,List<EnergyMeterContext>> sortedHierarchyVMMap = new TreeMap<Integer,List<EnergyMeterContext>>(hierarchyVMMap); 
+									
+				for(Integer hierarchy:sortedHierarchyVMMap.keySet())
+				{		
+					List<EnergyMeterContext> groupedVMList = sortedHierarchyVMMap.get(hierarchy);
+					LOGGER.info(" VM Job Hierarchy -- " + hierarchy + " VMs --" + groupedVMList + " Job Id --" + jc.getJobId());
+					
+					List<ReadingContext> hierarchicalVMReadings = new ArrayList<ReadingContext>();
+					List<MarkedReadingContext> hierarchicalMarkedList = new ArrayList<MarkedReadingContext>();
+					
+					for(EnergyMeterContext vm:groupedVMList)
+					{						
+						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(vm.getId(), deltaField); //childrenVM not VM as well as all VMChildren has completed insertion
+						long startTime = meta.getTtime()+1;
+						List<ReadingContext> vmReadings = DeviceAPI.getandDeleteDuplicateVirtualMeterReadings(vm,childMeterIdMap.get(vm.getId()),startTime,endTime,minutesInterval,true, false);
+						if (vmReadings != null) {
+							hierarchicalVMReadings.addAll(vmReadings); 		
+						}
+						List<MarkedReadingContext> markedList= DeviceAPI.validatedataGapCountForVMReadings(vmReadings, vm, false);										
+						if (vmReadings != null && markedList != null) {
+							hierarchicalMarkedList.addAll(markedList); //Grouping readings for all the meters in the same hierarchy	
+						}										
+					}
+					
+					LOGGER.info(" GroupedVMList Size -- " + groupedVMList.size() + " Job Id --" + jc.getJobId());
+					LOGGER.info(" hierarchicalVMReadings Size -- " + hierarchicalVMReadings.size() + " Job Id --" + jc.getJobId());
+					
+					DeviceAPI.insertVMReadingsBasedOnHierarchy(hierarchicalVMReadings,endTime,minutesInterval,true, false, hierarchicalMarkedList);						
+				}
+				LOGGER.info(" VM Job Timetaken -- " + (System.currentTimeMillis()-jobStartTime) + " Job Id --" + jc.getJobId());			
+			}
+				
 		} catch (Exception e) {
 			LOGGER.error("Exception occurred ", e);
 			CommonCommandUtil.emailException("VMEnergyDataCalculator", "VM Calculation failed", e);
@@ -241,18 +169,7 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 		else {
 			return Integer.parseInt(defaultIntervalProp);
 		}
-	}
-	
-private List<Long> getVmList(List<EnergyMeterContext> virtualMeters){
-		
-		List<Long> vmList= new ArrayList<Long>();
-		for(EnergyMeterContext meter:virtualMeters) {
-			
-			vmList.add( meter.getId());
-		}
-		return vmList;
-	}
-	
+	}		
 	private List<Long> getVmChildren(List<Long> vmList, List<Long> children) {
 		List<Long> childrenVms= new ArrayList<Long> ();
 		
@@ -263,17 +180,6 @@ private List<Long> getVmList(List<EnergyMeterContext> virtualMeters){
 			}
 		}
 		return childrenVms;
-	}
-	
-	private boolean isCompleted(List<Long> completedList, List<Long> children) {
-		
-		for (Long id: children) {
-			
-			if(!completedList.contains(id)) {
-				return false;
-			}
-		}
-		return true;
 	}
 	
 	public void handleTimeOut() {
