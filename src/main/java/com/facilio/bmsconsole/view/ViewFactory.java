@@ -4957,9 +4957,9 @@ public class ViewFactory {
 
 		Condition expiredCondition = new Condition();
 		expiredCondition.setField(validTillField);
-		long CurrentTime = DateTimeUtil.getCurrenTime();
-		expiredCondition.setOperator(NumberOperators.LESS_THAN);
-		expiredCondition.setValue(CurrentTime + "");
+//		long CurrentTime = DateTimeUtil.getCurrenTime();
+		expiredCondition.setOperator(DateOperators.TILL_NOW);
+//		expiredCondition.setValue(CurrentTime + "");
 		return expiredCondition;
 	}
 	
@@ -4996,16 +4996,43 @@ public class ViewFactory {
 
 		Condition expiredCondition = new Condition();
 		expiredCondition.setField(expectedStartTimeField);
-		long CurrentTime = DateTimeUtil.getCurrenTime();
-		expiredCondition.setOperator(NumberOperators.LESS_THAN);
-		expiredCondition.setValue(CurrentTime + "");
+		expiredCondition.setOperator(DateOperators.TILL_NOW);
 		
 		return expiredCondition;
 	}
 	
+	private static Criteria getActiveWorkPermitCriteria(){
+		
+		FacilioField expectedStartTimeField = new LookupField();
+		expectedStartTimeField.setName("expectedStartTime");
+		expectedStartTimeField.setColumnName("EXPECTED_START_TIME");
+		expectedStartTimeField.setDataType(FieldType.DATE_TIME);
+		expectedStartTimeField.setModule(ModuleFactory.getWorkPermitModule());
+
+		Condition activeCondition = new Condition();
+		activeCondition.setField(expectedStartTimeField);
+		activeCondition.setOperator(DateOperators.TILL_NOW);
+		
+		FacilioField expectedEndTimeField = new LookupField();
+		expectedEndTimeField.setName("expectedEndTime");
+		expectedEndTimeField.setColumnName("EXPECTED_END_TIME");
+		expectedEndTimeField.setDataType(FieldType.DATE_TIME);
+		expectedEndTimeField.setModule(ModuleFactory.getWorkPermitModule());
+
+		Condition expiredCondition = new Condition();
+		expiredCondition.setField(expectedEndTimeField);
+		expiredCondition.setOperator(DateOperators.UPCOMING);
+		
+		Criteria activeCriteria = new Criteria();
+		activeCriteria.addAndCondition(activeCondition);
+		activeCriteria.addAndCondition(expiredCondition);
+		
+		return activeCriteria;
+	}
+	
 	private static FacilioView getActiveWorkPermitView() {
 		Criteria activeCriteria = new Criteria();
-		activeCriteria.addAndCondition(getMyWorkPermitsCondition());
+		activeCriteria.andCriteria(getActiveWorkPermitCriteria());
 		FacilioView allView = new FacilioView();
 		allView.setName("myActive");
 		allView.setDisplayName("Active Work Permit");
@@ -5044,11 +5071,13 @@ public class ViewFactory {
 	}
 	
 	private static FacilioView getVendorWorkPermitView() {
-
+		Criteria activeCriteria = new Criteria();
+		activeCriteria.andCriteria(getActiveWorkPermitCriteria());
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Work Permit");
 		allView.setHidden(true);
+		allView.setCriteria(activeCriteria);
 		return allView;
 	}
 
