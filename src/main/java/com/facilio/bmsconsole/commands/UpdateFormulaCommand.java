@@ -121,7 +121,7 @@ public class UpdateFormulaCommand extends FacilioCommand {
 			WorkflowUtil.deleteWorkflow(oldFormula.getWorkflowId());
 			
 			DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
-			dateRange = getRange(newFormula,FieldUtil.getAsJSON(dateRange));
+			dateRange = getRange(oldFormula,FieldUtil.getAsJSON(dateRange));
 			
 			Boolean skipFormulaCalculation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING);
 			if(skipFormulaCalculation == null || skipFormulaCalculation.equals(Boolean.FALSE)) {
