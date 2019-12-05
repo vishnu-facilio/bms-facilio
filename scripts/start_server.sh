@@ -3,8 +3,9 @@ echo "starting the server..."
 export UBUNTU_HOME="/home/ubuntu"
 export APP_HOME="$UBUNTU_HOME/tomcat"
 export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
-
-cd /home/ubuntu
+export JAVA_HOME=$UBUNTU_HOME/jdk/bin
+export PATH=$JAVA_HOME:$PATH
+cd $UBUNTU_HOME
 
 sudo killall -9 java
 chmod 644 $APP_HOME/logs/*
