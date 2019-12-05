@@ -517,6 +517,8 @@
 	</package>
 	<package name="vendorVisitorLog" namespace="/api/service/v2/visitorLogging/logs"
 		extends="newServicePortalApiV2">
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="deleteVisitorLogging" />
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging" />
 		<action name="update"
