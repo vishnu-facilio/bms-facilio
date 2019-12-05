@@ -63,7 +63,10 @@ public class AddFormulaFieldCommand extends FacilioCommand {
 			case SCHEDULE:
 				if (props == null || props.isEmpty()) {
 					range = new DateRange(FormulaFieldAPI.getStartTimeForHistoricalCalculation(formula), currentTime);
-					range.setEndTime(currentTime);
+					if((range.getStartTime() == -1) || (range.getEndTime() == -1))
+					{
+						range = null;
+					}
 				}
 				else {
 					range = FieldUtil.getAsBeanFromJson(props, DateRange.class);
@@ -72,6 +75,10 @@ public class AddFormulaFieldCommand extends FacilioCommand {
 					}
 					if (range.getEndTime() == -1) {
 						range.setEndTime(currentTime);
+					}
+					if((range.getStartTime() == -1) || (range.getEndTime() == -1))
+					{
+						range = null;
 					}
 				}
 				break;
