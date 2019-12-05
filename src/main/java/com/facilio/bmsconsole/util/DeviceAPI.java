@@ -1033,7 +1033,6 @@ public class DeviceAPI
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField meterField=modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		FacilioField markedField=modBean.getField("marked", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 
 		FacilioField timeField = new FacilioField();
 		timeField.setName("ttime");
@@ -1049,15 +1048,19 @@ public class DeviceAPI
 		powerField.setName("totalDemand");
 		powerField.setColumnName("AVG(TOTAL_DEMAND)");
 		powerField.setDataType(FieldType.DECIMAL);
-
-
+	
+		FacilioField markedField = new FacilioField();
+		markedField.setName("marked");
+		markedField.setColumnName("MAX(MARKED)");
+		markedField.setDataType(FieldType.BOOLEAN);
+		
 		List<FacilioField> fields= new ArrayList<FacilioField>();
 
 		fields.add(timeField);
 		fields.add(meterField);
 		fields.add(deltaField);
 		fields.add(powerField);
-	//	fields.add(markedField);
+		fields.add(markedField);
 
 		long timeInterval=minutesInterval*60*1000;
 
@@ -1067,11 +1070,11 @@ public class DeviceAPI
 				.moduleName(FacilioConstants.ContextNames.ENERGY_DATA_READING)
 				.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentId", StringUtils.join(childIds, ","), NumberOperators.EQUALS))
 				.andCustomWhere("TTIME BETWEEN ? AND ?", startTime, endTime)
-//				.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+", "+endTime, DateOperators.BETWEEN))
 				.groupBy("PARENT_METER_ID, TTIME/"+timeInterval)
 				.orderBy("ttime");
 
-		return getReadings.get();
+		List<ReadingContext> readings = getReadings.get();
+		return readings;
 
 	}
 	
