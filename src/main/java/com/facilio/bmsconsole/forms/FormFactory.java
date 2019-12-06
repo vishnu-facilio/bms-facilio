@@ -264,7 +264,7 @@ public class FormFactory {
 		List<FacilioForm> poForm = Arrays.asList(getPurchaseOrderForm());
 		List<FacilioForm> prForm = Arrays.asList(getPurchaseRequestForm());
 		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm(), getPortalVisitorForm());
-		List<FacilioForm> vendorsForms = Arrays.asList(getVendorsForm());
+		List<FacilioForm> vendorsForms = Arrays.asList(getVendorsForm(), getPortalVendorForm());
 		
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
 		List<FacilioForm> insuranceForm = Arrays.asList(getInsuranceForm(),getPortalInsuranceForm());
