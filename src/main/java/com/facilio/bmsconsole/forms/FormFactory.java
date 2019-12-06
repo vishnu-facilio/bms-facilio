@@ -74,7 +74,7 @@ public class FormFactory {
 		forms.put("visitorPreRegisterForm", getVisitorPreRegisterForm());
 		forms.put("portalVisitorPreRegisterForm", getPortalVisitorPreRegisterForm());
 		forms.put("vendor_contact_form", getVendorContactForm());
-		forms.put("portal_vendor_contact_form", getPortalVendorContactForm());
+		forms.put("portal_vendor_contact_form", getPortalVendorForm());
 		//visitor type forms
 		
 		forms.put("visitorLogForm", getVisitorLogForm());
@@ -520,13 +520,13 @@ public class FormFactory {
 		return form;
 	}
 	
-	public static FacilioForm getPortalVendorContactForm() {
+	public static FacilioForm getPortalVendorForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW VENDOR");
-		form.setName("portal_default");
+		form.setName("default_vendors_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VENDORS));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFields(getPortalVendorContactFormField());
+		form.setFields(getPortalVendorFormField());
 		form.setFormType(FormType.PORTAL);
 		return form;
 	}
@@ -815,7 +815,7 @@ public class FormFactory {
 	}
 
 	
-	private static List<FormField> getPortalVendorContactFormField() {
+	private static List<FormField> getPortalVendorFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
