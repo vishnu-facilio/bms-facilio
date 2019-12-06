@@ -38,12 +38,16 @@ public class MLJobReportPreparationJob extends FacilioJob
 			if(fileId > 0){
 				
 				FileInfo file = fs.getFileInfo(fileId);
+				Map<String, String> files = new HashMap<>();
 				String name = file.getFileName();
 				String url = fs.getPrivateUrl(fileId);
-				Map<String, String> files = new HashMap<>();
+				files.put(name, url);
+				url = fs.getOrgiFileUrl(fileId);
+				files.put(name, url);
+				url = fs.getOrgiDownloadUrl(fileId);
 				files.put(name, url);
 				LOGGER.info("MLJobReport File : "+files);
-				sendMail(files);
+//				sendMail(files);
 				LOGGER.info("MLJobReport Mail Successfully sent");
 				fs.deleteFile(fileId);
 				LOGGER.info("MLJobReport Successfully deleted");
