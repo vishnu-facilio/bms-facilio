@@ -29,9 +29,11 @@ public class LoadVendorLookUpCommand extends FacilioCommand{
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		LookupField contactField = (LookupField) fieldsAsMap.get("registeredBy");
+		LookupField moduleStateField = (LookupField) fieldsAsMap.get("moduleState");
 		LookupField addressField = (LookupField) fieldsAsMap.get("address");
 		additionaLookups.add(contactField);
 		additionaLookups.add(addressField);
+		additionaLookups.add(moduleStateField);
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
 		return false;
 	}

@@ -1529,7 +1529,6 @@ public class FormFactory {
 		ticketField.setHideField(true);
 		fields.add(ticketField);
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 3, 2);
-		vendorField.setHideField(true);
 		fields.add(vendorField);
 		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 5, 1));
 //		FormField requestedByField = new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1);

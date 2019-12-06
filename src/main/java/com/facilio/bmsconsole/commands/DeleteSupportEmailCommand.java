@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.util.SupportEmailAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.service.FacilioService;
 
 public class DeleteSupportEmailCommand extends FacilioCommand {
 
@@ -13,11 +15,8 @@ public class DeleteSupportEmailCommand extends FacilioCommand {
 		
 		long supportEmailId = (long) context.get(FacilioConstants.ContextNames.ID);
 		if(supportEmailId != -1) {
-			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-														.table("SupportEmails")
-														.andCustomWhere("ID = ?", supportEmailId);
-			builder.delete();
-			context.put(FacilioConstants.ContextNames.RESULT, "success");
+			
+			FacilioService.runAsService(() -> SupportEmailAPI.deleteSupportEmail(supportEmailId));
 		}
 		
 		return false;
