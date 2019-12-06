@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.io.File;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,12 +45,25 @@ public class MLJobReportPreparationJob extends FacilioJob
 				files.put(name, url);
 				url = fs.getOrgiFileUrl(fileId);
 				files.put(name, url);
+				try{
+					URL url1 = new URL(url);
+					LOGGER.info("Valid url1 : "+url);
+				}catch(Exception e){
+					LOGGER.fatal("Invalid url1 : "+url);
+				}
+				
 				url = fs.getOrgiDownloadUrl(fileId);
 				files.put(name, url);
+				try{
+					URL url2 = new URL(url);
+					LOGGER.info("Valid url2 : "+url);
+				}catch(Exception e){
+					LOGGER.fatal("Invalid url2 : "+url);
+				}
 				LOGGER.info("MLJobReport File : "+files);
 //				sendMail(files);
 				LOGGER.info("MLJobReport Mail Successfully sent");
-				fs.deleteFile(fileId);
+//				fs.deleteFile(fileId);
 				LOGGER.info("MLJobReport Successfully deleted");
 			}
 			File file = File.createTempFile("ML_JOB_REPORT", ".txt");
