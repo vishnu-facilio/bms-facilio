@@ -5055,16 +5055,16 @@ public class ViewFactory {
 	
 	private static Criteria getActiveWorkPermitCriteria(){
 		
-		FacilioField expectedStartTimeField = new LookupField();
-		expectedStartTimeField.setName("expectedStartTime");
-		expectedStartTimeField.setColumnName("EXPECTED_START_TIME");
-		expectedStartTimeField.setDataType(FieldType.DATE_TIME);
-		expectedStartTimeField.setModule(ModuleFactory.getWorkPermitModule());
-
-		Condition activeCondition = new Condition();
-		activeCondition.setField(expectedStartTimeField);
-		activeCondition.setOperator(DateOperators.TILL_NOW);
-		
+//		FacilioField expectedStartTimeField = new LookupField();
+//		expectedStartTimeField.setName("expectedStartTime");
+//		expectedStartTimeField.setColumnName("EXPECTED_START_TIME");
+//		expectedStartTimeField.setDataType(FieldType.DATE_TIME);
+//		expectedStartTimeField.setModule(ModuleFactory.getWorkPermitModule());
+//
+//		Condition activeCondition = new Condition();
+//		activeCondition.setField(expectedStartTimeField);
+//		activeCondition.setOperator(DateOperators.TILL_NOW);
+//		
 		FacilioField expectedEndTimeField = new LookupField();
 		expectedEndTimeField.setName("expectedEndTime");
 		expectedEndTimeField.setColumnName("EXPECTED_END_TIME");
@@ -5076,7 +5076,7 @@ public class ViewFactory {
 		expiredCondition.setOperator(DateOperators.UPCOMING);
 		
 		Criteria activeCriteria = new Criteria();
-		activeCriteria.addAndCondition(activeCondition);
+//		activeCriteria.addAndCondition(activeCondition);
 		activeCriteria.addAndCondition(expiredCondition);
 		
 		return activeCriteria;
