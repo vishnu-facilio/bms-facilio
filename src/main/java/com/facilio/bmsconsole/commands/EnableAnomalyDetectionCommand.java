@@ -62,7 +62,9 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		fieldObj = ((JSONObject)context.get("parentIdField"));
 		FacilioField energyParentField = modBean.getField(fieldObj.get("fieldName").toString(), fieldObj.get("moduleName").toString());
 		
-		buildGamModel(assetContextList,(JSONObject)((JSONObject)context.get("mlVariables")).get("buildGam"),(JSONObject)context.get("mlModelVariables"),energyField,markedField,energyParentField);
+		JSONObject buildGamMlVariable  = context.containsKey("mlVariables") ? ((JSONObject)context.get("mlVariables")).containsKey("buildGam") ?(JSONObject)((JSONObject)context.get("mlVariables")).get("buildGam") :null  : null; 
+		
+		buildGamModel(assetContextList,buildGamMlVariable,(JSONObject)context.get("mlModelVariables"),energyField,markedField,energyParentField);
 		
 		FacilioModule module = modBean.getModule("anomalydetectionmllogreadings");
 		List<FacilioField> fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLLogCheckGamFields();
@@ -71,26 +73,33 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		module = modBean.getModule("anomalydetectionmlreadings");
 		fields = module != null ? modBean.getAllFields(module.getName()) : FieldFactory.getMLCheckGamFields();
 		MLAPI.addReading(assetIDList,"AnomalyDetectionMLReadings",fields,ModuleFactory.getMLReadingModule().getTableName(),module);
+
+        Long ratioCheckMLid = null;
+        if(context.get("parentHierarchy").toString().equalsIgnoreCase("true")){
+	
+			JSONObject ratiocheckMlVariable  = context.containsKey("mlVariables") ? ((JSONObject)context.get("mlVariables")).containsKey("ratioCheck") ?(JSONObject)((JSONObject)context.get("mlVariables")).get("ratioCheck") :null  : null; 
+			
+			if(context.containsKey("ratioHierarchy"))
+			{
+				JSONArray ratioHierachy = new JSONArray((String)context.get("ratioHierarchy"));
+				ratioCheckMLid = addMultipleRatioCheckModel(assetIDList,ratioHierachy,ratiocheckMlVariable,energyField.getId());
+			}
+			else
+			{
+				ratioCheckMLid = addRatioCheckModel(assetIDList,(String)context.get("TreeHierarchy"),ratiocheckMlVariable,energyField.getId());
+			}
 		
-        long ratioCheckMLid = 0L;
+		}
+		JSONObject checkGamMlVariable  = context.containsKey("mlVariables") ? ((JSONObject)context.get("mlVariables")).containsKey("checkGam") ?(JSONObject)((JSONObject)context.get("mlVariables")).get("checkGam") :null  : null; 
 		
-		if(context.containsKey("ratioHierarchy"))
-		{
-			JSONArray ratioHierachy = new JSONArray((String)context.get("ratioHierarchy"));
-			ratioCheckMLid = addMultipleRatioCheckModel(assetIDList,ratioHierachy,(JSONObject)((JSONObject)context.get("mlVariables")).get("ratioCheck"),energyField.getId());
-		}
-		else
-		{
-			ratioCheckMLid = addRatioCheckModel(assetIDList,(String)context.get("TreeHierarchy"),(JSONObject)((JSONObject)context.get("mlVariables")).get("ratioCheck"),energyField.getId());
-		}
-		checkGamModel(ratioCheckMLid,assetContextList,(JSONObject)((JSONObject)context.get("mlVariables")).get("checkGam"),(JSONObject)context.get("mlModelVariables"),energyField,markedField,energyParentField);
+		checkGamModel(ratioCheckMLid,assetContextList,checkGamMlVariable,(JSONObject)context.get("mlModelVariables"),energyField,markedField,energyParentField);
 		
 		LOGGER.info("Finished EnableAnomalyDetectionCommand");
 		
 		return false;
 	}
 	
-	private void checkGamModel(long ratioCheckMLID, LinkedList<AssetContext> assetContextList,JSONObject mlVariables,JSONObject mlModelVariables,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
+	private void checkGamModel(Long ratioCheckMLID, LinkedList<AssetContext> assetContextList,JSONObject mlVariables,JSONObject mlModelVariables,FacilioField energyField,FacilioField markedField,FacilioField energyParentField) throws Exception
 	{
 		JSONArray mlIDList = new JSONArray();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -144,8 +153,9 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 			
 			mlIDList.put(mlID);
 		}
-		
-		MLAPI.addMLModelVariables((long) mlIDList.get(mlIDList.length()-1),"jobid",""+ratioCheckMLID);
+		if(ratioCheckMLID != null){
+			MLAPI.addMLModelVariables((long) mlIDList.get(mlIDList.length()-1),"jobid",""+ratioCheckMLID);
+		}
 		updateSequenceForMLModel((long)mlIDList.get(0),mlIDList.toString());
 		ScheduleInfo info = new ScheduleInfo();
 		info.setFrequencyType(FrequencyType.DAILY);

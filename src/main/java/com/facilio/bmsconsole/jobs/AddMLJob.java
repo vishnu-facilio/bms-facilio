@@ -22,7 +22,7 @@ public class AddMLJob extends FacilioJob {
 		LOGGER.info("ML JOB name : "+props.get("name").toString().toUpperCase());
 		switch(props.get("name").toString().toUpperCase()){
 			case "ANOMALY":{
-				if(!props.containsKey("parentHierarchy") || (props.containsKey("parentHierarchy") && props.get("parentHierarchy").toString().equalsIgnoreCase("true"))){
+				if((!props.containsKey("parentHierarchy")) || (props.containsKey("parentHierarchy") && props.get("parentHierarchy").toString().equalsIgnoreCase("true"))){
 					FacilioChain chain = FacilioChainFactory.enableAnomalyDetectionChain();
 					FacilioContext context = chain.getContext();
 					context.put("TreeHierarchy", props.get("TreeHierarchy"));
@@ -32,12 +32,17 @@ public class AddMLJob extends FacilioJob {
 						context.put("markedField", props.get("markedField"));
 					}
 					context.put("parentIdField", props.get("parentIdField"));
-					context.put("mlVariables", props.get("mlVariables"));
+					
 					context.put("mlModelVariables", props.get("mlModelVariables"));
+					if(props.containsKey("mlVariables"))
+					{
+						context.put("mlVariables", props.get("mlVariables"));
+					}
 					if(props.containsKey("ratioHierarchy"))
 					{
 						context.put("ratioHierarchy", props.get("ratioHierarchy"));
 					}
+					context.put("parentHierarchy", "true");
 					chain.execute();
 				}else if(props.get("parentHierarchy").toString().equalsIgnoreCase("false")){
 					 String[] ids = props.get("assetIds").toString().split(",");
@@ -51,8 +56,12 @@ public class AddMLJob extends FacilioJob {
 							context.put("markedField", props.get("markedField"));
 						}
 						context.put("parentIdField", props.get("parentIdField"));
-						context.put("mlVariables", props.get("mlVariables"));
+						if(props.containsKey("mlVariables"))
+						{
+							context.put("mlVariables", props.get("mlVariables"));
+						}
 						context.put("mlModelVariables", props.get("mlModelVariables"));
+						context.put("parentHierarchy", props.get("parentHierarchy"));
 						chain.execute();
 					}
 				}
