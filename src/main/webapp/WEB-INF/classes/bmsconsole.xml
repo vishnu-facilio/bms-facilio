@@ -3047,6 +3047,18 @@
 	</result>
 	</action>
 	
+	<action name="updateTenantLogo" class="com.facilio.bmsconsole.actions.TenantAction" 
+	method="updateTenantLogo">
+		<param name="permission">UPDATE</param> 
+		<param name="moduleName">tenant</param>
+			<result name="success" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
+	</action>
+	
 	<action name="markAsPrimaryContact" class="com.facilio.bmsconsole.actions.TenantAction" 
 	method="markAsPrimaryContact">
 		<param name="permission">UPDATE</param> 

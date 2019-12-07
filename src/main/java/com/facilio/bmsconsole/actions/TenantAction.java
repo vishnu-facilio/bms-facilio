@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -473,6 +474,23 @@ private Map<String, Double> readingData;
    public void setTenantLogo(File tenantLogo) {
       this.tenantLogo = tenantLogo;
    }
+   
+   private String tenantLogoFileName;
+	public String getTenantLogoFileName() {
+		return tenantLogoFileName;
+	}
+	public void setTenantLogoFileName(String tenantLogoFileName) {
+		this.tenantLogoFileName = tenantLogoFileName;
+	}
+	
+	private  String tenantLogoContentType;
+	public String getTenantLogoContentType() {
+		return tenantLogoContentType;
+	}
+	public void setTenantLogoContentType(String tenantLogoContentType) {
+		this.tenantLogoContentType = tenantLogoContentType;
+	}
+	
    public String updateTenant() {
       try {
          if(CollectionUtils.isNotEmpty(utilityAssets)) {
@@ -859,6 +877,21 @@ private Map<String, Double> readingData;
       this.utilityAssets = utilityAssets;
    }
    
-   
+   public String updateTenantLogo() throws Exception {
+	   if(getTenantLogo() != null && getId() > 0) {
+	       FacilioChain addTenantLogo = FacilioChainFactory.addTenantLogoChain();
+	       FacilioContext context = new FacilioContext();
+	       TenantContext tenant = new TenantContext();
+	       tenant.setId(getId());
+	       tenant.setTenantLogo(getTenantLogo());
+	       tenant.setTenantLogoFileName(getTenantLogoFileName());
+	       tenant.setTenantLogoContentType(getTenantLogoContentType());
+	       context.put(FacilioConstants.ContextNames.TENANT, tenant);
+	       addTenantLogo.execute(context);
+	       setResult("fileId", context.get(FacilioConstants.ContextNames.FILE_ID));
+		   
+	   }
+	  return SUCCESS;
+   }  
    
 }

@@ -42,6 +42,10 @@ public class UtilityAsset {
 	public FacilioUtility getUtilityEnum() {
 		return utility;
 	}
+	public void setUtility(int utility) {
+		this.utility = FacilioUtility.valueOf(utility);
+	}
+
 	public void setUtility(FacilioUtility utility) {
 		this.utility = utility;
 	}
@@ -51,13 +55,10 @@ public class UtilityAsset {
 		}
 		return -1;
 	}
-	public void setUtility(int utility) {
-		this.utility = FacilioUtility.valueOf(utility);
+	
+	public void setUtility(String utility) {
+		this.utility = FacilioUtility.valueOf((Integer.parseInt(utility)));
 	}
-
-//	public void setUtility(long utility) {
-//		this.utility = FacilioUtility.valueOf(((Number) utility).intValue());
-//	}
 
 	private long assetId = -1;
 	public long getAssetId() {

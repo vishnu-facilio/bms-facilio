@@ -158,12 +158,15 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 		}
 		return -1;
 	}
-	public void setStatus(Status status) {
-		this.status = status;
-	}
+	
 	public void setStatus(int status) {
 		this.status = Status.valueOf(status);
 	}
+	
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+	
 	
 	public static enum Status {
 		ACTIVE(),

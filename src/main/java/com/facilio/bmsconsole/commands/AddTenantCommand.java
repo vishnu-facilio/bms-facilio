@@ -25,7 +25,7 @@ public class AddTenantCommand extends GenericAddModuleDataCommand {
 		List<Long> spaceIds = (ArrayList<Long>)context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		List<ContactsContext> tenantContacts = (List<ContactsContext>)context.get(FacilioConstants.ContextNames.CONTACTS);
 		
-	    TenantsAPI.addTenantLogo(tenant);
+	   // TenantsAPI.addTenantLogo(tenant);
 		super.executeCommand(context);
 		tenant.setId((Long)context.get(FacilioConstants.ContextNames.RECORD_ID));
 		TenantsAPI.addUtilityMapping(tenant,spaceIds);

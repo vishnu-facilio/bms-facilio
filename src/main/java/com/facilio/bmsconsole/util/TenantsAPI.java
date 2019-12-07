@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.RateCardContext;
@@ -680,13 +681,30 @@ public class TenantsAPI {
 		
 		
 	}
-	public static void addTenantLogo(TenantContext tenant) throws Exception {
+	public static long addTenantLogo(TenantContext tenant) throws Exception {
 		if (tenant.getTenantLogo() != null) {
 			FileStore fs = FacilioFactory.getFileStore();
 			long fileId = fs.addFile(tenant.getTenantLogoFileName(), tenant.getTenantLogo(), tenant.getTenantLogoContentType());
 			tenant.setLogoId(fileId);
-			tenant.setTenantLogo(null);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+			FacilioField logoField = modBean.getField("logoId", module.getName());
+			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+			Map<String, Object> updateMap = new HashMap<>();
+			
+			updateMap.put("logoId", fileId);
+			updatedfields.add(logoField);
+			
+			UpdateRecordBuilder<TenantContext> updateBuilder = new UpdateRecordBuilder<TenantContext>()
+					.module(module)
+					.fields(updatedfields)
+					.andCondition(CriteriaAPI.getIdCondition(tenant.getId(), module))
+				;
+			
+			updateBuilder.updateViaMap(updateMap);
+			
 		}
+		return tenant.getLogoId();
 	}
 	
 	public static void deleteTenantLogo(long logoId) throws Exception {
@@ -712,13 +730,7 @@ public class TenantsAPI {
 			
 		}
 		
-		TenantContext oldTenant = null;
-		if (tenant.getTenantLogo() != null) {
-			addTenantLogo(tenant);
-			oldTenant = getTenant(tenant.getId(), true);
-		}
-		
-	    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
 	    //updateContactDetails(tenant.getContact(),tenant.getId());
 		UpdateRecordBuilder<TenantContext> updateBuilder = new UpdateRecordBuilder<TenantContext>()
@@ -727,11 +739,6 @@ public class TenantsAPI {
 //														   .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														   .andCondition(CriteriaAPI.getIdCondition(tenant.getId(), module));
 		int count = updateBuilder.update(tenant);
-		
-		if (oldTenant != null) {
-			deleteTenantLogo(oldTenant.getLogoId());
-		}
-		
 		return count;
 	}
 	

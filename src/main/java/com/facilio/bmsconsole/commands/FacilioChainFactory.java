@@ -1918,6 +1918,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain addTenantLogoChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AddTenantLogoCommand());
+		return c;
+	}
+	
 	public static FacilioChain updateTenantChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UpdateTenantCommand());
