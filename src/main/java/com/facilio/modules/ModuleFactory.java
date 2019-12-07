@@ -2976,4 +2976,11 @@ public class ModuleFactory {
 		agentVersionLogModule.setTableName("Agent_VersionLog");
 		return agentVersionLogModule;
 	}
+	public static FacilioModule getSecretFileModule() {
+		FacilioModule secretFilesModule = new FacilioModule();
+		secretFilesModule.setName("secretFile");
+		secretFilesModule.setDisplayName("Secret Files");
+		secretFilesModule.setTableName("Secret_Files");
+		return secretFilesModule;
+	}
 }

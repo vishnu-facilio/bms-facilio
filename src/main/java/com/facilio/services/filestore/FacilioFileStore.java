@@ -257,4 +257,24 @@ public class FacilioFileStore extends FileStore {
 		//TODO implement is file exists..
 		return true;
 	}
+
+	@Override
+	public long addSecretFile(String fileName, File file, String contentType) throws Exception {
+		return 0;
+	}
+
+	@Override
+	public InputStream getSecretFile(String tag) {
+		return null;
+	}
+
+	@Override
+	public boolean removeSecretFile(String tag) {
+		return false;
+	}
+
+	@Override
+	public boolean isSecretFileExists(String fileName) {
+		return false;
+	}
 }

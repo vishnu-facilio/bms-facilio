@@ -1,13 +1,12 @@
 package com.facilio.fw.listener;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -150,6 +149,7 @@ public class FacilioContextListener implements ServletContextListener {
 					FacilioFactory.getMessageQueue().start();
 				}
 				AgentIntegrationQueueFactory.startIntegrationQueues();
+				downloadEnvironmentFiles();
 			} catch (Exception e){
 				LOGGER.info("Exception occurred ", e);
 			}
@@ -175,6 +175,31 @@ public class FacilioContextListener implements ServletContextListener {
 			LOGGER.info("Exception occurred ", e);
 		}
 		
+	}
+
+	private void downloadEnvironmentFiles() {
+		downloadGoogleAppCredentials();
+	}
+
+	private void downloadGoogleAppCredentials() {
+		InputStream inputStream = FacilioFactory.getFileStore().getSecretFile("GOOGLE_APP_CREDENTIALS");
+		File secretsDir = new File("/tmp/secrets");
+		if (!secretsDir.exists()) if(secretsDir.mkdir()) {
+
+			File file = new File("/tmp/secrets/google_app_credentials.json");
+			try (FileOutputStream outputStream = new FileOutputStream(file)) {
+
+				int read;
+				byte[] bytes = new byte[1024];
+
+				while ((read = inputStream.read(bytes)) != -1) {
+					outputStream.write(bytes, 0, read);
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void registerMBeans() {

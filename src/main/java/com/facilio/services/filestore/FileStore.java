@@ -7,13 +7,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.operators.StringOperators;
 import org.apache.commons.codec.binary.Base64;
 
 import com.facilio.accounts.dto.User;
@@ -601,4 +602,72 @@ public abstract class FileStore {
 	public abstract String getOrgiDownloadUrl(long fileId) throws Exception;
 
 	public abstract boolean isFileExists(String newVersion);
+
+	public long addDummySecretFileEntry(String filename) throws Exception {
+		//TODO
+		Map<String, Object> record = new HashMap<>();
+		record.put("fileName",filename);
+		record.put("uploadTime", System.currentTimeMillis());
+		long id =new GenericInsertRecordBuilder().table(ModuleFactory.getSecretFileModule().getTableName())
+				.fields((List<FacilioField>) FieldFactory.getSecretFileFields())
+				.insert(record);
+		return id;
+
+	}
+
+	public void updateSecretFileEntry(long fileId, String fileName, String filePath, long fileSize, String contentType) throws SQLException {
+		//TODO
+		Map<String, Object> fieldsToUpdate = new HashMap<>();
+		fieldsToUpdate.put("fileName", fileName);
+		fieldsToUpdate.put("filePath", filePath);
+		fieldsToUpdate.put("fileSize", fileSize);
+		fieldsToUpdate.put("contentType", contentType);
+		new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getSecretFileModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSecretFileIdField(), Collections.singleton(fileId), NumberOperators.EQUALS))
+				.update(fieldsToUpdate);
+	}
+	void deleteSecretFileEntry(long fieldId) {
+		//todo
+		//delete entry
+	}
+	public List<FileInfo> listSecretFiles() throws Exception {
+
+		List<FileInfo> list = new ArrayList<>();
+		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getSecretFileModule().getTableName())
+				.select(FieldFactory.getSecretFileFields()).limit(100);
+		List<Map<String, Object>> res = genericSelectRecordBuilder.get();
+		for (Map<String,Object> row:
+			 res) {
+			FileInfo fileInfo = new FileInfo();
+			fileInfo.setContentType(row.get("contentType").toString());
+			fileInfo.setFileId(Long.parseLong(row.get("fileId").toString()));
+			fileInfo.setFileName(row.get("fileName").toString());
+			fileInfo.setFilePath(row.get("filePath").toString());
+			fileInfo.setFileSize(Long.parseLong(row.get("fileSize").toString()));
+			fileInfo.setUploadedTime(Long.parseLong(row.get("uploadedTime").toString()));
+			list.add(fileInfo);
+		}
+		return list;
+	}
+
+	public boolean markSecretFileAsDeleted (String fileName) throws SQLException {
+		Map<String, Object> toUpdate = new HashMap<>();
+		toUpdate.put("isDeleted",true);
+		return new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getSecretFileModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSecretFileIdField(), fileName, StringOperators.IS))
+				.update(toUpdate) >0;
+	}
+
+	public abstract long addSecretFile(String fileName,File file,String contentType) throws Exception;
+
+
+	public abstract InputStream getSecretFile(String tag);
+
+	public abstract boolean removeSecretFile(String tag);
+
+
+	public abstract boolean isSecretFileExists(String fileName);
 }

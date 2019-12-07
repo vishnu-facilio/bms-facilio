@@ -31,6 +31,8 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -538,6 +540,24 @@ public class AdminAction extends ActionSupport {
 
 	}
 	private File file;
+	private String fileName;
+	private String contentType;
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileNamem) {
+		this.fileName = fileNamem;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
 
 	public File getFile() {
 		return file;
@@ -547,73 +567,11 @@ public class AdminAction extends ActionSupport {
 		this.file = file;
 	}
 
-	public void uploadGoogleCredential(){
-		logger.info("Uploading Google credentials");
-		Bucket b=createBucket();
-
-		try {
-			AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-					.withRegion(Regions.DEFAULT_REGION)
-					.build();
-
-			// Upload a text string as a new object.
-			StringBuilder content = new StringBuilder();
-			System.out.println("999427" +getFile());
-			System.out.println(getFile().toPath());
-			System.out.println(getFile().toString());
-			List<String> list = Files.readAllLines(file.toPath());
-			for (String line:list){
-				content.append(line);
-			}
-			s3Client.putObject(bucket_name, obj_key_name, content.toString());
-
-			// Upload a file as a new object with ContentType and title specified.
-			PutObjectRequest request = new PutObjectRequest(bucket_name, file_obj_key_name, new File(file_name));
-			ObjectMetadata metadata = new ObjectMetadata();
-			metadata.setContentType("plain/text");
-			metadata.addUserMetadata("x-amz-meta-title", "someTitle");
-			request.setMetadata(metadata);
-			s3Client.putObject(request);
-		} catch (IOException | SdkClientException e) {
-			// The call was transmitted successfully, but Amazon S3 couldn't process
-			// it, so it returned an error response.
-			logger.info("Error occ " + e.getMessage() );
-			e.printStackTrace();
+	public void uploadSecretFiles() throws Exception {
+		FileStore fs = FacilioFactory.getFileStore() ;
+		if(fs.isSecretFileExists(getFileName())){
+			FacilioFactory.getFileStore().addSecretFile(getFileName(),getFile(),getContentType());
 		}
-	}
-	public static Bucket getBucket(String bucket_name) {
-
-		final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
-		Bucket named_bucket = null;
-		try {
-			List<Bucket> buckets = s3.listBuckets();
-			logger.info("buckets.size() = " + buckets.size());
-			for (Bucket b : buckets) {
-				if (b.getName().equals(bucket_name)) {
-					named_bucket = b;
-				}
-			}
-		}catch (Exception ex){
-			logger.info("Error while getting bucket");
-			logger.info(ex.getMessage());
-		}
-		return named_bucket;
-	}
-
-	private static Bucket createBucket() {
-		final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
-		Bucket b = null;
-		if (s3.doesBucketExist(bucket_name)) {
-			logger.info("Bucket already exists");
-			b = getBucket(bucket_name);
-		} else {
-			try {
-				b = s3.createBucket(bucket_name);
-			} catch (AmazonS3Exception e) {
-				logger.info("Error occured while creating bucket");
-			}
-		}
-		return b;
 	}
 
 }

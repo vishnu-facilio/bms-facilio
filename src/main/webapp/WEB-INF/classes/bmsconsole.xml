@@ -1141,7 +1141,7 @@
 			<action name="upload" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/upload.jsp</result>
 			</action>
-		<action name="uploadGoogleCredential" class="com.facilio.bmsconsole.actions.AdminAction" method ="uploadGoogleCredential">
+		<action name="uploadSecretFiles" class="com.facilio.bmsconsole.actions.AdminAction" method ="uploadSecretFiles">
 			<result   type="tiles">adminpage/upload.jsp</result>
 		</action>
 	</package>

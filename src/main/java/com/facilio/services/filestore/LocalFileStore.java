@@ -67,6 +67,26 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	}
 
 	@Override
+	public long addSecretFile(String fileName, File file, String contentType) throws Exception {
+		return 0;
+	}
+
+	@Override
+	public InputStream getSecretFile(String tag) {
+		return null;
+	}
+
+	@Override
+	public boolean removeSecretFile(String tag) {
+		return false;
+	}
+
+	@Override
+	public boolean isSecretFileExists(String fileName) {
+		return false;
+	}
+
+	@Override
 	public long addFile(String fileName, File file, String contentType) throws Exception {
 		long fileId = addDummyFileEntry(fileName);
 		String filePath = getRootPath() + File.separator + fileId+"-"+fileName;

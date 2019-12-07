@@ -107,6 +107,25 @@ public class FieldFactory {
 
 	}
 
+	public static Collection<FacilioField> getSecretFileFields() {
+		FacilioModule module = ModuleFactory.getSecretFileModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("fileId","FILE_ID",module,FieldType.NUMBER));
+		fields.add(getField("fileName","FILE_NAME",module,FieldType.STRING));
+		fields.add(getField("filePath","FILE_PATH",module,FieldType.STRING));
+		fields.add(getField("fileSize","FILE_SIZE",module,FieldType.NUMBER));
+		fields.add(getField("contentType","CONTENT_TYPE",module,FieldType.STRING));
+		fields.add(getField("uploadTime","UPLOADED_TIME",module,FieldType.NUMBER));
+		fields.add(getField("isDeleted","IS_DELETED",module,FieldType.BOOLEAN));
+
+
+		return  fields;
+	}
+
+	public static FacilioField getSecretFileIdField() {
+		return getField("fileId","FILE_ID", ModuleFactory.getSecretFileModule(),FieldType.NUMBER);
+	}
+
 	public static class Fields {
 		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
 		static {

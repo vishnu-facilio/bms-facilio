@@ -47,6 +47,7 @@ public class S3FileStore extends FileStore {
 	
 	private String bucketName;
 	private String rootPath;
+	private static final String SECRET_ROOT_PATH="secrets";
 	private static Logger log = LogManager.getLogger(S3FileStore.class.getName());
 
 	@Override
@@ -366,4 +367,49 @@ public class S3FileStore extends FileStore {
 		}
 		return AWS_S3_CLIENT;
 	}
+
+	@Override
+	public long addSecretFile(String fileName,File file, String contentType) throws Exception {
+		long fileId = addDummySecretFileEntry(fileName);
+		String filePath = SECRET_ROOT_PATH;
+		long fileSize = file.length();
+		try{
+			PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(),filePath,file);
+			if (rs != null ){
+				updateSecretFileEntry(fileId,fileName,filePath,fileSize,contentType);
+				return fileId;
+			}
+			else{
+				deleteSecretFileEntry(fileId);
+				return -1;
+			}
+
+		}catch (Exception ex){
+			deleteSecretFileEntry(fileId);
+			throw ex;
+
+		}
+
+	}
+
+
+	@Override
+	public boolean removeSecretFile(String fileName) {
+		//TODO implement remove secret files
+		return false;
+	}
+
+	@Override
+	public boolean isSecretFileExists(String fileName) {
+		//TODO implement isExists
+		return false;
+	}
+
+	@Override
+	public InputStream getSecretFile(String filename) {
+		S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(),SECRET_ROOT_PATH +File.separator + filename);
+		return so.getObjectContent();
+	}
+
+
 }
