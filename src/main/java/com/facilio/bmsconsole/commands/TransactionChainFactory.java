@@ -3789,6 +3789,8 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
+			c.addCommand(new LoadVisitorLoggingLookUpCommand());
+			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
@@ -3809,6 +3811,8 @@ public class TransactionChainFactory {
 			c.addCommand(new SchedulePreOpenVisitorLogsCreateCommand(false));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
+			c.addCommand(new LoadVisitorLoggingLookUpCommand());
+			c.addCommand(new GenericGetModuleDataListCommand());
 			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));

@@ -63,7 +63,6 @@ public class GenerateQrInviteUrlCommand extends FacilioCommand {
 			
 			}
 			
-			
 		}
 		return false;
 	}
