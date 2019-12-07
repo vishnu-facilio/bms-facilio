@@ -1606,6 +1606,8 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddSubModuleDataCommand());
 			c.addCommand(new AddVendorContactsCommand());
 			c.addCommand(new AddInsuranceVendorRollUpsCommand());
+			c.addCommand(new LoadVendorLookUpCommand());
+			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
@@ -1621,6 +1623,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddSubModuleDataCommand());
 			c.addCommand(new AddVendorContactsCommand());
 			c.addCommand(new AddInsuranceVendorRollUpsCommand());
+			c.addCommand(new LoadVendorLookUpCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
@@ -4042,6 +4045,8 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new LoadWorkPermitLookUpsCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 		return c;
 	}
@@ -4051,6 +4056,7 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForWorkPermit());
 		c.addCommand(new ComputeScheduleForWorkPermitCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new LoadWorkPermitLookUpsCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
