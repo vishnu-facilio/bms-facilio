@@ -3150,7 +3150,7 @@ public class ViewFactory {
 
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("expectedCheckInTime");
-			createdTime.setDataType(FieldType.NUMBER);
+			createdTime.setDataType(FieldType.DATE_TIME);
 			createdTime.setColumnName("EXPECTED_CHECKIN_TIME");
 			createdTime.setModule(visitorInvitesModule);
 
@@ -3175,7 +3175,7 @@ public class ViewFactory {
 
 			FacilioField createdTime = new FacilioField();
 			createdTime.setName("sysCreatedTime");
-			createdTime.setDataType(FieldType.NUMBER);
+			createdTime.setDataType(FieldType.DATE_TIME);
 			createdTime.setColumnName("SYS_CREATED_TIME");
 			createdTime.setModule(visitorInvitesModule);
 
@@ -4936,6 +4936,18 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Visits");
+		
+		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(visitorLogging);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		allView.setSortFields(sortFields);
+		
+
 		return allView;
 	}
 	
@@ -4952,7 +4964,7 @@ public class ViewFactory {
 		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("checkInTime");
-		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("CHECKIN_TIME");
 		createdTime.setModule(visitorLogging);
 
@@ -4975,7 +4987,7 @@ public class ViewFactory {
 		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("expectedCheckInTime");
-		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("EXPECTED_CHECKIN_TIME");
 		createdTime.setModule(visitorLogging);
 
@@ -4994,7 +5006,7 @@ public class ViewFactory {
 		FacilioModule visitorInvitesModule = ModuleFactory.getVisitorLoggingModule();
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("expectedCheckInTime");
-		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("EXPECTED_CHECKIN_TIME");
 		createdTime.setModule(visitorInvitesModule);
 
@@ -5312,6 +5324,18 @@ public class ViewFactory {
 		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
 		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_EMPTY));
 		view.setCriteria(criteria);
+		
+		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedtime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(visitorLogging);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		view.setSortFields(sortFields);
+		
+
 
 		return view;
 	}
@@ -5325,6 +5349,17 @@ public class ViewFactory {
 		view.setDisplayName("My Pending Visits");
 		view.setCriteria(criteria);
 		view.setHidden(true);
+
+		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("checkInTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("CHECKIN_TIME");
+		createdTime.setModule(visitorLogging);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		view.setSortFields(sortFields);
+		
 
 		return view;
 	}
@@ -5341,6 +5376,18 @@ public class ViewFactory {
 		criteria.addAndCondition(CriteriaAPI.getCondition(preRegisterField, String.valueOf(true),BooleanOperators.IS));
 		criteria.addAndCondition(getVisitorLogStatusCriteria("Upcoming"));
 		view.setCriteria(criteria);
+		
+		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("expectedCheckInTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("EXPECTED_CHECKIN_TIME");
+		createdTime.setModule(visitorLogging);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		view.setSortFields(sortFields);
+		
+
 
 		return view;
 	}
