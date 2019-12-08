@@ -5384,7 +5384,7 @@ public class ViewFactory {
 		createdTime.setColumnName("EXPECTED_CHECKIN_TIME");
 		createdTime.setModule(visitorLogging);
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 		view.setSortFields(sortFields);
 		
 
