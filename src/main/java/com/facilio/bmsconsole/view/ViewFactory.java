@@ -564,7 +564,7 @@ public class ViewFactory {
 		views.put("upcoming", getUpcomingVisitsView().setOrder(order++));
 		views.put("all", getAllVisitorLogsView().setOrder(order++));
 		views.put("vendorVisits", getAllVisitsView().setOrder(order++));
-		views.put("vendorVisitors", getAllVisitsView().setOrder(order++));
+		views.put("vendorVisitors", getVendorAllInvitesView().setOrder(order++));
 		views.put("vendorUpcomingVisitors", getVendorUpcomingVisitorLogsView().setOrder(order++));
 		views.put("myUpcoming", getMyUpcomingVisitorInvites().setOrder(order++));
 		views.put("myAll", getMyAllVisitorInvites().setOrder(order++));
@@ -4948,6 +4948,41 @@ public class ViewFactory {
 		allView.setDisplayName("All Visits");
 		allView.setHidden(true);
 		allView.setCriteria(criteria);
+		
+		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("checkInTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CHECKIN_TIME");
+		createdTime.setModule(visitorLogging);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		allView.setSortFields(sortFields);
+		
+
+		return allView;
+	}
+	
+	private static FacilioView getVendorAllInvitesView() {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getPastVisitorLogStatusCriteria("Upcoming"));
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Invites");
+		allView.setHidden(true);
+		allView.setCriteria(criteria);
+		
+		FacilioModule visitorLogging = ModuleFactory.getVisitorLoggingModule();
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("expectedCheckInTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("EXPECTED_CHECKIN_TIME");
+		createdTime.setModule(visitorLogging);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		allView.setSortFields(sortFields);
+		
+
 		return allView;
 	}
 	
@@ -4979,6 +5014,12 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("invite_all");
 		allView.setDisplayName("All Invites");
+		
+		FacilioModule visitorLogModule = ModuleFactory.getVisitorLoggingModule();
+		FacilioField expCheckInTime = FieldFactory.getField("expectedCheckInTime", "EXPECTED_CHECKIN_TIME", visitorLogModule,FieldType.DATE_TIME);
+		
+		allView.setSortFields(Arrays.asList(new SortField(expCheckInTime, false)));
+		
 		return allView;
 	}
 	
@@ -5233,7 +5274,11 @@ public class ViewFactory {
 		FacilioField expCheckInTime = FieldFactory.getField("expectedCheckInTime", "EXPECTED_CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
 		criteria.addAndCondition(CriteriaAPI.getCondition(expCheckInTime, DateOperators.TODAY));
 		view.setCriteria(criteria);
+		
+		List<SortField> sortFields = Arrays.asList(new SortField(expCheckInTime, false));
 
+		view.setSortFields(sortFields);
+		
 		return view;
 	}
 
@@ -5313,6 +5358,10 @@ public class ViewFactory {
 		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
 		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_EMPTY));
 		criteria.addAndCondition(getVisitorLogStatusCriteria("Invited"));
+		
+		FacilioField expCheckInTime = FieldFactory.getField("expectedCheckInTime", "EXPECTED_CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
+		view.setSortFields(Arrays.asList(new SortField(expCheckInTime, false)));
+		
 
 		view.setCriteria(criteria);
 
