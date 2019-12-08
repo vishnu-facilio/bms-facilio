@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import com.facilio.activity.AlarmActivityType;
-import com.facilio.bmsconsole.commands.UpdateWoIdInNewAlarmCommand;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,6 +24,7 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.AlarmActivityType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
@@ -92,7 +90,6 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.pdf.PdfUtil;
-import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.PublicFileUtil;
 import com.facilio.tasker.FacilioTimer;
@@ -114,13 +111,28 @@ public enum ActionType {
 				try {
 					String to = (String) obj.get("to");
 					if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
+						String attachmentsUrl = (String) obj.getOrDefault("attachmentsUrl", null);
+						String attachmentsNames = (String) obj.getOrDefault("attachmentsNames", null);
 						List<String> emails = new ArrayList<>();
-						FacilioFactory.getEmailClient().sendEmail(obj);
-
 						emails.add(to);
 						if (context != null) {
 							context.put(FacilioConstants.Workflow.NOTIFIED_EMAILS, emails);
 						}
+						
+						if(StringUtils.isNotEmpty(attachmentsUrl) && StringUtils.isNotEmpty(attachmentsNames)){
+							String[] urls = attachmentsUrl.split(",");
+							String[] names = attachmentsNames.split(",");
+							if(names.length == urls.length) {
+								Map<String, String> filesMap = new HashMap<String, String>();
+								for(int i = 0; i < names.length; i++) {
+									filesMap.put(names[i], urls[i]);
+								}
+								FacilioFactory.getEmailClient().sendEmail(obj, filesMap);
+								return;
+							}
+						}
+						FacilioFactory.getEmailClient().sendEmail(obj);
+						
 					}
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);

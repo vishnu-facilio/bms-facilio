@@ -921,7 +921,9 @@
 		"mailType": "html",
 		"subject": "Welcome!",
 		"to": "${vLog.visitor.email}",
-		"message_ftl": "welcomeVisitor"
+		"message_ftl": "welcomeVisitor",
+		"attachmentsUrl" : "<#if vLog.ndaUrl??>${vLog.ndaUrl}</#if>",
+		"attachmentsNames" : "<#if vLog.ndaFileName??>${vLog.ndaFileName}</#if>"
 	},
 	"104": {
 		"name": "VISITOR_THANKS_NOTIFICATION",
