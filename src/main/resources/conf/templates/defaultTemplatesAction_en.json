@@ -997,7 +997,7 @@
 	},
 	"115": {
 		"name": "BLOCKED_VISITOR_SMS_NOTIFICATION",
-		"to": "${vLog.host.phone}",
+		"to": "${visitorlogging.host.phone}",
 		"message": "A watchlist blocked visitor ${visitorlogging.visitor.name} tried to check in and is restricted from visiting you.\nAdmin Team."
 	
 	},
@@ -1011,7 +1011,7 @@
 	},
 	"117": {
 		"name": "VIP_VISITOR_SMS_NOTIFICATION",
-		"to": "${vLog.host.phone}",
+		"to": "${visitorlogging.host.phone}",
 		"message": "A VIP Visitor - ${visitorlogging.visitor.name} has checked in and the access is made hassle free due to a VIP watchlist record match.\nAdmin Team."
 	
 	},

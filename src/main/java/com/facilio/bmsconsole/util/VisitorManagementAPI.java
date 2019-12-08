@@ -714,7 +714,7 @@ public class VisitorManagementAPI {
 		}
 		
 		builder.andCriteria(criteria);
-		builder.andCondition(CriteriaAPI.getCondition("IS_BLOCKED", "isBlocked", "true", BooleanOperators.IS));
+		//builder.andCondition(CriteriaAPI.getCondition("IS_BLOCKED", "isBlocked", "true", BooleanOperators.IS));
 		
 		WatchListContext record = builder.fetchFirst();
 		return record;
@@ -1978,7 +1978,7 @@ public class VisitorManagementAPI {
 		
 		
 		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
-		workflowRuleContext.setName("Blocked Visitor Notification");
+		workflowRuleContext.setName("VIP Visitor Notification");
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
@@ -2061,22 +2061,25 @@ public class VisitorManagementAPI {
 		StringJoiner userEmailStr = new StringJoiner(",");
 		for(String ouId : ouIdList) {
 			User user = userBean.getUser(Long.parseLong(ouId), false);
-			if(user != null) {
+			if(user != null && StringUtils.isNotEmpty(user.getMobile())) {
 				userEmailStr.add(user.getMobile());
 			}
 		}
+		if(!userEmailStr.isEmpty()) {
 		
-		SMSTemplate temp = addSmsTemplate("Blocked SMS Template", userEmailStr.toString(), 115);
-		emailAction.setTemplateId(temp.getId());
-		//add rule,action and job
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
-		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
-        
-		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
-		chain.execute(context);
-	
-		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+			SMSTemplate temp = addSmsTemplate("Blocked SMS Template", userEmailStr.toString(), 115);
+			emailAction.setTemplateId(temp.getId());
+			//add rule,action and job
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+			context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+	        
+			FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+			chain.execute(context);
+		
+			return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+		}
+		return null;
 	}
 	
 	
@@ -2132,7 +2135,7 @@ public class VisitorManagementAPI {
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleId);
-				Long ruleId = saveBlockedVisitorMailNotificationPrefs(map, module.getName());
+				Long ruleId = saveVipVisitorMailNotificationPrefs(map, module.getName());
 				List<Long> ruleIdList = new ArrayList<>();
 				ruleIdList.add(ruleId);
 				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
@@ -2197,15 +2200,17 @@ public class VisitorManagementAPI {
 		form.setSections(sections);
 		form.setFields(fields);
 		form.setLabelPosition(LabelPosition.TOP);
-		return new Preference("notifyBlocked_SmsNotification", "Notify on Blocked visitor checkin_SMS", form, " Define who needs to be notified when a visitor matches a blocked record in watchlist") {
+		return new Preference("notifyBlocked_SmsNotification", "Notify on Blocked visitor checkin_SMS", form, "Define who needs to be notified when a visitor matches a blocked record in watchlist") {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleId);
 				Long ruleId = saveBlockedVisitorSmsNotificationPrefs(map, module.getName());
-				List<Long> ruleIdList = new ArrayList<>();
-				ruleIdList.add(ruleId);
-				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+				if(ruleId != null) {
+					List<Long> ruleIdList = new ArrayList<>();
+					ruleIdList.add(ruleId);
+					PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+				}
 			}
 
 			@Override
@@ -2237,9 +2242,11 @@ public class VisitorManagementAPI {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleId);
 				Long ruleId = saveVipVisitorSmsNotificationPrefs(map, module.getName());
-				List<Long> ruleIdList = new ArrayList<>();
-				ruleIdList.add(ruleId);
-				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+				if(ruleId != null) {
+					List<Long> ruleIdList = new ArrayList<>();
+					ruleIdList.add(ruleId);
+					PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
+				}
 			}
 
 			@Override
@@ -2288,22 +2295,24 @@ public class VisitorManagementAPI {
 		StringJoiner userEmailStr = new StringJoiner(",");
 		for(String ouId : ouIdList) {
 			User user = userBean.getUser(Long.parseLong(ouId), false);
-			if(user != null) {
+			if(user != null && StringUtils.isNotEmpty(user.getMobile())) {
 				userEmailStr.add(user.getMobile());
 			}
 		}
+		if(!userEmailStr.isEmpty()) {
+			SMSTemplate temp = addSmsTemplate("VIP SMS Template", userEmailStr.toString(), 117);
+			emailAction.setTemplateId(temp.getId());
+			//add rule,action and job
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+			context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+	        
+			FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
+			chain.execute(context);
 		
-		SMSTemplate temp = addSmsTemplate("VIP SMS Template", userEmailStr.toString(), 117);
-		emailAction.setTemplateId(temp.getId());
-		//add rule,action and job
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
-		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
-        
-		FacilioChain chain = TransactionChainFactory.addWorkflowRuleChain();
-		chain.execute(context);
-	
-		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+			return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+		}
+		return null;
 	}
 	
 }

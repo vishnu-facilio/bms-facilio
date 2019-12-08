@@ -1401,6 +1401,8 @@
 		<workflow>
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
+			<parameter name="visitorlogging"
+				type="String" />
 			
 			<parameter name="visitorlogging.host.phone"
 				type="String" />
@@ -1433,6 +1435,8 @@
 		<workflow>
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
+			<parameter name="visitorlogging"
+				type="String" />
 			
 			<parameter name="visitorlogging.host.phone"
 				type="String" />
