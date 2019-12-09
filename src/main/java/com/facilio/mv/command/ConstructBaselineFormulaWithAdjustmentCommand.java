@@ -108,6 +108,8 @@ public class ConstructBaselineFormulaWithAdjustmentCommand extends FacilioComman
 				FacilioChain updateEnPIChain = TransactionChainFactory.updateFormulaChain();
 				updateEnPIChain.execute(context);
 				
+				baseLine.setFormulaFieldWithAjustment(FormulaFieldAPI.getFormulaField(formulaFieldContext.getId()));
+				
 			}
 			else {
 				FormulaFieldContext formulaFieldContext = new FormulaFieldContext();
