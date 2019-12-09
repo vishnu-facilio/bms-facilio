@@ -8,7 +8,10 @@ import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
@@ -66,8 +69,20 @@ public class GetAlarmRcaDetailCommand extends  FacilioCommand {
 
             SelectRecordsBuilder<ReadingAlarmOccurrenceContext> buildesr = new SelectRecordsBuilder<ReadingAlarmOccurrenceContext>().module(module)
                     .beanClass(ReadingAlarmOccurrenceContext.class).select(fields)
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(alarmId), NumberOperators.EQUALS))
+//                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), String.valueOf(ruleId), NumberOperators.EQUALS));
+
+            Condition condition1 = CriteriaAPI.getCondition(fieldMap.get("clearedTime"), String.valueOf(dateRange.getStartTime()),
+                    NumberOperators.GREATER_THAN_EQUAL);
+            Condition condition2 = CriteriaAPI.getCondition(fieldMap.get("clearedTime"), CommonOperators.IS_EMPTY);
+
+            Criteria criterias = new Criteria();
+
+            criterias.addOrCondition(condition1);
+            criterias.addOrCondition(condition2);
+
+            buildesr.andCriteria(criterias);
 
             List<ReadingAlarmOccurrenceContext> occurrenceList = buildesr.get();
 
@@ -92,12 +107,25 @@ public class GetAlarmRcaDetailCommand extends  FacilioCommand {
                         .andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), rcaIds, NumberOperators.EQUALS))
 //                    .fetchLookup(rulelookup)
                         .groupBy(fieldMap.get("rule").getCompleteColumnName());
-                for (ReadingAlarmOccurrenceContext occurrence : occurrenceList) {
-                    DateRange range = new DateRange();
-                    range.setStartTime(occurrence.getCreatedTime());
-                    range.setEndTime(occurrence.getClearedTime() > 0 ? occurrence.getClearedTime() : System.currentTimeMillis());
-                    builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN));
+                if (occurrenceList != null && occurrenceList.size() > 0) {
+                    Criteria criteria = new Criteria();
+                    List<Condition> conditions = new ArrayList<Condition>();
+                    for (ReadingAlarmOccurrenceContext occurrence : occurrenceList) {
+                        long createdTime = occurrence.getCreatedTime();
+                        long clearedTime = occurrence.getClearedTime() > 0 ? occurrence.getClearedTime() : System.currentTimeMillis() ;
+
+                        conditions.add(CriteriaAPI.getCondition(fieldMap.get("createdTime"), createdTime+","+clearedTime, DateOperators.BETWEEN));
+
+//                    DateRange range = new DateRange();
+//                    range.setStartTime(occurrence.getCreatedTime());
+//                    range.setEndTime(occurrence.getClearedTime() > 0 ? occurrence.getClearedTime() : System.currentTimeMillis());
+//                    builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN));
+                    }
+                    criteria.groupOrConditions(conditions);
+                    builder.andCriteria(criteria);
+
                 }
+
 
                 List<Map<String, Object>> list = builder.getAsProps();
                 for (Map<String, Object> prop : list) {

@@ -164,7 +164,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 					readingFieldId = alarm.getReadingFieldId();
 				}
 				if (occurrenceId == null || occurrenceId == -1) {
-					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(parentIds, -1l, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), null, null);
+					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(parentIds, -1l, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), null, null, null);
 				}
 				else if (currentAlarm != null && readingFieldId == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
 					AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(occurrenceId);
