@@ -89,7 +89,6 @@
 				<param name="includeProperties">dashboards,dashboards\[\d+\],dashboards\[\d+\].*</param>
 			</result>
 		</action>
-		
 	</package>
 
 	<package name="serviceWorkOrderApiV2" namespace="/api/v2/service/workorders" extends="servicePortalApiV2">
@@ -1093,10 +1092,19 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
 	</package>
 	<package name="tenantworkorders"
-		namespace="/api/service/v2/workorders/view" extends="newServicePortalApiV2">
+		 namespace="/api/service/v2/workorders/view" extends="newServicePortalApiV2">
 	<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
 			<param name="viewName">{1}</param>
 			<param name="includeParentFilter">true</param>
+		</action>
+		</package>
+		<package name = "servicePortalUsers" namespace="/api/service/setup" extends="newServicePortalApiV2">
+		<action name="portalusers" class="com.facilio.bmsconsole.actions.UserAction" method="portalUserList">
+			<param name="moduleName">setup</param>
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<param name="cache">org</param>
+			<result name="success" type="json">
+				<param name="includeProperties">users.*</param></result>
 		</action>
 		</package>
 	<!-- Tenant apis end -->

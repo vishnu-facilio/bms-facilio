@@ -29,10 +29,21 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 		// addPrimaryDetailsWidget(tab1Sec1);
 		addSecondaryDetailsWidget(tab1Sec1);
 		
+		Section tab1Sec2 = page.new Section();
+		tab1.addSection(tab1Sec2);
+		addWorkrequestDetailsWidget(tab1Sec2);
+		
 		Section tab1Sec3 = page.new Section();
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleGroup(tab1Sec3);
 		
+		Tab tab2 = page.new Tab("history");
+		page.addTab(tab2);
+		
+		Section tab2Sec1 = page.new Section();
+		tab2.addSection(tab2Sec1);
+		
+		addActivityWidget(tab2Sec1);
 		
 		return page;
 	}
@@ -43,10 +54,17 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 		section.addWidget(detailsWidget);
 	}
 
-	private static void addAddressInfoWidget(Section section) {
-		PageWidget recurringInfoWidget = new PageWidget(WidgetType.ADDRESS, "addressLocation");
-		recurringInfoWidget.addToLayoutParams(section, 24, 6);
+	private static void addWorkrequestDetailsWidget(Section section) {
+		PageWidget recurringInfoWidget = new PageWidget(WidgetType.WORK_REQUEST_DETAILS_WIDGET, "workRequestDetails");
+		recurringInfoWidget.addToLayoutParams(section, 24, 7);
 		section.addWidget(recurringInfoWidget);
 	}
+	
+	private static void addActivityWidget(Section section) {
+		PageWidget historyWidget = new PageWidget(WidgetType.ACTIVITY);
+		historyWidget.addToLayoutParams(section, 24, 3);
+		section.addWidget(historyWidget);
+	}
+
 	
 }
