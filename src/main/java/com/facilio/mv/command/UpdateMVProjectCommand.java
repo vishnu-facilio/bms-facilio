@@ -65,7 +65,7 @@ public class UpdateMVProjectCommand extends FacilioCommand {
 		else {
 			if(mvProjectContextOld.getSaveGoalFormulaField() != null) {
 				context.put(FacilioConstants.ContextNames.RECORD_ID, mvProjectContextOld.getSaveGoalFormulaField().getId());
-				
+				context.put(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V,true);
 				FacilioChain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 				deleteEnPIChain.execute(context);
 			}

@@ -46,12 +46,14 @@ public class DeleteMVProjectCommand extends FacilioCommand {
 	private void deleteDependencies(MVProjectWrapper wrapper,Context context) throws Exception {
 		for(MVBaseline baseline : wrapper.getBaselines()) {
 			context.put(FacilioConstants.ContextNames.RECORD_ID, baseline.getFormulaField().getId());
+			context.put(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V,true);
 			
 			FacilioChain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 			deleteEnPIChain.execute(context);
 			
 			FacilioChain deleteEnPIChain1 = FacilioChainFactory.deleteFormulaChain();
 			context.put(FacilioConstants.ContextNames.RECORD_ID, baseline.getFormulaFieldWithAjustment().getId());
+			context.put(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V,true);
 			
 			deleteEnPIChain1.execute(context);
 		}
@@ -59,6 +61,7 @@ public class DeleteMVProjectCommand extends FacilioCommand {
 			for(MVAdjustment adjustment : wrapper.getAdjustments()) {
 				if(adjustment.getFormulaField() != null) {
 					context.put(FacilioConstants.ContextNames.RECORD_ID, adjustment.getFormulaField().getId());
+					context.put(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V,true);
 					
 					FacilioChain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 					deleteEnPIChain.execute(context);

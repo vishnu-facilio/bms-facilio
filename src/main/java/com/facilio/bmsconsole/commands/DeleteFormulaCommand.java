@@ -40,8 +40,12 @@ public class DeleteFormulaCommand extends FacilioCommand {
 				WorkflowRuleAPI.deleteWorkflowRule(oldFormula.getViolationRuleId());
 			}
 			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			modBean.deleteModule(oldFormula.getReadingField().getModule().getName());
+			Boolean isFormulaFieldOppFromMandV = (Boolean) context.get(FacilioConstants.ContextNames.IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V);
+			
+			if(isFormulaFieldOppFromMandV == null || !isFormulaFieldOppFromMandV) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				modBean.deleteModule(oldFormula.getReadingField().getModule().getName());
+			}
 			
 			context.put(FacilioConstants.ContextNames.RESULT, "success");
 		}
