@@ -86,6 +86,7 @@ import com.facilio.workflows.functions.FacilioMapFunction;
 import com.facilio.workflows.functions.FacilioMathFunction;
 import com.facilio.workflows.functions.FacilioModuleFunctions;
 import com.facilio.workflows.functions.FacilioNotificationFunctions;
+import com.facilio.workflows.functions.FacilioNumberFunctions;
 import com.facilio.workflows.functions.FacilioPsychrometricsFunction;
 import com.facilio.workflows.functions.FacilioReadingFunctions;
 import com.facilio.workflows.functions.FacilioResourceFunction;
@@ -1904,6 +1905,8 @@ public class WorkflowUtil {
 					break;
 				case ANALYTICS:
 					facilioWorkflowFunction = FacilioAnalyticsFunctions.getFacilioAnalyticsFunction(functionName);
+				case NUMBER:
+					facilioWorkflowFunction = FacilioNumberFunctions.getFacilioNumberFunction(functionName);
 					break;
 					
 			}
@@ -1988,6 +1991,8 @@ public class WorkflowUtil {
 					break;
 				case ANALYTICS:
 					facilioWorkflowFunction = new ArrayList<>( FacilioAnalyticsFunctions.getAllFunctions().values());
+				case NUMBER:
+					facilioWorkflowFunction = new ArrayList<>( FacilioNumberFunctions.getAllFunctions().values());
 					break;
 			}
 		}

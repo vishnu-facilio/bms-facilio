@@ -181,6 +181,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
                     		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.CRITERIA.getName());
                     		isDataTypeSpecificFunction = true;
                     	}
+                    	else if(value.asObject() instanceof Number) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.NUMBER.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
                     		wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace)value.asObject()).getName());
                     	}
