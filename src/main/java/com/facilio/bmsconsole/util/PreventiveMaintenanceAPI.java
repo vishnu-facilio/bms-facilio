@@ -430,7 +430,7 @@ public class PreventiveMaintenanceAPI {
 		return resourceIds;
  	}
 	public static long getEndTime(long startTime, List<PMTriggerContext> triggers) {
-		Optional<PMTriggerContext> minTrigger = triggers.stream().min(Comparator.comparingInt(PMTriggerContext::getFrequency));
+		Optional<PMTriggerContext> minTrigger = triggers.stream().filter(i -> i.getTriggerExecutionSourceEnum() == TriggerExectionSource.SCHEDULE).min(Comparator.comparingInt(PMTriggerContext::getFrequency));
 
 		int maxSchedulingDays = minTrigger.get().getFrequencyEnum().getMaxSchedulingDays();
 		if (startTime == -1) {
