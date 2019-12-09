@@ -267,9 +267,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					if(data != null) {
 						data.setEndTime(System.currentTimeMillis());
 						data.setStatus(status);
-						if(AccountUtil.getCurrentAccount()!= null) {
-							data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());
-						}
+						data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());
 						AuditData finalData1 = data;
 						FacilioService.runAsServiceWihReturn(() ->audit.update(finalData1));
 					}
