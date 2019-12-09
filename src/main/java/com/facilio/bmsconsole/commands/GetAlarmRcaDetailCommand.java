@@ -112,7 +112,7 @@ public class GetAlarmRcaDetailCommand extends  FacilioCommand {
                     List<Condition> conditions = new ArrayList<Condition>();
                     for (ReadingAlarmOccurrenceContext occurrence : occurrenceList) {
                         long createdTime = occurrence.getCreatedTime();
-                        long clearedTime = occurrence.getClearedTime() > 0 ? occurrence.getClearedTime() : System.currentTimeMillis() ;
+                        long clearedTime = occurrence.getClearedTime() > 0 ? occurrence.getClearedTime() : dateRange.getEndTime() ;
 
                         conditions.add(CriteriaAPI.getCondition(fieldMap.get("createdTime"), createdTime+","+clearedTime, DateOperators.BETWEEN));
 

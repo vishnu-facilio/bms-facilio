@@ -612,7 +612,7 @@ public class NewAlarmAPI {
 		for (AlarmOccurrenceContext alarmOccurrence : occurrenceContexts)
 		{
 			long createdTime = alarmOccurrence.getCreatedTime();
-			long clearedTime = alarmOccurrence.getClearedTime() > 0 ?alarmOccurrence.getClearedTime() : System.currentTimeMillis() ;
+			long clearedTime = alarmOccurrence.getClearedTime() > 0 ?alarmOccurrence.getClearedTime() :endTime ;
 
 			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), createdTime+","+clearedTime, DateOperators.BETWEEN));
 //			criteria.addOrCondition(condition2);
