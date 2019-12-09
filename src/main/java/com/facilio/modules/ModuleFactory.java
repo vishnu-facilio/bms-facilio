@@ -2980,7 +2980,7 @@ public class ModuleFactory {
 		FacilioModule secretFilesModule = new FacilioModule();
 		secretFilesModule.setName("secretFile");
 		secretFilesModule.setDisplayName("Secret Files");
-		secretFilesModule.setTableName("Secret_Files");
+		secretFilesModule.setTableName("Secret_File");
 		return secretFilesModule;
 	}
 }

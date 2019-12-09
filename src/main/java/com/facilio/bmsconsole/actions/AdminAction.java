@@ -21,6 +21,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
@@ -33,6 +34,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.services.filestore.FileStoreFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -69,11 +71,7 @@ public class AdminAction extends ActionSupport {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(AdminAction.class.getName());
 	private static org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(AdminAction.class.getName());
-	private static String bucket_name="facilio-admin-files";
-	private static String obj_key_name ="facilio-admin-files-obj-key";
-	private String file_obj_key_name = "facilio-admin-file-obj-key-name";
-	private String file_name = "app.json";
-
+	public static JSONObject secretFilesList;
 	public String show() {
 		return SUCCESS;
 	}
@@ -572,6 +570,22 @@ public class AdminAction extends ActionSupport {
 		if(fs.isSecretFileExists(getFileName())){
 			FacilioFactory.getFileStore().addSecretFile(getFileName(),getFile(),getContentType());
 		}
+	}
+	public String getSecretFiles() throws Exception {
+		List<FileInfo> list =FacilioFactory.getFileStore().listSecretFiles();
+		org.json.simple.JSONArray jsonArray = new org.json.simple.JSONArray();
+		for (FileInfo fileInfo: list){
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("fileId",fileInfo.getFileId());
+			jsonObject.put("fileName",fileInfo.getFileName());
+			jsonObject.put("fileSize",fileInfo.getFileSize());
+			jsonObject.put("contentType",fileInfo.getContentType());
+			jsonArray.add(jsonArray);
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("secretFiles",jsonArray);
+		secretFilesList= jsonObject;
+		return SUCCESS;
 	}
 
 }

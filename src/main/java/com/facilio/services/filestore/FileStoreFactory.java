@@ -21,6 +21,7 @@ public class FileStoreFactory {
 	}
 	
 	public FileStore getFileStore(long ouid) {
+		if (ouid == -1) return getFileStoreFromOrg(-1L,ouid);
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		return getFileStoreFromOrg(orgId, ouid);
 	}

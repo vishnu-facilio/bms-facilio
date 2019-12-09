@@ -1138,11 +1138,13 @@
 			</action>
 			<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method ="addAgentVersion">
 			</action>
-			<action name="upload" class="com.facilio.bmsconsole.actions.AdminAction">
-			<result   type="tiles">adminpage/upload.jsp</result>
-			</action>
 		<action name="uploadSecretFiles" class="com.facilio.bmsconsole.actions.AdminAction" method ="uploadSecretFiles">
 			<result   type="tiles">adminpage/upload.jsp</result>
+		</action>
+		<action name="getSecretFiles" class="com.facilio.bmsconsole.actions.AdminAction" method ="getSecretFiles">
+			<result name ="success" type="json">
+				<param name="includeProperties">secretFilesList</param>
+			</result>
 		</action>
 	</package>
 
