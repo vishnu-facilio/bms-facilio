@@ -154,7 +154,7 @@ private long ruleId = -1;
 		this.parentAlarmId = parentAlarmId;
 	}
 
-	long parentAlarmId;
+	long parentAlarmId = -1;
 
 	
 	long siteId = -1;
