@@ -1,17 +1,18 @@
 package com.facilio.services.filestore;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -66,25 +67,7 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 		return f.exists();
 	}
 
-	@Override
-	public long addSecretFile(String fileName, File file, String contentType) throws Exception {
-		return 0;
-	}
 
-	@Override
-	public InputStream getSecretFile(String tag) {
-		return null;
-	}
-
-	@Override
-	public boolean removeSecretFile(String tag) {
-		return false;
-	}
-
-	@Override
-	public boolean isSecretFileExists(String fileName) {
-		return false;
-	}
 
 	@Override
 	public long addFile(String fileName, File file, String contentType) throws Exception {
@@ -221,5 +204,69 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 		else {
 			return false;
 		}
+	}
+	@Override
+	public long addSecretFile(String fileName, File file, String contentType) throws Exception {
+		long fileId = addDummyFileEntry(fileName);
+		String filePath = "secrets" + File.separator +fileName;
+		long fileSize = file.length();
+
+		InputStream is = null;
+		OutputStream os = null;
+		try {
+			File createFile = new File(filePath);
+			createFile.createNewFile();
+
+
+			is = new FileInputStream(file);
+			os = new FileOutputStream(createFile);
+			byte[] buffer = new byte[4096];
+			int length;
+			while ((length = is.read(buffer)) > 0) {
+				os.write(buffer, 0, length);
+			}
+			os.flush();
+
+			updateSecretFileEntry(fileId, fileName, filePath, fileSize, contentType);
+		} catch (IOException ioe) {
+			deleteSecretFileEntry(fileId);
+			throw ioe;
+		} finally {
+			is.close();
+			os.close();
+		}
+		return fileId;
+	}
+
+	@Override
+	public InputStream getSecretFile(String fileName) throws Exception {
+		FileInfo fileInfo = getSecretFileInfo(fileName);
+		return readFile(fileInfo);
+	}
+
+	private FileInfo getSecretFileInfo(String fileName) throws Exception {
+		FileInfo fileInfo = new FileInfo();
+		fileInfo.setFileName(fileName);
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getSecretFileModule().getTableName())
+				.select(FieldFactory.getSecretFileFields())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSecretFileIdField(),fileName, StringOperators.IS));
+		Map<String, Object> row =selectRecordBuilder.get().get(0);
+		if (row.containsKey("fileId")) fileInfo.setFileId(Long.parseLong(row.get("fileId").toString()));
+		if (row.containsKey("contentType")) fileInfo.setContentType(row.get("contentType").toString());
+		if (row.containsKey("fileSize")) fileInfo.setFileSize(Long.parseLong (row.get("fileSize").toString()));
+		if (row.containsKey("filePath")) fileInfo.setFilePath(row.get("filePath").toString());
+
+		return fileInfo;
+	}
+
+	@Override
+	public boolean removeSecretFile(String tag) {
+		return false;
+	}
+
+	@Override
+	public boolean isSecretFileExists(String fileName) {
+		return false;
 	}
 }

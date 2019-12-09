@@ -1,14 +1,6 @@
 package com.facilio.services.filestore;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -19,7 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.services.filestore.FileStore;
 
 public class FacilioFileStore extends FileStore {
@@ -45,7 +43,7 @@ public class FacilioFileStore extends FileStore {
 		long fileId = addDummyFileEntry(fileName);
 		byte[] contentInBytes = Files.readAllBytes(file.toPath());
 		try {
-			return addFile(fileId, fileName, contentInBytes, contentType);
+			return addFile(fileId, fileName, contentInBytes, contentType,false);
 		} catch (Exception e){
 			return -1;
 		}
@@ -60,18 +58,24 @@ public class FacilioFileStore extends FileStore {
 	public long addFile(String fileName, String content, String contentType) throws Exception {
 		long fileId = addDummyFileEntry(fileName);
 		try {
-			return addFile(fileId, fileName, content.getBytes(), contentType);
+			return addFile(fileId, fileName, content.getBytes(), contentType,false);
 		} catch (Exception e){
 			return -1;
 		}
 	}
 
-	private long addFile(long fileId, String fileName, byte[] content, String contentType) throws Exception {
+	private long addFile(long fileId, String fileName, byte[] content, String contentType,boolean isSecretFile) throws Exception {
 
-		String request = FacilioProperties.getConfig("files.url") + "/api/file/put";
-		
-		HttpUtil httpConn = new HttpUtil(request);
-		httpConn.addFormField("orgId", getOrgId() + "");
+		HttpUtil httpConn;
+		if (isSecretFile) {
+
+			httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
+		}
+		else{
+			httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/secrets/put");
+			httpConn.addFormField("orgId", getOrgId() + "");
+
+		}
 		httpConn.addFormField("fileId", fileId + "");
 		httpConn.addFormField("fileName", fileName);
 		httpConn.addFormField("contentType", contentType);
@@ -83,20 +87,32 @@ public class FacilioFileStore extends FileStore {
 		Integer statusCode = (Integer) response.get("status");
 		
 		if (statusCode == 200) {
-			String filePath = getOrgId() + File.separator + "files" + File.separator + fileName;
-			updateFileEntry(fileId, fileName, filePath, content.length, contentType);
-			return fileId;
+			String filePath;
+			if(isSecretFile){
+				filePath = "secrets"+ File.separator + "files" + File.separator + fileName;
+				updateSecretFileEntry(fileId, fileName, filePath, content.length, contentType);
+				return fileId;
+			}else {
+				filePath = getOrgId() + File.separator + "files" + File.separator + fileName;
+				updateFileEntry(fileId, fileName, filePath, content.length, contentType);
+				return fileId;
+			}
 			
 		} else {
-			deleteFileEntry(fileId);
+			if (isSecretFile){
+				deleteSecretFileEntry(fileId);
+			}else {
+				deleteFileEntry(fileId);
+			}
 			return -1;
 		}
 	}
 
 	@Override
 	public InputStream readFile(long fileId) throws Exception {
-		FileInfo fileInfo = getFileInfo(fileId);
-		return readFile(fileInfo);
+			FileInfo fileInfo = getFileInfo(fileId);
+			return readFile(fileInfo);
+
 	}
 	@Override
 	public InputStream readFile(FileInfo fileInfo) throws Exception {
@@ -260,12 +276,46 @@ public class FacilioFileStore extends FileStore {
 
 	@Override
 	public long addSecretFile(String fileName, File file, String contentType) throws Exception {
-		return 0;
+		long fileId = addDummySecretFileEntry(fileName);
+		return addFile(fileId,fileName,Files.readAllBytes(file.toPath()),contentType,true);
+
 	}
 
 	@Override
-	public InputStream getSecretFile(String tag) {
+	public InputStream getSecretFile(String fileName) throws Exception {
+		FileInfo fileInfo = getSecretFileInfo(fileName);
+		String url = FacilioProperties.getConfig("files.url")+"/api/file/secret/get?"+"&fileName="+URLEncoder.encode(fileName, "UTF-8")+"&fileId="+fileInfo.getFileId()+"&contentType="+fileInfo.getContentType();
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		con.setRequestMethod("GET");
+
+		int responseCode = con.getResponseCode();
+		if(responseCode == 200) {
+			BufferedInputStream bos = new BufferedInputStream(con.getInputStream());
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			int readBytes = 0;
+			while ((readBytes = bos.read()) != -1) {
+				baos.write(readBytes);
+			}
+			return new ByteArrayInputStream(baos.toByteArray());
+		}
 		return null;
+	}
+	private FileInfo getSecretFileInfo(String fileName) throws Exception {
+		FileInfo fileInfo = new FileInfo();
+		fileInfo.setFileName(fileName);
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getSecretFileModule().getTableName())
+				.select(FieldFactory.getSecretFileFields())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSecretFileIdField(),fileName, StringOperators.IS));
+		Map<String, Object> row =selectRecordBuilder.get().get(0);
+		if (row.containsKey("fileId")) fileInfo.setFileId(Long.parseLong(row.get("fileId").toString()));
+		if (row.containsKey("contentType")) fileInfo.setContentType(row.get("contentType").toString());
+		if (row.containsKey("fileSize")) fileInfo.setFileSize(Long.parseLong (row.get("fileSize").toString()));
+		if (row.containsKey("filePath")) fileInfo.setFilePath(row.get("filePath").toString());
+
+		return fileInfo;
 	}
 
 	@Override
