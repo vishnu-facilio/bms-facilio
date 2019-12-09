@@ -130,7 +130,7 @@ private long ruleId = -1;
 		context.put(FacilioConstants.ContextNames.IS_RCA, false);
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
 		context.put(FacilioConstants.ContextNames.READING_RULE_ID, ruleId);
-		context.put(FacilioConstants.ContextNames.PARENT_ALARM_ID, parentAlarmId);
+		context.put(FacilioConstants.ContextNames.PARENT_ALARM_ID, getParentAlarmId());
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
@@ -146,11 +146,12 @@ private long ruleId = -1;
 		return SUCCESS;
 	}
 
+
 	public long getParentAlarmId() {
 		return parentAlarmId;
 	}
 
-	public void setParentAlarmID(long parentAlarmId) {
+	public void setParentAlarmId(long parentAlarmId) {
 		this.parentAlarmId = parentAlarmId;
 	}
 

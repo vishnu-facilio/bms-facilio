@@ -49,7 +49,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		long assetId = (long) context.get(ContextNames.ASSET_ID);
 		Boolean isRca = (Boolean) context.get(FacilioConstants.ContextNames.IS_RCA);
-		long parentAlarmId = (long) context.get(FacilioConstants.ContextNames.PARENT_ALARM_ID);
+		long parentAlarmId = (long) context.getOrDefault(FacilioConstants.ContextNames.PARENT_ALARM_ID, -1l);
 		List<Long> assetIds = (List<Long>) context.get(ContextNames.RESOURCE_LIST);
 		long readingRuleId = (long) context.get(ContextNames.READING_RULE_ID);
 		long alarmId = (long) context.get(ContextNames.ALARM_ID);
@@ -254,7 +254,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				long clearedTime = alarmOccurrence.getClearedTime() > 0 ?alarmOccurrence.getClearedTime() :  dateRange.getEndTime() ;
 
 				criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), createdTime+","+clearedTime, DateOperators.BETWEEN));
-//			
+//
 			}
 			builder.andCriteria(criteria);
 		}
