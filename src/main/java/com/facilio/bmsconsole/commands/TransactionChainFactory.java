@@ -3710,18 +3710,22 @@ public class TransactionChainFactory {
 		public static FacilioChain addVisitorChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitor());
+			c.addCommand(new CheckForVisitorDuplicationCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
-
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		
 			return c;
 		}
 
 		public static FacilioChain updateVisitorChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitor());
+			c.addCommand(new CheckForVisitorDuplicationCommand());
 			c.addCommand(new GenericUpdateListModuleDataCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
-
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		
 
 			return c;
 		}
@@ -4025,7 +4029,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addWatchListChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWatchList());
-		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new CheckForExisitingWatchlistRecordsCommand());
 		return c;
 	}
 	

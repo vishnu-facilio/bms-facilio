@@ -2315,4 +2315,12 @@ public class VisitorManagementAPI {
 		return null;
 	}
 	
+	public static boolean checkForDuplicateVisitor(VisitorContext visitor) throws Exception {
+		VisitorContext visitorExisiting = getVisitor(-1, visitor.getPhone());
+		if(visitorExisiting != null && visitor.getId() != visitorExisiting.getId()) {
+			return true;
+		}
+		return false;
+	}
+	
 }

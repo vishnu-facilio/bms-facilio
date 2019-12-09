@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -105,10 +106,24 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 					//throw new IllegalArgumentException("This visitor has an active record already. Kindly Checkout and proceed to CheckIn");
 				}
 				if(vL.getVisitor() != null && vL.getVisitor().getId() <= 0) {
-					RecordAPI.addRecord(true, Collections.singletonList(vL.getVisitor()) , module, fields);
+					if(!VisitorManagementAPI.checkForDuplicateVisitor(vL.getVisitor())) {
+						RecordAPI.addRecord(true, Collections.singletonList(vL.getVisitor()) , module, fields);
+					}
+					else {
+						throw new IllegalArgumentException("A Visitor Already Exist with this phone number");
+					}
 				}
 				else {
-					RecordAPI.updateRecord(vL.getVisitor(), module, fields);
+					VisitorContext vLVisitor = VisitorManagementAPI.getVisitor(vL.getVisitor().getId(), null);
+					if(StringUtils.isNotEmpty(vL.getVisitor().getPhone())) {
+						vLVisitor.setPhone(vL.getVisitor().getPhone());
+					}
+					if(!VisitorManagementAPI.checkForDuplicateVisitor(vLVisitor)) {
+						RecordAPI.updateRecord(vL.getVisitor(), module, fields);
+					}
+					else {
+						throw new IllegalArgumentException("A Visitor Already Exist with this phone number");
+					}
 				}
 				if(vL.getInvite() != null) {
 					VisitorInviteContext visitorInvite = VisitorManagementAPI.getVisitorInvite(vL.getInvite().getId());
