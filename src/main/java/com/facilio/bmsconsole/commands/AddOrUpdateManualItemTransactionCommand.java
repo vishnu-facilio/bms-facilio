@@ -243,7 +243,7 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 		woItem.setParentTransactionId(itemTransactions.getParentTransactionId());
 		woItem.setApprovedState(approvalState);
 		if (itemTransactions.getTransactionStateEnum() == TransactionState.ISSUE) {
-			if(itemTransactions.getTransactionType() == TransactionType.SHIPMENT_STOCK.getValue() || (itemTransactions.getTransactionType() == TransactionType.MANUAL.getValue() && itemTransactions.getResource() != null && itemTransactions.getResource().getResourceType() == ResourceType.USER.getValue() )) {
+			if(itemTransactions.getTransactionType() == TransactionType.SHIPMENT_STOCK.getValue() || (itemTransactions.getTransactionType() == TransactionType.MANUAL.getValue() && (itemTransactions.getResource() == null || (itemTransactions.getResource() != null && itemTransactions.getResource().getResourceType() == ResourceType.USER.getValue()) ))) {
 				woItem.setRemainingQuantity(quantity);
 			} 
 			else

@@ -110,7 +110,7 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 						RecordAPI.addRecord(true, Collections.singletonList(vL.getVisitor()) , module, fields);
 					}
 					else {
-						throw new IllegalArgumentException("A Visitor Already Exist with this phone number");
+						throw new IllegalArgumentException("A Visitor Already exists with this phone number");
 					}
 				}
 				else {
@@ -122,7 +122,7 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 						RecordAPI.updateRecord(vL.getVisitor(), module, fields);
 					}
 					else {
-						throw new IllegalArgumentException("A Visitor Already Exist with this phone number");
+						throw new IllegalArgumentException("A Visitor Already exists with this phone number");
 					}
 				}
 				if(vL.getInvite() != null) {
