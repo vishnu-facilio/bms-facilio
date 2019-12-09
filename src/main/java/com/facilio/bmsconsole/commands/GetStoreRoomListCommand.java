@@ -8,7 +8,9 @@ import java.util.Set;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
@@ -91,9 +93,11 @@ public class GetStoreRoomListCommand extends FacilioCommand {
 			builder.andCriteria(scopeCriteria);
 		}
 
-		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory", "read");
-		if (permissionCriteria != null) {
-			builder.andCriteria(permissionCriteria);
+		if(AccountUtil.getCurrentUser().getUserType() == UserType.USER.getValue()) {
+			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory", "read");
+			if (permissionCriteria != null) {
+				builder.andCriteria(permissionCriteria);
+			}
 		}
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

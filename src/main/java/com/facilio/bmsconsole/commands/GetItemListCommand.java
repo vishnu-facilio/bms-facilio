@@ -9,6 +9,8 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountConstants.UserType;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
@@ -72,7 +74,8 @@ public class GetItemListCommand extends FacilioCommand {
 							+ ModuleFactory.getInventryModule().getTableName() + ".ITEM_TYPES_ID");
 			builder.andCustomWhere(
 					"(Item_Types.INDIVIDUAL_TRACKING = 0) OR (Item_Types.INDIVIDUAL_TRACKING = 1 AND Item_Types.IS_CONSUMABLE = 1)");
-		} else {
+		} 
+		else if(AccountUtil.getCurrentUser().getUserType() == UserType.USER.getValue()) {
 			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory",
 					"read");
 			if (permissionCriteria != null) {

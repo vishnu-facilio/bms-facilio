@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.ToolContext;
@@ -144,9 +145,11 @@ public class GetToolTransactionsListCommand extends FacilioCommand {
 
 		}
 
-		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory","read");
-		if(permissionCriteria != null) {
-			builder.andCriteria(permissionCriteria);
+		if(AccountUtil.getCurrentUser().getUserType() == UserType.USER.getValue()) {
+			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory","read");
+			if(permissionCriteria != null) {
+				builder.andCriteria(permissionCriteria);
+			}
 		}
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

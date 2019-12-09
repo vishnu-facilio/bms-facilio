@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
@@ -70,9 +71,11 @@ public class GetItemTransactionsListCommand extends FacilioCommand {
 			// }
 			builder.orderBy(orderBy);
 		}
-		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory", "read");
-		if (permissionCriteria != null) {
-			builder.andCriteria(permissionCriteria);
+		if(AccountUtil.getCurrentUser().getUserType() == UserType.USER.getValue()) {
+			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory", "read");
+			if (permissionCriteria != null) {
+				builder.andCriteria(permissionCriteria);
+			}
 		}
 		Integer maxLevel = (Integer) context.get(FacilioConstants.ContextNames.MAX_LEVEL);
 		if (maxLevel != null && maxLevel != -1) {
