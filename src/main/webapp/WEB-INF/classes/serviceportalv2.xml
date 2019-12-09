@@ -744,6 +744,22 @@
 			<param name="parentId">{1}</param>
 		</action>
 	</package>
+	<package name="VendoritemListApiv2" namespace="/api/service/v2/item/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ItemAction" method="itemList">
+			<param name="moduleName">inventory</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="VendortoolListApiv2" namespace="/api/service/v2/tool/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ToolAction" method="toolList">
+			<param name="moduleName">inventory</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	<package name="VendorWorkorderLabourList"
 		namespace="/api/service/v2/workorderLabourList/parent" extends="newServicePortalApiV2">
 		<action name="*"

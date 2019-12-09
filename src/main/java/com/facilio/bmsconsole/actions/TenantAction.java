@@ -499,7 +499,7 @@ private Map<String, Double> readingData;
          
          tenant.parseFormData();
          FacilioContext context = new FacilioContext();
-         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.EDIT);
          context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
          context.put(FacilioConstants.ContextNames.RECORD, tenant);
          context.put(FacilioConstants.ContextNames.SITE_ID, tenant.getSiteId());
