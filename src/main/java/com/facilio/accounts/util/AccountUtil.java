@@ -16,6 +16,7 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -28,6 +29,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
 
 public class AccountUtil {
 
@@ -40,7 +42,13 @@ public class AccountUtil {
 	}
 	
 	public static void setCurrentAccount(long orgId) throws Exception {
-		Organization org = IAMUtil.getOrgBean().getOrgv2(orgId);
+		Organization org = null;
+		if(FacilioProperties.isProduction()) {
+			 org = IAMUtil.getOrgBean().getOrgv2(orgId);
+		}else {
+			 org = FacilioService.runAsServiceWihReturn(() ->IAMUtil.getOrgBean().getOrgv2(orgId));
+		}
+		
 		
 		if (org != null) {
 
