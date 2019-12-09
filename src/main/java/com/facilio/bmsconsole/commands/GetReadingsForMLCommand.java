@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +38,18 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 		LOGGER.info("inside getReadingsforML");
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		List<MLVariableContext> mlVariable = mlContext.getMLVariable();
+		long time;
+		if(mlContext.getModelPath().equals("ratioCheck") || mlContext.getModelPath().equals("checkGam1") || mlContext.getModelPath().equals("buildGamModel")){
+			Calendar calendar = Calendar.getInstance();
+			Date date = calendar.getTime();
+			Date newDate = new Date(date.getYear(),date.getMonth(),date.getDate(),date.getHours(),0);
+			calendar.setTime(newDate);
+			time = calendar.getTimeInMillis();
+		}else{
+			time = System.currentTimeMillis();
+		}
 		
-		long currentTime = mlContext.isHistoric() ? mlContext.getExecutionEndTime() : System.currentTimeMillis();
+		long currentTime = mlContext.isHistoric() ? mlContext.getExecutionEndTime() : time;
 		if( FacilioProperties.isDevelopment() && !mlContext.isHistoric())
 		{
 			// for dev testing purpose time is moved back 
