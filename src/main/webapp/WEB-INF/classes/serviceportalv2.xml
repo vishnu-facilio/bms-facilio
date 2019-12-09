@@ -744,6 +744,14 @@
 			<param name="parentId">{1}</param>
 		</action>
 	</package>
+	<package name="VendorlabourApi" namespace="/api/service/v2/labour"
+		extends="v2Api">
+		<action name="labourList"
+			class="com.facilio.bmsconsole.actions.LabourAction"
+			method="labourList">
+			<param name="moduleName">labour</param>
+		</action>
+	</package>
 	<package name="VendoritemListApiv2" namespace="/api/service/v2/item/view"
 		extends="v2Api">
 		<action name="*"
