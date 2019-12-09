@@ -646,10 +646,23 @@ public class AlarmAction extends FacilioAction {
 		chain.getContext().put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		chain.getContext().put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		chain.getContext().put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
+		chain.getContext().put(FacilioConstants.ContextNames.PARENT_ALARM_ID, getParentAlarmId());
 		chain.getContext().put(FacilioConstants.ContextNames.RESOURCE_LIST, resourceList);
 		chain.execute();
 		setResult(ContextNames.ALARM_LIST, chain.getContext().get(ContextNames.ALARM_LIST));
 		return SUCCESS;
+	}
+
+	public long getParentAlarmId() {
+		return parentAlarmId;
+	}
+
+	long parentAlarmId = -1;
+
+
+
+	public void setParentAlarmId(long parentAlarmId) {
+		this.parentAlarmId = parentAlarmId;
 	}
 	private long ruleId = -1;
 	
