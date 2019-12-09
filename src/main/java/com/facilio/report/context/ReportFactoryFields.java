@@ -123,6 +123,13 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("sourceType"));
 		selectedFields.add(fields.get("totalCost"));
 		selectedFields.add(fields.get("status"));
+		selectedFields.add(fields.get("requestedBy"));
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+			selectedFields.add(fields.get("tenant"));
+		}
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.INVENTORY)) {
+			selectedFields.add(fields.get("vendor"));
+		}
 		
 		if(customFields.size() != 0) {
 			for(String customFieldName: customFields.keySet()) {
@@ -147,6 +154,7 @@ public class ReportFactoryFields {
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingTool"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingItem"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("lastIssuedToUser"));
 		
 		List<FacilioField> spaceFields = new ArrayList<FacilioField>();
@@ -190,6 +198,7 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("retireDate"));
 		selectedFields.add(fields.get("warrantyExpiryDate"));
 		selectedFields.add(fields.get("rotatingTool"));
+		selectedFields.add(fields.get("rotatingItem"));
 		selectedFields.add(fields.get("lastIssuedToUser"));
 		
 		
@@ -395,6 +404,7 @@ public class ReportFactoryFields {
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingTool"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingItem"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("lastIssuedToUser"));
 		
 		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
@@ -463,6 +473,7 @@ public class ReportFactoryFields {
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("serialNumber"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingTool"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingItem"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("lastIssuedToUser"));
 		
 		List <FacilioField> workorderfields = new ArrayList<FacilioField>();
@@ -601,6 +612,7 @@ public class ReportFactoryFields {
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("serialNumber"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingTool"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingItem"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("lastIssuedToUser"));
 		
 		List <FacilioField> workorderfields = new ArrayList<FacilioField>();
@@ -728,6 +740,7 @@ public class ReportFactoryFields {
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingTool"));
+				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingItem"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("lastIssuedToUser"));
 				
 				

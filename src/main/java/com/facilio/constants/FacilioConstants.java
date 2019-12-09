@@ -88,8 +88,8 @@ public class FacilioConstants {
 		public static final String PURCHASED_TOOL ="purchasedtool";
 		public static final String PURCHASED_ITEM ="purchaseditem";
 		public static final String REQUEST_LINE_ITEM ="inventoryrequestlineitems";
-		
-		
+		public static final String TENANT ="tenant";
+		public static final String VENDOR ="vendor";
 	}
 
 	public static class ContextNames {
