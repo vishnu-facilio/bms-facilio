@@ -36,7 +36,7 @@ public class ScheduleNewVisitorLogCommand extends FacilioJob {
 		if (visitorLog.getTrigger() != null) {
 			try {
 				long currentTime = System.currentTimeMillis();
-				long startTime = visitorLog.getTrigger() != null ? visitorLog.getTrigger().getStartTime() : currentTime;
+				long startTime = visitorLog.getExpectedCheckInTime() > 0 ? visitorLog.getExpectedCheckInTime() : currentTime;
 				if(isEdit) {
 					deleteUpcomingChildren(visitorLog.getId(),startTime);
 				}

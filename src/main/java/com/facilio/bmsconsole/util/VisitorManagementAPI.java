@@ -1814,7 +1814,7 @@ public class VisitorManagementAPI {
 	public static long getStartTime(int action, VisitorLoggingContext log, PMTriggerContext trigger) {
 		long startTime = -1;
 		if (action == 1) {
-			startTime = getStartTimeInSecond(trigger.getStartTime());
+			startTime = getStartTimeInSecond(log.getExpectedCheckInTime());
 		} else if (action == 2) {
 			startTime = log.getLogGeneratedUpto();
 		}

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,18 +15,16 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
-import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
@@ -253,6 +252,10 @@ private static final long serialVersionUID = 1L;
 			if(triggerString != null) {
 				setTriggerContext(triggerString);
 				parentLog.setTrigger(this.getTrigger());
+				Date d1 = new Date(parentLog.getExpectedCheckInTime());
+				Date d2 = new Date(parentLog.getExpectedCheckOutTime());
+			    long diffMs = d2.getTime() - d1.getTime();
+			    parentLog.setExpectedVisitDuration(diffMs);
 				
 			}
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(parentLog));
@@ -273,6 +276,10 @@ private static final long serialVersionUID = 1L;
 			if(triggerString != null) {
 				setTriggerContext(triggerString);
 				parentLog.setTrigger(this.getTrigger());
+				Date d1 = new Date(parentLog.getExpectedCheckInTime());
+				Date d2 = new Date(parentLog.getExpectedCheckOutTime());
+			    long diffMs = d2.getTime() - d1.getTime();
+			    parentLog.setExpectedVisitDuration(diffMs);
 				
 			}
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(parentLog));

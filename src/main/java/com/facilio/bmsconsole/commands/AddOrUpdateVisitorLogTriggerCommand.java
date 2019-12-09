@@ -7,6 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
@@ -29,6 +30,8 @@ public class AddOrUpdateVisitorLogTriggerCommand extends FacilioCommand{
 		
 		for(VisitorLoggingContext vLog: vLogs) {
 			if (vLog.getTrigger() != null) {
+				vLog.getTrigger().setTriggerExecutionSource(TriggerExectionSource.SCHEDULE);
+				vLog.getTrigger().setName(vLog.getId()+ "-Trigger");
 				if(vLog.getTrigger().getId() > 0) {
 					VisitorManagementAPI.updateTrigger(vLog.getTrigger());
 				}
