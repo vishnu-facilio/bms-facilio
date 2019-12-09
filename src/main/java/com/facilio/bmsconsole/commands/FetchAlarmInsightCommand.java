@@ -240,11 +240,14 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				.on(occurrenceModule.getTableName() + ".ALARM_ID = " + readingAlarmModule.getTableName() + ".ID");
 
 		if ( parentAlarmId > 0) {
-			SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = NewAlarmAPI.getAlarmBuilder(dateRange.getStartTime(), dateRange.getEndTime(), selectFields, fieldMap);
 
-			selectBuilder.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" + parentAlarmId, NumberOperators.EQUALS));
+			List<FacilioField> occurrencefields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+			Map<String, FacilioField> occurrencefieldMap = FieldFactory.getAsMap(occurrencefields);
+			SelectRecordsBuilder<AlarmOccurrenceContext> parentOccurrenceBuilder = NewAlarmAPI.getAlarmBuilder(dateRange.getStartTime(), dateRange.getEndTime(), occurrencefields, occurrencefieldMap);
 
-			List<AlarmOccurrenceContext> occurrenceContexts = selectBuilder.get();
+			parentOccurrenceBuilder.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" + parentAlarmId, NumberOperators.EQUALS));
+
+			List<AlarmOccurrenceContext> occurrenceContexts = parentOccurrenceBuilder.get();
 			Criteria criteria = new Criteria();
 
 			LOGGER.info("occurrenceContexts : " + occurrenceContexts.size());
@@ -253,10 +256,12 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				long createdTime = alarmOccurrence.getCreatedTime();
 				long clearedTime = alarmOccurrence.getClearedTime() > 0 ?alarmOccurrence.getClearedTime() :  dateRange.getEndTime() ;
 
-				criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), createdTime+","+clearedTime, DateOperators.BETWEEN));
-//
+				criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), createdTime+","+clearedTime, DateOperators.BETWEEN));//
 			}
-			builder.andCriteria(criteria);
+			if (criteria != null) {
+				builder.andCriteria(criteria);
+
+			}
 		}
 
 		if (assetId > 0 ) {
