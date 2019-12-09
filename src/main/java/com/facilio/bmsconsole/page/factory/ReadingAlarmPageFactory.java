@@ -82,16 +82,16 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     }
     protected  static  void  addTimeLineWidget(Page.Section section, ReadingAlarm alarms) throws Exception {
         JSONObject activities = new JSONObject();
-        int widgetHeight = 1;
+        int widgetHeight = 0;
         if (alarms.getLastOccurrence() != null) {
             if (alarms.getLastOccurrence().getWoId() > 0) {
                 WorkOrderContext wo = WorkOrderAPI.getWorkOrder(alarms.getLastOccurrence().getWoId());
                 activities.put("workOrder", wo);
-                widgetHeight = widgetHeight + 1;
+                widgetHeight = widgetHeight + 2;
             }
-            if (alarms.getLastOccurrence().getAcknowledged()) {
-                activities.put("acknowledge", alarms.getAcknowledgedBy());
-                widgetHeight = widgetHeight + 1;
+            if (alarms.getLastOccurrence().getAcknowledged() != null && alarms.getLastOccurrence().getAcknowledged()) {
+                activities.put("acknowledge", alarms.getLastOccurrence().getAcknowledgedBy());
+                widgetHeight = widgetHeight + 2;
             }
         }
         PageWidget pageWidget = new PageWidget(PageWidget.WidgetType.ALARM_TIME_LINE);
