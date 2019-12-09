@@ -86,7 +86,11 @@ public class CalculateDeltaCommand extends FacilioCommand {
 										if (deltaVal != null) {
 											String fieldName = field.getName()+"Delta";
 											reading.addReading(fieldName, deltaVal);
-											newRdmPairs.add(Pair.of(reading.getParentId(), fieldMap.get(fieldName)));
+											FacilioField deltaField = fieldMap.get(fieldName);
+											if (deltaField == null) {
+												throw new IllegalArgumentException("Delta field is not found for counter field : "+fieldName+". This is not supposed to happen");
+											}
+											newRdmPairs.add(Pair.of(reading.getParentId(), deltaField));
 											if (AccountUtil.getCurrentOrg().getId() == 78) {
 												LOGGER.info("Delta Value for "+fieldName+" is : "+deltaVal);
 											}
@@ -108,7 +112,6 @@ public class CalculateDeltaCommand extends FacilioCommand {
 			
 			if (!newRdmPairs.isEmpty()) {
 				List<ReadingDataMeta> metaList = ReadingsAPI.getReadingDataMetaList(newRdmPairs) ;
-				
 				for(ReadingDataMeta meta : metaList) {
 					rdmMap.put(ReadingsAPI.getRDMKey(meta.getResourceId(), meta.getField()), meta);
 				}
