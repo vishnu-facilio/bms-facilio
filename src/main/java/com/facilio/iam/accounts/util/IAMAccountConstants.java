@@ -10,6 +10,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SystemEnumField;
 
 public class IAMAccountConstants {
 
@@ -220,6 +221,21 @@ public class IAMAccountConstants {
 			dbName.setColumnName("DATABASE_NAME");
 			dbName.setModule(module);
 			fields.add(dbName);
+			
+			FacilioField dateFormat = new FacilioField();
+			dateFormat.setName("dateFormat");
+			dateFormat.setDataType(FieldType.STRING);
+			dateFormat.setColumnName("DATE_FORMAT");
+			dateFormat.setModule(module);
+			fields.add(dateFormat);
+			
+			SystemEnumField timeFormat = new SystemEnumField();
+			timeFormat.setName("timeFormat");
+			timeFormat.setDataType(FieldType.SYSTEM_ENUM);
+			timeFormat.setColumnName("TIME_FORMAT");
+			timeFormat.setModule(module);
+			timeFormat.setEnumName("TimeFormat");
+			fields.add(timeFormat);
 
 			return fields;
 		}
