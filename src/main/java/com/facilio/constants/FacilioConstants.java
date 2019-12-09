@@ -825,6 +825,7 @@ public class FacilioConstants {
 		public static final String DATE_FIELD = "dateField";
 		public static final String START_TIME = "startTime";
 		public static final String ALARM_ID = "alarmId";
+		public static  final  String PARENT_ALARM_ID = "parentAlarmId";
 		public static final String SCHEDULE_INFO = "scheduleInfo";
 		public static final String EXPORT_INFO = "exportInfo";
 		public static final String END_TIME = "endTime";

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.db.criteria.Criteria;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +49,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		long assetId = (long) context.get(ContextNames.ASSET_ID);
 		Boolean isRca = (Boolean) context.get(FacilioConstants.ContextNames.IS_RCA);
+		long parentAlarmId = (long) context.get(FacilioConstants.ContextNames.PARENT_ALARM_ID);
 		List<Long> assetIds = (List<Long>) context.get(ContextNames.RESOURCE_LIST);
 		long readingRuleId = (long) context.get(ContextNames.READING_RULE_ID);
 		long alarmId = (long) context.get(ContextNames.ALARM_ID);
@@ -66,7 +68,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 
 		List<Map<String, Object>> props = null;
 		if ( AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-			props = getNewAlarmProps(modBean, assetId, readingRuleId,  dateRange, operator, alarmId, assetIds);
+				props = getNewAlarmProps(modBean, assetId, readingRuleId,  dateRange, operator, alarmId, assetIds, parentAlarmId);
 		}
 		else {
 			props = getAlarmProps(modBean, assetId, readingRuleId, isRca, dateRange, operator, assetIds);
@@ -192,7 +194,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		return props;
 	}
 
-	private List<Map<String, Object>> getNewAlarmProps(ModuleBean modBean, long assetId, long ruleId, DateRange dateRange, Operator operator, long alarmId, List<Long> assetIds) throws Exception {
+	private List<Map<String, Object>> getNewAlarmProps(ModuleBean modBean, long assetId, long ruleId, DateRange dateRange, Operator operator, long alarmId, List<Long> assetIds, long parentAlarmId) throws Exception {
 		FacilioModule readingAlarmModule = modBean.getModule(ContextNames.NEW_READING_ALARM);
 		FacilioModule occurrenceModule = modBean.getModule(ContextNames.ALARM_OCCURRENCE);
 
@@ -236,6 +238,26 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		SelectRecordsBuilder<AlarmOccurrenceContext> builder = NewAlarmAPI.getAlarmBuilder(dateRange.getStartTime(), dateRange.getEndTime(), selectFields, fieldMap);
 		builder.innerJoin(readingAlarmModule.getTableName())
 				.on(occurrenceModule.getTableName() + ".ALARM_ID = " + readingAlarmModule.getTableName() + ".ID");
+
+		if ( parentAlarmId > 0) {
+			SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = NewAlarmAPI.getAlarmBuilder(dateRange.getStartTime(), dateRange.getEndTime(), selectFields, fieldMap);
+
+			selectBuilder.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" + parentAlarmId, NumberOperators.EQUALS));
+
+			List<AlarmOccurrenceContext> occurrenceContexts = selectBuilder.get();
+			Criteria criteria = new Criteria();
+
+			LOGGER.info("occurrenceContexts : " + occurrenceContexts.size());
+			for (AlarmOccurrenceContext alarmOccurrence : occurrenceContexts)
+			{
+				long createdTime = alarmOccurrence.getCreatedTime();
+				long clearedTime = alarmOccurrence.getClearedTime() > 0 ?alarmOccurrence.getClearedTime() :  dateRange.getEndTime() ;
+
+				criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), createdTime+","+clearedTime, DateOperators.BETWEEN));
+//			
+			}
+			builder.andCriteria(criteria);
+		}
 
 		if (assetId > 0 ) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"),( assetId > 0 ? String.valueOf(assetId) : StringUtils.join(assetIds, ",") ), NumberOperators.EQUALS))
