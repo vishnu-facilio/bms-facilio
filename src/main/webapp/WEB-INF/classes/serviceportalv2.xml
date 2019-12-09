@@ -699,6 +699,12 @@
 			method="v2metadata">
 		</action>
 	</package>
+	<package name="VendorV2ModuleMetaApi" namespace="/api/service/v2/module"
+		extends="newServicePortalApiV2">
+		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="v2metadata">
+		</action>
+	</package>
 	 <package name="VendorModuleDataApiv2" namespace="/api/service/v2/module/data"
 		extends="newServicePortalApiV2">
 		<action name="add"
