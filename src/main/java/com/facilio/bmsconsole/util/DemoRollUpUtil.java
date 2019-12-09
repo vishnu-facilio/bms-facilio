@@ -148,7 +148,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Labour" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME"));
 		tablesContainsDateField.put("Workorder_labour" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("Event" , Arrays.asList("CREATED_TIME"));
-		tablesContainsDateField.put("Notification_Logger" , Arrays.asList("CREATED_TIME"));
+//		tablesContainsDateField.put("Notification_Logger" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Purchase_Orders" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME"));
 		tablesContainsDateField.put("Purchase_Requests" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME"));
 		tablesContainsDateField.put("Purchase_Request_Attachments" , Arrays.asList("CREATED_TIME"));
