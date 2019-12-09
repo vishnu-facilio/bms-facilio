@@ -25,11 +25,12 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
         ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
         if(record != null) {
             Map<String, List<Map<String, Object>>> subForm = record.getSubForm();
-
-            Map<String, Object> parentObject = new HashMap<>();
-            parentObject.put("id", record.getId());
-
+            List<ModuleBaseWithCustomFields.SubFormDataContext> subFormData = record.getSubFormData();
+            // to be removed once it is handled in client
             if (MapUtils.isNotEmpty(subForm)) {
+                Map<String, Object> parentObject = new HashMap<>();
+                parentObject.put("id", record.getId());
+
                 Map<String, List> recordMap = new HashMap<>();
                 String mainModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -61,10 +62,10 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
                         insertRecordBuilder.withLocalId();
                     }
 
-                    List<String> fileFields = new ArrayList<>();
+                    List<FacilioField> fileFields = new ArrayList<>();
                     for (FacilioField f : fields) {
                         if (f instanceof FileField) {
-                            fileFields.add(f.getName());
+                            fileFields.add(f);
                         }
                     }
 
@@ -73,16 +74,22 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
                     Class contextClass = FacilioConstants.ContextNames.getClassFromModule(module);
                     for (Map<String, Object> map : maps) {
                         map.put(lookupField.getName(), parentObject);
-                        Map<String, StrutsUploadedFile> fileMap = new HashMap<>();
-                        for (String s : fileFields) {
-                            Object remove = map.remove(s);
+                        Map<FacilioField, StrutsUploadedFile> fileMap = new HashMap<>();
+                        for (FacilioField f : fileFields) {
+                            Object remove = map.remove(f.getName());
                             if (remove != null) {
-                                fileMap.put(s, (StrutsUploadedFile) remove);
+                                fileMap.put(f, (StrutsUploadedFile) remove);
                             }
                         }
                         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(map, contextClass);
-                        for (String key : fileMap.keySet()) {
-                            PropertyUtils.setProperty(moduleRecord, key, fileMap.get(key).getContent());
+                        for (FacilioField field : fileMap.keySet()) {
+                            File file = fileMap.get(field).getContent();
+                            if (field.isDefault()) {
+                                PropertyUtils.setProperty(moduleRecord, field.getName(), file);
+                            }
+                            else {
+                                moduleRecord.setDatum(field.getName(), file);
+                            }
                         }
                         moduleRecord.parseFormData();
                         beanList.add(moduleRecord);
@@ -93,6 +100,84 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
                     recordMap.put(moduleName, beanList);
                 }
 
+                context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
+            }
+            else if (CollectionUtils.isNotEmpty(subFormData)) {
+                Map<String, Object> parentObject = new HashMap<>();
+                parentObject.put("id", record.getId());
+
+                Map<String, List> recordMap = new HashMap<>();
+                String mainModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                FacilioModule mainModule = modBean.getModule(mainModuleName);
+
+                SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+                        .module(mainModule)
+                        .select(modBean.getAllFields(mainModuleName))
+                        .beanClass(FacilioConstants.ContextNames.getClassFromModule(mainModule))
+                        .andCondition(CriteriaAPI.getIdCondition(record.getId(), mainModule));
+                ModuleBaseWithCustomFields updatedRecord = builder.fetchFirst();
+                recordMap.put(mainModuleName, Collections.singletonList(updatedRecord));
+
+
+                for (ModuleBaseWithCustomFields.SubFormDataContext subFormD : subFormData) {
+                    String moduleName = subFormD.getModuleName();
+                    FacilioModule module = modBean.getModule(moduleName);
+                    List<FacilioField> fields = modBean.getAllFields(moduleName);
+
+                    Map<String, LookupField> allLookupFields = getAllLookupFields(modBean, module);
+                    LookupField lookupField = allLookupFields.get(mainModuleName);
+
+                    InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<>()
+                            .module(module)
+                            .fields(fields)
+                            ;
+                    insertRecordBuilder.withChangeSet();
+
+                    boolean moduleWithLocalId = ModuleLocalIdUtil.isModuleWithLocalId(module);
+                    if (moduleWithLocalId) {
+                        insertRecordBuilder.withLocalId();
+                    }
+
+                    List<FacilioField> fileFields = new ArrayList<>();
+                    for (FacilioField f : fields) {
+                        if (f instanceof FileField) {
+                            fileFields.add(f);
+                        }
+                    }
+
+                    List<ModuleBaseWithCustomFields.Data> maps = subFormD.getData();
+                    List<ModuleBaseWithCustomFields> beanList = new ArrayList<>();
+                    Class contextClass = FacilioConstants.ContextNames.getClassFromModule(module);
+                    for (ModuleBaseWithCustomFields.Data datum : maps) {
+                        Map<String, Object> map = datum.getDatumMap();
+
+                        map.put(lookupField.getName(), parentObject);
+                        Map<FacilioField, StrutsUploadedFile> fileMap = new HashMap<>();
+                        for (FacilioField f : fileFields) {
+                            Object remove = map.remove(f.getName());
+                            if (remove != null) {
+                                fileMap.put(f, (StrutsUploadedFile) remove);
+                            }
+                        }
+                        ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(map, contextClass);
+                        for (FacilioField field : fileMap.keySet()) {
+                            File file = fileMap.get(field).getContent();
+                            if (field.isDefault()) {
+                                PropertyUtils.setProperty(moduleRecord, field.getName(), file);
+                            }
+                            else {
+                                moduleRecord.setDatum(field.getName(), file);
+                            }
+                        }
+                        moduleRecord.parseFormData();
+                        beanList.add(moduleRecord);
+                    }
+                    insertRecordBuilder.addRecords(beanList);
+                    insertRecordBuilder.save();
+
+                    recordMap.put(moduleName, beanList);
+                }
                 context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
             }
         }
@@ -118,5 +203,80 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
             }
         }
         return lookupFieldMap;
+    }
+
+    private void sample() {
+//        if (MapUtils.isNotEmpty(subForm)) {
+//            Map<String, List> recordMap = new HashMap<>();
+//            String mainModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+//            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//            FacilioModule mainModule = modBean.getModule(mainModuleName);
+//            SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+//                    .module(mainModule)
+//                    .select(modBean.getAllFields(mainModuleName))
+//                    .beanClass(FacilioConstants.ContextNames.getClassFromModule(mainModule))
+//                    .andCondition(CriteriaAPI.getIdCondition(record.getId(), mainModule));
+//            ModuleBaseWithCustomFields updatedRecord = builder.fetchFirst();
+//            recordMap.put(mainModuleName, Collections.singletonList(updatedRecord));
+//
+//
+//            for (String moduleName : subForm.keySet()) {
+//                FacilioModule module = modBean.getModule(moduleName);
+//                List<FacilioField> fields = modBean.getAllFields(moduleName);
+//
+//                Map<String, LookupField> allLookupFields = getAllLookupFields(modBean, module);
+//                LookupField lookupField = allLookupFields.get(mainModuleName);
+//
+//                InsertRecordBuilder<ModuleBaseWithCustomFields> insertRecordBuilder = new InsertRecordBuilder<>()
+//                        .module(module)
+//                        .fields(fields)
+//                        ;
+//                insertRecordBuilder.withChangeSet();
+//
+//                boolean moduleWithLocalId = ModuleLocalIdUtil.isModuleWithLocalId(module);
+//                if (moduleWithLocalId) {
+//                    insertRecordBuilder.withLocalId();
+//                }
+//
+//                List<FacilioField> fileFields = new ArrayList<>();
+//                for (FacilioField f : fields) {
+//                    if (f instanceof FileField) {
+//                        fileFields.add(f);
+//                    }
+//                }
+//
+//                List<Map<String, Object>> maps = subForm.get(moduleName);
+//                List<ModuleBaseWithCustomFields> beanList = new ArrayList<>();
+//                Class contextClass = FacilioConstants.ContextNames.getClassFromModule(module);
+//                for (Map<String, Object> map : maps) {
+//                    map.put(lookupField.getName(), parentObject);
+//                    Map<FacilioField, StrutsUploadedFile> fileMap = new HashMap<>();
+//                    for (FacilioField f : fileFields) {
+//                        Object remove = map.remove(f.getName());
+//                        if (remove != null) {
+//                            fileMap.put(f, (StrutsUploadedFile) remove);
+//                        }
+//                    }
+//                    ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(map, contextClass);
+//                    for (FacilioField field : fileMap.keySet()) {
+//                        File file = fileMap.get(field).getContent();
+//                        if (field.isDefault()) {
+//                            PropertyUtils.setProperty(moduleRecord, field.getName(), file);
+//                        }
+//                        else {
+//                            moduleRecord.setDatum(field.getName(), file);
+//                        }
+//                    }
+//                    moduleRecord.parseFormData();
+//                    beanList.add(moduleRecord);
+//                }
+//                insertRecordBuilder.addRecords(beanList);
+//                insertRecordBuilder.save();
+//
+//                recordMap.put(moduleName, beanList);
+//            }
+//
+//            context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
+//        }
     }
 }
