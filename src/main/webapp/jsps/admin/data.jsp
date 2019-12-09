@@ -18,13 +18,14 @@
 <%@page import="com.facilio.accounts.dto.Organization"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
+<%@page import="com.facilio.service.FacilioService" %>
 <%
 long receivedTime =0l;
 String receiveddate = "";
 List<Organization> org = null;
 OrgBean bean =  AccountUtil.getOrgBean();
 org = bean.getOrgs();
-List<Map<String , Object>> orgList = AdminAction.getAgentOrgs();
+List<Map<String , Object>> orgList = FacilioService.runAsServiceWihReturn(() -> AdminAction.getOrgsList());
 System.out.println("Select org list is  "+orgList);
 %>
 
