@@ -1,16 +1,6 @@
 
 package com.facilio.bmsconsole.page.factory;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
@@ -34,6 +24,15 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class AssetPageFactory extends PageFactory {
 	
@@ -175,6 +174,27 @@ public class AssetPageFactory extends PageFactory {
 			tab5.addSection(tab5Sec1);
 			
 			addContractWidget(tab5Sec1);
+		}
+
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.INVENTORY)) {
+			if (asset.getRotatingItem() != null && asset.getRotatingItem().getId() > 0) {
+
+				Tab tab9 = page.new Tab("inventory usage");
+				page.addTab(tab9);
+
+				Section tab5Sec1 = page.new Section();
+				tab9.addSection(tab5Sec1);
+				addInventoryTransactionsWidget(tab5Sec1, "itemTransactions");
+			}
+			else if (asset.getRotatingTool() != null && asset.getRotatingTool().getId() > 0) {
+
+				Tab tab9 = page.new Tab("inventory usage");
+				page.addTab(tab9);
+
+				Section tab5Sec1 = page.new Section();
+				tab9.addSection(tab5Sec1);
+				addInventoryTransactionsWidget(tab5Sec1, "toolTransactions");
+			}
 		}
 
 		Tab tab9 = page.new Tab("history", "history");
@@ -399,7 +419,13 @@ public class AssetPageFactory extends PageFactory {
 		contractsWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(contractsWidget);
 	}
-	
+
+	private static void addInventoryTransactionsWidget(Section section, String moduleName) {
+		PageWidget pageWidget = new PageWidget(WidgetType.LIST, moduleName);
+		pageWidget.addToLayoutParams(section, 24, 10);
+		section.addWidget(pageWidget);
+	}
+
 	private static void addSupplyTemperatureChartWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "supplyTemperature");
 		cardWidget.addToLayoutParams(section, 24, 8);
