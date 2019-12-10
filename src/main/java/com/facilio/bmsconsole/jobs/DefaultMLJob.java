@@ -83,7 +83,7 @@ public class DefaultMLJob extends FacilioJob
 			LOGGER.fatal("Error in DefaultMLJob"+e);
 			try{
 				if(fileId > 0){
-					addContent(fileId, e.getMessage()+" in job : JOBID : "+jc.getJobId()+"| JOBNAME : "+jc.getJobName()+"| EXECUTION_TIME : "+jc.getExecutionTime()+"| cause : "+e.getCause()+"| message : "+e.getMessage());
+					addContent(fileId, e.getMessage()+" in job : JOBID : "+jc.getJobId()+"| JOBNAME : "+jc.getJobName()+"| EXECUTION_TIME : "+jc.getExecutionTime()+"| cause : "+e.getCause());
 				}
 			}catch(Exception ex){
 				LOGGER.fatal("Error while adding error mlJobReport"+ex);

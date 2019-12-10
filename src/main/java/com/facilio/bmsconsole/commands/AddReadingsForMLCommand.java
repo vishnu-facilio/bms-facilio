@@ -130,10 +130,10 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 		}
 		catch(Exception e)
 		{
-			LOGGER.fatal("Error in AddReadingsForMLCommand", e);
-//			AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), e.toString());
-			throw e;
+			LOGGER.fatal("Error in AddReadingsForMLCommand"+e);
+			throw new Exception("JAVA error"+e.getCause());
 		}
+		
 		return false;
 	}
 	

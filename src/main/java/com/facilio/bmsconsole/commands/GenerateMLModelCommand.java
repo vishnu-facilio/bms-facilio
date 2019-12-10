@@ -11,6 +11,7 @@ import java.util.SortedMap;
 import java.util.TimeZone;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +35,7 @@ public class GenerateMLModelCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception 
 	{
+		try{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		JSONObject postObj = new JSONObject();
 		postObj.put("ml_id",mlContext.getId());
@@ -101,7 +103,15 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		headers.put("Content-Type", "application/json");
 		LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());
 		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(),300);
+		if(StringUtils.isEmpty(result)){
+			LOGGER.fatal("Error in GenerateMLModelCommand");
+			throw new Exception("ML error : Response from Python is empty");
+		}
 		mlContext.setResult(result);
+	}catch(Exception e){
+		LOGGER.fatal("Error in GenerateMLModelCommand"+e);
+		throw new Exception("JAVA error"+e.getCause());
+	}
 		return false;
  	}
 	

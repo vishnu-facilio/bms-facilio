@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.constants.FacilioConstants;
@@ -16,10 +17,11 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.Operator;
 
 public class ApplyCriteriaForMLCommand extends FacilioCommand {
-
+	private static final Logger LOGGER = Logger.getLogger(ApplyCriteriaForMLCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception 
 	{
+		try{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		if(mlContext.getMLCriteriaVariables()!=null && mlContext.getMLCriteriaVariables().size()>0)
 		{
@@ -94,7 +96,10 @@ public class ApplyCriteriaForMLCommand extends FacilioCommand {
 			}
 			mlContext.setMlVariablesDataMap(criteriaSatisfiedDataMap);
 		}
-		
+		}catch(Exception e){
+			LOGGER.fatal("Error in ApplyCriteriaForMLCommand"+e);
+			throw new Exception("JAVA error"+e.getCause());
+		}
 		return false;
 	}
 

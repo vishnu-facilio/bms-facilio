@@ -19,7 +19,7 @@ public class ApplyRuleForMLCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception 
 	{
-		
+		try{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		executeAnotherJob(mlContext);
 		/*
@@ -30,11 +30,16 @@ public class ApplyRuleForMLCommand extends FacilioCommand {
 			WorkflowRuleAPI.executeScheduledRule(rule, mlContext.getPredictionTime() * 1000 , ruleContext);
 		}
 		*/
+		}catch(Exception e)
+		{
+			LOGGER.fatal("Error in ApplyRuleForMLCommand"+e);
+			throw new Exception("JAVA error"+e.getCause());
+		}
 		return false;
 		
 	}
 	
-	private void executeAnotherJob(MLContext mlContext)
+	private void executeAnotherJob(MLContext mlContext) throws Exception
 	{
 		String jobid = mlContext.getMLModelVariable("jobid");
 		try
@@ -64,6 +69,7 @@ public class ApplyRuleForMLCommand extends FacilioCommand {
 		catch(Exception e)
 		{
 			LOGGER.error("Error while executing job "+jobid,e);
+			throw e;
 		}
 	}
 
