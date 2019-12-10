@@ -116,18 +116,23 @@ public class DataProcessorUtil {
                 eventRules = ruleList;
             }
             try {
-                if (payLoad.containsKey(AgentConstants.VERSION) && (("2".equalsIgnoreCase((String) payLoad.get(AgentConstants.VERSION))))) {
-                    if (dataProcessorV2 != null && isStage) {
-                        LOGGER.info(" newProcessor payload -> " + payLoad);
-                        try {
-                            dataProcessorV2.processNewAgentData(payLoad);
-                        } catch (Exception newProcessorException) {
-                            LOGGER.info("Exception occurred ", newProcessorException);
-                            return false;
+                if(payLoad.containsKey(AgentConstants.VERSION)) {
+                    Object version = payLoad.get(AgentConstants.VERSION);
+                    if (version instanceof String) {
+                        if ( ("2".equalsIgnoreCase((String) version) )){
+                            if (dataProcessorV2 != null && isStage) {
+                                LOGGER.info(" newProcessor payload -> " + payLoad);
+                                try {
+                                    dataProcessorV2.processNewAgentData(payLoad);
+                                } catch (Exception newProcessorException) {
+                                    LOGGER.info("Exception occurred ", newProcessorException);
+                                    return false;
+                                }
+                            }
+                            updateAgentMessage(recordId, MessageStatus.PROCESSED);
+                            return true;
                         }
                     }
-                    updateAgentMessage(recordId,MessageStatus.PROCESSED);
-                    return true;
                 }
             } catch (Exception e) {
                 LOGGER.info("Exception occurred while processing new agent's message", e);
