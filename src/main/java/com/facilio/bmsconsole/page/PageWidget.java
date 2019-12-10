@@ -230,7 +230,8 @@ public class PageWidget {
 		ACTIVITY_WIDGET("activityWidget"),
 		ADDRESS("addressLocation"),
 		RULE_ACTION_WIDGET("ruleActionWidget"),
-		WORK_REQUEST_DETAILS_WIDGET("workRequestDetails")
+		WORK_REQUEST_DETAILS_WIDGET("workRequestDetails"),
+		PORTAL_ACTIVITY("portalActivity")
  		;
 		
 		private String name;

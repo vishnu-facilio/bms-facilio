@@ -61,8 +61,8 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 	}
 	
 	private static void addActivityWidget(Section section) {
-		PageWidget historyWidget = new PageWidget(WidgetType.ACTIVITY);
-		historyWidget.addToLayoutParams(section, 24, 3);
+		PageWidget historyWidget = new PageWidget(WidgetType.PORTAL_ACTIVITY);
+		historyWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(historyWidget);
 	}
 
