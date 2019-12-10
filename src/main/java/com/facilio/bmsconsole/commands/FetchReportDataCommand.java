@@ -343,6 +343,8 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 			String aggrFieldName = ReportUtil.getAggrFieldName(dp.getyAxis().getField(), dp.getyAxis().getAggrEnum());
 			FacilioModule lookupModule = ((LookupField) outerJoinField).getLookupModule();
+			
+			FacilioModule lookupGroupModule = null;
 
 			FacilioField idField;
 			if (LookupSpecialTypeUtil.isSpecialType(lookupModule.getName())) {
@@ -357,11 +359,27 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 			idField.setName(outerJoinField.getName());
 
+			List<FacilioField> selectFields =  new ArrayList<>();
+			selectFields.add(idField);
+			selectFields.add(countField);
+			if(CollectionUtils.isNotEmpty(dp.getGroupByFields())) {
+				for (ReportGroupByField groupByField : dp.getGroupByFields()) {
+					if (groupByField.getField() == null) {
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						groupByField.setField(groupByField.getModule(), modBean.getField(groupByField.getFieldId()));
+					}
+					selectFields.add(groupByField.getField());
+					lookupGroupModule = groupByField.getField().getModule();
+				}
+			}
 			String queryString = newSelectBuilder.constructQueryString();
 			GenericSelectRecordBuilder newSelect = new GenericSelectRecordBuilder()
 					.table(lookupModule.getTableName())
-					.select(Arrays.asList(idField, countField))
-					.leftJoinQuery(queryString, "inn")
+					.select(selectFields);
+					if(lookupGroupModule != null) {
+						newSelect.innerJoin(lookupGroupModule.getTableName());
+					}
+					newSelect.leftJoinQuery(queryString, "inn")
 						.on(lookupModule.getTableName() + "." + idField.getColumnName() + " = inn." + outerJoinField.getName())
 					.andCondition(CriteriaAPI.getCondition(idField.getCompleteColumnName(), idField.getName(), StringUtils.join(dp.getxAxis().getSelectValuesOnly(), ","), NumberOperators.EQUALS))
 					;
@@ -371,6 +389,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			}
 
 			props = newSelect.get();
+			LOGGER.severe("SELECT BUILDER --- "+ newSelect);
 		}
 		else {
 			props = newSelectBuilder.getAsProps();
