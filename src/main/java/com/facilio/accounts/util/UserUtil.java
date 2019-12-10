@@ -122,7 +122,7 @@ public class UserUtil {
 		Criteria finalCriteria = new Criteria();
 		finalCriteria.andCriteria(criteria);
 		finalCriteria.andCriteria(criteria2);
-		Map<Long, Map<String, Object>> userMap = IAMUtil.getUserBean().getUserData(finalCriteria, AccountUtil.getCurrentOrg().getOrgId(), false);
+		Map<Long, Map<String, Object>> userMap = IAMUserUtil.getIAMOrgUserData(finalCriteria, AccountUtil.getCurrentOrg().getOrgId(), false);
 		if(userMap != null) {
 			return userMap.values().stream().findFirst().get();
 		}
