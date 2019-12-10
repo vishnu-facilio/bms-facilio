@@ -372,7 +372,7 @@ public class S3FileStore extends FileStore {
 	public long addSecretFile(String fileName,File file, String contentType) throws Exception {
 		log.info("add secret file called : "+fileName + ":" + file.getPath() + " : "+ contentType);
 		long fileId = addDummySecretFileEntry(fileName);
-		String filePath = SECRET_ROOT_PATH;
+		String filePath = SECRET_ROOT_PATH + File.separator + fileName;
 		long fileSize = file.length();
 		try{
 			PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(),filePath,file);
