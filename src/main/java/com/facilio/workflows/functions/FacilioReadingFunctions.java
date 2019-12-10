@@ -12,8 +12,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -24,10 +26,12 @@ import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.WorkflowReadingContext;
@@ -222,6 +226,25 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 				enumMap = ((EnumField) field).getEnumMap();
 			}
 			return enumMap;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	
+	GET_RDM(5,"getRDM") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
+			
+			return FieldUtil.getAsProperties(ReadingsAPI.getReadingDataMeta(workflowReadingContext.getParentId(), field));
 		};
 		
 		public void checkParam(Object... objects) throws Exception {

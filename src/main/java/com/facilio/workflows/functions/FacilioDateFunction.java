@@ -9,9 +9,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.BaseLineContext.AdjustType;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -647,6 +649,26 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 				return DateTimeUtil.getFormattedTime(ttime);
 			}
 			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	GET_DATE_OPERATOR(32,"getDateOperator") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			String name = objects[0].toString();
+			DateOperators operator = null;
+			if(FacilioUtil.isNumeric(name)) {
+				operator = (DateOperators) Operator.getOperator(Integer.parseInt(name));
+				return operator.getOperator();
+			}
+			else {
+				Map<String, Operator> operators = DateOperators.getAllOperators();
+				operator = (DateOperators) operators.get(name);
+				return operator.getOperatorId();
+			}
 		};
 		public void checkParam(Object... objects) throws Exception {
 
