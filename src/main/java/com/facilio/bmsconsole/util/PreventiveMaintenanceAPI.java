@@ -104,6 +104,26 @@ public class PreventiveMaintenanceAPI {
 
 	public static void populateResourcePlanner(PreventiveMaintenance pm) throws Exception {
 		Map<Long, PMResourcePlannerContext> resourcePlanners = getPMResourcesPlanner(pm.getId());
+		populateResourcePlanner(pm, resourcePlanners);
+	}
+
+	public static void populateResourcePlanner(PreventiveMaintenance pm, Map<Long, PMResourcePlannerContext> resourcePlanners) throws Exception {
+		Collection<PMResourcePlannerContext> resourcePlannerContexts = resourcePlanners.values();
+		WorkorderTemplate workorderTemplate = pm.getWoTemplate();
+		if (workorderTemplate == null) {
+			workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
+		}
+		for (PMResourcePlannerContext resourcePlanner :resourcePlannerContexts) {
+			if (resourcePlanner.getTriggerContexts() == null || resourcePlanner.getTriggerContexts().isEmpty()) {
+				boolean defaultAllTriggers = pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers();
+				resourcePlanner.setTriggerContexts(PreventiveMaintenanceAPI.getDefaultTrigger(defaultAllTriggers, pm.getTriggers()));
+			}
+
+			if (resourcePlanner.getAssignedToId() == null || resourcePlanner.getAssignedToId() == -1L) {
+				resourcePlanner.setAssignedToId(workorderTemplate.getAssignedToId());
+			}
+		}
+
 		Long baseSpaceId = pm.getBaseSpaceId();
 		if (baseSpaceId == null || baseSpaceId < 0) {
 			baseSpaceId = pm.getSiteId();
@@ -116,9 +136,13 @@ public class PreventiveMaintenanceAPI {
 				if(pmResourcePlannerContext.getResourceId() != null && pmResourcePlannerContext.getResourceId() > 0) {
 					pmResourcePlannerContext.setResource(ResourceAPI.getResource(pmResourcePlannerContext.getResourceId()));
 				}
+
+				boolean defaultAllTriggers = pm.getDefaultAllTriggers() != null && pm.getDefaultAllTriggers();
+				pmResourcePlannerContext.setTriggerContexts(PreventiveMaintenanceAPI.getDefaultTrigger(defaultAllTriggers, pm.getTriggers()));
+
 				pmResourcePlannerContext.setPmId(pm.getId());
-				pmResourcePlannerContext.setAssignedToId(-1l);
-				pmResourcePlannerContext.setTriggerContexts(new ArrayList<>());
+				pmResourcePlannerContext.setAssignedToId(workorderTemplate.getAssignedToId());
+
 				pmResourcePlannerContext.setPmResourcePlannerReminderContexts(Collections.emptyList());
 
 				resourcePlanners.put(resourceId, pmResourcePlannerContext);
