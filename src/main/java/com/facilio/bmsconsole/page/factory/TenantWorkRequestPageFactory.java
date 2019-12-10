@@ -37,7 +37,7 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 		tab1.addSection(tab1Sec3);
 		addCommonSubModuleGroup(tab1Sec3);
 		
-		Tab tab2 = page.new Tab("history");
+		Tab tab2 = page.new Tab("activity");
 		page.addTab(tab2);
 		
 		Section tab2Sec1 = page.new Section();
