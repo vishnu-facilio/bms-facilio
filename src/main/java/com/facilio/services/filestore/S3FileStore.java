@@ -37,18 +37,18 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.ImageScaleUtil;
 
 public class S3FileStore extends FileStore {
+	private static Logger log = LogManager.getLogger(S3FileStore.class.getName());
 	private static AmazonS3 AWS_S3_CLIENT = null;
 	private static final String PRIVATE_KEY_FILE_PATH = "/home/ubuntu/pk/pk-APKAJUH5UCWNSYC4DOSQ.pem";
 	private static final long EXPIRATION = 24 * 60* 60 * 1000;
 
+
 	S3FileStore(long orgId, long userId) {
 		super(orgId, userId);
 	}
-	
 	private String bucketName;
 	private String rootPath;
 	private static final String SECRET_ROOT_PATH="secrets";
-	private static Logger log = LogManager.getLogger(S3FileStore.class.getName());
 
 	@Override
 	protected String getRootPath() {
@@ -370,6 +370,7 @@ public class S3FileStore extends FileStore {
 
 	@Override
 	public long addSecretFile(String fileName,File file, String contentType) throws Exception {
+		log.info("add secret file called : "+fileName + ":" + file.getPath() + " : "+ contentType);
 		long fileId = addDummySecretFileEntry(fileName);
 		String filePath = SECRET_ROOT_PATH;
 		long fileSize = file.length();
@@ -402,12 +403,12 @@ public class S3FileStore extends FileStore {
 
 	@Override
 	public boolean isSecretFileExists(String fileName) {
-		//TODO implement isExists
 		return false;
 	}
 
 	@Override
 	public InputStream getSecretFile(String filename) {
+		log.info("get secret file called");
 		S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(),SECRET_ROOT_PATH +File.separator + filename);
 		return so.getObjectContent();
 	}

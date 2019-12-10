@@ -590,10 +590,11 @@ public class AdminAction extends ActionSupport {
 		this.secretFilesList = secretFilesList;
 	}
 	public String addSecretFile() throws Exception {
+		logger.info("Add Secret file called .. ");
 		if (getFileName()!=null && getFile()!=null && getContentType() !=null){
 
 			FileStore fs = FacilioFactory.getFileStore() ;
-			if(fs.isSecretFileExists(getFileName())){
+			if(!fs.isSecretFileExists(getFileName())){
 				FacilioService.runAsService(() ->FacilioFactory.getFileStore().addSecretFile(getFileName(),getFile(),getContentType()));
 			}
 			getSecretFiles();
@@ -602,6 +603,7 @@ public class AdminAction extends ActionSupport {
 		else return "error";
 	}
 	public String deleteSecretFile() throws Exception {
+		logger.info("delete secret file called");
 		if(getFileName()!=null){
 			FacilioService.runAsService(() ->FacilioFactory.getFileStore().removeSecretFile(getFileName()));
 		}
