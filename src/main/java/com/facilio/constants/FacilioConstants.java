@@ -1505,6 +1505,7 @@ public class FacilioConstants {
 			classMap.put(ALARM_OCCURRENCE, AlarmOccurrenceContext.class);
 			classMap.put(BASE_ALARM, BaseAlarmContext.class);
 			classMap.put(NEW_READING_ALARM, ReadingAlarm.class);
+			classMap.put(BASE_EVENT, BaseEventContext.class);
 			classMap.put(READING_EVENT, ReadingEventContext.class);
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
 			classMap.put(VISITOR, VisitorContext.class);
