@@ -143,6 +143,10 @@ public class PageFactory {
 		addChartParams(widget, xFieldName, yFieldName, null, criteria);
 	}
 	
+	protected static void addChartParams(String groupByFieldName,PageWidget widget, String xFieldName, String yFieldName , Criteria criteria) {
+		addChartParams(widget, "line", DateAggregateOperator.MONTHANDYEAR, xFieldName, NumberAggregateOperator.SUM, yFieldName, groupByFieldName , DateOperators.CURRENT_YEAR, null, criteria);
+	}
+	
 	protected static void addChartParams(PageWidget widget, String xFieldName,AggregateOperator xAggr, String yFieldName,AggregateOperator yAggr, Criteria criteria) {
 		addChartParams(widget, "line", xAggr, xFieldName, yAggr, yFieldName, null , DateOperators.CURRENT_YEAR, null, criteria);
 	}

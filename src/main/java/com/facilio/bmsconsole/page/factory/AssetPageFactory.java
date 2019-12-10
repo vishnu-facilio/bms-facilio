@@ -332,7 +332,7 @@ public class AssetPageFactory extends PageFactory {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 11);
 		cardWidget.addCardType(CardType.COST_BREAKUP);
-		addChartParams(cardWidget, "costType", "cost", criteria);
+		addChartParams(null,cardWidget, "costType", "cost", criteria);
 		section.addWidget(cardWidget);
 	}
 	
