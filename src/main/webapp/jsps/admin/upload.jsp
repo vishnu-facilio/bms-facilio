@@ -10,7 +10,7 @@
 <body>
 <%= "GOOGLE_APPLICATION_CREDENTIALS" %>
 <div class = "admin-data-grey">
- <form action = "http://stage.facilio.in/admin/addSecretFile" method = "post"
+ <form action = "https://stage.facilio.in/admin/addSecretFile" method = "post"
          enctype = "multipart/form-data">
          <input type = "file" name = "file" />
          <input type = "text" name = "fileName"/>

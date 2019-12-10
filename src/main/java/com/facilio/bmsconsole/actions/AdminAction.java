@@ -545,8 +545,8 @@ public class AdminAction extends ActionSupport {
 		return fileName;
 	}
 
-	public void setFileName(String fileNamem) {
-		this.fileName = fileNamem;
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 	public String getContentType() {
@@ -591,7 +591,7 @@ public class AdminAction extends ActionSupport {
 	}
 	public String addSecretFile() throws Exception {
 		logger.info("Add Secret file called .. ");
-		logger.info(getFileName() + " : " + getFile().getPath() + " : "+ getContentType());
+		logger.info(getFileName() + " : " + getFile() + " : "+ getContentType());
 		if (getFileName()!=null && getFile()!=null && getContentType() !=null){
 
 			FileStore fs = FacilioFactory.getFileStore() ;
