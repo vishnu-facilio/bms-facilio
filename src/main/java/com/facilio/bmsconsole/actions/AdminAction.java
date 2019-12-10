@@ -591,10 +591,12 @@ public class AdminAction extends ActionSupport {
 	}
 	public String addSecretFile() throws Exception {
 		logger.info("Add Secret file called .. ");
+		logger.info(getFileName() + " : " + getFile().getPath() + " : "+ getContentType());
 		if (getFileName()!=null && getFile()!=null && getContentType() !=null){
 
 			FileStore fs = FacilioFactory.getFileStore() ;
 			if(!fs.isSecretFileExists(getFileName())){
+				logger.info("adding secretFile");
 				FacilioService.runAsService(() ->FacilioFactory.getFileStore().addSecretFile(getFileName(),getFile(),getContentType()));
 			}
 			getSecretFiles();
