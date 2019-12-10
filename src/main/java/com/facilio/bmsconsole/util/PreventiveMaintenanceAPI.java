@@ -267,8 +267,14 @@ public class PreventiveMaintenanceAPI {
 				 
 				 List<TaskContext> tasks = new ArrayList<TaskContext>();
 				 for(TaskTemplate taskTemplate :taskTemplates) {
-					 
-					 List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId(),taskTemplate.getPmIncludeExcludeResourceContexts());
+
+					 List<Long> taskResourceIds = null;
+				 	try {
+						taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId(),taskTemplate.getPmIncludeExcludeResourceContexts());
+					} catch (Exception ex) {
+						LOGGER.log(Level.ERROR, "exception ocurred for task " + taskTemplate.getId() + " section " + taskTemplate.getSectionId());
+						throw ex;
+					}
 
 					 applySectionSettingsIfApplicable(sectiontemplate,taskTemplate);
 					 for(Long taskResourceId :taskResourceIds) {
