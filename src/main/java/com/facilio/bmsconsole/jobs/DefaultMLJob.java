@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.jobs;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,7 +36,13 @@ public class DefaultMLJob extends FacilioJob
 	@Override
 	public void execute(JobContext jc) throws Exception 
 	{	
+		long fileId = -1;
 		try{
+			JSONObject reportProps= getJobProps("MLReportJob");
+
+			if(reportProps.containsKey("fileId") && Long.parseLong(reportProps.get("fileId").toString()) > 0){
+				fileId = Long.parseLong(reportProps.get("fileId").toString());
+			}
 			LOGGER.info("Inside DefaultMLJob, JOB ID :"+jc.getJobId());
 			List<MLContext> mlContextList = MLUtil.getMlContext(jc);
 			List<MLContext> filteredmlContextList = mlContextList.stream().filter(ml->ml!=null).collect(Collectors.toList());
@@ -48,10 +55,8 @@ public class DefaultMLJob extends FacilioJob
 				FacilioContext context = chain.getContext();
 				
 				try{
-					JSONObject reportProps= getJobProps("MLReportJob");
-					if(reportProps.containsKey("fileId") && Long.parseLong(reportProps.get("fileId").toString()) > 0){
-						Long fileId = Long.parseLong(reportProps.get("fileId").toString());
-					    context.put("fileId",  fileId);
+					if(fileId > 0){
+						context.put("fileId",  fileId);
 					    addContent(fileId, "Starting job : JOBID : "+jc.getJobId()+" JOBNAME : "+jc.getJobName()+" MLID : "+mlContext.getId()+" MODELPATH : "+mlContext.getModelPath()+" EXECUTION_TIME : "+jc.getExecutionTime());
 					}
 				}catch(Exception e){
@@ -62,8 +67,7 @@ public class DefaultMLJob extends FacilioJob
 				chain.execute();
 				
 				try{
-					if(context.containsKey("fileId")){
-						Long fileId = Long.parseLong(context.get("fileId").toString());
+					if(fileId > 0){
 						addContent(fileId, "Ending job : JOBID : "+jc.getJobId()+" JOBNAME : "+jc.getJobName()+" EXECUTION_TIME : "+jc.getExecutionTime());
 					}
 				}catch(Exception e){
@@ -74,6 +78,13 @@ public class DefaultMLJob extends FacilioJob
 			LOGGER.info("Finished DefaultMLJob, JOB ID :"+jc.getJobId());
 		}catch(Exception e){
 			LOGGER.fatal("Error in DefaultMLJob"+e);
+			try{
+				if(fileId > 0){
+					addContent(fileId, e.getMessage()+" in job : JOBID : "+jc.getJobId()+" JOBNAME : "+jc.getJobName()+" EXECUTION_TIME : "+jc.getExecutionTime()+" cause : "+e.getCause()+" message : "+e.getMessage());
+				}
+			}catch(Exception ex){
+				LOGGER.fatal("Error while adding error mlJobReport"+ex);
+			}
 		}
 	}
 	public static void addContent(Long fileId,String contentToAdd) throws Exception{
@@ -91,7 +102,8 @@ public class DefaultMLJob extends FacilioJob
 	    sb.append(contentToAdd);
 	    LOGGER.info("Sb after adding"+sb.toString());
 		fs.addFile("ML_JOB_REPORT", sb.toString(), "application/text");
-		LOGGER.info("File replaced successfully");
+		
+		LOGGER.info("File replaced successfully"+new URL(fs.getOrgiFileUrl(fileId)));
 	}
 
 	public static JSONObject getJobProps (String jobName) throws Exception {

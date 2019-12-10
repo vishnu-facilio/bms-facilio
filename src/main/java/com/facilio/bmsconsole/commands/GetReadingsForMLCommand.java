@@ -35,6 +35,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception 
 	{
+		try{
 		LOGGER.info("inside getReadingsforML");
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		List<MLVariableContext> mlVariable = mlContext.getMLVariable();
@@ -173,7 +174,10 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			}
 			mlContext.setMlCriteriaVariablesDataMap(criteriavariableData);
 		}
-		
+		}catch(Exception e){
+			LOGGER.fatal("Error in GetReadingsForMLCommand"+e);
+			throw new Exception("JAVA error"+e.getCause());
+		}
 		return false;
 	}
 

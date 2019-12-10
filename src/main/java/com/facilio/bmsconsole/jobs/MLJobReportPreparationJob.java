@@ -75,7 +75,7 @@ public class MLJobReportPreparationJob extends FacilioJob
 	
 	private void sendMail(Map<String, String> files) throws Exception {
 		// TODO Auto-generated method stub
-		StringBuffer sb = new StringBuffer("\n Report : \n");
+		StringBuffer sb = new StringBuffer("\n");
 		if (FacilioProperties.isProduction()) {
 
 			sb.append("\nOrgId: ")
