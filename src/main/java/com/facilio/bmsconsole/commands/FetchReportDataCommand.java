@@ -55,6 +55,7 @@ import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.report.context.ReportFactory;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportGroupByField;
@@ -363,10 +364,17 @@ public class FetchReportDataCommand extends FacilioCommand {
 			selectFields.add(idField);
 			selectFields.add(countField);
 			if(CollectionUtils.isNotEmpty(dp.getGroupByFields())) {
+				List<String> hardCodeFields =  new ArrayList<>();
+				hardCodeFields.add(ReportFactory.WorkOrder.OPENVSCLOSE_COL);
+				hardCodeFields.add(ReportFactory.WorkOrder.OVERDUE_OPEN_COL);
+				hardCodeFields.add(ReportFactory.WorkOrder.OVERDUE_CLOSED_COL);
+				hardCodeFields.add(ReportFactory.WorkOrder.PLANNED_VS_UNPLANNED_COL);
+				hardCodeFields.add(ReportFactory.WorkOrder.FIRST_RESPONSE_TIME_COL);
+				hardCodeFields.add(ReportFactory.WorkOrder.ESTIMATED_DURATION_COL);
 				for (ReportGroupByField groupByField : dp.getGroupByFields()) {
-					if (groupByField.getField() == null) {
+					if (hardCodeFields.contains(groupByField.getField().getName())) {
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-						groupByField.setField(groupByField.getModule(), modBean.getField(groupByField.getFieldId()));
+						groupByField.getField().setModule(modBean.getModule("Ticket"));
 					}
 					selectFields.add(groupByField.getField());
 					lookupGroupModule = groupByField.getField().getModule();
