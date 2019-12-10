@@ -97,6 +97,7 @@ public class DefaultMLJob extends FacilioJob
 	    URL url = new URL(fs.getOrgiFileUrl(fileId));
 	    LOGGER.info("Getting url for the file"+url);
 	    URLConnection connection = url.openConnection();
+	    connection.setDoOutput(true);
 	    LOGGER.info("Getting the connection"+connection);
 	    String toAdd = URLEncoder.encode(contentToAdd);
 	    LOGGER.info("Encoding the content"+toAdd);
@@ -111,18 +112,18 @@ public class DefaultMLJob extends FacilioJob
 		}
         
         
-        try{
-        String filePath = fs.getFileInfo(fileId).getFilePath();
-        LOGGER.info("Filepath from filestore"+filePath);
-        Path path = Paths.get(filePath);
-        LOGGER.info("path from filepath"+path);
-        byte[] strToBytes = contentToAdd.getBytes();
-        LOGGER.info("content to bytes"+strToBytes);
-        Files.write(path, strToBytes);
-        LOGGER.info("Writing in the file");
-        }catch(Exception e){
-        	LOGGER.fatal("Error in addcontent in path"+e);
-        }
+//        try{
+//        String filePath = fs.getFileInfo(fileId).getFilePath();
+//        LOGGER.info("Filepath from filestore"+filePath);
+//        Path path = Paths.get(filePath);
+//        LOGGER.info("path from filepath"+path);
+//        byte[] strToBytes = contentToAdd.getBytes();
+//        LOGGER.info("content to bytes"+strToBytes);
+//        Files.write(path, strToBytes);
+//        LOGGER.info("Writing in the file");
+//        }catch(Exception e){
+//        	LOGGER.fatal("Error in addcontent in path"+e);
+//        }
         
 	}
 
