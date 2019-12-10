@@ -56,6 +56,7 @@ public class GenericImportDataLogJob extends InstantJob{
 			
 		} catch(Exception e) {
 			String message;
+			boolean sendExceptionEmail = false;
 			if(e instanceof ImportAssetMandatoryFieldsException) {
 				ImportAssetMandatoryFieldsException importFieldException = (ImportAssetMandatoryFieldsException) e;
 				message = importFieldException.getClientMessage();
@@ -68,6 +69,7 @@ public class GenericImportDataLogJob extends InstantJob{
 				message = importParseException.getClientMessage();
 			}
 			else {
+				sendExceptionEmail = true;
 				message = e.getMessage();
 			}
 			try {
@@ -88,7 +90,9 @@ public class GenericImportDataLogJob extends InstantJob{
 			} catch(Exception a) {
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			}
-			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- " + AccountUtil.getCurrentOrg().getId(), e);
+			if (sendExceptionEmail) {
+				CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- " + AccountUtil.getCurrentOrg().getId(), e);
+			}
 			log.info("Exception occurred ", e);
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}

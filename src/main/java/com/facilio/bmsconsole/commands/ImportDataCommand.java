@@ -23,6 +23,7 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 	private Long jobId;
 	private String exceptionMessage = null;
 	private StackTraceElement[] stack = null;
+	private boolean sendExceptionMail = false;
 
 	@Override
 	public boolean executeCommand(Context commandContext) throws Exception {
@@ -80,6 +81,7 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 				ImportAssetMandatoryFieldsException importAssetMandExp = (ImportAssetMandatoryFieldsException) exception;
 				exceptionMessage = importAssetMandExp.getClientMessage();
 			} else {
+				sendExceptionMail = true;
 				exceptionMessage = exception.getMessage();
 			}
 			stack = exception.getStackTrace();
@@ -112,8 +114,10 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 			if (stack != null) {
 				mailExp.setStackTrace(stack);
 			}
-			CommonCommandUtil.emailException("Import Failed",
-					"Import failed - orgid -- " + AccountUtil.getCurrentOrg().getId(), mailExp);
+			if (sendExceptionMail) {
+				CommonCommandUtil.emailException("Import Failed",
+						"Import failed - orgid -- " + AccountUtil.getCurrentOrg().getId(), mailExp);
+			}
 			LOGGER.log(Level.SEVERE, exceptionMessage);
 
 			

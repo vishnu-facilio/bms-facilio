@@ -58,8 +58,8 @@ public class ImportReadingLogJob extends InstantJob{
 			
 		
 		}catch(Exception e) {
-			String Message;
 			String message;
+			boolean sendExceptionEmail = false;
 			e.printStackTrace();
 			LOGGER.severe(e.toString());
 			if(e instanceof ImportParseException) {
@@ -71,6 +71,7 @@ public class ImportReadingLogJob extends InstantJob{
 				message= timeException.getClientMessage();
 			}
 			else {
+				sendExceptionEmail = true;
 				message = e.getMessage();
 			}
 			
@@ -100,8 +101,9 @@ public class ImportReadingLogJob extends InstantJob{
 			
 			pubsub.publishImportStatusChange(importProcessContext.getOrgId(), importProcessContext.getId(), parseError);
 			
-			
-			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
+			if (sendExceptionEmail) {
+				CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- " + AccountUtil.getCurrentOrg().getId(), e);
+			}
 			log.info("Exception occurred ", e);
 			LOGGER.severe(e.getMessage());
 		}
