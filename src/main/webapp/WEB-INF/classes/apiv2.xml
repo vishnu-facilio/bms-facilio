@@ -1808,6 +1808,7 @@
 		<action name="fetchReportWithData"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReportWithData">
+			<param name="cacheUrl">true</param>
 		</action>
 		<action name="deleteReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
