@@ -749,7 +749,16 @@
 			<param name="parentId">{1}</param>
 		</action>
 	</package>
-	
+	<package name="vendorStoreRoomListApiv2"
+		namespace="/api/service/v2/storeRoom/view" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.StoreRoomAction"
+			method="storeRoomList">
+			<param name="moduleName">inventory</param>
+			<param name="permission">READ,READ_OWN</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	<package name="VendorworkorderToolsApi"
 		namespace="/api/service/v2/workorderTools" extends="newServicePortalApiV2">
 		<action name="delete"
