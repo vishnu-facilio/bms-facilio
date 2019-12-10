@@ -1,9 +1,12 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,7 +60,7 @@ public class DefaultMLJob extends FacilioJob
 				try{
 					if(fileId > 0){
 						context.put("fileId",  fileId);
-					    addContent(fileId, "Starting job : JOBID : "+jc.getJobId()+" JOBNAME : "+jc.getJobName()+" MLID : "+mlContext.getId()+" MODELPATH : "+mlContext.getModelPath()+" EXECUTION_TIME : "+jc.getExecutionTime());
+					    addContent(fileId, "Starting job : JOBID : "+jc.getJobId()+"| JOBNAME : "+jc.getJobName()+"| MLID : "+mlContext.getId()+"| MODELPATH : "+mlContext.getModelPath()+"| EXECUTION_TIME : "+jc.getExecutionTime());
 					}
 				}catch(Exception e){
 					LOGGER.fatal("Error while writing job start in mlJobReport"+e);
@@ -68,7 +71,7 @@ public class DefaultMLJob extends FacilioJob
 				
 				try{
 					if(fileId > 0){
-						addContent(fileId, "Ending job : JOBID : "+jc.getJobId()+" JOBNAME : "+jc.getJobName()+" EXECUTION_TIME : "+jc.getExecutionTime());
+						addContent(fileId, "Ending job : JOBID : "+jc.getJobId()+"| JOBNAME : "+jc.getJobName()+"| MLID : "+mlContext.getId()+"| MODELPATH : "+mlContext.getModelPath()+"| EXECUTION_TIME : "+jc.getExecutionTime());
 					}
 				}catch(Exception e){
 					LOGGER.fatal("Error while ending job start in mlJobReport"+e);
@@ -80,7 +83,7 @@ public class DefaultMLJob extends FacilioJob
 			LOGGER.fatal("Error in DefaultMLJob"+e);
 			try{
 				if(fileId > 0){
-					addContent(fileId, e.getMessage()+" in job : JOBID : "+jc.getJobId()+" JOBNAME : "+jc.getJobName()+" EXECUTION_TIME : "+jc.getExecutionTime()+" cause : "+e.getCause()+" message : "+e.getMessage());
+					addContent(fileId, e.getMessage()+" in job : JOBID : "+jc.getJobId()+"| JOBNAME : "+jc.getJobName()+"| EXECUTION_TIME : "+jc.getExecutionTime()+"| cause : "+e.getCause()+"| message : "+e.getMessage());
 				}
 			}catch(Exception ex){
 				LOGGER.fatal("Error while adding error mlJobReport"+ex);
@@ -88,22 +91,39 @@ public class DefaultMLJob extends FacilioJob
 		}
 	}
 	public static void addContent(Long fileId,String contentToAdd) throws Exception{
-		FileStore fs = FacilioFactory.getFileStore();
-		InputStream inputStream = fs.readFile(fileId);
-		LOGGER.info("File readed");
-		InputStreamReader isReader = new InputStreamReader(inputStream);
-	    BufferedReader reader = new BufferedReader(isReader);
-	    StringBuffer sb = new StringBuffer();
-	    String str;
-	    while((str = reader.readLine())!= null){
-	       sb.append(str);
-	    }
-	    LOGGER.info("Sb before adding"+sb.toString());
-	    sb.append(contentToAdd);
-	    LOGGER.info("Sb after adding"+sb.toString());
-		fs.addFile("ML_JOB_REPORT", sb.toString(), "application/text");
 		
-		LOGGER.info("File replaced successfully"+new URL(fs.getOrgiFileUrl(fileId)));
+		FileStore fs = FacilioFactory.getFileStore();
+		try{
+	    URL url = new URL(fs.getOrgiFileUrl(fileId));
+	    LOGGER.info("Getting url for the file"+url);
+	    URLConnection connection = url.openConnection();
+	    LOGGER.info("Getting the connection"+connection);
+	    String toAdd = URLEncoder.encode(contentToAdd);
+	    LOGGER.info("Encoding the content"+toAdd);
+	    PrintStream outStream = new PrintStream(connection.getOutputStream());
+	    LOGGER.info("Creating Outstream"+outStream);
+        outStream.println(toAdd);
+        LOGGER.info("Added new line in Outstream");
+        outStream.close();
+        LOGGER.info("Outstream closed");
+		}catch(Exception e){
+			LOGGER.fatal("Error in addcontent in url"+e);
+		}
+        
+        
+        try{
+        String filePath = fs.getFileInfo(fileId).getFilePath();
+        LOGGER.info("Filepath from filestore"+filePath);
+        Path path = Paths.get(filePath);
+        LOGGER.info("path from filepath"+path);
+        byte[] strToBytes = contentToAdd.getBytes();
+        LOGGER.info("content to bytes"+strToBytes);
+        Files.write(path, strToBytes);
+        LOGGER.info("Writing in the file");
+        }catch(Exception e){
+        	LOGGER.fatal("Error in addcontent in path"+e);
+        }
+        
 	}
 
 	public static JSONObject getJobProps (String jobName) throws Exception {
