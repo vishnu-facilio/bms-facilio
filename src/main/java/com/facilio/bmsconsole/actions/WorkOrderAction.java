@@ -246,6 +246,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.DO_NOT_EXECUTE, getDoNotExecute());
+		context.put(ContextNames.LIMIT_VALUE, getLimit());
 		FacilioChain chain = TransactionChainFactory.openUnOpenedPMs();
 		chain.execute(context);
 		List<Long> workOrders = (List<Long>) context.get(ContextNames.WORK_ORDER_LIST);
@@ -2723,7 +2724,19 @@ public class WorkOrderAction extends FacilioAction {
 		return doNotExecute;
 	}
 
+	private int limit = -1;
+
+
+
 	public void setDoNotExecute(Boolean doNotExecute) {
 		this.doNotExecute = doNotExecute;
+	}
+
+	public int getLimit() {
+		return limit;
+	}
+
+	public void setLimit(int limit) {
+		this.limit = limit;
 	}
 }

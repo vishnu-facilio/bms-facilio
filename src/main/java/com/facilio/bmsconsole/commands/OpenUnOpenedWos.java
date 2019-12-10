@@ -44,6 +44,8 @@ public class OpenUnOpenedWos extends FacilioCommand {
             throw new IllegalArgumentException("Missing startTime");
         }
 
+        Integer limit = (Integer) context.get(FacilioConstants.ContextNames.LIMIT_VALUE);
+
         SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
         selectRecordsBuilder.select(fields)
                 .module(module)
@@ -53,6 +55,9 @@ public class OpenUnOpenedWos extends FacilioCommand {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(maxTime), NumberOperators.LESS_THAN))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(startTime), NumberOperators.GREATER_THAN))
                 .andCustomWhere("WorkOrders.PM_ID IS NOT NULL");
+        if (limit != null && limit > 0) {
+            selectRecordsBuilder.limit(limit);
+        }
 
         List<WorkOrderContext> wos = selectRecordsBuilder.get();
 
@@ -64,6 +69,7 @@ public class OpenUnOpenedWos extends FacilioCommand {
 
         context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrderIds);
         Boolean doNotExecute = (Boolean) context.get(FacilioConstants.ContextNames.DO_NOT_EXECUTE);
+
         if (doNotExecute != null && doNotExecute) {
             return false;
         }
