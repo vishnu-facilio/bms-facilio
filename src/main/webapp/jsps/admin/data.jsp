@@ -25,7 +25,7 @@ String receiveddate = "";
 List<Organization> org = null;
 OrgBean bean =  AccountUtil.getOrgBean();
 org = bean.getOrgs();
-List<Map<String , Object>> orgList = FacilioService.runAsServiceWihReturn(() -> AdminAction.getOrgsList());
+List<Map<String , Object>> orgList = AdminAction.getOrgsList());
 System.out.println("Select org list is  "+orgList);
 %>
 

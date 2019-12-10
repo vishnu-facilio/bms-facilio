@@ -43,7 +43,7 @@ public class FacilioFileStore extends FileStore {
 		long fileId = addDummyFileEntry(fileName);
 		byte[] contentInBytes = Files.readAllBytes(file.toPath());
 		try {
-			return addFile(fileId, fileName, contentInBytes, contentType,false);
+			return addFile(fileId, fileName, contentInBytes, contentType);
 		} catch (Exception e){
 			return -1;
 		}
@@ -58,24 +58,50 @@ public class FacilioFileStore extends FileStore {
 	public long addFile(String fileName, String content, String contentType) throws Exception {
 		long fileId = addDummyFileEntry(fileName);
 		try {
-			return addFile(fileId, fileName, content.getBytes(), contentType,false);
+			return addFile(fileId, fileName, content.getBytes(), contentType);
 		} catch (Exception e){
 			return -1;
 		}
 	}
+	private long addSecretFile(long fileId, String fileName, byte[] content, String contentType) throws Exception
+	{
+		HttpUtil httpConn;
+		httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
 
-	private long addFile(long fileId, String fileName, byte[] content, String contentType,boolean isSecretFile) throws Exception {
+
+		httpConn.addFormField("fileId", fileId + "");
+		httpConn.addFormField("fileName", fileName);
+		httpConn.addFormField("contentType", contentType);
+
+		httpConn.addFilePart("fileContent", fileName, content);
+
+		Map<String, Object> response = httpConn.finish();
+
+		Integer statusCode = (Integer) response.get("status");
+
+		if (statusCode == 200) {
+			String filePath;
+
+				filePath = "secrets"+ File.separator + "files" + File.separator + fileName;
+				updateSecretFileEntry(fileId, fileName, filePath, content.length, contentType);
+				return fileId;
+
+
+		} else {
+
+				deleteSecretFileEntry(fileId);
+			return -1;
+		}
+	}
+
+	private long addFile(long fileId, String fileName, byte[] content, String contentType) throws Exception {
 
 		HttpUtil httpConn;
-		if (isSecretFile) {
 
-			httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
-		}
-		else{
 			httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/secrets/put");
 			httpConn.addFormField("orgId", getOrgId() + "");
 
-		}
+
 		httpConn.addFormField("fileId", fileId + "");
 		httpConn.addFormField("fileName", fileName);
 		httpConn.addFormField("contentType", contentType);
@@ -88,22 +114,16 @@ public class FacilioFileStore extends FileStore {
 		
 		if (statusCode == 200) {
 			String filePath;
-			if(isSecretFile){
-				filePath = "secrets"+ File.separator + "files" + File.separator + fileName;
-				updateSecretFileEntry(fileId, fileName, filePath, content.length, contentType);
-				return fileId;
-			}else {
+
 				filePath = getOrgId() + File.separator + "files" + File.separator + fileName;
 				updateFileEntry(fileId, fileName, filePath, content.length, contentType);
 				return fileId;
-			}
+
 			
 		} else {
-			if (isSecretFile){
-				deleteSecretFileEntry(fileId);
-			}else {
+
 				deleteFileEntry(fileId);
-			}
+
 			return -1;
 		}
 	}
@@ -277,13 +297,13 @@ public class FacilioFileStore extends FileStore {
 	@Override
 	public long addSecretFile(String fileName, File file, String contentType) throws Exception {
 		long fileId = addDummySecretFileEntry(fileName);
-		return addFile(fileId,fileName,Files.readAllBytes(file.toPath()),contentType,true);
+		return addSecretFile(fileId,fileName,Files.readAllBytes(file.toPath()),contentType);
 
 	}
 
 	@Override
 	public InputStream getSecretFile(String fileName) throws Exception {
-		FileInfo fileInfo = getSecretFileInfo(fileName);
+		FileInfo fileInfo = SecretFileUtils.getSecretFileInfo(fileName);
 		String url = FacilioProperties.getConfig("files.url")+"/api/file/secret/get?"+"&fileName="+URLEncoder.encode(fileName, "UTF-8")+"&fileId="+fileInfo.getFileId()+"&contentType="+fileInfo.getContentType();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -302,24 +322,21 @@ public class FacilioFileStore extends FileStore {
 		}
 		return null;
 	}
-	private FileInfo getSecretFileInfo(String fileName) throws Exception {
-		FileInfo fileInfo = new FileInfo();
-		fileInfo.setFileName(fileName);
-		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getSecretFileModule().getTableName())
-				.select(FieldFactory.getSecretFileFields())
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSecretFileIdField(),fileName, StringOperators.IS));
-		Map<String, Object> row =selectRecordBuilder.get().get(0);
-		if (row.containsKey("fileId")) fileInfo.setFileId(Long.parseLong(row.get("fileId").toString()));
-		if (row.containsKey("contentType")) fileInfo.setContentType(row.get("contentType").toString());
-		if (row.containsKey("fileSize")) fileInfo.setFileSize(Long.parseLong (row.get("fileSize").toString()));
-		if (row.containsKey("filePath")) fileInfo.setFilePath(row.get("filePath").toString());
 
-		return fileInfo;
-	}
 
 	@Override
-	public boolean removeSecretFile(String tag) {
+	public boolean removeSecretFile(String tag) throws Exception {
+		FileInfo fileInfo = SecretFileUtils.getSecretFileInfo(tag);
+		HttpUtil httpConn;
+		httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/secrets/delete");
+
+
+		httpConn.addFormField("fileId", fileInfo.getFileId() + "");
+		Map<String, Object> response = httpConn.finish();
+		if (response.get("status").toString().equals("200")){
+			deleteSecretFileEntry(fileInfo.getFileId());
+			return true;
+		}
 		return false;
 	}
 

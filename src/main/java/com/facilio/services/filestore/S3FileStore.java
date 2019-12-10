@@ -394,8 +394,9 @@ public class S3FileStore extends FileStore {
 
 
 	@Override
-	public boolean removeSecretFile(String fileName) {
-		//TODO implement remove secret files
+	public boolean removeSecretFile(String fileName) throws Exception {
+		FileInfo fileInfo = SecretFileUtils.getSecretFileInfo(fileName);
+		AwsUtil.getAmazonS3Client().deleteObject(bucketName,SECRET_ROOT_PATH+File.separator+fileInfo.getFileName());
 		return false;
 	}
 

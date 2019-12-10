@@ -17,6 +17,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FieldType;
 import org.apache.commons.codec.binary.Base64;
 
 import com.facilio.accounts.dto.User;
@@ -606,10 +607,10 @@ public abstract class FileStore {
 	public abstract boolean isFileExists(String newVersion);
 
 	public long addDummySecretFileEntry(String filename) throws Exception {
-		//TODO
+		System.out.println("addDummy called");
 		Map<String, Object> record = new HashMap<>();
 		record.put("fileName",filename);
-		record.put("uploadTime", System.currentTimeMillis());
+		record.put("uploadedTime", System.currentTimeMillis());
 		long id =new GenericInsertRecordBuilder().table(ModuleFactory.getSecretFileModule().getTableName())
 				.fields((List<FacilioField>) FieldFactory.getSecretFileFields())
 				.insert(record);
@@ -619,14 +620,23 @@ public abstract class FileStore {
 
 	public void updateSecretFileEntry(long fileId, String fileName, String filePath, long fileSize, String contentType) throws SQLException {
 		//TODO
+
+		List <FacilioField> fields = new ArrayList<>();
+				fields.add(FieldFactory.getField("fileName","FILE_NAME", FieldType.STRING));
+				fields.add(FieldFactory.getField("filePath","FILE_PATH", FieldType.STRING));
+				fields.add(FieldFactory.getField("fileSize","FILE_SIZE", FieldType.NUMBER));
+				fields.add(FieldFactory.getField("contentType","CONTENT_TYPE", FieldType.STRING));
 		Map<String, Object> fieldsToUpdate = new HashMap<>();
 		fieldsToUpdate.put("fileName", fileName);
 		fieldsToUpdate.put("filePath", filePath);
 		fieldsToUpdate.put("fileSize", fileSize);
 		fieldsToUpdate.put("contentType", contentType);
+		System.out.println("testing update secretFileEntry");
+		System.out.println(fileId + " : "+fileName + " : "+filePath + " : "+fileSize + " : " + contentType) ;
 		new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getSecretFileModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSecretFileIdField(), Collections.singleton(fileId), NumberOperators.EQUALS))
+				.fields(fields)
 				.update(fieldsToUpdate);
 	}
 	void deleteSecretFileEntry(long fieldId) {
@@ -668,7 +678,7 @@ public abstract class FileStore {
 
 	public abstract InputStream getSecretFile(String tag) throws Exception;
 
-	public abstract boolean removeSecretFile(String tag);
+	public abstract boolean removeSecretFile(String tag) throws Exception;
 
 
 	public abstract boolean isSecretFileExists(String fileName);

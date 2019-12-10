@@ -115,7 +115,7 @@ public class FieldFactory {
 		fields.add(getField("filePath","FILE_PATH",module,FieldType.STRING));
 		fields.add(getField("fileSize","FILE_SIZE",module,FieldType.NUMBER));
 		fields.add(getField("contentType","CONTENT_TYPE",module,FieldType.STRING));
-		fields.add(getField("uploadTime","UPLOADED_TIME",module,FieldType.NUMBER));
+		fields.add(getField("uploadedTime","UPLOADED_TIME",module,FieldType.NUMBER));
 		fields.add(getField("isDeleted","IS_DELETED",module,FieldType.BOOLEAN));
 
 
@@ -124,6 +124,9 @@ public class FieldFactory {
 
 	public static FacilioField getSecretFileIdField() {
 		return getField("fileId","FILE_ID", ModuleFactory.getSecretFileModule(),FieldType.NUMBER);
+	}
+	public static FacilioField getSecretFileNameField() {
+		return getField("fileName","FILE_NAME", ModuleFactory.getSecretFileModule(),FieldType.STRING);
 	}
 
 	public static class Fields {

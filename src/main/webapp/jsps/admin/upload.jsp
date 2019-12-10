@@ -10,9 +10,11 @@
 <body>
 <%= "GOOGLE_APPLICATION_CREDENTIALS" %>
 <div class = "admin-data-grey">
- <form action = "https://stage.facilio.in/admin/uploadGoogleCredential" method = "post"
+ <form action = "http://localhost:8080/admin/addSecretFile" method = "post"
          enctype = "multipart/form-data">
-         <input type = "file" accept=".json" name = "file" />
+         <input type = "file" name = "file" />
+         <input type = "text" name = "fileName"/>
+         <input type = "text" name = "contentType"/>
          <br />
          <input type = "submit" value = "Upload File" />
       </form>

@@ -71,7 +71,7 @@ public class AdminAction extends ActionSupport {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(AdminAction.class.getName());
 	private static org.apache.log4j.Logger log = org.apache.log4j.LogManager.getLogger(AdminAction.class.getName());
-	public static JSONObject secretFilesList;
+	private org.json.simple.JSONArray secretFilesList = new org.json.simple.JSONArray();
 	public String show() {
 		return SUCCESS;
 	}
@@ -565,12 +565,6 @@ public class AdminAction extends ActionSupport {
 		this.file = file;
 	}
 
-	public void uploadSecretFiles() throws Exception {
-		FileStore fs = FacilioFactory.getFileStore() ;
-		if(fs.isSecretFileExists(getFileName())){
-			FacilioFactory.getFileStore().addSecretFile(getFileName(),getFile(),getContentType());
-		}
-	}
 	public String getSecretFiles() throws Exception {
 		List<FileInfo> list =FacilioFactory.getFileStore().listSecretFiles();
 		org.json.simple.JSONArray jsonArray = new org.json.simple.JSONArray();
@@ -580,12 +574,38 @@ public class AdminAction extends ActionSupport {
 			jsonObject.put("fileName",fileInfo.getFileName());
 			jsonObject.put("fileSize",fileInfo.getFileSize());
 			jsonObject.put("contentType",fileInfo.getContentType());
-			jsonArray.add(jsonArray);
+			jsonArray.add(jsonObject);
 		}
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("secretFiles",jsonArray);
-		secretFilesList= jsonObject;
+
+		secretFilesList=jsonArray;
+
 		return SUCCESS;
 	}
 
+	public org.json.simple.JSONArray getSecretFilesList() {
+		return secretFilesList;
+	}
+
+	public void setSecretFilesList(org.json.simple.JSONArray secretFilesList) {
+		this.secretFilesList = secretFilesList;
+	}
+	public String addSecretFile() throws Exception {
+		if (getFileName()!=null && getFile()!=null && getContentType() !=null){
+
+			FileStore fs = FacilioFactory.getFileStore() ;
+			if(fs.isSecretFileExists(getFileName())){
+				FacilioFactory.getFileStore().addSecretFile(getFileName(),getFile(),getContentType());
+			}
+			getSecretFiles();
+			return SUCCESS;
+		}
+		else return "error";
+	}
+	public String deleteSecretFile() throws Exception {
+		if(getFileName()!=null){
+			FacilioFactory.getFileStore().removeSecretFile(getFileName());
+		}
+		getSecretFiles();
+		return SUCCESS;
+	}
 }

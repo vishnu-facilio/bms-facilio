@@ -2,19 +2,25 @@ package com.facilio.services.filestore;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.math.raw.Mod;
 
 public class LocalFileStore extends FileStore {
 
@@ -154,7 +160,6 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 		if (fileInfo == null) {
 			return null;
 		}
-		
 		return new FileInputStream(new File(fileInfo.getFilePath()));
 	}
 
@@ -207,20 +212,24 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	}
 	@Override
 	public long addSecretFile(String fileName, File file, String contentType) throws Exception {
-		long fileId = addDummyFileEntry(fileName);
+		long fileId = addDummySecretFileEntry(fileName);
 		String filePath = "secrets" + File.separator +fileName;
 		long fileSize = file.length();
-
 		InputStream is = null;
 		OutputStream os = null;
 		try {
 			File createFile = new File(filePath);
-			createFile.createNewFile();
+			File secretsDir = new File("secrets");
+			if (secretsDir.exists() && secretsDir.isDirectory()) {
+				createFile.createNewFile();
 
-
+			}else{
+				Files.createDirectory(Paths.get("secrets"));
+				createFile.createNewFile();
+			}
 			is = new FileInputStream(file);
 			os = new FileOutputStream(createFile);
-			byte[] buffer = new byte[4096];
+			byte[] buffer = new byte[1024];
 			int length;
 			while ((length = is.read(buffer)) > 0) {
 				os.write(buffer, 0, length);
@@ -240,33 +249,25 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 
 	@Override
 	public InputStream getSecretFile(String fileName) throws Exception {
-		FileInfo fileInfo = getSecretFileInfo(fileName);
+		FileInfo fileInfo = SecretFileUtils.getSecretFileInfo(fileName);
 		return readFile(fileInfo);
 	}
 
-	private FileInfo getSecretFileInfo(String fileName) throws Exception {
-		FileInfo fileInfo = new FileInfo();
-		fileInfo.setFileName(fileName);
-		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getSecretFileModule().getTableName())
-				.select(FieldFactory.getSecretFileFields())
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSecretFileIdField(),fileName, StringOperators.IS));
-		Map<String, Object> row =selectRecordBuilder.get().get(0);
-		if (row.containsKey("fileId")) fileInfo.setFileId(Long.parseLong(row.get("fileId").toString()));
-		if (row.containsKey("contentType")) fileInfo.setContentType(row.get("contentType").toString());
-		if (row.containsKey("fileSize")) fileInfo.setFileSize(Long.parseLong (row.get("fileSize").toString()));
-		if (row.containsKey("filePath")) fileInfo.setFilePath(row.get("filePath").toString());
 
-		return fileInfo;
-	}
 
 	@Override
-	public boolean removeSecretFile(String tag) {
-		return false;
+	public boolean removeSecretFile(String tag) throws Exception {
+		FileInfo fileInfo =SecretFileUtils.getSecretFileInfo(tag);
+		if (fileInfo==null) return false;
+		Files.delete(Paths.get(fileInfo.getFilePath()));
+		new GenericDeleteRecordBuilder().table(ModuleFactory.getSecretFileModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSecretFileIdField(), Collections.singleton(fileInfo.getFileId()), NumberOperators.EQUALS))
+				.delete();
+		return SecretFileUtils.getSecretFileInfo(tag)==null;
 	}
 
 	@Override
 	public boolean isSecretFileExists(String fileName) {
-		return false;
+		return true;
 	}
 }

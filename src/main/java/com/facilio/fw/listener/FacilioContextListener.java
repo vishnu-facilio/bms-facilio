@@ -184,7 +184,8 @@ public class FacilioContextListener implements ServletContextListener {
 	private void downloadGoogleAppCredentials() throws Exception {
 		InputStream inputStream = FacilioFactory.getFileStore().getSecretFile("GOOGLE_APP_CREDENTIALS");
 		File secretsDir = new File("/tmp/secrets");
-		if (!secretsDir.exists()) if(secretsDir.mkdir()) {
+		if (!secretsDir.exists())
+			secretsDir.mkdir();
 
 			File file = new File("/tmp/secrets/google_app_credentials.json");
 			try (FileOutputStream outputStream = new FileOutputStream(file)) {
@@ -199,7 +200,7 @@ public class FacilioContextListener implements ServletContextListener {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+
 	}
 
 	private void registerMBeans() {

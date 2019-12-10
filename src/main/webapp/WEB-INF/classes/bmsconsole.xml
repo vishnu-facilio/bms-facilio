@@ -1138,12 +1138,25 @@
 			</action>
 			<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method ="addAgentVersion">
 			</action>
-		<action name="uploadSecretFiles" class="com.facilio.bmsconsole.actions.AdminAction" method ="uploadSecretFiles">
+		<action name="uploadSecretFilesPage" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/upload.jsp</result>
 		</action>
+
+		<action name="addSecretFile" class="com.facilio.bmsconsole.actions.AdminAction" method ="addSecretFile">
+			<result name="error">500</result>
+			<result name ="success" type="json">
+				<param name="includeProperties">^secretFilesList.*</param>
+			</result>
+		</action>
+
 		<action name="getSecretFiles" class="com.facilio.bmsconsole.actions.AdminAction" method ="getSecretFiles">
 			<result name ="success" type="json">
-				<param name="includeProperties">secretFilesList</param>
+				<param name="includeProperties">^secretFilesList.*</param>
+			</result>
+		</action>
+		<action name="deleteSecretFile" class="com.facilio.bmsconsole.actions.AdminAction" method ="deleteSecretFile">
+			<result name ="success" type="json">
+				<param name="includeProperties">^secretFilesList.*</param>
 			</result>
 		</action>
 	</package>
