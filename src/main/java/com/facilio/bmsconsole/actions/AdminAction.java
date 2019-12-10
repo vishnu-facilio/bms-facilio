@@ -566,7 +566,7 @@ public class AdminAction extends ActionSupport {
 	}
 
 	public String getSecretFiles() throws Exception {
-		List<FileInfo> list =FacilioFactory.getFileStore().listSecretFiles();
+		List<FileInfo> list =FacilioService.runAsServiceWihReturn(()->FacilioFactory.getFileStore().listSecretFiles());
 		org.json.simple.JSONArray jsonArray = new org.json.simple.JSONArray();
 		for (FileInfo fileInfo: list){
 			JSONObject jsonObject = new JSONObject();
@@ -594,7 +594,7 @@ public class AdminAction extends ActionSupport {
 
 			FileStore fs = FacilioFactory.getFileStore() ;
 			if(fs.isSecretFileExists(getFileName())){
-				FacilioFactory.getFileStore().addSecretFile(getFileName(),getFile(),getContentType());
+				FacilioService.runAsService(() ->FacilioFactory.getFileStore().addSecretFile(getFileName(),getFile(),getContentType()));
 			}
 			getSecretFiles();
 			return SUCCESS;
@@ -603,7 +603,7 @@ public class AdminAction extends ActionSupport {
 	}
 	public String deleteSecretFile() throws Exception {
 		if(getFileName()!=null){
-			FacilioFactory.getFileStore().removeSecretFile(getFileName());
+			FacilioService.runAsService(() ->FacilioFactory.getFileStore().removeSecretFile(getFileName()));
 		}
 		getSecretFiles();
 		return SUCCESS;
