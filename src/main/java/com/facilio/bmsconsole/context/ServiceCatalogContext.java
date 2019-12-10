@@ -80,6 +80,14 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
         this.moduleId = moduleId;
     }
 
+    private String moduleName;
+    public String getModuleName() {
+        return moduleName;
+    }
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
     private long formId = -1;
     public long getFormId() {
         return formId;

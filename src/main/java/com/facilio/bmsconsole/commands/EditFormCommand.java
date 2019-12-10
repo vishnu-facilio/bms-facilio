@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.Map;
 
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,21 +26,9 @@ public class EditFormCommand extends FacilioCommand {
 		Map<String, Object> props = FieldUtil.getAsProperties(editedForm);
 		FacilioModule formModule = ModuleFactory.getFormModule();
 
-		if (editedForm.getStateFlowId() != -99) {
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.table(formModule.getTableName())
-					.select(FieldFactory.getFormFields())
-					.andCondition(CriteriaAPI.getIdCondition(editedForm.getId(), formModule));
-			Map<String, Object> map = builder.fetchFirst();
-			Long stateFlowId = (Long) map.get("stateFlowId");
-			if (stateFlowId != null && stateFlowId > 0) {
-				boolean stateFlowUsedInAnyForm = FormsAPI.isStateFlowUsedInAnyForm(stateFlowId, editedForm.getId());
-				if (!stateFlowUsedInAnyForm) {
-					StateFlowRulesAPI.updateFormLevel(stateFlowId, false);
-				}
-			}
-		}
-		
+		FacilioForm existingForm = FormsAPI.getFormFromDB(editedForm.getId(), false);
+		removeExistingStateFlow(existingForm);
+
 		GenericUpdateRecordBuilder formUpdateBuilder = new GenericUpdateRecordBuilder()
 				.table(formModule.getTableName())
 				.fields(FieldFactory.getFormFields())
@@ -48,7 +36,15 @@ public class EditFormCommand extends FacilioCommand {
 		
 		formUpdateBuilder.update(props);
 
+		// Update stateFlow property
 		if (editedForm.getStateFlowId() > 0) {
+			StateFlowRuleContext stateFlowContext = StateFlowRulesAPI.getStateFlowContext(editedForm.getStateFlowId());
+			if (stateFlowContext == null) {
+				throw new IllegalArgumentException("Invalid StateFlow");
+			}
+			if (stateFlowContext.getModuleId() != existingForm.getModuleId()) {
+				throw new IllegalArgumentException("StateFlow and Form is from different module");
+			}
 			StateFlowRulesAPI.updateFormLevel(editedForm.getStateFlowId(), true);
 		}
 		
@@ -57,6 +53,16 @@ public class EditFormCommand extends FacilioCommand {
 		}
 		
 		return false;
+	}
+
+	private void removeExistingStateFlow(FacilioForm form) throws Exception {
+		Long stateFlowId = form.getStateFlowId();
+		if (stateFlowId != null && stateFlowId > 0) {
+			boolean stateFlowUsedInAnyForm = FormsAPI.isStateFlowUsedInAnyForm(stateFlowId, form.getId());
+			if (!stateFlowUsedInAnyForm) {
+				StateFlowRulesAPI.updateFormLevel(stateFlowId, false);
+			}
+		}
 	}
 
 }

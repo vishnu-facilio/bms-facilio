@@ -715,4 +715,16 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		map.put("formLevel", formLevel);
 		stateUpdate.update(map);
 	}
+
+	public static List<StateFlowRuleContext> getStateFlowBaseDetails(List<Long> stateFlowIds) throws Exception {
+		if (CollectionUtils.isEmpty(stateFlowIds)) {
+			return new ArrayList<>();
+		}
+		List<FacilioField> fields = FieldFactory.getStateFlowFields();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getStateFlowModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(stateFlowIds, ModuleFactory.getStateFlowModule()));
+		return FieldUtil.getAsBeanListFromMapList(builder.get(), StateFlowRuleContext.class);
+	}
 }

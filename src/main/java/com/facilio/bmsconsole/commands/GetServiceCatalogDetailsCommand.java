@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -30,6 +33,10 @@ public class GetServiceCatalogDetailsCommand extends FacilioCommand {
             long formId = serviceCatalog.getFormId();
             FacilioForm form = FormsAPI.getFormFromDB(formId);
             serviceCatalog.setForm(form);
+
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(serviceCatalog.getModuleId());
+            serviceCatalog.setModuleName(module.getName());
 
             context.put(FacilioConstants.ContextNames.SERVICE_CATALOG, serviceCatalog);
         }

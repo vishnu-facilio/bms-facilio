@@ -1,10 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -12,6 +14,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.collections.CollectionUtils;
 
 public class GetFormListCommand extends FacilioCommand {
 
@@ -29,7 +32,23 @@ public class GetFormListCommand extends FacilioCommand {
 		List<FacilioForm> formsList = new ArrayList<>(forms.values());
 		formsList.removeIf(form -> form.isHideInList() || (AccountUtil.getCurrentAccount().isFromMobile() && !form.getShowInMobile()));
 
+		List<Long> stateFlowIds = new ArrayList<>();
+		for (FacilioForm form : formsList) {
+			if (form.getStateFlowId() > 0) {
+				stateFlowIds.add(form.getStateFlowId());
+			}
+		}
+
+		Map<Long, WorkflowRuleContext> stateFlowMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(stateFlowIds)) {
+			List<WorkflowRuleContext> stateFlowBaseDetails = WorkflowRuleAPI.getWorkflowRules(stateFlowIds, false, false);
+			for (WorkflowRuleContext rule : stateFlowBaseDetails) {
+				stateFlowMap.put(rule.getId(), rule);
+			}
+		}
+
 		context.put(FacilioConstants.ContextNames.FORMS, formsList);
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_LIST, stateFlowMap);
 		return false;
 	}
 

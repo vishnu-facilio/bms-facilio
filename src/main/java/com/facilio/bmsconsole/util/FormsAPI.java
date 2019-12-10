@@ -269,11 +269,17 @@ public class FormsAPI {
 	}
 
 	public static boolean isStateFlowUsedInAnyForm(long stateFlowId, Long formId) throws Exception {
+		return isStateFlowUsedInAnyForm(stateFlowId, Collections.singletonList(formId));
+	}
+
+	public static boolean isStateFlowUsedInAnyForm(long stateFlowId, List<Long> formIds) throws Exception {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getFormModule().getTableName())
 				.select(FieldFactory.getFormFields())
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getFormModule()), String.valueOf(formId), NumberOperators.NOT_EQUALS))
 				.andCondition(CriteriaAPI.getCondition("STATE_FLOW_ID", "stateFlowId", String.valueOf(stateFlowId), NumberOperators.EQUALS));
+		if (CollectionUtils.isNotEmpty(formIds)) {
+			builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getFormModule()), StringUtils.join(formIds, ","), NumberOperators.NOT_EQUALS));
+		}
 		List<Map<String, Object>> maps = builder.get();
 		return (CollectionUtils.isNotEmpty(maps));
 	}
@@ -443,6 +449,16 @@ public class FormsAPI {
 		}
 		return null;
 	}
+
+	public static FacilioForm getFormFromDB(long id, boolean fetchFields) throws Exception {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getFormModule()));
+		List<FacilioForm> dbFormList = getDBFormList(null, (List<Integer>) null, criteria, null, fetchFields);
+		if (CollectionUtils.isNotEmpty(dbFormList)) {
+			return dbFormList.get(0);
+		}
+		return null;
+	}
 		
 	public static Map<Long, FacilioForm> getFormsAsMap(Collection<Long> ids) throws Exception {
 		List<FacilioForm> forms = getFormsFromDB(ids);
@@ -458,9 +474,31 @@ public class FormsAPI {
 	
 	public static int deleteForms (Collection<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getFormModule();
+
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(FieldFactory.getFormFields())
+				.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(builder.get(), FacilioForm.class);
+		if (CollectionUtils.isNotEmpty(forms)) {
+			Set<Long> stateflowIds = new HashSet<>();
+			List<Long> formIds = new ArrayList<>();
+			for (FacilioForm form : forms) {
+				stateflowIds.add(form.getStateFlowId());
+				formIds.add(form.getId());
+			}
+
+			if (CollectionUtils.isNotEmpty(stateflowIds)) {
+				for (Long stateFlowId : stateflowIds) {
+					if (!isStateFlowUsedInAnyForm(stateFlowId, formIds)) {
+						StateFlowRulesAPI.updateFormLevel(stateFlowId, false);
+					}
+				}
+			}
+		}
+
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(ids, module))
 														;
 		return deleteBuilder.delete();

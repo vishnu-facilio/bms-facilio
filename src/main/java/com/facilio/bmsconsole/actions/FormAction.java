@@ -212,6 +212,7 @@ public class FormAction extends FacilioAction {
 		
 		ReadOnlyChainFactory.getFormList().execute(context);
 		setResult("forms",context.get(ContextNames.FORMS));
+		setResult(FacilioConstants.ContextNames.STATE_FLOW_LIST, context.get(FacilioConstants.ContextNames.STATE_FLOW_LIST));
 		
 		return SUCCESS;
 	}

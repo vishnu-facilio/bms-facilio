@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -8,10 +9,13 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -53,6 +57,13 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
 
         List<Map<String, Object>> maps = builder.get();
         List<ServiceCatalogContext> serviceCatalogs = FieldUtil.getAsBeanListFromMapList(maps, ServiceCatalogContext.class);
+        if (CollectionUtils.isNotEmpty(serviceCatalogs)) {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            for (ServiceCatalogContext serviceCatalog : serviceCatalogs) {
+                FacilioModule module = modBean.getModule(serviceCatalog.getModuleId());
+                serviceCatalog.setModuleName(module.getName());
+            }
+        }
 
         context.put(FacilioConstants.ContextNames.SERVICE_CATALOGS, serviceCatalogs);
 
