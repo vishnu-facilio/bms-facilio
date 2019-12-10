@@ -149,7 +149,9 @@ public class FacilioContextListener implements ServletContextListener {
 					FacilioFactory.getMessageQueue().start();
 				}
 				AgentIntegrationQueueFactory.startIntegrationQueues();
-				downloadEnvironmentFiles();
+				if(!FacilioProperties.isProduction()) {
+					downloadEnvironmentFiles();
+				}
 			} catch (Exception e){
 				LOGGER.info("Exception occurred ", e);
 			}
