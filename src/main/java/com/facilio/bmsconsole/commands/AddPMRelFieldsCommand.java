@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -51,16 +52,16 @@ public class AddPMRelFieldsCommand extends FacilioCommand {
 		for(PreventiveMaintenance pm:pms) {
 			if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 				TemplateAPI.addIncludeExcludePropsForPM(pm);
-				prepareAndAddResourcePlanner(pm);
+				prepareAndAddResourcePlanner(context, pm);
 			}
 		}
 		return false;
 	}
-	private void prepareAndAddResourcePlanner(PreventiveMaintenance pm) throws Exception {
-		
-		
+	private void prepareAndAddResourcePlanner(Context context, PreventiveMaintenance pm) throws Exception {
+		PreventiveMaintenance pm1 = PreventiveMaintenanceAPI.getPM(pm.getId(), false);
+		pm.setDefaultAllTriggers(pm1.getDefaultAllTriggers());
+		PreventiveMaintenanceAPI.populateResourcePlanner(pm);
 		if(pm.getResourcePlanners() != null) {
-			
 			for(PMResourcePlannerContext resourcePlanner :pm.getResourcePlanners()) {
 				if(resourcePlanner.getTriggerContexts() != null) {
 					List<PMTriggerContext> trigs = new ArrayList<>();
@@ -100,7 +101,6 @@ public class AddPMRelFieldsCommand extends FacilioCommand {
 				
 				if(resourcePlanner.getPmResourcePlannerReminderContexts() != null) {
 					for(PMResourcePlannerReminderContext pmResourcePlannerReminderContext : resourcePlanner.getPmResourcePlannerReminderContexts()) {
-						
 						if(pmResourcePlannerReminderContext.getReminderName() != null) {
 							PMReminder reminder = pm.getReminderMap().get(pmResourcePlannerReminderContext.getReminderName());
 							pmResourcePlannerReminderContext.setReminderId(reminder.getId());
