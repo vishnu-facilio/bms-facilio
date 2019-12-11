@@ -369,7 +369,6 @@ public class FetchReportDataCommand extends FacilioCommand {
 					selectFields.add(groupField);
 				}
 			}
-			dp.getGroupByFields();
 			String queryString = newSelectBuilder.constructQueryString();
 			GenericSelectRecordBuilder newSelect = new GenericSelectRecordBuilder()
 					.table(lookupModule.getTableName())
