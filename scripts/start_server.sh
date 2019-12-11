@@ -5,7 +5,7 @@ export APP_HOME="$UBUNTU_HOME/tomcat"
 export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 export JAVA_HOME=$UBUNTU_HOME/jdk
 export PATH=$JAVA_HOME:$PATH
-export GOOGLE_APP_CREDENTIALS="/tmp/secrets/google_app_credentials.json"
+export GOOGLE_APPLICATION_CREDENTIALS="/tmp/secrets/google_app_credentials.json"
 cd $UBUNTU_HOME
 
 sudo killall -9 java
