@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportModuleMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
@@ -80,6 +81,9 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 			} else if (exception instanceof ImportAssetMandatoryFieldsException) { 
 				ImportAssetMandatoryFieldsException importAssetMandExp = (ImportAssetMandatoryFieldsException) exception;
 				exceptionMessage = importAssetMandExp.getClientMessage();
+			} else if (exception instanceof ImportModuleMissingException) {
+				ImportModuleMissingException importModMissing = (ImportModuleMissingException) exception;
+				exceptionMessage = importModMissing.getClientMessage();
 			} else {
 				sendExceptionMail = true;
 				exceptionMessage = exception.getMessage();

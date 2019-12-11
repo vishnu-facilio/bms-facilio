@@ -1,12 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -14,6 +7,12 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class InsertImportDataIntoLogCommand extends FacilioCommand {
 
@@ -21,7 +20,7 @@ public class InsertImportDataIntoLogCommand extends FacilioCommand {
 	private static Logger LOGGER = Logger.getLogger(InsertImportDataIntoLogCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		LOGGER.severe("----Inserting into Import Log Table-- start");
+		LOGGER.info("----Inserting into Import Log Table-- start");
 		// TODO Auto-generated method stub
 		HashMap<String, List<ImportRowContext>> groupedContext = 
 				(HashMap<String, List<ImportRowContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT);
@@ -82,11 +81,11 @@ public class InsertImportDataIntoLogCommand extends FacilioCommand {
 		insertBuilder.save();
 
 		context.put(ImportAPI.ImportProcessConstants.HAS_DUPLICATE_ENTRIES, hasDuplicates);
-		LOGGER.severe("HAS DUPLICATES" + hasDuplicates);
+		LOGGER.info("HAS DUPLICATES" + hasDuplicates);
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.RESOLVE_VALIDATION.getValue());
 		ImportAPI.updateImportProcess(importProcessContext);
 		
-		LOGGER.severe("----Inserting into Import Log Table----- end");
+		LOGGER.info("----Inserting into Import Log Table----- end");
 		return false;
 	}
 	

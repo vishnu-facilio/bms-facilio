@@ -10,21 +10,18 @@ import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportModuleMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -320,10 +317,12 @@ public class ProcessImportCommand extends FacilioCommand {
 										lookupPropsList = getLookupProps(lookupField,colVal, fieldMapping.get(key), importProcessContext);
 									}catch(Exception e) {
 										LOGGER.severe("Process Import Lookup Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
-										if(colVal.get(key) == null) {
+										if(colVal.get(fieldMapping.get(key)) == null) {
 											throw new ImportFieldValueMissingException(row_no, fieldMapping.get(key), e);
 										}
-										else {
+										else if (e.getMessage().equals("Module not found")) {
+											throw new ImportModuleMissingException(colVal.get(fieldMapping.get(key)).toString(), row_no, fieldMapping.get(key), e);
+										} else {
 											throw e;
 										}
 
@@ -444,21 +443,21 @@ public class ProcessImportCommand extends FacilioCommand {
 				fieldsList.add(FieldFactory.getIdField(lookupField.getLookupModule()));
 				fieldsList.add(FieldFactory.getModuleIdField(lookupField.getLookupModule()));
 
-				String collumnName = "NAME";
+				String columnName = "NAME";
 				String fieldName = "name";
 				if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) || lookupField.getModule().getName().equals(FacilioConstants.ContextNames.TICKET)) {
 					if (lookupField.getName().equals("status")) {
-						collumnName = "STATUS";
+						columnName = "STATUS";
 						fieldName = "status";
 					} else if (lookupField.getName().equals("priority")) {
-						collumnName = "PRIORITY";
+						columnName = "PRIORITY";
 						fieldName = "priority";
 					}
 				}
 				SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder =  new SelectRecordsBuilder<>()
 												.module(lookupField.getLookupModule())
 												.select(fieldsList)
-												.andCustomWhere("LOWER(" + collumnName + ") = ?", value.toString().toLowerCase());
+												.andCustomWhere("LOWER(" + columnName + ") = ?", value.toString().toLowerCase());
 				
 				List<Map<String, Object>> props = selectBuilder.getAsProps();
 
@@ -470,33 +469,9 @@ public class ProcessImportCommand extends FacilioCommand {
 					insertProps.put("orgId", AccountUtil.getCurrentOrg().getId());
 					insertProps.put("moduleId", lookupField.getLookupModule().getModuleId());
 
-					
-					
 					if (lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET_CATEGORY)) {
-						FacilioModule module = new FacilioModule();
-						String name = value.toString();
-						
-						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-						FacilioModule assetModule = modBean.getModule("asset");
-						
-						module.setName(name.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-						module.setDisplayName(name);
-						module.setTableName("AssetCustomModuleData");
-						module.setType(ModuleType.BASE_ENTITY);
-						module.setExtendModule(assetModule);
-						
-						FacilioContext context = new FacilioContext();
-						context.put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
-						
-						FacilioChain addCategory = TransactionChainFactory.commonAddModuleChain();
-						
-						addCategory.execute(context);
-						
-						FacilioModule AssetModuleId = ((List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST)).get(0);
-						insertProps.put("type", AssetCategoryContext.AssetCategoryType.MISC.getIntVal());
-						insertProps.put("assetModuleID", AssetModuleId.getModuleId());
+						throw new Exception("Module not found");
 					}
-					
 					
 					GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
 							.table(lookupField.getLookupModule().getTableName()).fields(fieldsList);
