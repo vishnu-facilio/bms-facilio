@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.db.criteria.Condition;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -113,8 +114,15 @@ public enum LookupOperator implements Operator<Criteria> {
 	}
 
 	@Override
-	public boolean useCriteriaVal() {
-		return true;
+	public ValueType getValueType() {
+		return ValueType.CRITERIA;
+	}
+
+	@Override
+	public void validateValue(Condition condition, Criteria value) {
+		if (value == null && condition.getCriteriaValueId() == -1) {
+			throw new IllegalArgumentException("Criteria Value cannot be null in Condition with LOOKUP operator");
+		}
 	}
 
 	private static final Map<String, Operator> operatorMap = Collections.unmodifiableMap(initOperatorMap());

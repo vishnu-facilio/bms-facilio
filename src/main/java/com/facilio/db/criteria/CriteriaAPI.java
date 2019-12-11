@@ -75,11 +75,17 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 				if (condition.getOperator() == null) {
 					throw new IllegalArgumentException("Operator cannot be null in Condition");
 				}
-				if (condition.getOperator() == LookupOperator.LOOKUP && condition.getCriteriaValue() == null && condition.getCriteriaValueId() == -1) {
-					throw new IllegalArgumentException("Criteria Value cannot be null in Condition with LOOKUP operator");
-				}
-				if (condition.getOperator() != LookupOperator.LOOKUP && condition.getOperator().isValueNeeded() && (condition.getValue() == null || condition.getValue().isEmpty())) {
-					throw new IllegalArgumentException("Value cannot be null for Condition with operator "+condition.getOperator());
+
+				switch (condition.getOperator().getValueType()) {
+					case STRING:
+						condition.getOperator().validateValue(condition, condition.getValue());
+						break;
+					case CRITERIA:
+						condition.getOperator().validateValue(condition, condition.getCriteriaValue());
+						break;
+					case JSON:
+						condition.getOperator().validateValue(condition, condition.getJsonValue());
+						break;
 				}
 				
 				int sequence = -1;

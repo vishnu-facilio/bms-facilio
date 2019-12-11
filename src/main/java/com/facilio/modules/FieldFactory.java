@@ -2827,6 +2827,8 @@ public class FieldFactory {
 		criteriaValueId.setModule(module);
 		fields.add(criteriaValueId);
 
+		FacilioField jsonValueStrField = getField("jsonValueStr", "JSON_VAL", module, FieldType.STRING);
+
 		FacilioField isExpressionValue = new FacilioField();
 		isExpressionValue.setName("isExpressionValue");
 		isExpressionValue.setDataType(FieldType.BOOLEAN);
