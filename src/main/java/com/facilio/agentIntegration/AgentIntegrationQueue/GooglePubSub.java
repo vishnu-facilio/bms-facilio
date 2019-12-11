@@ -15,6 +15,10 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * Class for handling data from Google Pub Sub through Agent Message Integration Preprocessor
  */
@@ -70,7 +74,15 @@ public class GooglePubSub extends AgentIntegrationQueue{
             subscriber.startAsync().awaitRunning();
             // Allow the subscriber to run indefinitely unless an unrecoverable error occurs
             subscriber.awaitTerminated();
-        } finally {
+        }catch (Exception ex){
+            LOGGER.info(ex.getMessage());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            String sStackTrace = sw.toString(); // stack trace as a string
+            LOGGER.info(sStackTrace);
+        }
+        finally {
             // Stop receiving messages
             LOGGER.info("Stopping Google Pub Sub : "+projectId);
             if (subscriber != null) {
