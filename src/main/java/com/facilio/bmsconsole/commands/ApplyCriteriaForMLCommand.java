@@ -21,8 +21,8 @@ public class ApplyCriteriaForMLCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception 
 	{
-		try{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
+		try{
 		if(mlContext.getMLCriteriaVariables()!=null && mlContext.getMLCriteriaVariables().size()>0)
 		{
 			Hashtable<Long, Hashtable<String, SortedMap<Long, Object>>> variableDataMap = mlContext.getMlVariablesDataMap();
@@ -98,7 +98,8 @@ public class ApplyCriteriaForMLCommand extends FacilioCommand {
 		}
 		}catch(Exception e){
 			LOGGER.fatal("Error in ApplyCriteriaForMLCommand"+e);
-			throw new Exception("JAVA error"+e.getCause());
+			LOGGER.info("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+e.getMessage());
+			throw e;
 		}
 		return false;
 	}

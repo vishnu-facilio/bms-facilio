@@ -66,7 +66,8 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		catch(Exception e)
 		{
 			LOGGER.fatal("Error in TriggerAlarmForMLCommand"+e);
-			throw new Exception("JAVA error"+e.getCause());
+			LOGGER.info("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+e.getMessage());
+			throw e;
 		}
          
 		return false;
