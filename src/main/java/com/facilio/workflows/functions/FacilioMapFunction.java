@@ -172,6 +172,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	}
+		
 	;
 	private Integer value;
 	private String functionName;

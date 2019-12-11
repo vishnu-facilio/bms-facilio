@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.PublicFileContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.BitlyUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -37,9 +38,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -47,6 +50,7 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.services.filestore.PublicFileUtil;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
@@ -661,6 +665,30 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 		
 	},
+	GET_PUBLIC_FILE_URL_FOR_FILEID (23, "getPublicFileUrl") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			if(objects[0] != null) {
+				FileStore fs = FacilioFactory.getFileStore();
+		    	FileInfo fileInfo = fs.getFileInfo((long)objects[0]);
+				PublicFileContext publicFileContext = PublicFileUtil.createPublicFile(fileInfo.getFileId(), fileInfo.getFileName(), fileInfo.getContentType(), fileInfo.getContentType());
+				if(publicFileContext != null) {
+					return publicFileContext.getPublicUrl();
+				}
+			}
+			return null;
+		}
+		
+	},
+	GET_FROM_OBJECT(10, "getFromObject") {
+		
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			Map<String, Object> map = FieldUtil.getAsProperties(objects[0]);
+			return map.get(objects[1]);
+		}
+
+	}
 	;
 	private Integer value;
 	private String functionName;
