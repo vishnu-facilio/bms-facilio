@@ -46,9 +46,6 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 		try {
 			long jobStartTime = System.currentTimeMillis();
 			List<Integer> types = getFrequencyTypesToBeFetched();
-			if (AccountUtil.getCurrentOrg().getId() == 78l) {
-				types.add(FacilioFrequency.DAILY.getValue());
-			}
 			LOGGER.log(Level.INFO, "Frequencies to be fetched for Scheduled Formula Calculation : "+types);
 			List<FormulaFieldContext> formulas = FormulaFieldAPI.getActiveScheduledFormulasOfFrequencyType(types);
 			LOGGER.log(Level.INFO, "Formulas to be calculated : "+formulas);
