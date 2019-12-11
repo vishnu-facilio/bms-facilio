@@ -145,13 +145,13 @@ public class FacilioContextListener implements ServletContextListener {
 			}*/
 
 			try {
+				if(!FacilioProperties.isProduction()) {
+					downloadEnvironmentFiles();
+				}
 				if (FacilioProperties.isMessageProcessor()) {
 					FacilioFactory.getMessageQueue().start();
 				}
 				AgentIntegrationQueueFactory.startIntegrationQueues();
-				if(!FacilioProperties.isProduction()) {
-					downloadEnvironmentFiles();
-				}
 			} catch (Exception e){
 				LOGGER.info("Exception occurred ", e);
 			}
@@ -190,6 +190,7 @@ public class FacilioContextListener implements ServletContextListener {
 			secretsDir.mkdir();
 
 			File file = new File("/tmp/secrets/google_app_credentials.json");
+			if(file.exists()) file.delete();
 			try (FileOutputStream outputStream = new FileOutputStream(file)) {
 
 				int read;
