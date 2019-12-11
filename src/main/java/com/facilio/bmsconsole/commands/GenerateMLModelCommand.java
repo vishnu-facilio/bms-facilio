@@ -105,13 +105,12 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(),300);
 		if(StringUtils.isEmpty(result)){
 			LOGGER.fatal("Error in GenerateMLModelCommand");
-			LOGGER.info("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Response from Python is empty");
+			LOGGER.fatal("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Response from Python is empty");
 			throw new Exception("ML error : Response from Python is empty");
 		}
 		mlContext.setResult(result);
 	}catch(Exception e){
-		LOGGER.fatal("Error in GenerateMLModelCommand"+e);
-		LOGGER.info("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+e.getMessage());
+		LOGGER.fatal("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : GenerateMLModelCommand "+" ERROR MESSAGE : "+e);
 		throw e;
 	}
 		return false;

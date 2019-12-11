@@ -32,8 +32,7 @@ public class ApplyRuleForMLCommand extends FacilioCommand {
 		*/
 		}catch(Exception e)
 		{
-			LOGGER.fatal("Error in ApplyRuleForMLCommand"+e);
-			LOGGER.info("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+e.getMessage());
+			LOGGER.fatal("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : ApplyRuleForMLCommand "+" ERROR MESSAGE : "+e.getMessage());
 			throw e;
 		}
 		return false;
