@@ -1552,23 +1552,6 @@ public class TemplateAPI {
 			}
 			
 			addPMIncludeExclude(props);
-		} else {
-			Long baseSpaceId = pm.getBaseSpaceId();
-			if (baseSpaceId == null || baseSpaceId < 0) {
-				baseSpaceId = pm.getSiteId();
-			}
-			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
-			List<Map<String, Object>> props = new ArrayList<>();
-			for (long resourceId: resourceIds) {
-				PMIncludeExcludeResourceContext pmIncludeExcludeResourceContext = new PMIncludeExcludeResourceContext();
-				pmIncludeExcludeResourceContext.setIsInclude(true);
-				pmIncludeExcludeResourceContext.setParentType(1);
-				pmIncludeExcludeResourceContext.setPmId(pm.getId());
-				pmIncludeExcludeResourceContext.setResourceId(resourceId);
-				Map<String, Object> map = FieldUtil.getAsProperties(pmIncludeExcludeResourceContext);
-				props.add(map);
-			}
-			addPMIncludeExclude(props);
 		}
 	}
 	

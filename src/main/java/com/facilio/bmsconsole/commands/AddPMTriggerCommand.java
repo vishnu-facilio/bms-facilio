@@ -131,9 +131,7 @@ public class AddPMTriggerCommand extends FacilioCommand {
 
 		for (PMTriggerContext userTrigger: userTriggers) {
 			SharingContext<SingleSharingContext> sharingContext = userTrigger.getSharingContext();
-			if (sharingContext != null && !sharingContext.isEmpty()) {
-				SharingAPI.addSharing(sharingContext, userTrigger.getId(), ModuleFactory.getPMExecSharingModule());
-			}
+			SharingAPI.addSharing(sharingContext, userTrigger.getId(), ModuleFactory.getPMExecSharingModule());
 		}
 	}
 }
