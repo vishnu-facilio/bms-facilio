@@ -345,7 +345,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			String aggrFieldName = ReportUtil.getAggrFieldName(dp.getyAxis().getField(), dp.getyAxis().getAggrEnum());
 			FacilioModule lookupModule = ((LookupField) outerJoinField).getLookupModule();
 			
-			FacilioModule lookupGroupModule = null;
+//			FacilioModule lookupGroupModule = null;
 
 			FacilioField idField;
 			if (LookupSpecialTypeUtil.isSpecialType(lookupModule.getName())) {
@@ -360,34 +360,31 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 			idField.setName(outerJoinField.getName());
 
-			List<FacilioField> selectFields =  new ArrayList<>();
-			selectFields.add(idField);
-			selectFields.add(countField);
-			if(CollectionUtils.isNotEmpty(dp.getGroupByFields())) {
-				List<String> hardCodeFields =  new ArrayList<>();
-				hardCodeFields.add(ReportFactory.WorkOrder.OPENVSCLOSE_COL);
-				hardCodeFields.add(ReportFactory.WorkOrder.OVERDUE_OPEN_COL);
-				hardCodeFields.add(ReportFactory.WorkOrder.OVERDUE_CLOSED_COL);
-				hardCodeFields.add(ReportFactory.WorkOrder.PLANNED_VS_UNPLANNED_COL);
-				hardCodeFields.add(ReportFactory.WorkOrder.FIRST_RESPONSE_TIME_COL);
-				hardCodeFields.add(ReportFactory.WorkOrder.ESTIMATED_DURATION_COL);
-				for (ReportGroupByField groupByField : dp.getGroupByFields()) {
-					if (hardCodeFields.contains(groupByField.getField().getName())) {
-						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-						groupByField.getField().setModule(modBean.getModule("Ticket"));
-					}
-					selectFields.add(groupByField.getField());
-					lookupGroupModule = groupByField.getField().getModule();
-				}
-			}
+//			List<FacilioField> selectFields =  new ArrayList<>();
+//			selectFields.add(idField);
+//			selectFields.add(countField);
+//			if(CollectionUtils.isNotEmpty(dp.getGroupByFields())) {
+//				List<String> hardCodeFields =  new ArrayList<>();
+//				hardCodeFields.add(ReportFactory.WorkOrder.OPENVSCLOSE_COL);
+//				hardCodeFields.add(ReportFactory.WorkOrder.OVERDUE_OPEN_COL);
+//				hardCodeFields.add(ReportFactory.WorkOrder.OVERDUE_CLOSED_COL);
+//				hardCodeFields.add(ReportFactory.WorkOrder.PLANNED_VS_UNPLANNED_COL);
+//				hardCodeFields.add(ReportFactory.WorkOrder.FIRST_RESPONSE_TIME_COL);
+//				hardCodeFields.add(ReportFactory.WorkOrder.ESTIMATED_DURATION_COL);
+//				for (ReportGroupByField groupByField : dp.getGroupByFields()) {
+//					if (hardCodeFields.contains(groupByField.getField().getName())) {
+//						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//						groupByField.getField().setModule(modBean.getModule("Ticket"));
+//					}
+//					selectFields.add(groupByField.getField());
+//					lookupGroupModule = groupByField.getField().getModule();
+//				}
+//			}
 			String queryString = newSelectBuilder.constructQueryString();
 			GenericSelectRecordBuilder newSelect = new GenericSelectRecordBuilder()
 					.table(lookupModule.getTableName())
-					.select(selectFields);
-					if(lookupGroupModule != null) {
-						newSelect.innerJoin(lookupGroupModule.getTableName());
-					}
-					newSelect.leftJoinQuery(queryString, "inn")
+					.select(Arrays.asList(idField, countField))
+					.leftJoinQuery(queryString, "inn")
 						.on(lookupModule.getTableName() + "." + idField.getColumnName() + " = inn." + outerJoinField.getName())
 					.andCondition(CriteriaAPI.getCondition(idField.getCompleteColumnName(), idField.getName(), StringUtils.join(dp.getxAxis().getSelectValuesOnly(), ","), NumberOperators.EQUALS))
 					;
