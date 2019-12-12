@@ -1608,8 +1608,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getVisitorLoggingDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVisitorLogging());
-		c.addCommand(new LoadVisitorLoggingLookUpCommand());
-		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetTriggerForRecurringLogCommand());
 		
 		return c;
 	}

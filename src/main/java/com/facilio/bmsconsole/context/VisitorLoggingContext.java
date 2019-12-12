@@ -643,5 +643,7 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 	public void setTenant(TenantContext tenant) {
 		this.tenant = tenant;
 	}
+
+	
 	
 }

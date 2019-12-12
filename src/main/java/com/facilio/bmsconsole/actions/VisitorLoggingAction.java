@@ -163,14 +163,6 @@ private static final long serialVersionUID = 1L;
 	public void setParentLog(VisitorLoggingContext parentLog) {
 		this.parentLog = parentLog;
 	}
-	private String triggerString;
-	
-	public String getTriggerString() {
-		return triggerString;
-	}
-	public void setTriggerString(String triggerString) {
-		this.triggerString = triggerString;
-	}
 	
 	private List<File> attachedFiles;
 	private List<String> attachedFilesFileName;
@@ -249,9 +241,7 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.addRecurringVisitorLoggingRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			parentLog.parseFormData();
-			if(triggerString != null) {
-				setTriggerContext(triggerString);
-				parentLog.setTrigger(this.getTrigger());
+			if(parentLog.getTrigger() != null) {
 				Date d1 = new Date(parentLog.getExpectedCheckInTime());
 				Date d2 = new Date(parentLog.getExpectedCheckOutTime());
 			    long diffMs = d2.getTime() - d1.getTime();
@@ -273,9 +263,7 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateRecurringVisitorLoggingRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			parentLog.parseFormData();
-			if(triggerString != null) {
-				setTriggerContext(triggerString);
-				parentLog.setTrigger(this.getTrigger());
+			if(parentLog.getTrigger() != null) {
 				Date d1 = new Date(parentLog.getExpectedCheckInTime());
 				Date d2 = new Date(parentLog.getExpectedCheckOutTime());
 			    long diffMs = d2.getTime() - d1.getTime();
@@ -563,6 +551,7 @@ private static final long serialVersionUID = 1L;
 		
 		VisitorLoggingContext visitorLogging = (VisitorLoggingContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
 		setResult(FacilioConstants.ContextNames.VISITOR_LOGGING, visitorLogging);
+		
 		
 		return SUCCESS;
 	}
