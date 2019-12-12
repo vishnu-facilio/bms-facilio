@@ -73,6 +73,10 @@ public class ReportFactoryFields {
 				}
 			}
 		}
+		if(facilioModule.getType() == FacilioModule.ModuleType.CUSTOM.getValue()) {
+			selectedFields.addAll(FieldFactory.getSystemFields(facilioModule));
+		}
+		
 		
 		// loading additional module fields
 		JSONObject rearrangedFields = rearrangeFields(selectedFields, facilioModule);

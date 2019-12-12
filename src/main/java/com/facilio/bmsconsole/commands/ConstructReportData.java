@@ -165,6 +165,11 @@ public class ConstructReportData extends FacilioCommand {
 			if (dateField.containsKey("module_id")) {
 				moduleId = (long) dateField.get("module_id");
 			}
+			if(field == null && moduleId != -1) {
+				if(dateField.containsKey("fieldName")) {
+					field = modBean.getField((String) dateField.get("fieldName"), modBean.getModule(moduleId).getName());
+				}
+			}
 			reportFieldContext.setField(modBean.getModule(moduleId), field);
 			dataPointContext.setDateField(reportFieldContext);
 		}
