@@ -58,6 +58,42 @@ public enum FacilioCriteriaFunctions implements FacilioWorkflowFunctionInterface
 			}
 		}
 	},
+	AND(2,"and") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			Criteria criteria = (Criteria)objects[0];
+			
+			Criteria criteria1 = (Criteria)objects[1];
+			
+			criteria.andCriteria(criteria1);
+			return criteria;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	OR(2,"or") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			Criteria criteria = (Criteria)objects[0];
+			
+			Criteria criteria1 = (Criteria)objects[1];
+			
+			criteria.orCriteria(criteria1);
+			return criteria;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	
 	private Integer value;

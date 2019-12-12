@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -18,6 +19,7 @@ import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -427,5 +429,26 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	public Map<String, Object> asMap(List<Object> objects) throws Exception {
 		FacilioModule module = (FacilioModule) objects.get(0);
 		return FieldUtil.getAsProperties(module);
+	}
+
+	@Override
+	public Criteria getViewCriteria(List<Object> objects) throws Exception {
+		
+		FacilioModule module = (FacilioModule) objects.get(0);
+		
+		String viewName = (String) objects.get(1);
+		
+		FacilioChain viewDetailsChain = FacilioChainFactory.getViewDetailsChain();
+		
+		FacilioContext context = viewDetailsChain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
+		
+		viewDetailsChain.execute();
+		
+		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		
+		return view.getCriteria();
 	}
 }
