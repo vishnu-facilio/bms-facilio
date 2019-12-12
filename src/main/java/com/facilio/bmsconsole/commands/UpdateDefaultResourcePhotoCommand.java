@@ -19,7 +19,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class UpdateDefaultSpacePhotoCommand extends FacilioCommand {
+public class UpdateDefaultResourcePhotoCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -43,7 +43,8 @@ public class UpdateDefaultSpacePhotoCommand extends FacilioCommand {
 				.beanClass(PhotosContext.class)
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(idCondition);
+				.andCondition(idCondition)
+				.orderBy("ID DESC");
 
 		long photoId = -1L;
 
@@ -53,21 +54,21 @@ public class UpdateDefaultSpacePhotoCommand extends FacilioCommand {
 		}
 
 		if (photoId > 0) {
-			FacilioModule baseSpaceModule = modBean.getModule("basespace");
+			FacilioModule resourceModule = modBean.getModule("resource");
 			
 			FacilioField photoIdField = new FacilioField();
 			photoIdField.setName("photoId");
 			photoIdField.setDataType(FieldType.NUMBER);
 			photoIdField.setColumnName("PHOTO_ID");
-			photoIdField.setModule(baseSpaceModule);
+			photoIdField.setModule(resourceModule);
 			
 			List<FacilioField> baseSpaceFields = new ArrayList<>();
 			baseSpaceFields.add(photoIdField);
 			
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(baseSpaceModule.getTableName())
+					.table(resourceModule.getTableName())
 					.fields(baseSpaceFields)
-					.andCustomWhere(baseSpaceModule.getTableName()+".ID = ?", recordId);	
+					.andCustomWhere(resourceModule.getTableName()+".ID = ?", recordId);	
 
 			Map<String, Object> props = new HashMap<>();
 			props.put("photoId", photoId);

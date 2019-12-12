@@ -1540,10 +1540,10 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain getUpdateDefaultSpacePhotoChain() {
+	public static FacilioChain getUpdateDefaultResourcePhotoChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new UpdateDefaultSpacePhotoCommand());
+		c.addCommand(new UpdateDefaultResourcePhotoCommand());
 		return c;
 	}
 	

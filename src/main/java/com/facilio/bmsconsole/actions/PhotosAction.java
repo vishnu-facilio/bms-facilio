@@ -253,18 +253,14 @@ public class PhotosAction extends FacilioAction {
 		
 		setPhotos((List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS));
 		
-		if (FacilioConstants.ContextNames.BASE_SPACE_PHOTOS.equalsIgnoreCase(moduleName)) {
+		if (FacilioConstants.ContextNames.BASE_SPACE_PHOTOS.equalsIgnoreCase(moduleName) || FacilioConstants.ContextNames.ASSET_PHOTOS.equalsIgnoreCase(moduleName)) {
 			try {
-				BaseSpaceContext bscontext = SpaceAPI.getBaseSpace(parentId);
-				if (bscontext != null && bscontext.getPhotoId() <= 0) {
+				FacilioContext updateContext = new FacilioContext();
+				updateContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+				updateContext.put(FacilioConstants.ContextNames.RECORD_ID, parentId);
 					
-					FacilioContext updateContext = new FacilioContext();
-					updateContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
-					updateContext.put(FacilioConstants.ContextNames.RECORD_ID, parentId);
-					
-					FacilioChain updateDefaultPhotoChain = FacilioChainFactory.getUpdateDefaultSpacePhotoChain();
+					FacilioChain updateDefaultPhotoChain = FacilioChainFactory.getUpdateDefaultResourcePhotoChain();
 					updateDefaultPhotoChain.execute(updateContext);
-				}
 			}
 			catch (Exception e) {
 				log.info("Exception occurred ", e);

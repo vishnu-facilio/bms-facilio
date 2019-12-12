@@ -1376,6 +1376,7 @@ public enum CardLayout {
 			StringBuilder sb = new StringBuilder();
 			
 			sb.append("values = [];"
+					+ "lastRecord = null;"
 					+ "for each index, readingEntry in params.readings {"
 					+ "		reading = readingEntry.reading;"
 					+ "		valueMap = {};"
@@ -1392,7 +1393,7 @@ public enum CardLayout {
 					+ "				dateRangeObj = date.getDateRange(params.dateRange);"
 					+ "				period = params.dateRange;"
 					+ "			} else {"
-					+ "				dateRangeObj = date.getDateRange(\"Current Month\");"
+					+ "				dateRangeObj = date.getDateRange(\"Today\");"
 					+ "				period = \"Last Value\";"
 					+ "			}"
 					+ "			db = {"
@@ -1400,8 +1401,20 @@ public enum CardLayout {
 					+ "				field : reading.fieldName,"
 					+ "				aggregation : reading.yAggr"
 					+ "			};"
+					+ "			db1 = {"
+					+ "				criteria : [parentId == (reading.parentId) && ttime == dateRangeObj],"
+					+ "				field : \"ttime\","
+					+ "				limit: 1,"
+					+ "				orderBy : \"ttime\" desc"
+					+ "			};"
 					+ "			fetchModule = Module(reading.moduleName);"
 					+ "			cardValue = fetchModule.fetch(db);"
+					+ "			if (lastRecord == null) {"
+					+ "				lastRow = fetchModule.fetch(db1);"
+					+ "				if (lastRow != null) {"
+					+ "					lastRecord = lastRow[0];"
+					+ "				}"
+					+ "			}"
 					+ "			enumMap = Reading(fieldid, reading.parentId).getEnumMap();"
 					+ "			valueMap[\"value\"] = cardValue;"
 					+ "			if (enumMap != null) {"
@@ -1421,6 +1434,7 @@ public enum CardLayout {
 					+ "		}"
 					+ "}"
 					+ "result[\"title\"] = params.title;"
+					+ "result[\"lastUpdated\"] = lastRecord;"
 					+ "result[\"values\"] = values;");
 			
 			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
