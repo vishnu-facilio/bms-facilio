@@ -19,11 +19,14 @@ public class VerifyQrCommand extends FacilioCommand {
 		String qrVal = (String) context.get(FacilioConstants.ContextNames.QR_VALUE);
 		if (bool != null && bool) {
 			ResourceContext resource = ResourceAPI.getResource(resourceId);
-			if (resource == null || (resource != null && qrVal != null && resource.getQrVal().equals(qrVal))) {
+			if (resource != null && resource.getQrVal() == null) {
+				throw new IllegalArgumentException("There is no QR value associated with this asset");
+			}
+			else if (resource == null || (resource != null && qrVal != null && resource.getQrVal().equals(qrVal))) {
 				return false;
 			}
 			else {
-				throw new IllegalArgumentException("Resource Associated With this Workorder gets mismatched");
+				throw new IllegalArgumentException("Scanned QR code does not match associated asset");
 			}
 		}
 		return false;
