@@ -135,19 +135,19 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				}
 				else {
 					if(currentAccount.getUser() != null) {
-						List<Long> accessibleSpace = null;
-						if (currentAccount.getUser() != null) {
-							accessibleSpace = currentAccount.getUser().getAccessibleSpace();
-						}
+//						List<Long> accessibleSpace = null;
+//						if (currentAccount.getUser() != null) {
+//							accessibleSpace = currentAccount.getUser().getAccessibleSpace();
+//						}
 						if (currentAccount != null) {
 							List<Long> sites = CommonCommandUtil.getMySiteIds();
 							if (sites != null && sites.size() == 1) {
 								currentAccount.setCurrentSiteId(sites.get(0));
-								if (accessibleSpace == null) {
-									accessibleSpace = new ArrayList<>();
-									accessibleSpace.add(sites.get(0));
-									currentAccount.getUser().setAccessibleSpace(accessibleSpace);
-								}
+//								if (accessibleSpace == null) {
+//									accessibleSpace = new ArrayList<>();
+//									accessibleSpace.add(sites.get(0));
+//									currentAccount.getUser().setAccessibleSpace(accessibleSpace);
+//								}
 							} else {
 								String currentSite = request.getHeader("X-current-site");
 								long currentSiteId = -1;
@@ -170,11 +170,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
 										}
 									}
 									currentAccount.setCurrentSiteId(currentSiteId);
-									if (currentSiteId != -1 && accessibleSpace == null) {
-										accessibleSpace = new ArrayList<>();
-										accessibleSpace.add(currentSiteId);
-										currentAccount.getUser().setAccessibleSpace(accessibleSpace);
-									}
+//									if (currentSiteId != -1 && accessibleSpace == null) {
+//										accessibleSpace = new ArrayList<>();
+//										accessibleSpace.add(currentSiteId);
+//										currentAccount.getUser().setAccessibleSpace(accessibleSpace);
+//									}
 								}
 							}
 						}
