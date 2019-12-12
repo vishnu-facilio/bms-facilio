@@ -58,7 +58,7 @@ public enum FacilioCriteriaFunctions implements FacilioWorkflowFunctionInterface
 			}
 		}
 	},
-	AND(2,"and") {
+	AND(3,"and") {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
@@ -76,7 +76,7 @@ public enum FacilioCriteriaFunctions implements FacilioWorkflowFunctionInterface
 			}
 		}
 	},
-	OR(2,"or") {
+	OR(4,"or") {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
