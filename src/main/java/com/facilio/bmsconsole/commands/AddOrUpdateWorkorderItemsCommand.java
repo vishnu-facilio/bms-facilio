@@ -264,10 +264,13 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 		
 		if (item.getItemType() != null) {
 			ItemTypesContext itemType = ItemsApi.getItemTypes(item.getItemType().getId()); 
-			if(itemType != null && itemType.isRotating() && woItem.getTransactionStateEnum() == TransactionState.USE) {
-				
-				asset.setLastIssuedToUser(woItem.getIssuedTo());
-				asset.setLastIssuedToWo(woItem.getWorkorder().getId());
+			if(itemType != null && itemType.isRotating() && asset != null && woItem.getTransactionStateEnum() == TransactionState.USE) {
+				if(woItem.getIssuedTo() != null) {
+					asset.setLastIssuedToUser(woItem.getIssuedTo());
+				}
+				if(woItem.getWorkorder() != null) {
+					asset.setLastIssuedToWo(woItem.getWorkorder().getId());
+				}
 				asset.setLastIssuedTime(System.currentTimeMillis());
 				AssetsAPI.updateAsset(asset, asset.getId());
 				

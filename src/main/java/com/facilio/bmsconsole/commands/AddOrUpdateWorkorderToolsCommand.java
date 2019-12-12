@@ -96,8 +96,16 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 							if (workorderTool.getRequestedLineItem() != null && workorderTool.getRequestedLineItem().getId() > 0) {
 									approvalState = ApprovalState.APPROVED;
 							}
-							wTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
-									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context);
+							if (toolTypes.isRotating()) {
+								wTool = setWorkorderItemObj(null, 1, tool, parentId,
+										workorder, workorderTool, approvalState, wTool.getAsset(), workorderTool.getRequestedLineItem(), parentTransactionId, context);
+							
+						
+							} else {
+								wTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
+										workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId, context);
+							}
+
 							// update
 							wTool.setId(workorderTool.getId());
 							workorderToolslist.add(wTool);
@@ -226,10 +234,13 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 		
 		if (tool.getToolType() != null) {
 			ToolTypesContext toolType = ToolsApi.getToolTypes(tool.getToolType().getId()); 
-			if(toolType != null && toolType.isRotating() && woTool.getTransactionStateEnum() == TransactionState.USE) {
-				
-				asset.setLastIssuedToUser(woTool.getIssuedTo());
-				asset.setLastIssuedToWo(woTool.getWorkorder().getId());
+			if(toolType != null && toolType.isRotating() && asset != null && woTool.getTransactionStateEnum() == TransactionState.USE) {
+				if(woTool.getIssuedTo() != null) {
+					asset.setLastIssuedToUser(woTool.getIssuedTo());
+				}
+				if(woTool.getWorkorder() != null) {
+					asset.setLastIssuedToWo(woTool.getWorkorder().getId());
+				}
 				asset.setLastIssuedTime(System.currentTimeMillis());
 				AssetsAPI.updateAsset(asset, asset.getId());
 
