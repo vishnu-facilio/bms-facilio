@@ -918,12 +918,10 @@
 	"103": {
 		"name": "VISITOR_WELCOME_NOTIFICATION",
 		"sender": "noreply@${org.domain}.facilio.com",
-		"mailType": "mime",
+		"mailType": "html",
 		"subject": "Welcome!",
 		"to": "${vLog.visitor.email}",
-		"message_ftl": "welcomeVisitor",
-		"attachmentsUrl" : "<#if (ndaPublicUrl) ?? > ${ndaPublicUrl} </#if>",
-		"attachmentsNames" : "nda"
+		"message_ftl": "welcomeVisitor"
 	},
 	"104": {
 		"name": "VISITOR_THANKS_NOTIFICATION",
