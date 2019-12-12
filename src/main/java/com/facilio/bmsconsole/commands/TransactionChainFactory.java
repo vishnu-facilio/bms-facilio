@@ -2110,6 +2110,9 @@ public class TransactionChainFactory {
 			chain.addCommand(new AddOrUpdatePurchaseRequestCommand());
 			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			chain.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
+			chain.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		
 			return chain;
 		}
 
@@ -2117,6 +2120,9 @@ public class TransactionChainFactory {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseRequest());
 			chain.addCommand(new UpdateBulkPurchaseRequestStatusCommand());
+			chain.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		
 			return chain;
 		}
 
@@ -2150,6 +2156,9 @@ public class TransactionChainFactory {
 			chain.addCommand(new AssociateDefaultTermsToPoCommand());
 			chain.addCommand(getPurchaseOrderTotalCostChain()); //update purchase order total cost
 			chain.addCommand(new AddPurchaseRequestOrderRelation());
+			chain.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		
 			return chain;
 		}
 
@@ -2173,6 +2182,9 @@ public class TransactionChainFactory {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
 			chain.addCommand(new UpdateBulkPurchaseOrderStatusCommand());
+			chain.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		
 			return chain;
 		}
 

@@ -729,7 +729,7 @@ public class FormFactory {
 		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Located Site", Required.REQUIRED, "site", 3, 2));
 		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 3).setAllowCreate(true).setCreateFormName("location_form"));
 		fields.add(new FormField("owner", FieldDisplayType.USER, "Owner", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("sites", FieldDisplayType.SITEMULTICHOOSER, "Sites", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("sites", FieldDisplayType.SITEMULTICHOOSER, "Serving Sites", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 6, 2));
 		fields.add(new FormField("isGatePassRequired", FieldDisplayType.DECISION_BOX, "Gate Pass Needed", Required.OPTIONAL, 6, 3));
 
@@ -837,14 +837,15 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
 		fields.add(new FormField("spaces", FieldDisplayType.SPACEMULTICHOOSER, "Spaces", Required.REQUIRED, 5, 1));
-		//fields.add(new FormField("contact_name", FieldDisplayType.TEXTBOX, "Contact Name", Required.REQUIRED, 6, 1));
-		//fields.add(new FormField("contact_email", FieldDisplayType.TEXTBOX, "Contact Email", Required.REQUIRED, 7, 1));
-		fields.add(new FormField("tenantType", FieldDisplayType.SELECTBOX, "Tenant Type", Required.OPTIONAL, 6, 1));
-		fields.add(new FormField("inTime", FieldDisplayType.DATE, "Lease Start Time", Required.OPTIONAL, 8, 1));
-		fields.add(new FormField("outTime", FieldDisplayType.DATE, "Lease End Time", Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("primaryContactName", FieldDisplayType.TEXTBOX, "Primary Contact Name", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("primaryContactEmail", FieldDisplayType.TEXTBOX, "Primary Contact E-mail", Required.REQUIRED, 7, 1));
+		fields.add(new FormField("primaryContactPhone", FieldDisplayType.TEXTBOX, "Primary Contact Phone", Required.REQUIRED, 8, 1));
+		fields.add(new FormField("tenantType", FieldDisplayType.SELECTBOX, "Tenant Type", Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("inTime", FieldDisplayType.DATE, "Lease Start Time", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("outTime", FieldDisplayType.DATE, "Lease End Time", Required.OPTIONAL, 11, 1));
 		//fields.add(new FormField("logo", FieldDisplayType.LOGO, "Logo", Required.OPTIONAL, 1, 1));
-		fields.add(new FormField("tenantContacts", FieldDisplayType.VENDOR_CONTACTS , "Contacts", Required.OPTIONAL, 10, 1));
-		fields.add(new FormField("utilityMeters", FieldDisplayType.ASSETMULTICHOOSER, "UTILITY METERS", Required.OPTIONAL, 11, 1));
+		//fields.add(new FormField("tenantContacts", FieldDisplayType.VENDOR_CONTACTS , "Contacts", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("utilityMeters", FieldDisplayType.ASSETMULTICHOOSER, "UTILITY METERS", Required.OPTIONAL, 12, 1));
 
 		return fields;
 	}

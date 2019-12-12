@@ -786,18 +786,6 @@ private Map<String, Double> readingData;
    
    
    
-   public String addTenantUser() throws Exception {
-      
-       FacilioChain addTenantUser = FacilioChainFactory.addTenantUserChain();
-       FacilioContext context = new FacilioContext();
-       context.put(FacilioConstants.ContextNames.CONTACT, contact);
-       context.put(FacilioConstants.ContextNames.RECORD_ID, id);
-   //    tenant = TenantsAPI.getTenant(id, true);
-   // context.put(TenantsAPI.TENANT_CONTEXT, tenant);
-      addTenantUser.execute(context);
-      return SUCCESS;
-   }
-
    public String getTenantLogoUrl() throws Exception {
       
        setLogoUrl(TenantsAPI.getLogoUrl(logoId));

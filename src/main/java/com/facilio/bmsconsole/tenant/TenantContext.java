@@ -229,5 +229,33 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 			return null;
 		}
 	}
+	private String primaryContactName;
+
+	public String getPrimaryContactName() {
+		return primaryContactName;
+	}
+
+	public void setPrimaryContactName(String primaryContactName) {
+		this.primaryContactName = primaryContactName;
+	}
+	
+	private String primaryContactEmail;
+	private String primaryContactPhone;
+
+	public String getPrimaryContactEmail() {
+		return primaryContactEmail;
+	}
+
+	public void setPrimaryContactEmail(String primaryContactEmail) {
+		this.primaryContactEmail = primaryContactEmail;
+	}
+
+	public String getPrimaryContactPhone() {
+		return primaryContactPhone;
+	}
+
+	public void setPrimaryContactPhone(String primaryContactPhone) {
+		this.primaryContactPhone = primaryContactPhone;
+	}
 	
 }

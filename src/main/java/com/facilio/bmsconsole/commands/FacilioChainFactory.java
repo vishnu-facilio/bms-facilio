@@ -1912,12 +1912,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static FacilioChain addTenantUserChain() {
-		FacilioChain c = FacilioChain.getTransactionChain();
-		c.addCommand(new AddTenantUserCommand());
-		return c;
-	}
-	
 	public static FacilioChain addTenantLogoChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddTenantLogoCommand());

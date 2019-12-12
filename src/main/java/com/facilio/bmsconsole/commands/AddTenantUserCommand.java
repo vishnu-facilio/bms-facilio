@@ -26,29 +26,30 @@ public class AddTenantUserCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		TenantContext tenant = (TenantContext) context.get(FacilioConstants.ContextNames.RECORD);
 		List<ContactsContext> contacts = (List<ContactsContext>) context.get(FacilioConstants.ContextNames.CONTACTS);
+		
+		EventType eventType = (EventType)context.getOrDefault(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		
+		if(eventType == EventType.CREATE) {
+			ContactsContext primarycontact = addDefaultTenantPrimaryContact(tenant);
+			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
+		}
+		else {
+			ContactsContext existingcontactForEmail = ContactsAPI.getContactforEmail(tenant.getPrimaryContactEmail(), tenant.getId(), false);
+			if(existingcontactForEmail == null) {
+				existingcontactForEmail = addDefaultTenantPrimaryContact(tenant);
+				RecordAPI.addRecord(true, Collections.singletonList(existingcontactForEmail), module, fields);
+			}
+			else {
+				existingcontactForEmail.setName(tenant.getPrimaryContactName());
+				existingcontactForEmail.setPhone(tenant.getPrimaryContactPhone());
+				RecordAPI.updateRecord(existingcontactForEmail, module, fields);
+			}
+		}
 		if(tenant != null && CollectionUtils.isNotEmpty(contacts)) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
-			List<FacilioField> fields = modBean.getAllFields(module.getName());
-//			EventType eventType = (EventType)context.getOrDefault(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-//			
-//			
-//			if(eventType == EventType.CREATE) {
-//				ContactsContext primarycontact = addDefaultTenantPrimaryContact(tenant);
-//				RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
-//			}
-//			else {
-//				ContactsContext existingcontactForEmail = ContactsAPI.getContactforEmail(tenant.getPrimaryContactEmail(), tenant.getId(), false);
-//				if(existingcontactForEmail == null) {
-//					existingcontactForEmail = addDefaultTenantPrimaryContact(tenant);
-//					RecordAPI.addRecord(true, Collections.singletonList(existingcontactForEmail), module, fields);
-//				}
-//				else {
-//					existingcontactForEmail.setName(tenant.getPrimaryContactName());
-//					existingcontactForEmail.setPhone(tenant.getPrimaryContactPhone());
-//					RecordAPI.updateRecord(existingcontactForEmail, module, fields);
-//				}
-//			}
 			for(ContactsContext contact : contacts)	{
 				contact.setTenant(tenant);
 				contact.setContactType(ContactType.TENANT);
@@ -67,16 +68,16 @@ public class AddTenantUserCommand extends FacilioCommand {
 		return false;
 	}
 
-//	private ContactsContext addDefaultTenantPrimaryContact(TenantContext tenant) throws Exception {
-//		ContactsAPI.unMarkPrimaryContact(tenant.getId(), false);
-//		ContactsContext contact = new ContactsContext();
-//		contact.setName(tenant.getPrimaryContactName() != null ? tenant.getPrimaryContactName() : tenant.getName());
-//		contact.setContactType(ContactType.TENANT);
-//		contact.setTenant(tenant);
-//		contact.setEmail(tenant.getPrimaryContactEmail());
-//		contact.setPhone(tenant.getPrimaryContactPhone());
-//		contact.setIsPrimaryContact(true);
-//		contact.setIsPortalAccessNeeded(false);
-//		return contact;
-//	}
+	private ContactsContext addDefaultTenantPrimaryContact(TenantContext tenant) throws Exception {
+		ContactsAPI.unMarkPrimaryContact(tenant.getId(), false);
+		ContactsContext contact = new ContactsContext();
+		contact.setName(tenant.getPrimaryContactName() != null ? tenant.getPrimaryContactName() : tenant.getName());
+		contact.setContactType(ContactType.TENANT);
+		contact.setTenant(tenant);
+		contact.setEmail(tenant.getPrimaryContactEmail());
+		contact.setPhone(tenant.getPrimaryContactPhone());
+		contact.setIsPrimaryContact(true);
+		contact.setIsPortalAccessNeeded(false);
+		return contact;
+	}
 }

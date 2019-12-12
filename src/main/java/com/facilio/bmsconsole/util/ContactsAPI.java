@@ -74,7 +74,7 @@ public class ContactsAPI {
 		
 	}
 	
-	public static ContactsContext getVendorContactforEmail(String email, long vendorId) throws Exception {
+	public static ContactsContext getContactforEmail(String email, long id, boolean isVendor) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.CONTACT);
@@ -83,10 +83,15 @@ public class ContactsAPI {
 														.module(module)
 														.beanClass(ContactsContext.class)
 														.select(fields)
-														.andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(vendorId), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition("EMAIL", "email", email, StringOperators.IS))
 														
 														;
+		if(isVendor) {
+			builder.andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(id), NumberOperators.EQUALS));
+		}
+		else {
+			builder.andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenant", String.valueOf(id), NumberOperators.EQUALS));
+		}
 		ContactsContext records = builder.fetchFirst();
 		return records;
 		
@@ -155,8 +160,12 @@ public class ContactsAPI {
 		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 		FacilioField primaryContactField = contactFieldMap.get("isPrimaryContact");
 		if(contact.getVendor() != null && contact.isPrimaryContact()) {
-			unMarkPrimaryContactForVendor(contact.getVendor().getId());
+			unMarkPrimaryContact(contact.getVendor().getId(), true);
 			rollUpVendorPrimarycontactFields(contact.getVendor().getId(), contact);
+		}
+		else if(contact.getTenant() != null && contact.isPrimaryContact()) {
+			unMarkPrimaryContact(contact.getTenant().getId(), false);
+			rollUpTenantPrimarycontactFields(contact.getTenant().getId(), contact);
 		}
 		updatedfields.add(primaryContactField);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -198,6 +207,34 @@ public class ContactsAPI {
 		updateBuilder.update(value);
 
 	}
+	
+	public static void rollUpTenantPrimarycontactFields(long tenantId, ContactsContext contact) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
+		Map<String, FacilioField> contactFieldMap = FieldFactory.getAsMap(fields);
+		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+		
+		FacilioField primaryEmailField = contactFieldMap.get("primaryContactEmail");
+		FacilioField primaryPhoneField = contactFieldMap.get("primaryContactPhone");
+		FacilioField primaryNameField = contactFieldMap.get("primaryContactName");
+		
+		updatedfields.add(primaryEmailField);
+		updatedfields.add(primaryPhoneField);
+		updatedfields.add(primaryNameField);
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+											.table(module.getTableName())
+											.fields(updatedfields)
+											.andCondition(CriteriaAPI.getIdCondition(tenantId, module));
+									
+		Map<String, Object> value = new HashMap<>();
+		value.put("primaryContactEmail", contact.getEmail());
+		value.put("primaryContactPhone", contact.getPhone());
+		value.put("primaryContactName", contact.getName());
+		updateBuilder.update(value);
+
+	}
 
 	public static void deleteContactUser(long contactId) throws Exception {
 		ContactsContext contact = (ContactsContext) RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, contactId);
@@ -223,7 +260,7 @@ public class ContactsAPI {
 		
 	}
 	
-	public static int unMarkPrimaryContactForVendor(long vendorId) throws Exception{
+	public static int unMarkPrimaryContact(long id, boolean isVendor) throws Exception{
         
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
@@ -235,10 +272,17 @@ public class ContactsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 											.table(module.getTableName())
 											.fields(updatedfields)
-											.andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(vendorId), NumberOperators.EQUALS))
 											.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS))
 											
 											;
+		
+		if(isVendor) {
+			updateBuilder.andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(id), NumberOperators.EQUALS));
+			
+		}
+		else {
+			updateBuilder.andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenant", String.valueOf(id), NumberOperators.EQUALS));
+		}
 									
 		Map<String, Object> value = new HashMap<>();
 		value.put("isPrimaryContact", false);
