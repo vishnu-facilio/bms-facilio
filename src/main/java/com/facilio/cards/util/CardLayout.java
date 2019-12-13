@@ -51,7 +51,6 @@ public enum CardLayout {
 					+ "		fetchModule = Module(params.reading.moduleName);"
 					+ "		cardValue = fetchModule.fetch(db);"
 					+ "		enumMap = Reading(fieldid, params.reading.parentId).getEnumMap();"
-					+ "		log '' + enumMap;"
 					+ "		valueMap = {};"
 					+ "		valueMap[\"value\"] = cardValue;"
 					+ "		if (enumMap != null) {"
