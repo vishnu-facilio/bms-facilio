@@ -250,10 +250,13 @@ public class UpdateTaskCommand extends FacilioCommand {
 				if (ticket.getStateFlowId() == defaultStateFlow.getId()) {
 					FacilioStatus statusObj = ticket.getModuleState();
 					
-//					if ("Submitted".equalsIgnoreCase(statusObj.getStatus()) || "Assigned".equalsIgnoreCase(statusObj.getStatus())) {
-//						throw new IllegalArgumentException("Scan The QR Before Starting The Task");
-//					}
 					
+					if (tickets.get(0).getQrEnabled() != null && tickets.get(0).getQrEnabled() && ticket.getResource() != null) {
+						if ("Submitted".equalsIgnoreCase(statusObj.getStatus()) || "Assigned".equalsIgnoreCase(statusObj.getStatus())) {
+							throw new IllegalArgumentException("Scan the QR before starting the task");
+						}
+						
+					}
 					
 					if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
 						throw new IllegalArgumentException("Task cannot be updated for completed tickets");
@@ -280,14 +283,17 @@ public class UpdateTaskCommand extends FacilioCommand {
 					throw new IllegalArgumentException("Task cannot be updated for completed tickets");
 				}
 				
-				if ("Submitted".equalsIgnoreCase(statusObj.getStatus()) || "Assigned".equalsIgnoreCase(statusObj.getStatus())) {
-					throw new IllegalArgumentException("Scan The QR Before Starting The Task");
+				if (tickets.get(0).getQrEnabled() != null && tickets.get(0).getQrEnabled() && ticket.getResource() != null) {
+					if ("Submitted".equalsIgnoreCase(statusObj.getStatus()) || "Assigned".equalsIgnoreCase(statusObj.getStatus())) {
+						throw new IllegalArgumentException("Scan the QR before starting the task");
+					}
+					
 				}
 				
 				if (!("Work in Progress".equalsIgnoreCase(statusObj.getStatus()))) {
 					TicketContext newTicket = new TicketContext();
 					newTicket.setStatus(TicketAPI.getStatus("Work in Progress"));
-					TicketAPI.updateTicketStatus(activityType, newTicket, ticket, false);
+					TicketAPI.updateTicketStatus(activityType, newTicket, ticket, false);	
 					
 					UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
 																.module(woModule)
