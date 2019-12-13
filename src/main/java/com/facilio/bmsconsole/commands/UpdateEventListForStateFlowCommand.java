@@ -12,6 +12,11 @@ public class UpdateEventListForStateFlowCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		updateEventListForStateTransition(context);
+		return false;
+	}
+
+	public static void updateEventListForStateTransition(Context context) {
 		List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
 		if (eventTypes == null) {
 			eventTypes = new ArrayList<>();
@@ -21,11 +26,10 @@ public class UpdateEventListForStateFlowCommand extends FacilioCommand {
 		if (!eventTypes.contains(eventType)) {
 			eventTypes.add(eventType);
 		}
-		
+
 		if (!eventTypes.contains(EventType.STATE_TRANSITION)) {
 			eventTypes.add(EventType.STATE_TRANSITION);
 		}
-		return false;
 	}
 
 }
