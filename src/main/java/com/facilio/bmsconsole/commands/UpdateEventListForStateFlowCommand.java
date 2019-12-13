@@ -23,7 +23,7 @@ public class UpdateEventListForStateFlowCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, eventTypes);
 		}
 		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-		if (!eventTypes.contains(eventType)) {
+		if (eventType != null && !eventTypes.contains(eventType)) {
 			eventTypes.add(eventType);
 		}
 

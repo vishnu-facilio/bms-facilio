@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
@@ -25,8 +26,13 @@ public class GetVisitorDetailAndLogCommand extends FacilioCommand{
 			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(-1, passCode, false);
 			if(vLog != null) {
 				if(!vLog.isRecurring()) {
-					if(vLog.getExpectedCheckInTime() > 0 && vLog.getExpectedCheckOutTime() > 0 && (currentTime < vLog.getExpectedCheckInTime() || currentTime > vLog.getExpectedCheckOutTime())) {
-						throw new IllegalArgumentException("Invalid checkin time");
+					if(vLog.getExpectedCheckInTime() > 0) {
+						Date expectedCheckInDate = new Date(vLog.getExpectedCheckInTime());
+						Date currentDate = new Date(currentTime);
+						
+						if (currentDate.compareTo(expectedCheckInDate) != 0) {
+							throw new IllegalArgumentException("Invalid checkin time");
+						}
 					}
 					if(vLog != null) {
 						List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(vLog.getStateFlowId(), vLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOGGING, vLog, (FacilioContext)context);
