@@ -2159,6 +2159,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		
+			
 			return chain;
 		}
 
