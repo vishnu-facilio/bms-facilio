@@ -19,11 +19,13 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.PublicFileContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.BitlyUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -684,8 +686,29 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		
 		@Override
 		public Object execute(Object... objects) throws Exception {
-			Map<String, Object> map = FieldUtil.getAsProperties(objects[0]);
-			return map.get(objects[1]);
+			if(objects[0] != null) {
+				Map<String, Object> map = FieldUtil.getAsProperties(objects[0]);
+				return map.get(objects[1]);
+			}
+			return null;
+		}
+
+	},
+   GET_LANG_LONG_FOR_SITE(11, "getLatLngForSite") {
+		
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			if(objects[0] != null) {
+				ResourceContext resource = ResourceAPI.getResource((long)objects[0]);
+				if(resource != null) {
+					SiteContext site = SpaceAPI.getSiteSpace(resource.getSiteId());
+					if(site != null && site.getLocation() != null) {
+						String mapsLocation = "https://www.google.com/maps?saddr=My+Location&daddr="+ site.getLocation().getLat() + "," + site.getLocation().getLng();
+						return mapsLocation;
+					}
+				}
+			}
+			return null;
 		}
 
 	}

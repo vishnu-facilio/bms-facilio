@@ -165,6 +165,7 @@ public class SpaceAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		
 		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
 																	.select(fields)
@@ -174,6 +175,9 @@ public class SpaceAPI {
 																	.beanClass(SiteContext.class)
 //																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
+		
+		LookupField location = (LookupField) fieldsAsMap.get("location");
+		selectBuilder.fetchLookup(location);
 		List<SiteContext> spaces = selectBuilder.get();
 		
 		if(spaces != null && !spaces.isEmpty()) {
