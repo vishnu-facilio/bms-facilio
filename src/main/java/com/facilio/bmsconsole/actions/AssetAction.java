@@ -601,6 +601,8 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.QR_VALUE, value);
 		context.put(FacilioConstants.ContextNames.LOCATION, location);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, ContextNames.ASSET_ACTIVITY);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, ContextNames.ASSET);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSET_LOCATION_CHANGE);
 		FacilioChain getAssetChain = TransactionChainFactory.getAssetFromQRChain();
 		getAssetChain.execute(context);
 		setResult("asset", context.get(FacilioConstants.ContextNames.ASSET));

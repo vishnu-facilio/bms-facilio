@@ -81,7 +81,7 @@ public class UpdateGeoLocationCommand extends FacilioCommand {
 				JSONObject newinfo = new JSONObject();
                 newinfo.put("Location",info);
 				LOGGER.info("Asset Acitibity "+info.toJSONString());
-				updateAsset(asset, geoLocation, newLocation, isDesignatedLocation, distanceMoved);
+				updateAsset(asset, geoLocation, newLocation, isDesignatedLocation, distanceMoved, context);
 				CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.LOCATION, newinfo, (FacilioContext) context);
 			}
 		}
@@ -104,7 +104,7 @@ public class UpdateGeoLocationCommand extends FacilioCommand {
 		return null;
 	}
 	
-	private void updateAsset(AssetContext asset, String geoLocation, String newLocation, Boolean isDesignatedLocation, double distanceMoved) throws Exception {
+	private void updateAsset(AssetContext asset, String geoLocation, String newLocation, Boolean isDesignatedLocation, double distanceMoved, Context context) throws Exception {
 		AssetContext updateAsset = new AssetContext();
 		updateAsset.setCurrentLocation(newLocation);
 		asset.setCurrentLocation(newLocation);
@@ -130,7 +130,9 @@ public class UpdateGeoLocationCommand extends FacilioCommand {
 																.module(module)
 																.andCondition(CriteriaAPI.getIdCondition(asset.getId(), module))
 																;
-		updateBuilder.update(updateAsset);
+		updateBuilder.withChangeSet(AssetContext.class).update(updateAsset);
+		
+		context.put(FacilioConstants.ContextNames.CHANGE_SET, updateBuilder.getChangeSet());
 	}
 
 }

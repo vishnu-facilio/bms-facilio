@@ -223,6 +223,12 @@ public enum EventType {
 		public String getMessage(JSONObject json) {
 			return null;
 		}
+	},
+	ASSET_LOCATION_CHANGE (1 << 25) {
+		@Override
+		public String getMessage(JSONObject json) {
+			return null;
+		}
 	}
 	;
 
