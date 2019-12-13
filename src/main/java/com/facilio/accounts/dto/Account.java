@@ -54,6 +54,9 @@ public class Account implements AccountsInterface<User>, Serializable{
 	
 	public void setOrg(Organization org) {
 		this.org = org;
+		if (org != null && org.getLoggerLevel() >= 0) {
+			this.setLoggerLevel(org.getLoggerLevel());
+		}
 	}
 	
 	public Account(Organization org, User user) {
