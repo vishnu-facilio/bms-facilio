@@ -57,7 +57,9 @@ public class PurchaseOrderCompleteCommand extends FacilioCommand {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule pomodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
 				for (PurchaseOrderContext po : purchaseOrders) {
-					storeRoomId = po.getStoreRoom().getId();
+					if(po.getStoreRoom() != null) {
+						storeRoomId = po.getStoreRoom().getId();
+					}
 					vendorId = po.getVendor().getId();
 					if (lineItems == null) {
 						lineItems = getLineItemsForPO(po.getId());

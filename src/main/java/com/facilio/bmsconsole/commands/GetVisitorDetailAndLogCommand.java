@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.time.DateTimeUtil;
 
 public class GetVisitorDetailAndLogCommand extends FacilioCommand{
 
@@ -27,12 +28,13 @@ public class GetVisitorDetailAndLogCommand extends FacilioCommand{
 			if(vLog != null) {
 				if(!vLog.isRecurring()) {
 					if(vLog.getExpectedCheckInTime() > 0) {
-						Date expectedCheckInDate = new Date(vLog.getExpectedCheckInTime());
-						Date currentDate = new Date(currentTime);
-						
-						if (currentDate.compareTo(expectedCheckInDate) != 0) {
+						if(currentTime < vLog.getExpectedCheckInTime() && !DateTimeUtil.isSameDay(currentTime, vLog.getExpectedCheckInTime()))
+						{
 							throw new IllegalArgumentException("Invalid checkin time");
 						}
+					}
+					if(vLog.getExpectedCheckOutTime() > 0 && currentTime > vLog.getExpectedCheckOutTime()) {
+						throw new IllegalArgumentException("Invalid checkin time");
 					}
 					if(vLog != null) {
 						List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(vLog.getStateFlowId(), vLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOGGING, vLog, (FacilioContext)context);

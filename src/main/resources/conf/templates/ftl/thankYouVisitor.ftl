@@ -24,7 +24,7 @@
                         <tr>
                               <td style="padding-top: 30px;">
                                           <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;padding-bottom:20px;color:#282c36;font-size:40px;line-height:50px;text-align:left;font-weight:bold;padding-top: 20px;letter-spacing: 0.6px;">
-                                                      Thank you for visiting! 
+                                                      Thanks for visiting us! 
                                                   </div>
                                     <#if (vLog.visitedSpace) ??>
                                     <div style="color: #000;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;font-size: 16px;padding-bottom: 30px;letter-spacing: 0.5px;">

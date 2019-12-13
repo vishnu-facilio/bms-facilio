@@ -40,7 +40,7 @@ public class S3FileStore extends FileStore {
 	private static Logger log = LogManager.getLogger(S3FileStore.class.getName());
 	private static AmazonS3 AWS_S3_CLIENT = null;
 	private static final String PRIVATE_KEY_FILE_PATH = "/home/ubuntu/pk/pk-APKAJUH5UCWNSYC4DOSQ.pem";
-	private static final long EXPIRATION = 24 * 60* 60 * 1000;
+	private static final long EXPIRATION = 48 * 60* 60 * 1000;
 
 
 	S3FileStore(long orgId, long userId) {

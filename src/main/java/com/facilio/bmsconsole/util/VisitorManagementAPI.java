@@ -267,6 +267,8 @@ public class VisitorManagementAPI {
 														.beanClass(VisitorLoggingContext.class)
 														.select(fields)
 														.andCondition(CriteriaAPI.getCondition("EXPECTED_CHECKIN_TIME", "expectedCheckInTime", String.valueOf(currentTime) , DateOperators.TODAY))
+														.andCondition(CriteriaAPI.getCondition("EXPECTED_CHECKOUT_TIME", "expectedCheckOutTime", String.valueOf(currentTime) , DateOperators.IS_AFTER))
+														
 														;
 		if(parentLogId > 0) {
 			builder.andCondition(CriteriaAPI.getCondition("PARENT_LOG_ID", "parentLogId", String.valueOf(parentLogId), NumberOperators.EQUALS));

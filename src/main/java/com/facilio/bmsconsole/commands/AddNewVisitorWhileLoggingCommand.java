@@ -92,7 +92,7 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 					if(vLog != null) {
 						FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
 						VisitorContext visitor = null;
-						if(vL.getVisitor() != null && vL.getVisitor().getId() > 0) {
+						if(vL.getVisitor() != null && vL.getVisitor().getId() > 0 && !vL.isPreregistered()) {
 							visitor = VisitorManagementAPI.getVisitor(vL.getVisitor().getId(), null);
 							VisitorManagementAPI.checkOutVisitorLogging(visitor.getPhone(), c.getContext());
 						}
