@@ -1,6 +1,16 @@
 
 package com.facilio.bmsconsole.page.factory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
@@ -24,15 +34,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class AssetPageFactory extends PageFactory {
 	
@@ -146,7 +147,10 @@ public class AssetPageFactory extends PageFactory {
 		}
 		
 		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
-		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) || (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))) {
+		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) 
+				|| (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))
+				|| (AccountUtil.getCurrentOrg().getOrgId() == 253)
+			) {
 			
 			Tab tab6 = page.new Tab("graphics", "graphics");
 			page.addTab(tab6);
