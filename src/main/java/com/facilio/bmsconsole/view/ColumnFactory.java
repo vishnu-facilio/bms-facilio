@@ -260,6 +260,8 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("name", "Tenant Name"));
 		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("primaryContactName", "Primary Contact Name"));
+		columns.add(new ViewField("primaryContactEmail", "Primary Contact Email"));
 		columns.add(new ViewField("inTime", "Lease Start Time"));
 		columns.add(new ViewField("outTime", "Lease End Time"));
 				
