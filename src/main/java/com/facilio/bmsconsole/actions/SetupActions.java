@@ -142,12 +142,12 @@ public String importData() throws Exception {
 	public String updateOrgSettings() throws Exception {
 		org.getName();
 		
-		if (getOrgPhoto() != null) {
-			FileStore fs = FacilioFactory.getFileStore();
-			long fileId = fs.addFile(getOrgPhotoFileName(), getOrgPhoto(), getOrgPhotoContentType());
-			org.setLogoId(fileId);
-		}
-		
+//		if (getOrgPhoto() != null) {
+//			FileStore fs = FacilioFactory.getFileStore();
+//			long fileId = fs.addFile(getOrgPhotoFileName(), getOrgPhoto(), getOrgPhotoContentType());
+//			org.setLogoId(fileId);
+//		}
+//		
 		AccountUtil.getOrgBean().updateOrg(AccountUtil.getCurrentOrg().getOrgId(), org);
 		return SUCCESS;
 	}

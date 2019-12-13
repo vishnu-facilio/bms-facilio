@@ -43,12 +43,7 @@ public class AccountUtil {
 	
 	public static void setCurrentAccount(long orgId) throws Exception {
 		Organization org = null;
-		if(FacilioProperties.isProduction()) {
-			 org = IAMUtil.getOrgBean().getOrgv2(orgId);
-		}else {
-			 org = FacilioService.runAsServiceWihReturn(() ->IAMUtil.getOrgBean().getOrgv2(orgId));
-		}
-		
+		org = FacilioService.runAsServiceWihReturn(() ->IAMUtil.getOrgBean().getOrgv2(orgId));
 		
 		if (org != null) {
 
