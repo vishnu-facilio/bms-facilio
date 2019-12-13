@@ -119,6 +119,7 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		
 		Map<Long,PurchaseOrderLineItemContext> toolTypeItems = new HashMap<Long, PurchaseOrderLineItemContext>();
 		Map<Long,PurchaseOrderLineItemContext> itemTypeItems = new HashMap<Long, PurchaseOrderLineItemContext>();
+		ArrayList<PurchaseOrderLineItemContext> others = new ArrayList<PurchaseOrderLineItemContext>();
 		double quantity = 0.0;
 	
 		for(PurchaseRequestContext pr : list) {
@@ -161,6 +162,9 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 							toolTypeLineItem.setQuantity(quantity);
 						}
 					}
+					else if(prItem.getInventoryTypeEnum() == InventoryType.OTHERS) {
+						others.add(PurchaseOrderLineItemContext.from(prItem));
+					}
 					
 				}
 			}
@@ -169,6 +173,7 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		
 		List<PurchaseOrderLineItemContext> poLineItems = new ArrayList(itemTypeItems.values());
 		poLineItems.addAll(new ArrayList(toolTypeItems.values()));
+		poLineItems.addAll(others);
 		purchaseOrderContext.setLineItems(poLineItems);
 	
 	
