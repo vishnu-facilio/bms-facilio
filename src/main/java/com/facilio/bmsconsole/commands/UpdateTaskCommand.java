@@ -250,9 +250,9 @@ public class UpdateTaskCommand extends FacilioCommand {
 				if (ticket.getStateFlowId() == defaultStateFlow.getId()) {
 					FacilioStatus statusObj = ticket.getModuleState();
 					
-					if ("Submitted".equalsIgnoreCase(statusObj.getStatus()) || "Assigned".equalsIgnoreCase(statusObj.getStatus())) {
-						throw new IllegalArgumentException("Scan The QR Before Starting The Task");
-					}
+//					if ("Submitted".equalsIgnoreCase(statusObj.getStatus()) || "Assigned".equalsIgnoreCase(statusObj.getStatus())) {
+//						throw new IllegalArgumentException("Scan The QR Before Starting The Task");
+//					}
 					
 					
 					if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
