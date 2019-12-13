@@ -378,7 +378,10 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean deleteUser(long ouid) throws Exception {
 		User user = getUser(ouid, false);
-		return IAMUserUtil.deleteUser(user, AccountUtil.getCurrentOrg().getOrgId());
+		if(user != null) {
+			return IAMUserUtil.deleteUser(user, AccountUtil.getCurrentOrg().getOrgId());
+		}
+		return false;
 	}
 	
 	@Override

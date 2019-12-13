@@ -82,8 +82,10 @@ public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 			poItem.setInventoryType(prItem.getInventoryType());
 			poItem.setItemType(prItem.getItemType());
 			poItem.setToolType(prItem.getToolType());
+			poItem.setService(prItem.getService());
 			poItem.setQuantity(prItem.getQuantity());
 			poItem.setUnitPrice(prItem.getUnitPrice());
+			poItem.setRemarks(prItem.getRemarks());
 		}
 		return poItem;
 	}

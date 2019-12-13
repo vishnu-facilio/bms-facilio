@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -100,6 +101,7 @@ public class PurchaseRequestAction extends FacilioAction {
 	public String addPurchaseRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseRequest);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE_OR_EDIT);
 		
 		FacilioChain chain = TransactionChainFactory.getAddPurchaseRequestChain();
 		chain.execute(context);
@@ -204,6 +206,8 @@ public class PurchaseRequestAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		context.put(FacilioConstants.ContextNames.STATUS, getStatus());
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+		
 		
 		FacilioChain chain = TransactionChainFactory.getUpdatePurchaseRequestStatusChain();
 		chain.execute(context);

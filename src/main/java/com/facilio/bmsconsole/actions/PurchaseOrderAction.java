@@ -131,7 +131,10 @@ public class PurchaseOrderAction extends FacilioAction {
 	}
 	public String addPurchaseOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE.getValue());
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE_OR_EDIT);
+		if(purchaseOrder.getId() > 0) {
+			context.put(FacilioConstants.ContextNames.IS_EDIT, true);
+		}
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseOrder);
 		
 		if(!CollectionUtils.isEmpty(prIds)) {
@@ -148,6 +151,7 @@ public class PurchaseOrderAction extends FacilioAction {
 	public String bulkStatusUpdate() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.STATUS, getStatus());
 		
 		FacilioChain chain = TransactionChainFactory.getUpdatePurchaseOrderStatusChain();

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
@@ -161,7 +163,12 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 		public Object execute(Object... objects) throws Exception {
 			
 			checkParam(objects);
+			if(objects[0] instanceof Map) {
+				org.json.JSONObject json = new org.json.JSONObject((Map)objects[0]);
+				return FacilioUtil.parseJson(json.toString());
+			}
 			String string = (String) objects[0];
+			
 			return FacilioUtil.parseJson(string);
 			
 		}

@@ -16,10 +16,11 @@ public class ExecuteStateTransitionsCommand extends ExecuteAllWorkflowsCommand {
 	public ExecuteStateTransitionsCommand(RuleType ruleTypes) {
 		super(ruleTypes);
 	}
-	
+
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		context.put(FacilioConstants.ContextNames.STATE_TRANSITION_ONLY_CONDITIONED_CHECK, true);
+		UpdateEventListForStateFlowCommand.updateEventListForStateTransition(context);
 		return super.executeCommand(context);
 	}
 

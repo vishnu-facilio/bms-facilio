@@ -18,8 +18,8 @@ public class AssociateDefaultTermsToPoCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		Integer eventType = (Integer)context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-		if(eventType != null && eventType == EventType.CREATE.getValue()) {
+		Boolean eventType = (Boolean)context.getOrDefault(FacilioConstants.ContextNames.IS_EDIT, false);
+		if(!eventType) {
 			PurchaseOrderContext purchaseOrderContext = (PurchaseOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
 			List<TermsAndConditionContext> terms = PurchaseOrderAPI.fetchPoDefaultTerms();
 			if(CollectionUtils.isNotEmpty(terms)) {

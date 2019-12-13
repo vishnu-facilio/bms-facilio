@@ -249,6 +249,12 @@ public class UpdateTaskCommand extends FacilioCommand {
 				StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(woModule);
 				if (ticket.getStateFlowId() == defaultStateFlow.getId()) {
 					FacilioStatus statusObj = ticket.getModuleState();
+					
+					if ("Submitted".equalsIgnoreCase(statusObj.getStatus()) || "Assigned".equalsIgnoreCase(statusObj.getStatus())) {
+						throw new IllegalArgumentException("Scan The QR Before Starting The Task");
+					}
+					
+					
 					if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
 						throw new IllegalArgumentException("Task cannot be updated for completed tickets");
 					}
@@ -272,6 +278,10 @@ public class UpdateTaskCommand extends FacilioCommand {
 				FacilioStatus statusObj = ticket.getStatus();
 				if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
 					throw new IllegalArgumentException("Task cannot be updated for completed tickets");
+				}
+				
+				if ("Submitted".equalsIgnoreCase(statusObj.getStatus()) || "Assigned".equalsIgnoreCase(statusObj.getStatus())) {
+					throw new IllegalArgumentException("Scan The QR Before Starting The Task");
 				}
 				
 				if (!("Work in Progress".equalsIgnoreCase(statusObj.getStatus()))) {
