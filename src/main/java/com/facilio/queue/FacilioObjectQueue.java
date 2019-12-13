@@ -15,24 +15,22 @@ import com.facilio.service.FacilioService;
 
 public class FacilioObjectQueue {
 	private static final Logger LOGGER = Logger.getLogger(FacilioObjectQueue.class.getName());
-	private static final String TABLE_OLD = "FacilioInstantJobQueue";
-	private static final String NEW_TABLE_DATA ="FacilioInstantJobQueue_Data" ;
-	private static final FacilioQueueService INSTANCE = new FacilioDbQueue(TABLE_OLD,NEW_TABLE_DATA,false);
+	private static final FacilioQueueService INSTANCE = new FacilioDbQueue("FacilioInstantJobQueue",false);
 	private static FacilioQueueService getInstance() {
 		
 		return INSTANCE;
 	}
-	public static boolean sendMessage(Serializable serializable) throws Exception {
+	public static boolean sendMessage(String queueName, Serializable serializable) throws Exception {
 		if (serializable == null) {
 			return false;
 		}
 		String serializedString = Base64.encodeAsString(SerializationUtils.serialize(serializable));
-		return FacilioService.runAsServiceWihReturn(() -> getInstance().push(serializedString));
+		return FacilioService.runAsServiceWihReturn(() -> getInstance().push(queueName, serializedString));
 	}
 
-	public static List<ObjectMessage> getObjects( int limit) throws Exception {
+	public static List<ObjectMessage> getObjects(String queueName, int limit) throws Exception {
 		List<QueueMessage> receivedMessages = FacilioService
-				.runAsServiceWihReturn(() -> getInstance().pull(limit));
+				.runAsServiceWihReturn(() -> getInstance().pull(queueName, limit));
 		List<ObjectMessage> serializableList = new ArrayList<>();
 		for (QueueMessage message : receivedMessages) {
 			String serialized = message.getMessage();
@@ -52,13 +50,13 @@ public class FacilioObjectQueue {
 		return serializableList;
 	}
 
-	public static void deleteObject( String receiptHandle) throws Exception {
-		FacilioService.runAsService(() -> getInstance().delete(receiptHandle));
+	public static void deleteObject(String queueName, String receiptHandle) throws Exception {
+		FacilioService.runAsService(() -> getInstance().delete(queueName, receiptHandle));
 	}
 
-	public static boolean changeVisibilityTimeout(String receiptHandle, int visibilityTimeout)
+	public static boolean changeVisibilityTimeout(String queueName, String receiptHandle, int visibilityTimeout)
 			throws Exception {
 		return FacilioService.runAsServiceWihReturn(
-				() -> getInstance().changeVisibilityTimeout(receiptHandle, visibilityTimeout));
+				() -> getInstance().changeVisibilityTimeout(queueName, receiptHandle, visibilityTimeout));
 	}
 }
