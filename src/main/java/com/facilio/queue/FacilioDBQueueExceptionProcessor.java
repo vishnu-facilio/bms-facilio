@@ -46,11 +46,7 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
         	JSONObject json = new JSONObject();
 
             json.put("sender", "error@facilio.com");
-            if(FacilioProperties.isProduction()) {
-            	 json.put("to", "error@facilio.com");
-            }else {
-            	 json.put("to", "arunkumar@facilio.com");
-            }
+            json.put("to", "error@facilio.com");
            
             for(String orgWithClass : EXCEPTION_COUNT.keySet()) {
             	StringBuilder builder = new StringBuilder();
