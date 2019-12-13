@@ -359,7 +359,7 @@ public class CommonCommandUtil {
 			// New FacilioException Queue code need to remove condition for Production
 			if(FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
 				// LOGGER.debug("#####Facilio Exception Queue is push Msg is Entered"+message);
-				FacilioQueueException.addException("Exception", message);
+				FacilioQueueException.addException(message);
 			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
