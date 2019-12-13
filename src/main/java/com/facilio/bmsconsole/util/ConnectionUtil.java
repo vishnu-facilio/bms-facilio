@@ -87,6 +87,7 @@ public class ConnectionUtil {
 				else {
 					urlString = urlString + QUERY_STRING_SEPERATOR;
 				}
+				headerParam.put("Authorization", "Bearer "+connectionContext.getAccessToken());
 				urlString = urlString + ACCESS_TOKEN_STRING + EQUALS + connectionContext.getAccessToken();
 				break;
 			case BASIC:
@@ -209,19 +210,12 @@ public class ConnectionUtil {
 
 		HttpsURLConnection conn = null;
 		if(method == HttpMethod.GET) {
-			conn  = handleGetConnection(urlString,params);
+			conn  = handleGetConnection(urlString,params,headerParam);
 		}
 		else if(method == HttpMethod.POST) {
-			conn  = handlePostConnection(urlString,params,bodyString,bodyType);
+			conn  = handlePostConnection(urlString,params,bodyString,bodyType,headerParam);
 		}
 
-
-
-		if(headerParam != null && !headerParam.isEmpty()) {
-			for(String key : headerParam.keySet()) {
-				conn.setRequestProperty(key, headerParam.get(key));
-			}
-		}
 		conn.connect();
 
 		BufferedReader br = null;
@@ -241,7 +235,7 @@ public class ConnectionUtil {
   	   	return output.toString();
 	}
 
-	private static HttpsURLConnection handlePostConnection(String urlString, Map<String, String> params,String bodyString,String bodyType) throws Exception {
+	private static HttpsURLConnection handlePostConnection(String urlString, Map<String, String> params,String bodyString,String bodyType, Map<String, String> headerParam) throws Exception {
 
 		URL url = new URL(urlString);
 
@@ -250,6 +244,12 @@ public class ConnectionUtil {
 		conn.setDoOutput(true);
 		conn.setRequestMethod(HttpMethod.POST.name());
 		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
+		
+		if(headerParam != null && !headerParam.isEmpty()) {
+			for(String key : headerParam.keySet()) {
+				conn.setRequestProperty(key, headerParam.get(key));
+			}
+		}
 
 		String actualBodyString = null;
 		if(params != null && !params.isEmpty()) {
@@ -282,7 +282,7 @@ public class ConnectionUtil {
 		return conn;
 	}
 
-	private static HttpsURLConnection handleGetConnection(String urlString, Map<String, String> params) throws Exception {
+	private static HttpsURLConnection handleGetConnection(String urlString, Map<String, String> params, Map<String, String> headerParam) throws Exception {
 
 		String queryString = "";
 		if(params != null && !params.isEmpty()) {
@@ -316,6 +316,12 @@ public class ConnectionUtil {
 		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
 		conn.setDoInput(true);
 		conn.setDoOutput(true);
+		
+		if(headerParam != null && !headerParam.isEmpty()) {
+			for(String key : headerParam.keySet()) {
+				conn.setRequestProperty(key, headerParam.get(key));
+			}
+		}
 
 		return conn;
 	}
