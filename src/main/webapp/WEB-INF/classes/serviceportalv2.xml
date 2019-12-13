@@ -555,10 +555,13 @@
 	<package name="vendorWorkorder" namespace="/api/service/workorder/summary" extends="newServicePortalApiV2">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="v2viewWorkOrder">
+			method="viewWorkOrder">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="workOrderId">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
 		</action>
 	</package>
 	<package name="VendorWoStateTransition"
@@ -703,6 +706,13 @@
 		extends="newServicePortalApiV2">
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2metadata">
+		</action>
+	</package>
+	<package name="VendorV2ModuleMetaApiV2" namespace="/api/service/v2/modules/meta" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="v2metadata">
+			<param name="moduleName">{1}</param>
 		</action>
 	</package>
 	 <package name="VendorModuleDataApiv2" namespace="/api/service/v2/module/data"
