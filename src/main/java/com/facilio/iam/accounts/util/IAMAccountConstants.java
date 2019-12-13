@@ -207,6 +207,13 @@ public class IAMAccountConstants {
 			createdTime.setColumnName("CREATED_TIME");
 			createdTime.setModule(module);
 			fields.add(createdTime);
+
+			FacilioField loggerLevel = new FacilioField();
+			loggerLevel.setName("loggerLevel");
+			loggerLevel.setDataType(FieldType.NUMBER);
+			loggerLevel.setColumnName("LOGGER_LEVEL");
+			loggerLevel.setModule(module);
+			fields.add(loggerLevel);
 			
 			FacilioField dataSourceName = new FacilioField();
 			dataSourceName.setName("dataSource");
@@ -214,6 +221,7 @@ public class IAMAccountConstants {
 			dataSourceName.setColumnName("DATASOURCE");
 			dataSourceName.setModule(module);
 			fields.add(dataSourceName);
+
 			
 			FacilioField dbName = new FacilioField();
 			dbName.setName("database_name");
