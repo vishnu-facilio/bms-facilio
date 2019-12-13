@@ -71,11 +71,11 @@ public class ConnectionUtil {
 	public static final String QUERY_STRING_SEPERATOR = "?";
 	public static final String PARAM_SEPERATOR = "&";
 
-	public static String getUrlResult(ConnectionContext connectionContext,String urlString,Map<String,String> params,HttpMethod method,String bodyString,String bodyType) throws Exception {
+	public static String getUrlResult(ConnectionContext connectionContext,String urlString,Map<String,String> params,HttpMethod method,String bodyString,String bodyType,Map<String,String> headerParam) throws Exception {
 
 		params = params == null ? new HashMap<>() : params;
 
-		Map<String,String> headerParam = new HashMap<>();
+		headerParam = headerParam == null ? new HashMap<>() : headerParam;
 
 		switch(connectionContext.getAuthTypeEnum()) {
 

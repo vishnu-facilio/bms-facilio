@@ -36,7 +36,7 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 				params = (Map<String, String>) objects[2];
 			}
 			
-			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.GET,bodyString,bodyType);
+			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.GET,bodyString,bodyType,null);
 			
 			return res;
 		};
@@ -63,15 +63,19 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 			String bodyString = null;
 			String bodyType = null;
 			Map<String,String> params = null;
+			Map<String,String> headerParams = null;
 			if(objects.length == 3) {
 				params = (Map<String, String>) objects[2];
 			}
-			else if (objects.length == 4) {
+			else if (objects.length >= 4) {
 				bodyString = objects[2].toString();
 				bodyType = objects[3].toString();
+				if(objects.length == 5) {
+					headerParams = (Map<String, String>) objects[4];
+				}
 			}
 
-			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.POST,bodyString,bodyType);
+			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.POST,bodyString,bodyType,headerParams);
 			
 			return res;
 		};
