@@ -912,7 +912,7 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "Visitor Arrived!",
-		"to": "${vLog.host.email}",
+		"to": "<#if (vLog.host) ?? > ${vLog.host.email} </#if>",
 		"message_ftl": "notifyHost"
 	},
 	"103": {
@@ -944,7 +944,7 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "Visitor Approval Needed!",
-		"to": "${vLog.visitor.email}",
+		"to": "<#if (vLog.host) ?? > ${vLog.host.email} </#if>",
 		"message_ftl": "approveVisitor"
 	},
 	"107": {
@@ -992,7 +992,7 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "Attention Please ! Blocked Visitor on Watchlist Arrived!",
-		"to": "${vLog.host.email}",
+		"to": "<#if (vLog.host) ?? > ${vLog.host.email} </#if>",
 		"message_ftl": "notifyBlockedVisitor"
 	},
 	"115": {
@@ -1020,7 +1020,7 @@
 		"sender": "noreply@${org.domain}.facilio.com",
 		"mailType": "html",
 		"subject": "Attention Please ! VIP Visitor on Watchlist Arrived!",
-		"to": "${vLog.host.email}",
+		"to": "<#if (vLog.host) ?? >${vLog.host.email}</#if>",
 		"message_ftl": "notifyVipVisitor"
 	}
 }
