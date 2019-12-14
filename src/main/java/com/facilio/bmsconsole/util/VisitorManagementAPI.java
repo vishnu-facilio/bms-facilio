@@ -1109,7 +1109,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE);
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("host");
@@ -1159,7 +1159,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE);
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("host");
@@ -1209,7 +1209,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE);
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("host");
@@ -1256,7 +1256,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE);
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
@@ -1297,7 +1297,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE);
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
@@ -1338,7 +1338,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE);
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
@@ -1501,7 +1501,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE);
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
@@ -1551,7 +1551,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE);
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
@@ -1600,7 +1600,7 @@ public class VisitorManagementAPI {
 		workflowRuleContext.setRuleType(RuleType.MODULE_RULE_NOTIFICATION);
 		
 		workflowRuleContext.setModuleName(module.getName());
-		workflowRuleContext.setActivityType(EventType.CREATE);
+		workflowRuleContext.setActivityType(EventType.CREATE_OR_EDIT);
 		
 		Condition condition = new Condition();
 		condition.setFieldName("visitor");
