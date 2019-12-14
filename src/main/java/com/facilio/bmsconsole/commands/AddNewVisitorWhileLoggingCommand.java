@@ -87,24 +87,6 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 				else {
 					vL.setHostStatus(false);
 				}
-				if(vL.getVisitor() != null && vL.getVisitor().getId() > 0){
-					VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLogging(vL.getVisitor().getId(), true);
-					if(vLog != null) {
-						FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
-						VisitorContext visitor = null;
-						if(vL.getVisitor() != null && vL.getVisitor().getId() > 0 && !vL.isPreregistered()) {
-							visitor = VisitorManagementAPI.getVisitor(vL.getVisitor().getId(), null);
-							VisitorManagementAPI.checkOutVisitorLogging(visitor.getPhone(), c.getContext());
-						}
-						if(c.getContext().get("visitorLogging") != null) {
-							c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get("nextTransitionId"));
-							VisitorLoggingContext visitorLoggingContext = (VisitorLoggingContext) c.getContext().get("visitorLogging");
-							c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLoggingContext));
-							c.execute();
-						}
-					}
-					//throw new IllegalArgumentException("This visitor has an active record already. Kindly Checkout and proceed to CheckIn");
-				}
 				if(vL.getVisitor() != null && vL.getVisitor().getId() <= 0) {
 					if(!VisitorManagementAPI.checkForDuplicateVisitor(vL.getVisitor())) {
 						RecordAPI.addRecord(true, Collections.singletonList(vL.getVisitor()) , module, fields);

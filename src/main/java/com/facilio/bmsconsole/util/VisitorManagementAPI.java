@@ -116,7 +116,7 @@ public class VisitorManagementAPI {
 	
 	}
 	
-	public static VisitorLoggingContext getVisitorLogging(long visitorId, boolean fetchActiveLog) throws Exception {
+	public static VisitorLoggingContext getVisitorLogging(long visitorId, boolean fetchActiveLog, long currentLogId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
@@ -130,6 +130,10 @@ public class VisitorManagementAPI {
 		if(fetchActiveLog) {
 			FacilioStatus checkedInStatus = TicketAPI.getStatus(module, "CheckedIn");
 			builder.andCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedInStatus.getId()), NumberOperators.EQUALS));
+			
+		}
+		if(currentLogId > 0) {
+			builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(currentLogId), NumberOperators.NOT_EQUALS));
 		}
 		
 		VisitorLoggingContext records = builder.fetchFirst();
@@ -558,7 +562,7 @@ public class VisitorManagementAPI {
 			if(visitor == null) {
 				throw new IllegalArgumentException("Invalid phone number");
 			}
-			VisitorLoggingContext activeLog = getVisitorLogging(visitor.getId(), true);
+			VisitorLoggingContext activeLog = getVisitorLogging(visitor.getId(), true, -1);
 			if(activeLog == null) {
 				throw new IllegalArgumentException("No active CheckIn Log found");
 			}

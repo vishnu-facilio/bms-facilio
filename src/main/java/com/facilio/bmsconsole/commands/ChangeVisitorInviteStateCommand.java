@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -8,9 +9,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStatus;
@@ -45,6 +48,21 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 											VisitorManagementAPI.updateVisitorLogInvitationStatus(record, true);
 										}
 										else if(status.getStatus().toString().trim().equals("CheckedIn")) {
+											VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLogging(record.getVisitor().getId(), true, record.getId());
+											if(vLog != null) {
+												FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
+												VisitorContext visitor = null;
+												if(record.getVisitor() != null && record.getVisitor().getId() > 0) {
+													visitor = VisitorManagementAPI.getVisitor(record.getVisitor().getId(), null);
+													VisitorManagementAPI.checkOutVisitorLogging(visitor.getPhone(), c.getContext());
+												}
+												if(c.getContext().get("visitorLogging") != null) {
+													c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get("nextTransitionId"));
+													VisitorLoggingContext visitorLoggingContext = (VisitorLoggingContext) c.getContext().get("visitorLogging");
+													c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLoggingContext));
+													c.execute();
+												}
+											}
 											if(record.getCheckInTime() <= 0) { 
 												VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, true, time);
 												VisitorManagementAPI.updateVisitorRollUps(record, oldRecords.get(0));
