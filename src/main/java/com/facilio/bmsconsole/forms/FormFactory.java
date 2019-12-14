@@ -1314,7 +1314,7 @@ public class FormFactory {
 		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.REQUIRED, 3, 1));
-		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.REQUIRED, 4, 1));
 		fields.add(new FormField("location", FieldDisplayType.ADDRESS, "Location", Required.OPTIONAL, 5, 1));
 		return fields;
 	}
