@@ -66,7 +66,7 @@ public class FacilioFileStore extends FileStore {
 	private long addSecretFile(long fileId, String fileName, byte[] content, String contentType) throws Exception
 	{
 		HttpUtil httpConn;
-		httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
+		httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/secrets/put");
 
 
 		httpConn.addFormField("fileId", fileId + "");
@@ -98,7 +98,7 @@ public class FacilioFileStore extends FileStore {
 
 		HttpUtil httpConn;
 
-			httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/secrets/put");
+			httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
 			httpConn.addFormField("orgId", getOrgId() + "");
 
 
