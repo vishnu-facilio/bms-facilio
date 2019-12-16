@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.util.ActionAPI;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -16,6 +17,7 @@ public class GetStateTransitionCommand extends FacilioCommand {
 			if (stateFlowRuleContext == null) {
 				throw new IllegalArgumentException("Invalid id");
 			}
+			stateFlowRuleContext.setActions(ActionAPI.getActiveActionsFromWorkflowRule(stateFlowRuleContext.getId()));
 			context.put(FacilioConstants.ContextNames.RECORD, stateFlowRuleContext);
 		}
 		else {
