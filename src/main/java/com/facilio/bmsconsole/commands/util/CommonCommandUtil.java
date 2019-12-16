@@ -359,7 +359,7 @@ public class CommonCommandUtil {
 			// New FacilioException Queue code need to remove condition for Production
 			if(FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
 				// LOGGER.debug("#####Facilio Exception Queue is push Msg is Entered"+message);
-			FacilioQueueException.addException(message);
+			FacilioQueueException.addException("Exception", message);
 			}
 
 				
@@ -369,7 +369,7 @@ public class CommonCommandUtil {
 			LOGGER.info("Exception occurred ", e1);
 		}
 	}
-
+	
 	private static void checkDB(String errorTrace, StringBuilder body) {
 		if (errorTrace != null) {
 			if(errorTrace.toLowerCase().contains("deadlock") || body.toString().toLowerCase().contains("deadlock")) {

@@ -105,7 +105,7 @@ public class FacilioTimer {
 //			}
 //		}else {
 			try {
-				if (!FacilioObjectQueue.sendMessage(context)) {
+				if (!FacilioObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
 					throw new IllegalArgumentException("Unable to add instant job to queue");
 				}
 			} catch (Exception e) {
