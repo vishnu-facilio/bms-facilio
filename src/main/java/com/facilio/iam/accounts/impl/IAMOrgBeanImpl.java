@@ -42,7 +42,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		if (org.getLogo() != null) {
 			FileStore fs;
 			if (FacilioProperties.isProduction()) {
-				fs = FacilioFactory.getFileStore(orgId);
+				fs = FacilioFactory.getFileStoreFromOrg(orgId);
 			} else {
 				fs = FacilioFactory.getFileStore();
 			}
