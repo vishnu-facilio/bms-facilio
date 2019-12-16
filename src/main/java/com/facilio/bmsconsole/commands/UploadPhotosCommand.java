@@ -36,7 +36,9 @@ public class UploadPhotosCommand extends FacilioCommand {
 
 				int[] resize = {120};
 				long fileId = fs.addFile(fileName, file, contentType, resize);
-			
+				if	(!(fileId > 0) ){
+					throw new Exception("File not added");
+				}
 				PhotosContext photo = new PhotosContext();
 				photo.setParentId(parentId);
 				photo.setPhotoId(fileId);
