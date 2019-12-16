@@ -76,8 +76,10 @@ import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.queue.FAWSQueue;
+import com.facilio.queue.FacilioObjectQueue;
 import com.facilio.queue.FacilioQueueException;
 import com.facilio.services.factory.FacilioFactory;
+import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
@@ -357,10 +359,10 @@ public class CommonCommandUtil {
 //				FAWSQueue.sendMessage("Exception", message);
 //			}
 			// New FacilioException Queue code need to remove condition for Production
-			if(FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
+//			if(FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
 				// LOGGER.debug("#####Facilio Exception Queue is push Msg is Entered"+message);
-			FacilioQueueException.addException("Exception", message);
-			}
+			FacilioQueueException.addException(message);
+//			}
 
 				
 			
@@ -369,7 +371,7 @@ public class CommonCommandUtil {
 			LOGGER.info("Exception occurred ", e1);
 		}
 	}
-	
+
 	private static void checkDB(String errorTrace, StringBuilder body) {
 		if (errorTrace != null) {
 			if(errorTrace.toLowerCase().contains("deadlock") || body.toString().toLowerCase().contains("deadlock")) {

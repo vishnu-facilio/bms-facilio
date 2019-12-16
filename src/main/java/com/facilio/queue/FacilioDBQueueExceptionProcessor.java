@@ -12,10 +12,10 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.queue.service.QueueMessage;
+import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 public class FacilioDBQueueExceptionProcessor extends TimerTask {
 
-	private static final String QUEUE = "Exception";
     private static final HashMap<String, Integer> EXCEPTION_COUNT = new HashMap<>();
     private static final HashMap<String, String> EXCEPTION_MESSAGES = new HashMap<>();
     private static final List<String> RECEIPT_HANDLE_LIST = new ArrayList<>();
@@ -25,15 +25,15 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
 	public void run() {
 		
         List<QueueMessage> messageList = new ArrayList<>();
-        try {
-            messageList = FacilioQueueException.pull(QUEUE, 20);
+        try {				
+            messageList = FacilioService.runAsServiceWihReturn(() -> FacilioQueueException.pull(20));
         } catch (Exception e1) {
             LOGGER.info("Exception Occurred in  FacilioQueue  : ",e1);
         }
         while(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 20) {
             processMessages(messageList);
             try {
-				messageList = FacilioQueueException.pull(QUEUE, 20);
+				messageList =  FacilioService.runAsServiceWihReturn(() -> FacilioQueueException.pull(20));
 			} catch (Exception e) {
 				 LOGGER.info("Exception Occurred in  FacilioQueue  : ",e);
 			}
@@ -59,7 +59,7 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
                     FacilioFactory.getEmailClient().sendEmail(json);
                     LOGGER.info("calling delete msg with "+ RECEIPT_HANDLE_LIST.size());
                     for(String deleteMsgId : RECEIPT_HANDLE_LIST) {
-                    	 FacilioQueueException.deleteQueue(QUEUE, deleteMsgId);
+                    	 FacilioService.runAsService(() -> FacilioQueueException.deleteQueue(deleteMsgId));
                     }
                 } catch (Exception e) {
                     LOGGER.info("Exception while sending email ", e);
