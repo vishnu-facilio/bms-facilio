@@ -1155,27 +1155,26 @@ public class TemplateAPI {
 			for (Map<String, Object> prop : taskProps) {
 				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
 				if(template.getType()!=Type.PM_PRE_REQUEST.getIntVal()){
-				taskTemplates.add(template);
-				template.setPmIncludeExcludeResourceContexts(getPMIncludeExcludeList(null, null, template.getId()));
-				TaskContext task = template.getTask();
+					taskTemplates.add(template);
+					template.setPmIncludeExcludeResourceContexts(getPMIncludeExcludeList(null, null, template.getId()));
+					TaskContext task = template.getTask();
 				
-				String sectionName = null;
-				if (template.getSectionId() == -1) {
-					sectionName = FacilioConstants.ContextNames.DEFAULT_TASK_SECTION;
-				}
-				else {
-					TaskSectionTemplate sectionTemplate = sectionMap.get(template.getSectionId());
-					sectionName = sectionTemplate.getName();
-					sectionTemplate.getId();
-					sectionTemplate.addTaskTemplates(template);
-				}
-				List<TaskContext> tasks = taskMap.get(sectionName);
-				if (tasks == null) {
-					tasks = new ArrayList<>();
-					taskMap.put(sectionName, tasks);
-				}
-				allTasks.add(task);
-				tasks.add(task);
+					String sectionName = null;
+					if (template.getSectionId() == -1) {
+						sectionName = FacilioConstants.ContextNames.DEFAULT_TASK_SECTION;
+					} else {
+						TaskSectionTemplate sectionTemplate = sectionMap.get(template.getSectionId());
+						sectionName = sectionTemplate.getName();
+						sectionTemplate.getId();
+						sectionTemplate.addTaskTemplates(template);
+					}
+					List<TaskContext> tasks = taskMap.get(sectionName);
+					if (tasks == null) {
+						tasks = new ArrayList<>();
+						taskMap.put(sectionName, tasks);
+					}
+					allTasks.add(task);
+					tasks.add(task);
 				} else {
 					template.setPreRequest(true);
 					preRequestTemplates.add(template);
@@ -1186,7 +1185,7 @@ public class TemplateAPI {
 				woTemplate.setTaskTemplates(taskTemplates);
 				if(sectionMap != null) {
 					List<TaskSectionTemplate> taskSectionlist= sectionMap.entrySet().stream().map(Entry::getValue).filter(sec->!sec.isPreRequestSection()).collect(Collectors.toList());
-					woTemplate.setSectionTemplates(new ArrayList<>(sectionMap.values()));
+					woTemplate.setSectionTemplates(taskSectionlist);
 				}
 			}
 			else {
