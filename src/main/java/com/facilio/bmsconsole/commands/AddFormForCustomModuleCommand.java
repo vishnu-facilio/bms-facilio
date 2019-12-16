@@ -30,7 +30,7 @@ public class AddFormForCustomModuleCommand extends FacilioCommand{
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		if (module.getTypeEnum() == ModuleType.CUSTOM) {
+		if (module.isCustom()) {
 		List<FormField> formFields = new ArrayList<>();
 		List<FormField> photoFields = new ArrayList<>();
 //		List<FormField> siteFields = new ArrayList<>();

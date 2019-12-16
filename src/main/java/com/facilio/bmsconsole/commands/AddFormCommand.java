@@ -43,7 +43,7 @@ public class AddFormCommand extends FacilioCommand {
 			form.setLabelPosition(LabelPosition.LEFT);
 		}
 		
-		if (form.getSections() == null && (module.getTypeEnum() != ModuleType.CUSTOM)) {
+		if (form.getSections() == null && (module.isCustom())) {
 			FacilioForm defaultForm = FormsAPI.getDefaultForm(moduleName, form.getFormTypeEnum());
 			if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getSections())) {
 				form.setSections(new ArrayList<>(defaultForm.getSections()));
@@ -52,7 +52,7 @@ public class AddFormCommand extends FacilioCommand {
 				}
 			}
 		}
-		if (module.getTypeEnum() == ModuleType.CUSTOM) {
+		if (module.isCustom()) {
 			List<FacilioField> fields = new ArrayList();
 			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
 			context.put(FacilioConstants.ContextNames.MODULE, module);

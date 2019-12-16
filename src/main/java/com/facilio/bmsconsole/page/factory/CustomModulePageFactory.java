@@ -44,7 +44,7 @@ public class CustomModulePageFactory extends PageFactory {
 	private static void addRelatedList(Section section, long moduleId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioModule> subModules =
-				modBean.getSubModules(moduleId, FacilioModule.ModuleType.CUSTOM, FacilioModule.ModuleType.BASE_ENTITY);
+				modBean.getSubModules(moduleId, FacilioModule.ModuleType.BASE_ENTITY);
 
 		if (CollectionUtils.isNotEmpty(subModules)) {
 			for (FacilioModule subModule : subModules) {

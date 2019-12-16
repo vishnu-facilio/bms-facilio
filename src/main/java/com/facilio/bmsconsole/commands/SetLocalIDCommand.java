@@ -16,7 +16,7 @@ public class SetLocalIDCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
         if (module != null) {
-            if (module.getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
+            if (module.isCustom()) {
                 FacilioField localIdField = modBean.getField("localId", moduleName);
                 if (localIdField != null) {
                     context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);

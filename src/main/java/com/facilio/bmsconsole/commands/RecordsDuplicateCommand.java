@@ -47,7 +47,7 @@ public class RecordsDuplicateCommand extends FacilioCommand {
 		
 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 		if (beanClassName == null) {
-			if (module.getTypeEnum() == ModuleType.CUSTOM) {
+			if (module.isCustom()) {
 				beanClassName = CustomModuleData.class;
 			}
 			else {

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.db.criteria.operators.BooleanOperators;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -103,7 +104,8 @@ public class ModuleBeanImpl implements ModuleBean {
 				currentModule.setDataInterval(dataInterval);
 			}
 			currentModule.setStateFlowEnabled(rs.getBoolean("STATE_FLOW_ENABLED"));
-			
+			currentModule.setCustom(rs.getBoolean("IS_CUSTOM"));
+
 			if(isFirst) {
 				module = currentModule;
 				isFirst = false;
@@ -142,13 +144,23 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public List<FacilioModule> getModuleList(ModuleType moduleType) throws Exception {
+		return getModuleList(moduleType, false);
+	}
+
+	@Override
+	public List<FacilioModule> getModuleList(ModuleType moduleType, boolean onlyCustom) throws Exception {
 		FacilioModule moduleModule = ModuleFactory.getModuleModule();
-		
+
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(moduleModule.getTableName())
 				.select(FieldFactory.getModuleFields())
 				.andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "moduleType", String.valueOf(moduleType.getValue()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(1), NumberOperators.NOT_EQUALS));
+
+		if (onlyCustom) {
+			builder.andCondition(CriteriaAPI.getCondition("IS_CUSTOM", "custom", String.valueOf(onlyCustom), BooleanOperators.IS));
+		}
+
 		List<Map<String, Object>> props = builder.get();
 		for (Map<String, Object> prop : props) {
 			if (prop.containsKey("createdBy")) {
@@ -160,7 +172,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		List<FacilioModule> moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
 		return moduleList;
 	}
-	
+
 	@Override
 	public FacilioModule getModule(String moduleName) throws Exception {
 		
@@ -1179,14 +1191,14 @@ public class ModuleBeanImpl implements ModuleBean {
 				pstmt.setNull(8, Types.VARCHAR);
 			}
 			
-			if (module.getTypeEnum() == ModuleType.CUSTOM && AccountUtil.getCurrentUser() != null) {
+			if (module.isCustom() && AccountUtil.getCurrentUser() != null) {
 				pstmt.setLong(9, AccountUtil.getCurrentUser().getId());
 			}
 			else {
 				pstmt.setNull(9, Types.BIGINT);
 			}
 			
-			if (module.getTypeEnum() == ModuleType.CUSTOM) {
+			if (module.isCustom()) {
 				pstmt.setLong(10, System.currentTimeMillis());
 			}
 			else {

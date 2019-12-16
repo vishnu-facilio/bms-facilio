@@ -42,7 +42,7 @@ public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 			if (beanClassName == null) {
 				beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 				if (beanClassName == null) {
-					if (module.getTypeEnum() == ModuleType.CUSTOM) {
+					if (module.isCustom()) {
 						beanClassName = CustomModuleData.class;
 					}
 					else {

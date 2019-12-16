@@ -94,7 +94,7 @@ public class ViewFactory {
 						    columns.add(viewField);	
 				}
 				}
-				if (columns != null && module.getTypeEnum() == ModuleType.CUSTOM) {
+				if (columns != null && module.isCustom()) {
 					List<ViewField> fieldsToRemove = new ArrayList<>();
 					for(ViewField column : columns) {
 						if (column.getName().equals("stateFlowId")) {
@@ -122,7 +122,7 @@ public class ViewFactory {
 			});
 		}
 		if (MapUtils.isEmpty(moduleViews)) {
-			if (module != null && module.getTypeEnum() == ModuleType.CUSTOM) {
+			if (module != null && module.isCustom()) {
 				// Views of custom module
 				FacilioView allView = getCustomModuleAllView(module);
 				moduleViews.put("all", allView);

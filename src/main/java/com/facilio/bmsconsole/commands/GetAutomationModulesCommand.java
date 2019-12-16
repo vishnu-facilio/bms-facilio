@@ -45,7 +45,7 @@ public class GetAutomationModulesCommand extends FacilioCommand {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.ALARM));
         }
 
-        modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.CUSTOM));
+        modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         return false;

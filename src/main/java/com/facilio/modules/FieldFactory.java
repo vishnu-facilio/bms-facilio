@@ -849,6 +849,7 @@ public class FieldFactory {
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 		fields.add(getField("createdBy", "CREATED_BY", module, FieldType.LOOKUP));
 		fields.add(getField("stateFlowEnabled", "STATE_FLOW_ENABLED", module, FieldType.BOOLEAN));
+		fields.add(getField("custom", "IS_CUSTOM", module, FieldType.BOOLEAN));
 		return fields;
 	}
 
@@ -6243,13 +6244,13 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getModulesFields(){
-		FacilioModule module = ModuleFactory.getModuleModule();
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getModuleIdField(module));
-		fields.add(getField("moduleType", "MODULE_TYPE", module, FieldType.NUMBER));
-		return fields;
-	}
+//	public static List<FacilioField> getModulesFields(){
+//		FacilioModule module = ModuleFactory.getModuleModule();
+//		List<FacilioField> fields = new ArrayList<>();
+//		fields.add(getModuleIdField(module));
+//		fields.add(getField("moduleType", "MODULE_TYPE", module, FieldType.NUMBER));
+//		return fields;
+//	}
 	
 	public static List<FacilioField> getReportFieldsFields() {
 		FacilioModule module = ModuleFactory.getReportFieldsModule();

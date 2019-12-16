@@ -54,7 +54,7 @@ public class ReportFactoryFields {
 			}
 	}
 		
-		if(customFields.size() != 0 && facilioModule.getType() != FacilioModule.ModuleType.CUSTOM.getValue()) {
+		if(customFields.size() != 0 && !(facilioModule.isCustom() )) {
 			for(String customFieldName: customFields.keySet()) {
 				FacilioField customField = fields.get(customFieldName);
 				if(customField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
@@ -73,7 +73,7 @@ public class ReportFactoryFields {
 				}
 			}
 		}
-		if(facilioModule.getType() == FacilioModule.ModuleType.CUSTOM.getValue()) {
+		if(facilioModule.isCustom()) {
 			selectedFields.addAll(FieldFactory.getSystemFields(facilioModule));
 		}
 		
@@ -1012,7 +1012,7 @@ public class ReportFactoryFields {
 			List<FacilioField> moduleFields = bean.getAllFields(additonalModules.get(module));
 
 			List<FacilioField> customModuleFields = bean.getAllCustomFields(additonalModules.get(module));
-			if(customModuleFields != null && facilioModule.getType() != FacilioModule.ModuleType.CUSTOM.getValue()) {
+			if(customModuleFields != null && !facilioModule.isCustom()) {
 				moduleFields.addAll(customModuleFields);
 			}
 			

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.db.criteria.operators.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -36,10 +37,6 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BaseLineContext;
@@ -751,14 +748,15 @@ public class ReportUtil {
 		FacilioModule reportFoldermodule = ModuleFactory.getReportFolderModule();
 		FacilioModule modulesmodule = ModuleFactory.getModuleModule();
 		List<FacilioField> fields = FieldFactory.getReport1FolderFields();
-		List<FacilioField> moduleFields = FieldFactory.getModulesFields();
+		List<FacilioField> moduleFields = FieldFactory.getModuleFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		Map<String,FacilioField> moduleFieldMap = FieldFactory.getAsMap(moduleFields);
 		
 		GenericSelectRecordBuilder selectModules = new GenericSelectRecordBuilder()
-															.select(moduleFields)
+															.select(Collections.singletonList(moduleFieldMap.get("moduleId")))
 															.table(modulesmodule.getTableName())
-															.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("moduleType"),String.valueOf(FacilioModule.ModuleType.CUSTOM.getValue()), NumberOperators.EQUALS));
+															.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("type"),String.valueOf(FacilioModule.ModuleType.BASE_ENTITY.getValue()), NumberOperators.EQUALS))
+															.andCondition(CriteriaAPI.getCondition(moduleFieldMap.get("custom"),String.valueOf(true), BooleanOperators.IS));
 		
 		List<Map<String, Object>> moduleprops = selectModules.get();
 		

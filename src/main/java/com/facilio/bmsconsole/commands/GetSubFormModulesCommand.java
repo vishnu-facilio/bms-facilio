@@ -30,7 +30,7 @@ public class GetSubFormModulesCommand extends FacilioCommand {
             if (CollectionUtils.isNotEmpty(systemDefinedSubModules)) {
                 subModules.addAll(systemDefinedSubModules);
             }
-            List<FacilioModule> configuredSubModules = modBean.getSubModules(module.getModuleId(), FacilioModule.ModuleType.BASE_ENTITY, FacilioModule.ModuleType.CUSTOM);
+            List<FacilioModule> configuredSubModules = modBean.getSubModules(module.getModuleId(), FacilioModule.ModuleType.BASE_ENTITY);
             if (CollectionUtils.isNotEmpty(configuredSubModules)) {
                 subModules.addAll(configuredSubModules);
             }

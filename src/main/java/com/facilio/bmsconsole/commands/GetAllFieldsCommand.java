@@ -139,7 +139,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 			fields = allFields;
 		}
 		
-		if (mod.getTypeEnum() == ModuleType.CUSTOM ) {
+		if (mod.isCustom() ) {
 			List<FacilioField> fieldsToRemove = new ArrayList<>();
 			for(FacilioField field : fields) {
 				if (field.getName().equals("stateFlowId")) {

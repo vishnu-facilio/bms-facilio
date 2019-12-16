@@ -294,7 +294,7 @@ public class LoadViewCommand extends FacilioCommand {
 				fieldNames.put(field.getName(), displayName);
 			}
 		}
-		if (module.getTypeEnum() == ModuleType.CUSTOM) {
+		if (module.isCustom()) {
 			List<FacilioField> systemFields = FieldFactory.getSystemFields(module);
 			for(FacilioField systemField : systemFields) {
 				fieldNames.put(systemField.getName(), systemField.getDisplayName());

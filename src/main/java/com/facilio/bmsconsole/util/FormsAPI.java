@@ -611,7 +611,7 @@ public class FormsAPI {
 				break;
 		}
 
-		if (form.getModule().getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
+		if (form.getModule().isCustom()) {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			boolean hasPhoto = false;
@@ -653,7 +653,7 @@ public class FormsAPI {
 		
 		List<FormField> systemFields = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		if (form.getModule().getTypeEnum() == ModuleType.CUSTOM) {
+		if (form.getModule().isCustom()) {
 			addUnusedSystemFields(form, systemFields);
 		}
 		else {

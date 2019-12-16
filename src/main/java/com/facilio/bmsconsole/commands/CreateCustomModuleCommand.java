@@ -24,8 +24,9 @@ public class CreateCustomModuleCommand extends FacilioCommand {
 			module.setStateFlowEnabled(stateFlowEnabled);
 			module.setDescription(description);
 			if (moduleType != null) {
-				moduleType = ModuleType.CUSTOM.getValue();
+				moduleType = ModuleType.BASE_ENTITY.getValue();
 			}
+			module.setCustom(true);
 			module.setType(moduleType);
 
 			context.put("should_suppress_exception", true);

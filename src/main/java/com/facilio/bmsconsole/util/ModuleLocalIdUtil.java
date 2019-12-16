@@ -164,7 +164,7 @@ public class ModuleLocalIdUtil {
 		if(AccountUtil.getCurrentOrg().getId() == 92l && module.getName().equals("kdm")) {
 			return true;
 		}
-		if (module.getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
+		if (module.isCustom()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField localIdField = modBean.getField("localId", module.getName());
 			if (localIdField != null) {

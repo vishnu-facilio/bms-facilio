@@ -52,7 +52,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 
 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 		if (beanClassName == null) {
-			if (module.getTypeEnum() == ModuleType.CUSTOM) {
+			if (module.isCustom()) {
 				beanClassName = CustomModuleData.class;
 			}
 			else {
@@ -109,7 +109,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 			builder.andCriteria(scopeCriteria);
 		}
 
-		if (!fetchCount && module.getTypeEnum() == ModuleType.CUSTOM) {
+		if (!fetchCount && module.isCustom()) {
 			List<LookupField> lookupFields = new ArrayList<>();
 			for (FacilioField f : fields) {
 				if (f instanceof LookupField) {

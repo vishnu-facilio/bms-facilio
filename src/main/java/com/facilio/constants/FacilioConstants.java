@@ -1550,7 +1550,7 @@ public class FacilioConstants {
 				return getClassFromModule(module.getExtendModule(), true);
 			}
 
-			if (moduleClass == null && module.getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
+			if (moduleClass == null && module.isCustom()) {
 				moduleClass = CustomModuleData.class;
 			}
 			return moduleClass;
