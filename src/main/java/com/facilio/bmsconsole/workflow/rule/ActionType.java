@@ -782,6 +782,10 @@ public enum ActionType {
 								val = currentTime + FacilioUtil.parseLong(val);
 								obj.put(key, val);	// setting newly updated value if any
 								break;
+							case ENUM:
+								val = FacilioUtil.parseInt(val);
+								obj.put(key, val);
+								break;
 							default:
 								break;
 						}
@@ -1190,7 +1194,12 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) throws Exception {
-			addWorkOrder(obj, context, currentRecord, SourceType.TASK_DEVIATION);
+			try {
+				addWorkOrder(obj, context, currentRecord, SourceType.TASK_DEVIATION);
+			}
+			catch(Exception e) {
+				LOGGER.error("Exception occurred on creating deviation workorders", e);
+			}
 		}
 
 	},
