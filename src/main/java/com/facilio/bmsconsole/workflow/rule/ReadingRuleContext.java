@@ -576,6 +576,11 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	
 	private boolean checkOccurences(List<Map<String, Object>> flaps, ReadingContext reading) throws Exception {
 		addFlap(reading.getTtime(), reading.getParentId()); //Add flap if it's true
+		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 232l) {
+			if (getParentId() == 33962l) {
+				LOGGER.info("----- " + flaps.size() + " ----- " + occurences + " -----");
+			}
+		}
 		if (flaps.size() + 1 == occurences) { //Old flaps + current flap
 //			deleteAllFlaps(reading.getParentId());
 			return true;
