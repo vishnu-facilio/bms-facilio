@@ -26,14 +26,14 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
 		
         List<QueueMessage> messageList = new ArrayList<>();
         try {
-            messageList = FacilioQueueException.pull(QUEUE, 20);
+            messageList = FacilioQueueException.pull(20);
         } catch (Exception e1) {
             LOGGER.info("Exception Occurred in  FacilioQueue  : ",e1);
         }
         while(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 20) {
             processMessages(messageList);
             try {
-				messageList = FacilioQueueException.pull(QUEUE, 20);
+				messageList = FacilioQueueException.pull( 20);
 			} catch (Exception e) {
 				 LOGGER.info("Exception Occurred in  FacilioQueue  : ",e);
 			}
@@ -59,7 +59,7 @@ public class FacilioDBQueueExceptionProcessor extends TimerTask {
                     FacilioFactory.getEmailClient().sendEmail(json);
                     LOGGER.info("calling delete msg with "+ RECEIPT_HANDLE_LIST.size());
                     for(String deleteMsgId : RECEIPT_HANDLE_LIST) {
-                    	 FacilioQueueException.deleteQueue(QUEUE, deleteMsgId);
+                    	 FacilioQueueException.deleteQueue(deleteMsgId);
                     }
                 } catch (Exception e) {
                     LOGGER.info("Exception while sending email ", e);
