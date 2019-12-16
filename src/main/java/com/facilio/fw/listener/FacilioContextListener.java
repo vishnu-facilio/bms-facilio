@@ -75,9 +75,9 @@ public class FacilioContextListener implements ServletContextListener {
 			RedisManager.getInstance().release();// destroying redis connection pool
 		}
 		FacilioScheduler.stopSchedulers();
-		if(FacilioProperties.isProduction()) {
-			InstantJobExecutor.INSTANCE.stopExecutor();
-		}
+//		if(FacilioProperties.isProduction()) {
+//			InstantJobExecutor.INSTANCE.stopExecutor();
+//		}
 		FacilioInstantJobExecutor.INSTANCE.stopExecutor();
 		timer.cancel();
 		FacilioConnectionPool.INSTANCE.close();
@@ -126,9 +126,9 @@ public class FacilioContextListener implements ServletContextListener {
 			BeanFactory.initBeans();
 			
 			FacilioScheduler.initScheduler();
-			if(FacilioProperties.isProduction()) {
-				InstantJobExecutor.INSTANCE.startExecutor();
-			}
+//			if(FacilioProperties.isProduction()) {
+//				InstantJobExecutor.INSTANCE.startExecutor();
+//			}
 			FacilioInstantJobExecutor.INSTANCE.startExecutor();
 			
 			
