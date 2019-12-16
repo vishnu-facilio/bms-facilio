@@ -110,7 +110,9 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		}
 		mlContext.setResult(result);
 	}catch(Exception e){
-		LOGGER.fatal("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : GenerateMLModelCommand "+" ERROR MESSAGE : "+e);
+		if(!e.getMessage().contains("ML error")){
+			LOGGER.fatal("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : GenerateMLModelCommand "+" ERROR MESSAGE : "+e);
+		}
 		throw e;
 	}
 		return false;
