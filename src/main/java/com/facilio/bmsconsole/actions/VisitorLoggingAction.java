@@ -203,7 +203,6 @@ private static final long serialVersionUID = 1L;
 		if(!CollectionUtils.isEmpty(visitorLoggingRecords) || visitorLogging != null) {
 			FacilioChain c = TransactionChainFactory.addVisitorLoggingRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
-			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			
 			if (visitorLogging != null) {
 				visitorLogging.parseFormData();

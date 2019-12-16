@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.io.File;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.modules.FacilioEnum;
@@ -101,15 +102,45 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		this.visitor = visitor;
 	}
 	
-	private String purposeOfVisit;
-
-	public String getPurposeOfVisit() {
+	private PurposeOfVisit purposeOfVisit;
+	public int getPurposeOfVisit() {
+		if (purposeOfVisit != null) {
+			return purposeOfVisit.getIndex();
+		}
+		return -1;
+		
+	}
+	public void setPurposeOfVisit(int purposeOfVisit) {
+		this.purposeOfVisit = PurposeOfVisit.valueOf(purposeOfVisit);
+	}
+	public PurposeOfVisit getPurposeOfVisitEnum() {
 		return purposeOfVisit;
 	}
-
-	public void setPurposeOfVisit(String purposeOfVisit) {
+	public void setPurposeOfVisit(PurposeOfVisit purposeOfVisit) {
 		this.purposeOfVisit = purposeOfVisit;
 	}
+
+	public static enum PurposeOfVisit implements FacilioEnum {
+		MEETING, CONFERENCE, DELIVERY, MAINTENANCE, PERSONAL_VISIT, INSPECTION;
+
+		@Override
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name();
+		}
+
+		public static PurposeOfVisit valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
 	
 	private long ndaId;
 	private String ndaUrl;
@@ -527,6 +558,11 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		childLog.setIsRecurring(false);
 		childLog.setParentLogId(this.getId());
 		childLog.setIsInviteApprovalNeeded(false);
+		if(this.getVisitor() != null) {
+			childLog.setVisitorName(this.getVisitorName());
+			childLog.setVisitorEmail(this.getVisitorEmail());
+			childLog.setVisitorPhone(this.getVisitorPhone());
+		}
 		FacilioStatus status = VisitorManagementAPI.getLogStatus("Upcoming");
 		if(status != null) {
 			childLog.setModuleState(status);
@@ -644,6 +680,33 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		this.tenant = tenant;
 	}
 
+	private String visitorName;
+	private String visitorEmail;
+	private String visitorPhone;
+
+	public String getVisitorName() {
+		return visitorName;
+	}
+
+	public void setVisitorName(String visitorName) {
+		this.visitorName = visitorName;
+	}
+
+	public String getVisitorEmail() {
+		return visitorEmail;
+	}
+
+	public void setVisitorEmail(String visitorEmail) {
+		this.visitorEmail = visitorEmail;
+	}
+
+	public String getVisitorPhone() {
+		return visitorPhone;
+	}
+
+	public void setVisitorPhone(String visitorPhone) {
+		this.visitorPhone = visitorPhone;
+	}
 	
 	
 }
