@@ -62,11 +62,6 @@ public class KafkaMessageQueue extends MessageQueue {
        return AccountUtil.getOrgBean().getOrgs();
     }
 
-
-
-
-
-
     public void initiateProcessFactory(long orgId, String orgDomainName, String type) {
         try {
             new Thread(getProcessor(orgId, orgDomainName, type)).start();
@@ -81,8 +76,7 @@ public class KafkaMessageQueue extends MessageQueue {
     public void createQueue(String queueName) {
         LOGGER.info(" creating kafka stream "+queueName);
         try {
-
-            CreateTopicsResult result =getKafkaClient().createTopics(Collections.singletonList(new NewTopic(queueName, 1, (short) 1)));
+            CreateTopicsResult result =getKafkaClient().createTopics(Collections.singletonList(new NewTopic(queueName, 1, (short)2)));
             result.values().get(queueName).get(10, TimeUnit.SECONDS);
             LOGGER.info("Stream created : " + queueName );
         } catch (Exception ex){
@@ -94,8 +88,4 @@ public class KafkaMessageQueue extends MessageQueue {
     private static FacilioProcessor getProcessor(long orgId, String orgDomainName, String type) throws SQLException {
         return new KafkaProcessor(orgId,orgDomainName);
     }
-
-
-
-
 }
