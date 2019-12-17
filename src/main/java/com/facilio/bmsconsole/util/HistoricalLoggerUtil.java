@@ -159,19 +159,20 @@ public class HistoricalLoggerUtil {
 					historicalLoggers.add(historicalLogger);
 					resourceIds.add(historicalLogger.getParentId());
 				}
+				
+				List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
+				Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
+				
+				for(ResourceContext resource:resources)
+				{
+					resourcesMap.put(resource.getId(), resource);
+				}
+				
+				for(HistoricalLoggerContext historicalLogger :historicalLoggers) {
+					historicalLogger.setParentResourceContext(resourcesMap.get(historicalLogger.getParentId()));
+				}
 			}
-
-			List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
-			Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
 			
-			for(ResourceContext resource:resources)
-			{
-				resourcesMap.put(resource.getId(), resource);
-			}
-			
-			for(HistoricalLoggerContext historicalLogger :historicalLoggers) {
-				historicalLogger.setParentResourceContext(resourcesMap.get(historicalLogger.getParentId()));
-			}
 			return historicalLoggers;
 
 	}
