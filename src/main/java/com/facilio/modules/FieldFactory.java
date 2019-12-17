@@ -2263,6 +2263,7 @@ public class FieldFactory {
 
 		fields.add(getField("cc", "CC_ADDR", module, FieldType.STRING));
 		fields.add(getField("bcc", "BCC_ADDR", module, FieldType.STRING));
+		fields.add(getField("sendAsSeparateMail", "SEND_AS_SEPARATE_MAIL", module, FieldType.BOOLEAN));
 
 		FacilioField emailSubject = new FacilioField();
 		emailSubject.setName("subject");

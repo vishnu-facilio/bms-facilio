@@ -33,6 +33,23 @@ public class EMailTemplate extends Template {
 
 	private String bcc;
 
+	public Boolean sendAsSeparateMail;
+
+	public Boolean getSendAsSeparateMail() {
+		return sendAsSeparateMail;
+	}
+
+	public void setSendAsSeparateMail(Boolean sendAsSeparateMail) {
+		this.sendAsSeparateMail = sendAsSeparateMail;
+	}
+	public boolean isSendAsSeparateMail() {
+		if (sendAsSeparateMail != null) {
+			return sendAsSeparateMail.booleanValue();
+		}
+		return false;
+	}
+
+
 	private String subject;
 	public String getSubject() {
 		return subject;
@@ -66,6 +83,7 @@ public class EMailTemplate extends Template {
 		obj.put("bcc", bcc);
 		obj.put("subject", subject);
 		obj.put("message", message);
+		obj.put("sendAsSeparateMail", sendAsSeparateMail);
 		
 		return obj;
 	}

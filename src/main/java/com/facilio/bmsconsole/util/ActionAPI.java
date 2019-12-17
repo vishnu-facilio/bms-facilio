@@ -361,6 +361,9 @@ public class ActionAPI {
 		emailTemplate.setSubject((String) action.getTemplateJson().get("subject"));
 		emailTemplate.setMessage((String) action.getTemplateJson().get("message"));
 		emailTemplate.setType(Type.EMAIL);
+		if (action.getTemplateJson().containsKey("sendAsSeparateMail")) {
+			emailTemplate.setSendAsSeparateMail((Boolean) action.getTemplateJson().get("sendAsSeparateMail"));
+		}
 		if (action.getTemplateJson().containsKey("ftl")) {
 			emailTemplate.setFtl((Boolean) action.getTemplateJson().get("ftl"));
 		}

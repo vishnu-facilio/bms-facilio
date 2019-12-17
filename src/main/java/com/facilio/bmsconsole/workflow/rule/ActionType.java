@@ -172,17 +172,23 @@ public enum ActionType {
 
 					if (toEmails != null && !toEmails.isEmpty()) {
 						List<String> emails = new ArrayList<>();
-						for (Object toEmail : toEmails) {
-							String to = (String) toEmail;
-							if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
-								obj.put("to", to);
+						Boolean sendAsSeparateMail = (Boolean) obj.get("sendAsSeparateMail");
+						if (sendAsSeparateMail != null && !sendAsSeparateMail) {
+							obj.put("to", toAddr);
+							FacilioFactory.getEmailClient().sendEmail(obj);
+						} else {
+							for (Object toEmail : toEmails) {
+								String to = (String) toEmail;
+								if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
+									obj.put("to", to);
 
-								if (AccountUtil.getCurrentOrg().getId() == 104) {
-									LOGGER.info("Gonna Email : "+obj.toJSONString());
+									if (AccountUtil.getCurrentOrg().getId() == 104) {
+										LOGGER.info("Gonna Email : " + obj.toJSONString());
+									}
+
+									FacilioFactory.getEmailClient().sendEmail(obj);
+									emails.add(to);
 								}
-
-								FacilioFactory.getEmailClient().sendEmail(obj);
-								emails.add(to);
 							}
 						}
 						if (context != null) {
