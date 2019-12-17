@@ -4,10 +4,13 @@ import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.modules.BmsAggregateOperators;
 import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -137,7 +140,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         alarmDetails.addToLayoutParams(section, 24, 12);
         alarmDetails.addCardType(PageWidget.CardType.IMPACT_DETAILS);
         if (lastOccurrence != null && lastOccurrence.getAdditionInfo() != null && lastOccurrence.getAdditionInfo().containsKey("impact")) {
-            addChartParams(alarmDetails, "createdTime", DateAggregateOperator.HOURSOFDAYONLY, "cost" ,NumberAggregateOperator.SUM,criteria);
+            addChartParams(alarmDetails, null, DateAggregateOperator.HOURSOFDAYONLY , "createdTime",NumberAggregateOperator.SUM , "cost" ,null, DateOperators.BETWEEN, lastOccurrence.getCreatedTime()+ "," + (lastOccurrence.getCreatedTime() + 86400 * 60 ) ,criteria);
         } else  {
             alarmDetails.addToWidgetParams("isEmpty", true);
         }
