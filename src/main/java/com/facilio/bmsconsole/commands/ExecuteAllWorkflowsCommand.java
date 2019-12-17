@@ -102,6 +102,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 		}
 		return false;
 	}
+	public RuleType[] getRuleTypes() {
+		return ruleTypes;
+	}
 
 	protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
 		Criteria parentCriteria = getCriteria(records);

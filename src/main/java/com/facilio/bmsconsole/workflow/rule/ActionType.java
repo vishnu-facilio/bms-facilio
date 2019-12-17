@@ -1,16 +1,17 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.facilio.agentv2.FacilioAgent;
+import com.facilio.bmsconsole.commands.ExecuteAllWorkflowsCommand;
+import com.facilio.bmsconsole.commands.ExecuteSpecificWorkflowsCommand;
+import com.facilio.bmsconsole.util.*;
+import com.twilio.taskrouter.WorkflowRule;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -50,17 +51,6 @@ import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViolationEventContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.CallUtil;
-import com.facilio.bmsconsole.util.NewAlarmAPI;
-import com.facilio.bmsconsole.util.NotificationAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.SMSUtil;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WhatsappUtil;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
@@ -284,7 +274,30 @@ public enum ActionType {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
 					
 					BaseEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord,context);
+					///handle impacts
+					JSONObject impacts = (JSONObject) obj.get("impact");
+					if (!impacts.isEmpty()) {
+						Set<String> set = impacts.keySet();
+						for (String fieldName : set) {
+							JSONArray workFlowId = (JSONArray) impacts.get(fieldName);
+							for (int i = 0; i < workFlowId.size(); i++) {
+								long workFlowIds = (long) workFlowId.get(i);
+								WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(workFlowIds);
+								FacilioChain c = FacilioChain.getTransactionChain();
+								FacilioContext impactContext = c.getContext();
+								impactContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+								impactContext.put(FacilioConstants.ContextNames.RECORD, currentRecord);
+//								impactContext.put(FacilioConstants.ContextNames.IS_IMPACT, true);
+								String moduleName = currentRule.getModuleName();
+								impactContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+								c.addCommand(new ExecuteSpecificWorkflowsCommand(Collections.singletonList(workFlowIds), RuleType.IMPACT_RULE));
+								c.execute(impactContext);
+								double impact_key = (double) impactContext.get("impact_value");
+								PropertyUtils.setProperty(event, fieldName , impact_key);
+							}
+						}
 
+					}
 					addAlarm(event, obj, context, currentRule, currentRecord);
 					
 				} else {
@@ -1298,6 +1311,40 @@ public enum ActionType {
 			}
 		}
 	},
+	IMPACTS(28) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+		// 	context.put("impact_value", val);
+			try {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				List<FacilioField> fields = new ArrayList<>();
+				Map<String, Object> props = new HashMap<String, Object>();
+
+				Map<String,Object> currentRecordJson = null;
+				long alarmId = -1l;
+				if(currentRecord instanceof ReadingAlarmContext) {
+					currentRecordJson = FieldUtil.getAsProperties(currentRecord);
+					if(currentRecordJson.get("resource") != null) {
+						currentRecordJson.put("resourceId", ((Map)currentRecordJson.get("resource")).get("id"));
+					}
+					alarmId = (Long) currentRecordJson.get("id");
+				}
+
+				WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
+				workflowContext.setLogNeeded(true);
+				Object val = WorkflowUtil.getWorkflowExpressionResult(workflowContext, currentRecordJson);
+				context.put("impact_value", val);
+				// impactContext.get("impact_key");
+			}
+			catch (Exception e) {
+				System.out.println(e);
+			}
+		}
+		@Override
+		public boolean isTemplateNeeded() {
+			return false;
+		}
+	}
 	
 	;
 	

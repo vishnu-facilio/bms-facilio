@@ -83,8 +83,9 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 						if (alarmOccurrence.getPreviousSeverity() != null){
 							info.put("oldValue", AlarmAPI.getAlarmSeverity(alarmOccurrence.getPreviousSeverity().getId()).getDisplayName());
 						}
-
-						CommonCommandUtil.addAlarmActivityToContext(alarm.getId(),-1, AlarmActivityType.CLEAR_ALARM, info, (FacilioContext) context, alarmOccurrence.getId());
+						if (alarmOccurrence.getAlarm() != null && alarmOccurrence.getAlarm().getId() > 0) {
+							CommonCommandUtil.addAlarmActivityToContext(alarmOccurrence.getAlarm().getId(),-1, AlarmActivityType.CLEAR_ALARM, info, (FacilioContext) context, alarmOccurrence.getId());
+						}
 						baseEvents.add(createdEvent);
 						processEventToAlarm(createdEvent, context, additionEventsCreated);
 					}

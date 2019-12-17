@@ -302,6 +302,7 @@ public class ActionAPI {
 								break;
 							case FORMULA_FIELD_CHANGE:
 							case ALARM_IMPACT_ACTION:
+							case IMPACTS:
 							case WORKFLOW_ACTION:
 								setWorkflowTemplate(action,rule,Type.WORKFLOW);
 								break;
