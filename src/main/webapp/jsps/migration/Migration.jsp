@@ -23,7 +23,7 @@
 <%@page import="com.facilio.bmsconsole.actions.DashboardAction,com.facilio.constants.*"%>
 <%
 
-long orgid = 2; 
+long orgid = 78l; 
 
 	AccountUtil.setCurrentAccount(orgid);
 	
