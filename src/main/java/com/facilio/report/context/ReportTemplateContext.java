@@ -13,7 +13,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
 public class ReportTemplateContext {
-
+	private Long templateType;
 	private Boolean show;
 	private Long categoryId;
 	private Long siteId;
@@ -21,6 +21,13 @@ public class ReportTemplateContext {
 	private Long defaultValue;
 	private List<Object> chooseValues;
 	private Boolean isVisibleInDashBoard;
+	private List<ReportTemplateCategoryFilterContext> categoryFillter;
+	public Long getTemplateType() {
+		return templateType;
+	}
+	public void setTemplateType(Long templateType) {
+		this.templateType = templateType;
+	}
 	public Boolean getIsVisibleInDashBoard() {
 		return isVisibleInDashBoard;
 	}
@@ -107,5 +114,11 @@ public class ReportTemplateContext {
 		}
 		
 		return null;
+	}
+	public List<ReportTemplateCategoryFilterContext> getCategoryFillter() {
+		return categoryFillter;
+	}
+	public void setCategoryFillter(List<ReportTemplateCategoryFilterContext> categoryFillter) {
+		this.categoryFillter = categoryFillter;
 	}
 }

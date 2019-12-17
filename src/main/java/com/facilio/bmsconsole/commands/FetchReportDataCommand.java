@@ -19,6 +19,8 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
@@ -59,6 +61,7 @@ import com.facilio.report.context.ReportFactory;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportTemplateCategoryFilterContext;
 import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.util.ReportUtil;
@@ -96,22 +99,45 @@ public class FetchReportDataCommand extends FacilioCommand {
 					dateRange.setEndTime(currentTimeMillis);
 				}
 			}
-		}
+		}	
 
 		List<ReportDataContext> reportData = new ArrayList<>();
 		List<ReportDataPointContext> dataPoints = new ArrayList<>(report.getDataPoints());
 		if(report.getReportTemplate() != null ) {
 			Long reportParentId= report.getReportTemplate().getParentId();
-			if(reportParentId != null) {
-			Map<String, Object> metaData = new HashMap<>();
-			List<Long> parentIds = new ArrayList<>();
-			parentIds.add(reportParentId);
-			metaData.put("parentIds",parentIds);
+			Long templateType = report.getReportTemplate().getTemplateType();
+			if (templateType != null && templateType == 2) {
+				List<ReportTemplateCategoryFilterContext> categoryFillter = new ArrayList<>(report.getReportTemplate().getCategoryFillter());
+				if(categoryFillter.size() > 0) {
+					Map<String, Object> metaData = new HashMap<>();
+					List<Long> parentIds = new ArrayList<>();
+					for(ReportDataPointContext dataPoint : dataPoints) {
+						for(ReportTemplateCategoryFilterContext filter : categoryFillter) {
+							parentIds.add(filter.getParentId());
+							for(Object alais : filter.getApplyTo()) {
+								if (dataPoint.getAliases().get("actual") == alais) {
+									metaData.put("parentIds",filter.getParentId());
+									dataPoint.setMetaData(metaData);
+									dataPoint.setName(dataPoint.getyAxis().getLabel());
+								}
+							}
+
+						}
+					}
+				}
+			}
+			else {
+				if(reportParentId != null) {
+				Map<String, Object> metaData = new HashMap<>();
+				List<Long> parentIds = new ArrayList<>();
+				parentIds.add(reportParentId);
+				metaData.put("parentIds",parentIds);
 				for(ReportDataPointContext dataPoint : dataPoints) {
 					dataPoint.setMetaData(metaData);
 					dataPoint.setName(dataPoint.getyAxis().getLabel());
 				}
 			}
+		}
 		}
 		ReportDataPointContext sortPoint = getSortPoint(dataPoints);
 		ReportDataContext sortedData = null;
