@@ -341,8 +341,17 @@ public class ActionAPI {
 		emailTemplate.setFrom("noreply@${org.domain}.facilio.com");
 		String toAdresses = action.getTemplateJson().get("to").toString();
 //		toAdresses = toAdresses.substring(1, toAdresses.length()-1);
-		
-		if(toAdresses.contains(",")) {
+		String ccAddress = null;
+		String bccAddress = null;
+		if (action.getTemplateJson().get("cc") != null) {
+			ccAddress = action.getTemplateJson().get("cc").toString();
+			emailTemplate.setCc(ccAddress);
+		}
+		if (action.getTemplateJson().get("bcc") != null) {
+			bccAddress = action.getTemplateJson().get("bcc").toString();
+			emailTemplate.setBcc(bccAddress);
+		}
+		if(toAdresses.contains(",") || (ccAddress != null && StringUtils.isNotEmpty(ccAddress)) || (bccAddress != null && StringUtils.isNotEmpty(bccAddress))) {
 			action.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
 		}
 		

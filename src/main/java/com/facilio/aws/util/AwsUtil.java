@@ -29,6 +29,7 @@ import javax.activation.FileDataSource;
 import javax.activation.URLDataSource;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -37,7 +38,10 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.transaction.SystemException;
 
+import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -417,13 +421,22 @@ public class AwsUtil
 
 	private static void sendEmailViaAws(JSONObject mailJson) throws Exception  {
 		String toAddress = (String)mailJson.get("to");
+		String ccAddress = (String)mailJson.get("cc");
 		boolean sendEmail = true;
 		HashSet<String> to = new HashSet<>();
+		HashSet<String> cc = new HashSet<>();
 		if( !FacilioProperties.isProduction() ) {
 			if(toAddress != null) {
 				for(String address : toAddress.split(",")) {
 					if(address.contains("@facilio.com")) {
 						to.add(address);
+					}
+				}
+				if (ccAddress != null && StringUtils.isNotEmpty(ccAddress)) {
+					for(String address : ccAddress.split(",")) {
+						if(address.contains("@facilio.com")) {
+							cc.add(address);
+						}
 					}
 				}
 				if(to.size() == 0 ) {
@@ -440,36 +453,41 @@ public class AwsUtil
 			}
 		}
 		if(sendEmail && to.size() > 0) {
-			Destination destination = new Destination().withToAddresses(to);
-			Content subjectContent = new Content().withData((String) mailJson.get("subject"));
-			Content bodyContent = new Content().withData((String) mailJson.get("message"));
+			sendMailViaMessage(mailJson, to, cc);
+		}
+	}
 
-			Body body = null;
-			if(mailJson.get("mailType") != null && mailJson.get("mailType").equals("html")) {
-				body = new Body().withHtml(bodyContent);
-			}
-			else {
-				body = new Body().withText(bodyContent);
-			}
+	public static void sendMailViaMessage(JSONObject mailJson,HashSet<String> to, HashSet<String> cc) {
 
-			Message message = new Message().withSubject(subjectContent).withBody(body);
+		Destination destination = new Destination().withToAddresses(to);
+		if (CollectionUtils.isNotEmpty(cc)) {
+			destination.withCcAddresses(cc);
+		}
+		Content subjectContent = new Content().withData((String) mailJson.get("subject"));
+		Content bodyContent = new Content().withData((String) mailJson.get("message"));
 
-			try {
-				if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 104 || AccountUtil.getCurrentOrg().getId() == 151)) {
-					LOGGER.info("Sending email : "+mailJson.toJSONString());
-				}
-				SendEmailRequest request = new SendEmailRequest().withSource((String) mailJson.get("sender"))
-						.withDestination(destination).withMessage(message);
-				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
-				client.sendEmail(request);
-				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
-					LOGGER.info("Email sent to "+toAddress+"\n"+mailJson);
-				}
-			} catch (Exception ex) {
-				LOGGER.info("Error message: " + toAddress + " " + ex.getMessage());
-				throw ex;
+		Body body = null;
+		if(mailJson.get("mailType") != null && mailJson.get("mailType").equals("html")) {
+			body = new Body().withHtml(bodyContent);
+		}
+		else {
+			body = new Body().withText(bodyContent);
+		}
+
+		Message message = new Message().withSubject(subjectContent).withBody(body);
+
+		try {
+			SendEmailRequest request = new SendEmailRequest().withSource((String) mailJson.get("sender"))
+					.withDestination(destination).withMessage(message);
+			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
+			client.sendEmail(request);
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
+				LOGGER.info("Email sent to "+to.toString()+"\n"+mailJson);
 			}
+		} catch (Exception ex) {
+			LOGGER.info("Error message: " + to.toString() + " " + ex.getMessage());
+			throw ex;
 		}
 	}
 
@@ -478,11 +496,13 @@ public class AwsUtil
 		try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				String toAddress = (String) mailJson.get("to");
+				String ccAddress = (String) mailJson.get("cc");
+				String bccAddress = (String) mailJson.get("bcc");
 				if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
 					toAddress = toAddress == null ? "" : toAddress;
 					JSONObject info = new JSONObject();
 					info.put("subject", mailJson.get("subject"));
-					CommonAPI.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
+					CommonAPI.addNotificationLogger(NotificationType.EMAIL, toAddress, ccAddress, bccAddress, info);
 				}
 			}
 		}
@@ -537,17 +557,7 @@ public class AwsUtil
 //					mailJson.put("subject", "Local - " + mailJson.get("subject"));
 					return;
 				}
-
-				MimeMessage message = getEmailMessage(mailJson, files);
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				message.writeTo(outputStream);
-				RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
-				SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
-
-				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
-				client.sendRawEmail(request);
-				// LOGGER.info("Email sent!");
+				sendEmailViaMimeMessage(mailJson, files);
 				
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
 					LOGGER.info("Email sent to "+toAddress+"\n"+mailJson);
@@ -559,6 +569,18 @@ public class AwsUtil
 				throw ex;
 			}
 		}
+	}
+
+	public static void sendEmailViaMimeMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
+		MimeMessage message = getEmailMessage(mailJson, files);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		message.writeTo(outputStream);
+		RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+		SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
+
+		AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+				.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
+		client.sendRawEmail(request);
 	}
 
 	private static AWSCredentials getBasicAwsCredentials() {
@@ -901,55 +923,10 @@ public class AwsUtil
 	}
 	
 	private static MimeMessage getEmailMessage(JSONObject mailJson, Map<String,String> files) throws Exception {
-	 	String DefaultCharSet = MimeUtility.getDefaultJavaCharset();
-	 	
-		String sender = (String) mailJson.get("sender");
-		
 		Session session = Session.getDefaultInstance(new Properties());
-		MimeMessage message = new MimeMessage(session);
-		message.setFrom(new InternetAddress(sender));
-	    message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse((String) mailJson.get("to")));
-	    message.setSubject((String) mailJson.get("subject"));
-	    
-	    MimeMultipart messageBody = new MimeMultipart("alternative");
-	    MimeBodyPart textPart = new MimeBodyPart();
-	    
-	    String type = "text/plain; charset=UTF-8";
-	    if(mailJson.get("mailType") != null && mailJson.get("mailType").equals("html")) {
-	    	type = "text/html; charset=UTF-8";
-		}
-	    textPart.setContent(MimeUtility.encodeText((String) mailJson.get("message"),DefaultCharSet,"B"), type);
-        textPart.setHeader("Content-Transfer-Encoding", "base64");
-        messageBody.addBodyPart(textPart);
-        
-        MimeBodyPart wrap = new MimeBodyPart();
-        wrap.setContent(messageBody);
-	    
-		MimeMultipart messageContent = new MimeMultipart("mixed");
-	    messageContent.addBodyPart(wrap);
-	    
-	    for (Map.Entry<String, String> file : files.entrySet()) {
-	    		String fileUrl = file.getValue();
-	    		if(fileUrl == null) {	// Temporary check for local filestore.
-	    			continue;
-	    		}
-	    		MimeBodyPart attachment = new MimeBodyPart();
-	    		DataSource fileDataSource = null;
-	    		if (FacilioProperties.isDevelopment()) {
-	    			fileDataSource = new FileDataSource(fileUrl);
-	    		} else {
-	    			URL url = new URL(fileUrl);
-	    			fileDataSource = new URLDataSource(url);
-	    		}
-		    attachment.setDataHandler(new DataHandler(fileDataSource));
-		    attachment.setFileName(file.getKey());
-		    messageContent.addBodyPart(attachment);
-	    }
-	    
-	    message.setContent(messageContent);
+		MimeMessage message = EmailClient.constructMimeMessageContent(mailJson,session,files);
 	    message.addHeader("host", FacilioProperties.getAppDomain());
 	    return message;
 	}
-
 
 }

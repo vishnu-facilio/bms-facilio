@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.templates;
 
-import org.json.simple.JSONObject;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.json.simple.JSONObject;
 
 public class EMailTemplate extends Template {
 	/**
@@ -25,7 +24,15 @@ public class EMailTemplate extends Template {
 	public void setTo(String to) {
 		this.to = to;
 	}
-	
+
+	public String getCc() {
+		return cc;
+	}
+
+	private String cc;
+
+	private String bcc;
+
 	private String subject;
 	public String getSubject() {
 		return subject;
@@ -55,6 +62,8 @@ public class EMailTemplate extends Template {
 		JSONObject obj = new JSONObject();
 		obj.put("sender", from);
 		obj.put("to", to);
+		obj.put("cc", cc);
+		obj.put("bcc", bcc);
 		obj.put("subject", subject);
 		obj.put("message", message);
 		
@@ -70,5 +79,17 @@ public class EMailTemplate extends Template {
 	@JsonInclude(Include.ALWAYS)
 	public Type getTypeEnum() {
 		return Type.EMAIL;
+	}
+
+	public void setCc(String cc) {
+		this.cc = cc;
+	}
+
+	public String getBcc() {
+		return bcc;
+	}
+
+	public void setBcc(String bcc) {
+		this.bcc = bcc;
 	}
 }

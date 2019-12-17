@@ -7,7 +7,9 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -43,34 +45,7 @@ class AwsEmailClient extends EmailClient {
     private void sendEmailViaAws(JSONObject mailJson) throws Exception  {
 
         if(canSendEmail(mailJson)) {
-            Destination destination = new Destination().withToAddresses(getToAddresses(mailJson));
-            Content subjectContent = new Content().withData((String) mailJson.get(SUBJECT));
-            Content bodyContent = new Content().withData((String) mailJson.get(MESSAGE));
-
-            Body body = null;
-            if(mailJson.get(MAIL_TYPE) != null && mailJson.get(MAIL_TYPE).equals(HTML)) {
-                body = new Body().withHtml(bodyContent);
-            }
-            else {
-                body = new Body().withText(bodyContent);
-            }
-
-            Message message = new Message().withSubject(subjectContent).withBody(body);
-
-            try {
-
-                SendEmailRequest request = new SendEmailRequest().withSource((String) mailJson.get(SENDER))
-                        .withDestination(destination).withMessage(message);
-                AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-                        .withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
-                client.sendEmail(request);
-                if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
-                    LOGGER.info("Email sent to "+mailJson);
-                }
-            } catch (Exception ex) {
-                LOGGER.info("Error message: " + ex.getMessage());
-                throw ex;
-            }
+            AwsUtil.sendMailViaMessage(mailJson, getEmailAddresses(mailJson, TO), getEmailAddresses(mailJson, CC));
         }
     }
 
@@ -91,18 +66,7 @@ class AwsEmailClient extends EmailClient {
 
         if(canSendEmail(mailJson,files)) {
             try {
-
-
-                MimeMessage message = getEmailMessage(mailJson, files);
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                message.writeTo(outputStream);
-                RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
-                SendRawEmailRequest request = new SendRawEmailRequest(rawMessage);
-
-                AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-                        .withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
-                client.sendRawEmail(request);
-
+                AwsUtil.sendEmailViaMimeMessage(mailJson, files);
             } catch (Exception ex) {
                 LOGGER.info("The email was not sent.");
                 LOGGER.info("Error message: "+ex.getMessage());

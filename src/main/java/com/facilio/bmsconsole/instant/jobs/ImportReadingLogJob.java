@@ -26,16 +26,14 @@ public class ImportReadingLogJob extends InstantJob{
 		PubSubManager pubsub = PubSubManager.getInstance();
 		LOGGER.severe("----Beginning Import Log Job-----");
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
-		System.out.println(context);
-		System.out.print(context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT));
-		
+
 		try {
 			FacilioChain dataParseChain = TransactionChainFactory.parseReadingDataForImport();
 			dataParseChain.execute(context);
-			
+
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.BEGIN_VALIDATION.getValue());
 			ImportAPI.updateImportProcess(importProcessContext);
-			
+
 			JSONObject pubsubInfo = new JSONObject();
 			if((boolean)context.get(ImportAPI.ImportProcessConstants.HAS_DUPLICATE_ENTRIES)) {
 				pubsubInfo.put("hasDuplicates",true);
