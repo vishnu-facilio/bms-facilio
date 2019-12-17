@@ -650,28 +650,8 @@ public class PreventiveMaintenanceAPI {
 
 			Map<String, List<TaskContext>> preRequestMap = null;
 			Map<String, List<TaskContext>> preRequestMapForNewPmExecution = null;
-			isNewPmType = false;
 
-			if (clonedWoTemplate.getPreRequestSectionTemplates() != null) {
-				for (TaskSectionTemplate sectiontemplate : clonedWoTemplate.getPreRequestSectionTemplates()) {
-					if (sectiontemplate.getAssignmentType() < 0) {
-						isNewPmType = false;
-						break;
-					} else {
-						isNewPmType = true;
-					}
-				}
-			}
-
-			if (isNewPmType) {
-				Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
-				if (woTemplateResourceId > 0) {
-					Long currentTriggerId = pmTrigger.getId();
-					preRequestMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(context, clonedWoTemplate.getPreRequestSectionTemplates(), woTemplateResourceId, currentTriggerId);
-				}
-			} else {
-				preRequestMapForNewPmExecution = clonedWoTemplate.getPreRequests();
-			}
+			preRequestMapForNewPmExecution = clonedWoTemplate.getPreRequests();
 
 			if (preRequestMapForNewPmExecution != null) {
 				preRequestMap = preRequestMapForNewPmExecution;

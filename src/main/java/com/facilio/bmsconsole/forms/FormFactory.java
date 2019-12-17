@@ -1387,7 +1387,7 @@ public class FormFactory {
 		List<FormField> fields=new ArrayList<>();
 		
 		fields.add(new FormField("host",FieldDisplayType.LOOKUP_SIMPLE,"Who do you want to meet",Required.OPTIONAL, "user",1,1));
-		fields.add(new FormField("purposeOfVisit",FieldDisplayType.TEXTBOX,"What is the purpose of visit",Required.OPTIONAL,1,1));
+		fields.add(new FormField("purposeOfVisit",FieldDisplayType.SELECTBOX,"What is the purpose of visit",Required.OPTIONAL,1,1));
 		fields.add(new FormField("visitor", FieldDisplayType.LOOKUP_SIMPLE, "Visitor", Required.OPTIONAL, "visitor", 1, 1));
 		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1));
 		return fields;
@@ -1408,7 +1408,7 @@ public class FormFactory {
 	private static List<FormField> getVendorFormFields()
 	{
 		List<FormField> fields=new ArrayList<>();
-		fields.add(new FormField("purposeOfVisit",FieldDisplayType.TEXTBOX,"What is the purpose of visit",Required.OPTIONAL,1,1));
+		fields.add(new FormField("purposeOfVisit",FieldDisplayType.SELECTBOX,"What is the purpose of visit",Required.OPTIONAL,1,1));
 		fields.add(new FormField("host",FieldDisplayType.LOOKUP_SIMPLE,"Who do you want to meet",Required.OPTIONAL, "user",1,1));
 		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Visitor Photo",Required.OPTIONAL,1,1));
 		fields.add(new FormField("visitor", FieldDisplayType.LOOKUP_SIMPLE, "Visitor", Required.OPTIONAL, "visitor", 1, 1));

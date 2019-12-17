@@ -33,13 +33,19 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.util.FacilioUtil;
 
 public class IAMOrgBeanImpl implements IAMOrgBean {
 
 	@Override
 	public boolean updateOrgv2(long orgId, Organization org) throws Exception {
 		if (org.getLogo() != null) {
-			FileStore fs = FacilioFactory.getFileStore();
+			FileStore fs;
+			if (FacilioProperties.isProduction()) {
+				fs = FacilioFactory.getFileStoreFromOrg(orgId);
+			} else {
+				fs = FacilioFactory.getFileStore();
+			}
 			long fileId = fs.addFile(org.getLogoFileName(), org.getLogo(), org.getLogoContentType());
 			org.setLogoId(fileId);
 		}

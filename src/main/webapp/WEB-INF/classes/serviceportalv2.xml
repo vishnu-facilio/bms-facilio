@@ -564,6 +564,15 @@
 			</result>
 		</action>
 	</package>
+	<package name="vendorWorkorderSummary" namespace="/api/service/v2/workorder/summary" extends="newServicePortalApiV2">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2viewWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="workOrderId">{1}</param>
+		</action>
+	</package>
 	<package name="VendorWoStateTransition"
 		namespace="/api/service/v2/statetransition" extends="newServicePortalApiV2">
 		<action name="getAvailableState"

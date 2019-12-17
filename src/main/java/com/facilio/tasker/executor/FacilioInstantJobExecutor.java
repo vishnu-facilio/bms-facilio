@@ -68,7 +68,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 		while (isRunning) {
 			try {
 				handleTimeOut();
-				List<ObjectMessage> messageList = FacilioObjectQueue.getObjects(InstantJobConf.getInstantJobQueue(),
+				List<ObjectMessage> messageList = FacilioObjectQueue.getObjects(
 						getNoOfFreeThreads());
 				if (messageList != null) {
 					for (ObjectMessage message : messageList) {
@@ -87,7 +87,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 													.getDefaultTimeOut()) {
 												try {
 													FacilioObjectQueue.changeVisibilityTimeout(
-															InstantJobConf.getInstantJobQueue(),
+															
 															message.getId(),
 															(int) TimeUnit.SECONDS.toMinutes(instantJob.getTransactionTimeout()));
 												} catch (Exception e) {
@@ -113,7 +113,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 								}
 							}
 						} else {
-							FacilioObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), message.getId());
+							FacilioObjectQueue.deleteObject( message.getId());
 						}
 					}
 				}
@@ -133,7 +133,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 
 	public void jobEnd(String receiptHandle) {
 		try {
-			FacilioObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), receiptHandle);
+			FacilioObjectQueue.deleteObject( receiptHandle);
 		} catch (Exception e) {
 			LOGGER.info("Exception occurred in FacilioInstant Job Qeueu :  "+e);
 		}

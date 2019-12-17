@@ -28,10 +28,12 @@ public class CommonAPI {
 		}
 	}
 
-	public static void addNotificationLogger (NotificationType type, String to, JSONObject info) throws Exception {
+	public static void addNotificationLogger (NotificationType type, String to, String cc, String bcc, JSONObject info) throws Exception {
 		Map<String, Object> props = new HashMap<>();
 		props.put("type", type.getValue());
 		props.put("to", to);
+		props.put("cc", cc);
+		props.put("bcc", bcc);
 		props.put("threadName", Thread.currentThread().getName());
 		props.put("createdTime", System.currentTimeMillis());
 		if (info != null) {

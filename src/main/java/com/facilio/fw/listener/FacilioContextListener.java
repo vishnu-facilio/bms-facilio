@@ -1,16 +1,22 @@
 package com.facilio.fw.listener;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Timer;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -21,9 +27,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.agentIntegration.AgentIntegrationQueue.AgentIntegrationQueue;
-import com.facilio.agentIntegration.AgentIntegrationQueue.AgentIntegrationQueueFactory;
-import com.facilio.services.kafka.notification.NotificationProcessor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -35,6 +38,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.facilio.activity.ActivityType;
+import com.facilio.agentIntegration.AgentIntegrationQueue.AgentIntegrationQueueFactory;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -53,10 +57,9 @@ import com.facilio.logging.SysOutLogger;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.queue.FacilioDBQueueExceptionProcessor;
-import com.facilio.queue.FacilioExceptionProcessor;
-import com.facilio.service.FacilioService;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.kafka.notification.NotificationProcessor;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.FacilioInstantJobExecutor;
 import com.facilio.tasker.executor.InstantJobExecutor;
@@ -72,9 +75,9 @@ public class FacilioContextListener implements ServletContextListener {
 			RedisManager.getInstance().release();// destroying redis connection pool
 		}
 		FacilioScheduler.stopSchedulers();
-		if(FacilioProperties.isProduction()) {
-			InstantJobExecutor.INSTANCE.stopExecutor();
-		}
+//		if(FacilioProperties.isProduction()) {
+//			InstantJobExecutor.INSTANCE.stopExecutor();
+//		}
 		FacilioInstantJobExecutor.INSTANCE.stopExecutor();
 		timer.cancel();
 		FacilioConnectionPool.INSTANCE.close();
@@ -98,7 +101,7 @@ public class FacilioContextListener implements ServletContextListener {
 //		if(FacilioProperties.isScheduleServer() && FacilioProperties.isProduction()) {
 //			timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
 //		}
-		if(FacilioProperties.isScheduleServer() && FacilioProperties.isProduction()) {
+		if(FacilioProperties.isScheduleServer()) {
 			LOGGER.info("##Facilio exception queue Pull method calling");
 			timer.schedule(new FacilioDBQueueExceptionProcessor(), 0L, 900000L); // 30 minutes
 		}
@@ -123,9 +126,9 @@ public class FacilioContextListener implements ServletContextListener {
 			BeanFactory.initBeans();
 			
 			FacilioScheduler.initScheduler();
-			if(FacilioProperties.isProduction()) {
-				InstantJobExecutor.INSTANCE.startExecutor();
-			}
+//			if(FacilioProperties.isProduction()) {
+//				InstantJobExecutor.INSTANCE.startExecutor();
+//			}
 			FacilioInstantJobExecutor.INSTANCE.startExecutor();
 			
 			

@@ -198,7 +198,12 @@ public class CalculateAggregationCommand extends FacilioCommand {
 				endTime = currentTime;
 			}
 			else {
+				if(report.getDateRange() != null) {
+					endTime = report.getDateRange().getEndTime();
+				}
+				else {
 				endTime = report.getDateOperatorEnum().getRange(report.getDateValue()).getEndTime();
+				}
 			}
 			timeline.add(new SimpleEntry<Long, Integer>(endTime, previousRecord.getValue())); 
 			endTime++; //Because this endttime is inclusive

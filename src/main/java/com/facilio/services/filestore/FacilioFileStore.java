@@ -1,5 +1,6 @@
 package com.facilio.services.filestore;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -10,7 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amazonaws.services.s3.model.PutObjectResult;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.util.ImageScaleUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -19,8 +23,13 @@ import com.facilio.fs.FileInfo;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.services.filestore.FileStore;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import javax.imageio.ImageIO;
 
 public class FacilioFileStore extends FileStore {
+	private static Logger log = LogManager.getLogger(FacilioFileStore.class.getName());
 
 	public FacilioFileStore(long orgId, long userId) {
 		super(orgId, userId);
@@ -51,7 +60,49 @@ public class FacilioFileStore extends FileStore {
 
 	@Override
 	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
-		return 0;
+		long fileId = this.addFile(fileName, file, contentType);
+		for (int resizeVal : resize) {
+			try {
+				if (contentType.contains("image/")) {
+					// Image resizing...
+
+					FileInputStream fis = new FileInputStream(file);
+					BufferedImage imBuff = ImageIO.read(fis);
+					BufferedImage out = ImageScaleUtil.resizeImage(imBuff, resizeVal, resizeVal);
+
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					ImageIO.write(out, "png", baos);
+					baos.flush();
+					byte[] imageInByte = baos.toByteArray();
+					baos.close();
+
+					String resizedFilePath = getRootPath() + File.separator + fileId+"-resized-"+resizeVal+"x"+resizeVal;
+					HttpUtil httpConn;
+
+					httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
+					httpConn.addFormField("orgId", getOrgId() + "");
+
+
+					httpConn.addFormField("fileId", fileId + "");
+					httpConn.addFormField("fileName", fileName);
+					httpConn.addFormField("contentType", contentType);
+
+					httpConn.addFilePart("fileContent", fileName, imageInByte);
+
+					Map<String, Object> response = httpConn.finish();
+
+					Integer statusCode = (Integer) response.get("status");
+					if (statusCode == 200) {
+						addResizedFileEntry(fileId, resizeVal, resizeVal, resizedFilePath, imageInByte.length, "image/png");
+					}
+
+
+				}
+			} catch (Exception e) {
+				log.info("Exception occurred ", e);
+			}
+		}
+		return fileId;
 	}
 
 	@Override
@@ -66,7 +117,7 @@ public class FacilioFileStore extends FileStore {
 	private long addSecretFile(long fileId, String fileName, byte[] content, String contentType) throws Exception
 	{
 		HttpUtil httpConn;
-		httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
+		httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/secrets/put");
 
 
 		httpConn.addFormField("fileId", fileId + "");
@@ -98,7 +149,7 @@ public class FacilioFileStore extends FileStore {
 
 		HttpUtil httpConn;
 
-			httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/secrets/put");
+			httpConn = new HttpUtil(FacilioProperties.getConfig("files.url") + "/api/file/put");
 			httpConn.addFormField("orgId", getOrgId() + "");
 
 

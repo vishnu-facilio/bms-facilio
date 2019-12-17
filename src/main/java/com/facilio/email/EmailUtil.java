@@ -19,6 +19,9 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.services.email.EmailClient;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -90,47 +93,8 @@ public class EmailUtil {
         try {
 
             if (user != null) {
+                MimeMessage message = EmailClient.constructMimeMessageContent(mailJson,session,files);
 
-                String DefaultCharSet = MimeUtility.getDefaultJavaCharset();
-
-                String sender = (String) mailJson.get("sender");
-
-                MimeMessage message = new MimeMessage(session);
-                message.setFrom(new InternetAddress(sender));
-                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse((String) mailJson.get("to")));
-                message.setSubject((String) mailJson.get("subject"));
-
-                MimeMultipart messageBody = new MimeMultipart("alternative");
-                MimeBodyPart textPart = new MimeBodyPart();
-                textPart.setContent(MimeUtility.encodeText((String) mailJson.get("message"), DefaultCharSet, "B"), "text/plain; charset=UTF-8");
-                textPart.setHeader("Content-Transfer-Encoding", "base64");
-                messageBody.addBodyPart(textPart);
-
-                MimeBodyPart wrap = new MimeBodyPart();
-                wrap.setContent(messageBody);
-
-                MimeMultipart messageContent = new MimeMultipart("mixed");
-                messageContent.addBodyPart(wrap);
-
-                for (Map.Entry<String, String> file : files.entrySet()) {
-                    String fileUrl = file.getValue();
-                    if (fileUrl == null) {    // Temporary check for local filestore.
-                        continue;
-                    }
-                    MimeBodyPart attachment = new MimeBodyPart();
-                    DataSource fileDataSource = null;
-                    if (FacilioProperties.isDevelopment()) {
-                        fileDataSource = new FileDataSource(fileUrl);
-                    } else {
-                        URL url = new URL(fileUrl);
-                        fileDataSource = new URLDataSource(url);
-                    }
-                    attachment.setDataHandler(new DataHandler(fileDataSource));
-                    attachment.setFileName(file.getKey());
-                    messageContent.addBodyPart(attachment);
-                }
-
-                message.setContent(messageContent);
                 if (FacilioProperties.getServerName() != null) {
                     message.addHeader("host", FacilioProperties.getServerName());
                 }

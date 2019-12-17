@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.time.DateTimeUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -12,6 +13,7 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.activation.URLDataSource;
+import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.*;
 import java.net.URL;
@@ -35,6 +37,7 @@ public abstract class EmailClient {
     static final String HTML="html";
     private static final String HOST = "host";
     static final String TO = "to";
+    static final String CC = "cc";
     private static final String ERROR_MAIL_FROM="mlerror@facilio.com";
     private static final String ERROR_MAIL_TO="ai@facilio.com";
     private static final String ERROR_AT_FACILIO="error@facilio.com";
@@ -45,14 +48,26 @@ public abstract class EmailClient {
     public abstract void sendEmail(JSONObject mailJson, Map<String, String> files) throws Exception;
 
     MimeMessage getEmailMessage(JSONObject mailJson, Map<String, String> files) throws Exception {
+
+
+        Session session = getSession();
+        MimeMessage message = constructMimeMessageContent(mailJson,session,files);
+        message.addHeader(HOST, FacilioProperties.getAppDomain());
+        return message;
+    }
+
+    public static MimeMessage constructMimeMessageContent(JSONObject mailJson, Session session,Map<String, String> files) throws Exception {
         String DefaultCharSet = MimeUtility.getDefaultJavaCharset();
 
         String sender = (String) mailJson.get(SENDER);
 
-        Session session = getSession();
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress(sender));
         message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse((String) mailJson.get("to")));
+        String cc = (String) mailJson.get("cc");
+        if (cc != null && StringUtils.isNotEmpty(cc)) {
+            message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(cc));
+        }
         message.setSubject((String) mailJson.get(SUBJECT));
 
         MimeMultipart messageBody = new MimeMultipart(MIME_MULTIPART_SUBTYPE_ALTERNATIVE);
@@ -91,9 +106,9 @@ public abstract class EmailClient {
         }
 
         message.setContent(messageContent);
-        message.addHeader(HOST, FacilioProperties.getAppDomain());
         return message;
     }
+
     public void sendErrorMail(long orgid,long ml_id,String error)
     {
         try
@@ -126,11 +141,18 @@ public abstract class EmailClient {
         try {
             if (AccountUtil.getCurrentOrg() != null) {
                 String toAddress = (String) mailJson.get("to");
+                String ccAddress = null, bccAddress = null;
+                if (mailJson.get("cc") != null) {
+                    ccAddress = (String) mailJson.get("cc");
+                }
+                if (mailJson.get("bcc") != null) {
+                    bccAddress = (String) mailJson.get("bcc");
+                }
                 if (!ERROR_AND_ALERT_AT_FACILIO.equals(toAddress) && !ERROR_AT_FACILIO.equals(toAddress)) {
                     toAddress = toAddress == null ? "" : toAddress;
                     JSONObject info = new JSONObject();
                     info.put(SUBJECT, mailJson.get(SUBJECT));
-                    CommonAPI.addNotificationLogger(CommonAPI.NotificationType.EMAIL, toAddress, info);
+                    CommonAPI.addNotificationLogger(CommonAPI.NotificationType.EMAIL, toAddress, ccAddress, bccAddress, info);
                 }
             }
         }
@@ -148,26 +170,27 @@ public abstract class EmailClient {
 
     boolean canSendEmail(JSONObject mailJson) {
 
-        return (getToAddresses(mailJson).size() >0 );
+        return (getEmailAddresses(mailJson, TO).size() >0 );
     }
-    HashSet<String> getToAddresses(JSONObject mailJson){
-        String toAddress = (String)mailJson.get(TO);
-        HashSet<String> to = new HashSet<>();
+    HashSet<String> getEmailAddresses(JSONObject mailJson, String key){
+        String emailAddressString = (String)mailJson.get(key);
+        HashSet<String> emailAddress = new HashSet<>();
         if( !FacilioProperties.isProduction() ) {
-            if(toAddress != null) {
-                for(String address : toAddress.split(",")) {
+            if(emailAddressString != null) {
+                for(String address : emailAddressString.split(",")) {
                     if(address.contains("@facilio.com")) {
-                        to.add(address);
+                        emailAddress.add(address);
                     }
                 }
             }
         } else {
-            for(String address : toAddress.split(",")) {
+            for(String address : emailAddressString.split(",")) {
                 if(address != null && address.contains("@")) {
-                    to.add(address);
+                    emailAddress.add(address);
                 }
             }
         }
-        return to;
+        return emailAddress;
     }
+
 }

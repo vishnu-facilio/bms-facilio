@@ -520,6 +520,24 @@ public class VisitorManagementAPI {
 				}
 			
 			}
+			
+			if(vLog.getVisitor() != null) {
+				if(StringUtils.isEmpty(vLog.getVisitor().getName())) {
+					vLog.setVisitor(VisitorManagementAPI.getVisitor(vLog.getVisitor().getId(), null));
+				}
+				FacilioField visitorNameField = modBean.getField("visitorName", module.getName());
+				FacilioField visitorEmailField = modBean.getField("visitorEmail", module.getName());
+				FacilioField visitorPhoneField = modBean.getField("visitorPhone", module.getName());
+				
+				updateMap.put("visitorName", vLog.getVisitor().getName());
+				updateMap.put("visitorEmail", vLog.getVisitor().getEmail());
+				updateMap.put("visitorPhone", vLog.getVisitor().getPhone());
+				
+				updatedfields.add(visitorNameField);
+				updatedfields.add(visitorEmailField);
+				updatedfields.add(visitorPhoneField);
+			}
+			
 		
 			UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()
 					.module(module)
