@@ -23,6 +23,7 @@ import org.apache.commons.codec.binary.Base64;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.util.FileJWTUtil;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -590,6 +591,43 @@ public abstract class FileStore {
 		return getOrgiDownloadUrl(fileId);
 	}
 	
+	public String newPreviewFileUrl (String moduleName, long fileId) throws Exception {
+		return newPreviewFileUrl(moduleName, fileId, System.currentTimeMillis() + 300000);
+	}
+	
+	public String newPreviewFileUrl (String moduleName, long fileId, long expiryTime) throws Exception {
+		String url = getUrl(moduleName,fileId,false);
+		return url;
+	}
+	
+	public String newDownloadFileUrl (String moduleName, long fileId) throws Exception {
+		String url = getUrl(moduleName, fileId, true);
+		return url;
+	}
+	
+	private String getUrl (String moduleName, long fileId, boolean isDownload) {
+		Map<String, String> claims = new HashMap<>();
+		claims.put("moduleName", moduleName);
+		claims.put("fileId", String.valueOf(fileId));
+		String token =  FileJWTUtil.generateFileJWT(claims);
+		StringBuilder url = new StringBuilder();
+		if (FacilioProperties.isDevelopment()) {
+			url.append(FacilioProperties.getServerName());
+		}
+		url.append("/api/v3/files/");
+		if(AccountUtil.getCurrentOrg() !=null) {
+			url.append("app/");
+		} else {
+			url.append("public/");
+		}
+		if(isDownload) {
+			url.append("download");
+		} else {
+			url.append("preview");
+		}
+		url.append("?q=");
+		return url.toString()+token;
+	}
 	public abstract InputStream readFile(long fileId) throws Exception;
 	
 	public abstract InputStream readFile(FileInfo fileInfo) throws Exception;

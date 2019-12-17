@@ -2141,6 +2141,16 @@
 			<param name="fileID">{1}</param>
 		</action>
 	</package>
+	
+	<package name="newFilePreviewApiv2"
+		namespace="/api/v3/files/app" extends="attachmentPreviewApi">
+		<action name="preview"
+			class="com.facilio.bmsconsole.actions.V3FileAction"
+			method="previewFile">
+			<param name="permission">READ</param>
+		</action>
+	</package>
+	
 	<package name="addfile" namespace="/api/v2/files"
 		extends="v2Api">
 		<action name="add"

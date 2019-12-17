@@ -41,11 +41,12 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	public boolean updateOrgv2(long orgId, Organization org) throws Exception {
 		if (org.getLogo() != null) {
 			FileStore fs;
-			if (FacilioProperties.isProduction()) {
-				fs = FacilioFactory.getFileStoreFromOrg(orgId);
-			} else {
-				fs = FacilioFactory.getFileStore();
-			}
+//			if (FacilioProperties.isProduction()) {
+//				fs = FacilioFactory.getFileStoreFromOrg(orgId);
+//			} else {
+//				fs = FacilioFactory.getFileStore();
+//			}
+			fs = FacilioFactory.getFileStore();
 			long fileId = fs.addFile(org.getLogoFileName(), org.getLogo(), org.getLogoContentType());
 			org.setLogoId(fileId);
 		}

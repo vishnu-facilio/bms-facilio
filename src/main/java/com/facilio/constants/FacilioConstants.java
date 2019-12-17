@@ -347,7 +347,8 @@ public class FacilioConstants {
 		public static final String FILE_NAME = "fileName";
 		public static final String FILE_CONTENT_TYPE = "fileContentType";
 		public static final String FILE_CONTEXT_LIST = "fileContextList";
-
+		public static final String FILE_RESPONSE_STATUS = "fileResponseStatus";
+		public static final String FILE_DOWNLOAD_STREAM = "fileDownloadStream";
 
 		public static final String LOGO = "logo";
 
@@ -1349,6 +1350,8 @@ public class FacilioConstants {
 		public static final String PORTAL_USER_TYPE = "portalUserType";
 		public static final String IS_VENDOR_PORTAL = "isVendorPortal";
 		public static final String IS_TENANT_PORTAL = "isTenantPortal";
+		public static final String FILE_URL_STRING = "fileUrlString";
+		public static final String FILE_TOKEN_STRING = "fileTokenString";
 				
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

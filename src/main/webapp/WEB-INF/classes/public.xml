@@ -30,4 +30,16 @@
 			</result>
 		</action>
 	</package>
+	<package name="publicFilesv3" namespace="/api/v3/files/public" extends="publicApi">
+		<action name="preview"
+			class="com.facilio.bmsconsole.actions.V3FileAction"
+			method="previewFile">
+			<param name="permission">READ</param>
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+		</action>
+	</package>
 </struts>

@@ -49,7 +49,8 @@ public class IAMOrgUtil {
 		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
 		if (org.getLogoId() > 0) {
 			FileStore fs = FacilioFactory.getFileStoreFromOrg(org.getId());
-			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), false));
+//			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), false));
+			org.setLogoUrl(fs.newPreviewFileUrl("organization",org.getLogoId()));
 			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
 		}
 		return org;
