@@ -58,10 +58,11 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         addMeanTimeBetweenCard(tab2Sec1);
         addMeanTimeToClearCard(tab2Sec1);
         addAlarmDuration(tab2Sec1);
+
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.BASE_EVENT));
         Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("baseAlarm"), String.valueOf(alarms.getId()), NumberOperators.EQUALS));
-        addImpactDetails(tab2Sec1,criteria);
+        addImpactDetails(tab2Sec1, criteria, alarms.getLastOccurrence());
         
         // History Tab
         Page.Tab tab3 = page.new Tab("occurrenceHistory", "occurrenceHistory");
@@ -131,11 +132,16 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         section.addWidget(alarmReport);
         return alarmReport;
     }
-    protected static PageWidget addImpactDetails(Section section,Criteria criteria) {
+    protected static PageWidget addImpactDetails(Section section, Criteria criteria, AlarmOccurrenceContext lastOccurrence) {
         PageWidget alarmDetails = new PageWidget(WidgetType.CHART, "impactDetails");
         alarmDetails.addToLayoutParams(section, 24, 12);
         alarmDetails.addCardType(PageWidget.CardType.IMPACT_DETAILS);
-        addChartParams(alarmDetails, "createdTime",DateAggregateOperator.HOURSOFDAYONLY, "cost",NumberAggregateOperator.SUM, criteria);
+        if (lastOccurrence != null && lastOccurrence.getAdditionInfo() != null && lastOccurrence.getAdditionInfo().containsKey("impact")) {
+            addChartParams(alarmDetails, "createdTime", DateAggregateOperator.HOURSOFDAYONLY, "cost" ,NumberAggregateOperator.SUM,criteria);
+        } else  {
+            alarmDetails.addToWidgetParams("isEmpty", true);
+        }
+
         section.addWidget(alarmDetails);
         return alarmDetails;
     }

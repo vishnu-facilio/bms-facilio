@@ -92,7 +92,6 @@ public class WorkflowRuleAPI {
 			case ALARM_CLEAR_RULE:
 			case ALARM_RCA_RULES:
 			case PM_READING_TRIGGER:
-			case IMPACT_RULE:
 			case READING_VIOLATION_RULE:
 				if (((ReadingRuleContext) rule).getClearAlarm() == null) {
 					ruleProps.put("clearAlarm", true);

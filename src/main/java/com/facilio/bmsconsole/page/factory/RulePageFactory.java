@@ -1,19 +1,36 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
+
+import javax.swing.*;
+import java.util.List;
+import java.util.Map;
 
 public class RulePageFactory extends PageFactory {
-	public static Page getRulePage(AlarmRuleContext alarmRule) {
+	public static Page getRulePage(AlarmRuleContext alarmRule) throws Exception {
 		return getDefaultRuleSummaryPage(alarmRule);
 	}
 	
-	private static Page getDefaultRuleSummaryPage(AlarmRuleContext alarmRule) {
+	private static Page getDefaultRuleSummaryPage(AlarmRuleContext alarmRule) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
 		Page page = new Page();
 
 		Tab tab1 = page.new Tab("summary");
@@ -45,6 +62,31 @@ public class RulePageFactory extends PageFactory {
 		tab3.addSection(tab3Sec1);
 		
 		addRCAWidget(tab3Sec1);
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.READING_EVENT));
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("baseAlarm"), String.valueOf(alarmRule.getAlarmTriggerRule().getId()), NumberOperators.EQUALS));
+//		addImpactDetails(tab2Sec1,criteria);
+
+
+		// if (alarmRule.alarmTriggerRule.actions.get(0).template.getOriginalTemplate().containsKey("impact")) {
+		if (alarmRule.getAlarmTriggerRule() != null) {
+			{
+				List<ActionContext> actions = alarmRule.getAlarmTriggerRule().getActions();
+				for (ActionContext action: actions) {
+					if (action.template.getOriginalTemplate() != null && action.template.getOriginalTemplate().containsKey("impact")) {
+						Tab tab5 = page.new Tab("rule_impact", "rule_impact");
+						page.addTab(tab5);
+						Section tab5Sec1 = page.new Section();
+						tab5.addSection(tab5Sec1);
+						addImpactWidget(tab5Sec1, criteria);
+						break;
+					}
+
+				}
+			}
+		}
+
 	
 		
 		Tab tab4 = page.new Tab("history_log", "history_log");
@@ -114,6 +156,13 @@ public class RulePageFactory extends PageFactory {
 	private static void addRCAWidget(Section section) {
 		PageWidget rcaWidget = new PageWidget(WidgetType.RULE_RCA);
 		section.addWidget(rcaWidget);
+	}
+	private static void addImpactWidget(Section section, Criteria criteria) {
+		PageWidget alarmDetails = new PageWidget(WidgetType.CHART, "impactDetails");
+		alarmDetails.addToLayoutParams(section, 24, 12);
+		alarmDetails.addCardType(PageWidget.CardType.IMPACT_DETAILS);
+		addChartParams(alarmDetails, null, BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY, "createdTime", BmsAggregateOperators.NumberAggregateOperator.SUM,  "cost" , "resource", DateOperators.LAST_N_DAYS,"30" ,criteria);
+		section.addWidget(alarmDetails);
 	}
 	private static void addHistoryLogWidget(Section section) {
 		PageWidget historyLogWidget = new PageWidget(WidgetType.HISTORY_LOG);

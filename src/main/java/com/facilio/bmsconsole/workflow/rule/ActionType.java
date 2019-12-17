@@ -298,8 +298,10 @@ public enum ActionType {
 								impactContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 								c.addCommand(new ExecuteSpecificWorkflowsCommand(Collections.singletonList(workFlowIds), RuleType.IMPACT_RULE));
 								c.execute(impactContext);
-								double impact_key = (double) impactContext.get("impact_value");
-								PropertyUtils.setProperty(event, fieldName , impact_key);
+								if (impactContext.containsKey("impact_value")) {
+									double impact_key = (double) impactContext.get("impact_value");
+									PropertyUtils.setProperty(event, fieldName , impact_key);
+								}
 							}
 						}
 
