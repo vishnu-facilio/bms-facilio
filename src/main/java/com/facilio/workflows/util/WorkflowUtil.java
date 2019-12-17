@@ -821,10 +821,15 @@ public class WorkflowUtil {
 		return values;
 	}
 	
-	public static WorkflowContext convertOldWorkflowToNew(long wfid) throws Exception {
-		// TODO Auto-generated method stub
+	public static WorkflowContext convertOldWorkflowToNew(long wfId) throws Exception {
 		
-		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(wfid, true);
+		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(wfId, true);
+		
+		return convertOldWorkflowToNew(workflow);
+	}
+	
+	public static WorkflowContext convertOldWorkflowToNew(WorkflowContext workflow) throws Exception {
+		// TODO Auto-generated method stub
 		
 		List<ParameterContext> params = workflow.getParameters();
 		String paramString = "";
@@ -839,7 +844,13 @@ public class WorkflowUtil {
 			paramString = paramString.substring(0, paramString.length()-1);
 		}
 		
-		String code = "void test("+paramString+") {\n";
+		String returnType = "void";
+		
+		if(workflow.getResultEvaluator() != null) {
+			returnType = "Number"; 
+		}
+		
+		String code = returnType+" test("+paramString+") {\n";
 		
 		for(WorkflowExpression expression : workflow.getExpressions()) {
 			if(expression instanceof ExpressionContext) {
