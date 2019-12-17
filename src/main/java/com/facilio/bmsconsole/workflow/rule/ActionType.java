@@ -276,7 +276,7 @@ public enum ActionType {
 					BaseEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord,context);
 					///handle impacts
 					JSONObject impacts = (JSONObject) obj.get("impact");
-					if (!impacts.isEmpty()) {
+					if (impacts != null && !impacts.isEmpty()) {
 						Set<String> set = impacts.keySet();
 						for (String fieldName : set) {
 							JSONArray workFlowId = (JSONArray) impacts.get(fieldName);

@@ -133,9 +133,9 @@ public class ReadingAlarmPageFactory extends PageFactory  {
     }
     protected static PageWidget addImpactDetails(Section section,Criteria criteria) {
         PageWidget alarmDetails = new PageWidget(WidgetType.CHART, "impactDetails");
-        alarmDetails.addToLayoutParams(section, 24, 8);
+        alarmDetails.addToLayoutParams(section, 24, 12);
         alarmDetails.addCardType(PageWidget.CardType.IMPACT_DETAILS);
-        addChartParams(alarmDetails, "createdTime",DateAggregateOperator.MONTHANDYEAR, "cost",NumberAggregateOperator.SUM, criteria);
+        addChartParams(alarmDetails, "createdTime",DateAggregateOperator.HOURSOFDAYONLY, "cost",NumberAggregateOperator.SUM, criteria);
         section.addWidget(alarmDetails);
         return alarmDetails;
     }
