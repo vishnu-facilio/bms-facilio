@@ -119,7 +119,13 @@ if (buildinfo == null) {
                 <span class="nav-title">Upload credentials</span>
                  </a>
            </li>
-
+			<li>
+                <a href="getinstance">
+                <span class="nav-icon">
+                <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+                <span class="nav-title">AwsInstances</span>
+                 </a>
+           </li>
          </ul>
         
       <div class="nav  sidebar-footer-btn  ">

@@ -1,18 +1,36 @@
 package com.facilio.bmsconsole.actions;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.websocket.EncodeException;
+
+import org.apache.commons.chain.Context;
+import org.apache.struts2.ServletActionContext;
+import org.json.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.amazonaws.services.ec2.model.Instance;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.auth.actions.FacilioAuthAction;
+import com.facilio.aws.util.AwsGetEC2Instances;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -34,7 +52,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-import com.facilio.services.filestore.FileStoreFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -42,27 +59,6 @@ import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
-import org.apache.commons.chain.Context;
-import org.apache.struts2.ServletActionContext;
-import org.json.JSONArray;
-import org.json.simple.JSONObject;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.websocket.EncodeException;
-import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class AdminAction extends ActionSupport {
 	/**
@@ -269,6 +265,12 @@ public class AdminAction extends ActionSupport {
 
 	}
 
+	public static List<Instance> getAwsInstance()throws Exception{
+		List<Instance> inst = AwsGetEC2Instances.getInstance();
+		
+		return inst;
+	}
+	
 	public String deleteMessageQueue() {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		int daysToDelete = Integer.parseInt(request.getParameter("days"));

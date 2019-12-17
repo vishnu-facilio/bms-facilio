@@ -1136,6 +1136,10 @@
 			<action name="deleteMessageQueue" class="com.facilio.bmsconsole.actions.AdminAction" method = "deleteMessageQueue">
 			<result   type="tiles">adminpage/deletemessagequeue.jsp</result>
 			</action>
+			<action name="getinstance" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/awsinstances.jsp</result>
+			</action>
+			
 			<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method ="addAgentVersion">
 			</action>
 		<action name="uploadSecretFilesPage" class="com.facilio.bmsconsole.actions.AdminAction">
