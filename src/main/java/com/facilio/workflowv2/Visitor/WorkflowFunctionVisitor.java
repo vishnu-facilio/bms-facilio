@@ -209,7 +209,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     			}
     			else {
     		    	if(value.asObject() instanceof Map ) {
-    		    		Map<Object, Object> map = value.asMap();
+    		    		Map<String, Object> map = value.asMap();
     		    		
     		    		Object currentValue = map.get(functionCall.VAR().getText());
     		    		value = new Value(currentValue);
@@ -267,7 +267,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		
     		WorkflowV2Util.checkForNullAndThrowException(key, ctx.expr().getText());
     		
-    		parentValue.asMap().put(key.asObject(), value.asObject());
+    		parentValue.asMap().put(key.asString(), value.asObject());
     	}
     	assignmentValue = null;
     	return Value.VOID; 
@@ -878,52 +878,6 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 			visit(group);
 		}
 
-//		if(ctx.db_param_field(0) != null) {
-//			Value fieldValue = this.visit(ctx.db_param_field(0).expr());
-//			WorkflowV2Util.checkForNullAndThrowException(fieldValue, ctx.db_param_field(0).expr().getText());
-//			dbParamContext.setFieldName(fieldValue.asString());
-//		}
-//		if(ctx.db_param_aggr(0) != null) {
-//			Value aggrValue = this.visit(ctx.db_param_aggr(0).expr());
-//			WorkflowV2Util.checkForNullAndThrowException(aggrValue, ctx.db_param_aggr(0).expr().getText());
-//			String aggRes = aggrValue.asString();
-//			
-//			if(aggRes.contains(",")) {
-//				String[] aggrValues = aggRes.split(",");
-//				String aggrString = aggrValues[0].trim();
-//				String aggrFieldName = aggrValues[1].trim();
-//				
-//				dbParamContext.setAggregateString(aggrString);
-//				dbParamContext.setAggregateFieldName(aggrFieldName);
-//			}
-//			else {
-//				dbParamContext.setAggregateString(aggRes);
-//			}
-//		}
-//		if(ctx.db_param_limit(0) != null) {
-//			Value limitValue = this.visit(ctx.db_param_limit(0).expr());
-//			WorkflowV2Util.checkForNullAndThrowException(limitValue, ctx.db_param_limit(0).expr().getText());
-//			dbParamContext.setLimit(limitValue.asInt());
-//		}
-//		if(ctx.db_param_range(0) != null) {
-//			Value fromValue = this.visit(ctx.db_param_range(0).expr(0));
-//			WorkflowV2Util.checkForNullAndThrowException(fromValue, ctx.db_param_range(0).expr(0).getText());
-//			Value toValue = this.visit(ctx.db_param_range(0).expr(1));
-//			WorkflowV2Util.checkForNullAndThrowException(toValue, ctx.db_param_range(0).expr(1).getText());
-//			dbParamContext.setRange(Pair.of(fromValue.asInt(), toValue.asInt()));
-//		}
-//		if(ctx.db_param_group_by(0) != null) {
-//			Value fieldValue = this.visit(ctx.db_param_group_by(0).expr());
-//			WorkflowV2Util.checkForNullAndThrowException(fieldValue, ctx.db_param_group_by(0).expr().getText());
-//			dbParamContext.setGroupBy(fieldValue.asString());
-//		}
-//		if(ctx.db_param_sort(0) != null) {
-//			Value sortByField = this.visit(ctx.db_param_sort(0).expr());
-//			WorkflowV2Util.checkForNullAndThrowException(sortByField, ctx.db_param_sort(0).expr().getText());
-//			dbParamContext.setSortByFieldName(sortByField.asString());
-//			dbParamContext.setSortOrder(ctx.db_param_sort(0).op.getText());
-//		}
-		
 		Value dbParamContextVal = new Value(dbParamContext);
     	
 		dbParamContext = null;

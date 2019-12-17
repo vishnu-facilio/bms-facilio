@@ -209,21 +209,24 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			
 			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
 			
-			Map<Integer, Object> enumMap = null;
+			Map<String, Object> enumMap = new HashMap<>();
 			if (field instanceof BooleanField) {
 				BooleanField boolField = (BooleanField) field;
-				enumMap = new HashMap<>();
 				if (boolField.getTrueVal() != null && !boolField.getTrueVal().isEmpty()) {
-					enumMap.put(1, boolField.getTrueVal());
-					enumMap.put(0, boolField.getFalseVal());
+					enumMap.put("1", boolField.getTrueVal());
+					enumMap.put("0", boolField.getFalseVal());
 				}
 				else {
-					enumMap.put(1, "True");
-					enumMap.put(0, "False");
+					enumMap.put("1", "True");
+					enumMap.put("0", "False");
 				}
 			}
 			else if (field instanceof EnumField) {
-				enumMap = ((EnumField) field).getEnumMap();
+				Map<Integer, Object> enumMap1 = ((EnumField) field).getEnumMap();
+				
+				for(Integer key : enumMap1.keySet()) {
+					enumMap.put(key+"", enumMap1.get(key));
+				}
 			}
 			return enumMap;
 		};

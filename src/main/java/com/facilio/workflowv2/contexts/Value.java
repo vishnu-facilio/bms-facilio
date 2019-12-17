@@ -50,13 +50,14 @@ public class Value {
    	 	return (List<Object>)value;
     }
     
-    public Map<Object,Object> asMap() {
-      	 return (Map<Object,Object>)value;
+    public Map<String,Object> asMap() {
+      	 return (Map<String,Object>)value;
     }
 
     public Boolean asBoolean() {
         return (Boolean)value;
     }
+    
 
     public Double asDouble() {
         return Double.parseDouble(value.toString());

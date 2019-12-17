@@ -372,9 +372,9 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 
 			List<Map<String, Object>> records = builder.getAsProps();
 			if(records != null && records.size() > 0) {
-				Map<Long, String> pickList = new HashMap<>();
+				Map<String, String> pickList = new HashMap<>();
 				for(Map<String, Object> record : records) {
-					pickList.put((Long) record.get("id"), record.get(field.getName()).toString());
+					pickList.put(((Long) record.get("id")).toString(), record.get(field.getName()).toString());
 				}
 				return pickList; 
 			}
