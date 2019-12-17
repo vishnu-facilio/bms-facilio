@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -125,9 +126,15 @@ public class HistoricalLoggerUtil {
 						resourceIds.add(historicalLogger.getParentId());
 					}
 				}
+									
+				List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
+				Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
 				
-				Map<Long, ResourceContext> resourcesMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
-				
+				for(ResourceContext resource:resources)
+				{
+					resourcesMap.put(resource.getId(), resource);
+				}
+							
 				for(HistoricalLoggerContext historicalLogger :historicalLoggers) {
 					historicalLogger.setParentResourceContext(resourcesMap.get(historicalLogger.getParentId()));
 				}
@@ -154,7 +161,13 @@ public class HistoricalLoggerUtil {
 				}
 			}
 
-			Map<Long, ResourceContext> resourcesMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+			List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
+			Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
+			
+			for(ResourceContext resource:resources)
+			{
+				resourcesMap.put(resource.getId(), resource);
+			}
 			
 			for(HistoricalLoggerContext historicalLogger :historicalLoggers) {
 				historicalLogger.setParentResourceContext(resourcesMap.get(historicalLogger.getParentId()));
