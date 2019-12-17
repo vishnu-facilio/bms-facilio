@@ -845,6 +845,7 @@ public class DashboardUtil {
 			dashboardJson.put("tabs", dashboard.getDashboardTabContexts());
 			dashboardJson.put("tabEnabled", dashboard.isTabEnabled());
 			dashboardJson.put("dashboardTabPlacement", dashboard.getDashboardTabPlacement());
+			dashboardJson.put("clientMetaJsonString", dashboard.getClientMetaJsonString());
 			dashboardJson.put("mobileEnabled", dashboard.isMobileEnabled());
 			dashboardJson.put("dashboardSharingContext", dashboard.getDashboardSharingContext());
 			result.add(dashboardJson);
