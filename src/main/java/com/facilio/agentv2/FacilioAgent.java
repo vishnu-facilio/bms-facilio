@@ -3,32 +3,37 @@ package com.facilio.agentv2;
 import com.facilio.agent.AgentKeys;
 import org.json.simple.JSONObject;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 public class FacilioAgent {
 
 
-
+    @NotNull(message = " Agent name can't be null")
     private  String name;
     private  String deviceDetails;
-    private  Boolean connectionStatus;
+    private  boolean connectionStatus;
     private  String version;
-    private  Integer state;
-    private  Long interval;
-    private  Integer numberOfControllers;
+    private  int state;
+    private  long interval;
+    private  int numberOfControllers;
     private  String type; // change it to int using some enum
-    private Long id;
-    private Long siteId;
-    private Long deletedTime = -1L ;
-    private Boolean writable;
-    private  Long lastModifiedTime = -1L;
-    private  Long lastUpdatedTime = -1L;
-    private Long lastDataReceivedTime = -1L ;
+    private long id;
+    @NotNull(message = " agent's siteId can't be null ")
+    @Min(value = 0,message = " agent's siteId can't be < 1")
+    private long siteId;
+    private long deletedTime = -1L ;
+    private boolean writable;
+    private  long lastModifiedTime = -1L;
+    private  long lastUpdatedTime = -1L;
+    private long lastDataReceivedTime = -1L ;
     private String displayName;
-    private Long createdTime = -1L;
+    private long createdTime = -1L;
 
-    public Long getCreatedTime() {
+    public long getCreatedTime() {
         return createdTime;
     }
-    public void setCreatedTime(Long createdTime) { this.createdTime = createdTime; }
+    public void setCreatedTime(long createdTime) { this.createdTime = createdTime; }
 
    // private HashSet<ControllerContext> controllers;
 
@@ -53,10 +58,10 @@ public class FacilioAgent {
         this.version = version;
     }
 
-    public Integer getState() {
+    public int getState() {
         return state;
     }
-    public void setState(Integer state) {
+    public void setState(int state) {
         this.state = state;
     }
 
@@ -67,17 +72,15 @@ public class FacilioAgent {
         this.connectionStatus = connectionStatus;
     }
 
-    public Long getInterval() {
-        return interval;
-    }
-    public void setInterval(Long interval) {
+    public long getInterval() { return interval; }
+    public void setInterval(long interval) {
         this.interval = interval;
     }
 
-    public Integer getNumberOfControllers() {
+    public int getNumberOfControllers() {
         return numberOfControllers;
     }
-    public void setNumberOfControllers(Integer numberOfControllers) {
+    public void setNumberOfControllers(int numberOfControllers) {
         this.numberOfControllers = numberOfControllers;
     }
 
@@ -88,24 +91,24 @@ public class FacilioAgent {
         this.type = type;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getSiteId() {
+    public long getSiteId() {
         return siteId;
     }
-    public void setSiteId(Long siteId) {
+    public void setSiteId(long siteId) {
         this.siteId = siteId;
     }
 
-    public Long getDeletedTime() {
+    public long getDeletedTime() {
         return deletedTime;
     }
-    public void setDeletedTime(Long deletedTime) {
+    public void setDeletedTime(long deletedTime) {
         this.deletedTime = deletedTime;
     }
 
@@ -116,24 +119,24 @@ public class FacilioAgent {
         this.writable = writable;
     }
 
-    public Long getLastModifiedTime() {
+    public long getLastModifiedTime() {
         return lastModifiedTime;
     }
-    public void setLastModifiedTime(Long lastModifiedTime) {
+    public void setLastModifiedTime(long lastModifiedTime) {
         this.lastModifiedTime = lastModifiedTime;
     }
 
-    public Long getLastUpdatedTime() {
+    public long getLastUpdatedTime() {
         return lastUpdatedTime;
     }
-    public void setLastUpdatedTime(Long lastUpdatedTime) {
+    public void setLastUpdatedTime(long lastUpdatedTime) {
         this.lastUpdatedTime = lastUpdatedTime;
     }
 
-    public Long getLastDataReceivedTime() {
+    public long getLastDataReceivedTime() {
         return lastDataReceivedTime;
     }
-    public void setLastDataReceivedTime(Long lastDataReceivedTime) {
+    public void setLastDataReceivedTime(long lastDataReceivedTime) {
         this.lastDataReceivedTime = lastDataReceivedTime;
     }
 
@@ -158,7 +161,7 @@ public class FacilioAgent {
     public JSONObject toJSON(){
         JSONObject payload = new JSONObject();
         long currTime = System.currentTimeMillis();
-        if( (getId() != null) && ( getId() > 0 ) ){
+        if(  ( getId() > 0 ) ){
             payload.put(AgentConstants.ID,getId());
         }
         payload.put(AgentKeys.NAME,  getName());

@@ -71,6 +71,7 @@ public class ControllerUtilV2
             //return ControllerApiV2.getAllControllersFromDb(agentId).get(controllerIdentifier);
         }
         else if( (controllerMapList.get(controllerType.asInt()).isEmpty()) ){ // map for the controllerType is empty
+            LOGGER.info(" controller not found in map , getting from db");
             Map<String, Controller> controllers = ControllerApiV2.getControllersFromDb(agentId,controllerType); // get all controller fpr that controllerType
             if(controllers.isEmpty()){
                 return null;
@@ -80,6 +81,7 @@ public class ControllerUtilV2
             }
             return controllerMapList.get(controllerType.asInt()).get(controllerIdentifier);
         }else {
+            LOGGER.info(" controller found in map ");
             if(controllerMapList.get(controllerType.asInt()).containsKey(controllerIdentifier)){
                 return controllerMapList.get(controllerType.asInt()).get(controllerIdentifier);
             }
@@ -161,7 +163,7 @@ public class ControllerUtilV2
 
     public static boolean processController(long agentId, List<Long> ids) {
         LOGGER.info(" processing devices ");
-        FacilioChain chain = TransactionChainFactory.getProcessControllerV2Chain();
+        FacilioChain chain = TransactionChainFactory.getConfigurePointAndProcessControllerV2Chain();
         FacilioContext context = chain.getContext();
         context.put(AgentConstants.AGENT_ID,agentId);
         context.put(AgentConstants.ID,ids);
@@ -174,9 +176,10 @@ public class ControllerUtilV2
         return false;
     }
 
-    public static List<Long> fieldDeviceToController(long agentId,List<Device> devices) throws Exception{
+    public static Map<Long, Controller> fieldDeviceToController(long agentId, List<Device> devices) throws Exception{
         Controller controller ;
-        List<Long> deviceId = new ArrayList<>();
+        //List<Long> deviceId = new ArrayList<>();
+        Map<Long,Controller> deviceIdControllerMap = new HashMap<>();
         for (Device device : devices) {
             LOGGER.info("device are " + device);
             JSONObject controllerProps = device.getControllerProps();
@@ -187,6 +190,7 @@ public class ControllerUtilV2
                     Controller controllerFromDb = ControllerApiV2.getControllerFromDb(controller.makeIdentifier(),agentId,FacilioControllerType.valueOf(controller.getControllerType()));
                             //getController(agentId, controller.makeIdentifier(), FacilioControllerType.valueOf(controller.getControllerType()));
                     if (controllerFromDb != null) {
+                        deviceIdControllerMap.put(device.getId(),controllerFromDb);
                         /*controller.setId(controllerFromDb.getId());
                         ControllerApiV2.updateController(controller);*/
                         continue;
@@ -195,8 +199,10 @@ public class ControllerUtilV2
                         controller.setDataInterval(900000);
                         controller.setAvailablePoints(0);
                         long controllerId = ControllerApiV2.addController(controller);
-                        if( controllerId > 0){
-                            deviceId.add(device.getId());
+                        controller.setId(controllerId);
+                    if( controllerId > 0){
+                        deviceIdControllerMap.put(device.getId(),controller);
+                        //deviceId.add(device.getId());
                         }
                     }
                 } else {
@@ -206,11 +212,12 @@ public class ControllerUtilV2
                 throw new Exception("controllerProps can't be null or empty -> " + controllerProps );
             }
         }
-        return deviceId;
+        LOGGER.info(" device id controller map is ->"+deviceIdControllerMap);
+        return deviceIdControllerMap;
     }
 
 
-    private static Controller getControllerFromJSON(long agentId, Map<String,Object> controllerJSON)  {
+    public static Controller getControllerFromJSON(long agentId, Map<String,Object> controllerJSON)  {
         Controller controller = null;
         try {
            /* FacilioAgent agent = AgentApiV2.getAgent(agentId);

@@ -85,7 +85,7 @@ public class KafkaProcessor extends FacilioProcessor {
                         }
                     getConsumer().commit(record);
                 }catch (Exception e){
-                    LOGGER.info("Exception occurred ",e);
+                        LOGGER.info("Exception occurred while processing  ",e);
                 }
                 continue;
 

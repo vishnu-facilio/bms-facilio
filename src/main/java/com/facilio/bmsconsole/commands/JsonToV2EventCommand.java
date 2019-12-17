@@ -1,18 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.FieldUtil;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class JsonToV2EventCommand extends FacilioCommand {
 
@@ -29,8 +28,7 @@ public class JsonToV2EventCommand extends FacilioCommand {
 					// default event is bms alarm
 					type = Type.BMS_ALARM;
 				}
-				
-				BaseEventContext baseEvent = (BaseEventContext) FieldUtil.getAsBeanFromMap(jsonObject, NewEventAPI.getEventClass(type));
+					BaseEventContext baseEvent = (BaseEventContext) FieldUtil.getAsBeanFromMap(jsonObject, NewEventAPI.getEventClass(type));
 				eventList.add(baseEvent);
 			}
 			context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);

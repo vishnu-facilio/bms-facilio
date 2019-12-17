@@ -1,17 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -23,21 +14,32 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeseries.TimeSeriesAPI;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
-public class ModeledDataCommand extends FacilioCommand {
+import java.util.*;
+
+public class ModeledDataCommand extends AgentV2Command {
 	private static final Logger LOGGER = LogManager.getLogger(ModeledDataCommand.class.getName());
+	private boolean isV2;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
-		
 		Map<String, Map<String,String>> deviceData =(Map<String, Map<String,String>>) context.get(FacilioConstants.ContextNames.DEVICE_DATA);
+		LOGGER.info(" device data -"+deviceData);
 		Long timeStamp=(Long)context.get(FacilioConstants.ContextNames.TIMESTAMP);
-		
+		if(context.containsKey(AgentConstants.IS_NEW_AGENT) && (context.get(AgentConstants.IS_NEW_AGENT) != null) && (context.get(AgentConstants.IS_NEW_AGENT) instanceof Boolean)){
+			if((boolean)context.get(AgentConstants.IS_NEW_AGENT)){
+				isV2 = true;
+			}
+		}
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
 		Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
 		Long controllerId= (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-		List<Map<String,Object>> dataPointsValue=(List<Map<String, Object>>) context.get("DATA_POINTS");
+		List<Map<String,Object>> dataPointsValue=(List<Map<String, Object>>) context.get("DATA_POINTS"); // points table rows
 		if(TimeSeriesAPI.isStage()) {
 			LOGGER.debug(dataPointsValue+"Points data incomming");
 		}
@@ -48,11 +50,11 @@ public class ModeledDataCommand extends FacilioCommand {
 		if(TimeSeriesAPI.isStage()) {
 			LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
 		}
-		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 
-			String deviceName=data.getKey();
-			Map<String,String> instanceMap= data.getValue();
-			Iterator<String> instanceList = instanceMap.keySet().iterator();
+		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
+			String deviceName=data.getKey(); // controller name
+			Map<String,String> instanceMap= data.getValue(); // pointname-value map
+			Iterator<String> instanceList = instanceMap.keySet().iterator(); // pointname list
 			while(instanceList.hasNext()) {
 				String instanceName=instanceList.next();                
 				String instanceVal=instanceMap.get(instanceName);
@@ -61,7 +63,11 @@ public class ModeledDataCommand extends FacilioCommand {
 				}
 				dataPoints=  getValueContainsPointsData( deviceName,  instanceName, controllerId , dataPointsValue);
 				if(dataPoints==null) {
-
+					if(isV2){
+						LOGGER.info(" point is missing -> "+instanceName);
+						continue;
+						// make new point insert depending on the point type
+					}
 					Map<String, Object> value=new HashMap<String,Object>();
 					value.put("orgId", orgId);
 					value.put("device",deviceName);
@@ -181,16 +187,22 @@ public class ModeledDataCommand extends FacilioCommand {
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
 		context.put("POINTS_DATA_RECORD", dataPointsValue);
-
+		LOGGER.info("--------Modelled data Command-----------");
+		for (Object key : context.keySet()){
+			LOGGER.info(key+"->"+context.get(key));
+		}
+		LOGGER.info("-----------------------------");
 		return false;
 	}
 	private Map<String,Object> getValueContainsPointsData(String deviceName, String instanceName,Long controllerId ,List<Map<String , Object>> points_Data) throws Exception{
-
+		LOGGER.info("instanceName->"+instanceName);
+		String mDeviceName = "";
+		String mInstanceName = "";
+		Long mControllerId = -1L;
 		for (Map<String, Object> map : points_Data) {
-			String mDeviceName=(String) map.get("device");
-			String mInstanceName=(String) map.get("instance");
-			Long mControllerId=(Long)map.get("controllerId");
-
+				mDeviceName=(String) map.get("device");
+				mInstanceName=(String) map.get("instance");
+				mControllerId=(Long)map.get("controllerId");
 			if(deviceName.equals(mDeviceName) && instanceName.equals(mInstanceName)) {
 
 				if(controllerId==null || controllerId.equals(mControllerId) ) {
@@ -201,6 +213,7 @@ public class ModeledDataCommand extends FacilioCommand {
 			}
 
 		}
+		LOGGER.info(" point not found");
 		return null;
 	}
 	public static void generateEvent(Long assetId,Long timeStamp,String displayName) throws Exception {

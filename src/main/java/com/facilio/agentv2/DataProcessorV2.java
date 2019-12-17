@@ -3,15 +3,18 @@ package com.facilio.agentv2;
 import com.facilio.agent.PublishType;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerUtilV2;
+import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.DeviceUtil;
+import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.point.PointsUtil;
-import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.fw.BeanFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.util.AckUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +29,6 @@ public class DataProcessorV2
     private ControllerUtilV2 cU;
     private DeviceUtil dU;
     private Map<Long, ControllerUtilV2> agentIdControllerUtilMap = new HashMap<>();
-    JSONParser parser = new JSONParser();
 
 
 
@@ -90,9 +92,13 @@ public class DataProcessorV2
                 case TIMESERIES:
                     Controller controllerTs = cU.getControllerFromAgentPayload(payload);
                     if( controllerTs != null){
-                        processTimeSeries(payload,controllerTs);
+                        JSONObject timeseriesPayload = (JSONObject) payload.clone();
+                        timeseriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID,controllerTs.getId());
+                        processTimeSeries(timeseriesPayload,controllerTs);
                     }
                     break;
+                case COV:
+                    processCOV(payload,agentName);
                    //processTimeSeries(payload,)
                 default:
                     throw new Exception("No such Publish type "+publishType.name());
@@ -102,12 +108,25 @@ public class DataProcessorV2
         }
     }
 
+    private void processCOV(JSONObject payload, String agentName) {
+
+    }
+
     private boolean processController(JSONObject payload, FacilioAgent agent) throws Exception {
-        Controller controller = cU.getControllerFromAgentPayload(payload);
-        if (controller != null) {
+       // Controller controller = cU.getControllerFromAgentPayload(payload);
+        if( ! payload.containsKey(AgentConstants.CONTROLLER)){
+            LOGGER.info(" identifier missing from discoverPoints payload ->"+payload);
+            return false;
+        }
+        String identifier = (String) payload.get(AgentConstants.CONTROLLER);
+        if(identifier == null || identifier.isEmpty()){
+            LOGGER.info("Exception occurred, Controller identifier can't be null ->"+payload);
+            return false;
+        }
+        Device device = FieldDeviceApi.getDevice(agent.getId(),identifier);
+        if (device != null) {
             LOGGER.info(" controller not null and so processing point");
-            PointsUtil pU = new PointsUtil(agent.getId(), controller.getId());
-            return pU.processPoints(payload, controller);
+            return PointsUtil.processPoints(payload, device);
         } else {
             throw new Exception("Exception occurred, Controller obtained in null");
         }
@@ -125,9 +144,27 @@ public class DataProcessorV2
     }
 
     private void processTimeSeries(JSONObject payload, Controller controllerTs) {
+        LOGGER.info(" calling timeseries processer chain v2");
         try {
-            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            bean.processNewTimeSeries(payload,controllerTs);
+            FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
+            FacilioContext context = chain.getContext();
+            context.put(AgentConstants.IS_NEW_AGENT,true);
+            context.put(AgentConstants.CONTROLLER,controllerTs);
+            context.put(AgentConstants.CONTROLLER_ID,controllerTs.getId());
+            context.put(AgentConstants.DATA,payload);
+            context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
+            if(payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)){
+                context.put(AgentConstants.TIMESTAMP,payload.get(AgentConstants.TIMESTAMP));
+            }else {
+                context.put(AgentConstants.TIMESTAMP,System.currentTimeMillis());
+            }
+            chain.execute();
+            LOGGER.info(" done processes data command ");
+            for (Object key : context.keySet()) {
+                LOGGER.info(key+"->"+context.get(key));
+            }
+            /*ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+            bean.processNewTimeSeries(payload,controllerTs);*/
         } catch (Exception e) {
             e.printStackTrace();
         }

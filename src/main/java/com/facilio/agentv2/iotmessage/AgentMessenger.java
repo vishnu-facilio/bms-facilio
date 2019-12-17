@@ -46,7 +46,6 @@ public class AgentMessenger {
                 case SHUTDOWN:
                     break;
                 case CONTROLLER_STATUS:
-                case DISCOVER_CONTROLLERS:
                 case CONFIGURE:
                 case ADD_CONTROLLER:
                 case EDIT_CONTROLLER:
@@ -61,6 +60,7 @@ public class AgentMessenger {
             List<IotMessage> messages = new ArrayList<>();
             messages.add(MessengerUtil.getMessageObject(object));
             iotData.setMessages(messages);
+            LOGGER.info(" iot data generated is "+iotData);
             return iotData;
         }else {
             throw new Exception(" Agent can't be null ");
@@ -84,11 +84,11 @@ public class AgentMessenger {
         try {
             if( (agentId > 0) ){
                     IotData pingData = constructAgentPing(agentId);
-                MessengerUtil.addAndPublishNewAgentData(pingData);
+                    MessengerUtil.addAndPublishNewAgentData(pingData);
                     return true;
                 }
         } catch (Exception e) {
-            LOGGER.info("Exception occurred ",e);
+            LOGGER.info("Exception occurred while sending PING",e);
         }
         return false;
     }
@@ -98,4 +98,60 @@ public class AgentMessenger {
     }
 
 
+    public static boolean shutDown(long agentId) { //TODO not yet tested
+        if(agentId > 0){
+            try {
+                LOGGER.info(" shutting agent ->"+agentId+" down");
+                IotData shutDown = constructAgentShutDown(agentId);
+                MessengerUtil.addAndPublishNewAgentData(shutDown);
+                return true;
+            } catch (Exception e) {
+                LOGGER.info("Exception occurred while shutting agent down ->"+agentId+"-> ",e);
+            }
+        }
+        return false;
+    }
+
+    private static IotData constructAgentShutDown(long agentId) throws Exception {
+        return  constructNewIotAgentMessage(agentId,FacilioCommand.SHUTDOWN,null,null);
+    }
+
+    public static boolean getJVMStatus(Long agentId) {
+        try{
+            if(agentId > 0){
+                IotData data = constructNewIotAgentMessage(agentId,FacilioCommand.STATS,null,null);
+                MessengerUtil.addAndPublishNewAgentData(data);
+                return true;
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while Agent status command construction",e);
+        }
+        return false;
+    }
+
+    public static boolean getThreadDump(Long agentId) {
+        try{
+            if(agentId > 0){
+                IotData data = constructNewIotAgentMessage(agentId,FacilioCommand.THREAD_DUMP,null,null);
+                MessengerUtil.addAndPublishNewAgentData(data);
+                return true;
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while Agent status command construction",e);
+        }
+        return false;
+    }
+
+    public static boolean discoverController(Long agentId, FacilioControllerType controllerType) {
+        try{
+            if(agentId > 0){
+                IotData data = constructNewIotAgentMessage(agentId,FacilioCommand.DISCOVER_CONTROLLERS,null,controllerType);
+                MessengerUtil.addAndPublishNewAgentData(data);
+                return true;
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while Agent discover controller command construction",e);
+        }
+        return false;
+    }
 }

@@ -22,7 +22,9 @@ public class DeleteFieldDevice extends FacilioCommand
             }
             int rowsUpdated = FieldDeviceApi.deleteDevices(deviceId);
                 if (rowsUpdated>0) {
-                    return false;
+                    return true;
+                }else {
+                    throw new Exception("No device deleted rowsUpdated->"+rowsUpdated+" , deviceId->"+deviceId);
                 }
             }
         return false;

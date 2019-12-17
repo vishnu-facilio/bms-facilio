@@ -20,7 +20,7 @@ import org.json.simple.JSONObject;
 import java.util.*;
 
 
-public class ProcessDataCommand extends FacilioCommand {
+public class ProcessDataCommand extends FacilioCommand {      // reformats json
 	private static final Logger LOGGER = LogManager.getLogger(ProcessDataCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
@@ -81,6 +81,8 @@ public class ProcessDataCommand extends FacilioCommand {
 					Criteria deviceAndInstanceCriteria = new Criteria();
 					//here taking the keyName as deviceName in the assumption that POINT_ will not come hereafter...
 					//so not handling the deviceName as list scenario below..
+					LOGGER.info(" device name ->"+keyName);
+					LOGGER.info(" instance list ->"+instanceList.toString());
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module), keyName, StringOperators.IS));
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module), instanceList.toString(), StringOperators.IS));
 					criteriaList.orCriteria(deviceAndInstanceCriteria);
@@ -90,18 +92,23 @@ public class ProcessDataCommand extends FacilioCommand {
 //	if(TimeSeriesAPI.isStage()) {
 			
 			pointsStat= getDataPoints(criteriaList);
-			LOGGER.debug("########### Insert Points Data: "+pointsStat);
-			context.put("DATA_POINTS",pointsStat );
+			LOGGER.info("########### Insert Points Data: "+pointsStat);
+			context.put("DATA_POINTS",pointsStat );         // need this
 //	}
 		LOGGER.debug("Finished ProcessDataCommand####### : ");
 		context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceData);
 		if (TimeSeriesAPI.isStage() ) {
 			LOGGER.debug("Device Data : "+deviceData);
 		}
+		LOGGER.info("-----------------LEAVING PROCESSDATACOMMAND----------------------");
+		for (Object key : context.keySet()) {
+			LOGGER.info(key+"--->"+context.get(key));
+		}
+		LOGGER.info("---------------------------------------");
 		return false;
 	}
 
-	private List<Map<String,Object>> getDataPoints(Criteria criteriaList) throws Exception{
+	private List<Map<String,Object>> getDataPoints(Criteria criteriaList) throws Exception{           // do this
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
 		fields.add(FieldFactory.getIdField(module));

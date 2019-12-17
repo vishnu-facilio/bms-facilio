@@ -1,13 +1,5 @@
 package com.facilio.constants;
 
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.activity.ActivityContext;
 import com.facilio.agentv2.bacnet.BacnetIpController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuController;
@@ -22,12 +14,20 @@ import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.controlaction.util.ControlActionUtil;
-//import com.facilio.custom.CustomController;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
+import org.json.simple.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+//import com.facilio.custom.CustomController;
 
 public class FacilioConstants {
 	
@@ -585,6 +585,7 @@ public class FacilioConstants {
         public static final String MISC_CONTROLLER_MODULE_NAME = "misccontroller";
         public static final String REST_CONTROLLER_MODULE_NAME = "restcontroller";
         public static final String CUSTOM_CONTROLLER_MODULE_NAME = "customcontroller";
+        public static final String CONTROLLER_MODULE_NAME = "controller";
 
 		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";
 		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";

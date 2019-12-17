@@ -123,4 +123,10 @@ public class AgentConstants
     public static final String FIELD_DEIVICES = "fieldDevices";
     public static final String MODULE_NAME = "moduleName";
     public static final String SITE_NAME = "siteName";
+    public static final String RESULT = "result";
+    public static final String RECORD_IDS = "recordIds";
+    public static final String DEVICE_ID = "deviceId";
+    public static final String CONFIGURED_DEVICES = "configuredDevices";
+    public static final String DEVICE = "device";
+    public static final String CONTROLLER_NAME = "controllerName";
 }

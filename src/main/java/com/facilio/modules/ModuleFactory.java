@@ -1007,6 +1007,15 @@ public class ModuleFactory {
 
 		return controllerModule;
 	}
+
+	public static FacilioModule getNewControllerModule() {
+		FacilioModule controllerModule = new FacilioModule();
+		controllerModule.setName("Controllers");
+		controllerModule.setDisplayName("ControllerV2");
+		controllerModule.setTableName("Controllers");
+
+		return controllerModule;
+	}
 	
 	public static FacilioModule getControllerActivityModule() {
 		return constructModule("controllerActivity", "Controller Activity", "Controller_Activity");

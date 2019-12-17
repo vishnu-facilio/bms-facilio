@@ -2,7 +2,6 @@ package com.facilio.agentv2.opcua;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.point.Point;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
@@ -44,7 +43,7 @@ public class OpcUaPoint extends Point {
     @Deprecated
     public OpcUaPoint() { }
 
-    public static Point getPointFromMap(long agentId, long controllerId, Map<String,Object> pointMap) throws Exception {
+    public static Point getPointFromMap( Map<String,Object> pointMap) throws Exception {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
@@ -58,10 +57,6 @@ public class OpcUaPoint extends Point {
            return FieldUtil.getAsBeanFromJson(jsonObject,OpcUaPoint.class);
         }
         throw  new  Exception("Mandatory fields like "+AgentConstants.NAMESPACE+" , "+AgentConstants.IDENTIFIER+"  might be missing from input parameter -> "+pointMap);
-    }
-
-    public static Point getPointFromMap(Controller controller, Map<String,Object> row) throws Exception {
-        return getPointFromMap(controller.getAgentId(),controller.getId(),row);
     }
 
     @Override

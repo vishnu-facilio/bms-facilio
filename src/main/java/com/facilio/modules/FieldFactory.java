@@ -1,18 +1,5 @@
 package com.facilio.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
@@ -20,13 +7,12 @@ import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.FileField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.modules.fields.SystemEnumField;
+import com.facilio.modules.fields.*;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -5522,6 +5508,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getFieldDeviceModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getIdField(module));
+		fields.add(getField(AgentConstants.TYPE,"TYPE",module,FieldType.NUMBER));
 		fields.add(getField(AgentConstants.SITE_ID,"SITE_ID",module,FieldType.NUMBER));
 		fields.add(getNameField(module));
 		fields.add(getNewAgentIdField(module));
@@ -5533,6 +5520,10 @@ public class FieldFactory {
 
 	public static FacilioField  getNewDeletedTimeField(FacilioModule module) {
 		return getField(AgentConstants.DELETED_TIME,"DELETED_TIME",module,FieldType.NUMBER);
+	}
+
+	public static FacilioField getFieldDeviceId(FacilioModule module){
+		return getField(AgentConstants.DEVICE_ID,"DEVICE_ID",module,FieldType.NUMBER);
 	}
 
 	// using this
@@ -5549,6 +5540,7 @@ public class FieldFactory {
 		fields.add(getField(AgentConstants.PSEUDO,"PSEUDO",module,FieldType.BOOLEAN));
         //fields.add(getField(AgentConstants.CONTROLLER_ID, "CONTROLLER_ID", module, FieldType.NUMBER));
 		fields.add(getControllerIdField(module));
+		fields.add(getFieldDeviceId(module));
 		fields.add(getField(AgentConstants.ASSET_CATEGORY_ID, "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
 		fields.add(getField(AgentConstants.RESOURCE_ID, "RESOURCE_ID", module, FieldType.NUMBER));
 		fields.add(getField(AgentConstants.FIELD_ID, "FIELD_ID", module, FieldType.NUMBER));

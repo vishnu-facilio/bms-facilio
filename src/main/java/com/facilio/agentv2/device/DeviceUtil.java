@@ -23,37 +23,41 @@ public class DeviceUtil {
     public void processDevices(FacilioAgent agent, JSONObject payload) {
         LOGGER.info(" processing devices ");
         List<Device> devices = new ArrayList<>();
-        if (containsValueCheck(AgentConstants.DATA, payload)) {
-            JSONArray devicesArray = (JSONArray) payload.get(AgentConstants.DATA);
-            if (devicesArray.isEmpty()) {
-                LOGGER.info("Exception Occurred, Device data is empty");
-                return;
+                if (containsValueCheck(AgentConstants.DATA, payload)) {
+                    JSONArray devicesArray = (JSONArray) payload.get(AgentConstants.DATA);
+                    if (devicesArray.isEmpty()) {
+                        LOGGER.info("Exception Occurred, Device data is empty");
+                        return;
+                    }
+                    for (Object deviceObject : devicesArray) {
+                        JSONObject deviceJSON = (JSONObject) deviceObject;
+                        deviceJSON.put(AgentConstants.AGENT_ID, agent.getId());
+                        Device device = new Device(AccountUtil.getCurrentOrg().getOrgId(), agent.getId());
+                        device.setType(((Number)deviceJSON.get(AgentConstants.TYPE)).intValue());
+                        if (agent.getSiteId() < 1) {
+                            LOGGER.info(" Exception occurred. Agent is missing its siteId,skipping device processing.");
+                            continue;
+                        }
+                        device.setSiteId(agent.getSiteId());
+                        if (deviceJSON.containsKey(AgentConstants.IDENTIFIER)) {
+                            device.setName(String.valueOf(deviceJSON.get(AgentConstants.IDENTIFIER)));
+                        } else {
+                            LOGGER.info("Exception occurred, no identifier found in device json -> " + payload);
+                            return;
+                        }
+                        device.setCreatedTime(System.currentTimeMillis());
+                        if (!deviceJSON.containsKey(AgentConstants.CREATED_TIME)) {
+                            deviceJSON.put(AgentConstants.CREATED_TIME, device.getCreatedTime());
+                        }
+                        device.setControllerProps(deviceJSON);
+                        devices.add(device);
+                    }
+                    addDevices(devices);
+                }else {
+                    LOGGER.info("Exception occurred while processing device, data is missing from payload->"+payload);
+                }
             }
-            for (Object deviceObject : devicesArray) {
-                JSONObject deviceJSON = (JSONObject) deviceObject;
-                deviceJSON.put(AgentConstants.AGENT_ID, agent.getId());
-                Device device = new Device(AccountUtil.getCurrentOrg().getOrgId(), agent.getId());
-                if( agent.getSiteId() == null ){
-                    LOGGER.info(" Exception occurred. Agent is missing its siteId,skipping device processing.");
-                    continue;
-                }
-                device.setSiteId(agent.getSiteId());
-                if (deviceJSON.containsKey(AgentConstants.IDENTIFIER)) {
-                    device.setName(String.valueOf(deviceJSON.get(AgentConstants.IDENTIFIER)));
-                } else {
-                    LOGGER.info("Exception occurred, no identifier found in device json -> " + payload);
-                    return;
-                }
-                device.setCreatedTime(System.currentTimeMillis());
-                if (!deviceJSON.containsKey(AgentConstants.CREATED_TIME)) {
-                    deviceJSON.put(AgentConstants.CREATED_TIME, device.getCreatedTime());
-                }
-                device.setControllerProps(deviceJSON);
-                devices.add(device);
-            }
-            addDevices(devices);
-        }
-    }
+
 
     public boolean addDevices(List<Device> devices) {
         if (devices != null && !devices.isEmpty()) {

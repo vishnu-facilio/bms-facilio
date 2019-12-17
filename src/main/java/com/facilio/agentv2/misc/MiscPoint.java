@@ -21,17 +21,17 @@ public class MiscPoint extends Point {
     public String getPath() { return path; }
     public void setPath(String path) { this.path = path;}
 
-    public static MiscPoint getPointFromMap(long agentId, long controllerID, Map<String,Object> pointMap) throws Exception {
+    public static MiscPoint getPointFromMap( Map<String,Object> pointMap) throws Exception {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
         if(containsValueCheck(AgentConstants.PATH,pointMap)){
-            MiscPoint point = new MiscPoint(agentId,controllerID);
+            MiscPoint point = new MiscPoint();
             point.setPath(((String)pointMap.get(AgentConstants.PATH)));
             if(pointMap.containsKey(AgentConstants.PSEUDO)){
                 point.setPseudo(JsonUtil.getBoolean(pointMap.get(AgentConstants.PSEUDO)));
             }
-            return (MiscPoint) point.getPointFromMap(pointMap);
+            return (MiscPoint) point.getPointObjectFromMap(pointMap);
         }
         throw new Exception("Mandatory fields like "+AgentConstants.PATH+" might be missing from the input parameter -> "+pointMap);
     }

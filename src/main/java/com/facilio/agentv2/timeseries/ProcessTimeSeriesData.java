@@ -30,7 +30,7 @@ public class ProcessTimeSeriesData extends FacilioCommand {
 
         JSONObject payload = (JSONObject) context.get(AgentConstants.DATA);
         Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
-        List<Point> points = PointsAPI.getAllPoints(controller.getAgentId(), controller.getId());
+        List<Point> points = PointsAPI.getAllPoints(null, controller.getId());
         Map<String,Point> pointsMap = new HashMap<>();
         points.forEach(point -> pointsMap.put(point.getName(),point));
         if(payload.containsKey(AgentConstants.DATA)){

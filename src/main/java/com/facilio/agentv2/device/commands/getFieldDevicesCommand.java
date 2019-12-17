@@ -8,6 +8,7 @@ import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
+import java.util.Collections;
 import java.util.List;
 
 public class getFieldDevicesCommand extends FacilioCommand {
@@ -17,22 +18,29 @@ public class getFieldDevicesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         LOGGER.info(" in fielddevices command");
-        if( context.containsKey(AgentConstants.AGENT_ID) && (context.containsKey(AgentConstants.ID)) ){
-            long agentId = (long) context.get(AgentConstants.AGENT_ID);
-            List<Long> ids = (List<Long>) context.get(AgentConstants.ID);
-            List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(agentId, ids),Device.class);
-            LOGGER.info(" field devices are "+devices);
-            if( ! devices.isEmpty() ){
-                context.put(AgentConstants.FIELD_DEIVICES,devices);
+        if((context.containsKey(AgentConstants.ID)) ){
+            Long deviceId = (Long) context.get(AgentConstants.ID);
+            List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(null, Collections.singletonList(deviceId)),Device.class);
+            if(devices.isEmpty()){
+                throw new Exception(" no device found ");
+            }
+            if(devices.size() > 1){
+                throw new Exception(" multiple devices found->"+devices.size());
+            }
+                if(devices.get(0).getAgentId() > 0){
+                    context.put(AgentConstants.AGENT_ID,devices.get(0).getAgentId());
+                }else {
+                   throw new Exception("Exception while getting device object, agentId is 0");
+                }
+                context.put(AgentConstants.FIELD_DEIVICES,devices.get(0));
                 LOGGER.info(" returning field devices ");
                 return false;
-            }else {
-                LOGGER.info("Exception Occurred,  fields devices can't be empty ");
-                throw new Exception(" Devices empty ");
-            }
         }else {
             LOGGER.info(" Exception Occurred,  agentId and ids missing from contest to get FieldDevices");
             throw new Exception(" agentId and ids missing from contest to get FieldDevices");
         }
+    }
+    private static boolean containdAndNotNull(Context context, String key){
+        return ((context != null) && (key != null) && context.containsKey(key) && (context.get(key) != null) );
     }
 }

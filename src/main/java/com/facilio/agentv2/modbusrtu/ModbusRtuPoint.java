@@ -2,7 +2,6 @@ package com.facilio.agentv2.modbusrtu;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.point.Point;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
@@ -16,9 +15,9 @@ public class ModbusRtuPoint extends Point {
     private static final Logger LOGGER = LogManager.getLogger(ModbusRtuPoint.class.getName());
 
 
-    private int offset = -1;
+    private int registerNumber = -1;
     private int functionCode = -1;
-    private Integer modbusDatatype;
+    private int modbusDataType = -1;
 
     public ModbusRtuPoint(long agentId, long controllerId) {
         super(agentId, controllerId);
@@ -27,25 +26,27 @@ public class ModbusRtuPoint extends Point {
     private ModbusRtuPoint() { }
 
 
-    public int getOffset() { return offset; }
-    public void setOffset(int offset) { this.offset = offset; }
+    public int getRegisterNumber() { return registerNumber; }
+    public void setRegisterNumber(int registerNumber) {
+        System.out.println("setting rn");
+        this.registerNumber = registerNumber; }
 
     public int getFunctionCode() { return functionCode; }
-    public void setFunctionCode(int functionCode) { this.functionCode = functionCode; }
+    public void setFunctionCode(int functionCode) {
+        System.out.println("setting fc");
+        this.functionCode = functionCode; }
 
-    public Integer getModbusDatatype() { return modbusDatatype; }
-    public void setModbusDatatype(int modbusDatatype) { this.modbusDatatype = modbusDatatype; }
+    public int getModbusDataType() { return modbusDataType; }
+    public void setModbusDataType(int modbusDatatype) {
+        System.out.println("setting mdt");
+        this.modbusDataType = modbusDatatype; }
 
     @Override
     public FacilioControllerType getControllerType() {
         return FacilioControllerType.MODBUS_RTU;
     }
 
-    public static Point getPointFromMap(Controller controller, Map<String,Object> row) throws Exception {
-        return getPointFromMap(controller.getAgentId(),controller.getId(),row);
-    }
-
-    public static Point getPointFromMap(long agentId, long controllerId, Map<String,Object> pointMap) throws Exception {
+    public static Point getPointFromMap(Map<String,Object> pointMap) throws Exception {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
@@ -72,9 +73,20 @@ public class ModbusRtuPoint extends Point {
             object.put(AgentConstants.ID,getId());
         }
         object.put(AgentConstants.CONTROLLER_ID,getControllerId());
-        object.put(AgentConstants.REGISTER_NUMBER,getOffset());
+        object.put(AgentConstants.REGISTER_NUMBER, getRegisterNumber());
         object.put(AgentConstants.FUNCTION_CODE,getFunctionCode());
-        object.put(AgentConstants.MODBUS_DATA_TYPE,getModbusDatatype());
+        object.put(AgentConstants.MODBUS_DATA_TYPE,getModbusDataType());
         return object;
     }
+
+    /*public static void main(String[] args) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        JSONObject object = new JSONObject();
+        object.put(AgentConstants.MODBUS_DATA_TYPE,3);
+        object.put(AgentConstants.FUNCTION_CODE,5);
+        object.put(AgentConstants.REGISTER_NUMBER,100);
+        System.out.println(FieldUtil.getAsJSON(FieldUtil.getAsBeanFromMap(object, ModbusRtuPoint.class)));
+        ModbusRtuPoint point = new ModbusRtuPoint();
+        //point.setModbusDatatype(3);
+        System.out.println(FieldUtil.getAsJSON(point));
+    }*/
 }

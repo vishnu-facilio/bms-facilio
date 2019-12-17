@@ -17,13 +17,15 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.bouncycastle.math.raw.Mod;
 import org.json.simple.JSONObject;
 
 import java.security.SecureRandom;
@@ -505,6 +507,12 @@ public  class AgentUtil
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(agentMetriceModule),publishType.toString(),NumberOperators.EQUALS));
         }
         return genericSelectRecordBuilder.get();
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(" hello ");
+        //System.out.println(DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis()));
     }
 
 

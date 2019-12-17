@@ -25,6 +25,12 @@ public class IotMessage
     //private String msgData;
     private long ackTime = -1;
     private long completedTime = -1;
+    private long sentTime = -1;
+
+
+    public long getSentTime() { return sentTime; }
+
+    public void setSentTime(long sentTime) { this.sentTime = sentTime; }
 
     public long getOrgId() { return orgId; }
     public void setOrgId(long orgId) { this.orgId = orgId; }

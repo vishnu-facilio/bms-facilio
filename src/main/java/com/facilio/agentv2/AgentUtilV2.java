@@ -1,13 +1,4 @@
 package com.facilio.agentv2;
-import com.facilio.agent.AgentType;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -75,108 +66,13 @@ public class AgentUtilV2
     }
 
     private boolean updateAgent(FacilioAgent agent, JSONObject jsonObject){
-        Condition agentNameCondition = new Condition();
-        agentNameCondition.setField(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()));
-        agentNameCondition.setOperator(StringOperators.IS);
-        agentNameCondition.setValue(agent.getName());
-
-        FacilioChain updateAgentChain = TransactionChainFactory.updateAgent();
-        FacilioContext context = updateAgentChain.getContext();
-        context.put(FacilioConstants.ContextNames.CRITERIA,agentNameCondition);
-
         try {
-            Map<String, Object> toUpdate = new HashMap<>();
-            if (containsValueCheck(AgentConstants.CONNECTION_STATUS,jsonObject)) {
-                Boolean connectionStatus = Boolean.valueOf((jsonObject.get(AgentConstants.CONNECTION_STATUS).toString()));
-                if (agent.getConnectionStatus() != connectionStatus) {
-                    toUpdate.put(AgentConstants.CONNECTION_STATUS, connectionStatus);
-                    agent.setConnectionStatus(connectionStatus);
-                }
-            } else {
-                agent.setConnectionStatus(true);
-                toUpdate.put(AgentConstants.CONNECTION_STATUS, true);
-            }
 
-            if (containsValueCheck(AgentConstants.DISPLAY_NAME,jsonObject)) {
-                if (!jsonObject.get(AgentConstants.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
-                    toUpdate.put(AgentConstants.DISPLAY_NAME, jsonObject.get(AgentConstants.DISPLAY_NAME));
-                    agent.setDisplayName(jsonObject.get(AgentConstants.DISPLAY_NAME).toString());
-                }
-            }
-
-            if (containsValueCheck(AgentConstants.STATE,jsonObject)) {
-                Integer currStatus = Integer.parseInt(jsonObject.get(AgentConstants.STATE).toString());
-                if (!agent.getState().equals(currStatus)) {
-                    toUpdate.put(AgentConstants.STATE, currStatus);
-                    agent.setState(currStatus);
-
-                }
-            } else {
-                toUpdate.put(AgentConstants.STATE, 0);
-                agent.setState(0);
-            }
-
-            if (containsValueCheck(AgentConstants.DATA_INTERVAL,jsonObject)) {
-                Long currDataInterval = Long.parseLong(jsonObject.get(AgentConstants.DATA_INTERVAL).toString());
-                if (agent.getInterval().longValue() != currDataInterval.longValue()) {
-                    toUpdate.put(AgentConstants.DATA_INTERVAL, currDataInterval);
-                    agent.setInterval(currDataInterval);
-                }
-            }
-            if(containsValueCheck(AgentConstants.AGENT_TYPE,jsonObject)){
-                agent.setType(jsonObject.get(AgentConstants.AGENT_TYPE).toString().trim());
-                toUpdate.put(AgentConstants.AGENT_TYPE,agent.getType());
-            }
-         /*   if (containsValueCheck(AgentConstants.NUMBER_OF_CONTROLLERS,jsonObject)) {
-                Integer currNumberOfControllers = Integer.parseInt(jsonObject.get(AgentConstants.NUMBER_OF_CONTROLLERS).toString());
-                if ((agent.getNumberOfControllers().intValue() != currNumberOfControllers.intValue())) {
-                    toUpdate.put(AgentConstants.NUMBER_OF_CONTROLLERS, currNumberOfControllers);
-                    agent.setNumberOfControllers(currNumberOfControllers);
-                }
-            } else {
-                toUpdate.put(AgentConstants.NUMBER_OF_CONTROLLERS, 0);
-                agent.setNumberOfControllers(0);
-            }*/
-
-            /*if (containsValueCheck(AgentConstants.VERSION,jsonObject)) {
-                Object currDeviceDetails = jsonObject.get(AgentConstants.VERSION);
-                String currDeviceDetailsString = currDeviceDetails.toString();
-                String currVersion = getVersion(currDeviceDetails);
-                if ( (agent.getDeviceDetails() == null) || (agent.getDeviceDetails() != null && !(agent.getDeviceDetails().equalsIgnoreCase(currDeviceDetailsString))) ) {
-                    toUpdate.put(AgentConstants.DEVICE_DETAILS, currDeviceDetailsString);
-                    toUpdate.put(AgentConstants.VERSION, currVersion);
-                    agent.setDeviceDetails(currDeviceDetailsString);
-                    agent.setVersion(currVersion);
-                }
-            }*/
-            if (containsValueCheck(AgentConstants.WRITABLE,jsonObject)) {
-                Boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentConstants.WRITABLE).toString());
-                if (agent.getWritable() != currWriteble) {
-                    toUpdate.put(AgentConstants.WRITABLE, currWriteble);
-                    agent.setWritable(currWriteble);
-                }
-            }
-            if (containsValueCheck(AgentConstants.DELETED_TIME,jsonObject)) {
-                Long currDeletedTime = Long.parseLong(jsonObject.get(AgentConstants.DELETED_TIME).toString());
-                if (agent.getDeletedTime().longValue() != currDeletedTime.longValue()) {
-                    agent.setDeletedTime(currDeletedTime);
-                    toUpdate.put(AgentConstants.DELETED_TIME, currDeletedTime);
-                }
-            }
-            if(agent.getType() == null && containsValueCheck(AgentConstants.AGENT_TYPE,jsonObject)){
-                toUpdate.put(AgentConstants.AGENT_TYPE, (AgentType.valueOf(jsonObject.get(AgentConstants.AGENT_TYPE).toString())).getKey());
-            }
-            if (!toUpdate.isEmpty()) {
-                LOGGER.info("updating new agent and the toupdate map is " + toUpdate);
-                toUpdate.put(AgentConstants.LAST_MODIFIED_TIME, System.currentTimeMillis());
-                toUpdate.put(AgentConstants.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
-                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,toUpdate);
-                boolean isDone = updateAgentChain.execute();
+                boolean isDone = AgentApiV2.editAgent(agent,jsonObject);
                 if(isDone){
                     agentMap.replace(agent.getName(),agent);
                 }
                 return isDone;
-            }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }

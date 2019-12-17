@@ -1198,7 +1198,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	@Override
 	public void processNewTimeSeries(JSONObject payload,Controller controller) throws Exception {
-		FacilioChain chain = TransactionChainFactory.getNewTimeSeriesProcessChain();
+		FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
 		FacilioContext context = chain.getContext();
 		context.put(AgentConstants.DATA,payload);
 		context.put(AgentConstants.CONTROLLER,controller);

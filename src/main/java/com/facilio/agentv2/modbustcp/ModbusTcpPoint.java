@@ -2,7 +2,6 @@ package com.facilio.agentv2.modbustcp;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.point.Point;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
@@ -23,7 +22,7 @@ public class ModbusTcpPoint extends Point {
 
     private int registerNumber = -1;
     private int functionCode = -1;
-    private Integer modbusDataType = -1;
+    private int modbusDataType = -1;
 
     public int getRegisterNumber() { return registerNumber; }
     public void setRegisterNumber(int registerNumber) { this.registerNumber = registerNumber; }
@@ -31,7 +30,7 @@ public class ModbusTcpPoint extends Point {
     public int getFunctionCode() { return functionCode; }
     public void setFunctionCode(int functionCode) { this.functionCode = functionCode; }
 
-    public Integer getModbusDataType() { return modbusDataType; }
+    public int getModbusDataType() { return modbusDataType; }
     public void setModbusDataType(int modbusDataType) { this.modbusDataType = modbusDataType; }
 
     @Override
@@ -39,7 +38,7 @@ public class ModbusTcpPoint extends Point {
         return FacilioControllerType.MODBUS_IP;
     }
 
-    public static Point getPointFromMap(long agentId, long controllerId, Map<String,Object> pointMap) throws Exception {
+    public static Point getPointFromMap(Map<String,Object> pointMap) throws Exception {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
@@ -56,10 +55,6 @@ public class ModbusTcpPoint extends Point {
             return FieldUtil.getAsBeanFromJson(jsonObject,ModbusTcpPoint.class);
         }
         throw new Exception(" Mandatory fields like "+AgentConstants.REGISTER_NUMBER+" , "+AgentConstants.MODBUS_DATA_TYPE+" , "+AgentConstants.FUNCTION_CODE+" might be missing form input params -> "+pointMap);
-    }
-
-    public static Point getPointFromMap(Controller controller, Map<String,Object> row) throws Exception {
-        return getPointFromMap(controller.getAgentId(),controller.getId(),row);
     }
 
 

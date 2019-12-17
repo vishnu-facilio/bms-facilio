@@ -6,6 +6,7 @@ import com.facilio.agent.controller.FacilioDataType;
 import com.facilio.agent.controller.FacilioPoint;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -41,14 +42,19 @@ public abstract class Point extends FacilioPoint{
     private Long fieldId;
     private boolean pseudo;
     private long mappedTime;
-    private PointEnum.ConfigureStatus configureStatus = PointEnum.ConfigureStatus.UNCONFIGURED;
-    private PointEnum.SubscribeStatus subscribestatus = PointEnum.SubscribeStatus.UNSUBSCRIBED;
+    private long deviceId;
 
+  /*  private Integer subscribestatus = PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex();
+    private Integer configureStatus = PointEnum.ConfigureStatus.UNCONFIGURED.getIndex();*/
+
+    private PointEnum.SubscribeStatus subscribestatus = PointEnum.SubscribeStatus.UNSUBSCRIBED;
+    private PointEnum.ConfigureStatus configureStatus = PointEnum.ConfigureStatus.UNCONFIGURED;
     /**
      * This method is used to get point as map which can be used to insert point to point table,
      * so add fields which are columns in point table
      * @return
      */
+    @JsonIgnore
     public JSONObject getPointJSON(){
         JSONObject pointJSON = new JSONObject();
         if (getId() > 0) {
@@ -61,6 +67,7 @@ public abstract class Point extends FacilioPoint{
         pointJSON.put(AgentConstants.DATA_TYPE,getDataTypeAsInt());
         pointJSON.put(AgentConstants.POINT_TYPE,getPointType());
         pointJSON.put(AgentConstants.DEVICE_NAME,getDeviceName());
+        pointJSON.put(AgentConstants.DEVICE_ID,getDeviceId());
         pointJSON.put(AgentConstants.CONTROLLER_ID,getControllerId());
         pointJSON.put(AgentConstants.ASSET_CATEGORY_ID,getAssetCategoryId());
         pointJSON.put(AgentConstants.RESOURCE_ID,getResourceId());
@@ -73,8 +80,16 @@ public abstract class Point extends FacilioPoint{
         pointJSON.put(AgentConstants.CREATED_TIME,getCreatedTime());
         pointJSON.put(AgentConstants.MAPPED_TIME,getMappedTime());
         pointJSON.put(AgentConstants.UNIT,getUnit());
-        pointJSON.put(AgentConstants.CONFIGURE_STATUS,getConfigureStatus().getIndex());
-        pointJSON.put(AgentConstants.SUBSCRIBE_STATUS,getSubscribestatus().getIndex());
+        if(getConfigureStatus() != null ){
+            pointJSON.put(AgentConstants.CONFIGURE_STATUS,getConfigureStatus());
+        }else {
+            setConfigureStatus(PointEnum.ConfigureStatus.UNCONFIGURED.getIndex());
+        }
+        if(getSubscribestatus() != null ){
+            pointJSON.put(AgentConstants.SUBSCRIBE_STATUS,getSubscribestatus());
+        }else {
+            setConfigureStatus(PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex());
+        }
         return pointJSON;
     }
 
@@ -108,12 +123,17 @@ public abstract class Point extends FacilioPoint{
     public void setMappedTime(long mappedTime) { this.mappedTime = mappedTime; }
 
     public PointEnum.ConfigureStatus getConfigureStatus() { return configureStatus; }
-    public void setConfigureStatus(PointEnum.ConfigureStatus configureStatus) { this.configureStatus = configureStatus; }
+   /* @JsonIgnore
+    public void setConfigureStatus(PointEnum.ConfigureStatus configureStatus) { this.configureStatus = configureStatus; }*/
     public void setConfigureStatus(int configureStatus) { this.configureStatus = PointEnum.ConfigureStatus.valueOf(configureStatus); }
 
     public PointEnum.SubscribeStatus getSubscribestatus() { return subscribestatus; }
-    public void setSubscribestatus(PointEnum.SubscribeStatus subscribestatus) { this.subscribestatus = subscribestatus; }
+   /* @JsonIgnore
+    public void setSubscribestatus(PointEnum.SubscribeStatus subscribestatus) { this.subscribestatus = subscribestatus; }*/
     public void setSubscribestatus(int subscribestatus) { this.subscribestatus = PointEnum.SubscribeStatus.valueOf(subscribestatus); }
+
+    public long getDeviceId() { return deviceId; }
+    public void setDeviceId(long deviceId) { this.deviceId = deviceId; }
 
     /**
      * This method builds pointObject using map
@@ -122,7 +142,8 @@ public abstract class Point extends FacilioPoint{
      * @param row can be {@link JSONObject} from agent or {@link Map<String,Object>} from db
      * @return
      */
-    public Point getPointFromMap(Map<String,Object> row){
+    @JsonIgnore
+    public Point getPointObjectFromMap(Map<String,Object> row){
         if( (row == null) || (row.isEmpty()) ){
             return this;
         }
@@ -165,6 +186,9 @@ public abstract class Point extends FacilioPoint{
         if(row.containsKey(AgentConstants.IDENTIFIER)){
             setDeviceName(String.valueOf(row.get(AgentConstants.IDENTIFIER)));
         }
+        if(row.containsKey(AgentConstants.DEVICE_ID)){
+            setDeviceId((Long) row.get(AgentConstants.DEVICE_ID));
+        }
         return this;
     }
 
@@ -173,12 +197,14 @@ public abstract class Point extends FacilioPoint{
      * overridden methods in child classes will be called.
      * @return
      */
+    @JsonIgnore
     public abstract JSONObject getChildJSON();
 
     /**
      * This method gets a point as {@link JSONObject} with values for child point table's columns.
      * @return {@link JSONObject}
      */
+    @JsonIgnore
     public JSONObject toJSON(){
         JSONObject pointJSON = new JSONObject();
         pointJSON.putAll(getPointJSON());

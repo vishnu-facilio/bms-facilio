@@ -12,6 +12,11 @@ public class Device
     private long agentId;
     private long siteId;
     private String name;
+    private int type;
+
+    public int getType() { return type; }
+
+    public void setType(int type) { this.type = type; }
 
     public JSONObject getControllerProps() { return controllerProps; }
     public void setControllerProps(JSONObject controllerProps) { this.controllerProps = controllerProps; }

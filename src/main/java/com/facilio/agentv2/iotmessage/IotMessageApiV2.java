@@ -75,10 +75,12 @@ public class IotMessageApiV2
        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getIotMessageModule().getTableName())
                 .fields(FieldFactory.getIotMessageFields());
+       long createdTime = System.currentTimeMillis();
         for (IotMessage iotMessage : messages) {
             LOGGER.info(" adding message "+messages);
             iotMessage.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
             iotMessage.setParentId(parentId);
+            iotMessage.setSentTime(createdTime);
             iotMessage.setId(builder.insert(FieldUtil.getAsProperties(iotMessage)));
         }
     }

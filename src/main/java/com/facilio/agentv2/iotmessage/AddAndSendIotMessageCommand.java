@@ -11,7 +11,6 @@ public class AddAndSendIotMessageCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         IotData data = (IotData) context.get(AgentConstants.DATA);
-        System.out.println(" in execute command -- "+data.getMessages().size());
         for (IotMessage message : data.getMessages()) {
             Logger.getLogger(" message - "+message);
         }

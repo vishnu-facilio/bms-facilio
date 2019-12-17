@@ -2,7 +2,6 @@ package com.facilio.agentv2.opcxmlda;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.point.Point;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
@@ -32,7 +31,7 @@ public class OpcXmlDaPoint extends Point {
     @Deprecated
     public OpcXmlDaPoint() { }
 
-    public static OpcXmlDaPoint getPointFromMap(long agentId, long controllerId, Map<String,Object> pointMap) throws Exception {
+    public static OpcXmlDaPoint getPointFromMap( Map<String,Object> pointMap) throws Exception {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
@@ -45,10 +44,6 @@ public class OpcXmlDaPoint extends Point {
            return FieldUtil.getAsBeanFromJson(jsonObject,OpcXmlDaPoint.class);
         }
         throw new Exception("Mandatory fields like "+AgentConstants.PATH+" might be missing from the input parameter -> "+pointMap);
-    }
-
-    public static Point getPointFromMap(Controller controller, Map<String,Object> row) throws Exception {
-        return getPointFromMap(controller.getAgentId(),controller.getId(),row);
     }
 
     @Override

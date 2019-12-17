@@ -37,6 +37,6 @@ public class EditPointCommand extends FacilioCommand {
     }
 
     private static boolean containdAndNotNull(Context context, String key){
-        return (context.containsKey(key) && (context.get(key) != null) );
+        return ((context != null) && (key != null) && context.containsKey(key) && (context.get(key) != null) );
     }
 }

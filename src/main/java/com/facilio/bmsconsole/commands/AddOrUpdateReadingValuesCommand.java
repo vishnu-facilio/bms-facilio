@@ -1,17 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -32,6 +20,12 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 	
@@ -128,21 +122,21 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 		}
 		reading.setTtime(DateTimeUtil.getMillis(zdt, true));
 	}
-	
+
 	private void addReadings(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings,
-			Map<String, ReadingDataMeta> metaMap, Map<String, ReadingDataMeta> currentReadingMap, boolean isUpdateLastReading) throws Exception {
+							 Map<String, ReadingDataMeta> metaMap, Map<String, ReadingDataMeta> currentReadingMap, boolean isUpdateLastReading) throws Exception {
 
 //		System.err.println( Thread.currentThread().getName()+"Inside addReadings in  AddorUpdateCommand#######  "+readings);
 		if (AccountUtil.getCurrentOrg().getId() == 78 && module.getName().equals(FacilioConstants.ContextNames.WATER_READING)) {
-			LOGGER.info("Adding readings : "+readings);
+			LOGGER.info("Adding readings : " + readings);
 		}
 		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
-																	.module(module)
-																	.fields(fields)
-																	.addRecords(readings);
+				.module(module)
+				.fields(fields)
+				.addRecords(readings);
 		readingBuilder.save();
 		if (isUpdateLastReading) {
-			Map<String, ReadingDataMeta> currentRDMs = ReadingsAPI.updateReadingDataMeta(fields,readings,metaMap);
+			Map<String, ReadingDataMeta> currentRDMs = ReadingsAPI.updateReadingDataMeta(fields, readings, metaMap);
 			if (currentRDMs != null) {
 				currentReadingMap.putAll(currentRDMs);
 			}

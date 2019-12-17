@@ -1,5 +1,6 @@
 package com.facilio.agentv2.iotmessage;
 
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
@@ -33,17 +34,23 @@ public class ControllerMessenger {
         if ((points == null) || (points.isEmpty())) {
             throw new Exception("Exception occurred, points map is empty");
         }
-        return constructNewIotMessage((long) points.get(0).getControllerId(), command, points, null);
+        long controllerId = (long) points.get(0).getControllerId();
+        return constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), command, points, null);
     }
 
-
-    private static IotData constructNewIotMessage(long controllerId, FacilioCommand command) throws Exception {
-        return constructNewIotMessage(controllerId, command, null, null);
+    private static IotData constructNewIotMessage(List<Point> points, FacilioCommand command,Controller controller) throws Exception {
+        if ((points == null) || (points.isEmpty())) {
+            throw new Exception("Exception occurred, points map is empty");
+        }
+        return constructNewIotMessage(controller, command, points, null);
     }
 
-    private static IotData constructNewIotMessage(long controllerId, FacilioCommand command, List<Point> points, FacilioContext context) throws Exception {
+    private static IotData constructNewIotMessage(Controller controller, FacilioCommand command) throws Exception {
+        return constructNewIotMessage(controller, command, null, null);
+    }
+
+    private static IotData constructNewIotMessage(Controller controller, FacilioCommand command, List<Point> points, FacilioContext context) throws Exception {
             LOGGER.info(" constructing controller message ");
-            Controller controller = ControllerApiV2.getControllerFromDb(controllerId);
             if (controller == null) {
                 throw new Exception("Exception occurred,  Controller not present");
             }
@@ -139,7 +146,7 @@ public class ControllerMessenger {
 
 public static boolean discoverPoints(long controllerId){
         try {
-            IotData iotData = constructNewIotMessage(controllerId, FacilioCommand.DISCOVER_POINTS);
+            IotData iotData = constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), FacilioCommand.DISCOVER_POINTS);
             LOGGER.info(" iot data "+iotData);
             MessengerUtil.addAndPublishNewAgentData(iotData);
         }catch (Exception e){
@@ -148,4 +155,25 @@ public static boolean discoverPoints(long controllerId){
         return false;
 }
 
+    public static boolean discoverPoints(Controller controller){
+        try {
+            IotData iotData = constructNewIotMessage(controller, FacilioCommand.DISCOVER_POINTS);
+            LOGGER.info(" iot data "+iotData);
+            MessengerUtil.addAndPublishNewAgentData(iotData);
+            return true;
+        }catch (Exception e){
+            LOGGER.info("Exception occurred ",e);
+        }
+        return false;
+    }
+
+    public static void configurePoints(List<Point> points, FacilioControllerType controllerType) {
+        try{
+            IotData iotData = constructNewIotMessage(points, FacilioCommand.CONFIGURE);
+            LOGGER.info(" iot data "+iotData);
+            MessengerUtil.addAndPublishNewAgentData(iotData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

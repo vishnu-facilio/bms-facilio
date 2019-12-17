@@ -23,6 +23,9 @@ public class AddPointCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         LOGGER.info(" in add points command and context is " + context.keySet());
         Point point = (Point) context.get(FacilioConstants.ContextNames.RECORD);
+        if(point.getControllerId() >= 0){
+            point.setControllerId(-1);
+        } // TODO temp fix--- make it -1 by default
         JSONObject toInsertMap = point.getPointJSON();
         addPoint(ModuleFactory.getPointModule(), FieldFactory.getPointFields(),toInsertMap);
         if(toInsertMap.containsKey(AgentConstants.ID)){
@@ -66,7 +69,7 @@ public class AddPointCommand extends FacilioCommand {
     }
 
     private long addPoint( FacilioModule module, List<FacilioField> fields,Map<String,Object> toInsertMap)throws Exception{
-        LOGGER.info("fields used are ");
+        LOGGER.info("point json "+toInsertMap);
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(module.getTableName()).fields(fields);
             return builder.insert(toInsertMap);
         }

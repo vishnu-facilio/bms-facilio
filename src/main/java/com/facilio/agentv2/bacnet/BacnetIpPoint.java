@@ -2,14 +2,18 @@ package com.facilio.agentv2.bacnet;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.point.Point;
 import com.facilio.modules.FieldUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.Map;
 
 public class BacnetIpPoint extends Point {
+
+    private static final Logger LOGGER = LogManager.getLogger(BacnetIpPoint.class.getName());
+
 
     private long instanceNumber=-1;
     private int instanceType=-1;
@@ -46,33 +50,39 @@ public class BacnetIpPoint extends Point {
      * @return
      * @throws Exception
      */
-    public static Point getPointFromMap(long agentId, long controllerId, Map<String, Object> pointMap) throws Exception {
+    public static Point getPointFromMap( Map<String, Object> pointMap) throws Exception {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
         if (containsValueCheck(AgentConstants.INSTANCE_NUMBER, pointMap) && containsValueCheck(AgentConstants.INSTANCE_TYPE, pointMap)) {
-           BacnetIpPoint point = new BacnetIpPoint(agentId, controllerId);
-           /* point.setInstanceNumber(JsonUtil.getLong(pointMap.get(AgentConstants.INSTANCE_NUMBER)));
-            point.setInstanceType(JsonUtil.getInt(pointMap.get(AgentConstants.INSTANCE_TYPE)));
-            return point.getPointFromMap(pointMap);*/
+            LOGGER.info(" making bcp ");
           JSONObject jsonObject = new JSONObject();
           jsonObject.putAll(pointMap);
-          return FieldUtil.getAsBeanFromJson(jsonObject,BacnetIpPoint.class);
+          BacnetIpPoint point = FieldUtil.getAsBeanFromJson(jsonObject,BacnetIpPoint.class);
+          LOGGER.info(" point is ->"+point.toJSON());
+          return point;
         }
         throw new Exception(" Mandatory fields like " + AgentConstants.INSTANCE_NUMBER + "," + AgentConstants.INSTANCE_TYPE + " might be missing form input params -> " + pointMap);
     }
 
+/*    public static void main(String[] args) {
 
-    /**
-     * [{controllerId=12, thresholdJson={}, instanceType=8, dataType=0, subscribeStatus=1, instanceNumber=23, pointType=1, deviceName=1_#_23_#_0_#_192.168.1.140, orgId=1, writable=false, subscribed=false, unit=0, mappedTime=0, name=spinfo_23, inUse=false, createdTime=1571135229314, id=3, pseudo=false, configureStatus=1}]
-     * @param controller
-     * @param row
-     * @return
-     * @throws Exception
-     */
-    public static Point getPointFromMap(Controller controller, Map<String,Object> row) throws Exception {
-        return getPointFromMap(controller.getAgentId(),controller.getId(),row);
-    }
+        try {
+            Map<String,Object> map = new HashMap<>();
+            map.put(AgentConstants.DEVICE_ID,1);
+            System.out.println(FieldUtil.getAsJSON(FieldUtil.getAsBeanFromMap(map,BacnetIpPoint.class)));
+            BacnetIpPoint point = new BacnetIpPoint();
+            point.setDeviceId(2);
+            System.out.println(FieldUtil.getAsJSON(point));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+    }*/
+
 
         @Override
     public JSONObject getChildJSON() {
