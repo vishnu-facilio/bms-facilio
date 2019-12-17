@@ -116,7 +116,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 							parentIds.add(filter.getParentId());
 							for(Object alais : filter.getApplyTo()) {
 								if (dataPoint.getAliases().get("actual") == alais) {
-									metaData.put("parentIds",filter.getParentId());
+									metaData.put("parentIds",parentIds);
 									dataPoint.setMetaData(metaData);
 									dataPoint.setName(dataPoint.getyAxis().getLabel());
 								}
