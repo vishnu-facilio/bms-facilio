@@ -34,7 +34,6 @@ public class ErrorDataProducer {
     private static Properties getKafkaProducerProperties() {
         Properties props = new Properties();
         props.put("bootstrap.servers", FacilioProperties.getKafkaProducer());
-        props.put("acks", "all");
         props.put("retries", 0);
         props.put("batch.size", 16384);
         props.put("linger.ms", 1);

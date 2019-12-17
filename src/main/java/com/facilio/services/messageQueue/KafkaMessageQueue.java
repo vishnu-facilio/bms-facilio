@@ -76,7 +76,7 @@ public class KafkaMessageQueue extends MessageQueue {
     public void createQueue(String queueName) {
         LOGGER.info(" creating kafka stream "+queueName);
         try {
-            CreateTopicsResult result =getKafkaClient().createTopics(Collections.singletonList(new NewTopic(queueName, 1, (short)2)));
+            CreateTopicsResult result =getKafkaClient().createTopics(Collections.singletonList(new NewTopic(queueName, 1, (short)1)));
             result.values().get(queueName).get(10, TimeUnit.SECONDS);
             LOGGER.info("Stream created : " + queueName );
         } catch (Exception ex){
