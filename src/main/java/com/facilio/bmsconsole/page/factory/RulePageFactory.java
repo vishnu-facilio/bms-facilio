@@ -19,7 +19,6 @@ import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 
-import javax.swing.*;
 import java.util.List;
 import java.util.Map;
 
