@@ -184,9 +184,11 @@ public abstract class EmailClient {
                 }
             }
         } else {
-            for(String address : emailAddressString.split(",")) {
-                if(address != null && address.contains("@")) {
-                    emailAddress.add(address);
+            if(emailAddressString != null) {
+                for (String address : emailAddressString.split(",")) {
+                    if (address != null && address.contains("@")) {
+                        emailAddress.add(address);
+                    }
                 }
             }
         }
