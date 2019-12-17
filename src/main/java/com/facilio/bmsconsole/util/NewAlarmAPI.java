@@ -755,7 +755,7 @@ public class NewAlarmAPI {
 					throw new Exception ("Different/No Base Alarms in the historical interval which is rule/resource specific");
 				}
 				
-				if (alarmOccurrence.equals(initialEdgeCaseAlarmOccurrence) || (alarmOccurrence.equals(finalEdgeCaseAlarmOccurrence) && isNextClosestEvent)) {
+				if (alarmOccurrence.getId() == initialEdgeCaseAlarmOccurrence.getId() || (alarmOccurrence.getId() == finalEdgeCaseAlarmOccurrence.getId() && isNextClosestEvent)) {
 					continue;
 				}
 				delAlarmOccurrencesMap.put(alarmOccurrence.getId(), alarmOccurrence);
