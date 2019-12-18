@@ -787,6 +787,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		if (rule.getRuleId() <= 0) {
 			throw new IllegalArgumentException("Rule cannot be empty");
 		}
+		updateWorkflowRuleWithChildren(rule);
 		WorkflowRuleAPI.updateExtendedRule(rule, ModuleFactory.getAlarmWorkflowRuleModule(), FieldFactory.getAlarmWorkflowRuleFields());
 		return null;
 	}
