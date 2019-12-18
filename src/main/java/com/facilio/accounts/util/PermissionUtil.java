@@ -182,6 +182,16 @@ public class PermissionUtil {
 									criteria = new Criteria();
 									criteria.addAndCondition(storeRoomCondition);
 								}
+								else if (moduleName.equals("inventoryrequest")) {
+									Condition requestedForCondition = new Condition();
+									requestedForCondition.setColumnName("Inventory_Requests.REQUESTED_BY");
+									requestedForCondition.setFieldName("requestedBy");
+									requestedForCondition.setOperator(PickListOperators.IS);
+									requestedForCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
+
+									criteria = new Criteria();
+									criteria.addAndCondition(requestedForCondition);
+								}
 									else {
 									Condition userCondition = new Condition();
 									if (moduleName.equals("planned")) {

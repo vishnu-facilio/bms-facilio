@@ -996,15 +996,19 @@
 		<action name="addNew"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
 			method="addNewReadingRule">
+			<param name="moduleName">alarmrules</param>
+			<param name="permission">CREATE</param>
 		</action>
 		<action name="updateNew"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
 			method="updateNewReadingRule">
+			<param name="moduleName">alarmrules</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="fetchRule"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
 			method="fetchWorkflowRuleNew">
-			<param name="moduleName">alarm</param>
+			<param name="moduleName">alarmrules</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="fetchRuleActions"
@@ -1029,7 +1033,7 @@
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
 			method="v2RulesList">
 			<param name="permission">READ,READ_OWN,READ_TEAM</param>
-			<param name="moduleName">alarm</param>
+			<param name="moduleName">alarmrules</param>
 			<param name="viewName">{1}</param>
 			<param name="ruleType">1</param>
 			<result name="success" type="json">
@@ -1041,7 +1045,7 @@
 		<action name="rulesCount"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
 			method="v2rulesCount">
-			<param name="moduleName">alarm</param>
+			<param name="moduleName">alarmrules</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
@@ -3849,7 +3853,7 @@
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.InventoryRequestAction"
 			method="getInventoryRequestDetails">
-			<param name="moduleName">inventory</param>
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
 		<action name="addOrUpdateLineItem"
@@ -4115,7 +4119,7 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.InventoryRequestAction"
 			method="getInventoryRequestList">
-			<param name="moduleName">inventory</param>
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">READ,READ_OWN</param>
 			<param name="viewName">{1}</param>
 		</action>

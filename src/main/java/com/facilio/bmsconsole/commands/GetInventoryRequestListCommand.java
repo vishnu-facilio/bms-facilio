@@ -7,7 +7,9 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
@@ -87,6 +89,14 @@ public class GetInventoryRequestListCommand extends FacilioCommand {
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
+		
+		if(AccountUtil.getCurrentUser().getUserType() == UserType.USER.getValue()) {
+			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventoryrequest", "read");
+			if (permissionCriteria != null) {
+				builder.andCriteria(permissionCriteria);
+			}
+		}
+
         
 		//fetch store specific
 
