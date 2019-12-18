@@ -1013,6 +1013,7 @@ public class TransactionChainFactory {
 		
 		public static FacilioChain getUpdateTaskChain() {
 			FacilioChain c = getDefaultChain();
+//			c.addCommand(new ToVerifyStateFlowForParticularRecord());
 			c.addCommand(new ValidatePrerequisiteStatusForTaskUpdateCommnad());
 			c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
 			c.addCommand(new ValidateReadingInputForTask());
@@ -2332,6 +2333,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddFormCommand());
 			c.addCommand(new AddSystemFieldsCommand());
 			c.addCommand(new AddFormForCustomModuleCommand());
+			c.addCommand(new AddFormSiteRelationCommand());
 			
 			return c;
 		}

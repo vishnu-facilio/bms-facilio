@@ -286,6 +286,7 @@ public class FieldFactory {
 		labelPosition.setModule(module);
 		fields.add(labelPosition);
 		
+		fields.add(getSiteIdField(module));
 		fields.add(getField("showInMobile", "SHOW_IN_MOBILE", module, FieldType.BOOLEAN));
 		fields.add(getField("hideInList", "HIDE_IN_LIST", module, FieldType.BOOLEAN));
 		fields.add(getField("stateFlowId", "STATE_FLOW_ID", module, FieldType.NUMBER));
@@ -2111,6 +2112,18 @@ public class FieldFactory {
 		fields.add(isProcessField);
 
 		fields.add(getField("requestId", "REQUEST_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getFormSiteRelationFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFormSiteRelationModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
+		fields.add(getSiteIdField(module));
+		
 
 		return fields;
 	}

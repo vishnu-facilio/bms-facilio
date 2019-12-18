@@ -582,6 +582,14 @@ public class ModuleFactory {
 		ticketActivityModule.setTableName("Ticket_Activity");
 		return ticketActivityModule;
 	}
+	
+	public static FacilioModule getFormSiteRelationModule() {
+		FacilioModule notesModule = new FacilioModule();
+		notesModule.setName("formsiterelation");
+		notesModule.setDisplayName("Form Site Relation");
+		notesModule.setTableName("Form_Site_Relation");
+		return notesModule;
+	}
 
 	public static FacilioModule getAlarmFollowersModule() {
 		FacilioModule alarmFollowersModule = new FacilioModule();
