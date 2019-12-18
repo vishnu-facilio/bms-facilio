@@ -17,11 +17,11 @@ import com.amazonaws.services.ec2.model.Reservation;
 
 public class DescribeInstances {
 	private static final Logger LOGGER = LogManager.getLogger(DescribeInstances.class.getName());
-	public static List<String> getAwsvalue()
+	public static List<Instance> getAwsvalue()
     {
         final AmazonEC2 ec2 = AmazonEC2ClientBuilder.standard().withRegion(Regions.US_WEST_2).withCredentials(AwsUtil.getAWSCredentialsProvider()).build();
         boolean done = false;
-        List<String> insAws = new ArrayList<>();
+        List<Instance> awsEC2Instances = new ArrayList<>();
         DescribeInstancesRequest request = new DescribeInstancesRequest();
         while(!done) {
             DescribeInstancesResult response = ec2.describeInstances(request);
@@ -39,7 +39,7 @@ public class DescribeInstances {
 //                        instance.getInstanceType(),
 //                        instance.getState().getName(),
 //                        instance.getMonitoring().getState());
-                    insAws.add(instance.getInstanceId());
+                	awsEC2Instances.add(instance);
                 }
             }
 
@@ -49,7 +49,7 @@ public class DescribeInstances {
                 done = true;
             }
         }
-        LOGGER.info("EC2 instance : "+insAws);
-        return insAws;
+        LOGGER.info("EC2 instance : "+awsEC2Instances);
+        return awsEC2Instances;
     }
 }

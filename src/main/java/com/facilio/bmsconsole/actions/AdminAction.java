@@ -267,11 +267,11 @@ public class AdminAction extends ActionSupport {
 
 	}
 
-	public static List<String> getAwsInstance()throws Exception{
+	public static List<Instance> getAwsInstance()throws Exception{
 
-		List<String> inst = DescribeInstances.getAwsvalue();
-		if(CollectionUtils.isNotEmpty(inst)) {
-			return inst;
+		List<Instance> instanceInfo = DescribeInstances.getAwsvalue();
+		if(CollectionUtils.isNotEmpty(instanceInfo)) {
+			return instanceInfo;
 		}
 		return Collections.emptyList();
 	}

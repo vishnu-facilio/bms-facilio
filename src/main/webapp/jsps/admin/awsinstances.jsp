@@ -5,7 +5,7 @@
 <%@page import="java.util.List"%> 
 <%
 
-List<String> output= AdminAction.getAwsInstance();
+List<Instance> instanceInfo= AdminAction.getAwsInstance();
 %>
 <!DOCTYPE html>
 <html>
@@ -16,24 +16,26 @@ List<String> output= AdminAction.getAwsInstance();
 <body>
  <table class="table admin-data-border table-bordered  a">
 		<tr>
+			<th>S.No</th>
 			<th>InsatnecId</th>
-			<!-- <th>ImageId</th>
+			<th>ImageId</th>
 			<th>InstanceType</th>
 			<th>InstanceStateName</th>
-			<th>InstanceStateMonitoring</th> -->
+			<th>InstanceStateMonitoring</th> 
 		</tr>
 		<%
- 
- for(String instance : output) {
-    
+ int i=0;
+ for(Instance instance : instanceInfo) {
+    i++;
  %>
 
 		<tr>
-			<td align="center"><%=instance%></td>
-			<%-- <td align="center"><%= %></td>
-			<td align="center"><%=%></td>
-			<td align="center"><%=%></td>
-			<td align="center"><%=%></td> --%>
+			<td align="center"><%= i%></td>
+			<td align="center"><%=instance.getInstanceId()%></td>
+			<td align="center"><%=instance.getImageId() %></td>
+			<td align="center"><%=instance.getInstanceType()%></td>
+			<td align="center"><%=instance.getState().getName()%></td>
+			<td align="center"><%=instance.getMonitoring().getState()%></td> 
 
 		</tr>
 		<%} %>
