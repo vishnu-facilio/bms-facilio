@@ -109,6 +109,20 @@ public class FetchReportDataCommand extends FacilioCommand {
 			Long reportParentId= report.getReportTemplate().getParentId();
 			Long templateType = report.getReportTemplate().getTemplateType();
 			if (templateType != null && templateType == 2) {
+				Map<String, ReportTemplateCategoryFilterContext> categoryTemplate = report.getReportTemplate()
+						.getCategoryTemplate();
+				Map<String, Object> metaData = new HashMap<>();
+				List<Long> parentIds = new ArrayList<>();
+				for (ReportDataPointContext dataPoint : dataPoints) {
+					ReportTemplateCategoryFilterContext filter = categoryTemplate.get(dataPoint.getAliases().get("actual"));
+					if (filter != null) {
+						parentIds.add(filter.getParentId());
+						 metaData.put("parentIds", parentIds);
+						 dataPoint.setMetaData(metaData);
+						 dataPoint.setName(dataPoint.getyAxis().getLabel());
+					}
+
+				}
 			}
 			else {
 				if(reportParentId != null) {
