@@ -18,11 +18,12 @@ List<Instance> instanceInfo= AdminAction.getAwsInstance();
  <table class="table admin-data-border table-bordered  a">
 		<tr>
 			<th>S.No</th>
-			<th>InsatnecId</th>
-			<th>ImageId</th>
-			<th>InstanceType</th>
-			<th>InstanceStateName</th>
-			<th>InstanceStateMonitoring</th> 
+			<th>Instance Name</th>
+			<th>Instance Id</th>
+			<th>Image Id</th>
+			<th>Instance Type</th>
+			<th>Instance State Name</th>
+			<th>Instance State Monitoring</th> 
 		</tr>
 		<%
  int i=0;
