@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@page import ="com.facilio.bmsconsole.actions.AdminAction" %>   
 <%@page import=" com.amazonaws.services.ec2.model.Instance" %>
+<%@page import=" com.amazonaws.services.ec2.model.Tag" %>
 <%@page import="java.util.List"%> 
 <%
 
@@ -28,9 +29,18 @@ List<Instance> instanceInfo= AdminAction.getAwsInstance();
  for(Instance instance : instanceInfo) {
     i++;
  %>
-
+			
 		<tr>
 			<td align="center"><%= i%></td>
+			<%
+			List<Tag> tag = instance.getTags();
+			String tagName="";
+			for(Tag insTag : tag){
+				tagName = insTag.getValue();
+				break;
+			}
+			%>
+			<td align="center"><%=tagName%></td>
 			<td align="center"><%=instance.getInstanceId()%></td>
 			<td align="center"><%=instance.getImageId() %></td>
 			<td align="center"><%=instance.getInstanceType()%></td>
