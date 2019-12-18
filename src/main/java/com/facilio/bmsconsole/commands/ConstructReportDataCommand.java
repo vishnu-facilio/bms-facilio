@@ -234,40 +234,59 @@ public class ConstructReportDataCommand extends FacilioCommand {
 	
 	private void updateLookupMap(ReportFieldContext reportFieldContext, long fieldId, String specialType, FacilioModule lookupModule) throws Exception {
 		if (MapUtils.isEmpty(reportFieldContext.getLookupMap())) {
-			String moduleName = null;
-			if (LookupSpecialTypeUtil.isSpecialType(specialType)) {
-				moduleName = specialType;
-			} else {
-				moduleName = lookupModule.getName();
-			}
-			
 			Map<Long, Object> lookupMap;
 			if (LookupSpecialTypeUtil.isSpecialType(specialType)) {
 				List list = LookupSpecialTypeUtil.getObjects(specialType, null);
 				lookupMap = LookupSpecialTypeUtil.getPrimaryFieldValues(specialType, list);
 			} else {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField mainField = modBean.getPrimaryField(moduleName);
-				
-				List<FacilioField> selectFields = new ArrayList<>();
-				selectFields.add(mainField);
-				selectFields.add(FieldFactory.getIdField(lookupModule));
-				SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder()
-						.beanClass(FacilioConstants.ContextNames.getClassFromModule(lookupModule, false))
-						.select(selectFields)
-						.module(lookupModule)
-//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule))
-						;
-
-				List<Map<String,Object>> asProps = builder.getAsProps();
-				lookupMap = new HashMap<>();
-				for (Map<String, Object> map : asProps) {
-					lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
-				}
+				lookupMap = this.getLookUpMap(specialType, lookupModule);
 			}
 //			labelMap.put(fieldId, lookupMap);
 			reportFieldContext.setLookupMap(lookupMap);
 		}
+	}
+	
+	private Map<Long, Object> getLookUpMap(String specialType, FacilioModule lookupModule) throws Exception {
+		Map<Long, Object> lookupMap = new HashMap<>();
+		
+		String moduleName = null;
+		if (LookupSpecialTypeUtil.isSpecialType(specialType)) {
+			moduleName = specialType;
+		} else {
+			moduleName = lookupModule.getName();
+		}
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField mainField = modBean.getPrimaryField(moduleName);
+		
+		List<FacilioField> selectFields = new ArrayList<>();
+		selectFields.add(mainField);
+		selectFields.add(FieldFactory.getIdField(lookupModule));
+		SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder()
+				.beanClass(FacilioConstants.ContextNames.getClassFromModule(lookupModule, false))
+				.select(selectFields)
+				.module(lookupModule)
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule))
+				;
+
+		List<Map<String,Object>> asProps = builder.getAsProps();
+		
+		Map<Long, Object> lookupValueMap = null;
+		if(mainField instanceof LookupField) {
+			LookupField lookupField = (LookupField) mainField;
+			lookupValueMap = getLookUpMap(lookupField.getSpecialType(), lookupField.getLookupModule());
+		}
+		
+		lookupMap = new HashMap<>();
+		for (Map<String, Object> map : asProps) {
+			if(mainField instanceof LookupField) {
+				long id = (Long) map.get("id");
+				lookupMap.put(id, (String)lookupValueMap.get(id));
+			}else {
+				lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
+			}
+		}
+		return lookupMap;
 	}
 
 }
