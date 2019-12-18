@@ -140,7 +140,7 @@ public class ReadingAlarmPageFactory extends PageFactory  {
         alarmDetails.addToLayoutParams(section, 24, 12);
         alarmDetails.addCardType(PageWidget.CardType.IMPACT_DETAILS);
         if (lastOccurrence != null && lastOccurrence.getAdditionInfo() != null && lastOccurrence.getAdditionInfo().containsKey("impact")) {
-            addChartParams(alarmDetails, null, DateAggregateOperator.HOURSOFDAYONLY , "createdTime",NumberAggregateOperator.SUM , "cost" ,null, DateOperators.BETWEEN, lastOccurrence.getCreatedTime()+ "," + (lastOccurrence.getCreatedTime() + 86400 * 60 ) ,criteria);
+            addChartParams(alarmDetails, null, DateAggregateOperator.HOURSOFDAYONLY , "createdTime",NumberAggregateOperator.SUM , "cost" ,null, DateOperators.CURRENT_N_DAY, String.valueOf(lastOccurrence.getCreatedTime()) ,criteria);
         } else  {
             alarmDetails.addToWidgetParams("isEmpty", true);
         }
