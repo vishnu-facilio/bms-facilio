@@ -1615,6 +1615,72 @@ public enum CardLayout {
 			
 			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
 		}
+	},
+	
+	CONTROL_LAYOUT_1 ("controlcard_layout_1") {
+		
+		public JSONObject getParameters () {
+			JSONObject params = new JSONObject();
+			params.put("title", true);
+			params.put("reading", true);
+			params.put("control", true);
+			return params;
+		}
+		
+		public JSONObject getReturnValue () {
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", true);
+			returnValue.put("value", true);
+			returnValue.put("control", true);
+			return returnValue;
+		}
+		
+		public String getScript () {
+			StringBuilder sb = new StringBuilder();
+			
+			sb.append("fieldObj = NameSpace(\"module\").getField(params.reading.fieldName, params.reading.moduleName);\n"
+					+ "if (fieldObj != null) {"
+					+ "		fieldid = fieldObj.id();"
+					+ "		fieldMapInfo = fieldObj.asMap();"
+					+ "		date = NameSpace(\"date\");"
+					+ "		dateRangeObj = date.getDateRange(\"Today\");"
+					+ "		period = \"Last Value\";"
+					+ "		db = {"
+					+ "			criteria : [parentId == (params.reading.parentId) && ttime == dateRangeObj],"
+					+ "			field : params.reading.fieldName,"
+					+ "			aggregation : params.reading.yAggr"
+					+ "		};"
+					+ "		fetchModule = Module(params.reading.moduleName);"
+					+ "		cardValue = fetchModule.fetch(db);"
+					+ "		enumMap = Reading(fieldid, params.reading.parentId).getEnumMap();"
+					+ "		valueMap = {};"
+					+ "		valueMap[\"value\"] = cardValue;"
+					+ "		if (enumMap != null) {"
+					+ "			if (cardValue != null) {"
+					+ "				for each enumKey,enumValue in enumMap {"
+					+ "					if (enumKey == cardValue) {"
+					+ "						valueMap[\"value\"] = enumValue;"
+					+ "					}"
+					+ "				}"
+					+ "			}"
+					+ "		}"
+					+ "		if (fieldMapInfo != null) {"
+					+ "			valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");"
+					+ "			valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");"
+					+ "		}"
+					+ "		result[\"value\"] = valueMap;"
+					+ "}"
+					+ "else {"
+					+ "		valueMap = {};"
+					+ "		valueMap[\"value\"] = null;"
+					+ "		result[\"value\"] = valueMap;"
+					+ "}"
+					+ "result[\"title\"] = params.title;"
+					+ "result[\"control\"] = params.control;");
+					
+			
+			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
+		}
 	};
 	
 	private String name;
