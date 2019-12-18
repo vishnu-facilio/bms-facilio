@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.websocket.EncodeException;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
@@ -30,7 +32,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.auth.actions.FacilioAuthAction;
-import com.facilio.aws.util.AwsGetEC2Instances;
+import com.facilio.aws.util.DescribeInstances;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -265,10 +267,13 @@ public class AdminAction extends ActionSupport {
 
 	}
 
-	public static List<Instance> getAwsInstance()throws Exception{
-		List<Instance> inst = AwsGetEC2Instances.getInstance();
-		
-		return inst;
+	public static List<String> getAwsInstance()throws Exception{
+
+		List<String> inst = DescribeInstances.getAwsvalue();
+		if(CollectionUtils.isNotEmpty(inst)) {
+			return inst;
+		}
+		return Collections.emptyList();
 	}
 	
 	public String deleteMessageQueue() {
