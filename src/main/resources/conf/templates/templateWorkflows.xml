@@ -1033,6 +1033,8 @@
 			
 			<parameter name="visitorlogging.visitor.phone"
 				type="String" />
+			<parameter name="visitorlogging.visitor.name"
+				type="String" />
 			<parameter name="visitorlogging.checkInTimeString" type="String" />
 			<parameter name="visitorlogging.host.name"
 				type="String" />
@@ -1137,6 +1139,8 @@
 				type="String" />
 			<parameter name="visitorlogging.host.phone"
 				type="String" />
+			<parameter name="visitorlogging.host.name"
+				type="String" />
 		</workflow>
 	</template>
 	
@@ -1161,6 +1165,9 @@
 			
 			<parameter name="visitorlogging.visitor.phone"
 				type="String" />
+			<parameter name="visitorlogging.visitor.name"
+				type="String" />
+		
 		</workflow>
 	</template>
 		<template id="102">
@@ -1288,26 +1295,26 @@
 			
 			<parameter name="visitorlogging.host.phone"
 				type="String" />
+			<parameter name="visitorlogging.host.name"
+				type="String" />
 			<parameter name="visitorlogging.visitor.name"
 				type="String" />
 		</workflow>
 	</template>
 	<template id="108">
 		<workflow>
+			<parameter name="org" type="String" />
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.name" type="String" />
-			
-			<parameter name="visitorlogging.inviteId.name"
+			<parameter name="org.timezone" type="String" />
+			<parameter name="visitorlogging"
 				type="String" />
-			<parameter name="visitorlogging.expectedCheckInTime"
+			<parameter name="visitorlogging.id"
 				type="String" />
-			
-			<parameter name="visitorlogging.visitor.phone"
-				type="String" />
-			<parameter name="visitorlogging.passCode"
-				type="String" />
-			<parameter name="visitorlogging.host.name"
-				type="String" />
+			<expression name="vLog">
+				<function>resource.getVisitorLog(visitorlogging.id)
+				</function>
+			</expression>
 		</workflow>
 	</template>
 	<template id="109">
@@ -1422,6 +1429,8 @@
 			
 			<parameter name="visitorlogging.host.phone"
 				type="String" />
+			<parameter name="visitorlogging.host.name"
+				type="String" />
 			<parameter name="visitorlogging.visitor.name"
 				type="String" />
 		</workflow>
@@ -1455,6 +1464,8 @@
 				type="String" />
 			
 			<parameter name="visitorlogging.host.phone"
+				type="String" />
+			<parameter name="visitorlogging.host.name"
 				type="String" />
 			<parameter name="visitorlogging.visitor.name"
 				type="String" />
