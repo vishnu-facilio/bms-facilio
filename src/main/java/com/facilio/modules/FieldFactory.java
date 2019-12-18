@@ -3984,6 +3984,8 @@ public class FieldFactory {
 		fields.add(getField("customScriptId", "CUSTOM_SCRIPT_ID", module, FieldType.NUMBER));
 		fields.add(getField("cardParamsJSON", "CARD_PARAMS", module, FieldType.STRING));
 		fields.add(getField("cardStateJSON", "CARD_STATE", module, FieldType.STRING));
+		fields.add(getField("conditionalFormattingJSON", "CARD_CONDITIONAL_FORMATTING", module, FieldType.STRING));
+		fields.add(getField("cardDrilldownJSON", "CARD_DRILLDOWN", module, FieldType.STRING));
 
 		return fields;
 	}

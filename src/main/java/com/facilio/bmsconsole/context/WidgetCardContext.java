@@ -95,6 +95,46 @@ public class WidgetCardContext extends DashboardWidgetContext {
 			this.cardState = (JSONObject) new JSONParser().parse(cardState);
 		}
 	}
+	
+	private JSONObject conditionalFormatting;
+	
+	public JSONObject getConditionalFormatting() {
+		return conditionalFormatting;
+	}
+	public void setConditionalFormatting(JSONObject conditionalFormatting) {
+		this.conditionalFormatting = conditionalFormatting;
+	}
+	public String getConditionalFormattingJSON() {
+		if (conditionalFormatting != null) {
+			return conditionalFormatting.toJSONString();
+		}
+		return null;
+	}
+	public void setConditionalFormattingJSON(String conditionalFormatting) throws Exception {
+		if (conditionalFormatting != null) {
+			this.conditionalFormatting = (JSONObject) new JSONParser().parse(conditionalFormatting);
+		}
+	}
+	
+	private JSONObject cardDrilldown;
+	
+	public JSONObject getCardDrilldown() {
+		return cardDrilldown;
+	}
+	public void setCardDrilldown(JSONObject cardDrilldown) {
+		this.cardDrilldown = cardDrilldown;
+	}
+	public String getCardDrilldownJSON() {
+		if (cardDrilldown != null) {
+			return cardDrilldown.toJSONString();
+		}
+		return null;
+	}
+	public void setCardDrilldownJSON(String cardDrilldown) throws Exception {
+		if (cardDrilldown != null) {
+			this.cardDrilldown = (JSONObject) new JSONParser().parse(cardDrilldown);
+		}
+	}
 
 	@Override
 	public JSONObject widgetJsonObject() {
@@ -143,6 +183,8 @@ public class WidgetCardContext extends DashboardWidgetContext {
 		dataOptionsJson.put("cardLayout", cardLayout);
 		dataOptionsJson.put("cardParams", cardParams);
 		dataOptionsJson.put("cardState", cardState);
+		dataOptionsJson.put("cardDrilldown", cardDrilldown);
+		dataOptionsJson.put("conditionalFormatting", conditionalFormatting);
 		
 		resultJson.put("dataOptions", dataOptionsJson);
 		
