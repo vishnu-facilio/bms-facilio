@@ -2,6 +2,10 @@ package com.facilio.report.context;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Condition;
@@ -10,6 +14,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
 public class ReportTemplateContext {
@@ -21,7 +26,15 @@ public class ReportTemplateContext {
 	private Long defaultValue;
 	private List<Object> chooseValues;
 	private Boolean isVisibleInDashBoard;
-	private List<ReportTemplateCategoryFilterContext> categoryFillter;
+	private String categoryFillter;
+	private List<ReportTemplateCategoryFilterContext> categoryFillter1;
+	private Map<String, ReportTemplateCategoryFilterContext> categoryTemplate;
+	public String getCategoryFillter() {
+		return categoryFillter;
+	}
+	public void setCategoryFillter(String categoryFillter) {
+		this.categoryFillter = categoryFillter;
+	}
 	public Long getTemplateType() {
 		return templateType;
 	}
@@ -115,10 +128,22 @@ public class ReportTemplateContext {
 		
 		return null;
 	}
-	public List<ReportTemplateCategoryFilterContext> getCategoryFillter() {
-		return categoryFillter;
+//	public List<ReportTemplateCategoryFilterContext> getCategoryFillter() {
+//		return categoryFillter;
+//	}
+//	public void setCategoryFillter(List<ReportTemplateCategoryFilterContext> categoryFillter) {
+//		this.categoryFillter = categoryFillter;
+//	}
+	public Map<String, ReportTemplateCategoryFilterContext> getCategoryTemplate() {
+		return categoryTemplate;
 	}
-	public void setCategoryFillter(List<ReportTemplateCategoryFilterContext> categoryFillter) {
-		this.categoryFillter = categoryFillter;
+	public void setCategoryTemplate(Map<String, ReportTemplateCategoryFilterContext> categoryTemplate) {
+		this.categoryTemplate = categoryTemplate;
+	}
+	public List<ReportTemplateCategoryFilterContext> getCategoryFillter1() {
+		return categoryFillter1;
+	}
+	public void setCategoryFillter1(List<ReportTemplateCategoryFilterContext> categoryFillter1) {
+		this.categoryFillter1 = categoryFillter1;
 	}
 }

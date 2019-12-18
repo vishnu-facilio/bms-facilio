@@ -46,6 +46,7 @@ import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -62,6 +63,7 @@ import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.context.ReportTemplateCategoryFilterContext;
+import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.util.ReportUtil;
@@ -107,24 +109,6 @@ public class FetchReportDataCommand extends FacilioCommand {
 			Long reportParentId= report.getReportTemplate().getParentId();
 			Long templateType = report.getReportTemplate().getTemplateType();
 			if (templateType != null && templateType == 2) {
-				List<ReportTemplateCategoryFilterContext> categoryFillter = new ArrayList<>(report.getReportTemplate().getCategoryFillter());
-				if(categoryFillter.size() > 0) {
-					Map<String, Object> metaData = new HashMap<>();
-					List<Long> parentIds = new ArrayList<>();
-					for(ReportDataPointContext dataPoint : dataPoints) {
-						for(ReportTemplateCategoryFilterContext filter : categoryFillter) {
-							parentIds.add(filter.getParentId());
-							for(Object alais : filter.getApplyTo()) {
-								if (dataPoint.getAliases().get("actual") == alais) {
-									metaData.put("parentIds",parentIds);
-									dataPoint.setMetaData(metaData);
-									dataPoint.setName(dataPoint.getyAxis().getLabel());
-								}
-							}
-
-						}
-					}
-				}
 			}
 			else {
 				if(reportParentId != null) {
@@ -323,10 +307,28 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 
 		if(report.getReportTemplate() != null ) {
-			Criteria templateCriteria = report.getReportTemplate().getCriteria(report,dp);
-			if(templateCriteria != null) {
-				newSelectBuilder.andCriteria(templateCriteria);
-			}
+			System.out.println("catergory Filter" + report.getReportTemplate().getCategoryFillter());
+				Long templateType = report.getReportTemplate().getTemplateType();
+				Map<String, ReportTemplateCategoryFilterContext> template = report.getReportTemplate().getCategoryTemplate();
+				if (templateType != null && templateType == 2) {
+					if (template.get(dp.getAliases().get("actual")) != null) {
+						Long parentId = template.get(dp.getAliases().get("actual")).getParentId();
+						ReportTemplateCategoryFilterContext filter = template.get(dp.getAliases().get("actual"));
+						report.getReportTemplate().setParentId(parentId);
+						Criteria templateCriteria = report.getReportTemplate().getCriteria(report,dp);
+						if (templateCriteria != null) {
+							newSelectBuilder.andCriteria(filter.getCriteria(dp));
+						}
+					}
+
+				}
+				else {
+					Criteria templateCriteria = report.getReportTemplate().getCriteria(report,dp);
+					if(templateCriteria != null) {
+					newSelectBuilder.andCriteria(templateCriteria);
+					}
+					
+				}
 		}
 		else {
 			if (xValues == null) {
