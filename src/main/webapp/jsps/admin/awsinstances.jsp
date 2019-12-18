@@ -20,10 +20,7 @@ List<Instance> instanceInfo= AdminAction.getAwsInstance();
 			<th>S.No</th>
 			<th>Instance Name</th>
 			<th>Instance Id</th>
-			<th>Image Id</th>
-			<th>Instance Type</th>
 			<th>Instance State Name</th>
-			<th>Instance State Monitoring</th> 
 		</tr>
 		<%
  int i=0;
@@ -43,10 +40,7 @@ List<Instance> instanceInfo= AdminAction.getAwsInstance();
 			%>
 			<td align="center"><%=tagName%></td>
 			<td align="center"><%=instance.getInstanceId()%></td>
-			<td align="center"><%=instance.getImageId() %></td>
-			<td align="center"><%=instance.getInstanceType()%></td>
 			<td align="center"><%=instance.getState().getName()%></td>
-			<td align="center"><%=instance.getMonitoring().getState()%></td> 
 
 		</tr>
 		<%} %>
