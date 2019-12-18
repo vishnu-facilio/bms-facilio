@@ -1916,6 +1916,7 @@ public class WorkflowUtil {
 					break;
 				case ANALYTICS:
 					facilioWorkflowFunction = FacilioAnalyticsFunctions.getFacilioAnalyticsFunction(functionName);
+					break;
 				case NUMBER:
 					facilioWorkflowFunction = FacilioNumberFunctions.getFacilioNumberFunction(functionName);
 					break;
@@ -2002,6 +2003,7 @@ public class WorkflowUtil {
 					break;
 				case ANALYTICS:
 					facilioWorkflowFunction = new ArrayList<>( FacilioAnalyticsFunctions.getAllFunctions().values());
+					break;
 				case NUMBER:
 					facilioWorkflowFunction = new ArrayList<>( FacilioNumberFunctions.getAllFunctions().values());
 					break;
