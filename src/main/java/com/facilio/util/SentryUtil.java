@@ -37,15 +37,15 @@ public class SentryUtil {
                 for (Map.Entry<String, String> entry : contextMap.entrySet()) {
                     try {
                         context.addTag(entry.getKey(), entry.getValue());
-                        if (contextMap.containsKey("url")) {
+                        if(entry.getKey().equals("url")) {
                             sentryClient.sendMessage(contextMap.get("url"));
-                        } else {
-                            LOGGER.log(Level.ERROR, "url is not present");
                         }
                     } catch (Exception e) {
                         LOGGER.log(Level.ERROR, "Cannot log to sentry");
                     }
                 }
+
+
             }
         } catch (Exception e) {
             LOGGER.log(Level.ERROR, "Cannot log to sentry server project");
@@ -75,10 +75,8 @@ public class SentryUtil {
                 for (Map.Entry<String, String> entry : contextMap.entrySet()) {
                     try {
                         context.addTag(entry.getKey(), entry.getValue());
-                        if (contextMap.containsKey("JobDetail")) {
+                        if(entry.getKey().equals ("JobDetail")){
                             SENTRY_SCHEDULER_CLIENT.sendMessage(contextMap.get("JobDetail"));
-                        } else {
-                            LOGGER.log(Level.ERROR, "JobDetail is not present");
                         }
                     } catch (Exception e) {
                         LOGGER.log(Level.ERROR, "Cannot log to sentry");
