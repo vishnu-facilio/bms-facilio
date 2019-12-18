@@ -270,7 +270,6 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 			baseAlarm.setResource(getResource());
 			baseAlarm.setKey(getMessageKey());
 		}
-		setBaseAlarm(baseAlarm);
 		return baseAlarm;
 	}
 	

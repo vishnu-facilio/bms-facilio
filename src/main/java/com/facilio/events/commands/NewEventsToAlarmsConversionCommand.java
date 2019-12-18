@@ -182,6 +182,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 		
 		alarmMap.put(baseEvent.getMessageKey(), alarmOccurrence.getAlarm());
 		baseEvent.setAlarmOccurrence(alarmOccurrence);
+		baseEvent.setBaseAlarm(alarmOccurrence.getAlarm());
 	}
 	public static class PointedList<E> extends ArrayList<E> {
 		private static final long serialVersionUID = 1L;
