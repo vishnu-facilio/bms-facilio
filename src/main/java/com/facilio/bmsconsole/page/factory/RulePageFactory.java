@@ -64,7 +64,7 @@ public class RulePageFactory extends PageFactory {
 
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.READING_EVENT));
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), String.valueOf(alarmRule.getAlarmTriggerRule().getId()), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), String.valueOf(alarmRule.getPreRequsite().getId()), NumberOperators.EQUALS));
 //		addImpactDetails(tab2Sec1,criteria);
 
 
