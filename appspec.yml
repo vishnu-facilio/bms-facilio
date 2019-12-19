@@ -13,6 +13,8 @@ files:
     destination: /home/ubuntu
   - source: /setenv.sh
     destination: /home/ubuntu
+  - source: /threaddump.sh
+    destination: /home/ubuntu
   - source: /oom.sh
     destination: /home/ubuntu
   - source: /awsprops-scheduler.properties
