@@ -634,6 +634,14 @@ public class FieldFactory {
 
 		fields.add(getField("config", "CONFIG", module, FieldType.STRING));
 
+		FacilioField allowCreateOptions = new FacilioField();
+		allowCreateOptions.setName("allowCreate");
+		allowCreateOptions.setDataType(FieldType.BOOLEAN);
+		allowCreateOptions.setColumnName("ALLOW_CREATE_OPTIONS");
+		allowCreateOptions.setModule(module);
+		fields.add(allowCreateOptions);
+		
+
 		fields.add(span);
 		return fields;
 	}
@@ -899,7 +907,7 @@ public class FieldFactory {
 		defaultField.setColumnName("IS_DEFAULT");
 		defaultField.setModule(module);
 		fields.add(defaultField);
-
+	
 		return fields;
 	}
 
@@ -1021,7 +1029,7 @@ public class FieldFactory {
 		placeHolder.setColumnName("PLACE_HOLDER");
 		placeHolder.setModule(module);
 		fields.add(placeHolder);
-
+		
 		return fields;
 	}
 
