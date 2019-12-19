@@ -335,6 +335,9 @@ public class V2ReportAction extends FacilioAction {
 		if(hmAggr != null) {
 			context.put(FacilioConstants.ContextNames.HEATMAP_AGGR, hmAggr);
 		}
+		if(timeFilter != null) {
+			context.put(FacilioConstants.ContextNames.TIME_FILTER, (JSONObject) parser.parse(timeFilter));
+		}
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}
 	
@@ -1763,6 +1766,14 @@ public class V2ReportAction extends FacilioAction {
 	
 	public void setTrendLine(String trendLine){
 		this.trendLine = trendLine;
+	}
+	
+	private String timeFilter;
+	public String getTimeFilter () {
+		return timeFilter;
+	}
+	public void setTimeFilter(String timeFilter) {
+		this.timeFilter = timeFilter;
 	}
 
 	private AggregateOperator xAggr;

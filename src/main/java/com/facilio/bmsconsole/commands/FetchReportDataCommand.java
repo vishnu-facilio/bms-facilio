@@ -66,6 +66,7 @@ import com.facilio.report.context.ReportTemplateCategoryFilterContext;
 import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
+import com.facilio.report.util.FilterUtil;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 
@@ -76,12 +77,14 @@ public class FetchReportDataCommand extends FacilioCommand {
 	private static final Logger LOGGER = Logger.getLogger(FetchReportDataCommand.class.getName());
 	private FacilioModule baseModule;
 	private ModuleBean modBean;
+	private JSONObject timeFilter;
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		timeFilter = (JSONObject) context.get(FacilioConstants.ContextNames.TIME_FILTER);
 		
 		if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
 			return false;
@@ -373,6 +376,11 @@ public class FetchReportDataCommand extends FacilioCommand {
 		if(report.getCriteria() != null) {
 			newSelectBuilder.andCriteria(report.getCriteria());
 		}
+		
+//		Criteria timeFilterCriteria = FilterUtil.getTimeFilterCriteria(report.getDateRange(), dp.getxAxis().getModuleName(), timeFilter);
+//		if(timeFilterCriteria != null) {
+//			newSelectBuilder.andCriteria(timeFilterCriteria);
+//		}
 
 		List<Map<String, Object>> props;
 
