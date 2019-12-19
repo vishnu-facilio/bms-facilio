@@ -671,12 +671,13 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			if(objects[0] != null) {
-				FileStore fs = FacilioFactory.getFileStore();
-		    	FileInfo fileInfo = fs.getFileInfo((long)objects[0]);
-				PublicFileContext publicFileContext = PublicFileUtil.createPublicFile(fileInfo.getFileId(), fileInfo.getFileName(), fileInfo.getContentType(), fileInfo.getContentType());
-				if(publicFileContext != null) {
-					return publicFileContext.getPublicUrl();
-				}
+//				FileStore fs = FacilioFactory.getFileStore();
+//		    	FileInfo fileInfo = fs.getFileInfo((long)objects[0]);
+//		    	return PublicFileUtil.createPublicFile(fileInfo.getFileId(), fileInfo.getFileName(), fileInfo.getContentType(), fileInfo.getContentType());
+//				PublicFileContext publicFileContext = PublicFileUtil.createPublicFile(fileInfo.getFileId(), fileInfo.getFileName(), fileInfo.getContentType(), fileInfo.getContentType());
+//				if(publicFileContext != null) {
+//					return publicFileContext.getPublicUrl();
+//				}
 			}
 			return null;
 		}

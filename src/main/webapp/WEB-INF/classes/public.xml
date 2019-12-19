@@ -41,5 +41,16 @@
 				<param name="bufferSize">1024</param>
 			</result>
 		</action>
+		<action name="download"
+			class="com.facilio.bmsconsole.actions.V3FileAction"
+			method="previewFile">
+			<param name="permission">READ</param>
+			<param name="isDownload">true</param>
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+		</action>
 	</package>
 </struts>

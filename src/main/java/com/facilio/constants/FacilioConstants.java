@@ -1352,6 +1352,7 @@ public class FacilioConstants {
 		public static final String IS_TENANT_PORTAL = "isTenantPortal";
 		public static final String FILE_URL_STRING = "fileUrlString";
 		public static final String FILE_TOKEN_STRING = "fileTokenString";
+		public static final String IS_DOWNLOAD = "isDownload";
 				
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

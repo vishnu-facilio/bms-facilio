@@ -110,47 +110,47 @@ public class FileAction extends FacilioAction {
 
 	public String previewPublicFile() throws Exception {
 		
-		HttpServletResponse response = ServletActionContext.getResponse();
-		
-		if(publicFileKey != null) {
-			
-			PublicFileContext publicFileContext = PublicFileUtil.getPublicFileFromKey(publicFileKey);
-			
-			if(publicFileContext.getExpiresOn() <= DateTimeUtil.getCurrenTime()) {
-				response.setStatus(404);
-				return ERROR;
-			}
-			
-			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", publicFileContext.getOrgId());
-			
-			fileInfo = bean.getFile(publicFileContext.getFileId());
-			
-			FileStore fs = FacilioFactory.getFileStore();
-			
-			if (fileInfo != null) {
-				
-				downloadStream = fs.readFile(fileInfo);
-				 if (downloadStream != null) {
-					String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
-					response.setHeader("Last-Modified", dateStamp);
-					if (getIsDownload()) {
-						setContentType("application/x-download");
-						setFilename(fileInfo.getFileName());
-					}
-					else {
-						setContentType(fileInfo.getContentType());
-					}
-					return SUCCESS;
-				} 
-				else {
-					throw new Exception("File not Found");
-				}
-			}
-			else {
-				response.setStatus(404);
-			}
-		}
-		
+//		HttpServletResponse response = ServletActionContext.getResponse();
+//		
+//		if(publicFileKey != null) {
+//			
+//			PublicFileContext publicFileContext = PublicFileUtil.getPublicFileFromKey(publicFileKey);
+//			
+//			if(publicFileContext.getExpiresOn() <= DateTimeUtil.getCurrenTime()) {
+//				response.setStatus(404);
+//				return ERROR;
+//			}
+//			
+//			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", publicFileContext.getOrgId());
+//			
+//			fileInfo = bean.getFile(publicFileContext.getFileId());
+//			
+//			FileStore fs = FacilioFactory.getFileStore();
+//			
+//			if (fileInfo != null) {
+//				
+//				downloadStream = fs.readFile(fileInfo);
+//				 if (downloadStream != null) {
+//					String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
+//					response.setHeader("Last-Modified", dateStamp);
+//					if (getIsDownload()) {
+//						setContentType("application/x-download");
+//						setFilename(fileInfo.getFileName());
+//					}
+//					else {
+//						setContentType(fileInfo.getContentType());
+//					}
+//					return SUCCESS;
+//				} 
+//				else {
+//					throw new Exception("File not Found");
+//				}
+//			}
+//			else {
+//				response.setStatus(404);
+//			}
+//		}
+//		
 		return SUCCESS;
 	}
 

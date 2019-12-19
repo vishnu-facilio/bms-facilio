@@ -596,19 +596,24 @@ public abstract class FileStore {
 	}
 	
 	public String newPreviewFileUrl (String moduleName, long fileId, long expiryTime) throws Exception {
-		String url = getUrl(moduleName,fileId,false);
+		String url = getUrl(moduleName, fileId, expiryTime, false);
 		return url;
 	}
 	
 	public String newDownloadFileUrl (String moduleName, long fileId) throws Exception {
-		String url = getUrl(moduleName, fileId, true);
+		return newDownloadFileUrl(moduleName, fileId,  System.currentTimeMillis() + 300000);
+	}
+	
+	public String newDownloadFileUrl (String moduleName, long fileId, long expiryTime) throws Exception {
+		String url = getUrl(moduleName, fileId, expiryTime, true);
 		return url;
 	}
 	
-	private String getUrl (String moduleName, long fileId, boolean isDownload) {
+	private String getUrl (String moduleName, long fileId, long expiryTime, boolean isDownload) {
 		Map<String, String> claims = new HashMap<>();
 		claims.put("moduleName", moduleName);
 		claims.put("fileId", String.valueOf(fileId));
+		claims.put("expiresAt", String.valueOf(expiryTime));
 		String token =  FileJWTUtil.generateFileJWT(claims);
 		StringBuilder url = new StringBuilder();
 		if (FacilioProperties.isDevelopment()) {

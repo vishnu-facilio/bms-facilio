@@ -1818,7 +1818,7 @@ public class ReadOnlyChainFactory {
 	
 	public static FacilioChain getV3FilePreview() {
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new V3FilePreview());
+		chain.addCommand(new V3FilePreviewCommad());
 		return chain;
 	}
 }

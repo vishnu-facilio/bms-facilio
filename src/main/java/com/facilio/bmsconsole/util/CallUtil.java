@@ -26,9 +26,9 @@ public class CallUtil extends TwilioUtil {
 
 		String twilioML = response.toXml();
 		
-		PublicFileContext publicFileContext = PublicFileUtil.createPublicFile(twilioML, "twilioML", "xml", "text/xml");
+		String url = PublicFileUtil.createPublicFile(twilioML, "twilioML", "xml", "text/xml");
 		
-		String url = publicFileContext.getPublicUrl();
+//		String url = publicFileContext.getPublicUrl();
 		
 		LOGGER.info("url --- "+url);
 

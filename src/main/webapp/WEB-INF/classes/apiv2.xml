@@ -2149,6 +2149,12 @@
 			method="previewFile">
 			<param name="permission">READ</param>
 		</action>
+		<action name="download"
+			class="com.facilio.bmsconsole.actions.V3FileAction"
+			method="previewFile">
+			<param name="permission">READ</param>
+			<param name="isDownload">true</param>
+		</action>
 	</package>
 	
 	<package name="addfile" namespace="/api/v2/files"

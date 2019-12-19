@@ -3,6 +3,7 @@ package com.facilio.pdf;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -47,7 +48,7 @@ public class PdfUtil {
                       String[] server = serverName.split(":");
                       serverName = server[0];
                   }
-                  if (htmlContent == null) {
+                  if (StringUtils.isEmpty(htmlContent)) {
                 	  	htmlContent = "false";
                   }
                   
@@ -97,49 +98,53 @@ public class PdfUtil {
         return null;
     }
     
-    public static Long exportUrlAsPdf(String url, String name, String htmlContent, JSONObject additionalInfo, FileFormat... formats){
-        FileFormat format = FileFormat.PDF;
-        if (formats != null && formats.length > 0) {
-            format = formats[0];
-        }
-        
-        String pdfFileLocation;
-        if(htmlContent != null)
-        {
-        		pdfFileLocation = convertUrlToPdf(url, htmlContent, additionalInfo, format);
-        }
-        else
-        {
-        		pdfFileLocation = convertUrlToPdf(url, null, additionalInfo, format);
-        }
- 
-        File pdfFile = new File(pdfFileLocation);
-        if(pdfFileLocation != null) {
-
-                FileStore fs = FacilioFactory.getFileStore();
-                long fileId = 0;
-                try {
-                    fileId = fs.addFile(name != null ? name+format.getExtention() : pdfFile.getName(), pdfFile, format.getContentType());
-                    return fileId;
-                } catch (Exception e) {
-                    LOGGER.info("Exception occurred ", e);
-                }
-
-        }
-        return null;
-    }
+//    public static Long exportUrlAsPdf(String url, String name, String htmlContent, JSONObject additionalInfo, FileFormat... formats){
+//        FileFormat format = FileFormat.PDF;
+//        if (formats != null && formats.length > 0) {
+//            format = formats[0];
+//        }
+//        
+//        String pdfFileLocation;
+//        if(htmlContent != null)
+//        {
+//        		pdfFileLocation = convertUrlToPdf(url, htmlContent, additionalInfo, format);
+//        }
+//        else
+//        {
+//        		pdfFileLocation = convertUrlToPdf(url, null, additionalInfo, format);
+//        }
+// 
+//        File pdfFile = new File(pdfFileLocation);
+//        if(pdfFileLocation != null) {
+//
+//                FileStore fs = FacilioFactory.getFileStore();
+//                long fileId = 0;
+//                try {
+//                    fileId = fs.addFile(name != null ? name+format.getExtention() : pdfFile.getName(), pdfFile, format.getContentType());
+//                    return fileId;
+//                } catch (Exception e) {
+//                    LOGGER.info("Exception occurred ", e);
+//                }
+//
+//        }
+//        return null;
+//    }
     
     
-    public static File exportUrlAsFile(String url, String name, FileFormat... formats){	
+    public static File exportUrlAsFile(String url, String name, String htmlContent, JSONObject additionalInfo, FileFormat... formats){	
         FileFormat format = FileFormat.PDF;
         if (formats != null && formats.length > 0) {
             format = formats[0];
         }        
         
-        String pdfFileLocation = convertUrlToPdf(url, format);
+        String pdfFileLocation = convertUrlToPdf(url, htmlContent, additionalInfo, format);
         
     	File pdfFile = new File(pdfFileLocation);
         return pdfFile;
+	}
+    
+    public static File exportUrlAsFile(String url, String name, FileFormat... formats){	
+        return exportUrlAsFile(url, name, null, null, formats);
 	}
     	
 }

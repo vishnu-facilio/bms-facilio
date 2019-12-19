@@ -23,6 +23,18 @@ public class V3FileAction extends FacilioAction {
 	public void setQ(String fileToken) {
 		this.q = fileToken;
 	}
+	
+	private Boolean isDownload;
+	public Boolean getIsDownload() {
+		if (isDownload == null) {
+			isDownload = false;
+		}
+		return isDownload;
+	}
+
+	public void setIsDownload(Boolean isDownload) {
+		this.isDownload = isDownload;
+	}
 
 	private String contentType = "application/octet-stream";
 
@@ -75,6 +87,7 @@ public class V3FileAction extends FacilioAction {
 		FacilioChain chain = ReadOnlyChainFactory.getV3FilePreview();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.FILE_TOKEN_STRING, q);
+		context.put(FacilioConstants.ContextNames.IS_DOWNLOAD, isDownload);
 		chain.execute();
 		setContentType((String) context.get(FacilioConstants.ContextNames.FILE_CONTENT_TYPE));
 		if (context.get(FacilioConstants.ContextNames.FILE_NAME) != null) {

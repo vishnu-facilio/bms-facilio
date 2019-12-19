@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.io.File;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,7 +43,6 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.PublicFileContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -61,7 +61,6 @@ import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -1270,20 +1269,18 @@ public enum ActionType {
 						if(isHtmlContent != null && html != null && isHtmlContent)
 						{						
 							final String htmlContentString = "\'" + html+ "\'";							
-							Long fileId = NewTransactionService.newTransactionWithReturn(() -> PdfUtil.exportUrlAsPdf("http://www.facilio.com", null, htmlContentString, null, FileFormat.IMAGE));
+							File file = PdfUtil.exportUrlAsFile("http://www.facilio.com", null, htmlContentString, null, FileFormat.IMAGE);
 							
-							if(fileId !=null )
+							if(file !=null )
 							{
-								PublicFileContext publicFileContext = PublicFileUtil.createPublicFile(fileId, "twilioImage", "jpeg", "image/jpeg");
 								
-								if(publicFileContext != null)
-								{
-									String htmlContentPublicUrl = publicFileContext.getPublicUrl();
-								    
-									//htmlContentPublicUrl = htmlContentPublicUrl.replace("http://localhost:8080/", "https://093373e1.ngrok.io/ROOT/");
+								
+								
+									String htmlContentPublicUrl = PublicFileUtil.createPublicFile(file, "twilioImage", "jpeg", "image/jpeg");
+//									 htmlContentPublicUrl = htmlContentPublicUrl.replace("http://localhost:8080/", "https://ee765fb6.ngrok.io/");
 									obj.put("htmlContentPublicUrl", htmlContentPublicUrl);	
 									obj.put("message", "");
-								}
+								
 															
 							}							
 						}
@@ -1296,6 +1293,7 @@ public enum ActionType {
 						}
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
 					LOGGER.error("Exception occurred ", e);
 					
 				}
