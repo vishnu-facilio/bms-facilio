@@ -521,7 +521,7 @@ public class VisitorManagementAPI {
 			
 			}
 			
-			if(vLog.getVisitor() != null) {
+			if(StringUtils.isEmpty(vLog.getVisitorPhone()) && vLog.getVisitor() != null) {
 				if(StringUtils.isEmpty(vLog.getVisitor().getName())) {
 					vLog.setVisitor(VisitorManagementAPI.getVisitor(vLog.getVisitor().getId(), null));
 				}
@@ -592,6 +592,26 @@ public class VisitorManagementAPI {
 		}
 		
 	}
+	
+	public static void getActiveLogExcludingCurrentLog(VisitorLoggingContext record, FacilioContext context) throws Exception {
+		
+		if(record.getVisitor() != null) {
+			VisitorContext visitor = getVisitor(record.getVisitor().getId(), null);
+			if(visitor != null) {
+				VisitorLoggingContext activeLog = getVisitorLogging(visitor.getId(), true, record.getId());
+				if(activeLog != null) {
+					List<WorkflowRuleContext> nextStateRule = StateFlowRulesAPI.getAvailableState(activeLog.getStateFlowId(), activeLog.getModuleState().getId(), FacilioConstants.ContextNames.VISITOR_LOGGING, activeLog, context);
+					activeLog.setCheckOutTime(System.currentTimeMillis());
+					long nextTransitionId = nextStateRule.get(0).getId();
+					context.put("nextTransitionId", nextTransitionId);
+					context.put("visitorLogging", activeLog);
+				}
+			}
+		}
+		
+	}
+	
+	
 	
 	public static void updateVisitorLastVisitRollUps(VisitorLoggingContext visitorLog) throws Exception {
 		

@@ -13,13 +13,11 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.VisitorContext;
-import com.facilio.bmsconsole.context.VisitorInviteContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.util.ContactsAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
-import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -52,7 +50,9 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 				}
 				else {
 					vL.setIsReturningVisitor(false);
-					vL.getVisitor().setIsReturningVisitor(false);
+					if(vL.getVisitor() != null) {
+						vL.getVisitor().setIsReturningVisitor(false);
+					}
 				}
 				VisitorSettingsContext setting = settingsMap.get(vL.getVisitorType().getId());
 				if(setting != null) {
@@ -95,7 +95,7 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 						throw new IllegalArgumentException("A Visitor Already exists with this phone number");
 					}
 				}
-				else {
+				else if(vL.getVisitor() != null && vL.getVisitor().getId() > 0) {
 					VisitorContext vLVisitor = VisitorManagementAPI.getVisitor(vL.getVisitor().getId(), null);
 					if(StringUtils.isNotEmpty(vL.getVisitor().getPhone())) {
 						vLVisitor.setPhone(vL.getVisitor().getPhone());
@@ -106,10 +106,6 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand{
 					else {
 						throw new IllegalArgumentException("A Visitor Already exists with this phone number");
 					}
-				}
-				if(vL.getInvite() != null) {
-					VisitorInviteContext visitorInvite = VisitorManagementAPI.getVisitorInvite(vL.getInvite().getId());
-					vL.setExpectedVisitDuration(visitorInvite.getExpectedDuration());
 				}
 			}
 		}

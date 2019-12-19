@@ -48,37 +48,25 @@ public class ChangeVisitorInviteStateCommand extends FacilioCommand{
 											VisitorManagementAPI.updateVisitorLogInvitationStatus(record, true);
 										}
 										else if(status.getStatus().toString().trim().equals("CheckedIn")) {
-											VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLogging(record.getVisitor().getId(), true, record.getId());
-											if(vLog != null) {
-												FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
-												VisitorContext visitor = null;
-												if(record.getVisitor() != null && record.getVisitor().getId() > 0) {
-													visitor = VisitorManagementAPI.getVisitor(record.getVisitor().getId(), null);
-													VisitorManagementAPI.checkOutVisitorLogging(visitor.getPhone(), c.getContext());
-												}
-												if(c.getContext().get("visitorLogging") != null) {
-													c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get("nextTransitionId"));
-													VisitorLoggingContext visitorLoggingContext = (VisitorLoggingContext) c.getContext().get("visitorLogging");
-													c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLoggingContext));
-													c.execute();
-												}
+											FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
+											if(record.getVisitor() != null && record.getVisitor().getId() > 0) {
+												VisitorManagementAPI.getActiveLogExcludingCurrentLog(record, c.getContext());
+											}
+											if(c.getContext().get("visitorLogging") != null) {
+												c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get("nextTransitionId"));
+												VisitorLoggingContext visitorLoggingContext = (VisitorLoggingContext) c.getContext().get("visitorLogging");
+												c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLoggingContext));
+												c.execute();
 											}
 											if(record.getCheckInTime() <= 0) { 
 												VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, true, time);
 												VisitorManagementAPI.updateVisitorRollUps(record, oldRecords.get(0));
 												VisitorManagementAPI.updateVisitorLastVisitRollUps(record);
-	//											if(record.getInvite() != null) {
-	//												VisitorManagementAPI.updateVisitorInviteStateToArrived(record.getVisitor().getId(), record.getInvite().getId(), "Arrived");
-	//											}
 											}
 										}
 										else if(status.getStatus().toString().trim().equals("CheckedOut")) {
 											VisitorManagementAPI.updateVisitorLogCheckInCheckoutTime(record, false, time);
 											VisitorManagementAPI.updateVisitorLastVisitDurationRollUp(record);
-//											
-//											if(record.getInvite() != null && !record.getInvite().isRecurring()) {
-//												VisitorManagementAPI.updateVisitorInviteStateToArrived(record.getVisitor().getId(), record.getInvite().getId(), "CheckedOut");
-//											}
 										}
 									}
 								}

@@ -3829,8 +3829,9 @@ public class TransactionChainFactory {
 		public static FacilioChain addVisitorLoggingRecordsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
-			c.addCommand(new CheckForWatchListRecordCommand());
 			c.addCommand(new AddNewVisitorWhileLoggingCommand());
+			c.addCommand(new AddOrUpdateVisitorFromVisitsCommand());
+			c.addCommand(new CheckForWatchListRecordCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new AddAttachmentCommand());
 			c.addCommand(new AttachmentContextCommand());
@@ -3840,12 +3841,12 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteStateFlowCommand()); 
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
-			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			c.addCommand(new LoadVisitorLoggingLookUpCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+		//	c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			
 			return c;
@@ -3854,8 +3855,9 @@ public class TransactionChainFactory {
 		public static FacilioChain addRecurringVisitorLoggingRecordsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
-			c.addCommand(new CheckForWatchListRecordCommand());
 			c.addCommand(new AddNewVisitorWhileLoggingCommand());
+			c.addCommand(new AddOrUpdateVisitorFromVisitsCommand());
+			c.addCommand(new CheckForWatchListRecordCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new GenerateQrInviteUrlCommand());
 			c.addCommand(new AddOrUpdateVisitorLogTriggerCommand());
@@ -3866,7 +3868,6 @@ public class TransactionChainFactory {
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			c.addCommand(new LoadVisitorLoggingLookUpCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
-			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
@@ -3877,6 +3878,7 @@ public class TransactionChainFactory {
 		public static FacilioChain updateVisitorLoggingRecordsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
+			c.addCommand(new AddOrUpdateVisitorFromVisitsCommand());
 			c.addCommand(new GenericUpdateListModuleDataCommand());
 //			c.addCommand(new AddAttachmentCommand());
 //			c.addCommand(new AttachmentContextCommand());
@@ -3884,17 +3886,16 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-		
 			return c;
 		}
 		
 		public static FacilioChain updateRecurringVisitorLoggingRecordsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
+			c.addCommand(new AddOrUpdateVisitorFromVisitsCommand());
 			c.addCommand(new GenericUpdateListModuleDataCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
@@ -3902,7 +3903,6 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new SchedulePreOpenVisitorLogsCreateCommand(true));
 			c.addCommand(new ChangeVisitorInviteStateCommand());
-			//c.addCommand(new SetInvitationStatusForVisitorLogCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		
