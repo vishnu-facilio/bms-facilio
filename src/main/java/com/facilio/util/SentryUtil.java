@@ -34,18 +34,18 @@ public class SentryUtil {
                 if (contextMap.containsKey("graylogurl")) {
                     context.addExtra("graylogurl", contextMap.remove("graylogurl"));
                 }
+
                 for (Map.Entry<String, String> entry : contextMap.entrySet()) {
                     try {
                         context.addTag(entry.getKey(), entry.getValue());
-                        if(entry.getKey().equals("url")) {
-                            sentryClient.sendMessage(contextMap.get("url"));
-                        }
                     } catch (Exception e) {
                         LOGGER.log(Level.ERROR, "Cannot log to sentry");
                     }
                 }
+                if (contextMap.containsKey("url")) {
+                    sentryClient.sendMessage(contextMap.get("url"));
 
-
+                }
             }
         } catch (Exception e) {
             LOGGER.log(Level.ERROR, "Cannot log to sentry server project");
@@ -71,16 +71,16 @@ public class SentryUtil {
                 if (contextMap.containsKey("exceptionStackTrace")) {
                     context.addExtra("exceptionStackTrace", contextMap.remove("exceptionStackTrace"));
                 }
-
                 for (Map.Entry<String, String> entry : contextMap.entrySet()) {
                     try {
                         context.addTag(entry.getKey(), entry.getValue());
-                        if(entry.getKey().equals ("JobDetail")){
-                            SENTRY_SCHEDULER_CLIENT.sendMessage(contextMap.get("JobDetail"));
-                        }
                     } catch (Exception e) {
                         LOGGER.log(Level.ERROR, "Cannot log to sentry");
                     }
+                }
+                if (contextMap.containsKey("JobDetail")) {
+                    SENTRY_SCHEDULER_CLIENT.sendMessage(contextMap.get("JobDetail"));
+
                 }
             }
         } catch (Exception e) {
