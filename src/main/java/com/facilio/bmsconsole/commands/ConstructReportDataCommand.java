@@ -281,7 +281,8 @@ public class ConstructReportDataCommand extends FacilioCommand {
 		for (Map<String, Object> map : asProps) {
 			if(mainField instanceof LookupField) {
 				long id = (Long) map.get("id");
-				lookupMap.put(id, (String)lookupValueMap.get(id));
+				long lookupFieldId = (Long)((Map<String, Object>)map.get(mainField.getName())).get("id");
+				lookupMap.put(id, (String)lookupValueMap.get(lookupFieldId));
 			}else {
 				lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
 			}
