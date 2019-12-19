@@ -24,7 +24,7 @@ public class TwilioUtil {
 			info.put("msg", msg);
 			info.put("msgId", msgId);
 			try {
-				CommonAPI.addNotificationLogger(CommonAPI.NotificationType.SMS, to, null, null, info);
+				CommonAPI.addNotificationLogger(CommonAPI.NotificationType.SMS, to, info);
 			} catch (Exception e) {
 				LOGGER.error("Error occurred while logging " + type + " to " + to + " with props : "+info.toJSONString(), e);
 			}
