@@ -457,7 +457,7 @@ public class ReportUtil {
 					}
 
 					ReportFieldContext dateReportField = dataPoint.getDateField();
-					if (dataPoint.getDateFieldId() > 0) {
+					if (dataPoint.getDateFieldId() > 0 || dataPoint.getDateFieldName() != null) {
 						if (dateReportField == null) {
 							dateReportField = new ReportFieldContext();
 						}
