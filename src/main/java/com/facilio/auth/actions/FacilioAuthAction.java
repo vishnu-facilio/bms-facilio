@@ -38,7 +38,6 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.UserUtil;
-import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.actions.FacilioAction;
@@ -57,7 +56,6 @@ import com.opensymphony.xwork2.ActionContext;
 import io.sentry.SentryClient;
 import io.sentry.SentryClientFactory;
 import io.sentry.context.Context;
-import io.sentry.event.EventBuilder;
 import io.sentry.event.UserBuilder;
 
 public class FacilioAuthAction extends FacilioAction {
@@ -403,9 +401,14 @@ public class FacilioAuthAction extends FacilioAction {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		String authtoken = request.getParameter("authtoken");
 		String serviceurl = request.getParameter("serviceurl");
+		String isPortal = request.getParameter("isPortal");
+		
 		String parentdomain = request.getServerName().replaceAll("app.", "");
 
 		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
+		if(org.apache.commons.lang3.StringUtils.isNotEmpty(isPortal) && isPortal.contentEquals("true")) {
+			cookie = new Cookie("fc.idToken.facilioportal", authtoken);
+		}
 		cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 		cookie.setPath("/");
 		cookie.setHttpOnly(true);
