@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pid=`jps | grep Bootstrap| cut -d' ' -f1`
+pid=`/home/ubuntu/jdk/bin/jps | grep Bootstrap| cut -d' ' -f1`
 if [ -z "$pid" ]; then
     echo "Java process is not running"
     exit 0;
