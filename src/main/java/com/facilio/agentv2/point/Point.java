@@ -81,12 +81,12 @@ public abstract class Point extends FacilioPoint{
         pointJSON.put(AgentConstants.MAPPED_TIME,getMappedTime());
         pointJSON.put(AgentConstants.UNIT,getUnit());
         if(getConfigureStatus() != null ){
-            pointJSON.put(AgentConstants.CONFIGURE_STATUS,getConfigureStatus());
+            pointJSON.put(AgentConstants.CONFIGURE_STATUS,getConfigureStatus().getIndex());
         }else {
             setConfigureStatus(PointEnum.ConfigureStatus.UNCONFIGURED.getIndex());
         }
         if(getSubscribestatus() != null ){
-            pointJSON.put(AgentConstants.SUBSCRIBE_STATUS,getSubscribestatus());
+            pointJSON.put(AgentConstants.SUBSCRIBE_STATUS,getSubscribestatus().getIndex());
         }else {
             setConfigureStatus(PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex());
         }

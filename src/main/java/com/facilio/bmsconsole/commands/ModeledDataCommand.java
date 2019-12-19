@@ -1,23 +1,34 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.bacnet.BacnetIpPoint;
 import com.facilio.agentv2.commands.AgentV2Command;
+import com.facilio.agentv2.modbustcp.ModbusTcpPoint;
+import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeseries.TimeSeriesAPI;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
@@ -41,7 +52,7 @@ public class ModeledDataCommand extends AgentV2Command {
 		Long controllerId= (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		List<Map<String,Object>> dataPointsValue=(List<Map<String, Object>>) context.get("DATA_POINTS"); // points table rows
 		if(TimeSeriesAPI.isStage()) {
-			LOGGER.debug(dataPointsValue+"Points data incomming");
+			LOGGER.debug(dataPointsValue+"Points data incoming");
 		}
 		List<Map<String, Object>> insertNewPointsData= new ArrayList< >();
 		Map<String,Object>  dataPoints= null;
@@ -53,32 +64,57 @@ public class ModeledDataCommand extends AgentV2Command {
 
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 			String deviceName=data.getKey(); // controller name
-			Map<String,String> instanceMap= data.getValue(); // pointname-value map
-			Iterator<String> instanceList = instanceMap.keySet().iterator(); // pointname list
-			while(instanceList.hasNext()) {
-				String instanceName=instanceList.next();                
-				String instanceVal=instanceMap.get(instanceName);
-				if(deviceName ==null || instanceName==null) {
+			Map<String,String> pointsMap = data.getValue(); // pointname-value map
+			Iterator<String> pointsList = pointsMap.keySet().iterator(); // pointname list
+			while(pointsList.hasNext()) {
+				String pointName = pointsList.next();
+				String pointValue = pointsMap.get(pointName );
+				if(deviceName ==null || pointName ==null) {
 					continue;
 				}
-				dataPoints=  getValueContainsPointsData( deviceName,  instanceName, controllerId , dataPointsValue);
+				dataPoints=  getValueContainsPointsData( deviceName,  pointName , controllerId , dataPointsValue);
 				if(dataPoints==null) {
 					if(isV2){
-						LOGGER.info(" point is missing -> "+instanceName);
-						continue;
+						LOGGER.info(" point is missing -> "+pointName );
+						//TODO @anand
 						// make new point insert depending on the point type
+						if (controllerId==null) continue;
+						FacilioControllerType controllerType = getPointTypeFromControllerId(controllerId);
+						//TODO get agentId from payload
+						switch (controllerType){
+							case BACNET_IP:
+								BacnetIpPoint point = new BacnetIpPoint(Long.parseLong(context.get("AGENT_ID").toString()) ,controllerId);
+								point.setName(pointName);
+								PointsAPI.addPoint(point);
+								break;
+							case BACNET_MSTP:
+								throw new NotImplementedException();
+							case MODBUS_IP:
+								ModbusTcpPoint modbusTcpPoint = new ModbusTcpPoint(Long.parseLong(context.get("AGENT_ID").toString()) ,controllerId);
+								modbusTcpPoint.setName(pointName);
+								PointsAPI.addPoint(modbusTcpPoint);
+								break;
+							case MODBUS_RTU:
+								break;
+							case OPC_XML_DA:
+								break;
+							case OPC_UA:
+								break;
+							default:
+						}
+
+					}else {
+						Map<String, Object> value = new HashMap<String, Object>();
+						value.put("orgId", orgId);
+						value.put("device", deviceName);
+						value.put("instance", pointName);
+						value.put("createdTime", System.currentTimeMillis());
+						if (controllerId != null) {
+							//this will ensure the new inserts after addition of controller gets proper controller id
+							value.put("controllerId", controllerId);
+						}
+						insertNewPointsData.add(value);
 					}
-					Map<String, Object> value=new HashMap<String,Object>();
-					value.put("orgId", orgId);
-					value.put("device",deviceName);
-					value.put("instance", instanceName);
-					value.put("createdTime", System.currentTimeMillis());
-					if(controllerId!=null) {
-						//this will ensure the new inserts after addition of controller gets proper controller id
-						value.put("controllerId", controllerId);
-					}
-					insertNewPointsData.add(value);
-					continue;
 				}
 				else {
 					Long resourceId= (Long) dataPoints.get("resourceId");
@@ -88,8 +124,8 @@ public class ModeledDataCommand extends AgentV2Command {
 						FacilioField field =bean.getField(fieldId);
 						FieldType type = field.getDataTypeEnum();
 						String moduleName=field.getModule().getName();
-						if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
-								(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
+						if(pointValue !=null && (pointValue .equalsIgnoreCase("NaN")||
+								(type.equals(FieldType.DECIMAL) && pointValue .equalsIgnoreCase("infinity")))) {
 							generateEvent(resourceId,timeStamp,field.getDisplayName());
 							//								//Generate event with resourceId : assetId & 
 							continue;
@@ -100,12 +136,12 @@ public class ModeledDataCommand extends AgentV2Command {
 							reading = new ReadingContext();
 							iModuleVsReading.put(readingKey, reading);
 						}
-						reading.addReading(field.getName(), instanceVal);
+						reading.addReading(field.getName(), pointValue );
 						reading.setParentId(resourceId);
 						reading.setTtime(timeStamp);
 						//removing here to avoid going into unmodeled instance..
 						// remove deviceData is important 
-						instanceList.remove();
+						pointsList.remove();
 						dataPointsValue.remove(dataPoints);
 						//construct the reading to add in their respective module..????
 					}
@@ -194,6 +230,23 @@ public class ModeledDataCommand extends AgentV2Command {
 		LOGGER.info("-----------------------------");
 		return false;
 	}
+
+	private FacilioControllerType getPointTypeFromControllerId(Long controllerId) throws Exception {
+		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getPointModule().getTableName())
+				.select(FieldFactory.getPointFields())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getPointTypeField(), Collections.singleton(controllerId), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> row = genericSelectRecordBuilder.get();
+		if (row.size()>0) {
+			int type = Integer.parseInt(row.get(0).get("POINT_TYPE").toString());
+			return FacilioControllerType.valueOf(type);
+		}else{
+			LOGGER.info("No row found in controllers for controllerId "+ controllerId);
+			return null;
+		}
+	}
+
 	private Map<String,Object> getValueContainsPointsData(String deviceName, String instanceName,Long controllerId ,List<Map<String , Object>> points_Data) throws Exception{
 		LOGGER.info("instanceName->"+instanceName);
 		String mDeviceName = "";

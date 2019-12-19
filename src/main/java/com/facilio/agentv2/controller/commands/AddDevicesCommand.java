@@ -22,7 +22,7 @@ public class AddDevicesCommand extends FacilioCommand {
         if (context.containsKey(AgentConstants.DATA)) {
             FacilioContext deviceContex = new FacilioContext();
             List<Device> devices = (List<Device>) context.get(AgentConstants.DATA);
-            FieldDeviceApi.addFieldDevicecs(devices);
+            FieldDeviceApi.addFieldDevices(devices);
             return true;
         }
         return false;

@@ -81,7 +81,7 @@ public class DataProcessorV2
                     dU.processDevices(agent, payload);
                     break;
                 case DEVICE_POINTS:
-                        processController(payload,agent);
+                    processDevicePoints(agent,payload);
                     break;
                 case ACK:
                     LOGGER.info(" iamcvijay logs processing ack");
@@ -112,7 +112,7 @@ public class DataProcessorV2
 
     }
 
-    private boolean processController(JSONObject payload, FacilioAgent agent) throws Exception {
+    private boolean processDevicePoints( FacilioAgent agent,JSONObject payload) throws Exception {
        // Controller controller = cU.getControllerFromAgentPayload(payload);
         if( ! payload.containsKey(AgentConstants.CONTROLLER)){
             LOGGER.info(" identifier missing from discoverPoints payload ->"+payload);
@@ -143,14 +143,15 @@ public class DataProcessorV2
         return false;
     }
 
-    private void processTimeSeries(JSONObject payload, Controller controllerTs) {
+    private void processTimeSeries(JSONObject payload, Controller controller) {
         LOGGER.info(" calling timeseries processer chain v2");
         try {
             FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
             FacilioContext context = chain.getContext();
             context.put(AgentConstants.IS_NEW_AGENT,true);
-            context.put(AgentConstants.CONTROLLER,controllerTs);
-            context.put(AgentConstants.CONTROLLER_ID,controllerTs.getId());
+            //TODO context.put(AgentConstants.AGENT_ID,getAgentId(orgid,agentName));
+            context.put(AgentConstants.CONTROLLER,controller);
+            context.put(AgentConstants.CONTROLLER_ID,controller.getId());
             context.put(AgentConstants.DATA,payload);
             context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
             if(payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)){

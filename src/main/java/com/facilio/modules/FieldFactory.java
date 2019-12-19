@@ -5508,7 +5508,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getFieldDeviceModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getIdField(module));
-		fields.add(getField(AgentConstants.TYPE,"TYPE",module,FieldType.NUMBER));
+		//fields.add(getField(AgentConstants.TYPE,"TYPE",module,FieldType.NUMBER));
 		fields.add(getField(AgentConstants.SITE_ID,"SITE_ID",module,FieldType.NUMBER));
 		fields.add(getNameField(module));
 		fields.add(getNewAgentIdField(module));
@@ -5560,7 +5560,10 @@ public class FieldFactory {
 		fields.add(subscribeStatusfield);
 		return fields;
 	}
-	
+	public static FacilioField getPointTypeField(){
+		FacilioModule module = ModuleFactory.getPointModule();
+		return getField(AgentConstants.POINT_TYPE, "POINT_TYPE", module, FieldType.NUMBER);
+	}
 	public static List<FacilioField>  getNiagaraPointFields() {
 		FacilioModule module = ModuleFactory.getNiagaraPointModule();
 		List<FacilioField> fields = new ArrayList<>();

@@ -17,6 +17,8 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -39,7 +41,7 @@ public class FieldDeviceApi
        return builder.update(toUpdateMap);
     }
 
-    public static void addFieldDevicecs(List<Device> devices) throws Exception{
+    public static void addFieldDevices(List<Device> devices) throws Exception{
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                 .table(MODULE.getTableName())
                 .fields(FieldFactory.getFieldDeviceFields())
@@ -57,8 +59,15 @@ public class FieldDeviceApi
                             .andCondition(CriteriaAPI.getNameCondition(name,MODULE))
                             .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.AGENT_ID), String.valueOf(agentId),NumberOperators.EQUALS));
                     List<Map<String, Object>> result = builder.get();
-                    if( (! result.isEmpty()) && (result.size() == 1) ){
-                        return (Device) FieldUtil.getAsBeanFromMap(result.get(0),Device.class);
+                    System.out.println("anand.h "+result.toString());
+                    System.out.println("anand.h 1001 "+ result.size());
+                    if(result.size() == 1){
+                        Map<String, Object> row = result.get(0);
+                        Device device = FieldUtil.getAsBeanFromMap(result.get(0),Device.class);
+                        System.out.println("anand.h 1001.1 "+device.getControllerProps().get("type"));
+                        if (device.getControllerProps().containsKey("type"))
+                        device.setType(Integer.parseInt(device.getControllerProps().get("type").toString()));
+                        return device;
                     }
                 }
             }else
