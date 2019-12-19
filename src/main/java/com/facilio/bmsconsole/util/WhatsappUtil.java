@@ -31,6 +31,7 @@ public class WhatsappUtil extends TwilioUtil {
 		Message wmessage = wmessagecreator.create();  
 				
         System.out.println(wmessage.getSid());
+		log(CommonAPI.NotificationType.WHATSAPP, to, message, wmessage.getSid());
 		return wmessage.getSid();
 	}
 	

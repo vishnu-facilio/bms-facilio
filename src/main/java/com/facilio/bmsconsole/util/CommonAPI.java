@@ -49,7 +49,9 @@ public class CommonAPI {
 
 	public static enum NotificationType {
 		EMAIL,
-		SMS
+		SMS,
+		WHATSAPP,
+		CALL
 		;
 
 		public int getValue() {

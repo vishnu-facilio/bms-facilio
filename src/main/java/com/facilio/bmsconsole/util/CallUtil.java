@@ -41,6 +41,7 @@ public class CallUtil extends TwilioUtil {
             .create();
 		
 		LOGGER.info("Called successfully. ID : " + call.getSid());
+		log(CommonAPI.NotificationType.CALL, to, message, call.getSid());
 		return call.getSid();
 
 	}

@@ -7,13 +7,13 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.aws.util.FacilioProperties;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.twilio.rest.api.v2010.account.Message;
 
 public class SMSUtil extends TwilioUtil {
 	private static final Logger LOGGER = LogManager.getLogger(SMSUtil.class.getName());
+
 	public static String sendSMS(JSONObject obj) {
 		
 //		if(!FacilioProperties.isProduction())
@@ -39,6 +39,7 @@ public class SMSUtil extends TwilioUtil {
 		
 		LOGGER.info("SMS sent successfully. ID : "+tmessage.getSid());
 		LOGGER.info(to+"=>"+message);
+		log(CommonAPI.NotificationType.SMS, to, message, tmessage.getSid());
 		return tmessage.getSid();
 		
 	}
