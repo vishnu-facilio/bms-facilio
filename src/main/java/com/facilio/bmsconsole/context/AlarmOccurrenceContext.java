@@ -281,8 +281,13 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		}
 		
 		if (obj instanceof AlarmOccurrenceContext) {
-			if (getId() != -1 && ((AlarmOccurrenceContext) obj).getId() != -1) {
-				return ((AlarmOccurrenceContext) obj).getId() == getId();
+			AlarmOccurrenceContext alarmOccurrence = (AlarmOccurrenceContext) obj;
+			if (getId() != -1 && alarmOccurrence.getId() != -1) {
+				return alarmOccurrence.getId() == getId();
+			}
+			// check created time.. assumption, no two alarm occurrence will be found with same created time
+			else if (getCreatedTime() != -1 && alarmOccurrence.getCreatedTime() != -1) {
+				return getCreatedTime() == alarmOccurrence.getCreatedTime();
 			}
 			return super.equals(obj);
 		}
