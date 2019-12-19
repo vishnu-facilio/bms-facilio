@@ -6700,8 +6700,6 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getField("type", "NOTIFICATION_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("to", "TO_ADDR", module, FieldType.STRING));
-		fields.add(getField("cc", "CC_ADDR", module, FieldType.STRING));
-		fields.add(getField("bcc", "BCC_ADDR", module, FieldType.STRING));
 		fields.add(getField("info", "INFO", module, FieldType.STRING));
 		fields.add(getField("threadName", "THREAD_NAME", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.STRING));

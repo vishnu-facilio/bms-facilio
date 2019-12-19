@@ -44,10 +44,10 @@ public class ParseDataForReadingLogsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		LOGGER.severe("---DataParseForLogCommand start-----");
+		LOGGER.info("---DataParseForLogCommand start-----");
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		Long templateID = importProcessContext.getTemplateId();
-		LOGGER.severe("templateID -- "+templateID);
+		LOGGER.info("templateID -- "+templateID);
 		ImportTemplateAction importTemplateAction = new ImportTemplateAction();
 		ImportTemplateContext importTemplateContext = importTemplateAction.fetchTemplate(templateID);
 		
@@ -60,7 +60,6 @@ public class ParseDataForReadingLogsCommand extends FacilioCommand {
 		HashMap<String, List<ImportRowContext>> groupedContext = new HashMap<String, List<ImportRowContext>>();
 		
 		JSONObject templateMeta = importTemplateContext.getTemplateMetaJSON();
-		ArrayList<String> ModulesPlusFields = new ArrayList(fieldMapping.keySet());
 		JSONObject dateFormats = (JSONObject) templateMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
 		
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
@@ -214,10 +213,9 @@ public class ParseDataForReadingLogsCommand extends FacilioCommand {
 					}
 				}
 			}
-			LOGGER.severe(groupedContext.toString());
 			context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);
 			context.put(ImportAPI.ImportProcessConstants.ROW_COUNT, row_no);
-			LOGGER.severe("---DataParseForLogCommand End-----");
+			LOGGER.info("---DataParseForLogCommand End-----");
 			return false;
 		}
 	}
@@ -233,11 +231,6 @@ public class ParseDataForReadingLogsCommand extends FacilioCommand {
 //		return false;
 //	}
 	public static Long getAssetByUniqueness(HashMap<String,Object> colVal, String module, HashMap<String,String> uniqueMapping) throws Exception {
-		LOGGER.severe("getAssetByUniqueness");
-//		LOGGER.severe("colVal" + colVal.toString());
-//		LOGGER.severe("module" + module);
-		LOGGER.severe("uniqueMapping" + uniqueMapping.toString());
-		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> assetFields = new ArrayList<>();
 		

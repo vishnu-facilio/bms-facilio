@@ -27,6 +27,8 @@ public abstract class EmailClient {
     static final String SENDER="sender";
     static final String MESSAGE="message";
     static final String SUBJECT="subject";
+    static final String CC="cc";
+    static final String BCC="bcc";
     static final String MAIL_TYPE="mailType";
     static final String CONTENT_TYPE_TEXT_HTML="text/html; charset=UTF-8";
     private static final String CONTENT_TYPE_TEXT_PLAIN="text/plain; charset=UTF-8";
@@ -37,7 +39,6 @@ public abstract class EmailClient {
     static final String HTML="html";
     private static final String HOST = "host";
     static final String TO = "to";
-    static final String CC = "cc";
     private static final String ERROR_MAIL_FROM="mlerror@facilio.com";
     private static final String ERROR_MAIL_TO="ai@facilio.com";
     private static final String ERROR_AT_FACILIO="error@facilio.com";
@@ -152,7 +153,13 @@ public abstract class EmailClient {
                     toAddress = toAddress == null ? "" : toAddress;
                     JSONObject info = new JSONObject();
                     info.put(SUBJECT, mailJson.get(SUBJECT));
-                    CommonAPI.addNotificationLogger(CommonAPI.NotificationType.EMAIL, toAddress, ccAddress, bccAddress, info);
+                    if (mailJson.get(CC) != null) {
+                        info.put("cc", mailJson.get(CC));
+                    }
+                    if (mailJson.get(BCC) != null) {
+                        info.put("bcc", mailJson.get(BCC));
+                    }
+                    CommonAPI.addNotificationLogger(CommonAPI.NotificationType.EMAIL, toAddress, info);
                 }
             }
         }
