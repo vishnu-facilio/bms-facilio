@@ -4,33 +4,171 @@
         "http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
-    <!-- API with custom interceptor to handle tokens -->
-    <package name="agentDownloadApi" namespace="/api/agent/download" extends="json-default" >
 
+    <constant name="struts.beanValidation.providerClass" value="org.hibernate.validator.HibernateValidator"/>
+    <constant name="struts.beanValidation.ignoreXMLConfiguration" value="false"/>
+    <constant name="struts.xwork.chaining.copyErrors" value="true" />
+    <constant name="struts.xwork.chaining.copyFieldErrors" value="true" />
+    <constant name="struts.xwork.chaining.copyMessages" value="true" />
+
+
+    <package name="agent" namespace="/agentV2" extends="v2Api">
         <interceptors>
-            <interceptor name="agentDownloadInterceptor" class="com.facilio.bmsconsole.interceptors.AgentDownloadInterceptor">
-            </interceptor>
-
-            <interceptor-stack name="downloadInterceptorStack">
-                <interceptor-ref name="agentDownloadInterceptor" />
+            <interceptor name="cacheinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+            <interceptor name="scopeinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+            <interceptor name="datasourceinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
+            <interceptor name="authinterceptor"
+                         class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+            <interceptor name="beanValidation"
+                         class="com.facilio.interceptors.FacilioBeanValidationInterceptor"/>
+            <interceptor-stack name="validator">
                 <interceptor-ref name="defaultStack" />
+                <interceptor-ref name="authinterceptor" />
+                <interceptor-ref name="beanValidation"/>
+                <interceptor-ref name="datasourceinterceptor" />
+                <interceptor-ref name="scopeinterceptor" />
+                <interceptor-ref name="cacheinterceptor" />
             </interceptor-stack>
         </interceptors>
+        <default-interceptor-ref name="validator"/>
+        <global-results>
+            <result name="error" type="json">
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">.*</param>
+            </result>
+        </global-results>
+    </package>
 
-        <action name="downloadAgent" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method ="downloadAgent">
-            <interceptor-ref name="downloadInterceptorStack"/>
-            <result name="success" type="stream">
-                <param name="contentType">application/octet-stream</param>
-                <param name="inputName">fileInputStream</param>
-                <param name="contentDisposition">attachment;filename="FacilioAgent.exe"</param>
-                <param name="bufferSize">1024</param>
-            </result>
-            <result name="invalidToken" type="json">
-                <param name="includeProperties">errorStatus</param>
-            </result>
+
+    <package name="AgentApiV2" namespace="/api/v2/agent" extends="agent,v2Api">
+
+<!--1-->     <action name="list" class="com.facilio.agentv2.AgentAction" method="listAgents"> <!--DONE-->
+             </action>
+
+<!--2-->    <action name="ping" class="com.facilio.agentv2.actions.AgentIdAction" method="pingAgent"> <!--DONE-->
+            </action>
+
+<!--3-->    <action name="create" class="com.facilio.agentv2.actions.AddAgentAction" method="addAgent">
+            </action>
+
+<!--4-->    <action name="get" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentUsingId"> <!--DONE-->
+            </action>
+
+<!--5-->    <action name="download"  class="com.facilio.agentv2.AgentAction" method="download">
+            </action>
+
+<!--6-->    <action name="edit"  class="com.facilio.agentv2.actions.updateAgentAction" method="edit">
+            </action>
+
+<!--7-->    <action name="count" class="com.facilio.agentv2.AgentAction" method="getAgentCount"> <!--DONE-->
+            </action>
+
+<!--8-->    <action name="delete" class="com.facilio.agentv2.actions.IdsAction" method="deleteAgent"> <!--DONE-->
+            </action>
+
+<!--9-->    <action name="shutdown" class="com.facilio.agentv2.actions.IdsAction" method="shutDownAgent"> <!--DONE-->
+            </action>
+
+<!--10-->   <action name="jvmStatus" class="com.facilio.agentv2.actions.AgentIdAction" method="getjvmStatus"> <!--DONE-->
+            </action>
+
+<!--11-->   <action name="threadDump" class="com.facilio.agentv2.actions.AgentIdAction" method="getThreadDump"> <!--DONE-->
+            </action>
+
+<!--12-->   <action name="downloadAgent" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method ="downloadAgent">
+            </action>
+    </package>
+
+    <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent,v2Api">
+
+<!--1-->    <action name="count" class="com.facilio.agentv2.AgentAction" method="getControllerCount"> <!--DONE-->
+            </action>
+
+<!--3-->    <action name="list"  class="com.facilio.agentv2.actions.AgentIdAction" method="getControllers"> <!--DONE-->
+            </action>
+
+<!--4-->    <action name="get"  class="com.facilio.agentv2.actions.ControllerActions" method="getControllerUsingId">  <!--DONE-->
+            </action>
+
+<!--5-->    <action name="delete" class="com.facilio.agentv2.actions.IdsAction" method="deleteControllers">
+            </action>
+
+
+<!--6-->    <action name="discover" class="com.facilio.agentv2.actions.TypeAgentAction" method="discoverControllers"> <!--DONE-->
+            </action>
+
+<!--7-->    <action name="update"  class="com.facilio.agentv2.actions.UpdateControllerAction" method="updateController">
+            </action>
+
+            <action name="reset" class="com.facilio.agentv2.actions.ControllerActions" method="resetController">
+            </action>
+
+    </package>
+
+    <package name="PointsApiV2" namespace="/api/v2/point" extends="agent,v2Api">
+
+        <action name="list"  class="com.facilio.agentv2.AgentAction" method="listPoints"> <!--DONE--> <!--DONE-->
+        </action>
+
+        <action name="count" class="com.facilio.agentv2.AgentAction" method="PointsCount"> <!--DONE-->
+        </action>
+
+        <!--<action name="listDevicePoints" class="com.facilio.agentv2.actions.TypeDevices" method="listDeviceTypePoints"> &lt;!&ndash;DONE&ndash;&gt; &lt;!&ndash;DONE&ndash;&gt;
+        </action>
+
+        <action name="listControllerPoints"  class="com.facilio.agentv2.actions.TypeControllerAction" method="getControllerPoints">
+        </action>-->
+
+        <action name="set"  class="com.facilio.agentv2.actions.SetValueAction" method="setValue">
+        </action>
+
+       <!-- <action name="configure"  class="com.facilio.agentv2.AgentAction" method="configurePoint"> &lt;!&ndash;DONE&ndash;&gt; &lt;!&ndash;TOTEST&ndash;&gt;
+        </action>-->
+
+        <action name="configure"  class="com.facilio.agentv2.actions.controllerTypeIdsAction" method="configureController">
+        </action>
+
+        <action name="unConfigure"  class="com.facilio.agentv2.actions.PointIdAction" method="unConfigurePoint"> <!--DONE-->
+        </action>
+
+        <action name="discoverPoints"  class="com.facilio.agentv2.actions.ControllerActions" method="discoverPoints"> <!--DONE-->
+        </action>
+
+        <action name="removePoints"  class="com.facilio.agentv2.actions.IdsAction" method="removePoints"> <!--DONE-->
+        </action>
+
+
+    </package>
+
+    <package name="DeviceApiV2" namespace="/api/v2/device" extends="agent,v2Api">
+        <action name="list"  class="com.facilio.agentv2.actions.AgentIdAction" method="devices"> <!--DONEDONE-->
+        </action>
+
+        <action name="discoverPoints"  class="com.facilio.agentv2.actions.IdsAction" method="discoverDevicePoints">
+        </action>
+
+        <!--<action name="agetDeviceCount" class="com.facilio.agentv2.actions.AgentIdAction" method="countAgentDevices">
+        </action>
+-->
+        <action name="count"  class="com.facilio.agentv2.AgentAction" method="countDevices">
+        </action>
+
+<!--
+        <action name="countType" class="com.facilio.agentv2.actions.AgentDeviceAction" method="countTypeDevice">
+        </action>
+-->
+
+        <action name="delete" class="com.facilio.agentv2.actions.IdsAction" method="deleteDevice">
+        </action>
+
+        <action name="get" class="com.facilio.agentv2.actions.DeviceIdActions" method="device">
         </action>
 
     </package>
+
 
 <!--    <package name="agentVersionApi" namespace="/api/agent/version" extends="homeApi">-->
 <!--        <action name="addVersionLog" class="com.facilio.bmsconsole.actions.AgentVersionAction"-->

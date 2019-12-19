@@ -194,65 +194,11 @@
 		</action>
 	</package>
 
-
-	<package name="newDeviceSetupApiV2" namespace="/api/v2/setup/newAgent/device" extends="setupApiV2">
-		<action name="get"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getDevices">
-		</action>
-
-		<action name="configure"  class="com.facilio.bmsconsole.actions.DeviceAction" method="configureController">
-		</action>
-
-	</package>
-
-	<package name="newPointSetupApiV2" namespace="/api/v2/setup/newAgent/point" extends="setupApiV2">
-		<action name="get"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getPoints">
-		</action>
-
-		<action name="getPoint"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getPoint">
-		</action>
-
-		<action name="set"  class="com.facilio.bmsconsole.actions.DeviceAction" method="setValue">
-		</action>
-
-        <action name="configure"  class="com.facilio.bmsconsole.actions.DeviceAction" method="configurePoint">
-        </action>
-
-    </package>
-
-
 	<package name="newAgentSetupApiV2" namespace="/api/v2/setup/newAgent" extends="setupApiV2">
-
-		<action name="ping"  class="com.facilio.bmsconsole.actions.DeviceAction" method="pingAgent">
-		</action>
-
-		<action name="get"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getAgent">
-		</action>
-
-		<action name="getUsingId"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getAgentUsingId">
-		</action>
 
 		<action name="pubSubEndpoint"  class="com.facilio.bmsconsole.actions.DeviceAction" method="pubSubListener">
 		</action>
 	</package>
-
-	<package name="newControllerSetupApiV2" namespace="/api/v2/setup/newAgent/controller" extends="setupApiV2">
-		<action name="get"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getControllers">
-		</action>
-
-		<action name="update"  class="com.facilio.bmsconsole.actions.DeviceAction" method="updateController">
-		</action>
-
-		<action name="discover"  class="com.facilio.bmsconsole.actions.DeviceAction" method="discoverPoints">
-		</action>
-
-		<action name="getUsingId"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getControllerUsingId">
-		</action>
-
-		<action name="getUsingIdType"  class="com.facilio.bmsconsole.actions.DeviceAction" method="getControllerUsingIdType">
-		</action>
-
-	</package>
-
 
 	<package name="agentApiV2" namespace="/api/v2/setup/agent" extends="setupApiV2">
 		<action name="list"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getAgentDetails">

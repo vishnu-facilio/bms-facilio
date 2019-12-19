@@ -11,7 +11,9 @@ import com.facilio.agentIntegration.UpdateIntegrationCommand;
 import com.facilio.agentIntegration.wattsense.AgentIntegrationDeleteCommand;
 import com.facilio.agentv2.AddAgent;
 import com.facilio.agentv2.UpdateAgentCommand;
+import com.facilio.agentv2.commands.DeletePointCommand;
 import com.facilio.agentv2.commands.ProcessDataCommandV2;
+import com.facilio.agentv2.commands.SendResetCommand;
 import com.facilio.agentv2.controller.commands.AddDevicesCommand;
 import com.facilio.agentv2.controller.commands.FieldDevicesToControllerCommand;
 import com.facilio.agentv2.device.commands.DeleteFieldDevice;
@@ -3667,6 +3669,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain deleteControllerChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenericDeleteModuleDataCommand());
+		return chain;
+	}
+
 	public static FacilioChain getControllerChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GenericGetModuleDataListCommand());
@@ -4159,6 +4167,13 @@ public class TransactionChainFactory {
 	public static FacilioChain getAckProcessorChain() {
 		FacilioChain chain = getDefaultChain();
 		//
+		return chain;
+	}
+
+	public static FacilioChain resetControllerChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeletePointCommand());
+		chain.addCommand(new SendResetCommand());
 		return chain;
 	}
 }

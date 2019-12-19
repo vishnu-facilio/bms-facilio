@@ -25,7 +25,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.custom.CustomController;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -126,10 +125,15 @@ public class ControllerApiV2 {
 
 
     private static Controller getControllerContext(long controllerId, boolean fetchDeleted) throws  Exception{
+        LOGGER.info(" get controller context ");
         FacilioChain assetDetailsChain = FacilioChainFactory.getControllerModuleName();
         FacilioContext context = assetDetailsChain.getContext();
         context.put(FacilioConstants.ContextNames.ID, controllerId);
         AssetContext asset= AssetsAPI.getAssetInfo(controllerId, true);
+        LOGGER.info(" asset ->"+asset);
+        if(asset == null){
+            return null;
+        }
         AssetCategoryContext category= asset.getCategory();
         LOGGER.info(" category "+category.getName());
         if (category != null && category.getId() != -1) {
@@ -177,14 +181,13 @@ public class ControllerApiV2 {
 
     private static Controller getController(long controllerId,String moduleName){
         if (controllerId > 0) {
+            LOGGER.info(" getController ->"+controllerId);
             try {
                 FacilioChain getControllerChain = TransactionChainFactory.getControllerChain();
                 FacilioContext context = getControllerChain.getContext();
                 context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 List<FacilioField> fields = modBean.getAllFields(moduleName);
-                Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-                Criteria criteria = new Criteria();
 
                 ArrayList<Long> idList = new ArrayList<>();
                 idList.add(controllerId);
@@ -347,16 +350,42 @@ public class ControllerApiV2 {
 
 
     public static boolean editController(long controllerId, JSONObject controllerData){
+        LOGGER.info(" editing controller");
         Controller controller = getControllerFromDb(controllerId);
         if(controller != null){
             try {
                 JSONObject jsonObject = new JSONObject();
-                // EIDT controller
-                jsonObject.put(AgentConstants.CONTROLLER,controllerData);
+                JSONObject toUpdate = alterController(controller, controllerData);
+                if (toUpdate.isEmpty()){
+                    return false;
+                }
+                updateController(controller);
+                jsonObject.put(AgentConstants.CONTROLLER,toUpdate);
                 AgentMessenger.publishNewIotAgentMessage(controller, FacilioCommand.EDIT_CONTROLLER,jsonObject);
+                return true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        return false;
+    }
+
+    private static JSONObject alterController(Controller controller, JSONObject controllerData) {
+        JSONObject toUpdate = new JSONObject();
+        if(containsCheck(AgentConstants.DATA_INTERVAL,controllerData)){
+            controller.setDataInterval(((Number)controllerData.get(AgentConstants.DATA_INTERVAL)).longValue());
+            toUpdate.put(AgentConstants.DATA_INTERVAL,controller.getDataInterval());
+        }
+        if(containsCheck(AgentConstants.WRITABLE,controllerData)){
+            controller.setWritable((Boolean) controllerData.get(AgentConstants.WRITABLE));
+            toUpdate.put(AgentConstants.WRITABLE,controller.getWritable());
+        }
+        return toUpdate;
+    }
+
+    public static boolean containsCheck(String key, Map map){
+        if( (key != null) && ( ! key.isEmpty()) && ( map != null ) && ( ! map.isEmpty() ) && (map.containsKey(key)) && (map.get(key) != null) ){
+            return true;
         }
         return false;
     }
@@ -413,9 +442,6 @@ public class ControllerApiV2 {
         try {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> fields = modBean.getAllFields("Controller");
-            for (FacilioField field : fields) {
-                LOGGER.info(" field ->  "+field.getName());
-            }
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(MODULE.getTableName())
@@ -426,7 +452,6 @@ public class ControllerApiV2 {
                 builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId),NumberOperators.EQUALS));
             }
             List<Map<String, Object>> result = builder.get();
-            LOGGER.info(" selected rows are ->"+result.get(0));
             if((result!= null) && ( ! result.isEmpty())){
                 return (long) result.get(0).get(AgentConstants.ID);
             }
@@ -450,8 +475,12 @@ public class ControllerApiV2 {
     }
     public static boolean deleteControllerApi(List<Long> ids) throws SQLException {
         if ((ids != null) && (!ids.isEmpty())) {
-
-            GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+            FacilioChain deleteChain = TransactionChainFactory.deleteControllerChain();
+            FacilioContext context = deleteChain.getContext();
+            context.put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);
+            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+            context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CONTROLLER_ASSET);
+            /*GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                     .table(MODULE.getTableName())
                     .fields(Collections.singletonList(FieldFactory.getDeletedTimeField(MODULE)))
                     .andCondition(CriteriaAPI.getIdCondition(ids, MODULE));
@@ -460,8 +489,27 @@ public class ControllerApiV2 {
                 return true;
             } else {
                 LOGGER.info("Controller deletion failed, rows affected -> " + rowsAffected);
+            }*/
+            try {
+                deleteChain.execute();
+                LOGGER.info(" rows affected in deleting controller -> "+context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+                LOGGER.info(" rows  in deleting controller -> "+context.get(FacilioConstants.ContextNames.RECORD_LIST));
+                return (((Number)context.get(FacilioConstants.ContextNames.ROWS_UPDATED)).intValue()>0);
+            }catch (Exception e){
+                LOGGER.info("Exception while deleting controller ",e);
             }
         }
         return false;
+    }
+
+    public static void resetController(Long controllerId) {
+        FacilioChain chain = TransactionChainFactory.resetControllerChain();
+        FacilioContext context = chain.getContext();
+        context.put(AgentConstants.CONTROLLER_ID,controllerId);
+        try {
+            chain.execute();
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while reset-controller ",e);
+        }
     }
 }

@@ -4,16 +4,12 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
-import com.facilio.agentv2.point.Point;
-import com.facilio.agentv2.point.PointsAPI;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 public class ControllerActions extends AgentActionV2 {
 
@@ -50,33 +46,10 @@ public class ControllerActions extends AgentActionV2 {
         return SUCCESS;
     }
 
-    /**
-     * get all points for a controller
-     *
-     * @return
-     */
-    public String listPoints() {
-        JSONArray pointData = new JSONArray();
-        try {
-            List<Point> points = PointsAPI.getAllPoints(null, getControllerId());
-            LOGGER.info(" in device action " + points);
-            if (!points.isEmpty()) {
-                for (Point point : points) {
-                    pointData.add(point.toJSON());
-                }
-            }
-            setResult(AgentConstants.DATA, points);
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while getting points", e);
-            setResult(AgentConstants.EXCEPTION, e.getMessage());
-            setResult(AgentConstants.RESULT, ERROR);
-        }
-        return SUCCESS;
-    }
-
 
     public String discoverPoints() {
         try {
+            LOGGER.info(" discovering points");
             if (ControllerUtilV2.discoverPoints(getControllerId())) {
                 setResult(AgentConstants.RESULT, SUCCESS);
             } else {
@@ -91,16 +64,19 @@ public class ControllerActions extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public String listControllerPointsCount(){
+    public String resetController(){
         try{
-                long count = PointsAPI.getAgentPointsCount(-1, getControllerId());
-                setResult(AgentConstants.DATA,count);
-                setResult(AgentConstants.RESULT,SUCCESS);
+            ControllerApiV2.resetController(getControllerId());
+            setResult(AgentConstants.RESULT,SUCCESS);
+            return SUCCESS;
         }catch (Exception e){
-            LOGGER.info("Exception occurred while getting all point for agent->"+controllerId+" -",e);
+            LOGGER.info("Exception occurred while reset controller");
             setResult(AgentConstants.EXCEPTION,e.getMessage());
-            setResult(AgentConstants.RESULT,ERROR);
         }
+        setResult(AgentConstants.RESULT,ERROR);
         return SUCCESS;
     }
+
+
+
 }

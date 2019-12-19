@@ -1,12 +1,15 @@
 package com.facilio.agentv2.actions;
 
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.agentv2.point.Point;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TypeDevices extends DeviceIdActions {
 
@@ -28,7 +31,10 @@ public class TypeDevices extends DeviceIdActions {
     public String listDeviceTypePoints(){
         try{
             if(checkValue(getDeviceId()) && (getControllerType()>0)){
-                setResult(AgentConstants.DATA, PointsAPI.getDevicePoints(getDeviceId(),getControllerType()));
+                List<Point> points = new ArrayList<>();
+                JSONArray pointsArray = new JSONArray();
+                points.forEach(point -> pointsArray.add(point.toJSON()));
+                setResult(AgentConstants.DATA, pointsArray);
             }else {
                 throw new Exception(" deviceId ->"+getDeviceId());
             }

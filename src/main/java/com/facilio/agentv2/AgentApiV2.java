@@ -1,7 +1,6 @@
 package com.facilio.agentv2;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.beans.ModuleCRUDBean;
@@ -197,6 +196,25 @@ public class AgentApiV2 {
         return updateAgent(agent);
     }
 
+    public static boolean editAgent(FacilioAgent agent,Long dataInterval,Boolean writable,String displayName){
+        if(agent != null){
+            if((dataInterval != null)&&(dataInterval > 0L)){
+                agent.setInterval(dataInterval);
+            }
+            if((writable != null)){
+                agent.setWritable(writable);
+            }
+            if((displayName != null)&&( ! displayName.isEmpty())){
+                agent.setDisplayName(displayName);
+            }
+
+            return updateAgent(agent);
+        }else {
+            LOGGER.info("Exception occurred, agent can't be null to update ");
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
         System.out.println((List<FacilioField>) FIELDSMAP.values());
     }
@@ -256,12 +274,18 @@ public class AgentApiV2 {
     }
 
     public static boolean deleteAgent(List<Long> ids) {
+        LOGGER.info(" in delete agent");
         try {
             GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                     .table(MODULE.getTableName())
                     .fields(FieldFactory.getNewAgentDataFields())
                     .andCondition(CriteriaAPI.getIdCondition(ids, MODULE));
-            if(builder.update(Collections.singletonMap(AgentKeys.DELETED_TIME, System.currentTimeMillis())) > 0 ){
+            Map<String,Object> toUpdateMap = new HashMap<>();
+            toUpdateMap.put(AgentConstants.DELETED_TIME,System.currentTimeMillis());
+            int rowsAffected = builder.update(toUpdateMap);
+            LOGGER.info(" rows affected ->"+rowsAffected);
+            LOGGER.info(" update query "+builder.toString());
+            if( rowsAffected > 0 ){
                 return true;
             }
 

@@ -154,11 +154,18 @@ public class FieldDeviceApi
         return getDeviceCount(-1,null);
     }
 
-    public static Map<String,Object> getDevice(Long deviceId) {
+    public static Map<String,Object> getDeviceData(Long deviceId) {
         List<Map<String, Object>> devices = getDevices(null, Collections.singletonList(deviceId));
         if((devices != null)&&( ! devices.isEmpty())){
             return devices.get(0);
         }
         return new HashMap<>();
+    }
+    public static Device getDevice(Long deviceId){
+        Map<String,Object> deviceData = getDeviceData(deviceId);
+        if(! deviceData.isEmpty()){
+            return FieldUtil.getAsBeanFromMap(deviceData,Device.class);
+        }
+        return null;
     }
 }

@@ -35,6 +35,7 @@ public class ControllerMessenger {
             throw new Exception("Exception occurred, points map is empty");
         }
         long controllerId = (long) points.get(0).getControllerId();
+        LOGGER.info(" controller Id ->"+controllerId);
         return constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), command, points, null);
     }
 
@@ -79,8 +80,8 @@ public class ControllerMessenger {
                     case SET:
                         JSONArray pointsData = MessengerUtil.getPointsData(points);
                         JSONObject pointData = (JSONObject) pointsData.get(0);
-                        pointData.put(AgentConstants.VALUE, context.get(AgentConstants.VALUE));
-                        object.put(AgentConstants.POINTS, pointsData);
+                        pointData.put(AgentConstants.VALUE, points.get(0).getPresentValue());
+                        object.put(AgentConstants.POINTS, pointData);
                         break;
                     case CONFIGURE:
                     case REMOVE:
@@ -149,6 +150,7 @@ public static boolean discoverPoints(long controllerId){
             IotData iotData = constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), FacilioCommand.DISCOVER_POINTS);
             LOGGER.info(" iot data "+iotData);
             MessengerUtil.addAndPublishNewAgentData(iotData);
+            return true;
         }catch (Exception e){
             LOGGER.info("Exception occurred ",e);
         }
@@ -175,5 +177,15 @@ public static boolean discoverPoints(long controllerId){
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void resetController(long controllerId) throws Exception {
+        IotData iotDat = constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId),FacilioCommand.RESET);
+        MessengerUtil.addAndPublishNewAgentData(iotDat);
+    }
+
+    public static void setValue(Point point) throws  Exception {
+        IotData iotData = constructNewIotMessage(Collections.singletonList(point),FacilioCommand.SET);
+        MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 }

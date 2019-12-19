@@ -1,6 +1,6 @@
 package com.facilio.agentv2.device;
 
-import com.facilio.agentv2.AgentConstants;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -13,14 +13,18 @@ public class Device
     private long siteId;
     private String name;
     private int type;
+    private JSONObject controllerProps;
+    private Long createdTime;
 
     public int getType() { return type; }
 
     public void setType(int type) { this.type = type; }
 
     public JSONObject getControllerProps() { return controllerProps; }
+
     public void setControllerProps(JSONObject controllerProps) { this.controllerProps = controllerProps; }
 
+    @JSON(serialize = false)
     public String getPropsStr() {
         if(controllerProps != null){
             return controllerProps.toString();
@@ -28,13 +32,11 @@ public class Device
         return null;
     }
 
-    public void setPropsStr(String propsStr) throws ParseException {
+    public void setPropsStr(String propsStr) throws  ParseException {
         JSONParser parser = new JSONParser();
         this.controllerProps = (JSONObject) parser.parse(propsStr);
     }
 
-    private JSONObject controllerProps;
-    private Long createdTime;
 
 
     public Device(long orgId, long agentId) {
@@ -67,13 +69,7 @@ public class Device
 
 
 
-
-
-    /**
-     * device as {@link JSONObject}.
-     * @return
-     */
-    public JSONObject toJSON(){
+  /*  public JSONObject toJSON(){
         JSONObject deviceJSON = new JSONObject();
         deviceJSON.put(AgentConstants.AGENT_ID,agentId);
         deviceJSON.put(AgentConstants.SITE_ID,siteId);
@@ -81,7 +77,7 @@ public class Device
         deviceJSON.put(AgentConstants.CONTROLLER_PROPS,controllerProps);
         deviceJSON.put(AgentConstants.CREATED_TIME,createdTime);
         return deviceJSON;
-    }
+    }*/
 
 
 }

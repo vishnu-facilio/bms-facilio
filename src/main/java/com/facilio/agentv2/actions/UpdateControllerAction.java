@@ -1,0 +1,55 @@
+package com.facilio.agentv2.actions;
+
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.ControllerApiV2;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
+public class UpdateControllerAction extends AgentActionV2 {
+
+    private static final Logger LOGGER = LogManager.getLogger(UpdateControllerAction.class.getName());
+
+    @NotNull
+    @Min(1)
+    private Long controllerId;
+//    @NotNull
+    private JSONObject toUpdate;
+
+    public Long getControllerId() {
+        return controllerId;
+    }
+
+    public void setControllerId(Long controllerId) {
+        this.controllerId = controllerId;
+    }
+
+    public JSONObject getToUpdate() {
+        return toUpdate;
+    }
+    public void setToUpdate(JSONObject toUpdate) {
+        this.toUpdate = toUpdate;
+    }
+
+    public String updateController() {
+        LOGGER.info(" updating conttollers");
+        try {
+            LOGGER.info("To update map->"+toUpdate);
+                if (ControllerApiV2.editController(getControllerId(),getToUpdate())) {
+                    setResult(AgentConstants.RESULT, SUCCESS);
+                } else {
+                    setResult(AgentConstants.RESULT, ERROR);
+                    setResult(AgentConstants.EXCEPTION, "Exception while updating controller");
+                }
+
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while updating controller",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResult(AgentConstants.RESULT,ERROR);
+        }
+        return SUCCESS;
+    }
+}

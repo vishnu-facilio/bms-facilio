@@ -894,6 +894,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					selectRecordBuilder.limit(100);
 				}
 				rows.addAll(selectRecordBuilder.get());
+				LOGGER.info(" select query ->"+selectRecordBuilder.toString());
 			} else {
 				LOGGER.info("Exception occurred table name or criteria are mandatory and can't be null ");
 			}

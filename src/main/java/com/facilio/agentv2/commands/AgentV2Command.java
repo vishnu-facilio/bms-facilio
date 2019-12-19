@@ -12,4 +12,8 @@ public abstract class AgentV2Command extends FacilioCommand {
         }
         return false;
     }
+
+    public boolean checkNumber(Number number){
+        return (number.intValue() > 0);
+    }
 }

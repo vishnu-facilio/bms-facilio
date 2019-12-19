@@ -129,4 +129,5 @@ public class AgentConstants
     public static final String CONFIGURED_DEVICES = "configuredDevices";
     public static final String DEVICE = "device";
     public static final String CONTROLLER_NAME = "controllerName";
+    public static final String CONTROLLER_TABLE = "Controllers";
 }

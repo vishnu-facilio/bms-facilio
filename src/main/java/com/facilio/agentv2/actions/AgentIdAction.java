@@ -5,14 +5,18 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
+import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class AgentIdAction extends AgentActionV2 {
@@ -35,7 +39,13 @@ public class AgentIdAction extends AgentActionV2 {
     public String devices(){
         LOGGER.info(" getting devices for ->"+getAgentId());
         try {
-                    setResult(AgentConstants.RESULT, FieldDeviceApi.getDevices(getAgentId(), null));
+            List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(getAgentId(), null), Device.class);
+            for (Device device : devices) {
+                LOGGER.info("device->"+device.getControllerProps());
+            }
+            List<Device> newDevices = new ArrayList<>();
+            newDevices.add(devices.get(0));
+            setResult(AgentConstants.DATA, devices);
         }catch (Exception e){
             LOGGER.info("Exception occurred while getting devices");
             setResult(AgentConstants.RESULT,ERROR);

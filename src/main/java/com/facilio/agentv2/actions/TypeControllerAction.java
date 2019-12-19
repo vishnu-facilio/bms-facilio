@@ -4,13 +4,16 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class TypeControllerAction extends ControllerActions
 {
@@ -53,7 +56,11 @@ public class TypeControllerAction extends ControllerActions
      */
     public String getControllerPoints(){ //TODO use pointId
         try {
-                setResult(AgentConstants.DATA, PointsAPI.getControllerPointsData(FacilioControllerType.valueOf(getControllerType()), getControllerId()));
+
+            List<Point> points = PointsAPI.getControllerPoints(FacilioControllerType.valueOf(getControllerType()), getControllerId());
+            JSONArray array = new JSONArray();
+            points.forEach(point -> array.add(point.toJSON()));
+            setResult(AgentConstants.DATA, array);
                 setResult(AgentConstants.RESULT, SUCCESS);
                 return SUCCESS;
         }catch (Exception e){

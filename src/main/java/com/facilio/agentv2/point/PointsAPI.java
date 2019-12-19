@@ -20,15 +20,20 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class PointsAPI {
@@ -150,6 +155,7 @@ public class PointsAPI {
             return pointsData;
         }
         ModuleCRUDBean bean = null;
+
         try {
             bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
             Criteria criteria = new Criteria();
@@ -170,12 +176,12 @@ public class PointsAPI {
                 }
             }
             if ((ids != null) && (!ids.isEmpty())) {
-
                     criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, MODULE));
             }
             if(deviceId > 0){
                 criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.DEVICE_ID), String.valueOf(deviceId),NumberOperators.EQUALS));
             }
+            criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.ID),"0",NumberOperators.GREATER_THAN));
             List<FacilioField> fields = FieldFactory.getPointFields();
             FacilioContext context = getPointTypeBasedConditionAndFields(controllerType);
             if (context != null) {
@@ -187,6 +193,7 @@ public class PointsAPI {
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }
+        LOGGER.info(" point data ->"+pointsData);
         return pointsData;
     }
 
@@ -281,7 +288,7 @@ public class PointsAPI {
         return false;
     }
 
-    public static Point getPoint(String pointName, long agentId, long controllerId, FacilioControllerType controllerType) {
+    /*public static Point getPoint(String pointName, List<Long> pointId, long controllerId, FacilioControllerType controllerType) {
         try {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
             Criteria criteria = new Criteria();
@@ -306,7 +313,7 @@ public class PointsAPI {
         }
         return null;
     }
-
+*/
     public static void configureControllerAndPoints(List<Long> pointIds, FacilioControllerType controllerType) throws Exception {
         LOGGER.info("configure controller and points ");
         if ((pointIds != null) && (!pointIds.isEmpty())) {
@@ -342,13 +349,13 @@ public class PointsAPI {
                 pointIds.add(point.getId());
             }
 
-            return configurePoint(pointIds,controller.getId());
+            return configurePoint(pointIds,controller.getId(),controller.getControllerType());
         }else {
             throw new Exception("points can't be null or empty");
         }
     }
 
-    public static boolean configurePoint(List<Long> ids,Long controllerId) throws Exception {
+    public static boolean configurePoint(List<Long> ids, long controllerId, int controllerType) throws Exception {
             if ((ids != null)&&( ! ids.isEmpty()) ) {
                 FacilioChain editChain = TransactionChainFactory.getEditPointChain();
                 FacilioContext context = editChain.getContext();
@@ -398,17 +405,18 @@ public class PointsAPI {
     }
 
 
-    public static long getAgentPointsCount(long agentId, long controllerId) {
+    public static long getPointsCount(long controllerId, long deviceId) {
         try {
             Criteria criteria = new Criteria();
-            /*if (agentId > 0L) {
-                LOGGER.info(" field - " + FIELD_MAP.get(AgentConstants.AGENT_ID));
-                criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
-            }*/
             if (controllerId > 0L) {
                 LOGGER.info(FIELD_MAP.get(AgentConstants.CONTROLLER_ID));
                 criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.CONTROLLER_ID), String.valueOf(controllerId), NumberOperators.EQUALS));
             }
+            if (deviceId > 0L) {
+                LOGGER.info(FIELD_MAP.get(AgentConstants.CONTROLLER_ID));
+                criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.DEVICE_ID), String.valueOf(deviceId), NumberOperators.EQUALS));
+            }
+            criteria.addAndCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.ID), String.valueOf(0),NumberOperators.GREATER_THAN));
             return getPointsCount(criteria);
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting agent points count", e);
@@ -436,7 +444,7 @@ public class PointsAPI {
         List<Map<String, Object>> records = getDevicePointsAsMapList(deviceId, type);
         if( ! records.isEmpty()) {
             try {
-                return FieldUtil.getAsBeanListFromMapList(records, getPointType(FacilioControllerType.valueOf(type)));
+                return getPointFromRows(records);
             }catch (Exception e)
             {
                 LOGGER.info("Exception occurred while making point"+e.getMessage());
@@ -491,5 +499,65 @@ public class PointsAPI {
                 throw new Exception(" No implementation for "+type.asString()+" point");
 
         }
+    }
+
+    public static boolean deletePoints(List<Long> pointIds){
+        try{
+            return deletePoints(pointIds);
+        }catch (Exception e){
+            LOGGER.info("Exception while deleting points");
+        }
+        return false;
+    }
+    public static boolean deletePoint(long pointId){
+        if(pointId > 0){
+            return deletePoints(Collections.singletonList(pointId));
+        }else {
+            LOGGER.info("Exception while deleting point, pointId cant be less than 1");
+        }
+        return false;
+    }
+
+    public static boolean executeDeletePoints(List<Long> pointIds) throws SQLException {
+        //TODO -
+        if((pointIds != null) && ( ! pointIds.isEmpty()))
+        {
+            GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                    .table(MODULE.getTableName())
+                    .fields(FieldFactory.getPointFields())
+                    .andCondition(CriteriaAPI.getIdCondition(pointIds,MODULE));
+            Map<String,Object> toUpdateMap = new HashMap<>();
+            toUpdateMap.put(AgentConstants.DELETED_TIME,System.currentTimeMillis());
+            int rowsAffected = builder.update(toUpdateMap);
+            if(rowsAffected>0){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean setValue(long pointid,FacilioControllerType type,Object value) throws Exception {
+        Point point = getpoint(pointid, type);
+        LOGGER.info(" point ->"+point);
+        if(point != null){
+            LOGGER.info(" point's cid ->"+point.getControllerId());
+            point.setValue(value);
+            ControllerMessenger.setValue(point);
+            return true;
+        }
+        return false;
+    }
+
+    private static Point getpoint(long pointid, FacilioControllerType type) {
+        try {
+            List<Map<String, Object>> pointData = getPointData(Collections.singletonList(pointid), type);
+            List<Point> points = getPointFromRows(pointData);
+            if( ! points.isEmpty()){
+                return points.get(0);
+            }
+        }catch (Exception e){
+
+        }
+        return null;
     }
 }
