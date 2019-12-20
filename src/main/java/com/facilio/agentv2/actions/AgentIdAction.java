@@ -15,6 +15,7 @@ import org.json.simple.JSONArray;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,25 +57,39 @@ public class AgentIdAction extends AgentActionV2 {
 
 
     public String pingAgent() {
-            if (AgentMessenger.pingAgent(getAgentId())) {
-                setResult(AgentConstants.RESULT, SUCCESS);
-                return SUCCESS;
-            } else {
-                setResult(AgentConstants.EXCEPTION, "Exception while Sending Ping ");
-                setResult(AgentConstants.RESULT, ERROR);
-            }
-        return SUCCESS;
+        try {
+            AgentMessenger.pingAgent(getAgentId());
+            setResult(AgentConstants.RESULT, SUCCESS);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+            return SUCCESS;
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while pingAgent",e);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResult(AgentConstants.RESULT,ERROR);
+            return SUCCESS;
+        }
     }
 
     public String getAgentUsingId() {
+        try {
             FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
             if (agent != null) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 setResult(AgentConstants.DATA, agent.toJSON());
+                setResponseCode(HttpURLConnection.HTTP_OK);
             } else {
                 setResult(AgentConstants.RESULT, ERROR);
                 setResult(AgentConstants.EXCEPTION, "no such agent");
+                setResponseCode(HttpURLConnection.HTTP_NO_CONTENT);
+                return ERROR;
             }
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while getting agent ->"+agentId+"  ,",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            return ERROR;
+        }
         return SUCCESS;
 
     }

@@ -1,0 +1,111 @@
+version: 1
+variables:
+  api_url: "http://localhost:8080"
+  mailId: "workwithchai@gmail.com"
+  pass : "Valli123"
+transactions:
+  - id: "AgentApis"
+    variables:
+      agentData: |
+        {
+         "deviceDetails":null,
+         "lastModifiedTime":111111111,
+         "displayName":"facilioAgent",
+         "numberOfControllers":0,
+         "type":null,
+         "lastDataReceivedTime":111111111,
+         "version":null,
+         "writable":null,
+         "name":"facilio_agent_1",
+         "connectionStatus":true,
+         "siteId":-1,
+         "Deleted_Time":-1,
+         "createdTime":111111111,
+         "interval":15,
+         "id":1,
+         "state":1}
+      deviceData: |
+        {
+
+            "agentId":3,
+            "controllerProps":{
+                "identifier":"5_#_6_#_2",
+                "agentId":3,
+                "lastModifiedTime":1575882097078,
+                "ipAddress":"4.4.4.4",
+                "active":true,
+                "availablePoints":11,
+                "controllerProps":{
+                },
+                "type":5,
+                "portNumber":0,
+                "writable":true,
+                "slaveId":2,
+                "lastDataSentTime":1575882097078,
+                "name":"miscController",
+                "createdTime":1575882097078,
+                "interval":15,
+                "networkId":6,
+                "deletedTime":-1
+            },
+            "createdTime":1575882097617,
+            "id":5,
+            "name":"5_#_6_#_2",
+            "orgId":1,
+            "siteId":0,
+            "type":5
+
+        }
+    steps:
+        - id: "authenticate"
+          request:
+            method: POST
+            endpoint: "{{ var.api_url }}/api/integ/faciliosubmit"
+            headers:
+              Content-Type: "application/json"
+            body: |
+              {
+               "username":"{{  var.mailId  }}",
+               "password":"{{  var.pass  }}"
+               }
+          expect:
+            code: 200
+            body:
+              type: "json"
+              exact: false
+              content: |
+                {
+                    "jsonresponse": {
+                        "token": "eyJ0e",
+                        "username": "{{  var.mailId  }}"
+                    }
+                }
+          export:
+            auth_token: "response.body.jsonresponse.token"
+
+        - id: "getAgentList"
+          request:
+            method: GET
+            endpoint: "{{ var.api_url }}/api/v2/device/list"
+            headers:
+              Authorization: "Bearer {{authenticate.auth_token}}"
+          expect:
+            code: 200
+            body:
+              type: "json"
+              exact: false
+              content: |
+                {
+                  "responseCode":0,
+                  "result":
+                    {
+                      "data":
+                        [
+                          {{var.deviceData}}
+                        ]
+                    }
+                }
+          export:
+            agentId: "response.body.result.data[0].id"
+
+

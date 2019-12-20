@@ -9,6 +9,7 @@ import com.facilio.agentv2.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 
 import java.util.Map;
@@ -80,13 +81,13 @@ public abstract class Point extends FacilioPoint{
         pointJSON.put(AgentConstants.CREATED_TIME,getCreatedTime());
         pointJSON.put(AgentConstants.MAPPED_TIME,getMappedTime());
         pointJSON.put(AgentConstants.UNIT,getUnit());
-        if(getConfigureStatus() != null ){
-            pointJSON.put(AgentConstants.CONFIGURE_STATUS,getConfigureStatus().getIndex());
+        if(getConfigureStatusEnum() != null ){
+            pointJSON.put(AgentConstants.CONFIGURE_STATUS,getConfigureStatus());
         }else {
             setConfigureStatus(PointEnum.ConfigureStatus.UNCONFIGURED.getIndex());
         }
-        if(getSubscribestatus() != null ){
-            pointJSON.put(AgentConstants.SUBSCRIBE_STATUS,getSubscribestatus().getIndex());
+        if(getSubscribestatusEnum() != null ){
+            pointJSON.put(AgentConstants.SUBSCRIBE_STATUS,getSubscribestatus());
         }else {
             setConfigureStatus(PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex());
         }
@@ -122,12 +123,16 @@ public abstract class Point extends FacilioPoint{
     public long getMappedTime() { return mappedTime; }
     public void setMappedTime(long mappedTime) { this.mappedTime = mappedTime; }
 
-    public PointEnum.ConfigureStatus getConfigureStatus() { return configureStatus; }
+    public int getConfigureStatus() { return configureStatus.getIndex(); }
+    @JSON(serialize = false)
+    public PointEnum.ConfigureStatus getConfigureStatusEnum() { return configureStatus; }
    /* @JsonIgnore
     public void setConfigureStatus(PointEnum.ConfigureStatus configureStatus) { this.configureStatus = configureStatus; }*/
     public void setConfigureStatus(int configureStatus) { this.configureStatus = PointEnum.ConfigureStatus.valueOf(configureStatus); }
 
-    public PointEnum.SubscribeStatus getSubscribestatus() { return subscribestatus; }
+    public int getSubscribestatus() { return subscribestatus.getIndex(); }
+    @JSON(serialize = false)
+    public PointEnum.SubscribeStatus getSubscribestatusEnum() { return subscribestatus; }
    /* @JsonIgnore
     public void setSubscribestatus(PointEnum.SubscribeStatus subscribestatus) { this.subscribestatus = subscribestatus; }*/
     public void setSubscribestatus(int subscribestatus) { this.subscribestatus = PointEnum.SubscribeStatus.valueOf(subscribestatus); }

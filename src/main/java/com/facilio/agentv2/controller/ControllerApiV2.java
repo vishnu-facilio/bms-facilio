@@ -14,6 +14,7 @@ import com.facilio.agentv2.modbustcp.ModbusTcpController;
 import com.facilio.agentv2.niagara.NiagaraController;
 import com.facilio.agentv2.opcua.OpcUaController;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaController;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -216,6 +217,7 @@ public class ControllerApiV2 {
      * @return
      */
     private static Map<String, Controller> getControllersFromDb(String controllerIdentifier, long agentId, FacilioControllerType controllerType,long controllerId) {
+        LOGGER.info(controllerType+" controller identifier ->"+controllerIdentifier);
         Map<String, Controller> controllerMap = new HashMap<>();
         try {
             FacilioChain getControllerChain = getFetchControllerChain(controllerType);
@@ -240,6 +242,7 @@ public class ControllerApiV2 {
 
             if( (controllerIdentifier != null) && ( ! controllerIdentifier.isEmpty() ) ){
                 List<Condition> conditions = getControllerCondition(controllerIdentifier, controllerType);
+                LOGGER.info(" controller conditions ->"+conditions.size());
                 if(! conditions.isEmpty()) {
                     criteria.addAndConditions(conditions);
                     context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
@@ -502,14 +505,51 @@ public class ControllerApiV2 {
         return false;
     }
 
-    public static void resetController(Long controllerId) {
+    public static boolean resetController(Long controllerId) throws Exception {
         FacilioChain chain = TransactionChainFactory.resetControllerChain();
         FacilioContext context = chain.getContext();
         context.put(AgentConstants.CONTROLLER_ID,controllerId);
-        try {
-            chain.execute();
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while reset-controller ",e);
+        chain.execute();
+        return true;
+    }
+
+    public static boolean checkForController(long controllerId) throws Exception {
+            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                    .table(MODULE.getTableName())
+                    .select(new ArrayList<>())
+                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(MODULE))
+                    .andCondition(CriteriaAPI.getIdCondition(controllerId, MODULE));
+        List<Map<String, Object>> results = builder.get();
+        if( ! results.isEmpty()){
+            return (((Number)results.get(0).get(AgentConstants.ID)).intValue() > 0);
         }
+        return false;
+    }
+
+    public static void resetConfiguredPoints(Long controllerId) throws Exception {
+        if(checkForController(controllerId)){
+            PointsAPI.resetConfiguredPoints(controllerId);
+        }
+
+    }
+
+    public static boolean checkForFieldDeviceController(long deviceId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(MODULE.getTableName())
+                .select(new ArrayList<>())
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT,FieldFactory.getIdField(MODULE))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getField(AgentConstants.DEVICE_ID,"DEVICE_ID",MODULE,FieldType.NUMBER), String.valueOf(deviceId),NumberOperators.EQUALS));
+        List<Map<String, Object>> records = builder.get();
+        if( ! records.isEmpty()){
+            LOGGER.info(" resord "+records);
+            long count = (long) records.get(0).get(AgentConstants.ID);
+            LOGGER.info(" select device controller query -> "+builder.toString());
+            return (count > 0);
+        }
+        else{
+            LOGGER.info(" no rows selected ");
+        }
+        return false;
+
     }
 }

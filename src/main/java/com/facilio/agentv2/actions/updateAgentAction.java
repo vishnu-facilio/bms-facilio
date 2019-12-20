@@ -1,30 +1,19 @@
 package com.facilio.agentv2.actions;
 
+import com.facilio.agentv2.AgentAction;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.net.HttpURLConnection;
 
-public class updateAgentAction extends IdsAction {
+public class updateAgentAction extends AgentAction {
 
     private static final Logger LOGGER = LogManager.getLogger(updateAgentAction.class.getName());
 
-
-    public Long getAgentId() {
-        return agentId;
-    }
-
-    public void setAgentId(Long agentId) {
-        this.agentId = agentId;
-    }
-
-    @NotNull
-    @Min(value = 1,message = "agentId can't be less than 1")
-    private Long agentId;
 
     public JSONObject getToUpdate() {
         return toUpdate;
@@ -40,12 +29,17 @@ public class updateAgentAction extends IdsAction {
 
     public String edit() {
         try {
-                setResult(AgentConstants.RESULT, AgentApiV2.editAgent(AgentApiV2.getAgent(getAgentId()),getToUpdate()));
+            if (AgentApiV2.editAgent(AgentApiV2.getAgent(getAgentId()),getToUpdate())) {
                 setResult(AgentConstants.RESULT, SUCCESS);
+            }else {
+                setResponseCode(HttpURLConnection.HTTP_NOT_MODIFIED);
+                setResult(AgentConstants.RESULT,ERROR);
+            }
         }catch (Exception e){
             LOGGER.info("Exception occurred while editing agent"+e.getMessage());
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             setResult(AgentConstants.RESULT,ERROR);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }

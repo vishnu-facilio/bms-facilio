@@ -188,4 +188,20 @@ public static boolean discoverPoints(long controllerId){
         IotData iotData = constructNewIotMessage(Collections.singletonList(point),FacilioCommand.SET);
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
+
+    public static void deletePoints(List<Point> points) throws Exception {
+        IotData iotData = constructNewIotMessage(points,FacilioCommand.REMOVE);
+        MessengerUtil.addAndPublishNewAgentData(iotData);
+    }
+
+    public static void unConfigurePoints(List<Point> points) throws Exception {
+        IotData iotData = constructNewIotMessage(points,FacilioCommand.REMOVE);
+        MessengerUtil.addAndPublishNewAgentData(iotData);
+    }
+
+    public static void subscribeUnscbscribePoints(List<Point> points, FacilioCommand command) throws Exception {
+        LOGGER.info(" iot message to "+command.toString());
+        IotData iotData = constructNewIotMessage(points,command);
+        MessengerUtil.addAndPublishNewAgentData(iotData);
+    }
 }

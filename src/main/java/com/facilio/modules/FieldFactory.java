@@ -513,7 +513,6 @@ public class FieldFactory {
       	return getField(AgentKeys.DELETED_TIME,"DELETED_TIME",module,FieldType.NUMBER);
     }
 
-
 	public static List<FacilioField> getAgentControllerFields(){
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getAgentControllerModule();
@@ -3516,7 +3515,7 @@ public class FieldFactory {
 
 	public static FacilioField getControllerIdField(FacilioModule module) {
 		FacilioField controllerId = new FacilioField();
-		controllerId.setName("controllerId");
+		controllerId.setName(AgentConstants.CONTROLLER_ID);
 		controllerId.setDataType(FieldType.NUMBER);
 		controllerId.setColumnName("CONTROLLER_ID");
 		if (module != null) {
@@ -5551,6 +5550,7 @@ public class FieldFactory {
         fields.add(getField(AgentConstants.CREATED_TIME, "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.MAPPED_TIME, "MAPPED_TIME", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.UNIT, "UNIT", module, FieldType.NUMBER));
+        fields.add(getNewDeletedTimeField(module));
 		SystemEnumField configureStatusfield = (SystemEnumField) getField(AgentConstants.CONFIGURE_STATUS, "CONFIGURE_STATUS", module, FieldType.SYSTEM_ENUM);
 		configureStatusfield.setEnumName("ConfigureStatus");
 		fields.add(configureStatusfield);
@@ -5568,8 +5568,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getNiagaraPointModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
-		fields.add(getControllerIdField(module));
-        fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
+		fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 		return fields;
 	}
 
@@ -5577,7 +5576,9 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getOPCXmlDAPointModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
+/*
 		fields.add(getControllerIdField(module));
+*/
         fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 		return fields;
 	}
@@ -5586,7 +5587,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getMiscPointModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
-		fields.add(getControllerIdField(module));
+		//fields.add(getControllerIdField(module));
 		fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 		return fields;
 	}
@@ -5596,7 +5597,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getOPCUAPointModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
-		fields.add(getControllerIdField(module));
+		//fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.NAMESPACE, "NAME_SPACE", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.IDENTIFIER, "IDENTIFIER", module, FieldType.STRING));
 		return fields;
@@ -5606,7 +5607,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getModbusTcpPointModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
-		fields.add(getControllerIdField(module));
+		//fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.FUNCTION_CODE, "FUNCTION_CODE", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.MODBUS_DATA_TYPE, "MODBUS_DATA_TYPE", module, FieldType.NUMBER));
@@ -5616,7 +5617,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getModbusRtuPointModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
-		fields.add(getControllerIdField(module));
+		//fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.FUNCTION_CODE, "FUNCTION_CODE", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.MODBUS_DATA_TYPE, "MODBUS_DATA_TYPE", module, FieldType.NUMBER));
@@ -5628,7 +5629,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getBACnetIPPointModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
-		fields.add(getControllerIdField(module));
+		//fields.add(getControllerIdField(module));
         fields.add(getField(AgentConstants.INSTANCE_NUMBER, "INSTANCE_NUMBER", module, FieldType.NUMBER));
         fields.add(getField(AgentConstants.INSTANCE_TYPE, "INSTANCE_TYPE", module, FieldType.NUMBER));
 		return fields;

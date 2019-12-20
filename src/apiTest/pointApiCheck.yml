@@ -1,0 +1,376 @@
+version: 1
+variables:
+  api_url: "http://localhost:8080"
+  mailId: "workwithchai@gmail.com"
+  pass : "Valli123"
+transactions:
+  - id: "AgentApis"
+    variables:
+      agentData : |
+        {
+         "deviceDetails":null,
+         "lastModifiedTime":111111111,
+         "displayName":"facilioAgent",
+         "numberOfControllers":0,
+         "type":null,
+         "lastDataReceivedTime":111111111,
+         "version":null,
+         "writable":null,
+         "name":"facilio_agent_1",
+         "connectionStatus":true,
+         "siteId":-1,
+         "Deleted_Time":-1,
+         "createdTime":111111111,
+         "interval":15,
+         "id":1,
+         "state":1}
+      controllerData: |
+        {
+           "agentId":-1,
+           "lastModifiedTime":111111111,
+           "networkNumber":0,
+           "ipAddress":"1.1.1.1",
+           "active":true,
+           "availablePoints":0,
+           "instanceNumber":1,
+           "type":1,
+           "controllerProps":"controllerProps",
+           "writable":false,
+           "lastDataSentTime":-1,
+           "name":"Facilio_BacIp_Controller_1",
+           "createdTime":111111111,
+           "interval":900000,
+           "id":1,
+           "deletedTime":-1
+         }
+      pointData: |
+         {
+             "resourceId":null,
+             "displayName":null,
+             "description":null,
+             "subscribeStatus":1,
+             "deviceName":"facilioDevice",
+             "deviceId":13,
+             "orgId":1,
+             "writable":false,
+             "subscribed":false,
+             "mappedTime":0,
+             "inUse":false,
+             "createdTime":1576089183601,
+             "id":176,
+             "pseudo":false,
+             "fieldId":null,
+             "controllerId":0,
+             "thresholdJson":{
+             },
+             "dataType":0,
+             "pointType":1,
+             "unit":0,
+             "name":"FAC_PHASE_VOLTAGE_R",
+             "categoryId":null,
+             "configureStatus":2
+         }
+    steps:
+      - id: "authenticate"
+        request:
+          method: POST
+          endpoint: "{{ var.api_url }}/api/integ/faciliosubmit"
+          headers:
+            Content-Type: "application/json"
+          body: |
+            {
+             "username":"{{  var.mailId  }}",
+             "password":"{{  var.pass  }}"
+             }
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                  "jsonresponse": {
+                      "token": "eyJ0e",
+                      "username": "{{  var.mailId  }}"
+                  }
+              }
+        export:
+          auth_token: "response.body.jsonresponse.token"
+
+      - id: "getAgentList"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/agent/list"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                "responseCode":0,
+                "result":
+                  {
+                    "result":"success",
+                    "data":
+                      [
+                        {{var.agentData}}
+                      ]
+                  }
+              }
+
+
+        export:
+          agentId: "response.body.result.data[0].id"
+
+      - id: "getControllerList"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/controller/list?agentId={{getAgentList.agentId}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+
+                  "responseCode":0,
+                  "result":{
+                      "data":[{{var.controllerData}}]
+                  }
+              }
+        export:
+          controllerId: "response.body.result.data[0].id"
+          controllerType: "response.body.result.data[0].type"
+
+      - id: "listPoints"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/point/list?controllerId={{getControllerList.controllerId}}&controllerType={{getControllerList.controllerType}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                  "responseCode":0,
+                  "result":{
+                      "data":[{{var.pointData}}]
+                  }
+              }
+        export:
+           pointId: "response.body.result.data[0].id"
+           deviceId: "response.body.result.data[0].deviceId"
+           type: "response.body.result.data[0].pointType"
+
+      - id: "set"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/point/set?pointId={{listPoints.pointId}}&controllerType={{getControllerList.controllerType}}&value=9.9"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"success"}}
+
+
+
+      - id: "list"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/point/list?controllerId={{getControllerList.controllerId}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                  "responseCode":0,
+                  "result":{
+                      "data":[{{var.pointData}}]
+                  }
+              }
+
+
+      - id: "count all points"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/point/count"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"success","data":48}}
+
+
+      - id: "count controller points"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/point/count?controllerId={{getControllerList.controllerId}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"success","data":48}}
+
+
+      - id: "listDevicePoint"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/point/list?deviceId={{listPoints.deviceId}}&controllerType={{listPoints.type}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                  "responseCode":0,
+                  "result":{
+                      "data":[{{var.pointData}}]
+                  }
+              }
+        export:
+          type: "response.body.result.data[0].pointType"
+          pointId: "response.body.result.data[0].id"
+
+      - id: "getControllerPoints"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/point/list?controllerType={{listPoints.type}}&controllerId={{getControllerList.controllerId}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                  "responseCode":0,
+                  "result":{
+                      "data":[{{var.pointData}}]
+                  }
+              }
+
+      - id: "discover"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/point/discover?controllerId={{getControllerList.controllerId}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"error"}}
+
+
+      - id: "unconfigure"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/point/unconfigure"
+          body: |
+            {
+            	"recordIds":[{{listPoints.pointId}}],
+            	"controllerType":1
+            }
+          headers:
+            Content-Type: "application/json"
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"error"}}
+
+
+      - id: "remove"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/point/remove"
+          body: |
+            {
+              "recordIds":[{{listPoints.pointId}}],
+              "controllerType":1
+            }
+          headers:
+            Content-Type: "application/json"
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"error"}}
+
+
+      - id: "subscribe"
+        request:
+          method: POST
+          endpoint: "{{ var.api_url }}/api/v2/point/subscribe"
+          body: |
+            {
+              "recordIds":[{{listPoints.pointId}}],
+              "controllerType":1
+            }
+          headers:
+            Content-Type: "application/json"
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"error"}}
+
+      - id: "unsubscribe"
+        request:
+          method: POST
+          endpoint: "{{ var.api_url }}/api/v2/point/unsubscribe"
+          body: |
+            {
+              "recordIds":[{{listPoints.pointId}}],
+              "controllerType":1
+            }
+          headers:
+            Content-Type: "application/json"
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"error"}}

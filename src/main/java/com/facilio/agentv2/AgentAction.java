@@ -9,7 +9,9 @@ import com.facilio.agentv2.point.PointsAPI;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,13 +21,21 @@ public class AgentAction extends AgentActionV2 {
 
 
     public String listAgents() {
-        List<FacilioAgent> agents = AgentApiV2.getAgents();
-        JSONArray jsonArray = new JSONArray();
-        for (FacilioAgent agent : agents) {
-            jsonArray.add(agent.toJSON());
+        try {
+            List<FacilioAgent> agents = AgentApiV2.getAgents();
+            JSONArray jsonArray = new JSONArray();
+            for (FacilioAgent agent : agents) {
+                jsonArray.add(agent.toJSON());
+            }
+            setResult(AgentConstants.DATA, jsonArray);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResult(AgentConstants.RESULT, SUCCESS);
+        }catch (Exception e){
+            LOGGER.info("Exception while getting agent list",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResult(AgentConstants.RESULT,ERROR);
         }
-        setResult(AgentConstants.DATA, jsonArray);
-        setResult(AgentConstants.RESULT, SUCCESS);
         return SUCCESS;
     }
 
@@ -37,7 +47,16 @@ public class AgentAction extends AgentActionV2 {
 
 
     public String getAgentCount() {
-        setResult(AgentConstants.RESULT, AgentApiV2.getAgentCount());
+        try {
+            setResult(AgentConstants.DATA, AgentApiV2.getAgentCount());
+            setResponseCode(HttpURLConnection.HTTP_OK);
+            setResult(AgentConstants.RESULT,SUCCESS);
+        }catch (Exception e){
+            LOGGER.info("Exception while getting agentCount->",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResult(AgentConstants.RESULT,ERROR);
+        }
         return SUCCESS;
     }
 
@@ -198,7 +217,25 @@ public class AgentAction extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String getIdentifier() {
+        return identifier;
+    }
 
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    private String identifier;
+    public String getControllerUsingIdentifier(){
+        try {
+            setResult("DATA", ControllerApiV2.getControllerFromDb(getIdentifier(), getAgentId(), FacilioControllerType.BACNET_IP));
+        }catch (Exception e){
+            LOGGER.info("Exception while getting controller",e);
+            setResult(AgentConstants.RESULT,new JSONObject());
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+        }
+            return SUCCESS;
+    }
 
     //__________________________________________________
     // general utilities

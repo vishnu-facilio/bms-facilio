@@ -80,17 +80,13 @@ public class AgentMessenger {
 
 
 
-    public static boolean pingAgent(long agentId){
-        try {
-            if( (agentId > 0) ){
+    public static void pingAgent(long agentId) throws Exception {
+        if( (agentId > 0) ){
                     IotData pingData = constructAgentPing(agentId);
                     MessengerUtil.addAndPublishNewAgentData(pingData);
-                    return true;
-                }
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while sending PING",e);
+        }else {
+            throw new Exception(" agentId cant be less than 1");
         }
-        return false;
     }
 
     private static IotData constructAgentPing(long agentId) throws Exception {

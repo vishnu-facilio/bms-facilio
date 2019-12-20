@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigurePointCommand extends FacilioCommand {
@@ -20,10 +21,17 @@ public class ConfigurePointCommand extends FacilioCommand {
             Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
             if(containdAndNotNull(context,AgentConstants.POINTS)){
                 List<Point> points = (List<Point>) context.get(AgentConstants.POINTS);
+                List<Point> pointsToConfigure = new ArrayList<>();
+                LOGGER.info(" controller id "+controller.getId());
                 for (Point point : points) {
-                    point.setControllerId(controller.getId());
+                    if((point.getControllerId() < 1) || (point.getControllerId() == controller.getId()) ){
+                        point.setControllerId(controller.getId());
+                        pointsToConfigure.add(point);
+                    }else {
+                        LOGGER.info(" point already configured ");
+                    }
                 }
-                PointsAPI.configurePoint(points, controller);
+                PointsAPI.configurePoint(pointsToConfigure, controller);
             }
         }else {
             throw new Exception(AgentConstants.RECORD_IDS+", "+AgentConstants.TYPE+" missing from context->"+context);

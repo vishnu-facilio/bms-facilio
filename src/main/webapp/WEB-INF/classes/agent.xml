@@ -52,6 +52,9 @@
                          class="com.facilio.interceptors.FacilioBeanValidationInterceptor"/>
             <interceptor-stack name="validator">
                 <interceptor-ref name="defaultStack" />
+                <interceptor-ref name="json">
+                    <param name="enableSMD">true</param>
+                </interceptor-ref>
                 <interceptor-ref name="authinterceptor" />
                 <interceptor-ref name="beanValidation"/>
                 <interceptor-ref name="datasourceinterceptor" />
@@ -69,7 +72,7 @@
     </package>
 
 
-    <package name="AgentApiV2" namespace="/api/v2/agent" extends="agent,v2Api">
+    <package name="AgentApiV2" namespace="/api/v2/agent" extends="agent">
 
 <!--1-->     <action name="list" class="com.facilio.agentv2.AgentAction" method="listAgents"> <!--DONE-->
              </action>
@@ -108,7 +111,7 @@
             </action>
     </package>
 
-    <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent,v2Api">
+    <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent">
 
 <!--1-->    <action name="count" class="com.facilio.agentv2.AgentAction" method="getControllerCount"> <!--DONE-->
             </action>
@@ -132,9 +135,12 @@
             <action name="reset" class="com.facilio.agentv2.actions.ControllerActions" method="resetController">
             </action>
 
+            <action name="getControllerIdentifier" class="com.facilio.agentv2.AgentAction" method="getControllerUsingIdentifier">
+            </action> <!--testing purpose-->
+
     </package>
 
-    <package name="PointsApiV2" namespace="/api/v2/point" extends="agent,v2Api">
+    <package name="PointsApiV2" namespace="/api/v2/point" extends="agent">
 
         <action name="list"  class="com.facilio.agentv2.AgentAction" method="listPoints"> <!--DONE--> <!--DONE-->
         </action>
@@ -157,19 +163,23 @@
         <action name="configure"  class="com.facilio.agentv2.actions.controllerTypeIdsAction" method="configureController">
         </action>
 
-        <action name="unConfigure"  class="com.facilio.agentv2.actions.PointIdAction" method="unConfigurePoint"> <!--DONE-->
+        <action name="unconfigure"  class="com.facilio.agentv2.actions.controllerTypeIdsAction" method="unConfigurePoints"> <!--DONE-->
+        </action>
+        <action name="subscribe"  class="com.facilio.agentv2.actions.controllerTypeIdsAction" method="subscribePoints"> <!--DONE-->
+        </action>
+        <action name="unsubscribe"  class="com.facilio.agentv2.actions.controllerTypeIdsAction" method="unsubscribePoints"> <!--DONE-->
         </action>
 
-        <action name="discoverPoints"  class="com.facilio.agentv2.actions.ControllerActions" method="discoverPoints"> <!--DONE-->
+        <action name="discover"  class="com.facilio.agentv2.actions.ControllerActions" method="discoverPoints"> <!--DONE-->
         </action>
 
-        <action name="removePoints"  class="com.facilio.agentv2.actions.IdsAction" method="removePoints"> <!--DONE-->
+        <action name="remove"  class="com.facilio.agentv2.actions.controllerTypeIdsAction" method="removePoints"> <!--DONE-->
         </action>
 
 
     </package>
 
-    <package name="DeviceApiV2" namespace="/api/v2/device" extends="agent,v2Api">
+    <package name="DeviceApiV2" namespace="/api/v2/device" extends="agent">
         <action name="list"  class="com.facilio.agentv2.actions.AgentIdAction" method="devices"> <!--DONEDONE-->
         </action>
 

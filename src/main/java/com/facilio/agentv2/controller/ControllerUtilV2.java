@@ -176,11 +176,10 @@ public class ControllerUtilV2
         return false;
     }
 
-    public static Map<Long, Controller> fieldDeviceToController(long agentId, List<Device> devices) throws Exception{
+    public static Map<Long, Controller> fieldDeviceToController(long agentId, Device device) throws Exception{
         Controller controller ;
         //List<Long> deviceId = new ArrayList<>();
         Map<Long,Controller> deviceIdControllerMap = new HashMap<>();
-        for (Device device : devices) {
             LOGGER.info("device are " + device);
             JSONObject controllerProps = device.getControllerProps();
             LOGGER.info(" controller props JSON " + controllerProps);
@@ -190,11 +189,12 @@ public class ControllerUtilV2
                     Controller controllerFromDb = ControllerApiV2.getControllerFromDb(controller.makeIdentifier(),agentId,FacilioControllerType.valueOf(controller.getControllerType()));
                             //getController(agentId, controller.makeIdentifier(), FacilioControllerType.valueOf(controller.getControllerType()));
                     if (controllerFromDb != null) {
+                        LOGGER.info(" controller present ");
                         deviceIdControllerMap.put(device.getId(),controllerFromDb);
                         /*controller.setId(controllerFromDb.getId());
                         ControllerApiV2.updateController(controller);*/
-                        continue;
                     } else {
+                        LOGGER.info(" making new controller ");
                         controller.setActive(true);
                         controller.setDataInterval(900000);
                         controller.setAvailablePoints(0);
@@ -211,7 +211,7 @@ public class ControllerUtilV2
             } else {
                 throw new Exception("controllerProps can't be null or empty -> " + controllerProps );
             }
-        }
+
         LOGGER.info(" device id controller map is ->"+deviceIdControllerMap);
         return deviceIdControllerMap;
     }

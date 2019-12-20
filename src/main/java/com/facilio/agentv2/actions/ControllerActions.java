@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.net.HttpURLConnection;
 
 public class ControllerActions extends AgentActionV2 {
 
@@ -68,9 +69,11 @@ public class ControllerActions extends AgentActionV2 {
         try{
             ControllerApiV2.resetController(getControllerId());
             setResult(AgentConstants.RESULT,SUCCESS);
+            setResponseCode( HttpURLConnection.HTTP_OK);
             return SUCCESS;
         }catch (Exception e){
             LOGGER.info("Exception occurred while reset controller");
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
         }
         setResult(AgentConstants.RESULT,ERROR);

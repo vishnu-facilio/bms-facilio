@@ -5,11 +5,11 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
-import com.facilio.agentv2.point.PointsAPI;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import javax.validation.constraints.NotNull;
+import java.net.HttpURLConnection;
 import java.util.List;
 
 public class IdsAction extends AgentActionV2
@@ -76,13 +76,16 @@ public class IdsAction extends AgentActionV2
                 LOGGER.info(" deletion status->"+isdeleted);
                 if (isdeleted) {
                     setResult(AgentConstants.RESULT, SUCCESS);
+                    setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
                 }
+                setResponseCode(HttpURLConnection.HTTP_NOT_MODIFIED);
                 setResult(AgentConstants.RESULT, ERROR);
                 return SUCCESS;
             } else {
                 setResult(AgentConstants.EXCEPTION, "agentIds can't be empty");
                 setResult(AgentConstants.RESULT, ERROR);
+                setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
                 LOGGER.info("Exception occurred while deleting agent and agentIds can't be empty");
             }
         }catch (Exception e){
@@ -127,19 +130,8 @@ public class IdsAction extends AgentActionV2
         return SUCCESS;
     }
 
-    public String removePoints(){
-        try{
-            List<Long> pointIds = getRecordIds();
-            if( PointsAPI.deletePoints(pointIds)){
-               // setResponseCode();
-                return SUCCESS;
-            }
-        }catch (Exception e){
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            LOGGER.info("Exception while deleting point",e);
-        }
-        return ERROR;
-    }
+
+
 
 
 }

@@ -9,7 +9,6 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -24,14 +23,18 @@ public class FieldDevicesToControllerCommand extends FacilioCommand {
         if(context.containsKey(AgentConstants.FIELD_DEIVICES) && context.containsKey(AgentConstants.AGENT_ID)){
             Device device = (Device) context.get(AgentConstants.FIELD_DEIVICES);
             long agentId = (long) context.get(AgentConstants.AGENT_ID);
-            Map<Long, Controller> deviceIdControllerMap = ControllerUtilV2.fieldDeviceToController(agentId, Collections.singletonList(device));
+           /* if(ControllerApiV2.checkForFieldDeviceController(device.getId())){
+                LOGGER.info(" Exception , device already converted as controller ->"+device.getId());
+                context.put(AgentConstants.CONTROLLER,ControllerApiV2.getCon);
+                return false;
+            }*/
+            Map<Long, Controller> deviceIdControllerMap = ControllerUtilV2.fieldDeviceToController(agentId, device);
             if (deviceIdControllerMap.isEmpty()) {
                 throw new Exception(" No controllers for devices->"+device.getId());
             }
             context.put(AgentConstants.CONTROLLER,deviceIdControllerMap.values());
                 if(deviceIdControllerMap.containsKey(device.getId())){
                     devicesToDelete.add(device.getId());
-                    context.put(AgentConstants.CONFIGURED_DEVICES,devicesToDelete);
                     context.put(AgentConstants.CONTROLLER,deviceIdControllerMap.get(device.getId()));
                 }
             return false;
