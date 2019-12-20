@@ -1204,13 +1204,6 @@
 				<function>resource.getVisitorLog(visitorlogging.id)
 				</function>
 			</expression>
-			<expression name="getNdaId">
-				<function>default.getFromObject(vLog, 'ndaId')</function>
-			</expression>
-			<expression name="ndaPublicUrl">
-				<function>default.getPublicFileUrl(getNdaId)
-				</function>
-			</expression>
 		</workflow>
 	</template>
 	<template id="104">
