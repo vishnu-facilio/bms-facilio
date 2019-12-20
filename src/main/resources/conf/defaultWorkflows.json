@@ -1120,7 +1120,7 @@
 				countOfClearedOccurence = 0;
 				mttcCount = 0;
 				for each index,occurrence in alarmMonthOccurenceList {
-					if (occurrence.acknowledged != null) {
+					if (occurrence.acknowledgedTime != null) {
 						acknowledgedDuration = acknowledgedDuration + ( occurrence.acknowledgedTime - occurrence.createdTime);
 					}
 					if (previousClearedTime != 0) {
@@ -1156,7 +1156,7 @@
 				acknowledgedDuration = 0;
 				pttcCount = 0;
 				for each index,occurrence in alarmOccurenceTillLMonthList {
-					if (occurrence.acknowledged != null) {
+					if (occurrence.acknowledgedTime != null) {
 						tillLstMntAcknowledgedDuration = acknowledgedDuration + ( occurrence.acknowledgedTime - occurrence.createdTime);
 					}
 					if (previousClearedTime != 0) {
