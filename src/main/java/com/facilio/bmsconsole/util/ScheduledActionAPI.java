@@ -21,16 +21,8 @@ import com.facilio.tasker.job.JobStore;
 public class ScheduledActionAPI {
 	
 	public static void executeScheduledAction(long id, String... toAddr) throws Exception {
-		FacilioModule module = ModuleFactory.getScheduledActionModule();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-													.table(module.getTableName())
-													.select(FieldFactory.getScheduledActionFields())
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-													.andCondition(CriteriaAPI.getIdCondition(id, module));
-		
-		List<Map<String, Object>> props = builder.get();
-		if (props != null && !props.isEmpty()) {
-			ScheduledActionContext scheduledAction = FieldUtil.getAsBeanFromMap(props.get(0), ScheduledActionContext.class);
+		ScheduledActionContext scheduledAction = getScheduledAction(id);
+		if (scheduledAction != null) {
 			ActionContext action = ActionAPI.getAction(scheduledAction.getActionId());
 			if (toAddr != null && toAddr.length > 0 && action.getTemplate() instanceof EMailTemplate) {
 				((EMailTemplate)action.getTemplate()).setTo(toAddr[0]);

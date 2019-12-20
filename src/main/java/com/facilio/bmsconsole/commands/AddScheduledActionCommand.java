@@ -26,6 +26,12 @@ public class AddScheduledActionCommand extends FacilioCommand {
 		List<ActionContext> actions = (List<ActionContext>) context.get(FacilioConstants.ContextNames.ACTIONS_LIST);
 		scheduledAction.setActionId(actions.get(0).getId());
 		scheduledAction.setOrgId(AccountUtil.getCurrentOrg().getId());
+		if (scheduledAction.getScheduleInfo() != null) {
+			scheduledAction.setFrequency(scheduledAction.getScheduleInfo().getFrequencyType());
+			if (scheduledAction.getScheduleInfo().getTimeObjects() != null) {
+				scheduledAction.setTime(scheduledAction.getScheduleInfo().getTimeObjects().get(0));
+			}
+		}
 		
 		FacilioModule module = ModuleFactory.getScheduledActionModule();
 		
@@ -38,7 +44,8 @@ public class AddScheduledActionCommand extends FacilioCommand {
 		
 		scheduledAction.setId((long) prop.get("id"));
 		
-		FacilioTimer.scheduleCalendarJob(scheduledAction.getId(), "ScheduledActionExecution", System.currentTimeMillis(), getDateTimeSchedule(scheduledAction), "facilio");
+		ScheduleInfo info = scheduledAction.getScheduleInfo() != null ? scheduledAction.getScheduleInfo() :  getDateTimeSchedule(scheduledAction);
+		FacilioTimer.scheduleCalendarJob(scheduledAction.getId(), FacilioConstants.Job.DIGEST_JOB_NAME, System.currentTimeMillis(), info, "facilio");
 		
 		return false;
 	}

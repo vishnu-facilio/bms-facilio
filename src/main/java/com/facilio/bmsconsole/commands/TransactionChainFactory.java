@@ -576,6 +576,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain getUpdateScheduledActionChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new EditScheduledActionCommand());
+			return c;
+		}
+		
 		public static FacilioChain editViewChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new LoadViewCommand());
