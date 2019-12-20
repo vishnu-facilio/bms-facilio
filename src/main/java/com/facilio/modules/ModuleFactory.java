@@ -2983,4 +2983,19 @@ public class ModuleFactory {
 		secretFilesModule.setTableName("Secret_File");
 		return secretFilesModule;
 	}
+	
+	public static FacilioModule getPrinterModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ModuleNames.PRINTERS);
+		module.setDisplayName("Printers");
+		module.setTableName("Printers");
+		return module;
+	}
+	public static FacilioModule getVisitorKioskConfigModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ModuleNames.VISITOR_KIOSK_CONFIG);
+		module.setDisplayName("Visitor Kiosk Config");
+		module.setTableName("Devices_Visitor_Kiosk");
+		return module;
+	}
 }
