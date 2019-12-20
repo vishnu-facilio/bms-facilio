@@ -426,6 +426,9 @@ public class VisitorManagementAPI {
 	}
 	public static VisitorContext getVisitor(long id, String phoneNumber) throws Exception {
 		
+		if(id <= 0 && StringUtils.isEmpty(phoneNumber)) {
+			return null;
+		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR);

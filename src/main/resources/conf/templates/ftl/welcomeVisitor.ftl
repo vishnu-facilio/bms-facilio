@@ -20,18 +20,18 @@
                               <tr>
                                 <td colspan="100%">
                                       <div style="font-family:'Roboto', Helvetica,Helvetica Neue,Arial, sans-serif,Times New Roman, Times, serif;font-size: 30px;font-weight: 700;text-align: left;">
-                                          <strong style="color:#45474d;font-family:'Cera Pro','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:35px;line-height:40px;text-align:center;Margin:0;margin:0;border-bottom:3px solid #ff3989;letter-spacing: 0.6px;">Facilio Inc</strong>
+                                          <strong style="color:#45474d;font-family:'Cera Pro','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:35px;line-height:40px;text-align:center;Margin:0;margin:0;border-bottom:3px solid #ff3989;letter-spacing: 0.6px;">${org.name}</strong>
                                       </div>
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;padding-bottom:20px;color:#282c36;font-size:40px;line-height:50px;text-align:left;font-weight:bold;padding-top: 20px;letter-spacing: 0.6px;">
                                                 Happy Meeting! 
                                       </div>
                                       <#if (vLog.visitedSpace) ?? >
                                       <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          You have successfully checked in at ${vLog.visitedSpace.name} on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}.<#if (vLog.host) ??> You are on your way to meet ${vLog.host.name} </#if>.
+                                          You have successfully checked in at ${vLog.visitedSpace.name} on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}.<#if (vLog.host) ??> You are on your way to meet ${vLog.host.name}.<#else>Have a Good Day!</#if>.
                                     </div>
                                     <#else>
                                      <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          You have successfully checked in on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}.<#if (vLog.host) ??> You are on your way to meet ${vLog.host.name} </#if>.
+                                          You have successfully checked in on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}.<#if (vLog.host) ??> You are on your way to meet ${vLog.host.name}.<#else>Have a Good Day! </#if>.
                                     </div>
                                     </#if>
                                 </td>
