@@ -971,9 +971,9 @@
 	},
 	"111": {
 		"name": "VISITOR_THANKS_WHATSAPP_NOTIFICATION",
-		"to": "${visitorlogging.visitor.phone}",
-		"isHtmlContent": "false",
-		"message": "Thanks for visiting us.You have successfully checked out.\nAdmin Team."
+		"to": "${vLog.visitor.phone}",
+		"isHtmlContent": "true",
+		"message_ftl": "thankYouVisitor"
 	},	
 	"112": {
 		"name": "VISITOR_INVITE_WHATSAPP_NOTIFICATION",
