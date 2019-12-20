@@ -46,6 +46,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 //			} else {
 //				fs = FacilioFactory.getFileStore();
 //			}
+//			fs = FacilioFactory.getFileStoreFromOrg(orgId);
 			fs = FacilioFactory.getFileStore();
 			long fileId = fs.addFile(org.getLogoFileName(), org.getLogo(), org.getLogoContentType());
 			org.setLogoId(fileId);

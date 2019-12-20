@@ -39,31 +39,39 @@ public class PublicFileUtil {
     	return fileId;
 	}
 	
-	public static String createPublicFile(String content,String fileName,String fileType,String contentType) throws Exception {
+	public static String createPublicFile(String content,String fileName,String fileType,String contentType, long expiresOn) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
-		PublicFileContext file = FacilioService.runAsServiceWihReturn(() -> insertPublicFile(orgId, content, fileName, fileType, contentType));
-		return FacilioService.runAsServiceWihReturn(() ->FileStoreFactory.getInstance().getFileStore().newPreviewFileUrl("public", file.getFileId(), file.getExpiresOn()));
+		return FacilioService.runAsServiceWihReturn(() -> insertPublicFile(orgId, content, fileName, fileType, contentType, expiresOn));
+	}
+	
+	public static String createPublicFile(String content,String fileName,String fileType,String contentType) throws Exception {
+		return createPublicFile(content, fileName, fileType, contentType, System.currentTimeMillis() + PUBLIC_FILE_EXPIRY_IN_MILLIS);
 	}
 	
 	public static String createPublicFile(File file,String fileName, String fileType,String contentType) throws Exception {
+		return createPublicFile(file, fileName, fileType, contentType, System.currentTimeMillis() + PUBLIC_FILE_EXPIRY_IN_MILLIS);
+	}
+	
+	public static String createPublicFile(File file,String fileName, String fileType,String contentType, long expiresOn) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
-		PublicFileContext publicFile = FacilioService.runAsServiceWihReturn(() -> insertPublicFile(orgId, file, fileName, fileType, contentType));
-		return FacilioService.runAsServiceWihReturn(() ->FileStoreFactory.getInstance().getFileStore().newPreviewFileUrl("public", publicFile.getFileId(), publicFile.getExpiresOn()));
+		return FacilioService.runAsServiceWihReturn(() -> insertPublicFile(orgId, file, fileName, fileType, contentType, expiresOn));
 	}
 	
-	private static PublicFileContext insertPublicFile(long orgId, File file, String fileName, String fileType, String contentType) throws Exception {
-		return addPublicFile(orgId, FacilioFactory.getFileStore().addFile(fileName, file, contentType));
+	private static String insertPublicFile(long orgId, File file, String fileName, String fileType, String contentType, long expiresOn) throws Exception {
+		PublicFileContext publicFile = addPublicFile(orgId, FacilioFactory.getFileStore().addFile(fileName, file, contentType), expiresOn);
+		return FileStoreFactory.getInstance().getFileStore().newPreviewFileUrl("public", publicFile.getFileId(), publicFile.getExpiresOn());
 	}
 	
-	private static PublicFileContext insertPublicFile(long orgId, String content, String fileName, String fileType, String contentType) throws Exception {
+	private static String insertPublicFile(long orgId, String content, String fileName, String fileType, String contentType, long expiresOn) throws Exception {
 		long fileId = createFile(content, fileName, fileType, contentType);
-		return addPublicFile(orgId, fileId);
+		PublicFileContext publicFile = addPublicFile(orgId, fileId, expiresOn);
+		return FileStoreFactory.getInstance().getFileStore().newPreviewFileUrl("public", publicFile.getFileId(), publicFile.getExpiresOn());
 	}
 	
-	private static PublicFileContext addPublicFile (long orgId, long fileId) throws Exception {
+	private static PublicFileContext addPublicFile (long orgId, long fileId, long expiresOn) throws Exception {
 		PublicFileContext publicFileContext = new PublicFileContext();
 		publicFileContext.setOrgId(orgId);
-		publicFileContext.setExpiresOn(DateTimeUtil.getCurrenTime()+PUBLIC_FILE_EXPIRY_IN_MILLIS);
+		publicFileContext.setExpiresOn(expiresOn);
 		
 //		String key = CryptoUtils.hash256(""+fileID+DateTimeUtil.getCurrenTime());
 //		
