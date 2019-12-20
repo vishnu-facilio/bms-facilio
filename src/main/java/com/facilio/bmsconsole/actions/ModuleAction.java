@@ -548,6 +548,7 @@ public class ModuleAction extends FacilioAction {
 		setModuleData();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.RECORD, moduleData);
+		moduleData.parseFormData();
 		
 		// TODO.... Temporary. Will be changed to counter field soon
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, getWithLocalId());
@@ -607,6 +608,7 @@ public class ModuleAction extends FacilioAction {
 		setModuleData();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.RECORD, moduleData);
+		moduleData.parseFormData();
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));
 		
