@@ -68,6 +68,9 @@ public enum FacilioInstantJobExecutor implements Runnable {
 		while (isRunning) {
 			try {
 				handleTimeOut();
+				if(getNoOfFreeThreads() == 0) {
+					continue;
+				}
 				List<ObjectMessage> messageList = FacilioObjectQueue.getObjects(
 						getNoOfFreeThreads());
 				if (messageList != null) {
