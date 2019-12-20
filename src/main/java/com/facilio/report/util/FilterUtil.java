@@ -27,10 +27,6 @@ public class FilterUtil {
 		
 		JSONArray days = (JSONArray)calendarObj.get("days");
 		JSONObject intervals = (JSONObject)calendarObj.get("time");
-//		intervals.keySet().forEach(keyStr ->
-//	    {
-//	    	intervalArray.addAll((JSONArray)intervals.get(keyStr));
-//	    });
 		ZonedDateTime start = DateTimeUtil.getDateTime(datRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(datRange.getEndTime(), false);
 		do {
 		    if (days.contains(new Long(start.getDayOfWeek().getValue()))) {
@@ -46,18 +42,12 @@ public class FilterUtil {
 			    	intervalRange.setEndTime(start.toInstant().toEpochMilli()+endTime);
 			    	timeFilterCriteria.addOrCondition(CriteriaAPI.getCondition(timeField, intervalRange.toString(), DateOperators.BETWEEN));
 			    };
-//		    	Condition condition = CriteriaAPI.getCondition(timeField, intervalRange.toString(), DateOperators.BETWEEN);
-//		    	timeFilterCriteria.addOrCondition(condition);
-//		    	printIt(start.plusHours(0).plusMinutes(0).toInstant().toEpochMilli());
-//		    	System.out.println(start.plusHours(05).plusMinutes(30).toInstant().toEpochMilli());
-//		    	printIt(start.toInstant().toEpochMilli());
-//		    	printIt(start.toLocalDate().atTime(LocalTime.MAX).atZone(zone).toInstant().toEpochMilli());
-//		    	System.out.println(start.toInstant().toEpochMilli() - start.minusDays(1).toLocalDate().atTime(LocalTime.MAX).atZone(zone).toInstant().toEpochMilli());
-//		    	printIt(start.toLocalDate().atTime(LocalTime.MAX).atZone(zone).toInstant().toEpochMilli()-start.toInstant().toEpochMilli());
 		    }
 		    start = start.plusDays(1);
 		}  while (start.toEpochSecond() <= end.toEpochSecond());
 		return timeFilterCriteria;
 	}
-	
+	private boolean isValidObj(JSONObject calendarObj) {
+		return false;
+	}
 }
