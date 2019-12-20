@@ -370,7 +370,7 @@ public class NewAlarmAPI {
 		if (alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
 			JSONObject info = new JSONObject();
 			info.put("field", "Severity");
-			if (baseAlarm.getSeverity() != null) {
+			if (alarmOccurrence.getPreviousSeverity() != null) {
 				info.put("oldValue",  AlarmAPI.getAlarmSeverity(alarmOccurrence.getPreviousSeverity().getId()).getDisplayName());
 			}
 			info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
