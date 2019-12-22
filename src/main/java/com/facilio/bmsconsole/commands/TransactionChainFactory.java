@@ -3637,6 +3637,8 @@ public class TransactionChainFactory {
 		public static FacilioChain UploadImportPointsFileChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UploadImportPointsDataCommand());
+			c.addCommand(new ImportPointsFieldsEvaluationCommand());
+			c.addCommand(new UpdateImportPointsDataCommand());
 			return c;
 		}
 		

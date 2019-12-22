@@ -45,7 +45,7 @@ import io.jsonwebtoken.lang.Collections;
  *
  */
 public class ImportPointsAPI {
-	
+
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportAPI.class.getName());
 	private static Logger LOGGER  = Logger.getLogger(ImportAPI.class.getName());
 
@@ -55,79 +55,79 @@ public class ImportPointsAPI {
 		JSONArray columnheadings = new JSONArray();
 		ArrayList<String> missingInSheet;
 		HashMap<Integer, ArrayList<String>> missingColumns = new HashMap<Integer, ArrayList<String>>();
-//        Workbook workbook = WorkbookFactory.create(excelfile);
-        if(workbook.getNumberOfSheets() > 1) {
-        	for(int i =0; i< workbook.getNumberOfSheets();i++) {
-        		Sheet dataSheet =workbook.getSheetAt(i);
-        		Row row = dataSheet.getRow(0);
-        		Iterator ctr = row.cellIterator();
-        		missingInSheet = new ArrayList<String>();
-        		while(ctr.hasNext()) {
-        			Cell cell = (Cell)ctr.next();
-        			if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
-        				if(i == 0) {
-        					columnheadings.add(null);
-        				}
-        			}
-        			else {
-        				if(i!=0) {
-        					if(columnheadings.contains(cell.getStringCellValue())) {
-        						continue;
-        					}
-        					else {
-        						missingInSheet.add(cell.getStringCellValue());
-        					}
-        				}
-        				else {
-        					String cellValue = cell.getStringCellValue();
-        				}
-        			}
-        		}
-        		missingColumns.put(i, missingInSheet);
-        	}
-        	
-        	columnheadings.add(missingColumns);
-        }
-        else {
-        	Sheet datatypeSheet = workbook.getSheetAt(0);
-            
-            Iterator<Row> itr = datatypeSheet.iterator();
-            while (itr.hasNext()) {
-            	Row row = itr.next();
-            	Iterator<Cell> cellItr = row.cellIterator();
-            	while (cellItr.hasNext()) {
-            		Cell cell = cellItr.next();
-            		if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
-            			columnheadings.add(null);
-            		}
-            		else {
-            			String cellValue = cell.getStringCellValue();
-            			columnheadings.add(cellValue);
-            		}
-            	}
-            	break;
-            }
-        }
-//        workbook.close();
-        return columnheadings;
+		//        Workbook workbook = WorkbookFactory.create(excelfile);
+		if(workbook.getNumberOfSheets() > 1) {
+			for(int i =0; i< workbook.getNumberOfSheets();i++) {
+				Sheet dataSheet =workbook.getSheetAt(i);
+				Row row = dataSheet.getRow(0);
+				Iterator ctr = row.cellIterator();
+				missingInSheet = new ArrayList<String>();
+				while(ctr.hasNext()) {
+					Cell cell = (Cell)ctr.next();
+					if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+						if(i == 0) {
+							columnheadings.add(null);
+						}
+					}
+					else {
+						if(i!=0) {
+							if(columnheadings.contains(cell.getStringCellValue())) {
+								continue;
+							}
+							else {
+								missingInSheet.add(cell.getStringCellValue());
+							}
+						}
+						else {
+							String cellValue = cell.getStringCellValue();
+						}
+					}
+				}
+				missingColumns.put(i, missingInSheet);
+			}
+
+			columnheadings.add(missingColumns);
+		}
+		else {
+			Sheet datatypeSheet = workbook.getSheetAt(0);
+
+			Iterator<Row> itr = datatypeSheet.iterator();
+			while (itr.hasNext()) {
+				Row row = itr.next();
+				Iterator<Cell> cellItr = row.cellIterator();
+				while (cellItr.hasNext()) {
+					Cell cell = cellItr.next();
+					if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+						columnheadings.add(null);
+					}
+					else {
+						String cellValue = cell.getStringCellValue();
+						columnheadings.add(cellValue);
+					}
+				}
+				break;
+			}
+		}
+		//        workbook.close();
+		return columnheadings;
 	}
-	
+
 	public static PointsProcessContext getColumnHeadings(Workbook workbook, PointsProcessContext pointsProcessContext) throws Exception{
 		JSONArray columnHeadings = getColumnHeadings(workbook);
 		if(columnHeadings.size() == 1) {
 			if(columnHeadings.get(0) instanceof java.util.HashMap<?,?>) {
 				HashMap<Integer,ArrayList<String>> missingColumns = (HashMap<Integer, ArrayList<String>>) columnHeadings.get(0);
 				if(!missingColumns.isEmpty()) {
-		    		String warningMessage = constructWarning(missingColumns);
-		    		if(pointsProcessContext.getImportJobMetaJson().isEmpty()) {
-		    			JSONObject importMeta = new JSONObject();
-		    			importMeta.put(ImportPointsConstants.IMPORT_WARNING, warningMessage);
-		    		}
-		    		else {
-		    			JSONObject importMeta = pointsProcessContext.getImportJobMetaJson();
-		    			importMeta.put(ImportPointsConstants.IMPORT_WARNING, warningMessage);
-		    		}
-		    	}
+					String warningMessage = constructWarning(missingColumns);
+					if(pointsProcessContext.getImportJobMetaJson().isEmpty()) {
+						JSONObject importMeta = new JSONObject();
+						importMeta.put(ImportPointsConstants.IMPORT_WARNING, warningMessage);
+					}
+					else {
+						JSONObject importMeta = pointsProcessContext.getImportJobMetaJson();
+						importMeta.put(ImportPointsConstants.IMPORT_WARNING, warningMessage);
+					}
+				}
 				pointsProcessContext.setColumnHeadingString(null);
 			}
 			else {
@@ -138,10 +138,10 @@ public class ImportPointsAPI {
 			pointsProcessContext.setColumnHeadingString(columnHeadings.toJSONString().replaceAll("\"", "\\\""));
 		}
 		return pointsProcessContext;
-		
+
 	}
-	
-	
+
+
 
 	public static String constructWarning(HashMap<Integer, ArrayList<String>> missingColumns) {
 		StringBuilder newWarning= new StringBuilder();
@@ -158,52 +158,52 @@ public class ImportPointsAPI {
 		}
 		LOGGER.severe("Import Warning:" + newWarning.toString());
 		return newWarning.toString();
-		
+
 	}
 	public static void addImportProcess(PointsProcessContext importProcessContext) throws Exception {
-		
+
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getImportProcessModule().getTableName())
 				.fields(FieldFactory.getImportProcessFields());
-		
+
 		importProcessContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 		Map<String, Object> props = FieldUtil.getAsProperties(importProcessContext);
-		
+
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
-		
+
 		importProcessContext.setId((Long) props.get("id"));
 	}
-	
+
 	public static void updateImportProcess(PointsProcessContext importProcessContext) throws Exception {
-		
+
 		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
 		update.table(ModuleFactory.getImportPointsModule().getTableName());
 		update.fields(FieldFactory.getImportPointsFields());
 		update.andCustomWhere(ModuleFactory.getImportPointsModule().getTableName()+".ID = ?", importProcessContext.getId());
-		
-		Map<String, Object> props = FieldUtil.getAsProperties(importProcessContext);
-		
-		update.update(props);	
-		
-	}
-	
-//	public static void updateImportProcess(PointsProcessContext importProcessContext,ImportStatus importStatus) throws Exception {
-//		
-//		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
-//		update.table(ModuleFactory.getImportProcessModule().getTableName());
-//		update.fields(FieldFactory.	());
-//		update.andCustomWhere(ModuleFactory.getImportProcessModule().getTableName()+".ID = ?", importProcessContext.getId());
-//		
-//		Map<String, Object> props = new HashMap<>();
-//		
-//		props.put("status", importStatus.getValue());
-//		
-//		update.update(props);	
-//		
-//	}
 
-	
+		Map<String, Object> props = FieldUtil.getAsProperties(importProcessContext);
+
+		update.update(props);	
+
+	}
+
+	//	public static void updateImportProcess(PointsProcessContext importProcessContext,ImportStatus importStatus) throws Exception {
+	//		
+	//		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
+	//		update.table(ModuleFactory.getImportProcessModule().getTableName());
+	//		update.fields(FieldFactory.	());
+	//		update.andCustomWhere(ModuleFactory.getImportProcessModule().getTableName()+".ID = ?", importProcessContext.getId());
+	//		
+	//		Map<String, Object> props = new HashMap<>();
+	//		
+	//		props.put("status", importStatus.getValue());
+	//		
+	//		update.update(props);	
+	//		
+	//	}
+
+
 	public static List<Map<String,Object>> getValidatedRows(Long importProcessId) throws Exception{
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getImportProcessLogModule().getTableName())
@@ -220,35 +220,35 @@ public class ImportPointsAPI {
 		}
 		return fieldMapping;
 	}
-	
+
 	public static List<FacilioField> getImportPointsFieldsAsList() throws Exception{
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields = FieldFactory.getPointsFields();
 		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
 		selectedFields = fields.stream().filter(f -> f.getName().equals("device") || f.getName().equals("instance") || f.getName().equals("categoryId") || f.getName().equals("resourceId") || f.getName().equals("fieldId") || f.getName().equals("unit")).collect(Collectors.toList());
-		
+
 		LOGGER.severe(selectedFields.toString());
 		return selectedFields;
 	}
 	public static void getFieldMapping(PointsProcessContext importProcessContext) throws Exception {
-		
+
 		if(importProcessContext.getColumnHeadingString() != null) {
-			
+
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getImportPointsFields())
 					.table(ModuleFactory.getImportPointsModule().getTableName());
-			
+
 			selectBuilder.andCustomWhere(ModuleFactory.getImportPointsModule().getTableName()+".COLUMN_HEADING = ?", importProcessContext.getColumnHeadingString());
-			
+
 			selectBuilder.andCustomWhere(ModuleFactory.getImportPointsModule().getTableName()+".ORGID = ?", AccountUtil.getCurrentOrg().getId());
-			
+
 			selectBuilder.andCustomWhere(ModuleFactory.getImportPointsModule().getTableName()+".FIELD_MAPPING is not null");
-			
+
 			List<Map<String, Object>> props = selectBuilder.get();
 			if (props != null && !props.isEmpty()) {
-				
+
 				String fieldMapping = (String) props.get(0).get("fieldMappingString");
-				
+
 				if(fieldMapping != null && !fieldMapping.trim().isEmpty()) {
 					importProcessContext.setFieldMappingString(fieldMapping);
 					return;
@@ -257,24 +257,24 @@ public class ImportPointsAPI {
 		}
 		importProcessContext.populatePointsFieldMapping();
 	}
-	
-	
-	
-	
+
+
+
+
 	public static void importPasteParsedData(List<Map<Integer,String>> parsedDatas, Map<Integer,String> columnMaping,PointsProcessContext importProcessContext) throws Exception {
-		
+
 		List<ReadingContext> readingsList = new ArrayList<ReadingContext>();
-		
+
 		for(Map<Integer, String> parsedData:parsedDatas) {
-			
+
 			HashMap <String, Object> props = new LinkedHashMap<String,Object>();
 			columnMaping.forEach((key,value) ->
 			{
 				Object cellValue = parsedData.get(key);
 				boolean isfilledByLookup = false;
-				
+
 				if(cellValue != null && !cellValue.toString().equals("")) {
-					
+
 					Map<String, FacilioField> fieldMapping = null;
 					try {
 						fieldMapping = importProcessContext.getFacilioFieldMapping();
@@ -300,73 +300,68 @@ public class ImportPointsAPI {
 					props.put(value, cellValue);
 				}
 			});
-			
-			
+
+
 			ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 			reading.setParentId(importProcessContext.getAssetId());
 			readingsList.add(reading);
 		}
 		ProcessXLS.populateData(importProcessContext, readingsList);
 	}
-	public static JSONObject getFirstRow (Workbook workbook)throws Exception {
-		JSONObject firstRow = new JSONObject();
+	public static List<Map<String,Object>> getFirstRow (Workbook workbook)throws Exception {
+		List<Map<String, Object>> listVal = new ArrayList<>();
 		JSONArray columnHeadings = getColumnHeadings(workbook);
-//		Workbook workbook = WorkbookFactory.create(excelfile);
+		//		Workbook workbook = WorkbookFactory.create(excelfile);
 		Sheet datatypeSheet = workbook.getSheetAt(0);
 		Row row = datatypeSheet.getRow(1);
 		int lastCellNum = row.getLastCellNum();
-		
-		
-		for(int i =0; i< lastCellNum; i++) {
-			Cell cell = row.getCell(i);
-			if(columnHeadings.get(i) == null || columnHeadings.get(i) == "null") {
-				continue;
-			}
-			else {
-				if(cell == null || (cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
-					firstRow.put(columnHeadings.get(i), null);
+
+		for(int rowCount=1 ;rowCount<5000;rowCount++) {
+				row = datatypeSheet.getRow(rowCount);
+				if(row == null) {
+					continue;
+				}
+				Map<String,Object> list = new HashMap<String, Object>();
+				for(int i =0; i< lastCellNum; i++) {
+				Cell cell = row.getCell(i);
+				if(columnHeadings.get(i) == null || columnHeadings.get(i) == "null") {
+					continue;
 				}
 				else {
-					CellType type = cell.getCellTypeEnum();
-					if(type == CellType.NUMERIC || type == CellType.FORMULA) {
-	        			if(cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
-	        				DataFormatter df = new DataFormatter();
-	        				String cellValueString = df.formatCellValue(cell);
-	        				firstRow.put(columnHeadings.get(i),cellValueString);
-	        			}
-	        			else if(type== CellType.FORMULA) {
+					if(cell == null || (cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
+						continue;
+					}
+					else {
+						CellType type = cell.getCellTypeEnum();
+						
+						 if(type == CellType.STRING)
+						{
+							String cellValue = cell.getStringCellValue();
+							list.put(String.valueOf(columnHeadings.get(i)),cellValue);
+						}else {
 	        				Double cellValue = cell.getNumericCellValue();
-	        				firstRow.put(columnHeadings.get(i), cellValue);
+	        				list.put(String.valueOf(columnHeadings.get(i)),cellValue);
 	        			}
-	        			else {
-	        				Double cellValue = cell.getNumericCellValue();
-	        				firstRow.put(columnHeadings.get(i),cellValue);
-	        			}
-	        		}
-	        		else if(type== CellType.BOOLEAN) {
-	        			Boolean cellValue = cell.getBooleanCellValue();
-	        			firstRow.put(columnHeadings.get(i), cellValue);
-	        		}
-	        		else if(type == CellType.STRING)
-	        		{
-	        			String cellValue = cell.getStringCellValue();
-	        			firstRow.put(columnHeadings.get(i), cellValue);
-	        		}
+					}
 				}
 			}
+				if(!list.isEmpty()) {
+					listVal.add(list);
+				}
+				
 		}
-//		workbook.close();
-		return firstRow;
+		//		workbook.close();
+		return listVal;
 	}
-	
-	
+
+
 	public static PointsProcessContext getImportProcessContext(Long id) throws Exception {
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getImportPointsFields())
 				.table(ModuleFactory.getImportPointsModule().getTableName())
 				.andCustomWhere(ModuleFactory.getImportPointsModule().getTableName()+".ID = ?", id);
-		
+
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			PointsProcessContext importProcessContext = FieldUtil.getAsBeanFromMap(props.get(0), PointsProcessContext.class);
@@ -374,22 +369,22 @@ public class ImportPointsAPI {
 		}
 		return null;
 	}
-	
+
 	public static void addImportPoints(PointsProcessContext importProcessContext) throws Exception {
-			
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getImportPointsModule().getTableName())
-					.fields(FieldFactory.getImportPointsFields());
-			
-			importProcessContext.setOrgId(AccountUtil.getCurrentOrg().getId());
-			Map<String, Object> props = FieldUtil.getAsProperties(importProcessContext);
-			
-			insertBuilder.addRecord(props);
-			insertBuilder.save();
-			
-			importProcessContext.setId((Long) props.get("id"));
-		}
-	
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getImportPointsModule().getTableName())
+				.fields(FieldFactory.getImportPointsFields());
+
+		importProcessContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+		Map<String, Object> props = FieldUtil.getAsProperties(importProcessContext);
+
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+
+		importProcessContext.setId((Long) props.get("id"));
+	}
+
 	public static boolean isRemovableFieldImport(String name) {
 
 		switch (name){ 
@@ -405,20 +400,20 @@ public class ImportPointsAPI {
 		}
 		return false;
 	}
-	
+
 	public static void updateImportPoints(PointsProcessContext importProcessContext) throws Exception {
-			
-			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
-			update.table(ModuleFactory.getImportPointsModule().getTableName());
-			update.fields(FieldFactory.getImportPointsFields());
-			update.andCustomWhere(ModuleFactory.getImportPointsModule().getTableName()+".ID = ?", importProcessContext.getId());
-			
-			Map<String, Object> props = FieldUtil.getAsProperties(importProcessContext);
-			
-			update.update(props);	
-			
-		}
-	
+
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
+		update.table(ModuleFactory.getImportPointsModule().getTableName());
+		update.fields(FieldFactory.getImportPointsFields());
+		update.andCustomWhere(ModuleFactory.getImportPointsModule().getTableName()+".ID = ?", importProcessContext.getId());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(importProcessContext);
+
+		update.update(props);	
+
+	}
+
 	public static HashMap<String,String> getFieldMap(String jsonString) throws Exception
 	{
 		HashMap <String,String> fieldMap = new LinkedHashMap<String,String>();
@@ -433,8 +428,8 @@ public class ImportPointsAPI {
 		}
 		return fieldMap;
 	}
-	
-	
+
+
 	public static class  ImportPointsConstants{
 		public static final String POINTS_PROCESS_CONTEXT = "pointsProcessContext";
 		public static final String READINGS_LIST = "readingsList";
@@ -461,9 +456,9 @@ public class ImportPointsAPI {
 		public static final String PARSING_ERROR_MESSAGE="parsingErrorMessage";
 		public static final String GROUPED_ROW_CONTEXT="groupRowContext";
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 }

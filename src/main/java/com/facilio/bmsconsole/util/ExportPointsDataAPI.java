@@ -106,6 +106,7 @@ public class ExportPointsDataAPI {
 					continue;
 				}
 			}
+		}
 			for(Map<String,Object> map1 : recorddata) {
 				String deviceName = (String) map1.get("device");
 				String instanceName = (String) map1.get("instance");
@@ -116,7 +117,7 @@ public class ExportPointsDataAPI {
 				map1.put("Reading",fieldName);
 				map1.put("Asset Category",categoryName);
 			}
-		}
+		
 
 		Map<String,Object> table = new HashMap<String, Object>();
 		table.put("headers", headers);
