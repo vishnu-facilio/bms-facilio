@@ -1261,12 +1261,19 @@ public enum ActionType {
 			if (obj != null) {  //&& FacilioProperties.isProduction() add this on commit
 				try {
 					String to = (String) obj.get("to");
-					Boolean isHtmlContent =  Boolean.parseBoolean((String)obj.get("isHtmlContent"));
-					String html = (String) obj.get("message");
 					
 					if (to != null && !to.isEmpty()) {
 						List<String> sms = new ArrayList<>();
-					
+						
+						Boolean isHtmlContent = null;
+						String html = null;
+						
+						if(obj.get("isHtmlContent") != null)
+						{
+							isHtmlContent =  Boolean.parseBoolean((String)obj.get("isHtmlContent"));
+							html = (String) obj.get("message");
+						}
+											
 						if(isHtmlContent != null && html != null && isHtmlContent)
 						{						
 							final String htmlContentString = "\'" + html+ "\'";							
@@ -1280,7 +1287,7 @@ public enum ActionType {
 								{
 									String htmlContentPublicUrl = publicFileContext.getPublicUrl();
 								    
-									//htmlContentPublicUrl = htmlContentPublicUrl.replace("http://localhost:8080/", "https://093373e1.ngrok.io/ROOT/");
+									//htmlContentPublicUrl = htmlContentPublicUrl.replace("http://localhost:8080/", "https://374a62c1.ngrok.io/ROOT/");
 									obj.put("htmlContentPublicUrl", htmlContentPublicUrl);	
 									obj.put("message", "");
 								}
