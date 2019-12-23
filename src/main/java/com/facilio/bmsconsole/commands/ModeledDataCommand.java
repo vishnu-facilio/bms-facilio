@@ -46,6 +46,7 @@ public class ModeledDataCommand extends AgentV2Command {
 		if (isV2) {
 			LOGGER.info(" is v2");
 			Map<String, Map<String,String>>  deviceData2 = (Map<String, Map<String, String>>) context.get("DEVICE_DATA_2");
+			List<Map<String, Object>> dataPointsValue = (List<Map<String, Object>>) context.get("DATA_POINTS");
 			Map<String, ReadingContext> iModuleVsReading = new HashMap<String, ReadingContext>();
 			Map<String, List<ReadingContext>> moduleVsReading = new HashMap<String, List<ReadingContext>>();
 			Long controllerId =-1L;
@@ -53,90 +54,12 @@ public class ModeledDataCommand extends AgentV2Command {
 			for (Map.Entry<String, Map<String, String>> data : deviceData2.entrySet()){
 				String deviceName = data.getKey(); // controller name
 				if (deviceName.equals("UNKNOWN") ) {
-					Map<String, String> pointsMap = data.getValue(); // pointname-value map
-					Iterator<String> pointsList = pointsMap.keySet().iterator(); // pointname list
-					List<String> unknownPointNameList = new ArrayList<>();
-					List<String> dbPointNameList = new ArrayList<>();
-					while (pointsList.hasNext()) {//check pointList with pointsFrom db
-						String pointName = pointsList.next();
-						unknownPointNameList.add(pointName);
-					}
-					if (context.containsKey("DATA_POINTS_WITHOUT_CONTROLLER")) {
-						List<Map<String, Object>> pointsFromDb = (List<Map<String, Object>>) context.get("DATA_POINTS_WITHOUT_CONTROLLER");
-						for (Map<String, Object> point : pointsFromDb) {
-							if (point != null && point.get("name") != null && !point.get("name").toString().isEmpty()) { //if point name equals pointname from db
-								dbPointNameList.add(point.get("name").toString());
-							}
-						}
-					}
-					unknownPointNameList.removeAll(dbPointNameList);
-					for (String pointName : unknownPointNameList) {
-						long agentId = Long.parseLong(context.get(AgentConstants.AGENT_ID).toString());
-						MiscPoint miscPoint = new MiscPoint(agentId);
-						miscPoint.setDeviceName("UNKNOWN");
-						miscPoint.setName(pointName);
-						PointsAPI.addPoint(miscPoint);
-
-					}
-					dbPointNameList.addAll(unknownPointNameList);
-					List<Map<String, Object>> newPointsFromDb = PointsAPI.getPointsFromDb(dbPointNameList, null);
-					context.put("DATA_POINTS_WITHOUT_CONTROLLER", newPointsFromDb);
-
+					processUnknownController(context,data);
 				}
 
 				else{
-					List<Map<String, Object>> dataPointsValue = (List<Map<String, Object>>) context.get("DATA_POINTS");
-					Map<String, Object> dataPoints = null;
 					controllerId = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-
-					List<String> pointsInDb = new ArrayList<>();
-					for (Map<String, Object> dataPointName:dataPointsValue){
-						if (dataPointName.containsKey("name") && !dataPointName.get("name").toString().isEmpty()){
-							pointsInDb.add(dataPointName.get("name").toString());
-						}
-					}
-					long orgId = AccountUtil.getCurrentOrg().getOrgId();
-					Map<String, String> pointsMap = data.getValue();
-					Iterator<String> pointsList = pointsMap.keySet().iterator(); // pointname list
-					while (pointsList.hasNext()) {
-						String pointName = pointsList.next();
-						String pointValue = pointsMap.get(pointName);
-						if (deviceName == null || pointName == null) {
-							continue;
-						}
-						dataPoints = getValueContainsPointsData(deviceName, pointName, controllerId, dataPointsValue);
-						if (dataPoints==null) LOGGER.info(" dataPoints is null");
-						if(pointsInDb.contains(pointName) && dataPoints!=null){
-							Long resourceId = (Long) dataPoints.get("resourceId");
-						Long fieldId = (Long) dataPoints.get("fieldId");
-						if (fieldId != null && resourceId != null) {
-							ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-							FacilioField field = bean.getField(fieldId);
-							FieldType type = field.getDataTypeEnum();
-							String moduleName = field.getModule().getName();
-							if (pointValue != null && (pointValue.equalsIgnoreCase("NaN") ||
-									(type.equals(FieldType.DECIMAL) && pointValue.equalsIgnoreCase("infinity")))) {
-								generateEvent(resourceId, timeStamp, field.getDisplayName());
-								//								//Generate event with resourceId : assetId &
-								continue;
-							}
-							String readingKey = moduleName + "|" + resourceId;
-							ReadingContext reading = iModuleVsReading.get(readingKey);
-							if (reading == null) {
-								reading = new ReadingContext();
-								iModuleVsReading.put(readingKey, reading);
-							}
-							reading.addReading(field.getName(), pointValue);
-							reading.setParentId(resourceId);
-							reading.setTtime(timeStamp);
-							//removing here to avoid going into unmodeled instance..
-							// remove deviceData is important
-							pointsList.remove();
-							dataPointsValue.remove(dataPoints);
-							//construct the reading to add in their respective module..????
-						}
-						}
-					}
+					processKnownController(controllerId,iModuleVsReading,dataPointsValue,deviceName,timeStamp,data);
 
 				}
 
@@ -158,63 +81,13 @@ public class ModeledDataCommand extends AgentV2Command {
 					if (stat == null) {
 						continue;
 					}
-
-					//				Long assetId= (Long) stat.get("assetId");
-					//				Long fieldId= (Long) stat.get("fieldId");
-
-					//				if(fieldId!=null && assetId!=null) {
-					//					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					//					FacilioField field =bean.getField(fieldId);
-					//					FieldType type = field.getDataTypeEnum();
-					//					String moduleName=field.getModule().getName();
-					//
-					//					if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
-					//							(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
-					//						generateEvent(assetId,timeStamp,field.getDisplayName());
-					//						//Generate event with resourceId : assetId &
-					//						continue;
-					//					}
-					//					String readingKey=moduleName+"|"+assetId;
-					//					ReadingContext reading=iModuleVsReading.get(readingKey);
-					//					if(reading == null) {
-					//						reading = new ReadingContext();
-					//						iModuleVsReading.put(readingKey, reading);
-					//					}
-					//					reading.addReading(field.getName(), instanceVal);
-					//					reading.setParentId(assetId);
-					//					reading.setTtime(timeStamp);
-					//
-					//					//removing here to avoid going into unmodeled instance..
-					//					instanceList.remove();
-					//				}
 				}
 
 
 			}
 
-			for (Map.Entry<String, ReadingContext> iMap : iModuleVsReading.entrySet()) { //send the data to their's module eg.Energy_Meter...
-				String key = iMap.getKey();
-				String moduleName = key.substring(0, key.indexOf("|"));
-				ReadingContext reading = iMap.getValue();
-				List<ReadingContext> readings = moduleVsReading.get(moduleName);
-				if (readings == null) {
-					readings = new ArrayList<ReadingContext>();
-					moduleVsReading.put(moduleName, readings);
-				}
-				readings.add(reading);
-			}
-			if (TimeSeriesAPI.isStage()) {
-				LOGGER.debug("Inside ModeledDataCommand####### moduleVsReading: " + moduleVsReading);
-			}
-
-			context.put(FacilioConstants.ContextNames.READINGS_MAP, moduleVsReading);
-			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
-			//context.put("POINTS_DATA_RECORD", dataPointsValue);
-			LOGGER.info("--------Modelled data Command-----------");
-			for (Object key : context.keySet()) {
-				LOGGER.info(key + "->" + context.get(key));
-			}
-			LOGGER.info("-----------------------------");
+			addPointDataToContext(context,iModuleVsReading,moduleVsReading,dataPointsValue);
+			logModelledDataCommand(context);
 
 			return false;
 		} else {
@@ -324,34 +197,6 @@ public class ModeledDataCommand extends AgentV2Command {
 						continue;
 					}
 
-					//				Long assetId= (Long) stat.get("assetId");
-					//				Long fieldId= (Long) stat.get("fieldId");
-
-					//				if(fieldId!=null && assetId!=null) {
-					//					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					//					FacilioField field =bean.getField(fieldId);
-					//					FieldType type = field.getDataTypeEnum();
-					//					String moduleName=field.getModule().getName();
-					//
-					//					if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
-					//							(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
-					//						generateEvent(assetId,timeStamp,field.getDisplayName());
-					//						//Generate event with resourceId : assetId &
-					//						continue;
-					//					}
-					//					String readingKey=moduleName+"|"+assetId;
-					//					ReadingContext reading=iModuleVsReading.get(readingKey);
-					//					if(reading == null) {
-					//						reading = new ReadingContext();
-					//						iModuleVsReading.put(readingKey, reading);
-					//					}
-					//					reading.addReading(field.getName(), instanceVal);
-					//					reading.setParentId(assetId);
-					//					reading.setTtime(timeStamp);
-					//
-					//					//removing here to avoid going into unmodeled instance..
-					//					instanceList.remove();
-					//				}
 				}
 
 
@@ -382,6 +227,121 @@ public class ModeledDataCommand extends AgentV2Command {
 			LOGGER.info("-----------------------------");
 			return false;
 		}
+	}
+
+	private void processKnownController(Long controllerId ,Map<String, ReadingContext> iModuleVsReading, List<Map<String, Object>> dataPointsValue, String deviceName, Long timeStamp, Map.Entry<String, Map<String, String>> data) throws Exception {
+		Map<String, Object> dataPoints = null;
+
+
+		List<String> pointsInDb = new ArrayList<>();
+		for (Map<String, Object> dataPointName:dataPointsValue){
+			if (dataPointName.containsKey("name") && !dataPointName.get("name").toString().isEmpty()){
+				pointsInDb.add(dataPointName.get("name").toString());
+			}
+		}
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		Map<String, String> pointsMap = data.getValue();
+		Iterator<String> pointsList = pointsMap.keySet().iterator(); // pointname list
+		while (pointsList.hasNext()) {
+			String pointName = pointsList.next();
+			String pointValue = pointsMap.get(pointName);
+			if (deviceName == null || pointName == null) {
+				continue;
+			}
+			dataPoints = getValueContainsPointsData(deviceName, pointName, controllerId, dataPointsValue);
+			if (dataPoints==null) LOGGER.info(" dataPoints is null");
+			if(pointsInDb.contains(pointName) && dataPoints!=null){
+				Long resourceId = (Long) dataPoints.get("resourceId");
+				Long fieldId = (Long) dataPoints.get("fieldId");
+				if (fieldId != null && resourceId != null) {
+					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioField field = bean.getField(fieldId);
+					FieldType type = field.getDataTypeEnum();
+					String moduleName = field.getModule().getName();
+					if (pointValue != null && (pointValue.equalsIgnoreCase("NaN") ||
+							(type.equals(FieldType.DECIMAL) && pointValue.equalsIgnoreCase("infinity")))) {
+						generateEvent(resourceId, timeStamp, field.getDisplayName());
+						//								//Generate event with resourceId : assetId &
+						continue;
+					}
+					String readingKey = moduleName + "|" + resourceId;
+					ReadingContext reading = iModuleVsReading.get(readingKey);
+					if (reading == null) {
+						reading = new ReadingContext();
+						iModuleVsReading.put(readingKey, reading);
+					}
+					reading.addReading(field.getName(), pointValue);
+					reading.setParentId(resourceId);
+					reading.setTtime(timeStamp);
+					//removing here to avoid going into unmodeled instance..
+					// remove deviceData is important
+					pointsList.remove();
+					dataPointsValue.remove(dataPoints);
+					//construct the reading to add in their respective module..????
+				}
+			}
+		}
+	}
+
+	private void logModelledDataCommand(Context context) {
+		LOGGER.info("--------Modelled data Command-----------");
+		for (Object key : context.keySet()) {
+			LOGGER.info(key + "->" + context.get(key));
+		}
+		LOGGER.info("-----------------------------");
+	}
+
+	private void addPointDataToContext(Context context, Map<String, ReadingContext> iModuleVsReading, Map<String, List<ReadingContext>> moduleVsReading, List<Map<String, Object>> dataPointsValue) {
+		for (Map.Entry<String, ReadingContext> iMap : iModuleVsReading.entrySet()) { //send the data to their's module eg.Energy_Meter...
+			String key = iMap.getKey();
+			String moduleName = key.substring(0, key.indexOf("|"));
+			ReadingContext reading = iMap.getValue();
+			List<ReadingContext> readings = moduleVsReading.get(moduleName);
+			if (readings == null) {
+				readings = new ArrayList<ReadingContext>();
+				moduleVsReading.put(moduleName, readings);
+			}
+			readings.add(reading);
+		}
+		if (TimeSeriesAPI.isStage()) {
+			LOGGER.debug("Inside ModeledDataCommand####### moduleVsReading: " + moduleVsReading);
+		}
+
+		context.put(FacilioConstants.ContextNames.READINGS_MAP, moduleVsReading);
+		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
+		context.put("POINTS_DATA_RECORD", dataPointsValue);
+	}
+
+	private void processUnknownController( Context context,Map.Entry<String, Map<String, String>> data) throws Exception {
+		Map<String, String> pointsMap = data.getValue(); // pointname-value map
+		Iterator<String> pointsList = pointsMap.keySet().iterator(); // pointname list
+		List<String> unknownPointNameList = new ArrayList<>();
+		List<String> dbPointNameList = new ArrayList<>();
+		while (pointsList.hasNext()) {//check pointList with pointsFrom db
+			String pointName = pointsList.next();
+			unknownPointNameList.add(pointName);
+		}
+		if (context.containsKey("DATA_POINTS_WITHOUT_CONTROLLER")) {
+			List<Map<String, Object>> pointsFromDb = (List<Map<String, Object>>) context.get("DATA_POINTS_WITHOUT_CONTROLLER");
+			for (Map<String, Object> point : pointsFromDb) {
+				if (point != null && point.get("name") != null && !point.get("name").toString().isEmpty()) { //if point name equals pointname from db
+					dbPointNameList.add(point.get("name").toString());
+				}
+			}
+		}
+		unknownPointNameList.removeAll(dbPointNameList);
+		for (String pointName : unknownPointNameList) {
+			long agentId = Long.parseLong(context.get(AgentConstants.AGENT_ID).toString());
+			MiscPoint miscPoint = new MiscPoint(agentId);
+			miscPoint.setDeviceName("UNKNOWN");
+			miscPoint.setName(pointName);
+			PointsAPI.addPoint(miscPoint);
+
+		}
+		dbPointNameList.addAll(unknownPointNameList);
+		List<Map<String, Object>> newPointsFromDb = PointsAPI.getPointsFromDb(dbPointNameList, null);
+		context.put("DATA_POINTS_WITHOUT_CONTROLLER", newPointsFromDb);
+
 	}
 
 	private FacilioControllerType getPointTypeFromControllerId(Long controllerId) throws Exception {
