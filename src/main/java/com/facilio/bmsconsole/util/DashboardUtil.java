@@ -1599,7 +1599,7 @@ public class DashboardUtil {
 		
 		List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
 		
-		if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole().getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN)) {
+		if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole() != null && AccountUtil.getCurrentUser().getRole().getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN)) {
 			dashboardList.addAll(dashboardMap.values());
 			return dashboardList;
 		}
