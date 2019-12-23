@@ -2537,6 +2537,9 @@ public class WorkOrderAction extends FacilioAction {
 		if(workOrderString != null) {
 			setWorkordercontex(workOrderString);
 		}
+		else if(workorder != null) {
+			workorder.parseFormData();
+		}
 
 		//The following has to be moved to chain
 		workorder.setSourceType(SourceType.SERVICE_PORTAL_REQUEST);
