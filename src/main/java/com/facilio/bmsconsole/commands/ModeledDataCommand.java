@@ -3,11 +3,8 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.bacnet.BacnetIpPoint;
 import com.facilio.agentv2.commands.AgentV2Command;
-import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.misc.MiscPoint;
-import com.facilio.agentv2.modbustcp.ModbusTcpPoint;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -16,9 +13,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
@@ -31,7 +26,6 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
@@ -42,6 +36,7 @@ public class ModeledDataCommand extends AgentV2Command {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		LOGGER.info(" moduled data command->"+context);
 		Long timeStamp = (Long) context.get(FacilioConstants.ContextNames.TIMESTAMP);
 		if (context.containsKey(AgentConstants.IS_NEW_AGENT) && (context.get(AgentConstants.IS_NEW_AGENT) != null) && (context.get(AgentConstants.IS_NEW_AGENT) instanceof Boolean)) {
 			if ((boolean) context.get(AgentConstants.IS_NEW_AGENT)) {
@@ -49,7 +44,12 @@ public class ModeledDataCommand extends AgentV2Command {
 			}
 		}
 		if (isV2) {
+			LOGGER.info(" is v2");
 			Map<String, Map<String,String>>  deviceData2 = (Map<String, Map<String, String>>) context.get("DEVICE_DATA_2");
+			Map<String, ReadingContext> iModuleVsReading = new HashMap<String, ReadingContext>();
+			Map<String, List<ReadingContext>> moduleVsReading = new HashMap<String, List<ReadingContext>>();
+			Long controllerId =-1L;
+			LOGGER.info(" deviceData2 "+deviceData2);
 			for (Map.Entry<String, Map<String, String>> data : deviceData2.entrySet()){
 				String deviceName = data.getKey(); // controller name
 				if (deviceName.equals("UNKNOWN") ) {
@@ -87,9 +87,8 @@ public class ModeledDataCommand extends AgentV2Command {
 				else{
 					List<Map<String, Object>> dataPointsValue = (List<Map<String, Object>>) context.get("DATA_POINTS");
 					Map<String, Object> dataPoints = null;
-					Long controllerId = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-					Map<String, List<ReadingContext>> moduleVsReading = new HashMap<String, List<ReadingContext>>();
-					Map<String, ReadingContext> iModuleVsReading = new HashMap<String, ReadingContext>();
+					controllerId = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
+
 					List<String> pointsInDb = new ArrayList<>();
 					for (Map<String, Object> dataPointName:dataPointsValue){
 						if (dataPointName.containsKey("name") && !dataPointName.get("name").toString().isEmpty()){
@@ -140,7 +139,83 @@ public class ModeledDataCommand extends AgentV2Command {
 					}
 
 				}
+
 			}
+			//oldPublish data
+			for (Map.Entry<String, Map<String, String>> data : deviceData2.entrySet()) {
+
+				String deviceName = data.getKey();
+				if (deviceName.equalsIgnoreCase("UNKNOWN")) {
+					continue;
+				}
+				Map<String, String> instanceMap = data.getValue();
+				Iterator<String> instanceList = instanceMap.keySet().iterator();
+				while (instanceList.hasNext()) {
+					String instanceName = instanceList.next();
+//				String instanceVal=instanceMap.get(instanceName);
+					//for now sending as null till migration..
+					Map<String, Object> stat = ReadingsAPI.getInstanceMapping(deviceName, instanceName, controllerId);
+					if (stat == null) {
+						continue;
+					}
+
+					//				Long assetId= (Long) stat.get("assetId");
+					//				Long fieldId= (Long) stat.get("fieldId");
+
+					//				if(fieldId!=null && assetId!=null) {
+					//					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					//					FacilioField field =bean.getField(fieldId);
+					//					FieldType type = field.getDataTypeEnum();
+					//					String moduleName=field.getModule().getName();
+					//
+					//					if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
+					//							(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
+					//						generateEvent(assetId,timeStamp,field.getDisplayName());
+					//						//Generate event with resourceId : assetId &
+					//						continue;
+					//					}
+					//					String readingKey=moduleName+"|"+assetId;
+					//					ReadingContext reading=iModuleVsReading.get(readingKey);
+					//					if(reading == null) {
+					//						reading = new ReadingContext();
+					//						iModuleVsReading.put(readingKey, reading);
+					//					}
+					//					reading.addReading(field.getName(), instanceVal);
+					//					reading.setParentId(assetId);
+					//					reading.setTtime(timeStamp);
+					//
+					//					//removing here to avoid going into unmodeled instance..
+					//					instanceList.remove();
+					//				}
+				}
+
+
+			}
+
+			for (Map.Entry<String, ReadingContext> iMap : iModuleVsReading.entrySet()) { //send the data to their's module eg.Energy_Meter...
+				String key = iMap.getKey();
+				String moduleName = key.substring(0, key.indexOf("|"));
+				ReadingContext reading = iMap.getValue();
+				List<ReadingContext> readings = moduleVsReading.get(moduleName);
+				if (readings == null) {
+					readings = new ArrayList<ReadingContext>();
+					moduleVsReading.put(moduleName, readings);
+				}
+				readings.add(reading);
+			}
+			if (TimeSeriesAPI.isStage()) {
+				LOGGER.debug("Inside ModeledDataCommand####### moduleVsReading: " + moduleVsReading);
+			}
+
+			context.put(FacilioConstants.ContextNames.READINGS_MAP, moduleVsReading);
+			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
+			//context.put("POINTS_DATA_RECORD", dataPointsValue);
+			LOGGER.info("--------Modelled data Command-----------");
+			for (Object key : context.keySet()) {
+				LOGGER.info(key + "->" + context.get(key));
+			}
+			LOGGER.info("-----------------------------");
+
 			return false;
 		} else {
 

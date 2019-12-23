@@ -97,6 +97,7 @@ public class UnModeledDataCommand extends FacilioCommand {
 	}
 
 	private long getPointsId(Long controllerId, String pointName) throws Exception {
+		LOGGER.info(" controllerId "+controllerId);
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getPointsModule().getTableName())
 				.select(FieldFactory.getPointsFields())

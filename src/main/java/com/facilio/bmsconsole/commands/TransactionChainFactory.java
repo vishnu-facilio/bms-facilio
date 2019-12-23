@@ -16,7 +16,6 @@ import com.facilio.agentv2.controller.commands.AddDevicesCommand;
 import com.facilio.agentv2.controller.commands.FieldDevicesToControllerCommand;
 import com.facilio.agentv2.device.commands.DeleteFieldDevice;
 import com.facilio.agentv2.device.commands.getFieldDevicesCommand;
-import com.facilio.agentv2.iotmessage.AckMessageCommand;
 import com.facilio.agentv2.iotmessage.AddAndSendIotMessageCommand;
 import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
@@ -1055,6 +1054,7 @@ public class TransactionChainFactory {
 		chain.addCommand(new ProcessDataCommandV2());
 		chain.addCommand(new ModeledDataCommand());
 		chain.addCommand(new UnModeledDataCommand());
+		chain.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
 
 		//chain.addCommand(new ProcessTimeSeriesData());
 		return chain;
@@ -3950,14 +3950,7 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getAckMessageChain() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new AckMessageCommand());
-		return chain;
-	}
 
-
-	
 	public static FacilioChain addContactsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForContacts());
@@ -4164,7 +4157,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getAckProcessorChain() {
 		FacilioChain chain = getDefaultChain();
-		//
+		chain.addCommand( new AckIotMessageCommand());
 		return chain;
 	}
 
@@ -4190,6 +4183,16 @@ public class TransactionChainFactory {
 	public static FacilioChain subscribeUnsbscribechain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new SubscribeUnsbscribeCommand());
+		return chain;
+	}
+
+	/**
+	 * makes point's config status to in-progress and makes controllerId entry for point and childPoint.
+	 * @return
+	 */
+	public static FacilioChain updatePointsConfigured() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdatePointsConfiguredCommand());
 		return chain;
 	}
 }
