@@ -580,7 +580,7 @@ public class FormsAPI {
 		 if (spaces != null && spaces.size() > 0) {
 			 StringJoiner spaceIds = new StringJoiner(",");
 			 spaces.stream().forEach(f -> spaceIds.add(String.valueOf(f)));
-			 forms1.andCustomWhere("Form_Site_Relation.SITE_ID = "+ spaceIds.toString());
+			 forms1.andCondition(CriteriaAPI.getCondition(formSiteFieldMap.get("siteId"), spaceIds.toString(),NumberOperators.EQUALS));
 		 }
 		 GenericSelectRecordBuilder forms2 = new GenericSelectRecordBuilder()
 					.table(ModuleFactory.getFormSiteRelationModule().getTableName())

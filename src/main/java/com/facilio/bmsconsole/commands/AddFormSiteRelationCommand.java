@@ -35,13 +35,12 @@ public class AddFormSiteRelationCommand extends FacilioCommand {
 			}
 			
 			FacilioModule formSiteRelationModule = ModuleFactory.getFormSiteRelationModule();
+			if(!propList.isEmpty()) {
 			GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
 					.table(formSiteRelationModule.getTableName())
 					.fields(FieldFactory.getFormSiteRelationFields())
 					.addRecords(FieldUtil.getAsMapList(propList,FormSiteRelationContext.class));
 			
-			
-			if(!propList.isEmpty()) {
 				insertRecordBuilder.save();
 			}
 		}

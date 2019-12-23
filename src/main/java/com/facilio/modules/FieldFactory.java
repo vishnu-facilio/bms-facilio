@@ -286,7 +286,6 @@ public class FieldFactory {
 		labelPosition.setModule(module);
 		fields.add(labelPosition);
 		
-		fields.add(getSiteIdField(module));
 		fields.add(getField("showInMobile", "SHOW_IN_MOBILE", module, FieldType.BOOLEAN));
 		fields.add(getField("hideInList", "HIDE_IN_LIST", module, FieldType.BOOLEAN));
 		fields.add(getField("stateFlowId", "STATE_FLOW_ID", module, FieldType.NUMBER));

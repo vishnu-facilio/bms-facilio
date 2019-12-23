@@ -28,14 +28,12 @@ public class FacilioForm implements Serializable {
 		this.formType = formType;
 		this.labelPosition = labelPosition;
 		this.showInMobile = true;
-		this.siteId = siteId;
 	}
 
 	public FacilioForm(FacilioForm form) {
 		this(form.id, form.orgId, form.name, form.displayName, form.moduleId, new ArrayList<>(form.fields), form.module, form.formType, form.labelPosition);
 		this.showInMobile = form.showInMobile;
 		this.hideInList = form.hideInList;
-		this.siteId = form.siteId;
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -85,14 +83,6 @@ public class FacilioForm implements Serializable {
 		this.siteIds = siteIds;
 	}
 
-	private long siteId = -1;
-	public long getSiteId() {
-		return siteId;
-	}
-
-	public void setSiteId(long siteId) {
-		this.siteId = siteId;
-	}
 
 	private long moduleId = -1;
 
