@@ -13,6 +13,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -147,6 +148,7 @@ public class ExportPointsDataAPI {
 				.on("Points.ASSET_CATEGORY_ID="+"Asset_Categories.ID")
 				.leftJoin(ModuleFactory.getFieldsModule().getTableName())
 				.on("Points.FIELD_ID="+"Fields.FIELDID")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"),CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"),String.valueOf(controllerId) ,StringOperators.IS));
 
 		List<Map<String, Object>> props = builder.get();
