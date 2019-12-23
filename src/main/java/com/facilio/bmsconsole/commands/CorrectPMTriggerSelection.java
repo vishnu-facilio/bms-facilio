@@ -239,8 +239,21 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
             List<Map.Entry<Long, TaskSectionContext>> missing = new ArrayList<>();
             List<String> missingString = new ArrayList<>();
             List<String> woArray = new ArrayList<>();
+            List<String> check = Arrays.asList("annually","monthly","yearly","quarterly","half-yearly","half yearly","halfyearly", "daily", "weekly");
 
             for (Map.Entry<Long, TaskSectionContext> entry: taskSections.entrySet()) {
+                boolean skip = false;
+                for (String s: check) {
+                    if (!entry.getValue().getName().toLowerCase().contains(s)) {
+                        skip = true;
+                        break;
+                    }
+                }
+
+                if (skip) {
+                    continue;
+                }
+
                 if (!sectionNames.contains(StringUtils.trim(entry.getValue().getName()))) {
                     missing.add(entry);
                     missingString.add(entry.getValue().getName());
