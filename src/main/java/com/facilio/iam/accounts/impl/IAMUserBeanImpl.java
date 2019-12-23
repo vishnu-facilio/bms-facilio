@@ -758,11 +758,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	static IAMUser createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace) throws Exception {
 		IAMUser user = FieldUtil.getAsBeanFromMap(prop, IAMUser.class);
-//		if (user.getPhotoId() > 0) {
-//			FileStore fs = FacilioFactory.getFileStoreFromOrg(user.getOrgId(), -1);
-//			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
+		if (user.getPhotoId() > 0) {
+			FileStore fs = FacilioFactory.getFileStoreFromOrg(user.getOrgId(), -1);
+			user.setAvatarUrl(fs.newPreviewFileUrl("user", user.getPhotoId()));
 //			user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
-//		}
+		}
 		return user;
 	}
 
@@ -1137,6 +1137,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			Map<Long, Map<String, Object>> userMap = new HashMap<>();
 			for (Map<String, Object> prop : list) {
 				userMap.put((long)prop.get("iamOrgUserId"), prop);
+				Long photoId = (Long) prop.get("photoId"); 
+				if (photoId != null && photoId > 0) {
+					prop.put("avatarUrl", FacilioFactory.getFileStore().newPreviewFileUrl("user", photoId));
+				}
 			}
 			return userMap;
 		}
