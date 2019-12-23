@@ -30,7 +30,8 @@ import com.facilio.modules.fields.FacilioField;
 public class ExportPointsDataAPI {
 
 	private static final Logger LOGGER = Logger.getLogger(ExportPointsDataAPI.class.getName());
-
+	private static final int CONFI_STATUS = 3;
+	
 	public static Map<String,Object> getTableData(List<String> columns, List<Map<String,Object>> recorddata) throws Exception {
 		
 		List<String> headers = new ArrayList<String>(); 
@@ -148,7 +149,7 @@ public class ExportPointsDataAPI {
 				.on("Points.ASSET_CATEGORY_ID="+"Asset_Categories.ID")
 				.leftJoin(ModuleFactory.getFieldsModule().getTableName())
 				.on("Points.FIELD_ID="+"Fields.FIELDID")
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"),CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("configureStatus"),String.valueOf(CONFI_STATUS) ,StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"),String.valueOf(controllerId) ,StringOperators.IS));
 
 		List<Map<String, Object>> props = builder.get();
