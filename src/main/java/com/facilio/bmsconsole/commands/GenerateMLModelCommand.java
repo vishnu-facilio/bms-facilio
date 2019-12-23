@@ -13,7 +13,6 @@ import java.util.TimeZone;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.struts2.json.annotations.JSON;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -108,9 +107,9 @@ public class GenerateMLModelCommand extends FacilioCommand {
 			LOGGER.fatal("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Response from Python is empty");
 		}else{
 			try{
-				JSONObject json =  new JSONObject(mlContext.getResult());
+				JSONObject json =  new JSONObject(result);
 			}catch(Exception e){
-				LOGGER.fatal("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Result is not a valid JSON "+" RESULT : "+mlContext.getResult());				
+				LOGGER.fatal("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Result is not a valid JSON "+" RESULT : "+result);				
 			}
 		}
 		mlContext.setResult(result);
