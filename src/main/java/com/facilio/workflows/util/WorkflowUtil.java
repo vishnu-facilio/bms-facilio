@@ -1005,13 +1005,29 @@ public class WorkflowUtil {
 		if(workflow.getResultEvaluator() != null && !workflow.getResultEvaluator().isEmpty()) {
 			String resEval = workflow.getResultEvaluator();
 			
-			if(resEval.contains("if")) {
-				
-			}
-			
 			resEval = resEval.replaceAll("\\&\\&", "&");
 			resEval = resEval.replaceAll("\\|\\|", "|");
-			code = code + "return "+resEval+";\n";
+			
+			if(containsIgnoreCase(resEval, "if")) {
+				String[] ress = resEval.split(",");
+				
+				String condn = ress[0];
+				String trueRes = ress[1];
+				String falseRes = ress[2];
+				
+				condn = condn.substring(condn.indexOf('(')+1, condn.length());
+				falseRes = falseRes.substring(0, falseRes.length()-1);
+				
+				code = code + "if("+condn+") { \n";
+				code = code + "return "+trueRes+";\n";
+				code = code + "}";
+				code = code + "else { \n";
+				code = code + "return "+falseRes+";\n";
+				code = code + "}\n";
+			}
+			else {
+				code = code + "return "+resEval+";\n";
+			}
 		}
 		
 		code = code + "}";
@@ -1026,6 +1042,10 @@ public class WorkflowUtil {
 		}
 		return workflow;
 	}
+	
+	public static boolean containsIgnoreCase(String str, String subString) {
+        return str.toLowerCase().contains(subString.toLowerCase());
+    }
 	
 	public static WorkflowContext getWorkflowContext(Long workflowId) throws Exception  {
 		return getWorkflowContext(workflowId,false);
