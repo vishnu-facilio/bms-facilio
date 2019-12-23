@@ -261,7 +261,7 @@ public class FormAction extends FacilioAction {
 		TransactionChainFactory.getAddFormCommand().execute(context);
 		
 		setFormName(form.getName());
-		formDetails();
+//		formDetails();
 		
 		return SUCCESS;
 	}
