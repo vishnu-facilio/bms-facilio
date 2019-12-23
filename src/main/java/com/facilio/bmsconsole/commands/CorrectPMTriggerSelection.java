@@ -252,12 +252,15 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
                 }
 
                 if (skip) {
+                    LOGGER.log(Level.SEVERE, workOrderContext.getId() + " skipping " + entry.getValue().getName());
                     continue;
                 }
 
                 if (!sectionNames.contains(StringUtils.trim(entry.getValue().getName()))) {
                     missing.add(entry);
                     missingString.add(entry.getValue().getName());
+                } else {
+                    LOGGER.log(Level.SEVERE, workOrderContext.getId() + " [stale] " + entry.getValue().getName());
                 }
             }
 
