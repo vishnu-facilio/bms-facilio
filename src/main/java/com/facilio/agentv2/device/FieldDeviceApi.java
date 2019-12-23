@@ -59,12 +59,9 @@ public class FieldDeviceApi
                             .andCondition(CriteriaAPI.getNameCondition(name,MODULE))
                             .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.AGENT_ID), String.valueOf(agentId),NumberOperators.EQUALS));
                     List<Map<String, Object>> result = builder.get();
-                    System.out.println("anand.h "+result.toString());
-                    System.out.println("anand.h 1001 "+ result.size());
                     if(result.size() == 1){
                         Map<String, Object> row = result.get(0);
                         Device device = FieldUtil.getAsBeanFromMap(result.get(0),Device.class);
-                        System.out.println("anand.h 1001.1 "+device.getControllerProps().get("type"));
                         if (device.getControllerProps().containsKey("type"))
                         device.setType(Integer.parseInt(device.getControllerProps().get("type").toString()));
                         return device;
