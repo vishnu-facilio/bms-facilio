@@ -21,6 +21,7 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.json.simple.JSONObject;
@@ -230,16 +231,21 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
 
             Map<Long, TaskSectionContext> taskSections = TicketAPI.getTaskSectionFromParentTicketID(workOrderContext.getId());
 
-            Set<String> sectionNames = exec.get(0).getRight();
+            Set<String> sectionNames = new HashSet<>();
+            for (String name: exec.get(0).getRight()) {
+                sectionNames.add(StringUtils.trim(name));
+            }
 
             List<Map.Entry<Long, TaskSectionContext>> missing = new ArrayList<>();
 
             for (Map.Entry<Long, TaskSectionContext> entry: taskSections.entrySet()) {
-                if (!sectionNames.contains(entry.getValue().getName())) {
+                if (!sectionNames.contains(StringUtils.trim(entry.getValue().getName()))) {
                     missing.add(entry);
-                    LOGGER.log(Level.SEVERE, entry.getValue().getName());
                 }
             }
+
+            LOGGER.log(Level.SEVERE, workOrderContext.getId() + " original array " + Arrays.toString(missing.toArray()));
+            LOGGER.log(Level.SEVERE, workOrderContext.getId() + " missing array " + Arrays.toString(missing.toArray()));
 
             if (isDoMig()) {
                 deleteMissingEntry(missing);
