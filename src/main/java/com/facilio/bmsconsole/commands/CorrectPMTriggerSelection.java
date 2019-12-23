@@ -237,15 +237,20 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
             }
 
             List<Map.Entry<Long, TaskSectionContext>> missing = new ArrayList<>();
+            List<String> missingString = new ArrayList<>();
+            List<String> woArray = new ArrayList<>();
 
             for (Map.Entry<Long, TaskSectionContext> entry: taskSections.entrySet()) {
                 if (!sectionNames.contains(StringUtils.trim(entry.getValue().getName()))) {
                     missing.add(entry);
+                    missingString.add(entry.getValue().getName());
                 }
+                woArray.add(entry.getValue().getName());
             }
 
-            LOGGER.log(Level.SEVERE, workOrderContext.getId() + " original array " + Arrays.toString(missing.toArray()));
-            LOGGER.log(Level.SEVERE, workOrderContext.getId() + " missing array " + Arrays.toString(missing.toArray()));
+            LOGGER.log(Level.SEVERE, workOrderContext.getId() + " ghost array " + Arrays.toString(sectionNames.toArray()));
+            LOGGER.log(Level.SEVERE, workOrderContext.getId() + " woArray array " + Arrays.toString(woArray.toArray()));
+            LOGGER.log(Level.SEVERE, workOrderContext.getId() + " missing array " + Arrays.toString(missingString.toArray()));
 
             if (isDoMig()) {
                 deleteMissingEntry(missing);
