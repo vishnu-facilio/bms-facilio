@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -34,10 +35,12 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -553,15 +556,51 @@ public class FormsAPI {
 		
 		List<FacilioField> fields = FieldFactory.getFormFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-	
-		GenericSelectRecordBuilder formListBuilder=new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(formModule.getTableName());
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(formModule));
+		Map<String, FacilioField> formSiteFieldMap = FieldFactory.getAsMap(FieldFactory.getFormSiteRelationFields());
+		List<Long> spaces = new ArrayList<>();
+		if (AccountUtil.getCurrentSiteId() > 0) {
+			spaces.add(AccountUtil.getCurrentSiteId());
+
+		}
+		else {
+			spaces = AccountUtil.getCurrentUser().getAccessibleSpace();
+		}
+		System.out.println("&*&*&*&*"+ spaces);
+//		GenericSelectRecordBuilder formListBuilder=new GenericSelectRecordBuilder()
+//				.select(fields)
+//				.table(formModule.getTableName())
+//				.innerJoin("Form_Site_Relation")
+//				.on("Forms.ID = Form_Site_Relation.FORM_ID")
+//				;
+
+		 GenericSelectRecordBuilder forms1 = new GenericSelectRecordBuilder()
+					.table(ModuleFactory.getFormSiteRelationModule().getTableName())
+					.select(Collections.singleton(formSiteFieldMap.get("formId")));
+
+		 if (spaces != null && spaces.size() > 0) {
+			 StringJoiner spaceIds = new StringJoiner(",");
+			 spaces.stream().forEach(f -> spaceIds.add(String.valueOf(f)));
+			 forms1.andCustomWhere("Form_Site_Relation.SITE_ID = "+ spaceIds.toString());
+		 }
+		 GenericSelectRecordBuilder forms2 = new GenericSelectRecordBuilder()
+					.table(ModuleFactory.getFormSiteRelationModule().getTableName())
+					.select(Collections.singleton(formSiteFieldMap.get("formId")));
+
+
+		 GenericSelectRecordBuilder formListBuilder = new GenericSelectRecordBuilder()
+									.select(fields)
+									.table(formModule.getTableName())
+									;
+
+
 		if (moduleName != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			long moduleId=modBean.getModule(moduleName).getModuleId();
 			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
+		}
+		if (spaces != null && spaces.size() > 0) {
+			formListBuilder.andCustomWhere("(" + FieldFactory.getIdField().getColumnName() + " in (" + forms1.constructSelectStatement() + ")");
+			formListBuilder.orCustomWhere(FieldFactory.getIdField().getColumnName() + " not in (" + forms2.constructSelectStatement() + "))");
 		}
 		if (formTypes != null) {
 			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("formType"), StringUtils.join(formTypes, ","), NumberOperators.EQUALS));
@@ -585,6 +624,7 @@ public class FormsAPI {
 		
 		List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
 		
+
 		if (fetchFields && CollectionUtils.isNotEmpty(forms)) {
 			for (FacilioForm form: forms) {
 				setFormSections(form);
@@ -712,9 +752,9 @@ public class FormsAPI {
 		}
 		return allFields;
 	}
-	
+
 	public static void setFieldDetails(ModuleBean modBean, List<FormField> fields, String moduleName) throws Exception {
-		for(int i =0; i < fields.size(); i++) {
+		for (int i = 0; i < fields.size(); i++) {
 			FormField f = fields.get(i);
 			FormField mutatedField = FieldUtil.cloneBean(f, FormField.class);
 			FacilioField field = modBean.getField(mutatedField.getName(), moduleName);
@@ -742,9 +782,9 @@ public class FormsAPI {
 			}
 		}
 		return defaultForm;
-		
+
 	}
-	
+
 	// From DB first. If not, will check in factory
 	public static FacilioForm getDefaultFormFromDBOrFactory(FacilioModule module, FormType formType, Boolean...onlyFields) throws Exception {
 		String formName = FormFactory.getDefaultFormName(module.getName(), formType.getStringVal());
