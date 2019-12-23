@@ -141,12 +141,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 	private FacilioForm getChildForm(FacilioModule childModule) throws Exception {
 		FacilioForm form = null;
 		if (childModule != null && childModule.getExtendModule() != null) {
-			String extendedModName = childModule.getExtendModule().getName();
-			String formName = FormFactory.getDefaultFormName(extendedModName, FormType.WEB.getStringVal());
-			form = FormsAPI.getFormFromDB(formName, childModule.getExtendModule());
-			if (form == null) {
-				form = new FacilioForm(FormFactory.getDefaultForm(extendedModName, FormType.WEB.getStringVal()));
-			}
+			form = FormsAPI.getDefaultFormFromDBOrFactory(childModule.getExtendModule(), FormType.WEB);
 			form.setDisplayName(childModule.getDisplayName());
 		}
 		return form;
@@ -176,7 +171,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 		else {
 			List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
 			if (form.getName().equalsIgnoreCase("web_pm")) { // Temp...showing custom fields in standard form...will be removed once action in pm
-				FacilioForm defaultWoForm = FormsAPI.getDefaultForm(ContextNames.WORK_ORDER, FormType.WEB, true);
+				FacilioForm defaultWoForm = form = FormsAPI.getDefaultFormFromDBOrFactory(modBean.getModule(moduleName), FormType.WEB, true);
 				customFields = defaultWoForm.getFields().stream().filter(field -> field.getField() != null && !field.getField().isDefault())
 								.map(field -> field.getField()).collect(Collectors.toList());
 			}
