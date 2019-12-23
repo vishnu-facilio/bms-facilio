@@ -68,11 +68,11 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			List<Long> recordIdsTemp = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 			
 			
-			if(recordIdsTemp!= null && !recordIdsTemp.isEmpty() && currentTask != null)
-			{
-				LOGGER.log(Level.INFO, "skipValidation: "+skipValidation+" Task record ID: "+ recordIdsTemp.get(0) + " Current Input Value: " +  currentTask.getInputValue() + 
-						" Current Input Time: " + currentTask.getInputTime() +""+ " Reading Field Unit: " + currentTask.getReadingFieldUnitEnum());
-			}
+//			if(recordIdsTemp!= null && !recordIdsTemp.isEmpty() && currentTask != null)
+//			{
+//				LOGGER.log(Level.INFO, "skipValidation: "+skipValidation+" Task record ID: "+ recordIdsTemp.get(0) + " Current Input Value: " +  currentTask.getInputValue() + 
+//						" Current Input Time: " + currentTask.getInputTime() +""+ " Reading Field Unit: " + currentTask.getReadingFieldUnitEnum());
+//			}
 			
 			skipValidation = skipValidation == null ? Boolean.FALSE : skipValidation;  
 			
