@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -172,8 +173,13 @@ public class GetFormMetaCommand extends FacilioCommand {
 				}
 			}
 		}
-		else if (!form.getName().equalsIgnoreCase("web_pm")) {
+		else {
 			List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+			if (form.getName().equalsIgnoreCase("web_pm")) { // Temp...showing custom fields in standard form...will be removed once action in pm
+				FacilioForm defaultWoForm = FormsAPI.getDefaultForm(ContextNames.WORK_ORDER, FormType.WEB, true);
+				customFields = defaultWoForm.getFields().stream().filter(field -> field.getField() != null && !field.getField().isDefault())
+								.map(field -> field.getField()).collect(Collectors.toList());
+			}
 			if (customFields != null && !customFields.isEmpty()) {
 				for (FacilioField f: customFields) {
 					count = count + 1;

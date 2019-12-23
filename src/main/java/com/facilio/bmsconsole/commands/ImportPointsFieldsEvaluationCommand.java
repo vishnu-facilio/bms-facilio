@@ -31,16 +31,22 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 			long val = checkCategory(categoryVal);
 			if(val != 0 ) {
 				itr.put("Asset Category",String.valueOf(val));
+			}else {
+				throw new IllegalArgumentException("This Asset_Category doesn't exists : "+categoryVal);
 			}
 
 			long valasset = checkResources(val, resource);
 			if(valasset != 0 ) {
 				itr.put("Assets",String.valueOf(valasset));
+			}else {
+				throw new IllegalArgumentException("This Field "+fieldVal +" doesn't exists for this Asset_Category : "+categoryVal);
 			}
 
 			long valfield = checkFields(val,fieldVal);
 			if(valfield != 0 ) {
 				itr.put("Reading",String.valueOf(valfield));
+			}else {
+				throw new IllegalArgumentException("Field "+fieldVal +" doesn't exists for this Asset_Category : "+categoryVal);
 			}
 
 		finalList.add(itr);

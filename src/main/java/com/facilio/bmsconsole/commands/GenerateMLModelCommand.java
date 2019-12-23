@@ -13,7 +13,6 @@ import java.util.TimeZone;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.struts2.json.annotations.JSON;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -104,14 +103,9 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		headers.put("Content-Type", "application/json");
 		LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());
 		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(),300);
-		if(StringUtils.isEmpty(result)){
-			LOGGER.fatal("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Response from Python is empty");
-		}else{
-			try{
-				JSONObject json =  new JSONObject(mlContext.getResult());
-			}catch(Exception e){
-				LOGGER.fatal("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Result is not a valid JSON "+" RESULT : "+mlContext.getResult());				
-			}
+		if(StringUtils.isEmpty(result) || result.contains("Internal Server Error")){
+			LOGGER.fatal("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Response is not valid. RESULT : "+result);
+		    context.put("ML_ERROR", true);
 		}
 		mlContext.setResult(result);
 	}catch(Exception e){
