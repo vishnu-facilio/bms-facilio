@@ -616,6 +616,20 @@ public class TicketAPI {
 		}
 		return null;
 	}
+
+	public static Map<Long, TaskSectionContext> getTaskSectionFromParentTicketID(long parentTicketId) throws Exception {
+		if(parentTicketId != -1) {
+			FacilioModule module = ModuleFactory.getTaskSectionModule();
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getTaskSectionFields())
+					.table(module.getTableName())
+					.andCustomWhere("(IS_PRE_REQUEST IS NULL OR NOT IS_PRE_REQUEST) AND PARENT_TICKET_ID = ?", parentTicketId);
+
+			return getTasksSectionsFromMapList(selectBuilder.get());
+
+		}
+		return null;
+	}
 	
 	public static List<TaskSectionContext> getTaskSections(Criteria criteria) throws Exception {
 		if(criteria != null) {

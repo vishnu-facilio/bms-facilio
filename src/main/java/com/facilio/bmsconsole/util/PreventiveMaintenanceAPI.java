@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.commands.CorrectPMTriggerSelection;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.jobs.FailedPMNewScheduler;
 import com.facilio.db.builder.*;
@@ -3510,6 +3511,63 @@ public class PreventiveMaintenanceAPI {
 			long end = start + (24 * 60 * 60);
 			FailedPMNewScheduler.execute(jc, pm.getId(), start, end, doMigration);
 		}
+	}
+
+	public static void findMissedTriggerSelection(long orgID, boolean doMig, long pmId) throws Exception {
+
+		AccountUtil.setCurrentAccount(orgID);
+		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+			LOGGER.log(Level.WARN, "org is missing");
+			return;
+		}
+
+		CorrectPMTriggerSelection correctPMTriggerSelection = new CorrectPMTriggerSelection();
+
+		SelectRecordsBuilder<WorkOrderContext> endTimeSelect = new SelectRecordsBuilder<>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		endTimeSelect.select(fields)
+				.module(module)
+				.beanClass(WorkOrderContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), String.valueOf(3), NumberOperators.EQUALS))
+				.orderBy("WorkOrders.CREATED_TIME DESC")
+				.limit(1);
+		List<WorkOrderContext> endWorkOrderContexts = endTimeSelect.get();
+
+		if (CollectionUtils.isEmpty(endWorkOrderContexts)) {
+			LOGGER.log(Level.ERROR, "no end workorder");
+			return;
+		}
+
+		long endTime = endWorkOrderContexts.get(0).getCreatedTime();
+
+		SelectRecordsBuilder<WorkOrderContext> startTimeSelect = new SelectRecordsBuilder<>();
+		startTimeSelect.select(fields)
+				.module(module)
+				.beanClass(WorkOrderContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), String.valueOf(3), NumberOperators.EQUALS))
+				.orderBy("WorkOrders.CREATED_TIME ASC")
+				.limit(1);
+		List<WorkOrderContext> startWorkOrderContexts = startTimeSelect.get();
+
+		if (CollectionUtils.isEmpty(startWorkOrderContexts)) {
+			LOGGER.log(Level.ERROR, "no start workorder");
+			return;
+		}
+
+		long startTime = startWorkOrderContexts.get(0).getCreatedTime();
+
+		correctPMTriggerSelection.setStartTime((startTime/1000) - 300);
+		correctPMTriggerSelection.setEndTime((endTime/1000) + 300);
+		correctPMTriggerSelection.setDoMig(doMig);
+
+		JobContext jc = new JobContext();
+		jc.setJobId(pmId);
+		correctPMTriggerSelection.execute(jc);
 	}
 
 	private static JobContext getJobFromRS(ResultSet rs) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
