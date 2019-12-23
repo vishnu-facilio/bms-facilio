@@ -24,6 +24,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators;
@@ -639,4 +640,23 @@ public class PointsAPI {
         return false;
     }
 
+    public static List<Map<String, Object>> getPointsFromDb(List<String> pointNames, Controller controller) throws Exception {
+        Criteria criteria = new Criteria();
+        if (controller != null) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), String.valueOf(controller.getId()), NumberOperators.EQUALS));
+        }else{
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), CommonOperators.IS_EMPTY));
+        }
+        criteria.addAndCondition(CriteriaAPI.getNameCondition(String.join(",",pointNames),ModuleFactory.getPointModule()));
+
+        List<Map<String, Object>> pointsFromDb = getPointData(criteria);
+        return pointsFromDb;
+    }
+    private static List<Map<String,Object>> getPointData(Criteria criteriaList) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getPointModule().getTableName())
+                .select(FieldFactory.getPointFields())
+                .andCriteria(criteriaList);
+        return builder.get();
+    }
 }

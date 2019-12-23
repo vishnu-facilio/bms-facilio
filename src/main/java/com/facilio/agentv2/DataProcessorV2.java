@@ -1,5 +1,6 @@
 package com.facilio.agentv2;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.PublishType;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerUtilV2;
@@ -11,12 +12,18 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.util.AckUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DataProcessorV2
@@ -90,12 +97,16 @@ public class DataProcessorV2
                     //processLog(payload, agent.getId(), recordId);
                     break;
                 case TIMESERIES:
-                    Controller controllerTs = cU.getControllerFromAgentPayload(payload);
-                    if( controllerTs != null){
-                        JSONObject timeseriesPayload = (JSONObject) payload.clone();
-                        timeseriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID,controllerTs.getId());
-                        processTimeSeries(timeseriesPayload,controllerTs);
-                    }
+                    Controller controller = cU.getControllerFromAgentPayload(payload);
+
+                    JSONObject timeSeriesPayload = (JSONObject) payload.clone();
+                    if (controller!=null)
+                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID,controller.getId());
+                    else
+                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID,null);
+
+                    processTimeSeries(timeSeriesPayload,controller);
+
                     break;
                 case COV:
                     processCOV(payload,agentName);
@@ -123,7 +134,9 @@ public class DataProcessorV2
             LOGGER.info("Exception occurred, Controller identifier can't be null ->"+payload);
             return false;
         }
+        System.out.println("anand.h 1000 "+ agent.getId() + ":"+ identifier);
         Device device = FieldDeviceApi.getDevice(agent.getId(),identifier);
+        System.out.println("anand.h 1002 : "+device.getType());
         if (device != null) {
             LOGGER.info(" controller not null and so processing point");
             return PointsUtil.processPoints(payload, device);
@@ -149,9 +162,22 @@ public class DataProcessorV2
             FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
             FacilioContext context = chain.getContext();
             context.put(AgentConstants.IS_NEW_AGENT,true);
-            //TODO context.put(AgentConstants.AGENT_ID,getAgentId(orgid,agentName));
+            //TODO
             context.put(AgentConstants.CONTROLLER,controller);
-            context.put(AgentConstants.CONTROLLER_ID,controller.getId());
+            if (controller!=null) {
+                context.put(AgentConstants.CONTROLLER_ID,controller.getId());
+                context.put(AgentConstants.AGENT_ID,controller.getAgentId());
+            }
+            else {
+                context.put(AgentConstants.CONTROLLER_ID,-1L);
+                if (payload.containsKey("agent")){
+                long agentId =getAgentId(payload.get("agent").toString());
+                    if (agentId>0) {
+                        context.put(AgentConstants.AGENT_ID, agentId);
+                    }
+                }
+                else  throw new Exception("Agent missing in payload");
+            }
             context.put(AgentConstants.DATA,payload);
             context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
             if(payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)){
@@ -171,7 +197,17 @@ public class DataProcessorV2
         }
     }
 
-
+    private long getAgentId(String agent) throws Exception {
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getNewAgentDataModule().getTableName())
+                .select(FieldFactory.getNewAgentDataFields())
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getNewAgentDataModule()),agent, StringOperators.IS));
+        List<Map<String, Object>> rows =selectRecordBuilder.get();
+        if (rows.size()>0){
+            return Long.parseLong(rows.get(0).get(AgentConstants.ID).toString());
+        }
+        return -1;
+    }
 
     public ControllerUtilV2 getControllerUtil(long agentId){
         ControllerUtilV2 cU;

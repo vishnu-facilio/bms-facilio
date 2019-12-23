@@ -2,11 +2,15 @@ package com.facilio.agentv2.commands;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.misc.MiscPoint;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
@@ -15,10 +19,9 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static com.facilio.agentv2.point.PointsAPI.getPointsFromDb;
 
 public class ProcessDataCommandV2 extends AgentV2Command {
 
@@ -32,14 +35,20 @@ public class ProcessDataCommandV2 extends AgentV2Command {
             if( payloadObject instanceof JSONObject){
                 JSONObject payload = (JSONObject) payloadObject;
 
-                if( containsCheck(AgentConstants.CONTROLLER,context) ){
-                    Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
+                Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
+
                     if( containsCheck(AgentConstants.DATA,payload)){
+                        System.out.println("anand.h 1991.3 "+payload);
                         JSONArray pointData = (JSONArray) payload.get(AgentConstants.DATA);
                         List<String> pointNames = new ArrayList<>();
                         JSONObject pointJSON;
                         Map<String, Map<String,String>> deviceData= new HashMap<>();
-                        deviceData.put(controller.getName(),new HashMap<>());
+                        if (controller !=null) {
+                            deviceData.put(controller.getName(),new HashMap<>());
+                        }
+                        else  {
+                            deviceData.put("UNKNOWN",new HashMap<>());
+                        }
                         for (Object point : pointData) {
                             pointJSON = (JSONObject) point;
                             if (!pointJSON.isEmpty()) {
@@ -47,39 +56,46 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                                     String pointName = (String) key;
                                     if(containsCheck(pointName,pointJSON)){
                                         pointNames.add(pointName);
-                                        deviceData.get(controller.getName()).put(pointName, String.valueOf(pointJSON.get(key)));
-                                    }
+                                        if (controller != null) {
+                                            deviceData.get(controller.getName()).put(pointName, String.valueOf(pointJSON.get(key)));
+                                        }
+                                        else {
+                                            deviceData.get("UNKNOWN").put(pointName,String.valueOf(pointJSON.get(key)));
+                                        }
+                                        }
                                 }
-                                context.put(FacilioConstants.ContextNames.DEVICE_DATA,deviceData);
+                                 context.put("DEVICE_DATA_2", deviceData);
+
                             } else {
                                 LOGGER.info(" points can't be empty ");
                             }
                         }
                         if( ! pointNames.isEmpty()){
-                            Criteria criteria = new Criteria();
-                            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), String.valueOf(controller.getId()), NumberOperators.EQUALS));
-                            criteria.addAndCondition(CriteriaAPI.getNameCondition(String.join(",",pointNames),ModuleFactory.getPointModule()));
-
-                            List<Map<String, Object>> pointsFromDb = getPointData(criteria);
-                            if( ! pointsFromDb.isEmpty() ){
+                            List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
+                            if( ! pointsFromDb.isEmpty() && controller!=null){
                                 for (Map<String, Object> pointRow : pointsFromDb) {
                                     if( ! pointRow.isEmpty()){
-                                        pointRow.put(AgentConstants.CONTROLLER_NAME,controller.getName());
+                                        pointRow.put(AgentConstants.CONTROLLER_NAME, controller.getName());
                                         reformatDataPoint(pointRow);
                                     }
                                 }
                                 context.put("DATA_POINTS",pointsFromDb);
-                            }else {
-                                throw new Exception("points from db can't be empty");
+                            }
+                            if(! pointsFromDb.isEmpty() && controller==null){
+                                for (Map<String, Object> pointRow : pointsFromDb) {
+                                    if( ! pointRow.isEmpty()){
+                                        pointRow.put(AgentConstants.CONTROLLER_NAME, "UNKNOWN");
+                                        reformatDataPoint(pointRow);
+                                    }
+                                }
+                                context.put("DATA_POINTS_WITHOUT_CONTROLLER",pointsFromDb);
                             }
 
                         }else {
                             throw new Exception(" points name can't be empty");
                         }
                     }
-                }else {
-                    throw new Exception("Controller missing from payload");
-                }
+
             }else {
                 throw new Exception(" payload must be a jsonObject");
             }
@@ -109,13 +125,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
         }
     }
 
-    private List<Map<String,Object>> getPointData(Criteria criteriaList) throws Exception {
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getPointModule().getTableName())
-                .select(FieldFactory.getPointFields())
-                .andCriteria(criteriaList);
-        return builder.get();
-    }
+
 
 
 }

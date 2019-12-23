@@ -23,7 +23,9 @@ public abstract class Point extends FacilioPoint{
     public Point() { }
 
     public abstract FacilioControllerType getControllerType();
-
+    public Point (long agentId){
+        this.agentId = agentId;
+    }
     public Point(long agentId, long controllerId) {
         this.agentId = agentId;
         setControllerId(controllerId);

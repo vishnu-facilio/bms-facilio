@@ -11,7 +11,9 @@ import java.util.Map;
 public class MiscPoint extends Point {
 
     private String path;
-
+    public MiscPoint(long agentId){
+        super(agentId);
+    }
     public MiscPoint(long agentId, long controllerId) {
         super(agentId, controllerId);
     }

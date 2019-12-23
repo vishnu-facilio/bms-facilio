@@ -5560,9 +5560,9 @@ public class FieldFactory {
 		fields.add(subscribeStatusfield);
 		return fields;
 	}
-	public static FacilioField getPointTypeField(){
-		FacilioModule module = ModuleFactory.getPointModule();
-		return getField(AgentConstants.POINT_TYPE, "POINT_TYPE", module, FieldType.NUMBER);
+	public static FacilioField getControllerTypeField(){
+		FacilioModule module = ModuleFactory.getNewControllerModule();
+		return getField(AgentConstants.CONTROLLER_TYPE, "CONTROLLER_TYPE", module, FieldType.NUMBER);
 	}
 	public static List<FacilioField>  getNiagaraPointFields() {
 		FacilioModule module = ModuleFactory.getNiagaraPointModule();

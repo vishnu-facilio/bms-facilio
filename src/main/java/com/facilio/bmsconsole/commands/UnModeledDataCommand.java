@@ -1,10 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -19,12 +24,19 @@ import java.util.*;
 public class UnModeledDataCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(UnModeledDataCommand.class.getName());
-
+	private boolean isV2;
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-
-		Map<String, Map<String,String>> deviceData =(Map<String, Map<String,String>>) context.get(FacilioConstants.ContextNames.DEVICE_DATA);
+		LOGGER.info("anand.h 2000");
+		if(context.containsKey(AgentConstants.IS_NEW_AGENT) && (context.get(AgentConstants.IS_NEW_AGENT) != null) && (context.get(AgentConstants.IS_NEW_AGENT) instanceof Boolean)){
+			if((boolean)context.get(AgentConstants.IS_NEW_AGENT)){
+				isV2 = true;
+			}
+		}
+		Map<String, Map<String,String>> deviceData;
+		if (isV2) deviceData =(Map<String, Map<String,String>>) context.get("DEVICE_DATA_2");
+		else deviceData = (Map<String, Map<String,String>>) context.get(FacilioConstants.ContextNames.DEVICE_DATA);
 		long timeStamp=(long)context.get(FacilioConstants.ContextNames.TIMESTAMP);
 		Long controllerId=(Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		List<Map<String, Object>> records=new ArrayList<Map<String,Object>>();
@@ -37,42 +49,79 @@ public class UnModeledDataCommand extends FacilioCommand {
 			Map<String,String> instanceMap= data.getValue(); // timeseries data
 			for(Map.Entry<String,String> map:instanceMap.entrySet()) {
 				LOGGER.info("map->"+map);
-				String instanceName=map.getKey();
+				String pointName=map.getKey();
 				String instanceVal=map.getValue();
 				if(instanceVal.equalsIgnoreCase("NaN")) {
 					continue;
 				}
-				Long pointsInstanceId=null;
-//				if(TimeSeriesAPI.isStage()) {
-					pointsInstanceId = getPointsUnmodledInstance(deviceName , instanceName ,controllerId, pointsRecords);
-//				}
-				Long instanceId= getUnmodledInstance(deviceName,instanceName,controllerId);
+				Map<String, Object> record = new HashMap<String, Object>();
+				record.put("value", instanceVal);
+				record.put("ttime", timeStamp);
+				if (isV2) {
+					long pointId;
+					if (controllerId==-1) {
+						pointId = getPointIdWithNullController(pointName);
+					}
+					else {
+						pointId = getPointId(controllerId, pointName);
+						System.out.println("test "+ pointId);
+					}
+					if (pointId >= 0) {
+						record.put("instanceId", pointId);
+					}
 
-				if(instanceId==null && controllerId!=null) {
-					//TODO temporary code.. should be removed later
-					//for now passing controllerid as null to ensure updating of the unmodelled instance with proper controllerId.. 
-					instanceId= getUnmodledInstance(deviceName,instanceName,null);
-					//do the controllerId update here..
-					if(instanceId!=null) {
-						updateControllerForInstance(instanceId, controllerId);
+				}else{
+					long newInstanceId = getPointsId(controllerId,pointName);
+					if (newInstanceId >=0 ) {
+						record.put("newInstanceId", newInstanceId);
 					}
 				}
-
-				if(instanceId==null) {
-					instanceId=getUnmodeledInstanceAfterInsert(deviceName,instanceName,controllerId);
-				}
-				Map<String, Object> record=new HashMap<String,Object>();			
-//				if(TimeSeriesAPI.isStage()) {
-					record.put("newInstanceId", pointsInstanceId);
-//				}
-				record.put("instanceId", instanceId);
-				record.put("ttime",timeStamp);
-				record.put("value", instanceVal);
 				records.add(record);
 			}
 		}
 		insertUnmodeledData(records);
 		return false;
+	}
+
+	private long getPointIdWithNullController(String pointName) throws Exception {
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getPointModule().getTableName())
+				.select(FieldFactory.getPointsFields())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getPointModule()),pointName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), CommonOperators.IS_EMPTY));
+		List<Map<String, Object>> rows = selectRecordBuilder.get();
+		if (rows.size()>0){
+			if(rows.get(0).containsKey(AgentConstants.ID))
+				return Long.parseLong(rows.get(0).get(AgentConstants.ID).toString());
+		}
+		return -1;
+	}
+
+	private long getPointsId(Long controllerId, String pointName) throws Exception {
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getPointsModule().getTableName())
+				.select(FieldFactory.getPointsFields())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getPointsModule()),pointName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointsModule()), Collections.singleton(controllerId),NumberOperators.EQUALS));
+		List<Map<String, Object>> rows = selectRecordBuilder.get();
+		if (rows.size()>0){
+			if(rows.get(0).containsKey(AgentConstants.ID))
+				return Long.parseLong(rows.get(0).get(AgentConstants.ID).toString());
+		}
+		return -1;
+	}
+	private long getPointId(Long controllerId, String pointName) throws Exception {
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getPointModule().getTableName())
+				.select(FieldFactory.getPointFields())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getPointModule()),pointName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), Collections.singleton(controllerId),NumberOperators.EQUALS));
+		List<Map<String, Object>> rows = selectRecordBuilder.get();
+		if (rows.size()>0){
+			if(rows.get(0).containsKey(AgentConstants.ID))
+			return Long.parseLong(rows.get(0).get(AgentConstants.ID).toString());
+		}
+		return -1;
 	}
 
 	private  Long getUnmodledInstance(String deviceName, String instanceName, Long controllerId) throws Exception {
