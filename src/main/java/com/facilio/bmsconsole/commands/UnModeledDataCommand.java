@@ -28,7 +28,6 @@ public class UnModeledDataCommand extends FacilioCommand {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		LOGGER.info("anand.h 2000");
 		if(context.containsKey(AgentConstants.IS_NEW_AGENT) && (context.get(AgentConstants.IS_NEW_AGENT) != null) && (context.get(AgentConstants.IS_NEW_AGENT) instanceof Boolean)){
 			if((boolean)context.get(AgentConstants.IS_NEW_AGENT)){
 				isV2 = true;

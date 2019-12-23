@@ -38,7 +38,6 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                 Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
 
                     if( containsCheck(AgentConstants.DATA,payload)){
-                        System.out.println("anand.h 1991.3 "+payload);
                         JSONArray pointData = (JSONArray) payload.get(AgentConstants.DATA);
                         List<String> pointNames = new ArrayList<>();
                         JSONObject pointJSON;

@@ -134,9 +134,7 @@ public class DataProcessorV2
             LOGGER.info("Exception occurred, Controller identifier can't be null ->"+payload);
             return false;
         }
-        System.out.println("anand.h 1000 "+ agent.getId() + ":"+ identifier);
         Device device = FieldDeviceApi.getDevice(agent.getId(),identifier);
-        System.out.println("anand.h 1002 : "+device.getType());
         if (device != null) {
             LOGGER.info(" controller not null and so processing point");
             return PointsUtil.processPoints(payload, device);

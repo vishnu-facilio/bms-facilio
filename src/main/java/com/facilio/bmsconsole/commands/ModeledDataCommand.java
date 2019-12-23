@@ -106,7 +106,7 @@ public class ModeledDataCommand extends AgentV2Command {
 							continue;
 						}
 						dataPoints = getValueContainsPointsData(deviceName, pointName, controllerId, dataPointsValue);
-						if (dataPoints==null) System.out.println("anand.h 4000 "+ " dataPoints is null");
+						if (dataPoints==null) LOGGER.info(" dataPoints is null");
 						if(pointsInDb.contains(pointName) && dataPoints!=null){
 							Long resourceId = (Long) dataPoints.get("resourceId");
 						Long fieldId = (Long) dataPoints.get("fieldId");
