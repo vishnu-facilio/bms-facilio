@@ -21,6 +21,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
@@ -1597,6 +1598,11 @@ public class DashboardUtil {
 		List<Long> dashboardIds = new ArrayList<>(dashboardMap.keySet());
 		
 		List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
+		
+		if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole().getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN)) {
+			dashboardList.addAll(dashboardMap.values());
+			return dashboardList;
+		}
 		
 		if (!dashboardMap.isEmpty()) {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

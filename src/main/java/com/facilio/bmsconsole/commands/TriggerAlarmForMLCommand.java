@@ -92,20 +92,23 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 			Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(parentID);
 			
 	    	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
-	    	double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
-	
-	    	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
-	    	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
-	    	
-	    	 
-	    	LOGGER.info("Inside check and Generate Event "+parentID+". actual value "+actualValue+" , upperBound "+adjustedUpperBound);
-	    	if(actualValue > adjustedUpperBound)
-	    	{
-	    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext);
-	    	}
-	    	else
-	    	{
-				generateClearMLAnomalyEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),mlContext);
+	    	if(!actualValueMap.isEmpty()){
+	    		double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
+	    		
+		    	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
+		    	if(!adjustedUpperBoundMap.isEmpty()){
+		    		double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
+			    	 
+			    	LOGGER.info("Inside check and Generate Event "+parentID+". actual value "+actualValue+" , upperBound "+adjustedUpperBound);
+			    	if(actualValue > adjustedUpperBound)
+			    	{
+			    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext);
+			    	}
+			    	else
+			    	{
+						generateClearMLAnomalyEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),mlContext);
+			    	}
+		    	}
 	    	}
 		}
 		catch(Exception e)

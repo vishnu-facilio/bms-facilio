@@ -83,6 +83,7 @@ public class FormFactory {
 		forms.put("portalWorkpermitForm", getPortalWorkPermitForm());
 		forms.put("insuranceForm", getInsuranceForm());
 		forms.put("contactForm", getContactForm());
+		forms.put("printerForm",getPrinterForm());
 
 		return forms;
 	}
@@ -1261,6 +1262,25 @@ public class FormFactory {
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 2));		
 		fields.add(new FormField("associatedResource", FieldDisplayType.WOASSETSPACECHOOSER, "Space", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("deviceType", FieldDisplayType.SELECTBOX, "Device Type", Required.REQUIRED,5, 1));		
+		return fields;
+	}
+
+	public static FacilioForm getPrinterForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Printers");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ModuleNames.PRINTERS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getPrinterFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	private static List<FormField> getPrinterFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("ip", FieldDisplayType.TEXTBOX, "IP Address", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("model", FieldDisplayType.SELECTBOX, "Printer Model", Required.REQUIRED,3, 1));
+		fields.add(new FormField("connectionMode", FieldDisplayType.SELECTBOX, "Printer Model", Required.REQUIRED,4, 1));
 		return fields;
 	}
 	

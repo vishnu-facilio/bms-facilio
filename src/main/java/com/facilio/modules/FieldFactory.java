@@ -6700,8 +6700,6 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getField("type", "NOTIFICATION_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("to", "TO_ADDR", module, FieldType.STRING));
-		fields.add(getField("cc", "CC_ADDR", module, FieldType.STRING));
-		fields.add(getField("bcc", "BCC_ADDR", module, FieldType.STRING));
 		fields.add(getField("info", "INFO", module, FieldType.STRING));
 		fields.add(getField("threadName", "THREAD_NAME", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.STRING));
@@ -7240,6 +7238,34 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	public static List<FacilioField> getPrinterFields() {
+		FacilioModule module = ModuleFactory.getPrinterModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("ip", "IP", module, FieldType.STRING));
+		fields.add(getField("info", "INFO", module, FieldType.STRING));
+		fields.add(getField("connected", "IS_CONNECTED", module, FieldType.BOOLEAN));
+		fields.add(getField("printerModel", "MODEL", module, FieldType.SYSTEM_ENUM));
+		fields.add(getField("connectMode", "CONNECT_MODE", module, FieldType.SYSTEM_ENUM));
+		
+		
+		return fields;
+	}
+	public static List<FacilioField> getVisitorKioskConfigFields() {
+		FacilioModule module = ModuleFactory.getVisitorKioskConfigModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getField("id", "ID", module, FieldType.LOOKUP));
+		fields.add(getField("printerId", "PRINTER_ID", module, FieldType.LOOKUP));
+		fields.add(getField("kioskForSpaceId", "KIOSK_FOR_SPACE", module, FieldType.LOOKUP));
+				
+		
+		return fields;
+	}
+	
+	
 	
 	
 }

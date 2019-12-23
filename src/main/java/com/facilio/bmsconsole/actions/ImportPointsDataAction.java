@@ -48,19 +48,16 @@ public class ImportPointsDataAction extends FacilioAction{
 	
 	public String upload() throws Exception {
 		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.FILE_NAME, fileUploadFileName);
-		context.put(FacilioConstants.ContextNames.FILE, fileUpload);
-		context.put(FacilioConstants.ContextNames.FILE_CONTENT_TYPE, fileUploadContentType);
-		context.put(FacilioConstants.ContextNames.POINTS_PROCESS_CONTEXT, pointsProcessContext);
-		context.put(FacilioConstants.ContextNames.IMPORT_MODE, importMode);
-		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
-		
-		FacilioChain uploadFile = TransactionChainFactory.UploadImportPointsFileChain();
-		uploadFile.execute(context);
-		
-		PointsProcessContext imp = (PointsProcessContext) context.get(FacilioConstants.ContextNames.POINTS_PROCESS_CONTEXT);
-		setResult(FacilioConstants.ContextNames.POINTS_PROCESS_CONTEXT ,imp);
+		FacilioChain context = TransactionChainFactory.UploadImportPointsFileChain();
+		context.getContext().put(FacilioConstants.ContextNames.FILE_NAME, fileUploadFileName);
+		context.getContext().put(FacilioConstants.ContextNames.FILE, fileUpload);
+		context.getContext().put(FacilioConstants.ContextNames.FILE_CONTENT_TYPE, fileUploadContentType);
+		context.getContext().put(FacilioConstants.ContextNames.POINTS_PROCESS_CONTEXT, pointsProcessContext);
+		context.getContext().put(FacilioConstants.ContextNames.IMPORT_MODE, importMode);
+		context.getContext().put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
+		context.execute();
+		setResponseCode(200);
+		setResult(SUCCESS,"Successfully Imported Points data");
         
 		return SUCCESS;
 	}

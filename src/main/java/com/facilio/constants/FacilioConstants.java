@@ -90,6 +90,9 @@ public class FacilioConstants {
 		public static final String REQUEST_LINE_ITEM ="inventoryrequestlineitems";
 		public static final String TENANT ="tenant";
 		public static final String VENDOR ="vendor";
+		public static final String PRINTERS ="printers";
+		public static final String VISITOR_KIOSK_CONFIG ="visitorKioskConfig";
+		
 	}
 
 	public static class ContextNames {

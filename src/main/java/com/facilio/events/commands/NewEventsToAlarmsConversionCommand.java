@@ -75,6 +75,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 				for (AlarmOccurrenceContext alarmOccurrence : list) {
 					if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
 						BaseAlarmContext alarm = alarmOccurrence.getAlarm();
+						alarm = NewAlarmAPI.getAlarm(alarm.getId());
 						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(),
 						AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getLastOccurredTime() + 1000);
 						JSONObject info = new JSONObject();

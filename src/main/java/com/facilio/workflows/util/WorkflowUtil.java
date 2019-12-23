@@ -34,8 +34,11 @@ import org.w3c.dom.ls.LSSerializer;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -48,11 +51,13 @@ import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BaseLineContext.AdjustType;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -715,8 +720,10 @@ public class WorkflowUtil {
 							
 							String value1 = getValueStringFromValue(values[0]);
 							String value2 = getValueStringFromValue(values[1]);
-							
-							dateOperatorValue = value1 +","+value2;
+							if(value2 != null && BaseLineContext.AdjustType.getAllAdjustments().get(value2) != null) {
+								dateOperatorValue = value1 +",\""+value2+"\"";
+							}
+							dateOperatorValue = value1;
 						}
 						else {
 							dateOperatorValue = value;
@@ -821,6 +828,49 @@ public class WorkflowUtil {
 		return values;
 	}
 	
+	public static boolean isWorkflowFromRule(long wfId) throws Exception {
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+													.table(module.getTableName())
+													.select(fields)
+													.andCondition(CriteriaAPI.getCondition("WORKFLOW_ID", "workflowId", wfId+"", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = ruleBuilder.get();
+		if(props.isEmpty()) {
+			return  false;
+		}
+		return  true;
+	}
+	
+	public static String isWorkflowFromFormulaField(long wfId) throws Exception {
+		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
+		FacilioModule module = ModuleFactory.getFormulaFieldModule();
+		
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+													.table(module.getTableName())
+													.select(fields)
+													.andCondition(CriteriaAPI.getCondition("WORKFLOW_ID", "workflowId", wfId+"", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = ruleBuilder.get();
+		if(props.isEmpty()) {
+			return  null;
+		}
+		FormulaFieldContext ff  =  FieldUtil.getAsBeanFromMap(props.get(0), FormulaFieldContext.class);
+		if(ff.getReadingFieldId() > 0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField field = modBean.getField(ff.getReadingFieldId());
+			if(field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL) {
+				return "Number";
+			}
+			else if (field.getDataTypeEnum() == FieldType.BOOLEAN) {
+				return "Boolean";
+			}
+		}
+		return null;
+	}
+	
 	public static WorkflowContext convertOldWorkflowToNew(long wfId) throws Exception {
 		
 		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(wfId, true);
@@ -828,8 +878,19 @@ public class WorkflowUtil {
 		return convertOldWorkflowToNew(workflow);
 	}
 	
+	private static void oldWorkflowCorrection(WorkflowContext workflow) {
+		
+		// adding return statement for 
+		if(workflow.getResultEvaluator() == null && workflow.isSingleExpression() && workflow.getExpressions().get(0) instanceof ExpressionContext) {
+			ExpressionContext exp = (ExpressionContext) workflow.getExpressions().get(0);
+			workflow.setResultEvaluator(exp.getName());
+		}
+	}
+	
 	public static WorkflowContext convertOldWorkflowToNew(WorkflowContext workflow) throws Exception {
 		// TODO Auto-generated method stub
+		
+		oldWorkflowCorrection(workflow);
 		
 		List<ParameterContext> params = workflow.getParameters();
 		String paramString = "";
@@ -844,10 +905,20 @@ public class WorkflowUtil {
 			paramString = paramString.substring(0, paramString.length()-1);
 		}
 		
-		String returnType = "void";
+		boolean isFromRule = WorkflowUtil.isWorkflowFromRule(workflow.getId());
 		
-		if(workflow.getResultEvaluator() != null) {
-			returnType = "Number"; 
+		String returnType = "void";
+		if(isFromRule) {
+			returnType = "Boolean";
+		}
+		else {
+			String returnType1 = isWorkflowFromFormulaField(workflow.getId());
+			if(returnType1 != null) {
+				returnType = returnType1;
+			}
+			else if(workflow.getResultEvaluator() != null) {
+				returnType = "Number"; 
+			}
 		}
 		
 		String code = returnType+" test("+paramString+") {\n";

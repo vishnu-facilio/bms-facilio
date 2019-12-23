@@ -576,6 +576,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain getUpdateScheduledActionChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new EditScheduledActionCommand());
+			return c;
+		}
+		
 		public static FacilioChain editViewChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new LoadViewCommand());
@@ -3631,6 +3637,8 @@ public class TransactionChainFactory {
 		public static FacilioChain UploadImportPointsFileChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UploadImportPointsDataCommand());
+			c.addCommand(new ImportPointsFieldsEvaluationCommand());
+			c.addCommand(new UpdateImportPointsDataCommand());
 			return c;
 		}
 		
@@ -4124,6 +4132,20 @@ public class TransactionChainFactory {
 	public static FacilioChain getDeleteServiceCatalogChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteServiceCatalogCommand());
+		return chain;
+	}
+	
+	public static FacilioChain addOrUpdatePrinterChain()
+	{
+		FacilioChain chain =getDefaultChain();
+		chain.addCommand(new AddOrUpdatePrinterCommand());
+		return chain;
+	}
+	
+	public static FacilioChain addOrUpdateVisitorKioskConfigChain()
+	{
+		FacilioChain chain =getDefaultChain();
+		chain.addCommand(new AddOrUpdateVisitorKioskConfigCommand());
 		return chain;
 	}
 }

@@ -370,7 +370,7 @@ public class NewAlarmAPI {
 		if (alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
 			JSONObject info = new JSONObject();
 			info.put("field", "Severity");
-			if (baseAlarm.getSeverity() != null) {
+			if (alarmOccurrence.getPreviousSeverity() != null) {
 				info.put("oldValue",  AlarmAPI.getAlarmSeverity(alarmOccurrence.getPreviousSeverity().getId()).getDisplayName());
 			}
 			info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
@@ -750,40 +750,53 @@ public class NewAlarmAPI {
 						
 			if(MapUtils.isNotEmpty(delAlarmOccurrencesMap))
 			{
-				changeLatestAlarmOccurrence(delAlarmOccurrenceList, baseAlarmContext);
 				deleteAllAlarmOccurences(new ArrayList<Long>(delAlarmOccurrencesMap.keySet()));
 				updateBaseAlarmWithNoOfOccurences(baseAlarm);
-			}			
-		}	
+			}
+			changeLatestAlarmOccurrence(baseAlarmContext);
+		}
 	}
 	
-	public static void changeLatestAlarmOccurrence(List<AlarmOccurrenceContext> alarmOccurrenceList, BaseAlarmContext baseAlarmContext) throws Exception {
+	public static void changeLatestAlarmOccurrence(BaseAlarmContext baseAlarmContext) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-		AlarmOccurrenceContext firstOccurrence = alarmOccurrenceList.get(0);
-		
-		for (AlarmOccurrenceContext alarmOccurrence : alarmOccurrenceList) 
+//		AlarmOccurrenceContext firstOccurrence = alarmOccurrenceList.get(0);
+
+		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+				.select(modBean.getAllFields(module.getName()))
+				.module(modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE))
+				.beanClass(AlarmOccurrenceContext.class)
+				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" +baseAlarmContext.getId(), NumberOperators.EQUALS))
+				.orderBy("CREATED_TIME DESC").limit(1);
+		AlarmOccurrenceContext newLatestAlarmOccurrence =  selectbuilder.fetchFirst();
+		if (newLatestAlarmOccurrence != null)
 		{
-			if(alarmOccurrence.getId() == baseAlarmContext.getLastOccurrence().getId())
-			{
-				SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
-						.select(modBean.getAllFields(module.getName()))
-						.module(modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE))
-						.beanClass(AlarmOccurrenceContext.class)
-						.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + firstOccurrence.getCreatedTime(), NumberOperators.LESS_THAN))
-						.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" +baseAlarmContext.getId(), NumberOperators.EQUALS))
-						.orderBy("CREATED_TIME DESC").limit(1);
-				AlarmOccurrenceContext newLatestAlarmOccurrence =  selectbuilder.fetchFirst();		
-	
-				if (newLatestAlarmOccurrence != null) 
-				{
-					baseAlarmContext.setLastOccurrence(newLatestAlarmOccurrence);
-					updateBaseAlarmBuilder(baseAlarmContext);
-				}	
-				break;
-			}
+			baseAlarmContext.setLastOccurrence(newLatestAlarmOccurrence);
+			updateBaseAlarmBuilder(baseAlarmContext);
 		}
+		
+//		for (AlarmOccurrenceContext alarmOccurrence : alarmOccurrenceList)
+//		{
+//			if(alarmOccurrence.getId() == baseAlarmContext.getLastOccurrence().getId())
+//			{
+//				SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+//						.select(modBean.getAllFields(module.getName()))
+//						.module(modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE))
+//						.beanClass(AlarmOccurrenceContext.class)
+//						.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + firstOccurrence.getCreatedTime(), NumberOperators.LESS_THAN))
+//						.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" +baseAlarmContext.getId(), NumberOperators.EQUALS))
+//						.orderBy("CREATED_TIME DESC").limit(1);
+//				AlarmOccurrenceContext newLatestAlarmOccurrence =  selectbuilder.fetchFirst();
+//
+//				if (newLatestAlarmOccurrence != null)
+//				{
+//					baseAlarmContext.setLastOccurrence(newLatestAlarmOccurrence);
+//					updateBaseAlarmBuilder(baseAlarmContext);
+//				}
+//				break;
+//			}
+//		}
 	}
 
 	public static BaseEventContext generateEvent(AlarmOccurrenceContext alarmOccurrence, AlarmSeverityContext severityContext, long createdTime) 

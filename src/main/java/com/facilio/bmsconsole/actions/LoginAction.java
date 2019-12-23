@@ -64,6 +64,8 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.context.DeviceContext;
+import com.facilio.bmsconsole.context.DeviceContext.DeviceType;
+import com.facilio.bmsconsole.context.VisitorKioskContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
@@ -552,8 +554,16 @@ public class LoginAction extends FacilioAction {
 		DeviceContext device=DevicesAPI.getDevice(connectedDevice.getDeviceId());
 		if (connectedDevice!= null && connectedDevice.getDeviceId()> 0) {
 			data.put("device", device);
+			
+			if(device.getDeviceTypeEnum()==DeviceType.VISITOR_KIOSK)
+			{
+				VisitorKioskContext visitorKioskCtx=DevicesAPI.getVisitorKioskConfig(device.getId());
+				data.put("visitorKiosk",visitorKioskCtx);
+			}
+			
 			config.put("ws_endpoint", WmsApi.getRemoteWebsocketEndpoint(connectedDevice.getId()));
 		}
+		
 		
 
 		

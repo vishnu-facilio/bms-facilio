@@ -42,6 +42,7 @@ public class WhatsappUtil extends TwilioUtil {
 		jsonObject.put("message", "hello message");
 		jsonObject.put("isHtmlContent", "true");
 		jsonObject.put("htmlContent", "true");
+		jsonObject.put("htmlContentPublicUrl", "https://demo.twilio.com/owl.png");
 		
 		sendMessage(jsonObject);
 	}

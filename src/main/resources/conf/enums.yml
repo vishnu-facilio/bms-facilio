@@ -45,3 +45,9 @@ enums:
   
   - name: TimeFormat
     enumClassName: com.facilio.time.TimeFormat
+
+  - name: PrinterModel  
+    enumClassName: com.facilio.bmsconsole.context.PrinterContext$PrinterModel
+
+  - name: ConnectMode  
+    enumClassName: com.facilio.bmsconsole.context.PrinterContext$ConnectMode

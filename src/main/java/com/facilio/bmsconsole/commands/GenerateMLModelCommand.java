@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.struts2.json.annotations.JSON;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -104,16 +105,20 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());
 		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(),300);
 		if(StringUtils.isEmpty(result)){
-			LOGGER.fatal("Error in GenerateMLModelCommand");
 			LOGGER.fatal("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Response from Python is empty");
-			throw new Exception("ML error : Response from Python is empty");
+		}else{
+			try{
+				JSONObject json =  new JSONObject(mlContext.getResult());
+			}catch(Exception e){
+				LOGGER.fatal("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Result is not a valid JSON "+" RESULT : "+mlContext.getResult());				
+			}
 		}
 		mlContext.setResult(result);
 	}catch(Exception e){
 		if(!e.getMessage().contains("ML error")){
 			LOGGER.fatal("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : GenerateMLModelCommand "+" ERROR MESSAGE : "+e);
+			throw e;
 		}
-		throw e;
 	}
 		return false;
  	}

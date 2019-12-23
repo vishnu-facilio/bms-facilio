@@ -1260,12 +1260,19 @@ public enum ActionType {
 			if (obj != null) {  //&& FacilioProperties.isProduction() add this on commit
 				try {
 					String to = (String) obj.get("to");
-					Boolean isHtmlContent =  Boolean.parseBoolean((String)obj.get("isHtmlContent"));
-					String html = (String) obj.get("message");
 					
 					if (to != null && !to.isEmpty()) {
 						List<String> sms = new ArrayList<>();
-					
+						
+						Boolean isHtmlContent = null;
+						String html = null;
+						
+						if(obj.get("isHtmlContent") != null)
+						{
+							isHtmlContent =  Boolean.parseBoolean((String)obj.get("isHtmlContent"));
+							html = (String) obj.get("message");
+						}
+											
 						if(isHtmlContent != null && html != null && isHtmlContent)
 						{						
 							final String htmlContentString = "\'" + html+ "\'";							

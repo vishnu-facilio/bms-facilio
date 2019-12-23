@@ -13,6 +13,7 @@ import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.CommonReportUtil;
@@ -278,6 +279,9 @@ public class ReportUtil {
 	@SuppressWarnings("unlikely-arg-type")
 	public static List<ReportFolderContext> getFilteredReport(List<ReportFolderContext> reportFolders) throws Exception {
 		List<ReportFolderContext> reportFolder = new ArrayList<ReportFolderContext>();
+		if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getRole().getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN)) {
+			return reportFolders;
+		}
 		for(ReportFolderContext pro : reportFolders) 
 		{
 

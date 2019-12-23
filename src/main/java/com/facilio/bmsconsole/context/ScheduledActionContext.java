@@ -4,6 +4,7 @@ import java.time.LocalTime;
 
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.tasker.ScheduleInfo;
 
 public class ScheduledActionContext {
 
@@ -84,5 +85,13 @@ public class ScheduledActionContext {
 	}
 	public void setTime(String time) {
 		this.time = LocalTime.parse(time);
+	}
+	
+	private ScheduleInfo scheduleInfo;
+	public ScheduleInfo getScheduleInfo() {
+		return scheduleInfo;
+	}
+	public void setScheduleInfo(ScheduleInfo scheduleInfo) {
+		this.scheduleInfo = scheduleInfo;
 	}
 }

@@ -4560,6 +4560,21 @@
 			<action name="disconnect" class="com.facilio.bmsconsole.actions.DevicesAction" method="disconnectDevice">							
 			</action>
 	</package>
+	<package name="printerApi" namespace="/api/v2/printer" extends="v2Api">
+			<action name="add" class="com.facilio.bmsconsole.actions.PrinterAction" method="addOrUpdate">							
+			</action>
+			<action name="update" class="com.facilio.bmsconsole.actions.PrinterAction" method="addOrUpdate">							
+			</action>
+			
+	</package>
+	<package name="visitorKiosk" namespace="/api/v2/visitorKiosk" extends="v2Api">
+			<action name="add" class="com.facilio.bmsconsole.actions.VisitorKioskConfigAction" method="addOrUpdate">							
+			</action>
+			<action name="update" class="com.facilio.bmsconsole.actions.VisitorKioskConfigAction" method="addOrUpdate">							
+			</action>
+			
+			
+	</package>
 	<package name="visitorViews" namespace="/api/v2/visitor/view"
 		extends="v2Api">
 		<action name="*"
