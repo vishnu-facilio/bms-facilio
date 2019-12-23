@@ -242,25 +242,16 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
             List<String> check = Arrays.asList("annually","monthly","yearly","quarterly","half-yearly","half yearly","halfyearly", "daily", "weekly");
 
             for (Map.Entry<Long, TaskSectionContext> entry: taskSections.entrySet()) {
+                String trimmed = StringUtils.trim(entry.getValue().getName());
                 woArray.add(entry.getValue().getName());
-                boolean skip = false;
-                for (String s: check) {
-                    if (!entry.getValue().getName().toLowerCase().contains(s)) {
-                        skip = true;
-                        break;
+                if (!sectionNames.contains(trimmed)) {
+                    if (trimmed.toLowerCase().contains("annually") || trimmed.toLowerCase().contains("monthly") || trimmed.toLowerCase().contains("yearly")
+                            || trimmed.toLowerCase().contains("quarterly") || trimmed.toLowerCase().contains("half-yearly") || trimmed.toLowerCase().contains("half yearly")
+                            || trimmed.toLowerCase().contains("daily") || trimmed.toLowerCase().contains("weekly")) {
+                        missing.add(entry);
+                        missingString.add(trimmed);
                     }
-                }
 
-                if (skip) {
-                    LOGGER.log(Level.SEVERE, workOrderContext.getId() + " skipping " + entry.getValue().getName());
-                    continue;
-                }
-
-                if (!sectionNames.contains(StringUtils.trim(entry.getValue().getName()))) {
-                    missing.add(entry);
-                    missingString.add(entry.getValue().getName());
-                } else {
-                    LOGGER.log(Level.SEVERE, workOrderContext.getId() + " [stale] " + entry.getValue().getName());
                 }
             }
 
