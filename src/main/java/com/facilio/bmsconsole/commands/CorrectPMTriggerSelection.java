@@ -242,6 +242,7 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
             List<String> check = Arrays.asList("annually","monthly","yearly","quarterly","half-yearly","half yearly","halfyearly", "daily", "weekly");
 
             for (Map.Entry<Long, TaskSectionContext> entry: taskSections.entrySet()) {
+                woArray.add(entry.getValue().getName());
                 boolean skip = false;
                 for (String s: check) {
                     if (!entry.getValue().getName().toLowerCase().contains(s)) {
@@ -258,7 +259,6 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
                     missing.add(entry);
                     missingString.add(entry.getValue().getName());
                 }
-                woArray.add(entry.getValue().getName());
             }
 
             LOGGER.log(Level.SEVERE, workOrderContext.getId() + " ghost array " + Arrays.toString(sectionNames.toArray()));
