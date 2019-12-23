@@ -1,5 +1,6 @@
 package com.facilio.accounts.dto;
 
+import java.io.File;
 import java.util.List;
 
 import com.facilio.license.LicenseContext.FacilioLicense;
@@ -172,5 +173,32 @@ public class User extends IAMUser {
 		this.iamOrgUserId = iamOrgUserId;
 	}
 	
+	private File avatar;
+	
+	public File getAvatar() {
+		return avatar;
+	}
+	public void setAvatar(File avatar) {
+		this.avatar = avatar;
+	}
+	
+	private String avatarFileName;
+
+	public String getAvatarFileName() {
+		return avatarFileName;
+	}
+
+	public void setAvatarFileName(String avatarFileName) {
+		this.avatarFileName = avatarFileName;
+	}
+	
+	private String avatarContentType;
+	public String getAvatarContentType() {
+		return avatarContentType;
+	}
+
+	public void setAvatarContentType(String avatarContentType) {
+		this.avatarContentType = avatarContentType;
+	}
 	
 }

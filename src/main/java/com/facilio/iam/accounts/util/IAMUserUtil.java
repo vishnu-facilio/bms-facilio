@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldFactory;
@@ -100,8 +101,8 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().enableUserv2(user.getOrgId(), user.getUid()));
 	}
 	
-	public static boolean updateUserPhoto(long uid, long fileId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserPhoto(uid, fileId));
+	public static long updateUserPhoto(long uid, User user) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserPhoto(uid, user));
 	}
 	
 	public static boolean updateUserStatus(IAMUser user) throws Exception {

@@ -31,6 +31,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.chain.FacilioContext;
@@ -58,6 +59,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 
 ;
 
@@ -531,7 +534,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 	@Override
-	public boolean updateUserPhoto(long uid, long fileId) throws Exception {
+	public long updateUserPhoto(long uid, User user) throws Exception {
+		
+		FileStore fs = FacilioFactory.getFileStore();
+		long fileId = fs.addFile(user.getAvatarFileName(), user.getAvatar(), user.getAvatarContentType());
 		
 		FacilioField photoId = new FacilioField();
 		photoId.setName("photoId");
@@ -554,9 +560,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
-			return true;
+			return fileId;
 		}
-		return false;
+		return -1;
 	}
 
 	@Override

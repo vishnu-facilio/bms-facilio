@@ -66,7 +66,7 @@ public interface UserBean {
 	
 	public Organization getDefaultOrg(long uid) throws Exception;
 	
-	public boolean updateUserPhoto(long uid, long fileId) throws Exception;
+	public long updateUserPhoto(long uid, User user) throws Exception;
 
     public User getUser(String email, String portalDomain) throws Exception;
     

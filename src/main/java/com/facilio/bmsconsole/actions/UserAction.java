@@ -624,11 +624,12 @@ public class UserAction extends FacilioAction {
 	public String uploadUserAvatar() throws Exception {
 
 			FileStore fs = FacilioFactory.getFileStore();
-			long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
+//			long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 
-			AccountUtil.getUserBean().updateUserPhoto(userId, fileId);
-
-			setAvatarUrl(fs.getPrivateUrl(fileId));
+			long fileId = AccountUtil.getUserBean().updateUserPhoto(userId, user);
+			if(fileId > 0) {
+				setAvatarUrl(fs.newPreviewFileUrl("user", fileId));
+			}
 
 
 		

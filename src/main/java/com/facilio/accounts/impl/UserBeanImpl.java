@@ -751,8 +751,8 @@ public class UserBeanImpl implements UserBean {
 
 
 	@Override
-	public boolean updateUserPhoto(long uid, long fileId) throws Exception {
-		return IAMUserUtil.updateUserPhoto(uid, fileId);
+	public long updateUserPhoto(long uid, User user) throws Exception {
+		return IAMUserUtil.updateUserPhoto(uid, user);
 	}
 
 	private void addAccessibleSpace(long uid, List<Long> accessibleSpace) throws Exception {
@@ -856,7 +856,7 @@ public class UserBeanImpl implements UserBean {
 		if (user.getPhotoId() > 0) {
 
 				FileStore fs = FacilioFactory.getFileStoreFromOrg(user.getOrgId(), user.getOuid());
-				user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
+				user.setAvatarUrl(fs.newPreviewFileUrl("user", user.getPhotoId()));
 				user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
 
 		}

@@ -6,6 +6,7 @@ import java.util.Map;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.fields.FacilioField;
@@ -45,7 +46,7 @@ public interface IAMUserBean {
 	
 	public Organization getOrgv2(String currentOrgDomain, long uid) throws Exception;
 	
-	public boolean updateUserPhoto(long uid, long fileId) throws Exception;
+	public long updateUserPhoto(long uid, User user) throws Exception;
 
 	public IAMUser getFacilioUser(String email, String orgDomain, String portalDomain) throws Exception;
 	
