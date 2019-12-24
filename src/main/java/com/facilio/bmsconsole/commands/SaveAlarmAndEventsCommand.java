@@ -130,10 +130,13 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 								.andCondition(CriteriaAPI.getIdCondition(alarmOccurrenceContext.getId(), module))
 								.fields(allFields);
 						updateBuilder.update(alarmOccurrenceContext);
-						CommonCommandUtil.addAlarmActivityToContext(alarmOccurrenceContext.getAlarm().getId(), -1, AlarmActivityType.ALARM_OCCURRENCE_UPDATED, addOccurrenceInfo, (FacilioContext) context, alarmOccurrenceContext.getId() );
-
+						if (alarmOccurrenceContext.getAlarm() != null && alarmOccurrenceContext.getAlarm().getId() > 0) {
+							CommonCommandUtil.addAlarmActivityToContext(alarmOccurrenceContext.getAlarm().getId(), -1, AlarmActivityType.ALARM_OCCURRENCE_UPDATED, addOccurrenceInfo, (FacilioContext) context, alarmOccurrenceContext.getId() );
+						}
 					} else {
-						CommonCommandUtil.addAlarmActivityToContext(alarmOccurrenceContext.getAlarm().getId(), -1, AlarmActivityType.ALARM_OCCURRENCE_CREATED, addOccurrenceInfo, (FacilioContext) context, alarmOccurrenceContext.getId() );
+						if (alarmOccurrenceContext.getAlarm() != null && alarmOccurrenceContext.getAlarm().getId() > 0) {
+							CommonCommandUtil.addAlarmActivityToContext(alarmOccurrenceContext.getAlarm().getId(), -1, AlarmActivityType.ALARM_OCCURRENCE_CREATED, addOccurrenceInfo, (FacilioContext) context, alarmOccurrenceContext.getId());
+						}
 						records.add(alarmOccurrenceContext);
 					}
 				}
