@@ -39,7 +39,7 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 			if(valasset != 0 ) {
 				itr.put("Assets",String.valueOf(valasset));
 			}else {
-				throw new IllegalArgumentException("This Field "+fieldVal +" doesn't exists for this Asset_Category : "+categoryVal);
+				throw new IllegalArgumentException("This Asset "+valasset +" doesn't exists for this Asset_Category : "+categoryVal);
 			}
 
 			long valfield = checkFields(val,fieldVal);
@@ -59,7 +59,7 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 		return false;
 	}
 
-	public static long checkCategory(String categoryVal) throws Exception {
+	public  long checkCategory(String categoryVal) throws Exception {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
 		List<AssetCategoryContext> assetCategory = bean.getCategoryList();
 		for (AssetCategoryContext list : assetCategory) {
@@ -72,7 +72,7 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 
 	}
 
-	public static long checkResources(long categoryId ,  String asset) throws Exception, IllegalAccessException {
+	public long checkResources(long categoryId ,  String asset) throws Exception, IllegalAccessException {
 
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
 		List<AssetContext> AssetListForCategory = bean.getAssetListOfCategory(categoryId);
@@ -86,7 +86,7 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 		return 0;
 
 	}
-	public static long checkFields(long categoryId, String fieldVal) throws Exception {
+	public long checkFields(long categoryId, String fieldVal) throws Exception {
 
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
 		List<FacilioModule> fieldsList = bean.getAssetReadings(categoryId);
