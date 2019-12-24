@@ -7,6 +7,7 @@ import com.facilio.db.criteria.Criteria;
 
 public interface FacilioModuleFunction {
 	public void add(List<Object> objects) throws Exception;
+	public Map<String, Object> addTemplateData(List<Object> objects) throws Exception;
 	public void update(List<Object> objects) throws Exception;
 	public void delete(List<Object> objects) throws Exception;
 	public Object fetch(List<Object> objects) throws Exception;

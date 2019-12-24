@@ -3,6 +3,7 @@ package com.facilio.workflowv2.modulefunctions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -13,13 +14,17 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -33,15 +38,16 @@ import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.contexts.DBParamContext;
 
@@ -49,6 +55,58 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 
 	private static final Logger LOGGER = Logger.getLogger(FacilioModuleFunctionImpl.class.getName());
 	private static final String RESULT_STRING = "result";
+	
+	@Override
+	public Map<String, Object> addTemplateData(List<Object> objects) throws Exception {
+		
+		FacilioModule module = (FacilioModule) objects.get(0);
+		
+		String templateRef = objects.get(1).toString();
+		
+		FacilioChain chain = FacilioChainFactory.getFormMetaChain();
+		
+		FacilioContext context = chain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.MODULE_NAME,module.getName());
+		if(FacilioUtil.isNumeric(templateRef)) {
+			
+			context.put(FacilioConstants.ContextNames.FORM_ID, Double.valueOf(templateRef).longValue());
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.FORM_NAME, templateRef);
+		}
+		
+		chain.execute();
+		
+		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
+		List<FormField> fields = form.getFields();
+		
+		Map<String, Object> actualData = new HashMap<>(); 
+		
+		for(FormField field :fields) {
+			actualData.put(field.getName(), field.getValue());
+		}
+		if(objects.size() > 2) {
+			Map<String, Object> data = (Map<String,Object>)objects.get(2);
+			for(String name : data.keySet()) {
+				actualData.put(name, data.get(name));
+			}
+		}
+		
+		CustomModuleData moduleData = (CustomModuleData) FieldUtil.getAsBeanFromMap(actualData, CustomModuleData.class);
+		
+		FacilioChain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
+		context = addModuleDataChain.getContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+		context.put(FacilioConstants.ContextNames.RECORD, moduleData);
+		moduleData.parseFormData();
+		
+		addModuleDataChain.execute();
+		
+		return moduleData.getData();
+	}
 	@Override
 	public void add(List<Object> objects) throws Exception {
 		// TODO Auto-generated method stub
@@ -78,7 +136,6 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			FacilioContext context = addReadingChain.getContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 			context.put(FacilioConstants.ContextNames.READINGS, readings);
-//			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, !historicalAlarm);
 			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
 			
 			addReadingChain.execute();
@@ -451,4 +508,5 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		return view.getCriteria();
 	}
+
 }
