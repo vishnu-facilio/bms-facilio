@@ -135,7 +135,16 @@ public class FieldFactory {
 		return getField("fileName","FILE_NAME", ModuleFactory.getSecretFileModule(),FieldType.STRING);
 	}
 
-	public static class Fields {
+	public static List<FacilioField> getDeviceCatalogMappingFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getDeviceCatalogMappingModule();
+
+		fields.add(getField("deviceId", "DEVICE_ID", module, FieldType.NUMBER));
+		fields.add(getField("catalogId", "SERVICE_CATALOG_ID", module, FieldType.NUMBER));
+		return fields;
+	}
+
+    public static class Fields {
 		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
 		static {
 			alarmsFieldsInclude.add("isAcknowledged");
@@ -7260,12 +7269,19 @@ public class FieldFactory {
 		fields.add(getField("id", "ID", module, FieldType.LOOKUP));
 		fields.add(getField("printerId", "PRINTER_ID", module, FieldType.LOOKUP));
 		fields.add(getField("kioskForSpaceId", "KIOSK_FOR_SPACE", module, FieldType.LOOKUP));
-				
-		
+
 		return fields;
 	}
-	
-	
-	
+
+	public static List<FacilioField> getFeedbackKioskConfigFields() {
+		FacilioModule module = ModuleFactory.getFeedbackKioskConfigModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getField("id", "ID", module, FieldType.LOOKUP));
+		fields.add(getField("printerId", "PRINTER_ID", module, FieldType.LOOKUP));
+		fields.add(getField("kioskForSpaceId", "KIOSK_FOR_SPACE", module, FieldType.LOOKUP));
+
+		return fields;
+	}
 	
 }

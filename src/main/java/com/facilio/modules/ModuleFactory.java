@@ -2998,4 +2998,20 @@ public class ModuleFactory {
 		module.setTableName("Devices_Visitor_Kiosk");
 		return module;
 	}
+
+	public static FacilioModule getFeedbackKioskConfigModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ModuleNames.FEEDBACK_KIOSK_CONFIG);
+		module.setDisplayName("Feedback Kiosk Config");
+		module.setTableName("Devices_Feedback_Kiosk");
+		return module;
+	}
+
+	public static FacilioModule getDeviceCatalogMappingModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("deviceCatalogMapping");
+		module.setDisplayName("Device Catalog Mapping");
+		module.setTableName("Device_Catalog_Mapping");
+		return module;
+	}
 }

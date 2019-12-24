@@ -4572,9 +4572,12 @@
 			</action>
 			<action name="update" class="com.facilio.bmsconsole.actions.VisitorKioskConfigAction" method="addOrUpdate">							
 			</action>
-			
-			
 	</package>
+	<package name="feedbackKiosk" namespace="/api/v2/feedbackKiosk" extends="v2Api">
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.FeedbackKioskConfigAction" method="addOrUpdate">
+		</action>
+	</package>
+
 	<package name="visitorViews" namespace="/api/v2/visitor/view"
 		extends="v2Api">
 		<action name="*"

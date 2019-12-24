@@ -5,6 +5,8 @@ import com.facilio.bmsconsole.context.VisitorKioskContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 
 public class VisitorKioskConfigAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
@@ -31,7 +33,11 @@ public class VisitorKioskConfigAction extends FacilioAction{
 		FacilioChain addOrUpdateChain = TransactionChainFactory.addOrUpdateVisitorKioskConfigChain();
 		
     	FacilioContext addOrUpdateContext = addOrUpdateChain.getContext();
-    	addOrUpdateContext.put(FacilioConstants.ContextNames.RECORD, getVisitorKioskConfig());   	    			
+    	addOrUpdateContext.put(FacilioConstants.ContextNames.RECORD, getVisitorKioskConfig());
+
+		addOrUpdateContext.put(FacilioConstants.ContextNames.MODULE, ModuleFactory.getVisitorKioskConfigModule());
+		addOrUpdateContext.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getVisitorKioskConfigFields());
+
     	addOrUpdateChain.execute();			
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, addOrUpdateContext.get(FacilioConstants.ContextNames.ROWS_UPDATED));
 		return SUCCESS;

@@ -92,6 +92,7 @@ public class FacilioConstants {
 		public static final String VENDOR ="vendor";
 		public static final String PRINTERS ="printers";
 		public static final String VISITOR_KIOSK_CONFIG ="visitorKioskConfig";
+		public static final String FEEDBACK_KIOSK_CONFIG = "feedbackKioskConfig";
 		
 	}
 
