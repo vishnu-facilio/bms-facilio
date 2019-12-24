@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -31,11 +33,13 @@ public class LoadWorkPermitLookUpsCommand extends FacilioCommand{
 		LookupField vendorField = (LookupField) fieldsAsMap.get("vendor");
 		LookupField ticketField = (LookupField) fieldsAsMap.get("ticket");
 		LookupField moduleStateField = (LookupField)fieldsAsMap.get("moduleState");
-		LookupField tenantField = (LookupField)fieldsAsMap.get("tenant");
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+			LookupField tenantField = (LookupField)fieldsAsMap.get("tenant");
+			additionaLookups.add(tenantField);
+		}
 		LookupField requestedByField = (LookupField)fieldsAsMap.get("requestedBy");
 		additionaLookups.add(vendorField);
 		additionaLookups.add(ticketField);
-		additionaLookups.add(tenantField);
 		additionaLookups.add(moduleStateField);
 		additionaLookups.add(requestedByField);
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);

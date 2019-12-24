@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -29,24 +31,25 @@ public class LoadVisitorLoggingLookUpCommand extends FacilioCommand{
 		}
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
-		LookupField eventField = (LookupField) fieldsAsMap.get("invite");
 		LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitor"));
-		LookupField vendorLocationField = (LookupField) modBean.getField("lastVisitedSpace", FacilioConstants.ContextNames.VISITOR);
-		visitorField.addChildLookupFIeld(vendorLocationField);
+		LookupField visitorLastVisitedLocationField = (LookupField) modBean.getField("lastVisitedSpace", FacilioConstants.ContextNames.VISITOR);
+		visitorField.addChildLookupFIeld(visitorLastVisitedLocationField);
 		LookupField hostField = (LookupField) fieldsAsMap.get("host");
 		LookupField visitedSpaceField = (LookupField) fieldsAsMap.get("visitedSpace");
 		LookupField moduleStateField = (LookupField)fieldsAsMap.get("moduleState");
 		LookupField visitorTypefield = (LookupField)fieldsAsMap.get("visitorType");
-		LookupField tenant = (LookupField)fieldsAsMap.get("tenant");
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+			LookupField tenant = (LookupField)fieldsAsMap.get("tenant");
+			additionaLookups.add(tenant);
+		}
 		LookupField requestedBy = (LookupField)fieldsAsMap.get("requestedBy");
 		
-		additionaLookups.add(eventField);
 		additionaLookups.add(visitorField);
 		additionaLookups.add(hostField);
 		additionaLookups.add(visitedSpaceField);
 		additionaLookups.add(moduleStateField);
 		additionaLookups.add(visitorTypefield);
-		additionaLookups.add(tenant);
+		
 		additionaLookups.add(requestedBy);
 		
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
