@@ -220,8 +220,12 @@ public class FormField implements Serializable {
 	public Boolean getAllowCreate() {
 		return allowCreate;
 	}
-
-	public FormField setAllowCreate(Boolean allowCreate) {
+	
+	public void setAllowCreate(Boolean allowCreate) {
+		this.allowCreate = allowCreate ;
+	}
+	
+	public FormField setAllowCreateOptions(Boolean allowCreate) {
 		this.allowCreate = allowCreate;
 		return this;
 	}
