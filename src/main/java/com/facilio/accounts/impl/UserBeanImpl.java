@@ -751,7 +751,7 @@ public class UserBeanImpl implements UserBean {
 
 
 	@Override
-	public long updateUserPhoto(long uid, User user) throws Exception {
+	public String updateUserPhoto(long uid, User user) throws Exception {
 		return IAMUserUtil.updateUserPhoto(uid, user);
 	}
 

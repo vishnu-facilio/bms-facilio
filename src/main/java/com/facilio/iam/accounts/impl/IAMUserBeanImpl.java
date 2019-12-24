@@ -534,11 +534,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 	@Override
-	public long updateUserPhoto(long uid, User user) throws Exception {
+	public String updateUserPhoto(long uid, User user) throws Exception {
 		
 		FileStore fs = FacilioFactory.getFileStore();
 		long fileId = fs.addFile(user.getAvatarFileName(), user.getAvatar(), user.getAvatarContentType());
-		
+		String url = fs.newPreviewFileUrl("user", fileId);
 		FacilioField photoId = new FacilioField();
 		photoId.setName("photoId");
 		photoId.setDataType(FieldType.NUMBER);
@@ -560,9 +560,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
-			return fileId;
+			return url;
 		}
-		return -1;
+		return null;
 	}
 
 	@Override

@@ -101,7 +101,7 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().enableUserv2(user.getOrgId(), user.getUid()));
 	}
 	
-	public static long updateUserPhoto(long uid, User user) throws Exception {
+	public static String updateUserPhoto(long uid, User user) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserPhoto(uid, user));
 	}
 	

@@ -626,9 +626,9 @@ public class UserAction extends FacilioAction {
 			FileStore fs = FacilioFactory.getFileStore();
 //			long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 
-			long fileId = AccountUtil.getUserBean().updateUserPhoto(userId, user);
-			if(fileId > 0) {
-				setAvatarUrl(fs.newPreviewFileUrl("user", fileId));
+			String url = AccountUtil.getUserBean().updateUserPhoto(userId, user);
+			if(url != null && !url.isEmpty() && !url.equalsIgnoreCase("null")) {
+				setAvatarUrl(url);
 			}
 
 

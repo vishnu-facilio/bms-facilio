@@ -46,7 +46,7 @@ public interface IAMUserBean {
 	
 	public Organization getOrgv2(String currentOrgDomain, long uid) throws Exception;
 	
-	public long updateUserPhoto(long uid, User user) throws Exception;
+	public String updateUserPhoto(long uid, User user) throws Exception;
 
 	public IAMUser getFacilioUser(String email, String orgDomain, String portalDomain) throws Exception;
 	
