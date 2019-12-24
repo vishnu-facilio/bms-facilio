@@ -25,29 +25,45 @@ public class FilterUtil {
 		FacilioField timeField = modBean.getField("ttime", moduleName);
 		Criteria timeFilterCriteria = new Criteria();
 		
-		JSONArray days = (JSONArray)calendarObj.get("days");
-		JSONObject intervals = (JSONObject)calendarObj.get("time");
-		ZonedDateTime start = DateTimeUtil.getDateTime(datRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(datRange.getEndTime(), false);
-		do {
-		    if (days.contains(new Long(start.getDayOfWeek().getValue()))) {
-		    	
-		    	for (Object key : intervals.keySet()) {
-		            String keyStr = (String)key;
-
-			    	JSONArray interval = (JSONArray)intervals.get(keyStr);
-			    	Long startTime = (Long)interval.get(0);
-			    	Long endTime = (Long)interval.get(1);
-			    	DateRange intervalRange = new DateRange();
-			    	intervalRange.setStartTime(start.toInstant().toEpochMilli()+startTime);
-			    	intervalRange.setEndTime(start.toInstant().toEpochMilli()+endTime);
-			    	timeFilterCriteria.addOrCondition(CriteriaAPI.getCondition(timeField, intervalRange.toString(), DateOperators.BETWEEN));
-			    };
-		    }
-		    start = start.plusDays(1);
-		}  while (start.toEpochSecond() <= end.toEpochSecond());
-		return timeFilterCriteria;
+		if(calendarObj != null && !calendarObj.isEmpty()) {
+			JSONArray days = (JSONArray)calendarObj.get("days");
+			JSONObject intervals = (JSONObject)calendarObj.get("time");
+			if((days != null && !days.isEmpty()) || (intervals != null && !intervals.isEmpty())) {
+				ZonedDateTime start = DateTimeUtil.getDateTime(datRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(datRange.getEndTime(), false);
+				do {
+				    if (days.contains(new Long(start.getDayOfWeek().getValue())) || days.isEmpty()) {
+				    	if(intervals != null && !intervals.isEmpty()) {
+				    		for (Object key : intervals.keySet()) {
+					            String keyStr = (String)key;
+			
+						    	JSONArray interval = (JSONArray)intervals.get(keyStr);
+						    	if(interval != null && !interval.isEmpty()) {
+						    		Long startTime = (Long)interval.get(0);
+							    	Long endTime = (Long)interval.get(1);
+							    	DateRange intervalRange = new DateRange();
+							    	intervalRange.setStartTime(start.toInstant().toEpochMilli()+startTime);
+							    	intervalRange.setEndTime(start.toInstant().toEpochMilli()+endTime);
+							    	timeFilterCriteria.addOrCondition(CriteriaAPI.getCondition(timeField, intervalRange.toString(), DateOperators.BETWEEN));
+						    	}else {
+						    		DateRange intervalRange = new DateRange();
+							    	intervalRange.setStartTime(DateTimeUtil.getDayStartTimeOf(start.toInstant().toEpochMilli(), false));
+							    	intervalRange.setEndTime(DateTimeUtil.getDayEndTimeOf(start.toInstant().toEpochMilli(), false));
+							    	timeFilterCriteria.addOrCondition(CriteriaAPI.getCondition(timeField, intervalRange.toString(), DateOperators.BETWEEN));
+						    	}
+						    };
+				    	}
+				    }
+				    start = start.plusDays(1);
+				}  while (start.toEpochSecond() <= end.toEpochSecond());
+			}
+			return timeFilterCriteria;
+		}
+		return null;
 	}
-	private boolean isValidObj(JSONObject calendarObj) {
+	private static boolean isValidObj(JSONObject calendarObj) {
+		if(calendarObj != null && !calendarObj.isEmpty()) {
+			return true;
+		}
 		return false;
 	}
 }
