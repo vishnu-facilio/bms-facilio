@@ -244,14 +244,13 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
             for (Map.Entry<Long, TaskSectionContext> entry: taskSections.entrySet()) {
                 String trimmed = StringUtils.trim(entry.getValue().getName());
                 woArray.add(entry.getValue().getName());
-                if (!sectionNames.contains(trimmed)) {
+                if (!match(sectionNames, trimmed)) {
                     if (trimmed.toLowerCase().contains("annually") || trimmed.toLowerCase().contains("monthly") || trimmed.toLowerCase().contains("yearly")
                             || trimmed.toLowerCase().contains("quarterly") || trimmed.toLowerCase().contains("half-yearly") || trimmed.toLowerCase().contains("half yearly")
                             || trimmed.toLowerCase().contains("daily") || trimmed.toLowerCase().contains("weekly")) {
                         missing.add(entry);
                         missingString.add(trimmed);
                     }
-
                 }
             }
 
@@ -263,6 +262,19 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
                 deleteMissingEntry(missing);
             }
         }
+    }
+
+    private static boolean match(Set<String> sectionNames, String check) {
+        for (String sectionName: sectionNames) {
+            if (sectionName.contains(check)) {
+                return true;
+            }
+
+            if (check.contains(sectionName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static List<WorkOrderContext> getPmWorkOrders(long pmId) throws Exception {
