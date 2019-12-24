@@ -209,6 +209,11 @@ public class CorrectPMTriggerSelection extends FacilioJob implements Serializabl
             long resourceId = workOrderContext.getResource().getId();
             List<Triple<Long, Long, Set<String>>> execs = nextExecutionTimes.get(resourceId);
 
+            if (execs == null) {
+                LOGGER.log(Level.SEVERE, "no start " + workOrderContext.getId());
+                continue;
+            }
+
             Map<Long, List<Triple<Long, Long, Set<String>>>> execMap = new HashMap<>();
             for (Triple<Long, Long, Set<String>> exec: execs) {
                 if (execMap.get(exec.getMiddle()) == null) {
