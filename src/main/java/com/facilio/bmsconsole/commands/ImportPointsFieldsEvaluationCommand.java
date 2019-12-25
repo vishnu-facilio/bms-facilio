@@ -67,7 +67,7 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 	private long checkCategory(String assetCategoryDisplayName, List<AssetCategoryContext> assetCategories) throws Exception {
 
 		for (AssetCategoryContext assetCategory : assetCategories) {
-			if (assetCategory.getDisplayName().equals(assetCategoryDisplayName)) {
+			if (assetCategory.getDisplayName().equalsIgnoreCase(assetCategoryDisplayName)) {
 				return assetCategory.getId();
 			}
 		}
@@ -79,7 +79,7 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 		List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(categoryId);
 		logger.info("categoryId is  : "+categoryId +" assets are  : "+assets);
 		for (AssetContext asset : assets) {
-			if (asset.getName().equals(assetName)) {
+			if (asset.getName().equalsIgnoreCase(assetName)) {
 				return asset.getId();
 			}
 		}
@@ -95,7 +95,7 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 
 		for (FacilioModule fields : fieldsList) {
 			for (FacilioField field : fields.getFields()) {
-				if (field.getDisplayName().equals(fieldDisplayName)) {
+				if (field.getDisplayName().equalsIgnoreCase(fieldDisplayName)) {
 					return field.getId();
 				}
 			}
