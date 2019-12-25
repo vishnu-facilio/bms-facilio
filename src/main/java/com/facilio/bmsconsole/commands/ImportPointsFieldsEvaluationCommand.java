@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
 
@@ -15,6 +16,8 @@ import com.facilio.modules.fields.FacilioField;
 
 public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 
+
+	private static Logger logger = Logger.getLogger(ImportPointsFieldsEvaluationCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -28,14 +31,14 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 			String fieldVal = (String) itr.get("Reading");
 			String resource = (String) itr.get("Assets");
 
-			long val = checkCategory(categoryVal, assetCategory);
+			long val = checkCategory(categoryVal.trim(), assetCategory);
 			if (val != 0) {
 				itr.put("Asset Category", String.valueOf(val));
 			} else {
 				throw new IllegalArgumentException("This Asset_Category doesn't exists : " + categoryVal);
 			}
 
-			long valasset = checkResources(val, resource);
+			long valasset = checkResources(val, resource.trim());
 			if (valasset != 0) {
 				itr.put("Assets", String.valueOf(valasset));
 			} else {
@@ -43,7 +46,7 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 						"This Asset " + resource + " doesn't exists for this Asset_Category : " + categoryVal);
 			}
 
-			long valfield = checkFields(valasset, fieldVal);
+			long valfield = checkFields(valasset, fieldVal.trim());
 			if (valfield != 0) {
 				itr.put("Reading", String.valueOf(valfield));
 			} else {
@@ -74,7 +77,7 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 	private long checkResources(long categoryId, String assetName) throws Exception, IllegalAccessException {
 
 		List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(categoryId);
-
+		logger.info("categoryId is  : "+categoryId +" assets are  : "+assets);
 		for (AssetContext asset : assets) {
 			if (asset.getName().equals(assetName)) {
 				return asset.getId();
