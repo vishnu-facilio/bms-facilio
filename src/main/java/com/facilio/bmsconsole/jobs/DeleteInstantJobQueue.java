@@ -16,7 +16,7 @@ public class DeleteInstantJobQueue extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
 
-    	long startTime = (System.currentTimeMillis() -(1 * 24 * 60 * 60 * 1000));
+    	long startTime = (System.currentTimeMillis() -(3 * 24 * 60 * 60 * 1000));
         String deleteCondition = String.valueOf(startTime);
         try{
             int count =  DeleteMessageQueueJobsCommand.deleteQueue(TABLE_NAME, deleteCondition);
