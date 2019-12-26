@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang.StringUtils;
 
 import com.facilio.bmsconsole.actions.ReadingAction;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -67,7 +68,7 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 	private long checkCategory(String assetCategoryDisplayName, List<AssetCategoryContext> assetCategories) throws Exception {
 
 		for (AssetCategoryContext assetCategory : assetCategories) {
-			if (assetCategory.getDisplayName().equalsIgnoreCase(assetCategoryDisplayName)) {
+			if (StringUtils.equals(assetCategory.getDisplayName(), assetCategoryDisplayName)) {
 				return assetCategory.getId();
 			}
 		}
@@ -77,10 +78,9 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 	private long checkResources(long categoryId, String assetName) throws Exception, IllegalAccessException {
 
 		List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(categoryId);
-		logger.info("categoryId is  : "+categoryId +" assets are  : "+assets.toString() +" assetname is : "+assetName);
 		for (AssetContext asset : assets) {
-				String aname = asset.getName();
-			if (aname.equals(assetName)) {
+			logger.info(asset.getName() +" asset equals "+assetName);
+			if (StringUtils.equals(asset.getName(), assetName)) {
 				return asset.getId();
 			}
 		}
@@ -96,7 +96,7 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 
 		for (FacilioModule fields : fieldsList) {
 			for (FacilioField field : fields.getFields()) {
-				if (field.getDisplayName().equalsIgnoreCase(fieldDisplayName)) {
+				if (StringUtils.equals(field.getDisplayName(), fieldDisplayName)) {
 					return field.getId();
 				}
 			}
