@@ -312,7 +312,7 @@ public class KafkaProcessor extends FacilioProcessor {
         agent.setAgentName(agentName);
         agent.setAgentConnStatus(Boolean.TRUE);
         agent.setAgentState(1);
-        agent.setAgentDataInterval(15L);
+        agent.setInterval(15L);
         agent.setWritable(false);
         return agent;
     }

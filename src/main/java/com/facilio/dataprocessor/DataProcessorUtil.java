@@ -281,7 +281,7 @@ public class DataProcessorUtil {
             agent.setAgentName(agentName);
             agent.setAgentConnStatus(Boolean.TRUE);
             agent.setAgentState(1);
-            agent.setAgentDataInterval(15L);
+            agent.setInterval(15L);
             agent.setWritable(false);
             return agent;
         }else {
@@ -353,7 +353,7 @@ public class DataProcessorUtil {
         bean.processTimeSeries(timeStamp, payLoad, record, isTimeSeries);
         long timeTaken = (System.currentTimeMillis() - startTime);
         if (timeTaken > 100000L) {
-            LOGGER.info("timetaken : " + timeTaken);
+            LOGGER.info("timetaken to process timeseries data : " + timeTaken);
         }
     }
 

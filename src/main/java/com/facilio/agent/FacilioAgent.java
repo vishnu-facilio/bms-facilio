@@ -35,9 +35,13 @@ public class FacilioAgent
     public Boolean getConnectionStatus() { return connectionStatus; }
     public void setConnectionStatus(Boolean connectionStatus) { this.connectionStatus = connectionStatus; }
 
-    private  Long dataInterval;
-    public Long getDataInterval() { return dataInterval; }
-    public void setDataInterval(Long dataInterval) { this.dataInterval = dataInterval; }
+    private  Long interval;
+    public Long getInterval() {
+		return interval;
+	}
+	public void setInterval(Long interval) {
+		this.interval = interval;
+	}
 
     private  Integer numberOfControllers;
     public Integer getNumberOfControllers() { return numberOfControllers; }
@@ -82,9 +86,6 @@ public class FacilioAgent
 
     public Boolean getAgentConnStatus() { return connectionStatus; }
     public void setAgentConnStatus(Boolean agentConnStatus) { this.connectionStatus = agentConnStatus; }
-
-    public Long getAgentDataInterval() { return dataInterval; }
-    public void setAgentDataInterval(Long agentDataInterval) { this.dataInterval = agentDataInterval; }
 
     public Integer getAgentNumberOfControllers() { return numberOfControllers; }
     public void setAgentNumberOfControllers(Integer agentNumberOfControllers) { this.numberOfControllers = agentNumberOfControllers; }

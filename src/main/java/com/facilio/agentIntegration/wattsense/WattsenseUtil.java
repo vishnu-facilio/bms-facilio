@@ -136,27 +136,27 @@ public class WattsenseUtil
                     return createMqttConnection(wattsense);
                 } else if (  MQTT_ID_GENERATED.equals(wattsense.getIntegrationStatus()) ) {
                     return initiateMQTTConnection(wattsense);
-                } else if( NOT_INTEGRATED.equals(wattsense.getIntegrationStatus())){
+                } else if (NOT_INTEGRATED.equals(wattsense.getIntegrationStatus())) {
                     return createCertificateStoreId(wattsense);
                 }
 
             }
         } // no else because
         FacilioAgent agent = new FacilioAgent();
-            agent.setAgentName(wattsense.getClientId());
-            agent.setAgentConnStatus(Boolean.FALSE);
-            agent.setAgentDataInterval(15L);
-            agent.setAgentState(1);
-            agent.setAgentType(AgentType.Wattsense.getLabel());
-            agent.setId(util.addAgent(agent));
-            if (agent.getId() < 1) {
-                LOGGER.info(" Exception occurred while creating agent ");
-                return false;
-            }
+        agent.setAgentName(wattsense.getClientId());
+        agent.setAgentConnStatus(Boolean.FALSE);
+        agent.setInterval(15L);
+        agent.setAgentState(1);
+        agent.setAgentType(AgentType.Wattsense.getLabel());
+        agent.setId(util.addAgent(agent));
+        if (agent.getId() < 1) {
+            LOGGER.info(" Exception occurred while creating agent ");
+            return false;
+        }
 
         wattsense.setClientId(wattsense.getClientId());
-        if(makeWattsenseEntry(AgentIntegrationKeys.USER_NAME, wattsense.getUserName(),wattsense)
-                && makeWattsenseEntry(AgentIntegrationKeys.INTEGRATION_STATUS, NOT_INTEGRATED.toString(),wattsense)
+        if (makeWattsenseEntry(AgentIntegrationKeys.USER_NAME, wattsense.getUserName(), wattsense)
+                && makeWattsenseEntry(AgentIntegrationKeys.INTEGRATION_STATUS, NOT_INTEGRATED.toString(), wattsense)
                 && makeWattsenseEntry(AgentIntegrationKeys.DELETED_TIME,NOT_DELETED,wattsense) ){
 
             return createCertificateStoreId(wattsense); //create certificate store id

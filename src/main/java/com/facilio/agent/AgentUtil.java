@@ -121,9 +121,9 @@ public  class AgentUtil
         }
 
         if(payload.containsKey(AgentKeys.DATA_INTERVAL)) {
-            agent.setAgentDataInterval(Long.parseLong( payload.get(AgentKeys.DATA_INTERVAL).toString()));
+            agent.setInterval(Long.parseLong(payload.get(AgentKeys.DATA_INTERVAL).toString()));
         } else {
-            agent.setAgentDataInterval(DEFAULT_TIME);
+            agent.setInterval(DEFAULT_TIME);
         }
 
         if(payload.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)){
@@ -220,9 +220,9 @@ public  class AgentUtil
 
                    if (jsonObject.containsKey(AgentKeys.DATA_INTERVAL)) {
                        Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
-                       if (agent.getAgentDataInterval().longValue() != currDataInterval.longValue()) {
+                       if ((agent.getInterval() != null) && agent.getInterval() != currDataInterval.longValue()) {
                            toUpdate.put(AgentKeys.DATA_INTERVAL, currDataInterval);
-                           agent.setAgentDataInterval(currDataInterval);
+                           agent.setInterval(currDataInterval);
                        }
                    }
                    if(jsonObject.containsKey(AgentKeys.AGENT_TYPE)){
@@ -297,7 +297,7 @@ public  class AgentUtil
         payload.put(AgentKeys.CONNECTION_STATUS, agent.getAgentConnStatus());
         payload.put(AgentKeys.SITE_ID, agent.getSiteId());
         payload.put(AgentKeys.AGENT_TYPE, agent.getAgentType());
-        payload.put(AgentKeys.DATA_INTERVAL, agent.getAgentDataInterval());
+        payload.put(AgentKeys.DATA_INTERVAL, agent.getInterval());
         payload.put(AgentKeys.WRITABLE, agent.getWritable());
         payload.put(AgentKeys.DEVICE_DETAILS, agent.getAgentDeviceDetails());
         payload.put(AgentKeys.VERSION, agent.getAgentVersion());
