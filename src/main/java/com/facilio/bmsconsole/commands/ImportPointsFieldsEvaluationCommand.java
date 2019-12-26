@@ -77,9 +77,10 @@ public class ImportPointsFieldsEvaluationCommand extends FacilioCommand {
 	private long checkResources(long categoryId, String assetName) throws Exception, IllegalAccessException {
 
 		List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(categoryId);
-		logger.info("categoryId is  : "+categoryId +" assets are  : "+assets);
+		logger.info("categoryId is  : "+categoryId +" assets are  : "+assets.toString() +" assetname is : "+assetName);
 		for (AssetContext asset : assets) {
-			if (asset.getName().equalsIgnoreCase(assetName)) {
+				String aname = asset.getName();
+			if (aname.equals(assetName)) {
 				return asset.getId();
 			}
 		}
