@@ -59,12 +59,12 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 					while (it.hasNext()) {
 						FormulaFieldContext formula = it.next();
 						if(isCalculatable(formula, calculatedFieldIds)) {
-							if (AccountUtil.getCurrentOrg().getId() == 78l) {
+							if (AccountUtil.getCurrentOrg().getId() == 286l) {
 								LOGGER.info("Gonna execute scheduled formula : "+formula.getName());
 							}
 							try {
 								List<ReadingContext> readings = new ArrayList<>();
-								if (AccountUtil.getCurrentOrg().getId() == 78l) {
+								if (AccountUtil.getCurrentOrg().getId() == 286l) {
 									LOGGER.info("Formula matched resources : "+StringUtils.join(formula.getMatchedResourcesIds(), ","));
 								}
 								for (Long resourceId : formula.getMatchedResourcesIds()) {
@@ -79,7 +79,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 										readings.addAll(currentReadings);
 									}
 								}
-								if (AccountUtil.getCurrentOrg().getId() == 78l) {
+								if (AccountUtil.getCurrentOrg().getId() == 286l) {
 									LOGGER.info("Readings Calculated for : "+formula.getName());
 								}
 								if (!readings.isEmpty()) {
@@ -92,7 +92,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									addReadingChain.execute();
 									
 								}
-								if (AccountUtil.getCurrentOrg().getId() == 78l) {
+								if (AccountUtil.getCurrentOrg().getId() == 286l) {
 									LOGGER.info("Readings Added for : "+formula.getName());
 								}
 							}
