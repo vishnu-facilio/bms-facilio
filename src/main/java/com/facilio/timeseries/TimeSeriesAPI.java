@@ -23,6 +23,7 @@ import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.point.PointEnum;
+import com.facilio.agentv2.point.PointEnum.ConfigureStatus;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bacnet.BACNetUtil.InstanceType;
@@ -634,7 +635,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			throw e;
 		}
 	}
-	public static  int addPointsInstances(JSONArray instanceArray, Long controllerId) throws Exception {
+	public static  int addPointsInstances(JSONArray instanceArray, ControllerContext controller) throws Exception {
 
 		/*jsonObject should consists
 		object.put("device",deviceName);
@@ -644,6 +645,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		object.put("instanceType", instanceType);
 		 */
 		List<String> instanceNames = null;
+		Long controllerId = controller.getId();
 		if (controllerId != null) {
 			if(AccountUtil.getCurrentOrg().getId()==152) {
 				LOGGER.info("## Device Points in come payload " + instanceArray);
@@ -676,10 +678,15 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			}
 			instanceObj.put("orgId", orgId);
 			instanceObj.put("createdTime", System.currentTimeMillis());
+			ConfigureStatus configureStatus = ConfigureStatus.CONFIGURED;
 			if(controllerId!=null) {
 				//this will ensure the new inserts after addition of controller gets proper controller id
 				instanceObj.put("controllerId", controllerId);
+				if (controller.getControllerTypeEnum() != null && controller.getControllerTypeEnum().isConfigurable()) {
+					configureStatus = ConfigureStatus.UNCONFIGURED;
+				}
 			}
+			instanceObj.put("configureStatus", configureStatus.getIndex());
 			insertBuilderPoints.addRecord(instanceObj);
 			if(AccountUtil.getCurrentOrg().getId()==152) {
 				LOGGER.info("## Device Points Data comes form ORG 152 check" + instanceObj);
