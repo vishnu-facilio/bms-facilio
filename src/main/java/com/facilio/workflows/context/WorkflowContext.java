@@ -26,6 +26,7 @@ import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Lexer;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 import com.facilio.workflowv2.contexts.ErrorListener;
+import com.facilio.workflowv2.parser.ScriptParser;
 
 public class WorkflowContext implements Serializable {
 	
@@ -106,6 +107,15 @@ public class WorkflowContext implements Serializable {
 	List<ParameterContext> parameters;
 	List<Object> params;							// for v2 workflow
 	
+	boolean isParsedV2Script;
+	
+	public boolean isParsedV2Script() {
+		return isParsedV2Script;
+	}
+	public void setParsedV2Script(boolean isParsedV2Script) {
+		this.isParsedV2Script = isParsedV2Script;
+	}
+
 	List<WorkflowExpression> expressions;
 	
 	WorkflowFieldType returnType;
@@ -373,6 +383,36 @@ public class WorkflowContext implements Serializable {
 		return true;
 	}
 	
+	public void parseScript() throws Exception {
+		
+		if(isV2Script()) {
+			
+			try {
+				WorkflowV2Parser parser = getParser(this.getWorkflowV2String());
+		        ParseTree tree = parser.parse();
+		        
+		        if(!getErrorListener().hasErrors()) {
+		        	ScriptParser scriptParser = new ScriptParser();
+		        	scriptParser.setWorkflowContext(this);
+		        	scriptParser.visit(tree);
+		        }
+		        else {
+		        	if(isThrowExceptionForSyntaxError()) {
+		        		throw new Exception(getErrorListener().getErrorsAsString());
+		        	}
+		        	else {
+		        		LOGGER.log(Level.SEVERE, "Workflow - "+id+" has syntax errors - "+getErrorListener().getErrorsAsString());
+		        	}
+		        }
+		        this.setParsedV2Script(true);
+			}
+			catch(Exception e) {
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				this.setWorkflowExpressions(null);
+				this.setParsedV2Script(false);
+			}
+		}
+	}
 	
 	public Object executeWorkflow() throws Exception {
 		
@@ -434,38 +474,38 @@ public class WorkflowContext implements Serializable {
 	
 	//	old workflow methods starts
 	// only from client
-		public void setExpressions(JSONArray workflowExpressions) throws Exception {
-			if(workflowExpressions != null) {
+	public void setExpressions(JSONArray workflowExpressions) throws Exception {
+		if(workflowExpressions != null) {
+			
+			for(int i=0 ;i<workflowExpressions.size();i++) {
 				
-				for(int i=0 ;i<workflowExpressions.size();i++) {
-					
-					WorkflowExpression workflowExpression = null;
-					
-					Map workflowExp = (Map)workflowExpressions.get(i);
-					Integer workflowExpressionType = 0;
-					if (workflowExp.containsKey("workflowExpressionType")) {
-						workflowExpressionType = Integer.parseInt(workflowExp.get("workflowExpressionType").toString());
-					}
-					if(workflowExpressionType <= 0 || workflowExpressionType == WorkflowExpressionType.EXPRESSION.getValue()) {
-						workflowExpression = null;
-						workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, ExpressionContext.class);
-					}
-					else if(workflowExpressionType == WorkflowExpressionType.ITERATION.getValue()) {
-						workflowExpression = null;
-						workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, IteratorContext.class);
-					}
-					addWorkflowExpression(workflowExpression);
+				WorkflowExpression workflowExpression = null;
+				
+				Map workflowExp = (Map)workflowExpressions.get(i);
+				Integer workflowExpressionType = 0;
+				if (workflowExp.containsKey("workflowExpressionType")) {
+					workflowExpressionType = Integer.parseInt(workflowExp.get("workflowExpressionType").toString());
 				}
+				if(workflowExpressionType <= 0 || workflowExpressionType == WorkflowExpressionType.EXPRESSION.getValue()) {
+					workflowExpression = null;
+					workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, ExpressionContext.class);
+				}
+				else if(workflowExpressionType == WorkflowExpressionType.ITERATION.getValue()) {
+					workflowExpression = null;
+					workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, IteratorContext.class);
+				}
+				addWorkflowExpression(workflowExpression);
 			}
 		}
-	
+	}
+	@Deprecated
 	public boolean isSingleExpression() {
 		if(expressions != null && expressions.size() == 1) {
 			return true;
 		}
 		return false;
 	}
-	
+	@Deprecated
 	public boolean isMapReturnWorkflow() {
 		if(expressions != null && !expressions.isEmpty() && expressions.get(0) instanceof ExpressionContext) {
 			ExpressionContext exp = (ExpressionContext) expressions.get(0);
@@ -475,7 +515,7 @@ public class WorkflowContext implements Serializable {
 		}
 		return false;
 	}
-	
+	@Deprecated
 	public boolean isListReturnWorkflow() {
 		if(expressions != null && !expressions.isEmpty() && expressions.get(0) instanceof ExpressionContext) {
 			ExpressionContext exp = (ExpressionContext) expressions.get(0);
@@ -485,7 +525,7 @@ public class WorkflowContext implements Serializable {
 		}
 		return false;
 	}
-	
+	@Deprecated
 	public boolean isBooleanReturnWorkflow() {
 		if(getResultEvaluator() != null) {
 			for(String opperator: WorkflowUtil.getComparisionOpperator()) {
@@ -496,7 +536,7 @@ public class WorkflowContext implements Serializable {
 		}
 		return false;
 	}
-	
+	@Deprecated
 	public boolean isSingleValueReturnWorkflow() {
 		if(getResultEvaluator() != null) {
 			if(isBooleanReturnWorkflow()) {

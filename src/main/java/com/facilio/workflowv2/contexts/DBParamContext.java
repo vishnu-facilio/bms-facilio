@@ -10,6 +10,9 @@ import com.facilio.modules.AggregateOperator;
 
 public class DBParamContext {
 	
+	@Deprecated
+	String moduleName;		// dont use this anywhere
+	
 	String fieldName;
 	String aggregateString;
 	String aggregateFieldName;
@@ -22,6 +25,13 @@ public class DBParamContext {
 	String groupBy;
 	
 	int seqOrder = 0;
+	
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
 	
 	public String getGroupBy() {
 		return groupBy;
