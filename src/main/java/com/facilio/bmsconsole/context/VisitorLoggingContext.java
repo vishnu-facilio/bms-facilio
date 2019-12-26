@@ -4,12 +4,14 @@ import java.io.File;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.IAMUser.AppType;
+import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.time.DateTimeUtil;
 
 public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 
@@ -102,46 +104,25 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 		this.visitor = visitor;
 	}
 	
-	private PurposeOfVisit purposeOfVisit;
+	private int purposeOfVisit;
 	public int getPurposeOfVisit() {
-		if (purposeOfVisit != null) {
-			return purposeOfVisit.getIndex();
-		}
-		return -1;
-		
-	}
-	public void setPurposeOfVisit(int purposeOfVisit) {
-		this.purposeOfVisit = PurposeOfVisit.valueOf(purposeOfVisit);
-	}
-	public PurposeOfVisit getPurposeOfVisitEnum() {
 		return purposeOfVisit;
 	}
-	public void setPurposeOfVisit(PurposeOfVisit purposeOfVisit) {
+
+	public void setPurposeOfVisit(int purposeOfVisit) {
 		this.purposeOfVisit = purposeOfVisit;
 	}
-
-	public static enum PurposeOfVisit implements FacilioEnum {
-		MEETING, CONFERENCE, DELIVERY, MAINTENANCE, PERSONAL_VISIT, INSPECTION;
-
-		@Override
-		public int getIndex() {
-			return ordinal() + 1;
-		}
-
-		@Override
-		public String getValue() {
-			return name();
-		}
-
-		public static PurposeOfVisit valueOf(int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
-			}
-			return null;
-		}
+	
+	private String purposeOfVisitEnum;
+	
+	public String getPurposeOfVisitEnum() {
+		return purposeOfVisitEnum;
 	}
-	
-	
+
+	public void setPurposeOfVisitEnum(String purposeOfVisitEnum) {
+		this.purposeOfVisitEnum = purposeOfVisitEnum;
+	}
+
 	private long ndaId;
 	private String ndaUrl;
 	private File nda;
@@ -707,6 +688,5 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 	public void setVisitorPhone(String visitorPhone) {
 		this.visitorPhone = visitorPhone;
 	}
-	
 	
 }
