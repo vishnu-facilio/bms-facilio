@@ -2,4 +2,5 @@
 <workflow>
 	 <module displayname = 'WorkOrder' name='workorder' classname='com.facilio.workflowv2.modulefunctions.FacilioWorkOrderModuleFunctions'/>
 	 <module displayname = 'BaseSpace' name='basespace' classname='com.facilio.workflowv2.modulefunctions.FacilioBaseSpaceModuleFunctions'/>
+	 <module displayname = 'Contact' name='contact' classname='com.facilio.workflowv2.modulefunctions.FacilioContactModuleFunctions'/>
 </workflow>
