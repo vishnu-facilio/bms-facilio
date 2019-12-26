@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.workflow.rule.FormInterface;
+import com.facilio.modules.FacilioModule;
 
 public class ServiceCatalogContext implements Serializable, FormInterface {
 
@@ -80,12 +81,12 @@ public class ServiceCatalogContext implements Serializable, FormInterface {
         this.moduleId = moduleId;
     }
 
-    private String moduleName;
-    public String getModuleName() {
-        return moduleName;
+    private FacilioModule module;
+    public FacilioModule getModule() {
+        return module;
     }
-    public void setModuleName(String moduleName) {
-        this.moduleName = moduleName;
+    public void setModule(FacilioModule module) {
+        this.module = module;
     }
 
     private long formId = -1;

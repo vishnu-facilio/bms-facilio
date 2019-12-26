@@ -1091,6 +1091,8 @@
 				method="getAllServiceCatalogGroup" />
 		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogDetailGroup" />
+		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+				method="deleteServiceCatalogGroup" />
 	</package>
 
 	<package name="alarmEventListApiv2"

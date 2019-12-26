@@ -116,6 +116,15 @@ public class ServiceCatalogAction extends FacilioAction {
         return SUCCESS;
     }
 
+    public String deleteServiceCatalogGroup() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getDeleteServiceCatalogGroupChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, getId());
+        chain.execute();
+
+        return SUCCESS;
+    }
+
     public String getAllServiceCatalogGroup() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getAllServiceCatalogGroupChain();
         FacilioContext context = chain.getContext();

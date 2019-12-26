@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ServiceCatalogContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -19,8 +21,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class GetAllServiceCatalogCommand extends FacilioCommand {
 
@@ -59,9 +64,22 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
         List<ServiceCatalogContext> serviceCatalogs = FieldUtil.getAsBeanListFromMapList(maps, ServiceCatalogContext.class);
         if (CollectionUtils.isNotEmpty(serviceCatalogs)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+            List<Long> ids = new ArrayList<>();
+            for (ServiceCatalogContext serviceCatalog : serviceCatalogs) {
+                ids.add(serviceCatalog.getFormId());
+            }
+            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                    .table(ModuleFactory.getFormModule().getTableName())
+                    .select(FieldFactory.getFormFields())
+                    .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getFormModule()));
+            List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), FacilioForm.class);
+            Map<Long, FacilioForm> formMap = forms.stream().collect(Collectors.toMap(FacilioForm::getId, Function.identity()));
+
             for (ServiceCatalogContext serviceCatalog : serviceCatalogs) {
                 FacilioModule module = modBean.getModule(serviceCatalog.getModuleId());
-                serviceCatalog.setModuleName(module.getName());
+                serviceCatalog.setModule(module);
+                serviceCatalog.setForm(formMap.get(serviceCatalog.getFormId()));
             }
         }
 

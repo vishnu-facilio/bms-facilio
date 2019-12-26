@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -13,6 +14,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,10 @@ public class GetServiceCatalogDetailsCommand extends FacilioCommand {
                     .andCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getServiceCatalogModule()));
 
             Map<String, Object> prop = builder.fetchFirst();
+            if (prop == null) {
+                throw new IllegalArgumentException("Service Catalog not found");
+            }
+
             ServiceCatalogContext serviceCatalog = FieldUtil.getAsBeanFromMap(prop, ServiceCatalogContext.class);
             long formId = serviceCatalog.getFormId();
             FacilioForm form = FormsAPI.getFormFromDB(formId);
@@ -36,7 +42,7 @@ public class GetServiceCatalogDetailsCommand extends FacilioCommand {
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(serviceCatalog.getModuleId());
-            serviceCatalog.setModuleName(module.getName());
+            serviceCatalog.setModule(module);
 
             context.put(FacilioConstants.ContextNames.SERVICE_CATALOG, serviceCatalog);
         }
