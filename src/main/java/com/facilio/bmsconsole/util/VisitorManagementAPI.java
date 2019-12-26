@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.util;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -56,7 +60,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -64,7 +67,6 @@ import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.LookupFieldMeta;
 import com.facilio.modules.ModuleFactory;
@@ -73,6 +75,11 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.service.FacilioService;
+import com.facilio.tasker.ScheduleInfo;
+import com.facilio.tasker.ScheduleInfo.FrequencyType;
+import com.facilio.tasker.job.JobContext;
+import com.facilio.tasker.job.JobStore;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowContext;
 
@@ -2019,6 +2026,36 @@ public class VisitorManagementAPI {
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 	}
 	
+	
+	public static void saveAutoCheckOutVisitorsPrefs (Map<String, Object> map) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
+		JobContext job = new JobContext();
+		job.setJobName(FacilioConstants.Job.AUTO_CHECKOUT_JOB_NAME);
+		job.setActive(true);
+		job.setExecutorName("facilio");
+		job.setIsPeriodic(true);
+		job.setOrgId(AccountUtil.getCurrentOrg().getId());
+		
+		ScheduleInfo info = new ScheduleInfo();
+		info.setFrequencyType(FrequencyType.DAILY);
+		List<String> timeList = new ArrayList<String>();
+		if(MapUtils.isNotEmpty(map)) {
+			
+			Date date = new Date((Long)map.get("autoCheckOutTime"));
+			DateFormat formatter = new SimpleDateFormat("HH:mm");
+			formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+			String dateFormatted = formatter.format(date);
+			
+			timeList.add(dateFormatted);
+			info.setTimes(timeList);
+			job.setJobId(module.getModuleId());
+			job.setSchedule(info);
+			job.setExecutionTime(info.nextExecutionTime(System.currentTimeMillis()) / 1000);
+			FacilioService.runAsService(() -> JobStore.addJob(job));		
+		}
+	}
+	
 	public static Long saveVipVisitorMailNotificationPrefs (Map<String, Object> map, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
@@ -2368,6 +2405,63 @@ public class VisitorManagementAPI {
 			return true;
 		}
 		return false;
+	}
+	
+	public static Preference getVisitorCheckOutPref() {
+		FacilioForm form = new FacilioForm();
+		List<FormSection> sections = new ArrayList<FormSection>();
+		FormSection formSection = new FormSection();
+		formSection.setName("Visitor CheckOut Preference");
+		List<FormField> fields = new ArrayList<FormField>();
+		fields.add(new FormField("autoCheckOutTime", FieldDisplayType.TIME, "Sign visitors out at", Required.REQUIRED, 1, 1));
+		
+		formSection.setFields(fields);
+		sections.add(formSection);
+		form.setSections(sections);
+		form.setFields(fields);
+		form.setLabelPosition(LabelPosition.TOP);
+		return new Preference("autoCheckOut", "Automatic Check Out", form, "Choose when to automatically check out all visitors.") {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				saveAutoCheckOutVisitorsPrefs(map);
+			}
+
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				FacilioService.runAsService(() -> JobStore.deleteJob(moduleId, FacilioConstants.Job.AUTO_CHECKOUT_JOB_NAME));	
+			}
+
+		};
+		
+	}
+	
+	public static void autoCheckOutVisitors() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.VISITOR_LOGGING);
+		
+		FacilioStatus checkedInStatus = TicketAPI.getStatus(module, "CheckedIn");
+		FacilioStatus checkedOutStatus = TicketAPI.getStatus(module, "CheckedOut");
+		
+		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+		
+		UpdateRecordBuilder<VisitorLoggingContext> updateBuilder = new UpdateRecordBuilder<VisitorLoggingContext>()
+				.module(module)
+				.fields(updatedfields)
+				.andCondition(CriteriaAPI.getCondition("MODULE_STATE", "moduleState", String.valueOf(checkedInStatus.getId()), NumberOperators.EQUALS))
+			;
+		Map<String, Object> updateMap = new HashMap<>();
+		FacilioField statusField = modBean.getField("moduleState", module.getName());
+		FacilioField checkOutField = modBean.getField("checkOutTime", module.getName());
+		
+		updateMap.put("moduleState", FieldUtil.getAsProperties(checkedOutStatus));
+		updateMap.put("checkOutTime", System.currentTimeMillis());
+		
+		updatedfields.add(statusField);
+		updatedfields.add(checkOutField);
+		
+		updateBuilder.updateViaMap(updateMap);
 	}
 	
 }

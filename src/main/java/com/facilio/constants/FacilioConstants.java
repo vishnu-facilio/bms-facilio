@@ -1636,6 +1636,7 @@ public class FacilioConstants {
 		public static final String RECORD_SPECIFIC_RULE_JOB_NAME = "singleRecordRuleExecution";
 		
 		public static final String DIGEST_JOB_NAME = "ScheduledActionExecution";
+		public static final String AUTO_CHECKOUT_JOB_NAME = "AutoCheckOutVisitors";
 
 	}
 	public static class Ticket{

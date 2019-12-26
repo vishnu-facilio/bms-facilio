@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.Preference;
 import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.bmsconsole.util.InventoryApi;
@@ -37,7 +39,8 @@ public class PreferenceFactory {
 		modulePrefMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, getVisitorLogModulePrefList());
 		modulePrefMap.put(FacilioConstants.ContextNames.WATCHLIST, getWatchListModulePrefList());
 		modulePrefMap.put(FacilioConstants.ContextNames.VENDORS, getVendorModulePrefList());
-		
+		modulePrefMap.put(FacilioConstants.ContextNames.VISITOR, getVisitorLogGeneralPrefList());
+			
 	}
 	
 	public static List<Preference> getAllPreferencesForModuleRecord(String moduleName) {
@@ -95,23 +98,26 @@ public class PreferenceFactory {
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getHostMailNotificationsPref());
 		visitorLogPreferences.add(VisitorManagementAPI.getHostSmsNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getHostWhatsappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeMailNotificationsPref());
 		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeSmsNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getWelcomeWhatsappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getThanksMailNotificationsPref());
 		visitorLogPreferences.add(VisitorManagementAPI.getThanksSmsNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getThanksWhatsappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getInviteMailNotificationsPref());
 		visitorLogPreferences.add(VisitorManagementAPI.getInviteSmsNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getInviteWhatsappNotificationsPref());
 		
 		visitorLogPreferences.add(VisitorManagementAPI.getApprovalMailNotificationsPref());
 		visitorLogPreferences.add(VisitorManagementAPI.getApprovalSmsNotificationsPref());
-		visitorLogPreferences.add(VisitorManagementAPI.getApprovalWhatsappNotificationsPref());
+		
+		if(AccountUtil.getCurrentOrg().getOrgId() == 155 || AccountUtil.getCurrentOrg().getOrgId() == 210) {
+			visitorLogPreferences.add(VisitorManagementAPI.getWelcomeWhatsappNotificationsPref());
+			visitorLogPreferences.add(VisitorManagementAPI.getThanksWhatsappNotificationsPref());
+			visitorLogPreferences.add(VisitorManagementAPI.getInviteWhatsappNotificationsPref());
+			visitorLogPreferences.add(VisitorManagementAPI.getHostWhatsappNotificationsPref());
+			visitorLogPreferences.add(VisitorManagementAPI.getApprovalWhatsappNotificationsPref());
+		}
 		
 		return visitorLogPreferences;
 	}
@@ -135,6 +141,14 @@ public class PreferenceFactory {
 		
 		vendorPreferences.add(InventoryApi.getRegisterVendorMailNotificationsPref());
 		return vendorPreferences;
+	}
+	
+	private static List<Preference> getVisitorLogGeneralPrefList() {
+		
+		List<Preference> visitorLogGeneralPreferences = new ArrayList<Preference>();
+		
+		visitorLogGeneralPreferences.add(VisitorManagementAPI.getVisitorCheckOutPref());
+		return visitorLogGeneralPreferences;
 	}
 
 }

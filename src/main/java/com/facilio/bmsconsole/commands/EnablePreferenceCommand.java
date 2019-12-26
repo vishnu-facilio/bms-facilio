@@ -6,6 +6,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.Preference;
+import com.facilio.bmsconsole.context.PreferenceMetaContext;
 import com.facilio.bmsconsole.modules.PreferenceFactory;
 import com.facilio.bmsconsole.util.PreferenceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -31,14 +32,25 @@ public class EnablePreferenceCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 	
-		if(PreferenceAPI.checkForEnabledPreference(module.getModuleId(), name, recordId) != null) {
-			throw new IllegalArgumentException("Preference already enabled");
-		}
-		if(recordId > 0) {
-			preference = PreferenceFactory.getModuleRecordPreference(moduleName, name);
+		PreferenceMetaContext pref = PreferenceAPI.checkForEnabledPreference(module.getModuleId(), name, recordId);
+		if(pref != null) {
+			if(pref.getRecordId() > 0) {
+				preference = PreferenceFactory.getModuleRecordPreference(module.getName(), pref.getPreferenceName());
+			}
+			else {
+				preference = PreferenceFactory.getModulePreference(module.getName(), pref.getPreferenceName());
+			}
+			preference.disable(pref.getRecordId(), pref.getModuleId());
+			PreferenceAPI.deleteEnabledPreference(pref.getId());
+			context.put(FacilioConstants.ContextNames.PREFERENCE_ID, null);
 		}
 		else {
-			preference = PreferenceFactory.getModulePreference(moduleName, name);
+			if(recordId > 0) {
+				preference = PreferenceFactory.getModuleRecordPreference(moduleName, name);
+			}
+			else {
+				preference = PreferenceFactory.getModulePreference(moduleName, name);
+			}
 		}
 		if (preference != null) {
 			preference.subsituteAndEnable(map, recordId > 0 ? recordId : -1, module.getModuleId());
