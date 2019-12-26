@@ -20,7 +20,7 @@ public class SubscribeUnsbscribeCommand extends AgentV2Command {
                 throw new Exception("pointIds cant be empty ");
             }
             FacilioCommand command = (FacilioCommand) context.get(AgentConstants.COMMAND);
-            PointsAPI.subscribeUnscbscribePoints(pointIds,command);
+            PointsAPI.updatePointsSubscribedOrUnsubscribed(pointIds, command);
             List<Point> points = PointsAPI.getpoints(pointIds, (FacilioControllerType) context.get(AgentConstants.TYPE));
             if(FacilioCommand.UNSUBSCRIBE == command){
                 ControllerMessenger.subscribeUnscbscribePoints(points,command);

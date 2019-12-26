@@ -510,12 +510,6 @@ public  class AgentUtil
     }
 
 
-    public static void main(String[] args) {
-        System.out.println(" hello ");
-        //System.out.println(DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis()));
-    }
-
-
     /**
      * This method adds metrics to the database, which holds data explaining size and number of messages that were sent by the agent per publishtype, per day.
      * If message already there for a particular Publishtype tha day, updation takes place else insertion.

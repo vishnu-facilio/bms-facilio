@@ -26,27 +26,60 @@ public class IotMessage
     private long ackTime = -1;
     private long completedTime = -1;
     private long sentTime = -1;
+    private int command = -1;
 
 
-    public long getSentTime() { return sentTime; }
+    public int getCommand() {
+        return command;
+    }
 
-    public void setSentTime(long sentTime) { this.sentTime = sentTime; }
+    public void setCommand(int command) {
+        this.command = command;
+    }
 
-    public long getOrgId() { return orgId; }
-    public void setOrgId(long orgId) { this.orgId = orgId; }
 
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
+    public long getSentTime() {
+        return sentTime;
+    }
 
-    public long getParentId() { return parentId; }
-    public void setParentId(long parentId) { this.parentId = parentId; }
+    public void setSentTime(long sentTime) {
+        this.sentTime = sentTime;
+    }
 
-    public int getStatus() { return status; }
-    public void setStatus(int status) { this.status = status; }
+    public long getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(long orgId) {
+        this.orgId = orgId;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(long parentId) {
+        this.parentId = parentId;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     public String getMsgData() {
-        if(messageData != null)
-        {
+        if (messageData != null) {
             return messageData.toJSONString();
         }
         return new String();

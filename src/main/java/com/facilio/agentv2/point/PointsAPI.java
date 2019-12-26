@@ -44,8 +44,66 @@ public class PointsAPI {
     private static final Map<String, FacilioField> FIELD_MAP = FieldFactory.getAsMap(FieldFactory.getPointFields());
 
 
+    public static FacilioModule getPointModule(FacilioControllerType controllerType) throws Exception {
+        switch (controllerType) {
+
+            case OPC_XML_DA:
+                return ModuleFactory.getOPCXmlDAPointModule();
+            case MODBUS_RTU:
+                return ModuleFactory.getModbusRtuPointModule();
+
+            case MODBUS_IP:
+                return ModuleFactory.getModbusTcpPointModule();
+            case BACNET_IP:
+                LOGGER.info(" returning bacnetip module");
+                return ModuleFactory.getBACnetIPPointModule();
+            case NIAGARA:
+                return ModuleFactory.getNiagaraPointModule();
+            case MISC:
+                return ModuleFactory.getMiscPointModule();
+            case OPC_UA:
+                return ModuleFactory.getOPCUAPointModule();
+            case REST:
+            case CUSTOM:
+            case LON_WORKS:
+            case BACNET_MSTP:
+            case KNX:
+                throw new Exception(" No implementation for " + controllerType.asString() + " points");
+            default:
+                throw new Exception("No such implementation " + controllerType);
+        }
+    }
+
+    public static List<FacilioField> getChildPointFields(FacilioControllerType controllerType) throws Exception {
+        switch (controllerType) {
+            case OPC_XML_DA:
+                return FieldFactory.getOPCXmlDAPointFields();
+            case MODBUS_RTU:
+                return FieldFactory.getModbusRtuPointFields();
+            case MODBUS_IP:
+                return FieldFactory.getModbusTcpPointFields();
+            case BACNET_IP:
+                LOGGER.info(" returning bacn ip fields");
+                return FieldFactory.getBACnetIPPointFields();
+            case NIAGARA:
+                return FieldFactory.getNiagaraPointFields();
+            case MISC:
+                return FieldFactory.getMiscPointFields();
+            case OPC_UA:
+                return FieldFactory.getOPCUAPointFields();
+            case REST:
+            case CUSTOM:
+            case LON_WORKS:
+            case BACNET_MSTP:
+            case KNX:
+                throw new Exception(" No implementation for " + controllerType.asString() + " points");
+            default:
+                throw new Exception("No such implementation " + controllerType);
+        }
+    }
+
     public static Point getPointFromJSON(Map<String, Object> payload) throws Exception {
-        LOGGER.info("iamcvijay point from json -> "+payload);
+        LOGGER.info("iamcvijay point from json -> " + payload);
         if (containsValueCheck(AgentConstants.POINT_TYPE, payload)) {
             FacilioControllerType controllerType;
             controllerType = FacilioControllerType.valueOf(JsonUtil.getInt(payload.get(AgentConstants.POINT_TYPE)));
@@ -277,7 +335,7 @@ public class PointsAPI {
             try {
                 return addPointChain.execute();
             } catch (Exception e) {
-                LOGGER.info("Exception occurred ", e);
+                LOGGER.info("Exception occurred while adding point ", e);
             }
         }
         return false;
@@ -316,19 +374,19 @@ public class PointsAPI {
         return null;
     }
 */
-    public static void configureControllerAndPoints(List<Long> pointIds, FacilioControllerType controllerType) throws Exception {
+    public static void configurePointsAndMakeController(List<Long> pointIds, FacilioControllerType controllerType) throws Exception {
         LOGGER.info("configure controller and points ");
         if ((pointIds != null) && (!pointIds.isEmpty())) {
             List<Point> points = getPoints(pointIds, controllerType);
-            LOGGER.info("got points"+points);
+            LOGGER.info("got points" + points);
             if (points != null && (!points.isEmpty())) {
                 Long deviceId = points.get(0).getDeviceId();
                 FacilioChain chain = TransactionChainFactory.getConfigurePointAndProcessControllerV2Chain();
                 FacilioContext context = chain.getContext();
                 context.put(AgentConstants.ID, deviceId);
-                context.put(AgentConstants.POINTS,points);
-                context.put(AgentConstants.RECORD_IDS,pointIds);
-                context.put(AgentConstants.TYPE,controllerType);
+                context.put(AgentConstants.POINTS, points);
+                context.put(AgentConstants.RECORD_IDS, pointIds);
+                context.put(AgentConstants.TYPE, controllerType);
                 chain.execute();
                 //sendConfigurePointCommand(points,controllerType);
             } else {
@@ -339,75 +397,108 @@ public class PointsAPI {
         }
     }
 
-    private static void sendConfigurePointCommand(List<Point> points, FacilioControllerType controllerType) {
-        ControllerMessenger.configurePoints(points,controllerType);
+    private static void sendConfigurePointCommand(List<Point> points, FacilioControllerType controllerType) throws Exception {
+        ControllerMessenger.configurePoints(points, controllerType);
     }
 
-    public static boolean configurePoint(List<Point> points, Controller controller) throws Exception {
-        ControllerMessenger.configurePoints(points,FacilioControllerType.valueOf(controller.getControllerType()));
-        if((points != null)&&( ! points.isEmpty())){
+    public static boolean configurePoints(List<Point> points, Controller controller) throws Exception {
+        ControllerMessenger.configurePoints(points, FacilioControllerType.valueOf(controller.getControllerType()));
+        if ((points != null) && (!points.isEmpty())) {
             List<Long> pointIds = new ArrayList<>();
             for (Point point : points) {
                 pointIds.add(point.getId());
             }
-
-            return configurePoint(pointIds,controller.getId(),controller.getControllerType());
-        }else {
+            return updatePointsConfiguredInprogress(pointIds, controller.getId(), controller.getControllerType());
+        } else {
             throw new Exception("points can't be null or empty");
         }
     }
 
-    public static boolean configurePoint(List<Long> ids, long controllerId, int controllerType) throws Exception {
-            if ((ids != null)&&( ! ids.isEmpty()) ) {
-                FacilioChain editChain = TransactionChainFactory.getEditPointChain();
-                FacilioContext context = editChain.getContext();
-                context.put(FacilioConstants.ContextNames.CRITERIA, getIdCriteria(ids));
-                Map<String,Object> toUpdsteMap = new HashMap<>();
-                toUpdsteMap.put(AgentConstants.CONFIGURE_STATUS,PointEnum.ConfigureStatus.IN_PROGRESS.getIndex());
-                toUpdsteMap.put(AgentConstants.CONTROLLER_ID,controllerId);
-                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, toUpdsteMap); //TODO write method to make it CONFIGURES on ack.
-                editChain.execute();
-                LOGGER.info(" before check " + context);
-                if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
-                    LOGGER.info(" returning true");
-                    return true;
-                }
-            } else {
-                throw new Exception(" pointId cant be less than 1");
+    public static boolean updatePointsConfigurationComplete(List<Long> pointIds) throws Exception {
+        LOGGER.info(" making configuration complete ->" + pointIds);
+        if ((pointIds != null) && (!pointIds.isEmpty())) {
+            FacilioChain editChain = TransactionChainFactory.getEditPointChain();
+            FacilioContext context = editChain.getContext();
+            context.put(FacilioConstants.ContextNames.CRITERIA, getIdCriteria(pointIds));
+            context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.CONFIGURED.getIndex()));
+            editChain.execute();
+            if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
+                return true;
             }
+        }
         return false;
     }
 
-    public static boolean unConfigurePointsChain(List<Long> pointIds,FacilioControllerType type) throws Exception {
+    public static boolean updatePointsConfiguredInprogress(List<Long> ids, long controllerId, int controllerType) throws Exception {
+        if ((ids != null) && (!ids.isEmpty())) {
+
+            Map<String, Object> toUpdateMap = new HashMap<>();
+            toUpdateMap.put(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.IN_PROGRESS.getIndex());
+            toUpdateMap.put(AgentConstants.CONTROLLER_ID, controllerId);
+
+            FacilioChain chain = TransactionChainFactory.updatePointsConfigured();
+            FacilioContext context = chain.getContext();
+            context.put(AgentConstants.POINT_IDS, ids);
+            context.put(AgentConstants.POINT_TYPE, controllerType);
+            context.put(AgentConstants.CONTROLLER_ID, controllerId);
+
+            chain.execute();
+
+            LOGGER.info(" before check " + context);
+            if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
+                LOGGER.info(" returning true");
+                return true;
+            }
+        } else {
+            throw new Exception(" pointId cant be less than 1");
+        }
+        return false;
+    }
+
+    public static boolean unConfigurePointsChain(List<Long> pointIds, FacilioControllerType type) throws Exception {
         FacilioChain chain = TransactionChainFactory.unconfigurePointsChain();
         FacilioContext context = chain.getContext();
-        context.put(AgentConstants.POINT_IDS,pointIds);
-        context.put(AgentConstants.TYPE,type);
+        context.put(AgentConstants.POINT_IDS, pointIds);
+        context.put(AgentConstants.TYPE, type);
         chain.execute();
         return true;
-        }
+    }
 
-   public static boolean unConfigurePoints(List<Long> pointIds) {
-       try {
-           if ((pointIds != null) && ( ! pointIds.isEmpty())) {
-               FacilioChain editChain = TransactionChainFactory.getEditPointChain();
-               FacilioContext context = editChain.getContext();
-               context.put(FacilioConstants.ContextNames.CRITERIA, getIdCriteria(pointIds));
-               context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.UNCONFIGURED.getIndex()));
-               editChain.execute();
-               if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
-                   return true;
-               }
-           } else {
-               throw new Exception(" pointId cant be less than 1");
-           }
-       } catch (Exception e) {
-           LOGGER.info("Exception occurred ", e);
-       }
-       return false;
-   }
-    public static boolean unConfigurePoint(Long pointId) {
-        return unConfigurePoints(Collections.singletonList(pointId));
+
+    public static boolean updatePointSubsctiptionComplete(List<Long> pointIds) throws Exception {
+        LOGGER.info(" making subscription complete ->" + pointIds);
+        if ((pointIds != null) && (!pointIds.isEmpty())) {
+            FacilioChain editChain = TransactionChainFactory.getEditPointChain();
+            FacilioContext context = editChain.getContext();
+            context.put(FacilioConstants.ContextNames.CRITERIA, getIdCriteria(pointIds));
+            context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.SUBSCRIBED.getIndex()));
+            editChain.execute();
+            if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean UpdatePointsUnConfigured(List<Long> pointIds) throws Exception {
+
+        if ((pointIds != null) && (!pointIds.isEmpty())) {
+            FacilioChain editChain = TransactionChainFactory.getEditPointChain();
+            FacilioContext context = editChain.getContext();
+            context.put(FacilioConstants.ContextNames.CRITERIA, getIdCriteria(pointIds));
+            context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.UNCONFIGURED.getIndex()));
+            editChain.execute();
+            if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
+                return true;
+            }
+        } else {
+            throw new Exception(" pointIds cant be null or empty ->" + pointIds);
+        }
+        return false;
+    }
+
+    public static boolean UpdatePointUnConfigured(Long pointId) throws Exception {
+        return UpdatePointsUnConfigured(Collections.singletonList(pointId));
     }
 
     private static Criteria getIdCriteria(List<Long> pointIds) {
@@ -605,38 +696,37 @@ public class PointsAPI {
     }
 
     public static boolean subscribeUnsubscribePoints(List<Long> pointIds, FacilioControllerType type,FacilioCommand command) throws Exception {
+        LOGGER.info(" - - - sub unsub");
         FacilioChain chain = TransactionChainFactory.subscribeUnsbscribechain();
         FacilioContext context = chain.getContext();
-        context.put(AgentConstants.POINT_IDS,pointIds);
-        context.put(AgentConstants.TYPE,type);
-        context.put(AgentConstants.COMMAND,command);
+        context.put(AgentConstants.POINT_IDS, pointIds);
+        context.put(AgentConstants.TYPE, type);
+        context.put(AgentConstants.COMMAND, command);
         chain.execute();
         return true;
     }
 
-    public static boolean subscribeUnscbscribePoints(List<Long> pointIds, FacilioCommand command) throws Exception {
-            if ((pointIds != null) && ( ! pointIds.isEmpty())) {
-                FacilioChain editChain = TransactionChainFactory.getEditPointChain();
-                FacilioContext context = editChain.getContext();
-                context.put(FacilioConstants.ContextNames.CRITERIA, getIdCriteria(pointIds));
-                if(command == FacilioCommand.SUBSCRIBE){
-                    LOGGER.info(" updated to sub");
-                    context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.IN_PROGRESS.getIndex()));
-                }
-                else if(command == FacilioCommand.UNSUBSCRIBE){
-                    LOGGER.info(" updated to un sub");
-                    context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex()));
-                }
-                else {
-                    throw new Exception(" command cant be anything other than sub or unsub");
-                }
-                editChain.execute();
-                if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
-                    return true;
-                }
+    public static boolean updatePointsSubscribedOrUnsubscribed(List<Long> pointIds, FacilioCommand command) throws Exception {
+        if ((pointIds != null) && (!pointIds.isEmpty())) {
+            FacilioChain editChain = TransactionChainFactory.getEditPointChain();
+            FacilioContext context = editChain.getContext();
+            context.put(FacilioConstants.ContextNames.CRITERIA, getIdCriteria(pointIds));
+            if (command == FacilioCommand.SUBSCRIBE) {
+                LOGGER.info(" updated to sub");
+                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.IN_PROGRESS.getIndex()));
+            } else if (command == FacilioCommand.UNSUBSCRIBE) {
+                LOGGER.info(" updated to un sub");
+                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex()));
             } else {
-                throw new Exception(" pointId cant be less than 1");
+                throw new Exception(" command cant be anything other than sub or unsub");
             }
+            editChain.execute();
+            if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
+                return true;
+            }
+        } else {
+            throw new Exception(" pointId cant be less than 1");
+        }
         return false;
     }
 
@@ -644,7 +734,7 @@ public class PointsAPI {
         Criteria criteria = new Criteria();
         if (controller != null) {
             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), String.valueOf(controller.getId()), NumberOperators.EQUALS));
-        }else{
+        } else {
             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), CommonOperators.IS_EMPTY));
         }
         criteria.addAndCondition(CriteriaAPI.getNameCondition(String.join(",",pointNames),ModuleFactory.getPointModule()));

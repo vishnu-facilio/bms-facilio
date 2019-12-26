@@ -36,19 +36,19 @@ public class AckUtil
         }
     }
 
-    public void processNewAgentAck(JSONObject payload,String agent,long orgId) {
+    public void processAgentAck(JSONObject payload, String agent, long orgId) {
         try {
             Long msgId = (Long) payload.get(AgentConstants.MESSAGE_ID);
             int status = ((Number) payload.get(AgentConstants.STATUS)).intValue();
 
-            JSONObject newObj = new JSONObject();
-            newObj.putAll(payload);
+            JSONObject newObj = (JSONObject) payload.clone();
             newObj.put("agent", agent);
             FacilioChain chain = TransactionChainFactory.getAckProcessorChain();
             FacilioContext context = chain.getContext();
-            context.put(AgentConstants.ID,msgId);
-            context.put(AgentConstants.STATUS,Status.valueOf(status));
-            context.put(AgentConstants.DATA,newObj);
+            context.put(AgentConstants.ID, msgId);
+            context.put(AgentConstants.STATUS, Status.valueOf(status));
+            context.put(AgentConstants.DATA, newObj);
+            context.put(AgentConstants.ORGID, orgId);
             chain.execute();
 
         } catch (Exception e) {

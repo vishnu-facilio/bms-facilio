@@ -1,12 +1,16 @@
+# run using apid-latest-linux-amd64 check -c fileName.yaml
+# use function --verbosity 3 to log requests and responses
+# documentation -> https://www.getapid.com/docs/
+
 version: 1
 variables:
   api_url: "http://localhost:8080"
   mailId: "workwithchai@gmail.com"
-  pass : "Valli123"
+  pass: "Valli123"
 transactions:
   - id: "AgentApis"
     variables:
-      agentData : |
+      agentData: |
         {
          "deviceDetails":null,
          "lastModifiedTime":111111111,
@@ -44,32 +48,32 @@ transactions:
            "deletedTime":-1
          }
       pointData: |
-         {
-             "resourceId":null,
-             "displayName":null,
-             "description":null,
-             "subscribeStatus":1,
-             "deviceName":"facilioDevice",
-             "deviceId":13,
-             "orgId":1,
-             "writable":false,
-             "subscribed":false,
-             "mappedTime":0,
-             "inUse":false,
-             "createdTime":1576089183601,
-             "id":176,
-             "pseudo":false,
-             "fieldId":null,
-             "controllerId":0,
-             "thresholdJson":{
-             },
-             "dataType":0,
-             "pointType":1,
-             "unit":0,
-             "name":"FAC_PHASE_VOLTAGE_R",
-             "categoryId":null,
-             "configureStatus":2
-         }
+        {
+            "resourceId":null,
+            "displayName":null,
+            "description":null,
+            "subscribeStatus":1,
+            "deviceName":"facilioDevice",
+            "deviceId":13,
+            "orgId":1,
+            "writable":false,
+            "subscribed":false,
+            "mappedTime":0,
+            "inUse":false,
+            "createdTime":1576089183601,
+            "id":176,
+            "pseudo":false,
+            "fieldId":null,
+            "controllerId":0,
+            "thresholdJson":{
+            },
+            "dataType":0,
+            "pointType":1,
+            "unit":0,
+            "name":"FAC_PHASE_VOLTAGE_R",
+            "categoryId":null,
+            "configureStatus":2
+        }
     steps:
       - id: "authenticate"
         request:
@@ -167,9 +171,9 @@ transactions:
                   }
               }
         export:
-           pointId: "response.body.result.data[0].id"
-           deviceId: "response.body.result.data[0].deviceId"
-           type: "response.body.result.data[0].pointType"
+          pointId: "response.body.result.data[0].id"
+          deviceId: "response.body.result.data[0].deviceId"
+          type: "response.body.result.data[0].pointType"
 
       - id: "set"
         request:

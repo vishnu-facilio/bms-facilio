@@ -30,21 +30,22 @@ public class AgentApiV2 {
 
     private static final long DEFAULT_TIME = 10L;
 
-    private static StackTraceElement stackStrace(){
+    private static StackTraceElement stackStrace() {
         return Thread.currentThread().getStackTrace()[2];
     }
 
-    public static List<FacilioAgent> getAllAgents(){
-        return getAgents(null,null,true);
+    public static List<FacilioAgent> getAllAgents() throws Exception {
+        return getAgents(null, null, true);
     }
-    public static List<FacilioAgent> getAgents(){
-        return getAgents(null,null,false);
+
+    public static List<FacilioAgent> getAgents() throws Exception {
+        return getAgents(null, null, false);
     }
 
 
-    public static FacilioAgent getAgent(String agentName){
-        List<FacilioAgent> agentList = getAgents(agentName, null,true);
-        if( ! agentList.isEmpty()){
+    public static FacilioAgent getAgent(String agentName) throws Exception {
+        List<FacilioAgent> agentList = getAgents(agentName, null, true);
+        if (!agentList.isEmpty()) {
             return agentList.get(0);
         }
         return null;
@@ -53,37 +54,33 @@ public class AgentApiV2 {
     private static final Map<String, FacilioField> FIELDSMAP = FieldFactory.getAsMap(FieldFactory.getNewAgentDataFields());
     private static final FacilioModule MODULE = ModuleFactory.getNewAgentDataModule();
 
-    public static List<FacilioAgent> getAgents(AgentType type){
-        return getAgents(null,type,true);
+    public static List<FacilioAgent> getAgents(AgentType type) throws Exception {
+        return getAgents(null, type, true);
     }
 
-    private static List<FacilioAgent> getAgents(String agentName,AgentType type,boolean getDeleted){
+    private static List<FacilioAgent> getAgents(String agentName, AgentType type, boolean getDeleted) throws Exception {
         List<FacilioAgent> agentList = new ArrayList<>();
-        try {
-            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
-            FacilioContext context = new FacilioContext();
-            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentDataFields());
-            context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentConstants.AGENT_TABLE);
-            context.put(FacilioConstants.ContextNames.FIELDS,fieldMap.values());
-            Criteria criteria = new Criteria();
-            if((agentName != null) && ( ! agentName.isEmpty())){
-                criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.NAME),agentName, StringOperators.IS));
-            }
-            if(type != null){
-                criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_TYPE), String.valueOf(type.getKey()),NumberOperators.EQUALS));
-            }
-            if( ! getDeleted ){
-                criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
-            }
-            context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
 
-            List<Map<String, Object>> records = bean.getRows(context);
-            LOGGER.info(" rows selected are "+records);
-            return getAgentsFromRows(records);
-        } catch (Exception e) {
-            e.printStackTrace();
+        ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
+        FacilioContext context = new FacilioContext();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentDataFields());
+        context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentConstants.AGENT_TABLE);
+        context.put(FacilioConstants.ContextNames.FIELDS, fieldMap.values());
+        Criteria criteria = new Criteria();
+        if ((agentName != null) && (!agentName.isEmpty())) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.NAME), agentName, StringOperators.IS));
         }
-        return agentList;
+        if (type != null) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_TYPE), String.valueOf(type.getKey()), NumberOperators.EQUALS));
+        }
+        if (!getDeleted) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
+        }
+        context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+
+        List<Map<String, Object>> records = bean.getRows(context);
+        LOGGER.info(" rows selected are " + records);
+        return getAgentsFromRows(records);
     }
 
     public static FacilioAgent getAgent(Long agentId){
@@ -136,25 +133,21 @@ public class AgentApiV2 {
             return FieldUtil.getAsBeanFromJson(payload,FacilioAgent.class);
     }
 
-    public static long addAgent(FacilioAgent agent) {
+    public static long addAgent(FacilioAgent agent) throws Exception {
         LOGGER.info(" adding new agent " + stackStrace());
         Chain chain = TransactionChainFactory.addNewAgent();
         FacilioContext context = new FacilioContext();
         agent.setCreatedTime(System.currentTimeMillis());
         agent.setLastDataReceivedTime(agent.getCreatedTime());
         agent.setLastModifiedTime(agent.getCreatedTime());
-        context.put(AgentConstants.AGENT,agent);
-        try {
-            chain.execute(context);
-            Long agentId = (Long) context.get(AgentConstants.AGENT_ID);
-            if( (agentId != null) && (agentId > 0)){
-                agent.setId(agentId);
-                return agentId;
-            }else {
-                LOGGER.info("Failed adding agent "+agent.getName());
-            }
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while adding agent->"+agent.getName()+" ",e);
+        context.put(AgentConstants.AGENT, agent);
+        chain.execute(context);
+        Long agentId = (Long) context.get(AgentConstants.AGENT_ID);
+        if ((agentId != null) && (agentId > 0)) {
+            agent.setId(agentId);
+            return agentId;
+        } else {
+            LOGGER.info("Failed adding agent " + agent.getName());
         }
         return -1;
     }
@@ -162,32 +155,36 @@ public class AgentApiV2 {
 
     public static long addAgent(JSONObject jsonObject) {
         if( (jsonObject != null) && ( ! jsonObject.isEmpty() ) ){
-            if( containsValueCheck(AgentConstants.NAME,jsonObject) && containsValueCheck(AgentConstants.TYPE,jsonObject) && containsValueCheck(AgentConstants.SITE_ID,jsonObject)){
+            if (containsValueCheck(AgentConstants.NAME, jsonObject) && containsValueCheck(AgentConstants.TYPE, jsonObject) && containsValueCheck(AgentConstants.SITE_ID, jsonObject)) {
                 FacilioAgent agent = new FacilioAgent();
-                agent.setName((String)jsonObject.get(AgentConstants.NAME));
+                agent.setName((String) jsonObject.get(AgentConstants.NAME));
                 //agent.setType(AgentType.valueOf((int)jsonObject.get(AgentConstants.TYPE)));
-                agent.setSiteId((long)jsonObject.get(AgentConstants.SITE_ID));
-                return addAgent(agent);
+                agent.setSiteId((long) jsonObject.get(AgentConstants.SITE_ID));
+                try {
+                    return addAgent(agent);
+                } catch (Exception e) {
+                    LOGGER.info("Exception while padding agent");
+                }
             }
         }
         return -1;
     }
 
-    public static boolean editAgent(FacilioAgent agent,JSONObject jsonObject) {
-        if (containsValueCheck(AgentConstants.DISPLAY_NAME,jsonObject)) {
+    public static boolean editAgent(FacilioAgent agent, JSONObject jsonObject) throws Exception {
+        if (containsValueCheck(AgentConstants.DISPLAY_NAME, jsonObject)) {
             if (!jsonObject.get(AgentConstants.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
                 agent.setDisplayName(jsonObject.get(AgentConstants.DISPLAY_NAME).toString());
             }
         }
 
-        if (containsValueCheck(AgentConstants.DATA_INTERVAL,jsonObject)) {
+        if (containsValueCheck(AgentConstants.DATA_INTERVAL, jsonObject)) {
             long currDataInterval = Long.parseLong(jsonObject.get(AgentConstants.DATA_INTERVAL).toString());
             if (agent.getInterval() != currDataInterval) {
                 agent.setInterval(currDataInterval);
             }
         }
 
-        if (containsValueCheck(AgentConstants.WRITABLE,jsonObject)) {
+        if (containsValueCheck(AgentConstants.WRITABLE, jsonObject)) {
             boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentConstants.WRITABLE).toString());
             if (agent.getWritable() != currWriteble) {
                 agent.setWritable(currWriteble);
@@ -196,20 +193,20 @@ public class AgentApiV2 {
         return updateAgent(agent);
     }
 
-    public static boolean editAgent(FacilioAgent agent,Long dataInterval,Boolean writable,String displayName){
-        if(agent != null){
-            if((dataInterval != null)&&(dataInterval > 0L)){
+    public static boolean editAgent(FacilioAgent agent, Long dataInterval, Boolean writable, String displayName) throws Exception {
+        if (agent != null) {
+            if ((dataInterval != null) && (dataInterval > 0L)) {
                 agent.setInterval(dataInterval);
             }
-            if((writable != null)){
+            if ((writable != null)) {
                 agent.setWritable(writable);
             }
-            if((displayName != null)&&( ! displayName.isEmpty())){
+            if ((displayName != null) && (!displayName.isEmpty())) {
                 agent.setDisplayName(displayName);
             }
 
             return updateAgent(agent);
-        }else {
+        } else {
             LOGGER.info("Exception occurred, agent can't be null to update ");
         }
         return false;
@@ -218,7 +215,8 @@ public class AgentApiV2 {
     public static void main(String[] args) {
         System.out.println((List<FacilioField>) FIELDSMAP.values());
     }
-    public static boolean updateAgent(FacilioAgent agent) {
+
+    public static boolean updateAgent(FacilioAgent agent) throws Exception {
         long currTime = System.currentTimeMillis();
         agent.setLastModifiedTime(currTime);
         agent.setLastUpdatedTime(currTime);
@@ -226,18 +224,13 @@ public class AgentApiV2 {
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
                 .table(MODULE.getTableName())
                 .fields(FieldFactory.getNewAgentDataFields())
-                .andCondition(CriteriaAPI.getIdCondition(agent.getId(),MODULE));
-        try {
-                if(updateRecordBuilder.update(FieldUtil.getAsJSON(agent)) > 0){
-                    return true;
-                }else {
-                    LOGGER.info("Exception occurred while updating agent, updating failed");
-                    return false;
-                }
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while updating agent ",e);
+                .andCondition(CriteriaAPI.getIdCondition(agent.getId(), MODULE));
+        if (updateRecordBuilder.update(FieldUtil.getAsJSON(agent)) > 0) {
+            return true;
+        } else {
+            LOGGER.info("Exception occurred while updating agent, updating failed");
+            return false;
         }
-        return false;
     }
 
     public static long getAgentCount() {

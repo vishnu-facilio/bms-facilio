@@ -12,7 +12,6 @@ public class DeletePointCommand extends AgentV2Command {
 
     private static final Logger LOGGER = LogManager.getLogger(DeletePointCommand.class.getName());
 
-
     @Override
     public boolean executeCommand(Context context) throws Exception {
         if(containsCheck(AgentConstants.POINT_IDS,context)){

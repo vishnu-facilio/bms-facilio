@@ -1,8 +1,11 @@
+# run using apid-latest-linux-amd64 check -c fileName.yaml
+# use function --verbosity 3 to log requests and responses
+# documentation -> https://www.getapid.com/docs/
 version: 1
 variables:
   api_url: "http://localhost:8080"
   mailId: "workwithchai@gmail.com"
-  pass : "Valli123"
+  pass: "Valli123"
 transactions:
   - id: "AgentApis"
     variables:
@@ -57,55 +60,55 @@ transactions:
 
         }
     steps:
-        - id: "authenticate"
-          request:
-            method: POST
-            endpoint: "{{ var.api_url }}/api/integ/faciliosubmit"
-            headers:
-              Content-Type: "application/json"
-            body: |
+      - id: "authenticate"
+        request:
+          method: POST
+          endpoint: "{{ var.api_url }}/api/integ/faciliosubmit"
+          headers:
+            Content-Type: "application/json"
+          body: |
+            {
+             "username":"{{  var.mailId  }}",
+             "password":"{{  var.pass  }}"
+             }
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
               {
-               "username":"{{  var.mailId  }}",
-               "password":"{{  var.pass  }}"
-               }
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-                    "jsonresponse": {
-                        "token": "eyJ0e",
-                        "username": "{{  var.mailId  }}"
-                    }
-                }
-          export:
-            auth_token: "response.body.jsonresponse.token"
+                  "jsonresponse": {
+                      "token": "eyJ0e",
+                      "username": "{{  var.mailId  }}"
+                  }
+              }
+        export:
+          auth_token: "response.body.jsonresponse.token"
 
-        - id: "getAgentList"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/device/list"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-                  "responseCode":0,
-                  "result":
-                    {
-                      "data":
-                        [
-                          {{var.deviceData}}
-                        ]
-                    }
-                }
-          export:
-            agentId: "response.body.result.data[0].id"
+      - id: "getAgentList"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/device/list"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                "responseCode":0,
+                "result":
+                  {
+                    "data":
+                      [
+                        {{var.deviceData}}
+                      ]
+                  }
+              }
+        export:
+          agentId: "response.body.result.data[0].id"
 
 

@@ -50,98 +50,109 @@ public class ControllerMessenger {
         return constructNewIotMessage(controller, command, null, null);
     }
 
-    private static IotData constructNewIotMessage(Controller controller, FacilioCommand command, List<Point> points, FacilioContext context) throws Exception {
-            LOGGER.info(" constructing controller message ");
-            if (controller == null) {
-                throw new Exception("Exception occurred,  Controller not present");
-            }
-            IotData iotData = new IotData();
-            long agentId = controller.getAgentId();
-            LOGGER.info(" controller json " + controller.toJSON());
-            LOGGER.info(" agentId  " + agentId);
-            FacilioAgent agent = AgentApiV2.getAgent(agentId);
-            if (agent != null) {
-                iotData.setAgentId(agentId);
-                JSONObject object = new JSONObject();
-                object.put(AgentConstants.COMMAND, command.asInt());
-                LOGGER.info(" controller type  "+controller.getControllerType());
-                object.put(AgentConstants.TYPE, controller.getControllerType());
-                object.put(AgentConstants.IDENTIFIER, controller.makeIdentifier());
-                object.putAll(controller.getChildJSON());
-                object.put("timestamp", System.currentTimeMillis());
-                object.put("agent", agent.getName());
-                object.put(AgentConstants.AGENT_ID, agent.getId()); // Agent_Id key must be changed to camelcase.
 
-                switch (command) {
-                    case RESET:
-                        //build reset message
-                        break;
-                    //
-                    case SET:
-                        JSONArray pointsData = MessengerUtil.getPointsData(points);
-                        JSONObject pointData = (JSONObject) pointsData.get(0);
-                        pointData.put(AgentConstants.VALUE, points.get(0).getPresentValue());
-                        object.put(AgentConstants.POINTS, pointData);
-                        break;
-                    case CONFIGURE:
-                    case REMOVE:
-                    case SUBSCRIBE:
-                    case UNSUBSCRIBE:
-                    case GET:
-                        object.put(AgentConstants.POINTS, MessengerUtil.getPointsData(points));
-                        break;
-                    //
-                    case SHUTDOWN:
-                        break;
-                    case PROPERTY:
-                        object.put(AgentConstants.PROPERTY, context.get(AgentConstants.PROPERTY));
-                    case STATS:
-                        break;
-                    case UPGRADE:
-                        break;
-                    case THREAD_DUMP:
-                        break;
-                    case ADD_CONTROLLER:
-                        break;
-                    case DISCOVER_POINTS:
-                        break;
-                    case EDIT_CONTROLLER:
-                        break;
-                    case CONTROLLER_STATUS:
-                        break;
-                    case DISCOVER_CONTROLLERS:
-                        break;
-                }
-                String objString = object.toJSONString();
-                if (objString.length() > MAX_BUFFER) {
-                    List<IotMessage> messages = new ArrayList<>();
-                    JSONArray array = (JSONArray) object.get(AgentConstants.POINTS);
-                    int pointsSize = 0;
-                    JSONArray pointsArray = new JSONArray();
-                    for (int i = 0; i < array.size(); i++) {
-                        JSONObject point = (JSONObject) array.get(i);
-                        pointsSize = pointsSize + point.toJSONString().length();
-                        if (pointsSize < MAX_BUFFER) {
-                            pointsArray.add(point);
-                        } else {
-                            object.put("points", pointsArray);
-                            messages.add(MessengerUtil.getMessageObject(object));
-                            pointsArray.clear();
-                            pointsSize = point.toJSONString().length();
-                            pointsArray.add(point);
-                        }
-                    }
-                    if (pointsArray.size() > 0) {
-                        object.put("points", pointsArray);
-                        messages.add(MessengerUtil.getMessageObject(object));
-                    }
-                    iotData.setMessages(messages);
-                } else {
-                    iotData.setMessages(Collections.singletonList(MessengerUtil.getMessageObject(object)));
-                }
-            } else {
-                LOGGER.info("Exception Occurred, agent is null -> ");
+    /**
+     * THis method can buse to construct iot-messages specific for Facilio-agent's point related functionality
+     *
+     * @param controller {@link Controller} to which we need to send the command
+     * @param command    {@link FacilioCommand} point related commands
+     * @param points     {@link Point} points which should handled
+     * @param context    {@link FacilioContext } for any extra parameters
+     * @return {@link IotData} the actual data
+     * @throws Exception
+     */
+    private static IotData constructNewIotMessage(Controller controller, FacilioCommand command, List<Point> points, FacilioContext context) throws Exception {
+        LOGGER.info(" constructing controller message ");
+        if (controller == null) {
+            throw new Exception("Exception occurred,  Controller not present");
+        }
+        IotData iotData = new IotData();
+        long agentId = controller.getAgentId();
+        LOGGER.info(" controller json " + controller.toJSON());
+        LOGGER.info(" agentId  " + agentId);
+        FacilioAgent agent = AgentApiV2.getAgent(agentId);
+        if (agent != null) {
+            iotData.setAgentId(agentId);
+            JSONObject object = new JSONObject();
+            object.put(AgentConstants.COMMAND, command.asInt());
+            LOGGER.info(" controller type  " + controller.getControllerType());
+            object.put(AgentConstants.TYPE, controller.getControllerType());
+            object.put(AgentConstants.IDENTIFIER, controller.makeIdentifier());
+            object.putAll(controller.getChildJSON());
+            object.put("timestamp", System.currentTimeMillis());
+            object.put("agent", agent.getName());
+            object.put(AgentConstants.AGENT_ID, agent.getId()); // Agent_Id key must be changed to camelcase.
+
+            switch (command) {
+                case RESET:
+                    //build reset message
+                    break;
+                //
+                case SET:
+                    JSONArray pointsData = MessengerUtil.getPointsData(points);
+                    JSONObject pointData = (JSONObject) pointsData.get(0);
+                    pointData.put(AgentConstants.VALUE, points.get(0).getPresentValue());
+                    object.put(AgentConstants.POINTS, pointData);
+                    break;
+                case CONFIGURE:
+                case REMOVE:
+                case SUBSCRIBE:
+                case UNSUBSCRIBE:
+                case GET:
+                    object.put(AgentConstants.POINTS, MessengerUtil.getPointsData(points));
+                    break;
+                //
+                case SHUTDOWN:
+                    break;
+                case PROPERTY:
+                    object.put(AgentConstants.PROPERTY, context.get(AgentConstants.PROPERTY));
+                case STATS:
+                    break;
+                case UPGRADE:
+                    break;
+                case THREAD_DUMP:
+                    break;
+                case ADD_CONTROLLER:
+                    break;
+                case DISCOVER_POINTS:
+                    break;
+                case EDIT_CONTROLLER:
+                    break;
+                case CONTROLLER_STATUS:
+                    break;
+                case DISCOVER_CONTROLLERS:
+                    break;
             }
+            String objString = object.toJSONString();
+            if (objString.length() > MAX_BUFFER) {
+                List<IotMessage> messages = new ArrayList<>();
+                JSONArray array = (JSONArray) object.get(AgentConstants.POINTS);
+                int pointsSize = 0;
+                JSONArray pointsArray = new JSONArray();
+                for (int i = 0; i < array.size(); i++) {
+                    JSONObject point = (JSONObject) array.get(i);
+                    pointsSize = pointsSize + point.toJSONString().length();
+                    if (pointsSize < MAX_BUFFER) {
+                        pointsArray.add(point);
+                    } else {
+                        object.put("points", pointsArray);
+                        messages.add(MessengerUtil.getMessageObject(object, command));
+                        pointsArray.clear();
+                        pointsSize = point.toJSONString().length();
+                        pointsArray.add(point);
+                    }
+                }
+                if (pointsArray.size() > 0) {
+                    object.put("points", pointsArray);
+                    messages.add(MessengerUtil.getMessageObject(object, command));
+                }
+                iotData.setMessages(messages);
+            } else {
+                iotData.setMessages(Collections.singletonList(MessengerUtil.getMessageObject(object, command)));
+            }
+        } else {
+            LOGGER.info("Exception Occurred, agent is null -> ");
+        }
         return iotData;
     }
 
@@ -160,42 +171,39 @@ public static boolean discoverPoints(long controllerId){
     public static boolean discoverPoints(Controller controller){
         try {
             IotData iotData = constructNewIotMessage(controller, FacilioCommand.DISCOVER_POINTS);
-            LOGGER.info(" iot data "+iotData);
+            LOGGER.info(" iot data " + iotData);
             MessengerUtil.addAndPublishNewAgentData(iotData);
             return true;
-        }catch (Exception e){
-            LOGGER.info("Exception occurred ",e);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ", e);
         }
         return false;
     }
 
-    public static void configurePoints(List<Point> points, FacilioControllerType controllerType) {
-        try{
-            IotData iotData = constructNewIotMessage(points, FacilioCommand.CONFIGURE);
-            LOGGER.info(" iot data "+iotData);
-            MessengerUtil.addAndPublishNewAgentData(iotData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void configurePoints(List<Point> points, FacilioControllerType controllerType) throws Exception {
+        IotData iotData = constructNewIotMessage(points, FacilioCommand.CONFIGURE);
+        LOGGER.info(" iot data " + iotData);
+        MessengerUtil.addAndPublishNewAgentData(iotData);
+
     }
 
     public static void resetController(long controllerId) throws Exception {
-        IotData iotDat = constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId),FacilioCommand.RESET);
+        IotData iotDat = constructNewIotMessage(ControllerApiV2.getControllerFromDb(controllerId), FacilioCommand.RESET);
         MessengerUtil.addAndPublishNewAgentData(iotDat);
     }
 
-    public static void setValue(Point point) throws  Exception {
-        IotData iotData = constructNewIotMessage(Collections.singletonList(point),FacilioCommand.SET);
+    public static void setValue(Point point) throws Exception {
+        IotData iotData = constructNewIotMessage(Collections.singletonList(point), FacilioCommand.SET);
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 
     public static void deletePoints(List<Point> points) throws Exception {
-        IotData iotData = constructNewIotMessage(points,FacilioCommand.REMOVE);
+        IotData iotData = constructNewIotMessage(points, FacilioCommand.REMOVE);
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 
     public static void unConfigurePoints(List<Point> points) throws Exception {
-        IotData iotData = constructNewIotMessage(points,FacilioCommand.REMOVE);
+        IotData iotData = constructNewIotMessage(points, FacilioCommand.REMOVE);
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 

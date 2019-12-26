@@ -51,52 +51,52 @@ public interface ModuleCRUDBean {
 	
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, FacilioRecord record,
 			 boolean adjustTime) throws Exception;
-	
+
 	public void processTimeSeries(FacilioRecord record) throws Exception;
 
     /*public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record,
                                   IRecordProcessorCheckpointer checkpointer, boolean adjustTime) throws Exception;
 
     public void processTimeSeries(FacilioConsumer consumer, FacilioRecord record) throws Exception;*/
-	
+
 	public List<EventRuleContext> getActiveEventRules() throws Exception;
 
-	public ControllerContext getController(String deviceName, String deviceId,Long agentId) throws Exception;
-	
+	public ControllerContext getController(String deviceName, String deviceId, Long agentId) throws Exception;
+
 	public ControllerContext addController(ControllerContext controllerContext) throws Exception;
-	
-	public void acknowledgePublishedMessage (long id, String message, JSONObject payLoad) throws Exception;
 
-	public void acknowledgeNewPublishedMessage (long id, Status status, JSONObject payLoad) throws Exception;
+	public void acknowledgePublishedMessage(long id, String message, JSONObject payLoad) throws Exception;
 
-	public long addDeviceId (String deviceId) throws Exception;
-	
+	public void acknowledgeNewPublishedMessage(long id, Status status) throws Exception;
+
+	public long addDeviceId(String deviceId) throws Exception;
+
 	public Map<String, Long> getDeviceMap() throws Exception;
 
-	public  List<Map<String,Object>> getAgentDataMap(String agentName, AgentType type) throws Exception;
+	public List<Map<String, Object>> getAgentDataMap(String agentName, AgentType type) throws Exception;
 
-	public Long addLog(Map<String,Object> logData) throws Exception;
+	public Long addLog(Map<String, Object> logData) throws Exception;
 
-	public int updateAgentMetrics(Map<String,Object> metrics, Criteria criteria) throws Exception;
+	public int updateAgentMetrics(Map<String, Object> metrics, Criteria criteria) throws Exception;
 
-	public long insertAgentMetrics(Map<String,Object> metrics) throws Exception;
+	public long insertAgentMetrics(Map<String, Object> metrics) throws Exception;
 
 	public List<Map<String, Object>> getMetrics(Long agentId, Integer publishType, Long createdTime) throws Exception;
 
-	public Long addAgentMessage(Map<String,Object> map)throws Exception;
+	public Long addAgentMessage(Map<String, Object> map) throws Exception;
 
-	public Long updateAgentMessage(Map<String,Object> map)throws Exception;
+	public Long updateAgentMessage(Map<String, Object> map) throws Exception;
 
-	public List<Map<String,Object>> getRows(FacilioContext context) throws Exception;
+	public List<Map<String, Object>> getRows(FacilioContext context) throws Exception;
 
 	public Integer updateTable(FacilioContext context) throws Exception;
 
 	public Integer deleteFromDb(FacilioContext context) throws Exception;
-	
-	public  List<AssetCategoryContext> getCategoryList() throws Exception ;
-	
-	public  List<AssetContext> getAssetListOfCategory(long category) throws Exception;
-	
+
+	public List<AssetCategoryContext> getCategoryList() throws Exception;
+
+	public List<AssetContext> getAssetListOfCategory(long category) throws Exception;
+
 	public List<FacilioModule> getAssetReadings(long parentCategoryId) throws Exception;
 
 	public  void  readingTools(long orgId, long fieldId, long assetId, long startTtime, long endTtime, String email, long selectfields)throws Exception;

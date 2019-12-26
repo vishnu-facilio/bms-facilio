@@ -66,36 +66,46 @@ public class PointsUtil
         return false;
     }*/
 
-    public static boolean processPoints(JSONObject payload, Device device){
-        if(containsValueCheck(AgentConstants.DATA,payload)){
+    public static boolean processPoints(JSONObject payload, Device device) throws Exception {
+        if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray pointsJSON = (JSONArray) payload.get(AgentConstants.DATA);
+            if (pointsJSON.size() == 0) {
+                throw new Exception(" pointJSON cant be empty");
+            }
             List<Point> points = new ArrayList<>();
             for (Object o : pointsJSON) {
                 JSONObject pointJSON = (JSONObject) o;
-                pointJSON.put(AgentConstants.DEVICE_NAME,device.getName());
-                pointJSON.put(AgentConstants.DEVICE_ID,device.getId());
-                pointJSON.put(AgentConstants.POINT_TYPE,device.getType());
-                LOGGER.info(" point json "+pointJSON);
+                pointJSON.put(AgentConstants.DEVICE_NAME, device.getName());
+                pointJSON.put(AgentConstants.DEVICE_ID, device.getId());
+                pointJSON.put(AgentConstants.POINT_TYPE, device.getType());
+                LOGGER.info(" point json " + pointJSON);
                 try {
                     Point point = PointsAPI.getPointFromJSON(pointJSON);
                     LOGGER.info("point made");
-                    LOGGER.info("point to json ->"+ FieldUtil.getAsJSON(point));
-                    if(point != null){
+                    LOGGER.info("point to json ->" + FieldUtil.getAsJSON(point));
+                    if (point != null) {
                         points.add(point);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.info("Exception occurred while getting point");
                 }
             }
-            LOGGER.info(" points processed "+points.size());
+            if (points.size() == 0) {
+                throw new Exception(" points to cadd can't be empty");
+            }
+            LOGGER.info(" points processed " + points.size());
+            //TODO try bulk insert first
             for (Point point : points) {
-                boolean pointEntry = PointsAPI.addPoint(point);
-                LOGGER.info("point add status -> "+pointEntry);;
+                boolean pointEntry = PointsAPI.addPoint(point); //TODO make it bulk add
+                if (!pointEntry) {
+                    LOGGER.info("Exception while adding point," + point.toJSON());
+                }
+                LOGGER.info("point add status -> " + pointEntry); //TODO
             }
         }else {
             LOGGER.info(" Exception occurred, pointsData missing from payload -> "+payload);
         }
-        return false;
+        return true;
     }
 
     private static boolean containsValueCheck(String key, Map<String,Object> jsonObject){

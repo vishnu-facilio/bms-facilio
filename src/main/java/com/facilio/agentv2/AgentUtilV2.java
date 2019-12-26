@@ -41,59 +41,42 @@ public class AgentUtilV2
 
     /**
      * This method processes the {@link JSONObject} and creates or updates the agent in the database
+     *
      * @param jsonObject {@link JSONObject} containing all the necessary data to build or update an agent
-     * @param agentName in case of updation, agent name.
+     * @param agent      {@link FacilioAgent} for comparing new changes
      * @return {@link Long} 0 if failure
      */
-    public long processAgent(JSONObject jsonObject,String agentName) {
-        FacilioAgent agent = getFacilioAgent(agentName);
-        if(agent==null) {
-            try {
-                agent = AgentApiV2.getFacilioAgentFromJson(jsonObject);
-                LOGGER.info("adding agent " + agent.getName());
-                return addAgent(agent);
-            }catch (Exception e){
-                LOGGER.info(" Exception occurred ");
-            }
+    public boolean processAgent(JSONObject jsonObject, FacilioAgent agent) throws Exception {
+        if (agent != null) {
+            return updateAgent(agent, jsonObject);
+        } else {
+            throw new Exception("Agent can't be null");
         }
-        else  {
-            if (updateAgent(agent, jsonObject)) {
-                return 1;
-            }
-            return 0;
-        }
-        return 0;
     }
 
-    private boolean updateAgent(FacilioAgent agent, JSONObject jsonObject){
-        try {
-
-                boolean isDone = AgentApiV2.editAgent(agent,jsonObject);
-                if(isDone){
-                    agentMap.replace(agent.getName(),agent);
-                }
-                return isDone;
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred ", e);
+    private boolean updateAgent(FacilioAgent agent, JSONObject jsonObject) throws Exception {
+        boolean isDone = AgentApiV2.editAgent(agent, jsonObject);
+        if (isDone) {
+            agentMap.replace(agent.getName(), agent);
         }
-        return false;
+        return isDone;
     }
 
-    public FacilioAgent getFacilioAgent(String agentName) {
+    public FacilioAgent getFacilioAgent(String agentName) throws Exception {
         FacilioAgent agent = agentMap.get(agentName);
-        if(agent == null){
+        if (agent == null) {
             agent = AgentApiV2.getAgent(agentName);
-            if( agent != null ){
-                agentMap.put(agentName,agent);
+            if (agent != null) {
+                agentMap.put(agentName, agent);
             }
         }
         return agent;
     }
 
-    public long addAgent(FacilioAgent agent) {
+    public long addAgent(FacilioAgent agent) throws Exception {
         long agentId = AgentApiV2.addAgent(agent);
-        if( agentId > 0 ){
-            agentMap.put(agent.getName(),agent);
+        if (agentId > 0) {
+            agentMap.put(agent.getName(), agent);
         }
         return agentId;
     }

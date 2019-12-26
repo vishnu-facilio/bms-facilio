@@ -1,208 +1,211 @@
+# run using apid-latest-linux-amd64 check -c fileName.yaml
+# use function --verbosity 3 to log requests and responses
+# documentation -> https://www.getapid.com/docs/
 version: 1
 variables:
   api_url: "http://localhost:8080"
   mailId: "workwithchai@gmail.com"
-  pass : "Valli123"
+  pass: "Valli123"
 transactions:
-   - id: "AgentApis"
-     variables:
-         agentData : |
-          {
-           "deviceDetails":null,
+  - id: "AgentApis"
+    variables:
+      agentData: |
+        {
+         "deviceDetails":null,
+         "lastModifiedTime":111111111,
+         "displayName":"facilioAgent",
+         "numberOfControllers":0,
+         "type":null,
+         "lastDataReceivedTime":111111111,
+         "version":null,
+         "writable":null,
+         "name":"facilio_agent_1",
+         "connectionStatus":true,
+         "siteId":-1,
+         "Deleted_Time":-1,
+         "createdTime":111111111,
+         "interval":15,
+         "id":1,
+         "state":1}
+      controllerData: |
+        {
+           "agentId":-1,
            "lastModifiedTime":111111111,
-           "displayName":"facilioAgent",
-           "numberOfControllers":0,
-           "type":null,
-           "lastDataReceivedTime":111111111,
-           "version":null,
-           "writable":null,
-           "name":"facilio_agent_1",
-           "connectionStatus":true,
-           "siteId":-1,
-           "Deleted_Time":-1,
+           "networkNumber":0,
+           "ipAddress":"1.1.1.1",
+           "active":true,
+           "availablePoints":0,
+           "instanceNumber":1,
+           "type":1,
+           "controllerProps":"controllerProps",
+           "writable":false,
+           "lastDataSentTime":-1,
+           "name":"Facilio_BacIp_Controller_1",
            "createdTime":111111111,
-           "interval":15,
+           "interval":900000,
            "id":1,
-           "state":1}
-         controllerData: |
-          {
-             "agentId":-1,
-             "lastModifiedTime":111111111,
-             "networkNumber":0,
-             "ipAddress":"1.1.1.1",
-             "active":true,
-             "availablePoints":0,
-             "instanceNumber":1,
-             "type":1,
-             "controllerProps":"controllerProps",
-             "writable":false,
-             "lastDataSentTime":-1,
-             "name":"Facilio_BacIp_Controller_1",
-             "createdTime":111111111,
-             "interval":900000,
-             "id":1,
-             "deletedTime":-1
-           }
+           "deletedTime":-1
+         }
 
-     steps:
-        - id: "authenticate"
-          request:
-            method: POST
-            endpoint: "{{ var.api_url }}/api/integ/faciliosubmit"
-            headers:
-              Content-Type: "application/json"
-            body: |
-             {
-              "username":"{{  var.mailId  }}",
-              "password":"{{  var.pass  }}"
-              }
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-                    "jsonresponse": {
-                        "token": "eyJ0e",
-                        "username": "{{  var.mailId  }}"
-                    }
-                }
-          export:
-            auth_token: "response.body.jsonresponse.token"
-
-        - id: "getAgentList"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/agent/list"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-                  "responseCode":0,
-                  "result":
-                    {
-                      "result":"success",
-                      "data":
-                        [
-                          {{var.agentData}}
-                        ]
-                    }
-                }
-
-
-          export:
-            agentId: "response.body.result.data[0].id"
-
-        - id: "getControllerList"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/controller/list?agentId={{getAgentList.agentId}}"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-
-                    "responseCode":0,
-                    "result":{
-                        "data":[{{var.controllerData}}]
-                    }
-                }
-          export:
-            controllerId: "response.body.result.data[0].id"
-
-        - id: "getControllerUsingId"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/controller/get?controllerId={{getControllerList.controllerId}}"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-
-                    "responseCode":0,
-                    "result":{
-                        "data":{{var.controllerData}}
-                    }
-                }
-
-        - id: "getOrgCount"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/controller/count"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {"responseCode":0,"result":{"result":"success","data":1}}
-
-        - id: "getAgentControllerCount"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/controller/count?agentId={{getAgentList.agentId}}"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {"responseCode":0,"result":{"result":"success","data":1}}
-
-
-        - id: "discoverControllers"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/point/discover?controllerId={{getControllerList.controllerId}}"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {"responseCode":0,"result":{"result":"success"}}
-
-        - id: "editController"
-          request:
-            method: POST
-            endpoint: "{{ var.api_url }}/api/v2/controller/update"
-            body: |
-                {
-                  "controllerId": {{getControllerList.controllerId}},
-                  "toUpdate":{
-                               "interval": 1111,
-                               "writable": true
+    steps:
+      - id: "authenticate"
+        request:
+          method: POST
+          endpoint: "{{ var.api_url }}/api/integ/faciliosubmit"
+          headers:
+            Content-Type: "application/json"
+          body: |
+            {
+             "username":"{{  var.mailId  }}",
+             "password":"{{  var.pass  }}"
+             }
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                  "jsonresponse": {
+                      "token": "eyJ0e",
+                      "username": "{{  var.mailId  }}"
                   }
-                }
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-              Content-Type: "application/json"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: true
-              content: |
-                {"responseCode":0,"result":{"result":"success"}}
+              }
+        export:
+          auth_token: "response.body.jsonresponse.token"
+
+      - id: "getAgentList"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/agent/list"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                "responseCode":0,
+                "result":
+                  {
+                    "result":"success",
+                    "data":
+                      [
+                        {{var.agentData}}
+                      ]
+                  }
+              }
+
+
+        export:
+          agentId: "response.body.result.data[0].id"
+
+      - id: "getControllerList"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/controller/list?agentId={{getAgentList.agentId}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+
+                  "responseCode":0,
+                  "result":{
+                      "data":[{{var.controllerData}}]
+                  }
+              }
+        export:
+          controllerId: "response.body.result.data[0].id"
+
+      - id: "getControllerUsingId"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/controller/get?controllerId={{getControllerList.controllerId}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+
+                  "responseCode":0,
+                  "result":{
+                      "data":{{var.controllerData}}
+                  }
+              }
+
+      - id: "getOrgCount"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/controller/count"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"success","data":1}}
+
+      - id: "getAgentControllerCount"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/controller/count?agentId={{getAgentList.agentId}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"success","data":1}}
+
+
+      - id: "discoverControllers"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/point/discover?controllerId={{getControllerList.controllerId}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"success"}}
+
+      - id: "editController"
+        request:
+          method: POST
+          endpoint: "{{ var.api_url }}/api/v2/controller/update"
+          body: |
+            {
+              "controllerId": {{getControllerList.controllerId}},
+              "toUpdate":{
+                           "interval": 1111,
+                           "writable": true
+              }
+            }
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+            Content-Type: "application/json"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: true
+            content: |
+              {"responseCode":0,"result":{"result":"success"}}

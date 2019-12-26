@@ -18,7 +18,6 @@ public class AddDevicesCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        LOGGER.info(" adding devices through chain ");
         if (context.containsKey(AgentConstants.DATA)) {
             FacilioContext deviceContex = new FacilioContext();
             List<Device> devices = (List<Device>) context.get(AgentConstants.DATA);

@@ -38,12 +38,8 @@ public class AgentIdAction extends AgentActionV2 {
     }
 
     public String devices(){
-        LOGGER.info(" getting devices for ->"+getAgentId());
         try {
             List<Device> devices = FieldUtil.getAsBeanListFromMapList(FieldDeviceApi.getDevices(getAgentId(), null), Device.class);
-            for (Device device : devices) {
-                LOGGER.info("device->"+device.getControllerProps());
-            }
             List<Device> newDevices = new ArrayList<>();
             newDevices.add(devices.get(0));
             setResult(AgentConstants.DATA, devices);

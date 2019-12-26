@@ -15,7 +15,7 @@ public class unconfigurePointsCommand extends AgentV2Command {
     public boolean executeCommand(Context context) throws Exception {
         if(containsCheck(AgentConstants.POINT_IDS,context) && containsCheck(AgentConstants.TYPE,context)){
             List<Long> pointIds = (List<Long>) context.get(AgentConstants.POINT_IDS);
-            PointsAPI.unConfigurePoints(pointIds);
+            PointsAPI.UpdatePointsUnConfigured(pointIds);
             List<Point> points = PointsAPI.getpoints(pointIds, (FacilioControllerType) context.get(AgentConstants.TYPE));
             ControllerMessenger.unConfigurePoints(points);
         }

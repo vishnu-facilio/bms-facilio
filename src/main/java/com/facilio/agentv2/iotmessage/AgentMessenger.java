@@ -58,7 +58,7 @@ public class AgentMessenger {
                     break;
             }
             List<IotMessage> messages = new ArrayList<>();
-            messages.add(MessengerUtil.getMessageObject(object));
+            messages.add(MessengerUtil.getMessageObject(object, command));
             iotData.setMessages(messages);
             LOGGER.info(" iot data generated is "+iotData);
             return iotData;

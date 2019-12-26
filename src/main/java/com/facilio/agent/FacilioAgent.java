@@ -1,15 +1,14 @@
 package com.facilio.agent;
 
-import java.util.HashSet;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.IotPolicy;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.HashSet;
 
 public class FacilioAgent
 {
@@ -37,23 +36,10 @@ public class FacilioAgent
     public void setConnectionStatus(Boolean connectionStatus) { this.connectionStatus = connectionStatus; }
 
     private  Long dataInterval;
-    public Long getDataInterval() {
-    		if (dataInterval == null) {
-    			return getInterval();
-    		}
-    		return dataInterval; 
-    	}
+    public Long getDataInterval() { return dataInterval; }
     public void setDataInterval(Long dataInterval) { this.dataInterval = dataInterval; }
-    
-    private  Long interval;
-    public Long getInterval() {
-		return interval;
-	}
-	public void setInterval(Long interval) {
-		this.interval = interval;
-	}
 
-	private  Integer numberOfControllers;
+    private  Integer numberOfControllers;
     public Integer getNumberOfControllers() { return numberOfControllers; }
     public void setNumberOfControllers(Integer numberOfControllers) { this.numberOfControllers = numberOfControllers; }
 

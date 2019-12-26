@@ -18,7 +18,6 @@ public class FieldDevicesToControllerCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        LOGGER.info(" in field device to controller ");
         List<Long> devicesToDelete = new ArrayList<>();
         if(context.containsKey(AgentConstants.FIELD_DEIVICES) && context.containsKey(AgentConstants.AGENT_ID)){
             Device device = (Device) context.get(AgentConstants.FIELD_DEIVICES);

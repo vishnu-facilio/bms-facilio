@@ -55,33 +55,14 @@ public class BacnetIpPoint extends Point {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
         if (containsValueCheck(AgentConstants.INSTANCE_NUMBER, pointMap) && containsValueCheck(AgentConstants.INSTANCE_TYPE, pointMap)) {
-            LOGGER.info(" making bcp ");
           JSONObject jsonObject = new JSONObject();
           jsonObject.putAll(pointMap);
           BacnetIpPoint point = FieldUtil.getAsBeanFromJson(jsonObject,BacnetIpPoint.class);
-          LOGGER.info(" point is ->"+point.toJSON());
           return point;
         }
         throw new Exception(" Mandatory fields like " + AgentConstants.INSTANCE_NUMBER + "," + AgentConstants.INSTANCE_TYPE + " might be missing form input params -> " + pointMap);
     }
 
-/*    public static void main(String[] args) {
-
-        try {
-            Map<String,Object> map = new HashMap<>();
-            map.put(AgentConstants.DEVICE_ID,1);
-            System.out.println(FieldUtil.getAsJSON(FieldUtil.getAsBeanFromMap(map,BacnetIpPoint.class)));
-            BacnetIpPoint point = new BacnetIpPoint();
-            point.setDeviceId(2);
-            System.out.println(FieldUtil.getAsJSON(point));
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-    }*/
 
 
         @Override

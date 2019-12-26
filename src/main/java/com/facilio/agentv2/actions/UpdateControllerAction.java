@@ -35,9 +35,7 @@ public class UpdateControllerAction extends AgentActionV2 {
     }
 
     public String updateController() {
-        LOGGER.info(" updating conttollers");
         try {
-            LOGGER.info("To update map->"+toUpdate);
                 if (ControllerApiV2.editController(getControllerId(),getToUpdate())) {
                     setResult(AgentConstants.RESULT, SUCCESS);
                 } else {

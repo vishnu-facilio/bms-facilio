@@ -17,8 +17,6 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -42,37 +40,50 @@ public class FieldDeviceApi
     }
 
     public static void addFieldDevices(List<Device> devices) throws Exception{
-        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                .table(MODULE.getTableName())
-                .fields(FieldFactory.getFieldDeviceFields())
-                .addRecords(FieldUtil.getAsMapList(devices,Device.class));
-        builder.save();
+        try {
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(MODULE.getTableName())
+                    .fields(FieldFactory.getFieldDeviceFields())
+                    .addRecords(FieldUtil.getAsMapList(devices, Device.class));
+            builder.save();
+            return;
+        } catch (Exception e) {
+            LOGGER.info(" Bulk insert failed ");
+            for (Device device : devices) {
+                GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                        .table(MODULE.getTableName())
+                        .fields(FieldFactory.getFieldDeviceFields());
+                if (builder.insert(FieldUtil.getAsProperties(device)) < 0) {
+                    LOGGER.info(" failed to insert device ->" + FieldUtil.getAsJSON(device));
+                }
+            }
+        }
+        //try multiple insert if bulk fails
     }
 
-    public static Device getDevice(long agentId,String name){
-        try{
-            if(agentId>0){
-                if((name != null) && ( ! name.isEmpty() ) ){
-                    GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                            .table(MODULE.getTableName())
-                            .select(FIELD_MAP.values())
-                            .andCondition(CriteriaAPI.getNameCondition(name,MODULE))
-                            .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.AGENT_ID), String.valueOf(agentId),NumberOperators.EQUALS));
-                    List<Map<String, Object>> result = builder.get();
-                    if(result.size() == 1){
-                        Map<String, Object> row = result.get(0);
-                        Device device = FieldUtil.getAsBeanFromMap(result.get(0),Device.class);
-                        if (device.getControllerProps().containsKey("type"))
+    public static Device getDevice(long agentId, String name) throws Exception {
+        if (agentId > 0) {
+            if ((name != null) && (!name.isEmpty())) {
+                GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                        .table(MODULE.getTableName())
+                        .select(FIELD_MAP.values())
+                        .andCondition(CriteriaAPI.getNameCondition(name, MODULE))
+                        .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
+                List<Map<String, Object>> result = builder.get();
+                if (result.size() == 1) {
+                    Map<String, Object> row = result.get(0);
+                    Device device = FieldUtil.getAsBeanFromMap(result.get(0), Device.class);
+                    if (device.getControllerProps().containsKey("type"))
                         device.setType(Integer.parseInt(device.getControllerProps().get("type").toString()));
-                        return device;
-                    }
+                    return device;
+                } else {
+                    LOGGER.info("Exception, unexpected results, only one row should be selected for device->" + name + " agentId->" + agentId + " rowsSelected->" + result.size());
                 }
-            }else
-            {
-                LOGGER.info("Exception occurred while getting device, agentId can't be less than 1");
+            } else {
+                throw new Exception(" device name can't be null or empty");
             }
-        }catch (Exception e){
-            LOGGER.info("Exception while getting device ->"+name+"  for agentId->"+agentId+"--",e);
+        } else {
+            throw new Exception("agentId can't be less than 1");
         }
         return null;
     }
@@ -113,7 +124,7 @@ public class FieldDeviceApi
         LOGGER.info(" in discover points ");
         for (Map<String, Object> deviceMap : getDevices(null, ids)) {
             try{
-                device = (Device) FieldUtil.getAsBeanFromMap(deviceMap, Device.class);
+                device = FieldUtil.getAsBeanFromMap(deviceMap, Device.class);
                 controller = ControllerUtilV2.getControllerFromJSON(device.getAgentId(), device.getControllerProps());
                 LOGGER.info(" controller formed is ->"+controller.getChildJSON());
                  ControllerMessenger.discoverPoints(controller);

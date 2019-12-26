@@ -1,5 +1,6 @@
 package com.facilio.agentv2.iotmessage;
 
+import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -19,8 +20,9 @@ public class MessengerUtil
         return array;
     }
 
-    static IotMessage getMessageObject(JSONObject message) {
+    static IotMessage getMessageObject(JSONObject message, FacilioCommand command) {
         IotMessage msg = new IotMessage();
+        msg.setCommand(command.asInt());
         JSONObject data = new JSONObject();
         data.putAll(message);
         msg.setMessageData(data);

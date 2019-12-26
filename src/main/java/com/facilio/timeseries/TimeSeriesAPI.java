@@ -99,9 +99,11 @@ public class TimeSeriesAPI {
 			macAddr = record.getPartitionKey();
 		}
 		if (macAddr != null){
-			ControllerContext controller=  ControllerAPI.getController(macAddr);
-			if(controller!=null) {
+			ControllerContext controller = ControllerAPI.getController(macAddr);
+			if (controller != null) {
 				context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
+			} else {
+				LOGGER.info(" Controller not found ");
 			}
 		}
 		//Temp code. To be removed later *END*

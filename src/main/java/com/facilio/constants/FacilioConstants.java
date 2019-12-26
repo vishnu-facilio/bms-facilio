@@ -99,35 +99,37 @@ public class FacilioConstants {
 
 	public static class ContextNames {
 
-        public static final String SCHEDULE_GENERATION_TIME = "scheduleGenerationTime";
-        public static final String OLD_TASKS = "oldTasks";
+		public static final String SCHEDULE_GENERATION_TIME = "scheduleGenerationTime";
+		public static final String OLD_TASKS = "oldTasks";
 		public static final String TASKS = "tasks";
-        public static final String TASK_READINGS = "taskReadings";
+		public static final String TASK_READINGS = "taskReadings";
 		public static final String IS_USER_TRIGGER = "userTrigger";
-        public static final String DO_NOT_EXECUTE = "donNotExecute";
+		public static final String DO_NOT_EXECUTE = "donNotExecute";
 		public static final String SERVICE_CATALOG = "serviceCatalog";
 		public static final String SERVICE_CATALOGS = "serviceCatalogs";
 		public static final String SERVICE_CATALOG_GROUP = "serviceCatalogGroup";
 		public static final String SERVICE_CATALOG_GROUPS = "serviceCatalogGroups";
-		
-		public static final String SUB_MODULES = "submodules";
 
-        public static class Reservation {
+		public static final String SUB_MODULES = "submodules";
+		public static final String TO_UPDATE_CHILD_MAP = "toUpdateChildMap";
+		public static final String CHILD_CRITERIA = "childCriteria";
+		public static final String CONNECTION = "connectionContext";
+		public static final String OFFSET = "offset";
+		public static final String TABLE_NAME = "tableName";
+		public static final String CRITERIA = "criteria";
+
+		public static class Reservation {
 			public static final String RESERVATION = "reservation";
 			public static final String RESERVATION_LIST = "reservations";
 			public static final String RESERVATIONS_INTERNAL_ATTENDEE = "reservationInternalAttendee";
 			public static final String RESERVATIONS_EXTERNAL_ATTENDEE = "reservationExternalAttendee";
 		}
 
-		public static final String CONNECTION = "connectionContext";
-        public static final String OFFSET = "offset";
-        public static final String TABLE_NAME = "tableName";
-        public static final String CRITERIA = "criteria";
-        public static final String FIELDS = "fields";
+		public static final String FIELDS = "fields";
 		public static final String FIELD = "field";
-        public static final String TO_UPDATE_MAP = "toUpdateMap";
-        public static final String TO_INSERT_MAP = "toInsertMap";
-        public static final String BULK_DATA = "BULK_DATA";
+		public static final String TO_UPDATE_MAP = "toUpdateMap";
+		public static final String TO_INSERT_MAP = "toInsertMap";
+		public static final String BULK_DATA = "BULK_DATA";
         public static final String FEDGE_ZIP = "/fedge.zip";
 		public static final String INNER_JOIN = "innerJoin";
 		public static final String ON_CONDITION = "onCondition";

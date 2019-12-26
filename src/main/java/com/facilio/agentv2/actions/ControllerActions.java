@@ -50,7 +50,6 @@ public class ControllerActions extends AgentActionV2 {
 
     public String discoverPoints() {
         try {
-            LOGGER.info(" discovering points");
             if (ControllerUtilV2.discoverPoints(getControllerId())) {
                 setResult(AgentConstants.RESULT, SUCCESS);
             } else {

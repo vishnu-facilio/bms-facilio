@@ -20,34 +20,34 @@ import org.json.simple.JSONObject;
 import java.util.*;
 
 
-public class ProcessDataCommand extends FacilioCommand {      // reformats json
+public class ProcessDataCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(ProcessDataCommand.class.getName());
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 
-		JSONObject payLoad =(JSONObject)context.get(FacilioConstants.ContextNames.PAY_LOAD);
-		if (AccountUtil.getCurrentOrg().getId() == 146 ) {
-			LOGGER.info("Payload : "+payLoad);
+		JSONObject payLoad = (JSONObject) context.get(FacilioConstants.ContextNames.PAY_LOAD);
+		if (AccountUtil.getCurrentOrg().getId() == 146) {
+			LOGGER.info("Payload : " + payLoad);
 		}
 		Iterator<String> keyList = payLoad.keySet().iterator();
-		List<Map<String,Object>> pointsStat=null;
+		List<Map<String, Object>> pointsStat = null;
 		Criteria criteriaList = new Criteria();
-		
-		Map<String, Map<String,String>> deviceData= new HashMap<String, Map<String,String>>();
-		LOGGER.debug("Inside ProcessDataCommand####### incoming JSON: "+payLoad);
-		while(keyList.hasNext())
-		{
+
+		Map<String, Map<String, String>> deviceData = new HashMap<String, Map<String, String>>();
+		LOGGER.debug("Inside ProcessDataCommand####### incoming JSON: " + payLoad);
+		while (keyList.hasNext()) {
 			String actualKey = keyList.next();
 
-			Object recordObj= payLoad.get(actualKey);
-			if(!(recordObj instanceof JSONObject)) {
+			Object recordObj = payLoad.get(actualKey);
+			if (!(recordObj instanceof JSONObject)) {
 				continue;
 			}
-			JSONObject record =(JSONObject)recordObj;
-			String keyName=actualKey;
+			JSONObject record = (JSONObject) recordObj;
+			String keyName = actualKey;
 
-			if(actualKey.startsWith("DEVICE_") || actualKey.startsWith("POINT_")) {
+			if (actualKey.startsWith("DEVICE_") || actualKey.startsWith("POINT_")) {
 				int firstIndex= actualKey.indexOf("_");
 				keyName=actualKey.substring(firstIndex+1);
 			}
@@ -77,38 +77,31 @@ public class ProcessDataCommand extends FacilioCommand {      // reformats json
 //		if(TimeSeriesAPI.isStage()) {
 
 				if(instanceList.length()>0) { //if innerKeyList isEmpty,.. so the length will be 0
-					FacilioModule module=ModuleFactory.getPointsModule();
+					FacilioModule module = ModuleFactory.getPointsModule();
 					Criteria deviceAndInstanceCriteria = new Criteria();
 					//here taking the keyName as deviceName in the assumption that POINT_ will not come hereafter...
 					//so not handling the deviceName as list scenario below..
-					LOGGER.info(" device name ->"+keyName);
-					LOGGER.info(" instance list ->"+instanceList.toString());
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module), keyName, StringOperators.IS));
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module), instanceList.toString(), StringOperators.IS));
 					criteriaList.orCriteria(deviceAndInstanceCriteria);
-				}	
+				}
 //		}
 		}
 //	if(TimeSeriesAPI.isStage()) {
-			
-			pointsStat= getDataPoints(criteriaList);
-			LOGGER.info("########### Insert Points Data: "+pointsStat);
-			context.put("DATA_POINTS",pointsStat );         // need this
+
+		pointsStat = getDataPoints(criteriaList);
+		LOGGER.debug("########### Insert Points Data: " + pointsStat);
+		context.put("DATA_POINTS", pointsStat);
 //	}
 		LOGGER.debug("Finished ProcessDataCommand####### : ");
 		context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceData);
-		if (TimeSeriesAPI.isStage() ) {
-			LOGGER.debug("Device Data : "+deviceData);
+		if (TimeSeriesAPI.isStage()) {
+			LOGGER.debug("Device Data : " + deviceData);
 		}
-		LOGGER.info("-----------------LEAVING PROCESSDATACOMMAND----------------------");
-		for (Object key : context.keySet()) {
-			LOGGER.info(key+"--->"+context.get(key));
-		}
-		LOGGER.info("---------------------------------------");
 		return false;
 	}
 
-	private List<Map<String,Object>> getDataPoints(Criteria criteriaList) throws Exception{           // do this
+	private List<Map<String, Object>> getDataPoints(Criteria criteriaList) throws Exception {
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
 		fields.add(FieldFactory.getIdField(module));

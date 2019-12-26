@@ -1,6 +1,5 @@
 package com.facilio.agentv2;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.PublishType;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerUtilV2;
@@ -8,6 +7,7 @@ import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.DeviceUtil;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.point.PointsUtil;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -15,6 +15,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.util.AckUtil;
@@ -22,9 +23,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DataProcessorV2
 {
@@ -51,12 +50,26 @@ public class DataProcessorV2
             ackUtil = new AckUtil();
             dU = new DeviceUtil();
             LOGGER.info("done loading newProcessor ");
-        }catch (Exception e){
-            LOGGER.info("Exception occurred ",e);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ", e);
         }
     }
 
-   public void processNewAgentData(JSONObject payload){
+    public static void main(String[] args) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        int round = calendar.get(Calendar.MINUTE) % 15;
+        calendar.add(Calendar.MINUTE, round < 8 ? -round : (15 - round));
+        calendar.set(Calendar.SECOND, 0);
+        System.out.println(calendar.getTime());
+    }
+
+    private static long getQuarterHourStartTime(long currTime) {
+        return 0;
+    }
+
+    public boolean processRecord(JSONObject payload) {
+        boolean processStatus = false;
         try {
             LOGGER.info(" processing in processorV2 " + payload);
             String agentName = orgDomainName.trim();
@@ -70,86 +83,115 @@ public class DataProcessorV2
                 long agentId = au.addAgent(agent);
                 if (agentId < 1L) {
                     LOGGER.info(" Error in AgentId generation ");
-                }else {
+                } else {
                     agent.setId(agentId);
                 }
             }
             cU = getControllerUtil(agent.getId());
-            if( ! payload.containsKey(AgentConstants.PUBLISH_TYPE)){
-                LOGGER.info("Exception Occurred, "+AgentConstants.PUBLISH_TYPE+" is mandatory in payload "+payload);
+            if (!payload.containsKey(AgentConstants.PUBLISH_TYPE)) {
+                LOGGER.info("Exception Occurred, " + AgentConstants.PUBLISH_TYPE + " is mandatory in payload " + payload);
+                return false;
             }
             com.facilio.agent.fw.constants.PublishType publishType = com.facilio.agent.fw.constants.PublishType.valueOf(JsonUtil.getInt(payload.get(AgentConstants.PUBLISH_TYPE))); // change it to Type
-            LOGGER.info(" publish type for this record is "+publishType.name());
+            LOGGER.info(" publish type for this record is " + publishType.name());
+            markMetrices(agent.getId(), publishType, payload);
             switch (publishType) {
                 case AGENT:
-                    processAgent(payload,agentName);
+                    processStatus = processAgent(payload, agent);
                     break;
                 case CONTROLLERS:
-                    dU.processDevices(agent, payload);
+                    processStatus = processDevices(agent, payload);
                     break;
                 case DEVICE_POINTS:
-                    processDevicePoints(agent,payload);
+                    processStatus = processDevicePoints(agent, payload);
                     break;
                 case ACK:
                     LOGGER.info(" iamcvijay logs processing ack");
-                    payload.put(AgentConstants.IS_NEW_AGENT,Boolean.TRUE);
-                    ackUtil.processNewAgentAck(payload, agentName, orgId);
+                    payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
+                    ackUtil.processAgentAck(payload, agentName, orgId);
                     //processLog(payload, agent.getId(), recordId);
                     break;
                 case TIMESERIES:
                     Controller controller = cU.getControllerFromAgentPayload(payload);
 
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
-                    if (controller!=null)
-                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID,controller.getId());
+                    if (controller != null)
+                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
                     else
-                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID,null);
+                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, null);
 
-                    processTimeSeries(timeSeriesPayload,controller);
+                    processTimeSeries(timeSeriesPayload, controller);
 
                     break;
                 case COV:
-                    processCOV(payload,agentName);
-                   //processTimeSeries(payload,)
+                    processCOV(payload, agentName);
+                    //processTimeSeries(payload,)
                 default:
-                    throw new Exception("No such Publish type "+publishType.name());
+                    throw new Exception("No such Publish type " + publishType.name());
             }
-        }catch (Exception e){
-            LOGGER.info("Exception occurred ,",e);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ,", e);
         }
+        LOGGER.info(" process status " + processStatus);
+        return processStatus;
+    }
+
+    private void markMetrices(long id, com.facilio.agent.fw.constants.PublishType publishType, JSONObject payload) {
+        try {
+            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while marking metrices");
+        }
+    }
+
+    private boolean processDevices(FacilioAgent agent, JSONObject payload) {
+        try {
+            return dU.processDevices(agent, payload);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while processing device", e);
+        }
+        return false;
     }
 
     private void processCOV(JSONObject payload, String agentName) {
 
     }
 
-    private boolean processDevicePoints( FacilioAgent agent,JSONObject payload) throws Exception {
-       // Controller controller = cU.getControllerFromAgentPayload(payload);
-        if( ! payload.containsKey(AgentConstants.CONTROLLER)){
-            LOGGER.info(" identifier missing from discoverPoints payload ->"+payload);
-            return false;
+    private boolean processDevicePoints(FacilioAgent agent, JSONObject payload) {
+        try {
+            if (!payload.containsKey(AgentConstants.CONTROLLER)) {
+                throw new Exception(" identifier missing from discoverPoints payload ->" + payload);
+            }
+
+            String identifier = (String) payload.get(AgentConstants.CONTROLLER);
+            if (identifier == null || identifier.isEmpty()) {
+                throw new Exception("Exception occurred, Controller identifier can't be null ->" + payload);
+            }
+
+            Device device = FieldDeviceApi.getDevice(agent.getId(), identifier);
+            if (device != null) {
+                LOGGER.info(" controller not null and so processing point");
+                return PointsUtil.processPoints(payload, device);
+            } else {
+                throw new Exception("Exception occurred, Controller obtained in null");
+            }
+
+        } catch (Exception e) {
+            LOGGER.info("Exception while processing  points->" + payload);
         }
-        String identifier = (String) payload.get(AgentConstants.CONTROLLER);
-        if(identifier == null || identifier.isEmpty()){
-            LOGGER.info("Exception occurred, Controller identifier can't be null ->"+payload);
-            return false;
-        }
-        Device device = FieldDeviceApi.getDevice(agent.getId(),identifier);
-        if (device != null) {
-            LOGGER.info(" controller not null and so processing point");
-            return PointsUtil.processPoints(payload, device);
-        } else {
-            throw new Exception("Exception occurred, Controller obtained in null");
-        }
+        return false;
     }
 
-    private boolean processAgent(JSONObject payload, String agentName) {
-        long processStatus = au.processAgent(payload,agentName);
-        if(processStatus>0){
-            LOGGER.info(" Agent processing successful "+processStatus);
-            return true;
-        }else {
-            LOGGER.info(" Agent processing failed");
+    private boolean processAgent(JSONObject payload, FacilioAgent agent) {
+        try {
+            if (au.processAgent(payload, agent)) {
+                LOGGER.info(" Agent processing successful ");
+                return true;
+            } else {
+                LOGGER.info(" Agent processing failed");
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exeception while processing agent", e);
         }
         return false;
     }
@@ -159,7 +201,7 @@ public class DataProcessorV2
         try {
             FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
             FacilioContext context = chain.getContext();
-            context.put(AgentConstants.IS_NEW_AGENT,true);
+            context.put(AgentConstants.IS_NEW_AGENT, true);
             //TODO
             context.put(AgentConstants.CONTROLLER,controller);
             if (controller!=null) {

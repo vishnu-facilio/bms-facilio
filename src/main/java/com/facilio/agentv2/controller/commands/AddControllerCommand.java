@@ -17,7 +17,6 @@ public class AddControllerCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Controller controller = (Controller) context.get(AgentConstants.CONTROLLERS);
-        LOGGER.info(" controller from context inside command "+controller);
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", controller.getOrgId());
         if( bean.addAgentController(controller) > 0){
             LOGGER.info(" returning true for parent ");

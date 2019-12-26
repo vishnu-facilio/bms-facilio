@@ -123,7 +123,9 @@ public class DataProcessorUtil {
                             if (dataProcessorV2 != null && isStage) {
                                 LOGGER.info(" newProcessor payload -> " + payLoad);
                                 try {
-                                    dataProcessorV2.processNewAgentData(payLoad);
+                                    if (!dataProcessorV2.processRecord(payLoad)) {
+                                        return false;
+                                    }
                                 } catch (Exception newProcessorException) {
                                     LOGGER.info("Exception occurred ", newProcessorException);
                                     return false;

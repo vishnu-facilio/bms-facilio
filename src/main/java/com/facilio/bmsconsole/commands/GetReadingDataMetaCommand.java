@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -19,6 +10,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class GetReadingDataMetaCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GetReadingDataMetaCommand.class.getName());
@@ -46,13 +45,13 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 							if (field != null) {
 								Pair<Long, FacilioField> pair = Pair.of(reading.getParentId(), field);
 								rdmPairs.add(pair);
-								
+
 								if (rdmPairs.size() == BATCH_SIZE) {
 									readingDataMeta = fetchRDM(readingDataMeta, rdmPairs);
 									rdmPairs.clear();
 								}
 							}
-						}		
+						}
 					}
 				}
 //				if (moduleName.equals(FacilioConstants.ContextNames.WEATHER_READING) || moduleName.equals(FacilioConstants.ContextNames.PSYCHROMETRIC_READING)) {
@@ -62,6 +61,9 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 			}
 			if (!rdmPairs.isEmpty()) {
 				readingDataMeta = fetchRDM(readingDataMeta, rdmPairs);
+			}
+			if ((readingDataMeta == null) || (readingDataMeta.isEmpty())) {
+				LOGGER.info(" reading data meta empty->" + readingDataMeta);
 			}
 			context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, readingDataMeta);
 		}

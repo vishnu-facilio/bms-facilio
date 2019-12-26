@@ -1,210 +1,213 @@
+# run using apid-latest-linux-amd64 check -c fileName.yaml
+# use function --verbosity 3 to log requests and responses
+# documentation -> https://www.getapid.com/docs/
 version: 1
 variables:
   api_url: "http://localhost:8080"
   mailId: "workwithchai@gmail.com"
-  pass : "Valli123"
+  pass: "Valli123"
 transactions:
-   - id: "AgentApis"
-     variables:
-         agentData : |
-          {"deviceDetails":null,"lastModifiedTime":1576215816754,"displayName":null,"numberOfControllers":0,"type":null,"lastDataReceivedTime":1576215816754,"version":null,"writable":null,"name":"sam","connectionStatus":true,"siteId":2,"Deleted_Time":-1,"createdTime":1576078285381,"interval":15,"id":5,"state":1}
-     steps:
-        - &auth-step
-        - id: "authenticate"
-          request:
-            method: POST
-            endpoint: "{{ var.api_url }}/api/integ/faciliosubmit"
-            headers:
-              Content-Type: "application/json"
-            body: |
-             {
-              "username":"{{  var.mailId  }}",
-              "password":"{{  var.pass  }}"
-              }
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-                    "jsonresponse": {
-                        "token": "eyJ0e",
-                        "username": "{{  var.mailId  }}"
-                    }
-                }
-          export:
-            auth_token: "response.body.jsonresponse.token"
-
-        - id: "addAgent"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/agent/create?agentName=getApidTest&dataInterval=9990&siteId=2"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-                  "responseCode":200,
-                  "result":
-                    {
-                      "result":"success",
-                      "data": 0
-                    }
-                }
-          export:
-            agentId: "response.body.result.data"
-
-        - &initAgentId
-        - id: "getAgentList"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/agent/list"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-                  "responseCode":0,
-                  "result":
-                    {
-                      "result":"success",
-                      "data":
-                        [
-                          {{var.agentData}}
-                        ]
-                    }
-                }
-
-
-          export:
-            agentId: "response.body.result.data[0].id"
-
-        - id: "count"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/agent/count"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-                  "responseCode":0,
-                  "result":
-                    {
-                      "result":"success",
-                      "data":0
-                    }
-                }
-
-        - id: "pingAgent"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/agent/ping?agentId={{addAgent.agentId}}"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {"responseCode":0,"result":{"result":"success"}}
-
-
-
-
-        - id: "getUsingId"
-          request:
-            method: GET
-            endpoint: "{{ var.api_url }}/api/v2/agent/get?agentId={{getAgentList.agentId}}"
-            headers:
-              Authorization: "Bearer {{authenticate.auth_token}}"
-          expect:
-              code: 200
-              body:
-                type: "json"
-                exact: false
-                content: |
-                  {
-                    "responseCode":0,
-                    "result":
-                      {
-                        "result":"success",
-                        "data":
-                            {{var.agentData}}
-                      }
+  - id: "AgentApis"
+    variables:
+      agentData: |
+        {"deviceDetails":null,"lastModifiedTime":1576215816754,"displayName":null,"numberOfControllers":0,"type":null,"lastDataReceivedTime":1576215816754,"version":null,"writable":null,"name":"sam","connectionStatus":true,"siteId":2,"Deleted_Time":-1,"createdTime":1576078285381,"interval":15,"id":5,"state":1}
+    steps:
+      - &auth-step
+      - id: "authenticate"
+        request:
+          method: POST
+          endpoint: "{{ var.api_url }}/api/integ/faciliosubmit"
+          headers:
+            Content-Type: "application/json"
+          body: |
+            {
+             "username":"{{  var.mailId  }}",
+             "password":"{{  var.pass  }}"
+             }
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                  "jsonresponse": {
+                      "token": "eyJ0e",
+                      "username": "{{  var.mailId  }}"
                   }
-
-
-
-
-        - id: "edit"
-          request:
-            method: POST
-            endpoint: "{{ var.api_url }}/api/v2/agent/edit"
-            body: |
-              {
-              	"agentId":{{addAgent.agentId}},
-              	"toUpdate":{
-              		"writable":false,
-              		"interval":1919,
-              		"displayName":"apidTest"
-              	}
               }
-            headers:
+        export:
+          auth_token: "response.body.jsonresponse.token"
+
+      - id: "addAgent"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/agent/create?agentName=getApidTest&dataInterval=9990&siteId=2"
+          headers:
             Authorization: "Bearer {{authenticate.auth_token}}"
-            Content-Type: "application/json"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-                  "responseCode":0,
-                  "result":
-                    {
-                      "result":"success"
-                    }
-                }
-
-
-
-
-        - id: "delete"
-          request:
-            method: POST
-            endpoint: "{{ var.api_url }}/api/v2/agent/delete"
-            body: |
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
               {
-                "recordIds": [{{getAgentList.agentId}}]
+                "responseCode":200,
+                "result":
+                  {
+                    "result":"success",
+                    "data": 0
+                  }
               }
-            headers:
+        export:
+          agentId: "response.body.result.data"
+
+      - &initAgentId
+      - id: "getAgentList"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/agent/list"
+          headers:
             Authorization: "Bearer {{authenticate.auth_token}}"
-            Content-Type: "application/json"
-          expect:
-            code: 200
-            body:
-              type: "json"
-              exact: false
-              content: |
-                {
-                  "responseCode":0,
-                  "result":
-                    {
-                      "result":"success"
-                    }
-                }
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                "responseCode":0,
+                "result":
+                  {
+                    "result":"success",
+                    "data":
+                      [
+                        {{var.agentData}}
+                      ]
+                  }
+              }
+
+
+        export:
+          agentId: "response.body.result.data[0].id"
+
+      - id: "count"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/agent/count"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                "responseCode":0,
+                "result":
+                  {
+                    "result":"success",
+                    "data":0
+                  }
+              }
+
+      - id: "pingAgent"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/agent/ping?agentId={{addAgent.agentId}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {"responseCode":0,"result":{"result":"success"}}
+
+
+
+
+      - id: "getUsingId"
+        request:
+          method: GET
+          endpoint: "{{ var.api_url }}/api/v2/agent/get?agentId={{getAgentList.agentId}}"
+          headers:
+            Authorization: "Bearer {{authenticate.auth_token}}"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                "responseCode":0,
+                "result":
+                  {
+                    "result":"success",
+                    "data":
+                        {{var.agentData}}
+                  }
+              }
+
+
+
+
+      - id: "edit"
+        request:
+          method: POST
+          endpoint: "{{ var.api_url }}/api/v2/agent/edit"
+          body: |
+            {
+            	"agentId":{{addAgent.agentId}},
+            	"toUpdate":{
+            		"writable":false,
+            		"interval":1919,
+            		"displayName":"apidTest"
+            	}
+            }
+          headers:
+          Authorization: "Bearer {{authenticate.auth_token}}"
+          Content-Type: "application/json"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                "responseCode":0,
+                "result":
+                  {
+                    "result":"success"
+                  }
+              }
+
+
+
+
+      - id: "delete"
+        request:
+          method: POST
+          endpoint: "{{ var.api_url }}/api/v2/agent/delete"
+          body: |
+            {
+              "recordIds": [{{getAgentList.agentId}}]
+            }
+          headers:
+          Authorization: "Bearer {{authenticate.auth_token}}"
+          Content-Type: "application/json"
+        expect:
+          code: 200
+          body:
+            type: "json"
+            exact: false
+            content: |
+              {
+                "responseCode":0,
+                "result":
+                  {
+                    "result":"success"
+                  }
+              }

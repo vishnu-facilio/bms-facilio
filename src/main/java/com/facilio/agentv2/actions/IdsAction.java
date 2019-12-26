@@ -45,7 +45,6 @@ public class IdsAction extends AgentActionV2
     public String discoverDevicePoints(){
         try{
             List<Long> deviceIds = getRecordIds();
-            LOGGER.info(" ids ->"+deviceIds);
             if( !deviceIds.isEmpty() ){
                 if(FieldDeviceApi.discoverPoints(deviceIds)){
                     setResult(AgentConstants.RESULT,SUCCESS);
@@ -70,10 +69,8 @@ public class IdsAction extends AgentActionV2
     public String deleteAgent() { //TODO test
         try {
             List<Long> agentIds = getRecordIds();
-            LOGGER.info(" deleting agents "+agentIds);
             if (!agentIds.isEmpty()) {
                 boolean isdeleted = AgentApiV2.deleteAgent(agentIds);
-                LOGGER.info(" deletion status->"+isdeleted);
                 if (isdeleted) {
                     setResult(AgentConstants.RESULT, SUCCESS);
                     setResponseCode(HttpURLConnection.HTTP_OK);

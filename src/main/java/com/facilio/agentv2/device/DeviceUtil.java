@@ -20,57 +20,8 @@ public class DeviceUtil {
 
     private static final Logger LOGGER = LogManager.getLogger(DeviceUtil.class.getName());
 
-    public void processDevices(FacilioAgent agent, JSONObject payload) {
-        LOGGER.info(" processing devices ");
-        List<Device> devices = new ArrayList<>();
-                if (containsValueCheck(AgentConstants.DATA, payload)) {
-                    JSONArray devicesArray = (JSONArray) payload.get(AgentConstants.DATA);
-                    if (devicesArray.isEmpty()) {
-                        LOGGER.info("Exception Occurred, Device data is empty");
-                        return;
-                    }
-                    for (Object deviceObject : devicesArray) {
-                        JSONObject deviceJSON = (JSONObject) deviceObject;
-                        deviceJSON.put(AgentConstants.AGENT_ID, agent.getId());
-                        Device device = new Device(AccountUtil.getCurrentOrg().getOrgId(), agent.getId());
-                        device.setType(((Number)deviceJSON.get(AgentConstants.TYPE)).intValue());
-                        if (agent.getSiteId() < 1) {
-                            LOGGER.info(" Exception occurred. Agent is missing its siteId,skipping device processing.");
-                            continue;
-                        }
-                        device.setSiteId(agent.getSiteId());
-                        if (deviceJSON.containsKey(AgentConstants.IDENTIFIER)) {
-                            device.setName(String.valueOf(deviceJSON.get(AgentConstants.IDENTIFIER)));
-                        } else {
-                            LOGGER.info("Exception occurred, no identifier found in device json -> " + payload);
-                            return;
-                        }
-                        device.setCreatedTime(System.currentTimeMillis());
-                        if (!deviceJSON.containsKey(AgentConstants.CREATED_TIME)) {
-                            deviceJSON.put(AgentConstants.CREATED_TIME, device.getCreatedTime());
-                        }
-                        device.setControllerProps(deviceJSON);
-                        devices.add(device);
-                    }
-                    addDevices(devices);
-                }else {
-                    LOGGER.info("Exception occurred while processing device, data is missing from payload->"+payload);
-                }
-            }
-
-
-    public boolean addDevices(List<Device> devices) {
-        if (devices != null && !devices.isEmpty()) {
-            FacilioChain chain = TransactionChainFactory.getAddDevicesChain();
-            FacilioContext context = chain.getContext();
-            context.put(AgentConstants.DATA, devices);
-            try {
-                return chain.execute();
-            } catch (Exception e) {
-                LOGGER.info("Exception occurred ", e);
-            }
-        }
-        return false;
+    public static boolean deleteFieldDevice(long id) {
+        return deleteFieldDevices(Collections.singletonList(id));
     }
 
     private static boolean containsValueCheck(String key, Map<String, Object> jsonObject) {
@@ -80,9 +31,55 @@ public class DeviceUtil {
         return false;
     }
 
+    public boolean processDevices(FacilioAgent agent, JSONObject payload) throws Exception {
+        LOGGER.info(" processing devices ");
+        List<Device> devices = new ArrayList<>();
+        if (containsValueCheck(AgentConstants.DATA, payload)) {
+            JSONArray devicesArray = (JSONArray) payload.get(AgentConstants.DATA);
 
-    public static boolean deleteFieldDevice(long id){
-        return deleteFieldDevices(Collections.singletonList(id));
+            if (devicesArray.isEmpty()) {
+                throw new Exception("Exception Occurred, Device data is empty");
+            }
+
+            for (Object deviceObject : devicesArray) {
+                JSONObject deviceJSON = (JSONObject) deviceObject;
+                deviceJSON.put(AgentConstants.AGENT_ID, agent.getId());
+                Device device = new Device(AccountUtil.getCurrentOrg().getOrgId(), agent.getId());
+                device.setType(((Number) deviceJSON.get(AgentConstants.TYPE)).intValue());
+                if (agent.getSiteId() < 1) {
+                    LOGGER.info(" Exception occurred. Agent is missing its siteId,skipping device processing.");
+                    continue;
+                }
+                device.setSiteId(agent.getSiteId());
+                if (deviceJSON.containsKey(AgentConstants.IDENTIFIER)) {
+                    device.setName(String.valueOf(deviceJSON.get(AgentConstants.IDENTIFIER)));
+                } else {
+                    LOGGER.info("Exception occurred, no identifier found in device json -> " + payload);
+                    continue;
+                }
+                device.setCreatedTime(System.currentTimeMillis());
+                if (!deviceJSON.containsKey(AgentConstants.CREATED_TIME)) {
+                    deviceJSON.put(AgentConstants.CREATED_TIME, device.getCreatedTime());
+                }
+                device.setControllerProps(deviceJSON);
+                devices.add(device);
+            }
+            return addDevices(devices);
+        } else {
+            throw new Exception("Exception occurred while processing device, data is missing from payload->" + payload);
+        }
+    }
+
+    public boolean addDevices(List<Device> devices) throws Exception {
+        if (devices != null && !devices.isEmpty()) {
+            /*FacilioChain chain = TransactionChainFactory.getAddDevicesChain();
+            FacilioContext context = chain.getContext();
+            context.put(AgentConstants.DATA, devices);
+            return chain.execute();*/
+            FieldDeviceApi.addFieldDevices(devices);
+            return true;
+        }
+        throw new Exception("Fields to add can't be empty");
     }
 
     public static boolean deleteFieldDevices(List<Long> ids) {

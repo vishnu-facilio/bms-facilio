@@ -9,6 +9,7 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.actions.ReadingAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -684,13 +685,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		chain.execute();
 	}
 
-	public void acknowledgeNewPublishedMessage (long id, Status status, JSONObject payLoad) throws Exception{
-		FacilioChain chain = TransactionChainFactory.getAckMessageChain();
-		FacilioContext  context = chain.getContext();
-		context.put(AgentConstants.ID,id);
-		context.put(AgentConstants.STATUS,status);
-		context.put(AgentConstants.DATA,payLoad);
-		chain.execute();
+	public void acknowledgeNewPublishedMessage(long id, Status status) throws Exception {
+		IotMessageApiV2.acknowdledgeMessage(id, status);
 	}
 
 
