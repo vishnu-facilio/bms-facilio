@@ -70,7 +70,7 @@ public class UnModeledDataCommand extends FacilioCommand {
 					}
 
 				}else{
-					long newInstanceId = getPointsId(controllerId,pointName);
+					long newInstanceId = getPointsUnmodledInstance(deviceName,pointName,controllerId,pointsRecords);
 					if (newInstanceId >=0 ) {
 						record.put("newInstanceId", newInstanceId);
 					}
