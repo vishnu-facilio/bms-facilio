@@ -4576,6 +4576,8 @@
 	<package name="feedbackKiosk" namespace="/api/v2/feedbackKiosk" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.FeedbackKioskConfigAction" method="addOrUpdate">
 		</action>
+		<action name="getCatalogs" class="com.facilio.bmsconsole.actions.FeedbackKioskConfigAction" method="getServiceCatalog">
+		</action>
 	</package>
 
 	<package name="visitorViews" namespace="/api/v2/visitor/view"

@@ -1826,4 +1826,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchVisitorKioskConfigDetailsCommand());
 		return c;
 	}
+
+	public static FacilioChain getDeviceServiceCatalogChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new FetchDeviceServiceCatalogCommand());
+		return chain;
+	}
 }
