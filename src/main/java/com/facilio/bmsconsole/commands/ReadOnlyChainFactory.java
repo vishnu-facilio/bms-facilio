@@ -1832,4 +1832,9 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new FetchDeviceServiceCatalogCommand());
 		return chain;
 	}
+	public static FacilioChain getPrintersListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetPrintersListCommand());
+		return c;
+	}
 }

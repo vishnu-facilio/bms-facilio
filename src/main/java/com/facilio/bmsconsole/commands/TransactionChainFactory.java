@@ -4148,12 +4148,10 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateVisitorKioskConfigCommand());
 		return chain;
 	}
-
-	public static FacilioChain addOrUpdateFeedbackKioskConfigChain() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(addOrUpdateVisitorKioskConfigChain());
-		chain.addCommand(new AddOrUpdateDeviceServiceCatalogCommand());
-		return chain;
+	public static FacilioChain getDeletePrinterChain() {
+		FacilioChain c = getDefaultChain();		
+		c.addCommand(new DeletePrinterCommand());
+		return c;
 	}
 }
 

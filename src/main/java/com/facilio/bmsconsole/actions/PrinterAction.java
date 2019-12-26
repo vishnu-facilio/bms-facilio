@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PrinterContext;
 import com.facilio.chain.FacilioChain;
@@ -31,12 +34,26 @@ public class PrinterAction extends FacilioAction{
 		return SUCCESS;		
     }
 	
-//	public String deletePrinter() throws Exception
-//    {
-//    	
-//
-//		return SUCCESS;		
-//    }
+	public String deletePrinter() throws Exception
+    {
+		FacilioChain deleteChain=TransactionChainFactory.getDeletePrinterChain();
+		FacilioContext context=deleteChain.getContext();		
+		context.put(FacilioConstants.ContextNames.ID,printer.getId());
+		deleteChain.execute();
+		return SUCCESS;		
+    }
+	
+	public String fetchPrinterList() throws Exception{
+		
+		FacilioChain listChain=ReadOnlyChainFactory.getPrintersListChain();
+		listChain.execute();
+		FacilioContext context=listChain.getContext();
+		List<PrinterContext> printers=(List<PrinterContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		setResult(FacilioConstants.ContextNames.PRINTERS,printers );
+		return SUCCESS;
+		
+		
+	}
 	
 
 	

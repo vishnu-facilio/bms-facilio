@@ -4565,6 +4565,10 @@
 			</action>
 			<action name="update" class="com.facilio.bmsconsole.actions.PrinterAction" method="addOrUpdate">							
 			</action>
+			<action name="list" class="com.facilio.bmsconsole.actions.PrinterAction" method="fetchPrinterList">							
+			</action>
+			<action name="delete" class="com.facilio.bmsconsole.actions.PrinterAction" method="delete">							
+			</action>
 			
 	</package>
 	<package name="visitorKiosk" namespace="/api/v2/visitorKiosk" extends="v2Api">
