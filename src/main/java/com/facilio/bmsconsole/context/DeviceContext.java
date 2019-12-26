@@ -92,7 +92,8 @@ public class DeviceContext extends AssetContext {
     public static enum DeviceType implements FacilioEnum {
         TV("Tv"),
         VISITOR_KIOSK("Visitor Kiosk"),
-        DIGITAL_LOGBOOK("Digital Log Book")
+        DIGITAL_LOGBOOK("Digital Log Book"),
+		FEEDBACK_KIOSK("Feedback Kiosk"),
         ;
 
         private String name;
