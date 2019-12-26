@@ -60,6 +60,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.TASK_SECTION_MODULE.equals(specialType)
 				|| FacilioConstants.Workflow.WORKFLOW.equals(specialType)
 				|| FacilioConstants.ContextNames.KPI_CATEGORY.equals(specialType)
+				|| FacilioConstants.ModuleNames.PRINTERS.equals(specialType)
 				|| "trigger".equals(specialType)
 				|| "connectedApps".equals(specialType)
 				|| ContextNames.FORMULA_FIELD.equals(specialType)
@@ -586,6 +587,9 @@ public class LookupSpecialTypeUtil {
 		else if(ContextNames.FORMULA_FIELD.equals(specialType)) {
 			return ModuleFactory.getFormulaFieldModule();
 		}
+		else if(ContextNames.PRINTERS.equals(specialType)) {
+			return ModuleFactory.getPrinterModule();
+		}
 		return null;
 	}
 	
@@ -638,6 +642,10 @@ public class LookupSpecialTypeUtil {
 		else  if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 		    return  FieldFactory.getReadingRuleFields();
         }
+		else  if (FacilioConstants.ContextNames.PRINTERS.equals(specialType)) {
+		    return  FieldFactory.getPrinterFields();
+        }
+		
 		else if("trigger".equals(specialType)) {
 			return FieldFactory.getPMTriggerFields();
 		}

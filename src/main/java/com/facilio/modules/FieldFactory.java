@@ -7257,8 +7257,16 @@ public class FieldFactory {
 		fields.add(getField("ip", "IP", module, FieldType.STRING));
 		fields.add(getField("info", "INFO", module, FieldType.STRING));
 		fields.add(getField("connected", "IS_CONNECTED", module, FieldType.BOOLEAN));
-		fields.add(getField("printerModel", "MODEL", module, FieldType.SYSTEM_ENUM));
-		fields.add(getField("connectMode", "CONNECT_MODE", module, FieldType.SYSTEM_ENUM));
+		SystemEnumField printerModel=(SystemEnumField)getField("printerModel", "MODEL", module, FieldType.SYSTEM_ENUM);
+		printerModel.setEnumName("PrinterModel");
+		printerModel.setValues(FacilioEnum.getEnumValues("PrinterModel"));
+		fields.add(printerModel);
+		
+		SystemEnumField connectMode=(SystemEnumField)getField("connectMode", "CONNECT_MODE", module, FieldType.SYSTEM_ENUM);
+		connectMode.setEnumName("ConnectMode");
+		connectMode.setValues(FacilioEnum.getEnumValues("ConnectMode"));
+		fields.add(connectMode);
+		
 		
 		
 		return fields;

@@ -100,6 +100,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationModule());
 		moduleMap.put(FacilioConstants.ContextNames.BMS_ALARM, getBmsAlarmModule());
 		moduleMap.put(FacilioConstants.ModuleNames.DEVICES,getDevicesModule());
+		moduleMap.put(FacilioConstants.ModuleNames.PRINTERS,getPrinterModule());
 		moduleMap.put(FacilioConstants.ContextNames.VISITOR,getVisitorModule());
 		moduleMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING,getVisitorLoggingModule());
 		moduleMap.put(FacilioConstants.ContextNames.VISITOR_INVITE,getVisitorInviteModule());
