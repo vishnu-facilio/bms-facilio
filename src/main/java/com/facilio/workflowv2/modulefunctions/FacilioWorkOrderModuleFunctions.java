@@ -9,9 +9,13 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext.SourceType;
+import com.facilio.bmsconsole.context.JobPlanContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.util.JobPlanApi;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -64,6 +68,8 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		
 		Map<String, Object> actualData = new HashMap<>(); 
 		
+		Map<String, List<TaskContext>> taskList = null; 
+		
 		for(FormField field :fields) {
 			
 			if(field.getValue() != null) {
@@ -92,6 +98,12 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 					continue;
 				}
 				
+				if(field.getName() != null && field.getName().equals("tasks") && field.getValue() != null) {
+					JobPlanContext jobPlan = JobPlanApi.getJobPlan(Long.valueOf(field.getValue().toString()));
+					taskList = TemplateAPI.getTasksFromTemplate(jobPlan);
+					continue;
+				}
+				
 				actualData.put(field.getName(), field.getValue());
 			}
 		}
@@ -109,6 +121,11 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		FacilioChain addWoDataChain = TransactionChainFactory.getAddWorkOrderChain();
 		context = addWoDataChain.getContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+		
+		if(taskList != null) {
+			workorder.setTaskList(taskList);
+			context.put(FacilioConstants.ContextNames.TASK_MAP, taskList);
+		}
 
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
