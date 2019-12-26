@@ -712,7 +712,9 @@ public class ColumnFactory {
 
 	public static List<ViewField> getDefaultVisitorLoggingColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("visitor", "Visitor"));
+		columns.add(new ViewField("visitorName", "Name"));
+		columns.add(new ViewField("visitorPhone", "Phone"));
+		columns.add(new ViewField("visitorEmail", "Email"));
 		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("checkInTime", "Check-In Time"));
 		columns.add(new ViewField("checkOutTime", "Check-Out Time"));
@@ -724,7 +726,9 @@ public class ColumnFactory {
 
 	public static List<ViewField> getDefaultVisitorInvitesColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("visitor", "Visitor"));
+		columns.add(new ViewField("visitorName", "Name"));
+		columns.add(new ViewField("visitorPhone", "Phone"));
+		columns.add(new ViewField("visitorEmail", "Email"));
 		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("moduleState", "State"));
@@ -736,7 +740,9 @@ public class ColumnFactory {
 	
 	public static List<ViewField> getmyInvitesVisitorInvitesColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("visitor", "Visitor"));
+		columns.add(new ViewField("visitorName", "Name"));
+		columns.add(new ViewField("visitorPhone", "Phone"));
+		columns.add(new ViewField("visitorEmail", "Email"));
 		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("moduleState", "Status"));
@@ -749,6 +755,10 @@ public class ColumnFactory {
 	
 	public static List<ViewField> getVendorVisitsInvitesColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("visitorName", "Name"));
+		columns.add(new ViewField("visitorPhone", "Phone"));
+		columns.add(new ViewField("visitorEmail", "Email"));
+		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("visitedSpace", "Visiting Space"));
 		columns.add(new ViewField("requestedBy", "Requested By"));
@@ -763,6 +773,10 @@ public class ColumnFactory {
 	
 	public static List<ViewField> getVendorVisitorInvitesColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("visitorName", "Name"));
+		columns.add(new ViewField("visitorPhone", "Phone"));
+		columns.add(new ViewField("visitorEmail", "Email"));
+		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("visitedSpace", "Visiting Space"));
 		columns.add(new ViewField("requestedBy", "Requested By"));
@@ -779,7 +793,9 @@ public class ColumnFactory {
 	
 	public static List<ViewField> getAllVisitsColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("visitor", "Visitor"));
+		columns.add(new ViewField("visitorName", "Name"));
+		columns.add(new ViewField("visitorPhone", "Phone"));
+		columns.add(new ViewField("visitorEmail", "Email"));
 		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("checkInTime", "Check-in Time"));
