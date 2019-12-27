@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -289,6 +292,32 @@ public class ContactsAPI {
 		int count = updateBuilder.update(value);
 		return count;
 			
+	}
+	
+	public static boolean checkForDuplicateContact(ContactsContext contact) throws Exception {
+		ContactsContext contactExisiting = getContact(contact.getEmail());
+		if(contactExisiting != null && contact.getId() != contactExisiting.getId()) {
+			return true;
+		}
+		return false;
+	}
+	
+	public static ContactsContext getContact(String email) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
+		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.CONTACT);
+		SelectRecordsBuilder<ContactsContext> builder = new SelectRecordsBuilder<ContactsContext>()
+														.module(module)
+														.beanClass(ContactsContext.class)
+														.select(fields)
+														;
+		
+		if(StringUtils.isNotEmpty(email)) {
+			builder.andCondition(CriteriaAPI.getCondition("EMAIL", "email", String.valueOf(email), StringOperators.IS));
+		}
+		
+		ContactsContext records = builder.fetchFirst();
+		return records;
 	}
 
 	

@@ -435,6 +435,11 @@ public class SetTableNamesCommand extends FacilioCommand {
 		return new SetTableNamesCommand("workpermit", "WorkPermit");
 	}
 	
+	public static SetTableNamesCommand getForOccupants() {
+		return new SetTableNamesCommand("occupant", "Occupants");
+	}
+	
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

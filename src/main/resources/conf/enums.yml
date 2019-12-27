@@ -51,3 +51,6 @@ enums:
 
   - name: ConnectMode  
     enumClassName: com.facilio.bmsconsole.context.PrinterContext$ConnectMode
+
+  - name: OccupantType  
+    enumClassName: com.facilio.bmsconsole.context.OccupantsContext$OccupantType

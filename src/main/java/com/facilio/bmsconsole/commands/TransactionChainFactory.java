@@ -3956,6 +3956,7 @@ public class TransactionChainFactory {
 	public static FacilioChain addContactsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForContacts());
+		c.addCommand(new CheckForContactDuplicationCommand());
 		c.addCommand(new AddContactsAsRequesterCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateVendorPrimaryContactLookUpCommand());
@@ -3966,6 +3967,8 @@ public class TransactionChainFactory {
 	public static FacilioChain updateContactsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForContacts());
+		c.addCommand(new CheckForContactDuplicationCommand());
+		c.addCommand(new UpdateContactsRequesterCommand());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdateVendorPrimaryContactLookUpCommand());
 		
@@ -4196,6 +4199,25 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new UpdatePointsConfiguredCommand());
 		return chain;
+	
+	public static FacilioChain addOccupantsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForOccupants());
+		c.addCommand(new CheckForOccupantDuplicationCommand());
+		c.addCommand(new AddOccupantAsRequesterCommand());
+		c.addCommand(new GenericAddModuleDataListCommand());
+
+		return c;
+	}
+	
+	public static FacilioChain updateOccupantsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForOccupants());
+		c.addCommand(new CheckForOccupantDuplicationCommand());
+		c.addCommand(new UpdateOccupantsRequestercommand());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		
+		return c;
 	}
 }
 

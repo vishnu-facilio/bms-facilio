@@ -2098,4 +2098,12 @@ public class FacilioChainFactory {
 		chain.addCommand(new GetPermalinkDetailsCommand());
 		return chain;
 	}
+	
+	public static FacilioChain deleteOccupantsChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForOccupants());
+		c.addCommand(new DeleteContactUsersCommand());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
 }

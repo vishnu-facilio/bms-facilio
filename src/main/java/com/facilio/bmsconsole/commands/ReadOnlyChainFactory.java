@@ -1842,4 +1842,25 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetPrintersListCommand());
 		return c;
 	}
+	
+	public static FacilioChain getOccupantsListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForOccupants());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new LoadOccupantLookUpCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getOccupantDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForOccupants());
+		c.addCommand(new LoadOccupantLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		
+		return c;
+	}
 }
