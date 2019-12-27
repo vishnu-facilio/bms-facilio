@@ -1364,6 +1364,7 @@ public class FacilioConstants {
 		
 		public static final Object TIME_FILTER = "timeFilter";
 		public static final String PRINTERS = "printers";
+		public static final String VISITOR_KIOSKS = "visitorKiosks";
 				
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
@@ -1539,6 +1540,7 @@ public class FacilioConstants {
 			classMap.put(INSURANCE, InsuranceContext.class);
 			classMap.put(WATCHLIST, WatchListContext.class);
 			classMap.put(WORKPERMIT, WorkPermitContext.class);
+			classMap.put(PRINTERS,PrinterContext.class);
 
 			
 			return classMap;

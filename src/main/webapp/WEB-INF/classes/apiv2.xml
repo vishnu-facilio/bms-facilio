@@ -4578,6 +4578,8 @@
 			</action>
 			<action name="update" class="com.facilio.bmsconsole.actions.VisitorKioskConfigAction" method="addOrUpdate">							
 			</action>
+			<action name="list" class="com.facilio.bmsconsole.actions.VisitorKioskConfigAction" method="list">							
+			</action>
 	</package>
 	<package name="feedbackKiosk" namespace="/api/v2/feedbackKiosk" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.FeedbackKioskConfigAction" method="addOrUpdate">

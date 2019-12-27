@@ -1,10 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import java.io.Serializable;
-
-
-
-public class VisitorKioskContext implements Serializable {
+public class VisitorKioskContext extends DeviceContext{
 	private static final long serialVersionUID = 1L;
 
 	private long id = -1;

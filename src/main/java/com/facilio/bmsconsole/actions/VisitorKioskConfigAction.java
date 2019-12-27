@@ -1,10 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.VisitorKioskContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 
@@ -44,6 +46,15 @@ public class VisitorKioskConfigAction extends FacilioAction{
 		
 		
 		
+	}
+	public String list() throws Exception{
+		
+		FacilioChain listChain=ReadOnlyChainFactory.getVisitorKioskListChain();
+		listChain.execute();
+		FacilioContext context=listChain.getContext();
+		setResult(FacilioConstants.ContextNames.VISITOR_KIOSKS,context.get(ContextNames.RECORD_LIST));
+		
+		return SUCCESS;
 	}
 	
 

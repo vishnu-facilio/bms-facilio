@@ -7269,9 +7269,9 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getVisitorKioskConfigModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		fields.add(getField("id", "ID", module, FieldType.LOOKUP));
-		fields.add(getField("printerId", "PRINTER_ID", module, FieldType.LOOKUP));
-		fields.add(getField("kioskForSpaceId", "KIOSK_FOR_SPACE", module, FieldType.LOOKUP));
+		fields.add(getField("id", "ID", module, FieldType.NUMBER));
+		fields.add(getField("printerId", "PRINTER_ID", module, FieldType.NUMBER));
+		fields.add(getField("kioskForSpaceId", "KIOSK_FOR_SPACE", module, FieldType.NUMBER));
 
 		return fields;
 	}
