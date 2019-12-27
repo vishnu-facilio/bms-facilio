@@ -22,7 +22,6 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
-import com.facilio.bmsconsole.context.FormulaFieldResourceContext;
 import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -839,7 +838,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORMULA_METRIC, metricId);
 		context.put(FacilioConstants.ContextNames.READING_RULES_LIST,readingRules);
 		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, getFieldReadingRules());
-		context.put(FacilioConstants.ContextNames.DEPENDENT_FIELD_RESOURCE_CONTEXT_LIST,dependentFieldResourceContextList);
+//		context.put(FacilioConstants.ContextNames.DEPENDENT_FIELD_RESOURCE_CONTEXT_LIST,dependentFieldResourceContextList);
 //		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING,true);
 
 		FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
@@ -858,7 +857,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT, unitId);
 		context.put(FacilioConstants.ContextNames.FORMULA_METRIC, metricId);
-		context.put(FacilioConstants.ContextNames.DEPENDENT_FIELD_RESOURCE_CONTEXT_LIST,dependentFieldResourceContextList);
+//		context.put(FacilioConstants.ContextNames.DEPENDENT_FIELD_RESOURCE_CONTEXT_LIST,dependentFieldResourceContextList);
 //		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING,true);
 		
 	    List<List<ReadingRuleContext>> readingRules = getFieldReadingRules();
@@ -960,16 +959,6 @@ public class ReadingAction extends FacilioAction {
 	}
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
-	}
-	
-	private List<FormulaFieldResourceContext> dependentFieldResourceContextList;
-
-	public List<FormulaFieldResourceContext> getDependentFieldResourceContextList() {
-		return dependentFieldResourceContextList;
-	}
-
-	public void setDependentFieldResourceContextList(List<FormulaFieldResourceContext> dependentFieldResourceContextList) {
-		this.dependentFieldResourceContextList = dependentFieldResourceContextList;
 	}
 
 	private long resourceId = -1;
