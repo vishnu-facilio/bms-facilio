@@ -244,6 +244,7 @@ public class DataProcessorUtil {
             CommonCommandUtil.emailException("processor", "Error in processing records : "
                     + record.getId() + " in TimeSeries ", e, record.getData().toString());
             LOGGER.info("Exception occurred in processing payload ", e);
+            return false;
         }
         LOGGER.info(" processing successful");
         return true;
@@ -352,7 +353,7 @@ public class DataProcessorUtil {
         }*/
         bean.processTimeSeries(timeStamp, payLoad, record, isTimeSeries);
         long timeTaken = (System.currentTimeMillis() - startTime);
-        LOGGER.info("timetaken to process timeseries data : " + timeTaken);
+        LOGGER.info("timetaken to process timeseries data2 : " + timeTaken);
         if (timeTaken > 100000L) {
             LOGGER.info("timetaken to process timeseries is  > 100000  : " + timeTaken);
         }

@@ -112,7 +112,7 @@ public class KinesisProcessor implements IRecordProcessor {
                 try{
 
                     if( ! dataProcessorUtil.processRecord(facilioRecord)){
-                        //LOGGER.info(" processing record failed "+getString(record.getData()));
+                        LOGGER.info(record.getPartitionKey() + " processing record failed " + record.getSequenceNumber());
                        /* try {
                             LOGGER.info(record.getSequenceNumber()+" Exception while processing kinesis record -> " + getString(record.getData()));
                         }catch (Exception e){
