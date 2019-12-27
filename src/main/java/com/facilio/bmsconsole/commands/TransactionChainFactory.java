@@ -4199,6 +4199,7 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new UpdatePointsConfiguredCommand());
 		return chain;
+	}
 	
 	public static FacilioChain addOccupantsChain() {
 		FacilioChain c = getDefaultChain();
