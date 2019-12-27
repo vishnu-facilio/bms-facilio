@@ -294,7 +294,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			module = axis.getModule();
 		}
 
-		if (!baseModule.isParentOrChildModule(module)) {
+		if (!baseModule.isParentOrChildModule(module) && !isAlreadyAdded(addedModules, module)) {
 			applyJoin(axis.getJoinOn(), module, selectBuilder);
 			addedModules.add(module);
 		}
@@ -736,7 +736,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 	}
 
 	private void handleJoin(ReportFieldContext reportField, SelectRecordsBuilder selectBuilder, Set<FacilioModule> addedModules) throws Exception {
-		if (!reportField.getModule().equals(baseModule)) {		// inter-module support
+		if (!reportField.getModule().equals(baseModule) && !isAlreadyAdded(addedModules, reportField.getModule())) {		// inter-module support
 			List<FacilioField> allFields = modBean.getAllFields(baseModule.getName()); // for now base module is enough
 			Map<String, LookupField> lookupFields = getLookupFields(allFields);
 			handleLookupJoin(lookupFields, reportField.getModule(), selectBuilder, addedModules);
