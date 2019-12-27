@@ -352,8 +352,9 @@ public class DataProcessorUtil {
         }*/
         bean.processTimeSeries(timeStamp, payLoad, record, isTimeSeries);
         long timeTaken = (System.currentTimeMillis() - startTime);
+        LOGGER.info("timetaken to process timeseries data : " + timeTaken);
         if (timeTaken > 100000L) {
-            LOGGER.info("timetaken to process timeseries data : " + timeTaken);
+            LOGGER.info("timetaken to process timeseries is  > 100000  : " + timeTaken);
         }
     }
 
