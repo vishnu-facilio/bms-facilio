@@ -116,10 +116,10 @@ public class DataProcessorUtil {
                 eventRules = ruleList;
             }
             try {
-                if(payLoad.containsKey(AgentConstants.VERSION)) {
+                if (payLoad.containsKey(AgentConstants.VERSION) && isStage) {
                     Object version = payLoad.get(AgentConstants.VERSION);
                     if (version instanceof String) {
-                        if ( ("2".equalsIgnoreCase((String) version) )){
+                        if (("2#".equalsIgnoreCase((String) version))) {
                             if (dataProcessorV2 != null && isStage) {
                                 LOGGER.info(" newProcessor payload -> " + payLoad);
                                 try {
