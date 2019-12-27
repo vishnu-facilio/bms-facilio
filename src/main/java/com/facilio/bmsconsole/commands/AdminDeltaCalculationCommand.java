@@ -24,6 +24,8 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.unitconversion.UnitsUtil;
 
 public class AdminDeltaCalculationCommand extends FacilioCommand {
 
@@ -99,41 +101,60 @@ public class AdminDeltaCalculationCommand extends FacilioCommand {
 			Object deltaVal = null;
 			if (valField.getDataTypeEnum() == FieldType.DECIMAL) {
 				Double prevVal = (Double) rowFirst.getReading(nameField);
+				prevVal = UnitsUtil.convertToSiUnit(prevVal, UnitsUtil.getDisplayUnit((NumberField)valField));
 				Double currentValue = (Double) rowSecond.getReading(nameField);
+				currentValue = UnitsUtil.convertToSiUnit(currentValue, UnitsUtil.getDisplayUnit((NumberField)valField));
 				if (prevVal != -1) {
 					deltaVal = currentValue - prevVal;
 				}
 			} else {
 				Long prevVal = (Long) rowFirst.getReading(nameField);
+				prevVal = UnitsUtil.convertToSiUnit(prevVal, UnitsUtil.getDisplayUnit((NumberField)valField)).longValue();
 				Long currentValue = (Long) rowSecond.getReading(nameField);
+				currentValue = UnitsUtil.convertToSiUnit(currentValue, UnitsUtil.getDisplayUnit((NumberField)valField)).longValue();
 				if (prevVal != -1) {
 					deltaVal = currentValue - prevVal;
 				}
 			}
 
 			if (deltaVal != null) {
-				rowSecond.addReading(detaFieldName, deltaVal);
+				
+				ReadingContext rowSecondCloned = getClonedReadingContext(rowSecond);
+				
+				rowSecondCloned.addReading(detaFieldName, deltaVal);
+				
 				if (AccountUtil.getCurrentOrg().getId() == 78) {
 					LOGGER.info("Delta Value for "+detaFieldName+" is : "+deltaVal);
 				}
-			}
-			
-			UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>().module(module)
-					.fields(valfields).andCondition(CriteriaAPI.getIdCondition(id, module));
-			try {
-				int count = updateBuilder.update(rowSecond);
-				if (count > 0) {
-					
-					System.out.println("#####DeltaCalculation Updated Successfully" + count + "  " + "rows");
-					LOGGER.info("#####DeltaCalculation Updated Successfully");
+				
+				UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>().module(module)
+						.fields(valfields).andCondition(CriteriaAPI.getIdCondition(id, module));
+				try {
+					int count = updateBuilder.update(rowSecondCloned);
+					if (count > 0) {
+						
+						System.out.println("#####DeltaCalculation Updated Successfully" + count + "  " + "rows");
+						LOGGER.info("#####DeltaCalculation Updated Successfully");
+					}
+
+				} catch (Exception e) {
+					LOGGER.info("###DeltaCalculation is failed to Update : " + e);
+					System.out.println("###DeltaCalculation is failed to Update : " + e);
 				}
-
-			} catch (Exception e) {
-				LOGGER.info("###DeltaCalculation is failed to Update : " + e);
-				System.out.println("###DeltaCalculation is failed to Update : " + e);
 			}
-
 		}
+	}
+
+	private ReadingContext getClonedReadingContext(ReadingContext rowSecond) {
+		ReadingContext rowSecondCloned = new ReadingContext();
+		
+		rowSecondCloned.setId(rowSecond.getId());
+		rowSecondCloned.setOrgId(rowSecond.getOrgId());
+		rowSecondCloned.setModuleId(rowSecond.getModuleId());
+		rowSecondCloned.setParentId(rowSecond.getParentId());
+		rowSecondCloned.setTtime(rowSecond.getTtime());
+		
+		return rowSecondCloned;
 	}
 
 	private boolean isCounterValField(FacilioField valField) {
