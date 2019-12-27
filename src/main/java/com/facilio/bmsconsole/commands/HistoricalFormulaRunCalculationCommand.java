@@ -117,7 +117,7 @@ public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 			LoggerContext formulaFieldHistoricalLoggerContext = new LoggerContext();
 			if(isFirst) {
 				formulaFieldHistoricalLoggerContext = setLoggerContext(formulaId, range, finalResourceId, -1);
-				LoggerAPI.addHistoricalLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, formulaFieldHistoricalLoggerContext);
+				LoggerAPI.addLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, formulaFieldHistoricalLoggerContext);
 				
 				loggerGroupId = formulaFieldHistoricalLoggerContext.getId();
 				formulaFieldHistoricalLoggerContext.setLoggerGroupId(loggerGroupId);
@@ -126,7 +126,7 @@ public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 			}
 			else {
 				formulaFieldHistoricalLoggerContext = setLoggerContext(formulaId, range, finalResourceId, loggerGroupId);
-				LoggerAPI.addHistoricalLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, formulaFieldHistoricalLoggerContext);
+				LoggerAPI.addLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, formulaFieldHistoricalLoggerContext);
 			}
 
 			formulaLoggerIdvsHistoricalLoggerMap.put(formulaFieldHistoricalLoggerContext.getId(), formulaFieldHistoricalLoggerContext);
@@ -171,7 +171,7 @@ public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 					{
 						dependentFormulaLoggerContext.setDependentId(parentFormulaLoggerContext.getId());
 						uniqueFormulaIdvsHistoricalLoggerMap.put(dependentFormula.getId(), dependentFormulaLoggerContext);	
-						LoggerAPI.addHistoricalLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, dependentFormulaLoggerContext);	
+						LoggerAPI.addLogger(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields, dependentFormulaLoggerContext);	
 					}
 					else
 					{

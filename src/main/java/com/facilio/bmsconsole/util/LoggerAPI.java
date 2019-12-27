@@ -30,7 +30,7 @@ import com.facilio.modules.fields.FacilioField;
 
 public class LoggerAPI {
 	
-		public static void addHistoricalLogger(FacilioModule loggerModule, List<FacilioField> fields, List<LoggerContext> loggerContextList) throws Exception {
+		public static void addLogger(FacilioModule loggerModule, List<FacilioField> fields, List<LoggerContext> loggerContextList) throws Exception {
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(loggerModule.getTableName())
@@ -45,7 +45,7 @@ public class LoggerAPI {
 
 		}
 		
-		public static void addHistoricalLogger(FacilioModule loggerModule, List<FacilioField> fields, LoggerContext loggerContext) throws Exception {
+		public static void addLogger(FacilioModule loggerModule, List<FacilioField> fields, LoggerContext loggerContext) throws Exception {
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(loggerModule.getTableName())
@@ -373,7 +373,7 @@ public class LoggerAPI {
 		}
 		
 		
-		public static void deleteHistoricalLogger(FacilioModule loggerModule, long id) throws SQLException {
+		public static void deleteLogger(FacilioModule loggerModule, long id) throws SQLException {
 			
 			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 			

@@ -100,7 +100,7 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 					
 					for(EnergyMeterContext vm:groupedVMList)
 					{						
-						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(vm.getId(), deltaField); //childrenVM not VM as well as all VMChildren has completed insertion
+						ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(vm.getId(), deltaField); 
 						long startTime = meta.getTtime()+1;
 						List<ReadingContext> vmReadings = DeviceAPI.getandDeleteDuplicateVirtualMeterReadings(vm,childMeterIdMap.get(vm.getId()),startTime,endTime,minutesInterval,true, false);
 						if (vmReadings != null) {
