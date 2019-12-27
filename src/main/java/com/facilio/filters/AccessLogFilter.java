@@ -200,10 +200,10 @@ public class AccessLogFilter implements Filter {
             contextMap.put("graylogurl", grayLogSearchUrl);
 
             if (timeTaken > TIME_THRESHOLD){
-                SentryUtil.sendSlowresponseToSentry(contextMap, request );
+                SentryUtil.sendSlowresponseToSentry(contextMap );
             }
             else {
-                SentryUtil.sendToSentry(contextMap, request);
+                SentryUtil.sendToSentry(contextMap);
             }
         }
         if(appender != null) {

@@ -6,13 +6,11 @@ import com.facilio.tasker.job.JobContext;
 import io.sentry.SentryClient;
 import io.sentry.SentryClientFactory;
 import io.sentry.context.Context;
-import io.sentry.event.interfaces.HttpInterface;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,14 +21,12 @@ public class SentryUtil {
     private static final SentryClient SENTRY_SLOWNESS_CLIENT = SentryClientFactory.sentryClient(FacilioProperties.getSentryslownessdsn());
     private static final SentryClient SENTRY_SCHEDULER_CLIENT = SentryClientFactory.sentryClient(FacilioProperties.getSentryschedulerdsn());
     private static final Logger LOGGER = LogManager.getLogger(SentryUtil.class.getName());
-    private static void sendToSentryCommon(Map<String, String> contextMap, HttpServletRequest request,SentryClient sentryClient) {
+    private static void sendToSentryCommon(Map<String, String> contextMap,SentryClient sentryClient) {
         try {
             if (FacilioProperties.isSentryEnabled()) {
                 Context context = sentryClient.getContext();
                 context.clear();
-                if (request != null) {
-                    context.setHttp(new HttpInterface(request));
-                }
+
                 if (contextMap.containsKey("graylogurl")) {
                     context.addExtra("graylogurl", contextMap.remove("graylogurl"));
                 }
@@ -52,12 +48,12 @@ public class SentryUtil {
         }
     }
 
-    public static void sendToSentry(Map<String, String> contextMap, HttpServletRequest request) {
-        sendToSentryCommon(contextMap,request,SENTRY_CLIENT);
+    public static void sendToSentry(Map<String, String> contextMap) {
+        sendToSentryCommon(contextMap,SENTRY_CLIENT);
     }
 
-    public static void sendSlowresponseToSentry(Map<String, String> contextMap, HttpServletRequest request) {
-        sendToSentryCommon(contextMap,request,SENTRY_SLOWNESS_CLIENT);
+    public static void sendSlowresponseToSentry(Map<String, String> contextMap) {
+        sendToSentryCommon(contextMap ,SENTRY_SLOWNESS_CLIENT);
     }
 
     private static void sendSchedulerErrorsToSentry(Map<String, String> contextMap) {
