@@ -43,7 +43,7 @@ public class AddFormCommand extends FacilioCommand {
 			form.setLabelPosition(LabelPosition.LEFT);
 		}
 		
-		if (form.getSections() == null && (module.isCustom())) {
+		if (form.getSections() == null && (!module.isCustom())) {
 			FacilioForm defaultForm = FormsAPI.getDefaultForm(moduleName, form.getFormTypeEnum());
 			if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getSections())) {
 				form.setSections(new ArrayList<>(defaultForm.getSections()));
