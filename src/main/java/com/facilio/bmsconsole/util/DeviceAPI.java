@@ -631,6 +631,10 @@ public class DeviceAPI
 			ReadingContext firstReading=vmReadings.get(0);
 			long firstReadingTime =firstReading.getTtime();
 			ReadingContext lastReading=vmReadings.get(vmReadings.size() - 1);
+			
+			LOGGER.info("VM live Readings for meter : "+meter.getId()+" is : " + vmReadings);
+			LOGGER.info("Deleting live start time :" + firstReadingTime + "Deleting  end time :" + lastReading.getTtime());
+			
 			deleteEnergyData(meter.getId(), firstReadingTime, lastReading.getTtime()); //Deleting anyway to avoid duplicate entries			
 		}	
 					
@@ -739,9 +743,12 @@ public class DeviceAPI
 			ReadingContext firstReading=vmReadings.get(0);
 			long firstReadingTime =firstReading.getTtime();
 			ReadingContext lastReading=vmReadings.get(vmReadings.size() - 1);
+			
+			LOGGER.info("VM Historical Readings for meter : "+meter.getId()+" is : " + vmReadings);
+			LOGGER.info("Deleting historical start time :" + firstReadingTime + "Deleting historical end time :" + lastReading.getTtime());
+			
 			deleteEnergyData(meter.getId(), firstReadingTime, lastReading.getTtime()); //Deleting anyway to avoid duplicate entries
-			
-			
+								
 			boolean runThroughUpdate= Math.floor((System.currentTimeMillis()-endTime)/(60*1000)) < minutesInterval;
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.ENERGY_DATA_READING );
