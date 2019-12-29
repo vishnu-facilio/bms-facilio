@@ -70,6 +70,10 @@ public class HistoricalVMCalculationCommand extends FacilioCommand implements Po
 							}
 							
 							int interval = ReadingsAPI.getDataInterval(meter.getId(), energyField);
+							if (AccountUtil.getCurrentOrg().getId() == 231) {
+								interval = 10;
+							}
+							
 							DeviceAPI.insertVirtualMeterReadings(meter, childMeterIds, startTime, endTime, interval,updateReading, true);
 							
 							historicalLoggerIds.add(historicalLoggerContext.getId());
