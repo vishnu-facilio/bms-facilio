@@ -36,7 +36,6 @@ public class ModeledDataCommand extends AgentV2Command {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		LOGGER.info(" moduled data command->"+context);
 		Long timeStamp = (Long) context.get(FacilioConstants.ContextNames.TIMESTAMP);
 		if (context.containsKey(AgentConstants.IS_NEW_AGENT) && (context.get(AgentConstants.IS_NEW_AGENT) != null) && (context.get(AgentConstants.IS_NEW_AGENT) instanceof Boolean)) {
 			if ((boolean) context.get(AgentConstants.IS_NEW_AGENT)) {
@@ -86,20 +85,18 @@ public class ModeledDataCommand extends AgentV2Command {
 
 			}
 
-			addPointDataToContext(context,iModuleVsReading,moduleVsReading,dataPointsValue);
-			logModelledDataCommand(context);
+			addPointDataToContext(context, iModuleVsReading, moduleVsReading, dataPointsValue);
+			//logModelledDataCommand(context);
 
 			return false;
 		} else {
 
 			Map<String, Map<String, String>> deviceData = (Map<String, Map<String, String>>) context.get(FacilioConstants.ContextNames.DEVICE_DATA);
-			LOGGER.info(" device data -" + deviceData);
 			Map<String, List<ReadingContext>> moduleVsReading = new HashMap<String, List<ReadingContext>>();
 			Map<String, ReadingContext> iModuleVsReading = new HashMap<String, ReadingContext>();
 			Long controllerId = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 
 			List<Map<String, Object>> dataPointsValue = (List<Map<String, Object>>) context.get("DATA_POINTS"); // points table rows
-			LOGGER.debug(dataPointsValue + "Points data incoming");
 			if (TimeSeriesAPI.isStage()) {
 				LOGGER.debug(dataPointsValue + "Points data incoming");
 			}
@@ -220,11 +217,6 @@ public class ModeledDataCommand extends AgentV2Command {
 			context.put(FacilioConstants.ContextNames.READINGS_MAP, moduleVsReading);
 			context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
 			context.put("POINTS_DATA_RECORD", dataPointsValue);
-			LOGGER.info("--------Modelled data Command-----------");
-			for (Object key : context.keySet()) {
-				LOGGER.info(key + "->" + context.get(key));
-			}
-			LOGGER.info("-----------------------------");
 			return false;
 		}
 	}
@@ -362,18 +354,18 @@ public class ModeledDataCommand extends AgentV2Command {
 		}
 	}
 
-	private Map<String,Object> getValueContainsPointsData(String deviceName, String instanceName,Long controllerId ,List<Map<String , Object>> points_Data) throws Exception{
-		LOGGER.info("instanceName->"+instanceName);
+	private Map<String,Object> getValueContainsPointsData(String deviceName, String instanceName,Long controllerId ,List<Map<String , Object>> points_Data) throws Exception {
+		//LOGGER.info("instanceName->"+instanceName);
 		String mDeviceName = "";
 		String mInstanceName = "";
 		Long mControllerId = -1L;
 		for (Map<String, Object> map : points_Data) {
-				mDeviceName=(String) map.get("device");
-				mInstanceName=(String) map.get("instance");
-				mControllerId=(Long)map.get("controllerId");
-			if(deviceName.equals(mDeviceName) && instanceName.equals(mInstanceName)) {
+			mDeviceName = (String) map.get("device");
+			mInstanceName = (String) map.get("instance");
+			mControllerId = (Long) map.get("controllerId");
+			if (deviceName.equals(mDeviceName) && instanceName.equals(mInstanceName)) {
 
-				if(controllerId==null || controllerId.equals(mControllerId) ) {
+				if (controllerId == null || controllerId.equals(mControllerId)) {
 					// if controller is null.. then return map..
 					// if not null.. then it should be equal to return map..
 					return map;

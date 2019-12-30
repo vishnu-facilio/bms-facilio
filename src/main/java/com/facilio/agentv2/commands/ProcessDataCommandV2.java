@@ -2,24 +2,16 @@ package com.facilio.agentv2.commands;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.misc.MiscPoint;
-import com.facilio.agentv2.point.PointsAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.facilio.agentv2.point.PointsAPI.getPointsFromDb;
 
@@ -102,11 +94,11 @@ public class ProcessDataCommandV2 extends AgentV2Command {
         }else {
             throw new Exception("payload missing from context->"+context);
         }
-        LOGGER.info("--------process data command v2---------");
+       /* LOGGER.info("--------process data command v2---------");
         for (Object key : context.keySet()) {
             LOGGER.info(key+"->"+context.get(key));
         }
-        LOGGER.info("----------------------------------------");
+        LOGGER.info("----------------------------------------");*/
 
         return false;
     }

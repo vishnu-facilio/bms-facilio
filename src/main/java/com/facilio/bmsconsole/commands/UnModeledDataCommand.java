@@ -40,14 +40,10 @@ public class UnModeledDataCommand extends FacilioCommand {
 		Long controllerId=(Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		List<Map<String, Object>> records=new ArrayList<Map<String,Object>>();
 		List<Map<String, Object>> pointsRecords=(List<Map<String, Object>>) context.get("POINTS_DATA_RECORD");
-		LOGGER.info("deviceData-> "+deviceData);
-		LOGGER.info("pointsRecords-> "+pointsRecords);
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
-			LOGGER.info("data->"+data);
 			String deviceName=data.getKey();// controller name
 			Map<String,String> instanceMap= data.getValue(); // timeseries data
 			for(Map.Entry<String,String> map:instanceMap.entrySet()) {
-				LOGGER.info("map->"+map);
 				String pointName=map.getKey();
 				String instanceVal=map.getValue();
 				if(instanceVal.equalsIgnoreCase("NaN")) {
@@ -97,7 +93,6 @@ public class UnModeledDataCommand extends FacilioCommand {
 	}
 
 	private long getPointsId(Long controllerId, String pointName) throws Exception {
-		LOGGER.info(" controllerId "+controllerId);
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getPointsModule().getTableName())
 				.select(FieldFactory.getPointsFields())
@@ -149,10 +144,6 @@ public class UnModeledDataCommand extends FacilioCommand {
 	}
 
 	private  Long getPointsUnmodledInstance(String deviceName, String instanceName, Long controllerId,List<Map<String, Object>> pointsRecords) throws Exception {
-		LOGGER.info(" pointsRecord->"+pointsRecords);
-		LOGGER.info(" devicename->"+deviceName);
-		LOGGER.info(" instanceName->"+instanceName);
-		LOGGER.info(" controllerId->"+controllerId);
 		Iterator<Map<String,Object>> itr= pointsRecords.iterator();
 		while (itr.hasNext()) {
 			Map<String,Object> map= itr.next();
