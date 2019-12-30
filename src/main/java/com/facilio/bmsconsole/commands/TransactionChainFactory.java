@@ -2341,6 +2341,8 @@ public class TransactionChainFactory {
 		public static FacilioChain getUpdateFormChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new EditFormCommand());
+			c.addCommand(new DeleteFormSiteRelationCommand());
+			c.addCommand(new AddFormSiteRelationCommand());
 			return c;
 		}
 

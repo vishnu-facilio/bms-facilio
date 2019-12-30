@@ -19,8 +19,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.FormSiteRelationContext;
+import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
@@ -43,8 +47,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
@@ -565,13 +571,6 @@ public class FormsAPI {
 		else {
 			spaces = AccountUtil.getCurrentUser().getAccessibleSpace();
 		}
-		System.out.println("&*&*&*&*"+ spaces);
-//		GenericSelectRecordBuilder formListBuilder=new GenericSelectRecordBuilder()
-//				.select(fields)
-//				.table(formModule.getTableName())
-//				.innerJoin("Form_Site_Relation")
-//				.on("Forms.ID = Form_Site_Relation.FORM_ID")
-//				;
 
 		 GenericSelectRecordBuilder forms1 = new GenericSelectRecordBuilder()
 					.table(ModuleFactory.getFormSiteRelationModule().getTableName())
@@ -591,6 +590,7 @@ public class FormsAPI {
 									.select(fields)
 									.table(formModule.getTableName())
 									;
+		 
 
 
 		if (moduleName != null) {
@@ -624,6 +624,9 @@ public class FormsAPI {
 		
 		List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
 		
+		forms = getAsFormSiteRelationListMap(forms);
+		
+		
 
 		if (fetchFields && CollectionUtils.isNotEmpty(forms)) {
 			for (FacilioForm form: forms) {
@@ -635,6 +638,42 @@ public class FormsAPI {
 			
 	}
 	
+	private static List<FacilioForm> getAsFormSiteRelationListMap(List<FacilioForm> forms) throws Exception {
+		if (forms != null && forms.size() > 0) {
+			List<Long> formIds = forms.stream().map(FacilioForm::getId).collect(Collectors.toList());
+			StringJoiner ids = new StringJoiner(",");
+			formIds.stream().forEach(f -> ids.add(String.valueOf(f)));
+			Map<String, FacilioField> formSiteFieldMap = FieldFactory.getAsMap(FieldFactory.getFormSiteRelationFields());
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getFormSiteRelationFields())
+					.table(ModuleFactory.getFormSiteRelationModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(formSiteFieldMap.get("formId"), ids.toString(), NumberOperators.EQUALS));
+			
+			List<FormSiteRelationContext> props = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), FormSiteRelationContext.class);
+			Map<Long, List<Long>> formVsSite = new HashMap<>();
+			if (props != null) {
+			for (FormSiteRelationContext prop : props) {
+				Long formId = (Long) prop.getFormId();
+				Long siteId = (Long) prop.getSiteId();
+				
+				List<Long> siteIds = formVsSite.get(formId);
+				if (siteIds == null) {
+					siteIds = new ArrayList<>();
+					formVsSite.put(formId, siteIds);
+				}
+				siteIds.add(siteId);
+			}
+			for (FacilioForm form: forms) {
+				if (formVsSite.get(form.getId()) != null) {
+					form.setSiteIds(formVsSite.get(form.getId()));
+				}
+			}
+			}
+		}
+		// TODO Auto-generated method stub
+		return forms;
+	}
+
 	private static void addUnusedSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
 		if (form.getFormTypeEnum() == FormType.WEB) {
 			addUnusedWebSystemFields(form, defaultFields);
