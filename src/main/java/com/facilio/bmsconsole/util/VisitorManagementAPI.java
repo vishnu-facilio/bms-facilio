@@ -2044,7 +2044,6 @@ public class VisitorManagementAPI {
 			
 			Date date = new Date((Long)map.get("autoCheckOutTime"));
 			DateFormat formatter = new SimpleDateFormat("HH:mm");
-			formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 			String dateFormatted = formatter.format(date);
 			
 			timeList.add(dateFormatted);
