@@ -16,11 +16,13 @@ public class DeleteFormSiteRelationCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-				.table(ModuleFactory.getFormSiteRelationModule().getTableName())
-				.andCustomWhere("FORM_ID = ?", form.getId());
-				;
-		 deleteBuilder.delete();
+		if (form != null && form.getSiteIds() != null) {
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getFormSiteRelationModule().getTableName())
+					.andCustomWhere("FORM_ID = ?", form.getId());
+					;
+			 deleteBuilder.delete();
+		}
 		return false;
 	}
 
