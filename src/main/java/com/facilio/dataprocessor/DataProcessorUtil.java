@@ -120,19 +120,23 @@ public class DataProcessorUtil {
                     Object version = payLoad.get(AgentConstants.VERSION);
                     if (version instanceof String) {
                         if (("2#".equalsIgnoreCase((String) version))) {
-                            if (dataProcessorV2 != null && isStage) {
+                            if (dataProcessorV2 != null) {
                                 LOGGER.info(" newProcessor payload -> " + payLoad);
                                 try {
                                     if (!dataProcessorV2.processRecord(payLoad)) {
                                         return false;
                                     }
+                                    updateAgentMessage(recordId, MessageStatus.PROCESSED);
+                                    return true;
                                 } catch (Exception newProcessorException) {
                                     LOGGER.info("Exception occurred ", newProcessorException);
                                     return false;
                                 }
+                            } else {
+                                LOGGER.info(" DATAPROCESSOR object is null ");
                             }
-                            updateAgentMessage(recordId, MessageStatus.PROCESSED);
-                            return true;
+                        } else {
+                            LOGGER.info(" version not V2 -> " + version);
                         }
                     }
                 }
