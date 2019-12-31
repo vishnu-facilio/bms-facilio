@@ -20,6 +20,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.UserUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.copyAssetReadingCommand;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
@@ -375,6 +376,12 @@ public class OrgBeanImpl implements OrgBean {
 	public void updateLoggerLevel(int level, long orgId) throws Exception {
 		 // TODO Auto-generated method stub 
 		IAMOrgUtil.updateLoggerLevel(level, orgId);
+	}
+
+	@Override
+	public void copyReadingValue(List<Map<String, Object>> prop, FacilioModule module,long orgId) throws Exception {
+		// TODO Auto-generated method stub
+		copyAssetReadingCommand.insertAssetCopyValue(prop,module,orgId);
 	} 
 	
 	

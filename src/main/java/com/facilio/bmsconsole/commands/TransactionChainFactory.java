@@ -4156,6 +4156,7 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+
 	public static FacilioChain getAgentUpdateChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new UpdateAgentCommand());
@@ -4221,6 +4222,12 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		
 		return c;
+	}
+
+	public static FacilioChain copySpecificAssetReadingToAnotherOrgChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new copyAssetReadingCommand());
+		return chain;
 	}
 }
 

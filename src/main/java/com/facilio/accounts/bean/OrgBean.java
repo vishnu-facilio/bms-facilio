@@ -9,6 +9,8 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 
 public interface OrgBean {
 
@@ -54,4 +56,5 @@ public interface OrgBean {
 	
 	public List<Organization> getOrgs() throws Exception;
 	
+	public void copyReadingValue(List<Map<String,Object>> porp, FacilioModule module, long targetOrgId)throws Exception;
 }
