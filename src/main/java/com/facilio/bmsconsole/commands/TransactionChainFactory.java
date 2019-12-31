@@ -2373,6 +2373,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getDeleteFormChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new DeleteFormCommand());
+			c.addCommand(new DeleteFormSiteRelationCommand());
 			return c;
 		}
 
