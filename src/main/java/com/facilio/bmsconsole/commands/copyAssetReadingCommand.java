@@ -95,7 +95,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		FacilioModule targetModule = bean.getModule(module.getName());
-		if (targetModule != null) {
+		if (targetModule == null) {
 			long moduleId = bean.addModule(module);
 			targetModule = bean.getModule(moduleId);
 		}
