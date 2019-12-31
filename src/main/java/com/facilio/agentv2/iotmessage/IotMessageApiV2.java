@@ -136,6 +136,7 @@ public class IotMessageApiV2 {
 
 
     public static long addIotData(IotData data) throws Exception {
+        LOGGER.info(" adding iot data");
         data.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
         data.setCreatedTime(System.currentTimeMillis());
         long id = new GenericInsertRecordBuilder()

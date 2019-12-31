@@ -138,16 +138,12 @@ public class AgentMessenger {
         return false;
     }
 
-    public static boolean discoverController(Long agentId, FacilioControllerType controllerType) {
-        try{
-            if(agentId > 0){
-                IotData data = constructNewIotAgentMessage(agentId,FacilioCommand.DISCOVER_CONTROLLERS,null,controllerType);
-                MessengerUtil.addAndPublishNewAgentData(data);
-                return true;
-            }
-        } catch (Exception e) {
-            LOGGER.info("Exception occurred while Agent discover controller command construction",e);
+    public static boolean discoverController(Long agentId, FacilioControllerType controllerType) throws Exception {
+        if (agentId > 0) {
+            IotData data = constructNewIotAgentMessage(agentId, FacilioCommand.DISCOVER_CONTROLLERS, null, controllerType);
+            MessengerUtil.addAndPublishNewAgentData(data);
+            return true;
         }
-        return false;
+        return true;
     }
 }

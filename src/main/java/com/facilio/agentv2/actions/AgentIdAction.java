@@ -54,6 +54,7 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String pingAgent() {
         try {
+            LOGGER.info(" ping agent " + getAgentId());
             AgentMessenger.pingAgent(getAgentId());
             setResult(AgentConstants.RESULT, SUCCESS);
             setResponseCode(HttpURLConnection.HTTP_OK);
