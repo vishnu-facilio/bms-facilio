@@ -1,6 +1,6 @@
 package com.facilio.agentv2;
 
-import com.facilio.agent.PublishType;
+import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.device.Device;
@@ -23,7 +23,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DataProcessorV2
 {
@@ -55,14 +57,7 @@ public class DataProcessorV2
         }
     }
 
-    public static void main(String[] args) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        int round = calendar.get(Calendar.MINUTE) % 15;
-        calendar.add(Calendar.MINUTE, round < 8 ? -round : (15 - round));
-        calendar.set(Calendar.SECOND, 0);
-        System.out.println(calendar.getTime());
-    }
+
 
     private static long getQuarterHourStartTime(long currTime) {
         return 0;
@@ -71,10 +66,15 @@ public class DataProcessorV2
     public boolean processRecord(JSONObject payload) {
         boolean processStatus = false;
         try {
+
+           /* JSONObject payload = record.getData();
+            if(payload == null || payload.isEmpty()){
+                throw new Exception(" payload can't be null or empty");
+            }*/
             LOGGER.info(" processing in processorV2 " + payload);
             String agentName = orgDomainName.trim();
-            if (payload.containsKey(PublishType.agent.getValue())) {
-                agentName = payload.get(PublishType.agent.getValue()).toString().trim();
+            if (payload.containsKey(AgentConstants.AGENT)) {
+                agentName = payload.get(AgentConstants.AGENT).toString().trim();
             }
             FacilioAgent agent = au.getFacilioAgent(agentName);
             if (agent == null) {
@@ -87,14 +87,18 @@ public class DataProcessorV2
                     agent.setId(agentId);
                 }
             }
+            if (payload.containsKey("clearAgentCache")) {
+                au.getAgentMap().clear();
+                return true;
+            }
             cU = getControllerUtil(agent.getId());
             if (!payload.containsKey(AgentConstants.PUBLISH_TYPE)) {
                 LOGGER.info("Exception Occurred, " + AgentConstants.PUBLISH_TYPE + " is mandatory in payload " + payload);
                 return false;
             }
-            com.facilio.agent.fw.constants.PublishType publishType = com.facilio.agent.fw.constants.PublishType.valueOf(JsonUtil.getInt(payload.get(AgentConstants.PUBLISH_TYPE))); // change it to Type
+            PublishType publishType = PublishType.valueOf(JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE)))); // change it to Type
             LOGGER.info(" publish type for this record is " + publishType.name());
-            markMetrices(agent.getId(), publishType, payload);
+            // markMetrices(agent.getId(), publishType, payload);
             switch (publishType) {
                 case AGENT:
                     processStatus = processAgent(payload, agent);
