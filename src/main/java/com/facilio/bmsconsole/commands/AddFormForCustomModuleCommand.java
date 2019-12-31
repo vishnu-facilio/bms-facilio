@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -60,7 +61,12 @@ public class AddFormForCustomModuleCommand extends FacilioCommand{
 			FormSection formSection = new FormSection("Untitled", 1, formFields, true);
 			sections.add(formSection);
 			
-			form.setSections((sections));
+			if (form.getSections() != null && CollectionUtils.isNotEmpty(form.getSections())) {
+				form.setSections(form.getSections());
+			}
+			else {
+				form.setSections((sections));
+			}
 			FormsAPI.createForm(form, module);
 		}
 		return false;
