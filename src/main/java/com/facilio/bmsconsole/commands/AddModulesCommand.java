@@ -59,7 +59,9 @@ public class AddModulesCommand extends FacilioCommand {
 			dbModuleName = (String) props.get(0).get("name");
 			int count = 0;
 			if (dbModuleName.contains("_")) {
-				count = Integer.parseInt(dbModuleName.substring(dbModuleName.lastIndexOf('_') + 1));
+				try {
+					count = Integer.parseInt(dbModuleName.substring(dbModuleName.lastIndexOf('_') + 1));
+				} catch (NumberFormatException ex) {}
 			}
 			module.setName(module.getName() + "_" + ++count);				
 		}
