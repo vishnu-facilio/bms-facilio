@@ -116,7 +116,7 @@ public class DataProcessorUtil {
                 eventRules = ruleList;
             }
             try {
-                if (payLoad.containsKey(AgentConstants.VERSION) && isStage) {
+                if (payLoad.containsKey(AgentConstants.VERSION)) {
                     Object version = payLoad.get(AgentConstants.VERSION);
                     if (version instanceof String) {
                         if (("2#".equalsIgnoreCase((String) version))) {
