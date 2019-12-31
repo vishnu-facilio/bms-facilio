@@ -111,7 +111,7 @@ public class FacilioAction extends ActionSupport {
 	}
 	public void setStackTrace(Exception e) {
 		if (e != null) {
-			if(!FacilioProperties.isProduction() || fetchStackTrace) {
+			if(!FacilioProperties.isProduction() || getFetchStackTrace()) {
 				this.stackTrace = ExceptionUtils.getStackTrace(e);
 				System.out.println(this.stackTrace);
 			}
