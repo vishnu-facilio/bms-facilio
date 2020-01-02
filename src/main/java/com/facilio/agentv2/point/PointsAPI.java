@@ -55,7 +55,6 @@ public class PointsAPI {
             case MODBUS_IP:
                 return ModuleFactory.getModbusTcpPointModule();
             case BACNET_IP:
-                LOGGER.info(" returning bacnetip module");
                 return ModuleFactory.getBACnetIPPointModule();
             case NIAGARA:
                 return ModuleFactory.getNiagaraPointModule();
@@ -83,7 +82,6 @@ public class PointsAPI {
             case MODBUS_IP:
                 return FieldFactory.getModbusTcpPointFields();
             case BACNET_IP:
-                LOGGER.info(" returning bacn ip fields");
                 return FieldFactory.getBACnetIPPointFields();
             case NIAGARA:
                 return FieldFactory.getNiagaraPointFields();

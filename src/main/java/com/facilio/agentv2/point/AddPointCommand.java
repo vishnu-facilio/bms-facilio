@@ -34,7 +34,9 @@ public class AddPointCommand extends FacilioCommand {
             if(pointId > 0){
                 point.setId(pointId);
                 LOGGER.info(" childpointJSON " + point.getChildJSON());
-                return addChildPoint(point);
+                boolean childPointId = addChildPoint(point);
+                LOGGER.info(" child point id " + childPointId);
+                return childPointId;
             }
         }
         return false;
@@ -43,7 +45,8 @@ public class AddPointCommand extends FacilioCommand {
     private boolean addChildPoint(Point point) throws Exception {
         JSONObject toInsertMap = point.getChildJSON();
         LOGGER.info(" inserting child point for type " + point.getControllerType());
-        switch (point.getControllerType()){
+        return addPoint(PointsAPI.getPointModule(point.getControllerType()), PointsAPI.getChildPointFields(point.getControllerType()), toInsertMap) > 0;
+        /*switch (point.getControllerType()){
             case MODBUS_IP:
                 return addPoint(ModuleFactory.getModbusTcpPointModule(),FieldFactory.getModbusTcpPointFields(),toInsertMap) > 0;
             case NIAGARA:
@@ -65,12 +68,15 @@ public class AddPointCommand extends FacilioCommand {
             case BACNET_MSTP:
                 throw new Exception(" BACNET_MSTP point not implemented");
         }
-        return false;
+        return false;*/
     }
 
-    private long addPoint( FacilioModule module, List<FacilioField> fields,Map<String,Object> toInsertMap)throws Exception{
-        LOGGER.info("point json "+toInsertMap);
-            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(module.getTableName()).fields(fields);
-            return builder.insert(toInsertMap);
+    private long addPoint( FacilioModule module, List<FacilioField> fields,Map<String,Object> toInsertMap)throws Exception {
+        LOGGER.info("point json " + toInsertMap);
+        if (module.getTableName().equals(ModuleFactory.getBACnetIPPointModule().getTableName())) {
+            fields.forEach(field -> LOGGER.info(field.getColumnName() + "  " + field.getName()));
         }
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(module.getTableName()).fields(fields);
+        return builder.insert(toInsertMap);
+    }
 }

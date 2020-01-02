@@ -13,10 +13,8 @@ public class JsonUtil {
             return null;
         }
         try {
-            if (value instanceof Long){
-                return (Long) value;
-            } else if (value instanceof Integer) {
-                return Long.valueOf((Integer) value);
+            if (value instanceof Number) {
+                return ((Number) value).longValue();
             } else if (value instanceof String) {
                 return Long.valueOf((String) value);
             } else if (value instanceof Boolean) {
@@ -34,10 +32,8 @@ public class JsonUtil {
             return null;
         }
         try {
-            if (value instanceof Integer){
-                return (Integer)value;
-            } else if(value instanceof Long) {
-                return Math.toIntExact((Long) value);
+            if (value instanceof Number) {
+                return ((Number) value).intValue();
             } else if (value instanceof String) {
                 return Integer.valueOf((String) value);
             } else if (value instanceof Boolean) {

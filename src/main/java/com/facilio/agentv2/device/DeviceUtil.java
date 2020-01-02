@@ -79,7 +79,7 @@ public class DeviceUtil {
             FieldDeviceApi.addFieldDevices(devices);
             return true;
         }
-        throw new Exception("Fields to add can't be empty");
+        throw new Exception("Devices to add can't be empty");
     }
 
     public static boolean deleteFieldDevices(List<Long> ids) {

@@ -134,4 +134,7 @@ public class AgentConstants
     public static final String UPDATE_CHILD = "updateChild";
     public static final String CONTROLLER_TYPE = "controllerType";
 
+    public static final String AGENT_METRICS_MODULE = "agentMetricsV2";
+    public static final String NUMBER_OF_MSGS = "numberOfMessages";
+    public static final String SIZE = "size";
 }

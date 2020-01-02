@@ -65,6 +65,7 @@ public class AgentUtilV2
     public FacilioAgent getFacilioAgent(String agentName) throws Exception {
         FacilioAgent agent = agentMap.get(agentName);
         if (agent == null) {
+            LOGGER.info(" creating new agent ");
             agent = AgentApiV2.getAgent(agentName);
             if (agent != null) {
                 agentMap.put(agentName, agent);

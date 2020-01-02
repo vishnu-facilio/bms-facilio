@@ -89,6 +89,7 @@ public class DataProcessorV2
             }
             if (payload.containsKey("clearAgentCache")) {
                 au.getAgentMap().clear();
+                LOGGER.info(" agent cache cleared ->" + au.getAgentMap());
                 return true;
             }
             cU = getControllerUtil(agent.getId());

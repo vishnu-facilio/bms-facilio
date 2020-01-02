@@ -38,10 +38,20 @@ public abstract class Controller extends AssetContext {
     private long createdTime = -1;
     private long lastModifiedTime = -1;
     private long lastDataRecievedTime = -1;
-    private long deletedTime =-1;
+    private long deletedTime = -1;
     private static Map<String, FacilioField> fieldsMap;
 
-    private final long DEFAULT_DATA_INTERVAL = 900000 ;
+    private long deviceId;
+
+    public long getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(long deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    private final long DEFAULT_DATA_INTERVAL = 900000;
     //private final boolean DEFAULT_ACTIVE = true;
     //private final int DEFAULT_AVAIL_POINTS = 0;
 
@@ -49,7 +59,8 @@ public abstract class Controller extends AssetContext {
         dataInterval = DEFAULT_DATA_INTERVAL;
     /*    active = DEFAULT_ACTIVE;
         availablePoints =  DEFAULT_AVAIL_POINTS;
-    */}
+    */
+    }
 
     public Controller(long agentId, long orgId) {
         this.agentId = agentId;

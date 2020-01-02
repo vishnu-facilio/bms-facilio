@@ -59,8 +59,8 @@ public class ControllerUtilV2 {
         JSONObject controllerProps = device.getControllerProps();
         LOGGER.info(" controller props JSON " + controllerProps);
         if ((controllerProps != null) && (!controllerProps.isEmpty())) {
+            controllerProps.put(AgentConstants.DEVICE_ID, device.getId());
             controller = getControllerFromJSON(agentId, controllerProps);
-            controller.setId(device.getId());
             if (controller != null) {
                 Controller controllerFromDb = ControllerApiV2.getControllerFromDb(controller.makeIdentifier(), agentId, FacilioControllerType.valueOf(controller.getControllerType()));
                 if (controllerFromDb != null) {
