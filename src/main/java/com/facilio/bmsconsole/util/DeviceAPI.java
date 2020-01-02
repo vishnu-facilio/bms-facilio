@@ -627,15 +627,25 @@ public class DeviceAPI
 		}
 
 		if (!vmReadings.isEmpty()) {
-
+			
 			ReadingContext firstReading=vmReadings.get(0);
-			long firstReadingTime =firstReading.getTtime();
 			ReadingContext lastReading=vmReadings.get(vmReadings.size() - 1);
+			long firstReadingTime =firstReading.getTtime();
+			long lastReadingTime =lastReading.getTtime();
+			if (AccountUtil.getCurrentOrg().getId() == 231) {
+				ZonedDateTime zdtFirstReadingTime = DateTimeUtil.getDateTime(firstReadingTime);
+				zdtFirstReadingTime = zdtFirstReadingTime.truncatedTo(new SecondsChronoUnit(minutesInterval * 60));
+				firstReadingTime = DateTimeUtil.getMillis(zdtFirstReadingTime, true);
+				
+				ZonedDateTime zdtLastReadingTime = DateTimeUtil.getDateTime(lastReadingTime);
+				zdtLastReadingTime = zdtLastReadingTime.truncatedTo(new SecondsChronoUnit(minutesInterval * 60));
+				lastReadingTime = DateTimeUtil.getMillis(zdtLastReadingTime, true);										
+			}
 			
 			LOGGER.info("VM live Readings for meter : "+meter.getId()+" is : " + vmReadings);
-			LOGGER.info("Deleting live start time :" + firstReadingTime + "Deleting  end time :" + lastReading.getTtime());
+			LOGGER.info("Deleting live start time :" + firstReadingTime + "Deleting  end time :" + lastReadingTime);
 			
-			deleteEnergyData(meter.getId(), firstReadingTime, lastReading.getTtime()); //Deleting anyway to avoid duplicate entries			
+			deleteEnergyData(meter.getId(), firstReadingTime, lastReadingTime); //Deleting anyway to avoid duplicate entries			
 		}	
 					
 		return vmReadings;
@@ -739,15 +749,26 @@ public class DeviceAPI
 //			LOGGER.info("VM Readings size for meter : "+meter.getId()+" is : " + vmReadings.size());
 //		}
 		if (!vmReadings.isEmpty()) {
-
+			
 			ReadingContext firstReading=vmReadings.get(0);
-			long firstReadingTime =firstReading.getTtime();
 			ReadingContext lastReading=vmReadings.get(vmReadings.size() - 1);
+			long firstReadingTime =firstReading.getTtime();
+			long lastReadingTime =lastReading.getTtime();
+			
+			if (AccountUtil.getCurrentOrg().getId() == 231) {
+				ZonedDateTime zdtFirstReadingTime = DateTimeUtil.getDateTime(firstReadingTime);
+				zdtFirstReadingTime = zdtFirstReadingTime.truncatedTo(new SecondsChronoUnit(minutesInterval * 60));
+				firstReadingTime = DateTimeUtil.getMillis(zdtFirstReadingTime, true);
+				
+				ZonedDateTime zdtLastReadingTime = DateTimeUtil.getDateTime(lastReadingTime);
+				zdtLastReadingTime = zdtLastReadingTime.truncatedTo(new SecondsChronoUnit(minutesInterval * 60));
+				lastReadingTime = DateTimeUtil.getMillis(zdtLastReadingTime, true);										
+			}
 			
 			LOGGER.info("VM Historical Readings for meter : "+meter.getId()+" is : " + vmReadings);
-			LOGGER.info("Deleting historical start time :" + firstReadingTime + "Deleting historical end time :" + lastReading.getTtime());
+			LOGGER.info("Deleting historical start time :" + firstReadingTime + "Deleting historical end time :" + lastReadingTime);
 			
-			deleteEnergyData(meter.getId(), firstReadingTime, lastReading.getTtime()); //Deleting anyway to avoid duplicate entries
+			deleteEnergyData(meter.getId(), firstReadingTime, lastReadingTime); //Deleting anyway to avoid duplicate entries
 								
 			boolean runThroughUpdate= Math.floor((System.currentTimeMillis()-endTime)/(60*1000)) < minutesInterval;
 			FacilioContext context = new FacilioContext();
