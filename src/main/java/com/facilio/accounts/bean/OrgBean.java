@@ -56,5 +56,5 @@ public interface OrgBean {
 	
 	public List<Organization> getOrgs() throws Exception;
 	
-	public void copyReadingValue(List<Map<String,Object>> porp, FacilioModule module, long targetOrgId)throws Exception;
+	public void copyReadingValue(List<Map<String,Object>> porp, FacilioModule module, long targetOrgId, String string, long timeDiff)throws Exception;
 }

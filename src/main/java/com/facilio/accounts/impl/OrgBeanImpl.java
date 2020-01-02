@@ -379,9 +379,9 @@ public class OrgBeanImpl implements OrgBean {
 	}
 
 	@Override
-	public void copyReadingValue(List<Map<String, Object>> prop, FacilioModule module,long orgId) throws Exception {
+	public void copyReadingValue(List<Map<String, Object>> prop, FacilioModule module,long orgId,String asset,long timeDiff) throws Exception {
 		// TODO Auto-generated method stub
-		copyAssetReadingCommand.insertAssetCopyValue(prop,module,orgId);
+		copyAssetReadingCommand.insertAssetCopyValue(prop,module,orgId,asset,timeDiff);
 	} 
 	
 	

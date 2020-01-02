@@ -1370,13 +1370,14 @@ public class FacilioConstants {
 		public static final String OCCUPANTS = "occupants";
 	
 		
-		public static final String COPY_SOURCE_ASSET_ID ="sourceAssetId";
-		public static final String COPY_TARGET_ASSET_ID = "targetAssetId";
 		public static final String COPY_SOURCE_ORG_ID = "sourceOrgId";
 		public static final String COPY_TARGET_ORG_ID = "targetOrgId";
 		public static final String COPY_START_TIME = "startTime";
 		public static final String COPY_END_TIME = "endTime";
 		public static final String COPY_MODULE_LIST = "moduleList";
+		public static final String COPY_ASSET_LIST = "assetList";
+		public static final String COPY_TIME_DIFF = "timeDiff";
+		
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
