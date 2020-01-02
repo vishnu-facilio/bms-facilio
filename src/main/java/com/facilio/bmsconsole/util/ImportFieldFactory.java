@@ -99,23 +99,18 @@ public class ImportFieldFactory {
 	}
 	
 	public static List<FacilioField> getAllFields (String moduleName) throws Exception{
-		LOGGER.severe("MODULENAME!!!" + moduleName);
 		List<FacilioField> temp = new ArrayList<FacilioField>();
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		temp = bean.getAllFields(moduleName);
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>(temp);
-		
-		for(FacilioField field : fields) {
-			System.out.println(field.getName());
-		}
 		List<FacilioField> additionalFields = new ArrayList<FacilioField>();
 		
 		for(FacilioField field : fields) {
 			if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && !ImportAPI.isRemovableFieldOnImport(field.getName())) {
-				LOGGER.severe("LookupField!!!" + field.getName());
+				LOGGER.info("LookupField!!!" + field.getName());
 				LookupField lookupField = (LookupField) field;
-				LOGGER.severe(lookupField.getLookupModule().getName());
+				LOGGER.info(lookupField.getLookupModule().getName());
 				List<FacilioField> lookupModuleFields = bean.getAllFields(lookupField.getLookupModule().getName());
 				for(FacilioField lkField : lookupModuleFields) {
 					additionalFields.add(lkField);
@@ -138,7 +133,6 @@ public class ImportFieldFactory {
 			break;
 		}
 		}
-		LOGGER.severe(fields.toString());
 		return fields;
 	}
 	

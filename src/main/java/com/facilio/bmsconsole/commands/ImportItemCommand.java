@@ -95,7 +95,7 @@ public class ImportItemCommand extends FacilioCommand {
 						itemsList.set(itemIndex, exisItem);
 					} else {
 						itemsList.add(item);
-						itemNameVsIndexMap.put(item.getItemType().getName(), itemIndexCounter);
+						itemNameVsIndexMap.put(purchasedItem.getItemType().getName(), itemIndexCounter);
 						itemIndexCounter++;
 					}
 				}
