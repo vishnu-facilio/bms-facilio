@@ -109,8 +109,9 @@ public class copyAssetReadingCommand extends FacilioCommand {
 					add.put(entry.getKey(), entry.getValue());
 				}
 			}
+			insertList.add(add);
 		}
-		insertList.add(add);
+		
 		List<FacilioField> field = bean.getAllFields(targetModule.getName());
 		InsertRecordBuilder<ModuleBaseWithCustomFields> insertBuilder = new InsertRecordBuilder<ModuleBaseWithCustomFields>();
 		insertBuilder.fields(field).module(targetModule).table(targetModule.getTableName());
