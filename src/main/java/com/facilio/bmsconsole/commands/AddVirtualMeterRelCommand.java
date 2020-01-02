@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
@@ -49,7 +51,10 @@ public class AddVirtualMeterRelCommand extends FacilioCommand {
 			long startTime=DateTimeUtil.getMonthStartTime(DeviceAPI.VM_HISTORICAL_DATA_CALCULATION_INTERVAL);
 			long endTime=System.currentTimeMillis();
 			int interval=15;//ideally this value should be fetched from org settings.
-			DeviceAPI.addHistoricalVMCalculationJob(meter.getId(),startTime,endTime,interval,true);
+				
+			HistoricalLoggerContext historicalLoggerContext = DeviceAPI.setHistoricalLoggerContext(meter.getId(), startTime, endTime, true, (long) -1);
+			HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
+			DeviceAPI.addHistoricalVMCalculationJob(historicalLoggerContext.getId(),meter.getId(),startTime, endTime,true);
 		}
 		return false;
 	}

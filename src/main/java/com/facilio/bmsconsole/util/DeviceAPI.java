@@ -527,7 +527,7 @@ public class DeviceAPI
 				throw new Exception("Historical already In-Progress for the Current Meter "+ meter.getName());
 			}
 			
-			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(meter.getId(), startTime, endTime, true, (long) -1);
+			HistoricalLoggerContext historicalLoggerContext = setHistoricalLoggerContext(meter.getId(), startTime, endTime, true, (long) -1);
 			HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
 			Long loggerGroupId = historicalLoggerContext.getId();
 			addHistoricalVMCalculationJob(loggerGroupId, meter.getId(),startTime, endTime,false);
@@ -552,7 +552,7 @@ public class DeviceAPI
 				
 				if(vm != null && vm.size() > 0) {
 					
-					HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(parentmeterid, startTime, endTime, false,loggerGroupId);
+					HistoricalLoggerContext historicalLoggerContext = setHistoricalLoggerContext(parentmeterid, startTime, endTime, false,loggerGroupId);
 					
 					HistoricalLoggerContext parentHistoricalLoggerContext = historicalLoggerMap.get(currentMeter.getId());
 					
@@ -568,7 +568,7 @@ public class DeviceAPI
 		}
 	}
 
-	private static HistoricalLoggerContext gethistoricalLogger(long meterId,long startTime,long endTime,boolean isRootMeter,
+	public static HistoricalLoggerContext setHistoricalLoggerContext(long meterId,long startTime,long endTime,boolean isRootMeter,
 			Long loggerGroupId)
 	{
 		HistoricalLoggerContext historicalLogger = new HistoricalLoggerContext();
