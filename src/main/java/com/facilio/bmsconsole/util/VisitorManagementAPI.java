@@ -3,16 +3,15 @@ package com.facilio.bmsconsole.util;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -2042,15 +2041,13 @@ public class VisitorManagementAPI {
 		List<String> timeList = new ArrayList<String>();
 		if(MapUtils.isNotEmpty(map)) {
 			
-			Date date = new Date((Long)map.get("autoCheckOutTime"));
-			DateFormat formatter = new SimpleDateFormat("HH:mm");
-			String dateFormatted = formatter.format(date);
-			
+			ZonedDateTime date = DateTimeUtil.getDateTime((Long)map.get("autoCheckOutTime"), false);
+			String dateFormatted = date.getHour() + ":" + date.getMinute();
 			timeList.add(dateFormatted);
 			info.setTimes(timeList);
 			job.setJobId(module.getModuleId());
 			job.setSchedule(info);
-			job.setExecutionTime(info.nextExecutionTime(System.currentTimeMillis()) / 1000);
+			job.setExecutionTime(info.nextExecutionTime(System.currentTimeMillis() / 1000));
 			FacilioService.runAsService(() -> JobStore.addJob(job));		
 		}
 	}
