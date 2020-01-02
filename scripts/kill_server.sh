@@ -10,7 +10,12 @@ logsBucket=`grep "logs.bucket" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 today=`date +%F-%H-%M-%S`
 
 cd $APP_HOME
-sudo killall -9 java
+pid=`/home/ubuntu/jdk/bin/jps | grep Bootstrap| cut -d' ' -f1`
+if [ -z "$pid" ]; then
+    echo "Java process is not running"
+    exit 0;
+fi
+sudo kill -9 $pid
 # sh bin/shutdown.sh
 sh /home/ubuntu/move_logs.sh
 aws s3 mv $APP_HOME/logs/catalina.out s3://$logsBucket/$servername/$ipAddress/catalinaout.$today.log

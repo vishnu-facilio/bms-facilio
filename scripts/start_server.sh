@@ -8,7 +8,12 @@ export PATH=$JAVA_HOME:$PATH
 export GOOGLE_APPLICATION_CREDENTIALS="/tmp/secrets/google_app_credentials.json"
 cd $UBUNTU_HOME
 
-sudo killall -9 java
+pid=`/home/ubuntu/jdk/bin/jps | grep Bootstrap| cut -d' ' -f1`
+if [ -z "$pid" ]; then
+    echo "Java process is not running"
+    exit 0;
+fi
+sudo kill -9 $pid
 chmod 644 $APP_HOME/logs/*
 sh $APP_HOME/bin/startup.sh
 rm -rf $UBUNTU_HOME/deployment-files/*
