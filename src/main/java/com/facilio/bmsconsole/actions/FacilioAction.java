@@ -62,14 +62,17 @@ public class FacilioAction extends ActionSupport {
 	}
 	
 	public String handleException() {
-		this.responseCode = 1;
-		if (exception != null && exception instanceof IllegalArgumentException) {
-			this.message = exception.getMessage();
+		try {
+			this.responseCode = 1;
+			if (exception != null && exception instanceof IllegalArgumentException) {
+				this.message = exception.getMessage();
+			} else {
+				this.message = FacilioConstants.ERROR_MESSAGE;
+			}
+			setStackTrace(exception);
+		} catch (Exception e) {
+			LogManager.getLogger(this.getClass().getName()).error("Exception occurred inside handle Exception: - ", e);
 		}
-		else {
-			this.message = FacilioConstants.ERROR_MESSAGE;
-		}
-		setStackTrace(exception);
 		return ERROR;
 	}
 	
@@ -111,11 +114,11 @@ public class FacilioAction extends ActionSupport {
 	}
 	public void setStackTrace(Exception e) {
 		if (e != null) {
+			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
 			if(!FacilioProperties.isProduction() || getFetchStackTrace()) {
 				this.stackTrace = ExceptionUtils.getStackTrace(e);
 				System.out.println(this.stackTrace);
 			}
-			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);
 		}
 	}
 	
