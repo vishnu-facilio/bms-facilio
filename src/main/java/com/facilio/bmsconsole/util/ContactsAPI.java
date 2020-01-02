@@ -11,8 +11,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext;
-import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;

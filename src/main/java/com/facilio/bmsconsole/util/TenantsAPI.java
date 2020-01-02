@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.context.OccupantsContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -249,6 +250,7 @@ public class TenantsAPI {
 		TenantsAPI.loadTenantLookups(records);
 		if (records != null && !records.isEmpty()) {
 			records.get(0).setTenantContacts(TenantsAPI.getTenantContacts(records.get(0).getId()));
+			records.get(0).setOccupantList(TenantsAPI.getTenantOccupants(records.get(0).getId()));
 		    return records.get(0);
 		}
 		return null;
@@ -1015,6 +1017,11 @@ public class TenantsAPI {
 	public static List<ContactsContext> getTenantContacts(long id) throws Exception {
 		List<Map<String,Object>> contactList = ContactsAPI.getTenantContacts(Collections.singletonList(id));
 		return FieldUtil.getAsBeanListFromMapList(contactList, ContactsContext.class);
+	}
+	
+	public static List<OccupantsContext> getTenantOccupants(long id) throws Exception {
+		List<Map<String,Object>> occupantList = OccupantsAPI.getTenantOccupants(Collections.singletonList(id));
+		return FieldUtil.getAsBeanListFromMapList(occupantList, OccupantsContext.class);
 	}
 	
 	public static String getLogoUrl(Long logoId) throws Exception {
