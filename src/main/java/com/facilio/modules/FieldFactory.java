@@ -1184,6 +1184,18 @@ public class FieldFactory {
 		return field;
 	}
 
+	public static FacilioField getIdNotPrimaryField(FacilioModule module) {
+		FacilioField field = new FacilioField();
+		field.setName("id");
+		field.setDataType(FieldType.NUMBER);
+		field.setDisplayName("Id");
+		field.setColumnName("ID");
+		if (module != null) {
+			field.setModule(module);
+		}
+		return field;
+	}
+
 	public static FacilioField getNameField(FacilioModule module) {
 		FacilioField name = new FacilioField();
 		name.setName("name");
@@ -5578,7 +5590,7 @@ public class FieldFactory {
 	public static List<FacilioField>  getNiagaraPointFields() {
 		FacilioModule module = ModuleFactory.getNiagaraPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
+		fields.add(getIdNotPrimaryField(module));
 		fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 		return fields;
 	}
@@ -5586,16 +5598,16 @@ public class FieldFactory {
 	public static List<FacilioField>  getOPCXmlDAPointFields() {
 		FacilioModule module = ModuleFactory.getOPCXmlDAPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField(AgentConstants.ID,"ID",module,FieldType.NUMBER));
+		fields.add(getIdNotPrimaryField(module));
 		fields.add(getControllerIdField(module));
-        fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
+		fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 		return fields;
 	}
 
 	public static List<FacilioField>  getMiscPointFields() {
 		FacilioModule module = ModuleFactory.getMiscPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField(AgentConstants.ID, "ID", module, FieldType.NUMBER));
+		fields.add(getIdNotPrimaryField(module));
 		fields.add(getControllerIdField(module));
 		fields.add(getField(AgentConstants.PATH, "PATH", module, FieldType.STRING));
 		return fields;
@@ -5605,7 +5617,7 @@ public class FieldFactory {
 	public static List<FacilioField>  getOPCUAPointFields() {
 		FacilioModule module = ModuleFactory.getOPCUAPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField(AgentConstants.ID, "ID", module, FieldType.NUMBER));
+		fields.add(getIdNotPrimaryField(module));
 		fields.add(getControllerIdField(module));
 		fields.add(getField(AgentConstants.NAMESPACE, "NAME_SPACE", module, FieldType.NUMBER));
 		fields.add(getField(AgentConstants.IDENTIFIER, "IDENTIFIER", module, FieldType.STRING));
@@ -5615,7 +5627,7 @@ public class FieldFactory {
 	public static List<FacilioField>  getModbusTcpPointFields() {
 		FacilioModule module = ModuleFactory.getModbusTcpPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField(AgentConstants.ID, "ID", module, FieldType.NUMBER));
+		fields.add(getIdNotPrimaryField(module));
 		fields.add(getControllerIdField(module));
 		fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
 		fields.add(getField(AgentConstants.FUNCTION_CODE, "FUNCTION_CODE", module, FieldType.NUMBER));
@@ -5625,7 +5637,7 @@ public class FieldFactory {
 	public static List<FacilioField>  getModbusRtuPointFields() {
 		FacilioModule module = ModuleFactory.getModbusRtuPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField(AgentConstants.ID, "ID", module, FieldType.NUMBER));
+		fields.add(getIdNotPrimaryField(module));
 		fields.add(getControllerIdField(module));
 		fields.add(getField(AgentConstants.REGISTER_NUMBER, "REGISTER_NUMBER", module, FieldType.NUMBER));
 		fields.add(getField(AgentConstants.FUNCTION_CODE, "FUNCTION_CODE", module, FieldType.NUMBER));
@@ -5637,7 +5649,7 @@ public class FieldFactory {
 	public static List<FacilioField>  getBACnetIPPointFields() {
 		FacilioModule module = ModuleFactory.getBACnetIPPointModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getIdField(module));
+		fields.add(getIdNotPrimaryField(module));
 		fields.add(getControllerIdField(module));
 		fields.add(getField(AgentConstants.INSTANCE_NUMBER, "INSTANCE_NUMBER", module, FieldType.NUMBER));
 		fields.add(getField(AgentConstants.INSTANCE_TYPE, "INSTANCE_TYPE", module, FieldType.NUMBER));
@@ -7298,5 +7310,23 @@ public class FieldFactory {
 
 		return fields;
 	}
-	
+
+	public static List<FacilioField> getAgentMetricV2Fields() {
+		FacilioModule module = ModuleFactory.getAgentMetricsV2Module();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getNewAgentIdField(module));
+		fields.add(getCreatedTime(module));
+		fields.add(getLastModifiedTimeField(module));
+		fields.add(getField(AgentConstants.SIZE, "SIZE", module, FieldType.NUMBER));
+		fields.add(getField(AgentConstants.PUBLISH_TYPE, "PUBLISH_TYPE", module, FieldType.NUMBER));
+		fields.add(getField(AgentConstants.NUMBER_OF_MSGS, "NO_OF_MSGS", module, FieldType.NUMBER));
+		return fields;
+	}
+
+	public static FacilioField getLastModifiedTimeField(FacilioModule module) {
+		return getField(AgentConstants.LAST_MODIFIED_TIME, "LAST_MODIFIED_TIME", module, FieldType.NUMBER);
+	}
+
+
 }
