@@ -178,7 +178,7 @@ public class BmsDBConf extends DBConf {
     @Override
     public String getCurrentDataSource() {
         if (AccountUtil.getCurrentOrg() != null) {
-            return AccountUtil.getCurrentOrg().getDatasource();
+            return AccountUtil.getCurrentOrg().getDataSource();
         }
         return null;
     }

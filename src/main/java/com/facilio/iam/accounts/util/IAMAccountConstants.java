@@ -224,7 +224,7 @@ public class IAMAccountConstants {
 
 			
 			FacilioField dbName = new FacilioField();
-			dbName.setName("database_name");
+			dbName.setName("dbName");
 			dbName.setDataType(FieldType.STRING);
 			dbName.setColumnName("DATABASE_NAME");
 			dbName.setModule(module);
