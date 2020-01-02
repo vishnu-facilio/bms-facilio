@@ -5,8 +5,8 @@
 version: 1
 variables:
   api_url: "http://localhost:8080"
-  mailId: "workwithchai@gmail.com"
-  pass: "Valli123"
+  mailId: "bob@facilio.com"
+  pass: "alice"
 transactions:
   - id: "AgentApis"
     variables:
