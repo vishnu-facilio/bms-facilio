@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -2042,7 +2043,8 @@ public class VisitorManagementAPI {
 		if(MapUtils.isNotEmpty(map)) {
 			
 			ZonedDateTime date = DateTimeUtil.getDateTime((Long)map.get("autoCheckOutTime"), false);
-			String dateFormatted = date.getHour() + ":" + date.getMinute();
+			DecimalFormat formatter = new DecimalFormat("00");
+			String dateFormatted = formatter.format(date.getHour()) + ":" + formatter.format(date.getMinute());
 			timeList.add(dateFormatted);
 			info.setTimes(timeList);
 			job.setJobId(module.getModuleId());
