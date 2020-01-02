@@ -200,7 +200,7 @@ public class LoggerAPI {
 						parentHistoricalLoggerContextList = FieldUtil.getAsBeanListFromMapList(props, LoggerContext.class);
 					}
 					
-					LinkedHashMap<Long, LoggerContext> parentHistoricalLoggerContextMap = new LinkedHashMap <Long, LoggerContext>();
+					LinkedHashMap<Long, LoggerContext> parentHistoricalLoggerContextMap = new LinkedHashMap<Long, LoggerContext>();
 					for(LoggerContext parentHistoricalLoggerContext :parentHistoricalLoggerContextList)
 					{
 						parentHistoricalLoggerContextMap.put(parentHistoricalLoggerContext.getLoggerGroupId(), parentHistoricalLoggerContext);
@@ -228,16 +228,7 @@ public class LoggerAPI {
 					
 					
 					List<Map<String, Object>> propsList = selectBuilder.get();
-					Map<Long, Long> loggerGroupCountMap = new HashMap <Long, Long>();
-					
-					for(Map<String, Object> prop : propsList ) {
-						long loggerGroupId = (long) prop.get("loggerGroupId");
-						if(prop.get("count") != null) {
-							loggerGroupCountMap.put(loggerGroupId, (long) prop.get("count"));
-						}
-					}
-					
-					
+										
 //					if(propsList != null && !propsList.isEmpty())
 //					{
 //						for(Map<String, Object> prop :propsList)
@@ -256,6 +247,14 @@ public class LoggerAPI {
 					
 					if(propsList != null && !propsList.isEmpty())
 					{
+						Map<Long, Long> loggerGroupCountMap = new HashMap <Long, Long>();
+						for(Map<String, Object> prop : propsList ) {
+							long loggerGroupId = (long) prop.get("loggerGroupId");
+							if(prop.get("count") != null) {
+								loggerGroupCountMap.put(loggerGroupId, (long) prop.get("count"));
+							}
+						}
+						
 						for(Long loggerGroupId:parentHistoricalLoggerContextMap.keySet())
 						{
 							Long loggerCount = loggerGroupCountMap.get(loggerGroupId);
@@ -298,12 +297,18 @@ public class LoggerAPI {
 						LoggerContexts.add(loggerContext);
 						resourceIds.add(loggerContext.getResourceId());
 					}
-				}
-	
-				Map<Long, ResourceContext> resourcesMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
-				
-				for(LoggerContext loggerContext :LoggerContexts) {
-					loggerContext.setParentResourceContext(resourcesMap.get(loggerContext.getResourceId()));
+					
+					List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
+					Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
+					
+					for(ResourceContext resource:resources)
+					{
+						resourcesMap.put(resource.getId(), resource);
+					}
+					
+					for(LoggerContext loggerContext :LoggerContexts) {
+						loggerContext.setParentResourceContext(resourcesMap.get(loggerContext.getResourceId()));
+					}
 				}
 				return LoggerContexts;
 	
