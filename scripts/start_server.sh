@@ -11,9 +11,10 @@ cd $UBUNTU_HOME
 pid=`/home/ubuntu/jdk/bin/jps | grep Bootstrap| cut -d' ' -f1`
 if [ -z "$pid" ]; then
     echo "Java process is not running"
-    exit 0;
+else
+    echo "Shutting down java process $pid"
+    sudo kill -9 $pid
 fi
-sudo kill -9 $pid
 chmod 644 $APP_HOME/logs/*
 sh $APP_HOME/bin/startup.sh
 rm -rf $UBUNTU_HOME/deployment-files/*
