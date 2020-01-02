@@ -574,7 +574,8 @@ public class FormsAPI {
 
 		 GenericSelectRecordBuilder forms1 = new GenericSelectRecordBuilder()
 					.table(ModuleFactory.getFormSiteRelationModule().getTableName())
-					.select(Collections.singleton(formSiteFieldMap.get("formId")));
+					.select(Collections.singleton(formSiteFieldMap.get("formId")))
+					.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), ModuleFactory.getFormSiteRelationModule()));
 
 		 if (spaces != null && spaces.size() > 0) {
 			 StringJoiner spaceIds = new StringJoiner(",");
@@ -583,13 +584,14 @@ public class FormsAPI {
 		 }
 		 GenericSelectRecordBuilder forms2 = new GenericSelectRecordBuilder()
 					.table(ModuleFactory.getFormSiteRelationModule().getTableName())
-					.select(Collections.singleton(formSiteFieldMap.get("formId")));
+					.select(Collections.singleton(formSiteFieldMap.get("formId")))
+					.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), ModuleFactory.getFormSiteRelationModule()));
 
 
 		 GenericSelectRecordBuilder formListBuilder = new GenericSelectRecordBuilder()
 									.select(fields)
 									.table(formModule.getTableName())
-									;
+									.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), formModule));
 		 
 
 
@@ -621,7 +623,6 @@ public class FormsAPI {
 		else {
 			formListBuilder.orderBy("ID asc");
 		}
-		
 		List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
 		
 		forms = getAsFormSiteRelationListMap(forms);
