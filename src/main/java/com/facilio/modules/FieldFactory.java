@@ -7311,18 +7311,18 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getAgentMetricV2Fields() {
-		FacilioModule module = ModuleFactory.getAgentMetricsV2Module();
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getIdField(module));
-		fields.add(getNewAgentIdField(module));
-		fields.add(getCreatedTime(module));
-		fields.add(getLastModifiedTimeField(module));
-		fields.add(getField(AgentConstants.SIZE, "SIZE", module, FieldType.NUMBER));
-		fields.add(getField(AgentConstants.PUBLISH_TYPE, "PUBLISH_TYPE", module, FieldType.NUMBER));
-		fields.add(getField(AgentConstants.NUMBER_OF_MSGS, "NO_OF_MSGS", module, FieldType.NUMBER));
-		return fields;
-	}
+//	public static List<FacilioField> getAgentMetricV2Fields() {
+//		FacilioModule module = ModuleFactory.getAgentMetricsV2Module();
+//		List<FacilioField> fields = new ArrayList<>();
+//		fields.add(getIdField(module));
+//		fields.add(getNewAgentIdField(module));
+//		fields.add(getCreatedTime(module));
+//		fields.add(getLastModifiedTimeField(module));
+//		fields.add(getField(AgentConstants.SIZE, "SIZE", module, FieldType.NUMBER));
+//		fields.add(getField(AgentConstants.PUBLISH_TYPE, "PUBLISH_TYPE", module, FieldType.NUMBER));
+//		fields.add(getField(AgentConstants.NUMBER_OF_MSGS, "NO_OF_MSGS", module, FieldType.NUMBER));
+//		return fields;
+//	}
 
 	public static FacilioField getLastModifiedTimeField(FacilioModule module) {
 		return getField(AgentConstants.LAST_MODIFIED_TIME, "LAST_MODIFIED_TIME", module, FieldType.NUMBER);
