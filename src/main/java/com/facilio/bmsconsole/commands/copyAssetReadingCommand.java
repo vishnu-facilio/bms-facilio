@@ -92,9 +92,9 @@ public class copyAssetReadingCommand extends FacilioCommand {
 			targetModule = bean.getModule(moduleId);
 		}
 		List<Map<String, Object>> insertList = new ArrayList<>();
-		Map<String, Object> add = new HashMap<String, Object>();
+		
 		for (int i = 0; i < prop.size(); i++) {
-
+			Map<String, Object> add = new HashMap<String, Object>();
 			for (Entry<String, Object> entry : prop.get(i).entrySet()) {
 				if (entry.getKey().equals("id") || entry.getKey().equals("orgId")) {
 					continue;
