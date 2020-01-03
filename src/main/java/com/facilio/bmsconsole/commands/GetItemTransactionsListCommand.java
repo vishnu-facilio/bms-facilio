@@ -74,6 +74,7 @@ public class GetItemTransactionsListCommand extends FacilioCommand {
 		if(AccountUtil.getCurrentUser().getUserType() == UserType.USER.getValue()) {
 			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory", "read");
 			if (permissionCriteria != null) {
+				builder.innerJoin("Store_room").on("Item.STORE_ROOM_ID = Store_room.ID");
 				builder.andCriteria(permissionCriteria);
 			}
 		}

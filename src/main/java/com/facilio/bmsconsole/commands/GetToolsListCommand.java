@@ -71,6 +71,7 @@ public class GetToolsListCommand extends FacilioCommand {
 		if(AccountUtil.getCurrentUser().getUserType() == UserType.USER.getValue()){
 			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory", "read");
 			if (permissionCriteria != null) {
+				builder.innerJoin("Store_room").on("Tool.STORE_ROOM_ID = Store_room.ID");
 				builder.andCriteria(permissionCriteria);
 			}
 		}
