@@ -109,6 +109,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.WATCHLIST, getWatchListModule());
         moduleMap.put(ContextNames.CONTACT, getContactModule());
 		moduleMap.put(FacilioConstants.ContextNames.WORKPERMIT, getWorkPermitModule());
+		moduleMap.put(ContextNames.OCCUPANT, getOccupantModule());
 		return moduleMap;
 	}
 	
@@ -3030,6 +3031,15 @@ public class ModuleFactory {
 		module.setName("deviceCatalogMapping");
 		module.setDisplayName("Device Catalog Mapping");
 		module.setTableName("Device_Catalog_Mapping");
+		return module;
+	}
+
+	public static FacilioModule getOccupantModule()
+	{
+		FacilioModule module=new FacilioModule();
+		module.setName(ContextNames.OCCUPANT);
+		module.setDisplayName("Occupants");
+		module.setTableName("Occupants");
 		return module;
 	}
 }

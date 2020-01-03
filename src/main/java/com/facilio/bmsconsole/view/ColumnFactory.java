@@ -108,6 +108,7 @@ public class ColumnFactory {
 		columnMap.put("vendors-myVendors", getMyVendorsColumns());
 		columnMap.put("vendors-myNonInsuredVendors", getMyVendorsColumns());
 		columnMap.put("contact-default", getDefaultContactColumns());
+		columnMap.put("occupant-default", getDefaultOccupantColumns());
 	
 
 		// Default report columns
@@ -887,5 +888,19 @@ public class ColumnFactory {
 		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
 		return columns;
 	}
+
+	public static List<ViewField> getDefaultOccupantColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("phone", "Phone"));
+		columns.add(new ViewField("email", "Email"));
+		columns.add(new ViewField("occupantType", "Occupant Type"));
+		columns.add(new ViewField("tenant", "Tenant"));
+		columns.add(new ViewField("isPortalAccessNeeded", "Is Portal Access Needed"));
+		columns.add(new ViewField("locatedSpace", "Located Space"));
+		columns.add(new ViewField("requester", "Requester"));
+		return columns;
+	}
+
 
 }

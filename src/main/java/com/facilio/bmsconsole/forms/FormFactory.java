@@ -83,6 +83,7 @@ public class FormFactory {
 		forms.put("portalWorkpermitForm", getPortalWorkPermitForm());
 		forms.put("insuranceForm", getInsuranceForm());
 		forms.put("contactForm", getContactForm());
+		forms.put("occupantForm", getOccupantForm());
 		forms.put("printerForm",getPrinterForm());
 
 		return forms;
@@ -111,6 +112,7 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractForm())
 						.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestForm())
 						.put(FacilioConstants.ContextNames.INSURANCE, getInsuranceForm())
+						.put(FacilioConstants.ContextNames.OCCUPANT, getOccupantForm())
 						.build())
         			
 				.build();
@@ -270,6 +272,7 @@ public class FormFactory {
 		List<FacilioForm> workPermitForm = Arrays.asList(getWorkPermitForm(),getPortalWorkPermitForm());
 		List<FacilioForm> insuranceForm = Arrays.asList(getInsuranceForm(),getPortalInsuranceForm());
 		List<FacilioForm> watchListForm = Arrays.asList(getWatchListForm());
+		List<FacilioForm> occupantFormsList = Arrays.asList(getOccupantForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -281,6 +284,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.INSURANCE, getFormMap(insuranceForm))
 				.put(FacilioConstants.ContextNames.VENDORS, getFormMap(vendorsForms))
 				.put(FacilioConstants.ContextNames.WATCHLIST, getFormMap(watchListForm))
+				.put(FacilioConstants.ContextNames.OCCUPANT, getFormMap(occupantFormsList))
 				.build();
 	}
 	
@@ -1621,6 +1625,30 @@ public class FormFactory {
 		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant",4, 3));
 		fields.add(new FormField("isPortalAccessNeeded", FieldDisplayType.DECISION_BOX, "Is Portal Access Needed", Required.OPTIONAL, 5, 2));
 		fields.add(new FormField("isPrimaryContact", FieldDisplayType.DECISION_BOX, "Is Primary Contact", Required.OPTIONAL, 5, 3));
+
+		return fields;
+	}
+
+	public static FacilioForm getOccupantForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("OCCUPANT");
+		form.setName("default_occupant_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.OCCUPANT));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getOccupantFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
+	private static List<FormField> getOccupantFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.REQUIRED, 2, 2));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.REQUIRED, 2, 3));
+		fields.add(new FormField("occupantType", FieldDisplayType.SELECTBOX, "Occupant Type", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant",4, 1));
+		fields.add(new FormField("isPortalAccessNeeded", FieldDisplayType.DECISION_BOX, "Is Portal Access Needed", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("locatedSpace", FieldDisplayType.WOASSETSPACECHOOSER, "Located Space", Required.OPTIONAL, 6, 1));
 
 		return fields;
 	}
