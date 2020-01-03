@@ -40,17 +40,17 @@ public class HistoricalVMCalculationCommand extends FacilioCommand implements Po
 				String jobName = (String) context.get(FacilioConstants.ContextNames.HISTORICAL_VM_JOB);
 				JSONObject jobProps = BmsJobUtil.getJobProps(jobId, jobName);
 				
+				historicalLogger = HistoricalLoggerUtil.getHistoricalLoggerById(jobId);
+				historicalLogger.setCalculationStartTime(DateTimeUtil.getCurrenTime());
+				
 				Long meterId=(Long)jobProps.get("meterId");
 				Long startTime = (Long)jobProps.get("startTime");
 				Long endTime = (Long)jobProps.get("endTime");
-				
 				Boolean updateReading= (Boolean)jobProps.get("updateReading");
 				long processStartTime = System.currentTimeMillis();
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField energyField=modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
-				
-				historicalLogger = HistoricalLoggerUtil.getHistoricalLoggerById(jobId);
 				
 				if(historicalLogger != null) 
 				{					

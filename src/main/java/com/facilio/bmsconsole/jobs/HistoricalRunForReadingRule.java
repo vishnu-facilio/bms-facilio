@@ -60,8 +60,10 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		try {
 			long jobStartTime = System.currentTimeMillis();
 			
+			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(jc.getJobId());
+			workflowRuleHistoricalLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
+			
 			JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
-		//	DateRange range = (DateRange) props.get("range");
 			Long startTime = (Long) props.get("startTime");
 			Long endTime = (Long) props.get("endTime");
 			Long resourceId = (Long) props.get("resourceId");
@@ -147,8 +149,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			}		
 			
 			List<ReadingEventContext> events = new ArrayList<>();	
-			int alarmCount = executeWorkflows(readingRule, readings, currentFields, fields, events);
-			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(jc.getJobId());
+			int alarmCount = executeWorkflows(readingRule, readings, currentFields, fields, events);	
 			
 			if (!events.isEmpty())
 			{

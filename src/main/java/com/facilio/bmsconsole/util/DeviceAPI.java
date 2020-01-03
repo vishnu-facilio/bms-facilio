@@ -583,9 +583,7 @@ public class DeviceAPI
 		historicalLogger.setEndTime(endTime);
 		historicalLogger.setCreatedBy(AccountUtil.getCurrentUser().getId());
 		historicalLogger.setCreatedTime(DateTimeUtil.getCurrenTime());
-		historicalLogger.setCalculationStartTime(DateTimeUtil.getCurrenTime());
-		return historicalLogger;
-		
+		return historicalLogger;		
 	}
 	
 	public static List<ReadingContext> getandDeleteDuplicateVirtualMeterReadings(EnergyMeterContext meter, List<Long> childMeterIds,  long startTime, long endTime, int minutesInterval, boolean updateReading, boolean isHistorical) throws Exception {

@@ -201,7 +201,6 @@ public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 		loggerContext.setEndTime(range.getEndTime());
 		loggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
 		loggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
-		loggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());	
 		return loggerContext;	
 	}
 	

@@ -4,10 +4,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.LoggerContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -100,11 +103,30 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", ""+loggerGroupId, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
+		List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList = new ArrayList<WorkflowRuleHistoricalLoggerContext>();
+		
 		if (props != null && !props.isEmpty()) {
-			List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleHistoricalLoggerContext.class);
-			return workflowRuleHistoricalLoggerContextList;
+			
+			List<Long> resourceIds = new ArrayList<Long>();	
+			for(Map<String, Object> prop : props ) {
+				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleHistoricalLoggerContext.class);
+				workflowRuleHistoricalLoggerContextList.add(workflowRuleHistoricalLoggerContext);
+				resourceIds.add(workflowRuleHistoricalLoggerContext.getResourceId());
+			}
+			
+			List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
+			Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
+			
+			for(ResourceContext resource:resources)
+			{
+				resourcesMap.put(resource.getId(), resource);
+			}
+			
+			for(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext :workflowRuleHistoricalLoggerContextList) {
+				workflowRuleHistoricalLoggerContext.setResourceContext(resourcesMap.get(workflowRuleHistoricalLoggerContext.getResourceId()));
+			}
 		}
-		return null;
+		return workflowRuleHistoricalLoggerContextList;
 	}
 	
 	public static List<WorkflowRuleHistoricalLoggerContext> getGroupedInProgressWorkflowRuleHistoricalLoggers(long loggerGroupId) throws Exception {
@@ -216,7 +238,16 @@ public class WorkflowRuleHistoricalLoggerUtil {
 						if(activeChildLoggers == null || activeChildLoggers.isEmpty())
 						{
 							workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
+							workflowRuleHistoricalLoggerContext.setResolvedLogCount(workflowRuleHistoricalLoggerContext.getResourceLogCount());					
 						}
+						else
+						{
+							if(activeChildLoggers != null && workflowRuleHistoricalLoggerContext.getResourceLogCount() > 0 && workflowRuleHistoricalLoggerContext.getResourceLogCount() >= activeChildLoggers.size())
+							{
+								long resolvedResourceCount = workflowRuleHistoricalLoggerContext.getResourceLogCount() - activeChildLoggers.size();
+								workflowRuleHistoricalLoggerContext.setResolvedLogCount(resolvedResourceCount);
+							}
+						}	
 						
 					}		
 				}

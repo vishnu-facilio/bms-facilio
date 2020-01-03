@@ -51,7 +51,9 @@ private static final Logger LOGGER = Logger.getLogger(SingleResourceHistoricalFo
 			jobId = (long) context.get(FacilioConstants.ContextNames.HISTORICAL_FORMULA_FIELD_JOB_ID);
 			List<FacilioField> loggerfields = FieldFactory.getFormulaFieldHistoricalLoggerFields();
 			
-			historicalFormulaFieldLogger =  LoggerAPI.getLoggerById(ModuleFactory.getFormulaFieldHistoricalLoggerModule(), loggerfields,jobId);
+			historicalFormulaFieldLogger = LoggerAPI.getLoggerById(ModuleFactory.getFormulaFieldHistoricalLoggerModule(),loggerfields,jobId);
+			historicalFormulaFieldLogger.setCalculationStartTime(DateTimeUtil.getCurrenTime());	
+			
 			long startTime = (long) historicalFormulaFieldLogger.getStartTime();
 			long endTime = (long) historicalFormulaFieldLogger.getEndTime();
 			long resourceId = (long) historicalFormulaFieldLogger.getResourceId();

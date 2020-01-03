@@ -90,7 +90,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		for(Long finalResourceId:finalResourceIds)
 		{
 			if(isFirst) {
-				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = getworkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, -1);	
+				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = setWorkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, -1);	
 				WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
 				
 				loggerGroupId = workflowRuleHistoricalLoggerContext.getId();
@@ -100,7 +100,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 				isFirst = false;
 			}
 			else {
-				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = getworkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, loggerGroupId);	
+				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = setWorkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, loggerGroupId);	
 				WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLogger);
 				workflowRuleHistoricalLoggerMap.put(workflowRuleHistoricalLogger.getId(), workflowRuleHistoricalLogger);
 			}
@@ -140,7 +140,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 	}
 	
 	
-	private static WorkflowRuleHistoricalLoggerContext getworkflowRuleHistoricalLoggerContext(long ruleId, DateRange range,Long resourceId, long loggerGroupId)
+	private static WorkflowRuleHistoricalLoggerContext setWorkflowRuleHistoricalLoggerContext(long ruleId, DateRange range,Long resourceId, long loggerGroupId)
 	{
 		WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
 		workflowRuleHistoricalLoggerContext.setRuleId(ruleId);
@@ -152,7 +152,6 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		workflowRuleHistoricalLoggerContext.setEndTime(range.getEndTime());
 		workflowRuleHistoricalLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
 		workflowRuleHistoricalLoggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
-		workflowRuleHistoricalLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());	
 		return workflowRuleHistoricalLoggerContext;	
 	}
 }

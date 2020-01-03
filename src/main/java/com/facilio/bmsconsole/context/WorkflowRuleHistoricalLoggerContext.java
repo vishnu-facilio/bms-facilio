@@ -8,13 +8,15 @@ public class WorkflowRuleHistoricalLoggerContext {
 
 	private long id = -1;
 	private long orgId;
-	private long ruleId;
 	private Type type;
+	private long ruleId;
 	private Long resourceId;
+	private ResourceContext resourceContext;
 	private Status status;
 	private long alarmCount;
 	private long loggerGroupId;
 	private long resourceLogCount;
+	private long resolvedLogCount;
 	private int totalChildAlarmCount;
 	private long startTime;
 	private long endTime;
@@ -49,7 +51,15 @@ public class WorkflowRuleHistoricalLoggerContext {
 	public Long getResourceId() {
 		return resourceId;
 	}
+	
+	public ResourceContext getResourceContext() {
+		return resourceContext;
+	}
 
+	public void setResourceContext(ResourceContext resourceContext) {
+		this.resourceContext = resourceContext;
+	}
+	
 	public void setResourceId(Long resourceId) {
 		this.resourceId = resourceId;
 	}
@@ -116,6 +126,13 @@ public class WorkflowRuleHistoricalLoggerContext {
 
 	public void setResourceLogCount(long resourceLogCount) {
 		this.resourceLogCount = resourceLogCount;
+	}
+	
+	public long getResolvedLogCount() {
+		return resolvedLogCount;
+	}
+	public void setResolvedLogCount(long resolvedLogCount) {
+		this.resolvedLogCount = resolvedLogCount;
 	}
 	
 	public int getTotalChildAlarmCount() {

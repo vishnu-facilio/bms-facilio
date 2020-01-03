@@ -194,41 +194,41 @@ public class LoggerAPI {
 					.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", "id", NumberOperators.EQUALS))
 					.orderBy("STATUS,CREATED_TIME DESC");
 					
-					List<Map<String, Object>> props = selectBuilder.get();
-					List<LoggerContext> parentHistoricalLoggerContextList = new ArrayList<LoggerContext>();
-					if (props != null && !props.isEmpty()) {
-						parentHistoricalLoggerContextList = FieldUtil.getAsBeanListFromMapList(props, LoggerContext.class);
-					}
-					
-					LinkedHashMap<Long, LoggerContext> parentHistoricalLoggerContextMap = new LinkedHashMap<Long, LoggerContext>();
-					for(LoggerContext parentHistoricalLoggerContext :parentHistoricalLoggerContextList)
-					{
-						parentHistoricalLoggerContextMap.put(parentHistoricalLoggerContext.getLoggerGroupId(), parentHistoricalLoggerContext);
-					}
-					
-					FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("loggerGroupId"));
-					countField.setName("count");
-					
-					List<FacilioField> selectFields = new ArrayList<FacilioField>();
-					selectFields.add(fieldMap.get("loggerGroupId"));
-					selectFields.add(countField);
+			List<Map<String, Object>> props = selectBuilder.get();
+			List<LoggerContext> parentHistoricalLoggerContextList = new ArrayList<LoggerContext>();
+			if (props != null && !props.isEmpty()) {
+				parentHistoricalLoggerContextList = FieldUtil.getAsBeanListFromMapList(props, LoggerContext.class);
+			}
 			
-					if(fieldMap.get("actionCount") != null)
-					{
-						FacilioField sumField = BmsAggregateOperators.NumberAggregateOperator.SUM.getSelectField(fieldMap.get("actionCount"));
-						sumField.setName("sum");						
-						selectFields.add(sumField);					
-					}
-					
-					selectBuilder = new GenericSelectRecordBuilder()
-							.select(selectFields)
-							.table(loggerModule.getTableName())
-//							.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), ""+ parentId, NumberOperators.EQUALS))
-							.groupBy("LOGGER_GROUP_ID");
-					
-					
-					List<Map<String, Object>> propsList = selectBuilder.get();
-										
+			LinkedHashMap<Long, LoggerContext> parentHistoricalLoggerContextMap = new LinkedHashMap<Long, LoggerContext>();
+			for(LoggerContext parentHistoricalLoggerContext :parentHistoricalLoggerContextList)
+			{
+				parentHistoricalLoggerContextMap.put(parentHistoricalLoggerContext.getLoggerGroupId(), parentHistoricalLoggerContext);
+			}
+			
+			FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("loggerGroupId"));
+			countField.setName("count");
+			
+			List<FacilioField> selectFields = new ArrayList<FacilioField>();
+			selectFields.add(fieldMap.get("loggerGroupId"));
+			selectFields.add(countField);
+	
+			if(fieldMap.get("actionCount") != null)
+			{
+				FacilioField sumField = BmsAggregateOperators.NumberAggregateOperator.SUM.getSelectField(fieldMap.get("actionCount"));
+				sumField.setName("sum");						
+				selectFields.add(sumField);					
+			}
+			
+			selectBuilder = new GenericSelectRecordBuilder()
+					.select(selectFields)
+					.table(loggerModule.getTableName())
+//					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), ""+ parentId, NumberOperators.EQUALS))
+					.groupBy("LOGGER_GROUP_ID");
+			
+			
+			List<Map<String, Object>> propsList = selectBuilder.get();
+								
 //					if(propsList != null && !propsList.isEmpty())
 //					{
 //						for(Map<String, Object> prop :propsList)
@@ -236,7 +236,6 @@ public class LoggerAPI {
 //							LoggerContext parentHistoricalLoggerContext = parentHistoricalLoggerContextMap.get((long) prop.get("loggerGroupId"));
 //							if(prop.get("count") != null) {
 //								parentHistoricalLoggerContext.setResourceLogCount((long) prop.get("count"));
-//								
 //							}
 //							if(prop.get("sum") != null)
 //							{
@@ -244,35 +243,44 @@ public class LoggerAPI {
 //							}			
 //						}		
 //					}	
-					
-					if(propsList != null && !propsList.isEmpty())
+			
+			if(propsList != null && !propsList.isEmpty())
+			{
+				Map<Long, Long> loggerGroupCountMap = new HashMap <Long, Long>();
+				for(Map<String, Object> prop : propsList ) {
+					long loggerGroupId = (long) prop.get("loggerGroupId");
+					if(prop.get("count") != null) {
+						loggerGroupCountMap.put(loggerGroupId, (long) prop.get("count"));
+					}
+				}
+				
+				for(Long loggerGroupId:parentHistoricalLoggerContextMap.keySet())
+				{
+					Long loggerCount = loggerGroupCountMap.get(loggerGroupId);
+					LoggerContext parentLoggerContext = parentHistoricalLoggerContextMap.get(loggerGroupId);
+					if(loggerCount !=null) {
+						parentLoggerContext.setResourceLogCount(loggerCount);
+					}
+				
+					parentLoggerContext.setStatus(LoggerContext.Status.IN_PROGRESS.getIntVal());
+
+					List<LoggerContext> activeChildLoggers = getGroupedInProgressLoggers(loggerModule, loggerFields, loggerGroupId);
+					if(activeChildLoggers == null || activeChildLoggers.isEmpty())
 					{
-						Map<Long, Long> loggerGroupCountMap = new HashMap <Long, Long>();
-						for(Map<String, Object> prop : propsList ) {
-							long loggerGroupId = (long) prop.get("loggerGroupId");
-							if(prop.get("count") != null) {
-								loggerGroupCountMap.put(loggerGroupId, (long) prop.get("count"));
-							}
-						}
-						
-						for(Long loggerGroupId:parentHistoricalLoggerContextMap.keySet())
+						parentLoggerContext.setStatus(LoggerContext.Status.RESOLVED.getIntVal());
+						parentLoggerContext.setResolvedLogCount(parentLoggerContext.getResourceLogCount());					
+					}
+					else
+					{
+						if(activeChildLoggers != null && parentLoggerContext.getResourceLogCount() > 0 && parentLoggerContext.getResourceLogCount() >= activeChildLoggers.size())
 						{
-							Long loggerCount = loggerGroupCountMap.get(loggerGroupId);
-							LoggerContext parentLoggerContext = parentHistoricalLoggerContextMap.get(loggerGroupId);
-							if(loggerCount !=null) {
-								parentLoggerContext.setResourceLogCount(loggerCount);
-							}
-						
-							parentLoggerContext.setStatus(LoggerContext.Status.IN_PROGRESS.getIntVal());
-	
-							List<LoggerContext> activeChildLoggers = getGroupedInProgressLoggers(loggerModule, loggerFields, loggerGroupId);
-							if(activeChildLoggers == null || activeChildLoggers.isEmpty())
-							{
-								parentLoggerContext.setStatus(LoggerContext.Status.RESOLVED.getIntVal());
-							}
+							long resolvedResourceCount = parentLoggerContext.getResourceLogCount() - activeChildLoggers.size();
+							parentLoggerContext.setResolvedLogCount(resolvedResourceCount);
 						}
-					}				
-					return parentHistoricalLoggerContextMap.values();				
+					}					
+				}
+			}				
+			return parentHistoricalLoggerContextMap.values();				
 		}
 
 		public static List<LoggerContext> getGroupedLogger(FacilioModule loggerModule, List<FacilioField> fields,Long loggerGroupId) throws Exception {
@@ -286,35 +294,33 @@ public class LoggerAPI {
 //				.andCondition(CriteriaAPI.getCondition(fieldMap.get("dependentId"), "", CommonOperators.IS_EMPTY))
 				.orderBy("STATUS,CREATED_TIME DESC");
 	
-				List<Map<String, Object>> props = selectBuilder.get();
-				List<LoggerContext> LoggerContexts = new ArrayList<LoggerContext>();
-				
-				List<Long> resourceIds = new ArrayList<Long>();
-				
-				if (props != null && !props.isEmpty()) {
-					for(Map<String, Object> prop : props ) {
-						LoggerContext loggerContext = FieldUtil.getAsBeanFromMap(prop, LoggerContext.class);
-						LoggerContexts.add(loggerContext);
-						resourceIds.add(loggerContext.getResourceId());
-					}
-					
-					List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
-					Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
-					
-					for(ResourceContext resource:resources)
-					{
-						resourcesMap.put(resource.getId(), resource);
-					}
-					
-					for(LoggerContext loggerContext :LoggerContexts) {
-						loggerContext.setParentResourceContext(resourcesMap.get(loggerContext.getResourceId()));
-					}
+			List<Map<String, Object>> props = selectBuilder.get();
+			List<LoggerContext> LoggerContexts = new ArrayList<LoggerContext>();
+			
+			List<Long> resourceIds = new ArrayList<Long>();
+			
+			if (props != null && !props.isEmpty()) {
+				for(Map<String, Object> prop : props ) {
+					LoggerContext loggerContext = FieldUtil.getAsBeanFromMap(prop, LoggerContext.class);
+					LoggerContexts.add(loggerContext);
+					resourceIds.add(loggerContext.getResourceId());
 				}
-				return LoggerContexts;
+				
+				List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
+				Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
+				
+				for(ResourceContext resource:resources)
+				{
+					resourcesMap.put(resource.getId(), resource);
+				}
+				
+				for(LoggerContext loggerContext :LoggerContexts) {
+					loggerContext.setResourceContext(resourcesMap.get(loggerContext.getResourceId()));
+				}
+			}
+			return LoggerContexts;
 	
 		}
-
-
 
 		public static List<LoggerContext> getGroupedInProgressLoggers(FacilioModule loggerModule, List<FacilioField> fields,Long loggerGroupId) throws Exception {
 			
@@ -328,13 +334,13 @@ public class LoggerAPI {
 			subCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ LoggerContext.Status.FAILED.getIntVal(), NumberOperators.EQUALS));
 			
 			selectBuilder.andCriteria(subCriteria);
-			
-				List<Map<String, Object>> props = selectBuilder.get();				
-				if (props != null && !props.isEmpty()) {
-					List<LoggerContext> LoggerContextList = FieldUtil.getAsBeanListFromMapList(props, LoggerContext.class);
-					return LoggerContextList;	
-				}			
-				return null;
+		
+			List<Map<String, Object>> props = selectBuilder.get();				
+			if (props != null && !props.isEmpty()) {
+				List<LoggerContext> LoggerContextList = FieldUtil.getAsBeanListFromMapList(props, LoggerContext.class);
+				return LoggerContextList;	
+			}			
+			return null;
 		}
 		
 		public static List<LoggerContext> getAllInProgressLoggers(FacilioModule loggerModule, List<FacilioField> fields) throws Exception {
@@ -344,12 +350,12 @@ public class LoggerAPI {
 					.table(loggerModule.getTableName())
 					.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ LoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
 					
-					List<Map<String, Object>> props = selectBuilder.get();
-					if (props != null && !props.isEmpty()) {
-						List<LoggerContext> loggerContexts = FieldUtil.getAsBeanListFromMapList(props, LoggerContext.class);
-						return loggerContexts;
-					}
-					return null;
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				List<LoggerContext> loggerContexts = FieldUtil.getAsBeanListFromMapList(props, LoggerContext.class);
+				return loggerContexts;
+			}
+			return null;
 		}
 		
 		public static List<LoggerContext> getAllLoggers(FacilioModule loggerModule, List<FacilioField> fields) throws Exception {
@@ -358,12 +364,12 @@ public class LoggerAPI {
 					.select(fields)
 					.table(loggerModule.getTableName());
 					
-					List<Map<String, Object>> props = selectBuilder.get();
-					if (props != null && !props.isEmpty()) {
-						List<LoggerContext> loggerContexts = FieldUtil.getAsBeanListFromMapList(props, LoggerContext.class);
-						return loggerContexts;
-					}
-					return null;
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				List<LoggerContext> loggerContexts = FieldUtil.getAsBeanListFromMapList(props, LoggerContext.class);
+				return loggerContexts;
+			}
+			return null;
 		}
 	
 		public static void updateLogger(FacilioModule loggerModule, List<FacilioField> fields, LoggerContext loggerContext) throws Exception {

@@ -12,9 +12,10 @@ public class LoggerContext extends ModuleBaseWithCustomFields{
 	private Long dependentId;
 	private Long loggerGroupId;
 	private Status status;
-	private ResourceContext parentResourceContext;
+	private ResourceContext resourceContext;
 	private long actionCount;
 	private long resourceLogCount;
+	private long resolvedLogCount;
 	private int totalChildActionCount;
 	private long startTime;
 	private long endTime;
@@ -59,11 +60,11 @@ public class LoggerContext extends ModuleBaseWithCustomFields{
 	public void setResourceId(Long resourceId) {
 		this.resourceId = resourceId;
 	}
-	public ResourceContext getParentResourceContext() {
-		return parentResourceContext;
+	public ResourceContext getResourceContext() {
+		return resourceContext;
 	}
-	public void setParentResourceContext(ResourceContext parentResourceContext) {
-		this.parentResourceContext = parentResourceContext;
+	public void setResourceContext(ResourceContext resourceContext) {
+		this.resourceContext = resourceContext;
 	}
 	public long getActionCount() {
 		return actionCount;
@@ -76,6 +77,12 @@ public class LoggerContext extends ModuleBaseWithCustomFields{
 	}
 	public void setResourceLogCount(long resourceLogCount) {
 		this.resourceLogCount = resourceLogCount;
+	}
+	public long getResolvedLogCount() {
+		return resolvedLogCount;
+	}
+	public void setResolvedLogCount(long resolvedLogCount) {
+		this.resolvedLogCount = resolvedLogCount;
 	}
 	public int getTotalChildActionCount() {
 		return totalChildActionCount;
