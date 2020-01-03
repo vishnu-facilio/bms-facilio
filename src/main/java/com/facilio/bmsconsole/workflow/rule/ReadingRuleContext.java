@@ -45,6 +45,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
@@ -1045,17 +1046,17 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 				.append(this.getReadingField().getDisplayName())
 				.append("' ");
 
-		NumberOperators operator = (NumberOperators) Operator.getOperator(this.getOperatorId());
+		Operator operator = Operator.getOperator(this.getOperatorId());
 		switch (this.getThresholdTypeEnum()) {
 			case SIMPLE:
 				appendSimpleMsg(msgBuilder, operator, reading);
 				appendOccurences(msgBuilder);
 				break;
 			case AGGREGATION:
-				appendSimpleMsg(msgBuilder, operator, reading);
+				appendSimpleMsg(msgBuilder, (NumberOperators) operator, reading);
 				break;
 			case BASE_LINE:
-				appendBaseLineMsg(msgBuilder, operator);
+				appendBaseLineMsg(msgBuilder, (NumberOperators) operator);
 				break;
 			case FLAPPING:
 				appendFlappingMsg(msgBuilder);
@@ -1097,22 +1098,33 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	}
 
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-	private void appendSimpleMsg(StringBuilder msgBuilder, NumberOperators operator, ReadingContext reading) {
-		switch (operator) {
-			case EQUALS:
-				msgBuilder.append("was ");
-				break;
-			case NOT_EQUALS:
-				msgBuilder.append("wasn't ");
-				break;
-			case LESS_THAN:
-			case LESS_THAN_EQUAL:
-				msgBuilder.append("went below ");
-				break;
-			case GREATER_THAN:
-			case GREATER_THAN_EQUAL:
-				msgBuilder.append("exceeded ");
-				break;
+	private void appendSimpleMsg(StringBuilder msgBuilder, Operator operator, ReadingContext reading) {
+		if (operator instanceof NumberOperators) {
+			switch ((NumberOperators)operator) {
+				case EQUALS:
+					msgBuilder.append("was ");
+					break;
+				case NOT_EQUALS:
+					msgBuilder.append("wasn't ");
+					break;
+				case LESS_THAN:
+				case LESS_THAN_EQUAL:
+					msgBuilder.append("went below ");
+					break;
+				case GREATER_THAN:
+				case GREATER_THAN_EQUAL:
+					msgBuilder.append("exceeded ");
+					break;
+				/*case BETWEEN:
+					msgBuilder.append("between ");
+					break;
+				case NOT_BETWEEN:
+					msgBuilder.append("not between ");
+					break;*/
+				}
+		}
+		else if (operator instanceof BooleanOperators) {
+			msgBuilder.append("was ");
 		}
 
 		String value = null;
