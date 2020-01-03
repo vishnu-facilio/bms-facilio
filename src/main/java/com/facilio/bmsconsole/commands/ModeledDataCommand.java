@@ -36,7 +36,7 @@ public class ModeledDataCommand extends AgentV2Command {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		Long timeStamp = (Long) context.get(FacilioConstants.ContextNames.TIMESTAMP);
+		Long timeStamp = Long.parseLong(context.get(FacilioConstants.ContextNames.TIMESTAMP).toString());
 		if (context.containsKey(AgentConstants.IS_NEW_AGENT) && (context.get(AgentConstants.IS_NEW_AGENT) != null) && (context.get(AgentConstants.IS_NEW_AGENT) instanceof Boolean)) {
 			if ((boolean) context.get(AgentConstants.IS_NEW_AGENT)) {
 				isV2 = true;
@@ -44,7 +44,7 @@ public class ModeledDataCommand extends AgentV2Command {
 		}
 		if (isV2) {
 			LOGGER.info(" is v2");
-			Map<String, Map<String,String>>  deviceData2 = (Map<String, Map<String, String>>) context.get("DEVICE_DATA_2");
+			Map<String, Map<String, String>> deviceData2 = (Map<String, Map<String, String>>) context.get("DEVICE_DATA_2");
 			List<Map<String, Object>> dataPointsValue = (List<Map<String, Object>>) context.get("DATA_POINTS");
 			Map<String, ReadingContext> iModuleVsReading = new HashMap<String, ReadingContext>();
 			Map<String, List<ReadingContext>> moduleVsReading = new HashMap<String, List<ReadingContext>>();

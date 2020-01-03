@@ -226,7 +226,9 @@ public class DataProcessorV2
             context.put(AgentConstants.DATA,payload);
             context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
             if(payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)){
-                context.put(AgentConstants.TIMESTAMP,payload.get(AgentConstants.TIMESTAMP));
+                LOGGER.info(" timestamp long instance check " + (payload.get(AgentConstants.TIMESTAMP) instanceof Long));
+                LOGGER.info(" timestamp String instance check " + (payload.get(AgentConstants.TIMESTAMP) instanceof String));
+                context.put(AgentConstants.TIMESTAMP, payload.get(AgentConstants.TIMESTAMP));
             }else {
                 context.put(AgentConstants.TIMESTAMP,System.currentTimeMillis());
             }
