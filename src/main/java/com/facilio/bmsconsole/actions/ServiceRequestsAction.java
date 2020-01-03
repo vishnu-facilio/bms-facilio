@@ -2,13 +2,24 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.OccupantsContext;
 import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class ServiceRequestsAction extends FacilioAction{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String moduleName;
 	public String getModuleName() {
 		return moduleName;
@@ -78,6 +89,14 @@ public class ServiceRequestsAction extends FacilioAction{
 		this.serviceRequestId = serviceRequestId;
 	}
 	
+	private List<Long> serviceRequestIds;
+	public List<Long> getServiceRequestIds() {
+		return serviceRequestIds;
+	}
+	public void setServiceRequestIds(List<Long> serviceRequestIds) {
+		this.serviceRequestIds = serviceRequestIds;
+	}
+	
 	public String addServiceRequest() throws Exception {
 	
 			FacilioChain c = TransactionChainFactory.addServiceRequestChain();
@@ -86,6 +105,83 @@ public class ServiceRequestsAction extends FacilioAction{
 			c.execute();
 			setResult(FacilioConstants.ContextNames.SERVICE_REQUEST, serviceRequest);
 
+		return SUCCESS;
+	}
+	
+	public String updateServiceRequests() throws Exception {
+		
+		if(!CollectionUtils.isEmpty(serviceRequests)) {
+			FacilioChain c = TransactionChainFactory.updateServiceRequestChain();
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, serviceRequests);
+			c.execute();
+			setResult(FacilioConstants.ContextNames.SERVICE_REQUESTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+		}
+		return SUCCESS;
+	}
+	
+	public String deleteServiceRequests() throws Exception {
+		
+		if(!CollectionUtils.isEmpty(serviceRequestIds)) {
+			FacilioChain c = FacilioChainFactory.deleteServiceRequestsChain();
+			
+			c.getContext().put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, serviceRequestIds);
+			c.execute();
+			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		}
+		return SUCCESS;
+	}
+
+	public String getServicerequestsList() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getServiceRequestsListChain();
+		
+		chain.getContext().put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
+		chain.getContext().put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, "serviceRequest");
+ 		
+		chain.getContext().put(FacilioConstants.ContextNames.SORTING_QUERY, "Service_Requests.ID asc");
+ 		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		chain.getContext().put(FacilioConstants.ContextNames.FILTERS, json);
+	 		chain.getContext().put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		}
+ 		if (getSearch() != null) {
+ 			JSONObject searchObj = new JSONObject();
+ 			searchObj.put("fields", "serviceRequest.subject");
+ 			searchObj.put("query", getSearch());
+ 			chain.getContext().put(FacilioConstants.ContextNames.SEARCH, searchObj);
+ 		}
+ 		JSONObject pagination = new JSONObject();
+ 	 	pagination.put("page", getPage());
+ 	 	pagination.put("perPage", getPerPage());
+ 	 	if (getPerPage() < 0) {
+ 	 		pagination.put("perPage", 5000);
+ 	 	}
+ 	 	
+ 	 	chain.execute();
+		if (getFetchCount()) {
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,chain.getContext().get(FacilioConstants.ContextNames.RECORD_COUNT));
+		}
+		else {
+			serviceRequests = (List<ServiceRequestContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
+			setResult(FacilioConstants.ContextNames.SERVICE_REQUESTS, serviceRequests);
+		}
+		
+		return SUCCESS;
+	}
+	
+	public String getServiceRequestDetails() throws Exception {
+		
+		FacilioChain chain = ReadOnlyChainFactory.getServcieRequestDetailsChain();
+		chain.getContext().put(FacilioConstants.ContextNames.ID, recordId);
+		
+		chain.execute();
+		
+		serviceRequest = (ServiceRequestContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
+		setResult(FacilioConstants.ContextNames.SERVICE_REQUEST, serviceRequest);
+		
 		return SUCCESS;
 	}
 }

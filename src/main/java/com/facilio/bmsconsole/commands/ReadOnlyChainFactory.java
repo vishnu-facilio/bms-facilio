@@ -1875,4 +1875,26 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAllWebTabCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getServiceRequestsListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForServiceRequests());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+//		chain.addCommand(new LoadOccupantLookUpCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getServcieRequestDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForServiceRequests());
+//		c.addCommand(new LoadOccupantLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		
+		return c;
+	}
+	
 }

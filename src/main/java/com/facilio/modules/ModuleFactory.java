@@ -3058,4 +3058,12 @@ public class ModuleFactory {
 		module.setTableName("WebTab");
 		return module;
 	}
+	
+	public static FacilioModule getServiceRequestModule() {
+		FacilioModule ticketStatusModule = new FacilioModule();
+		ticketStatusModule.setName(FacilioConstants.ContextNames.SERVICE_REQUEST);
+		ticketStatusModule.setDisplayName("Service Requests");
+		ticketStatusModule.setTableName("Service_Requests");
+		return ticketStatusModule;
+	}
 }

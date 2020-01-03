@@ -4277,6 +4277,14 @@ public class TransactionChainFactory {
 		
 		return c;
 	}
+	
+	public static FacilioChain updateServiceRequestChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForServiceRequests());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		
+		return c;
+	}
 }
 
 

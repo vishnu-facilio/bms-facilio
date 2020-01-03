@@ -1386,6 +1386,7 @@ public class FacilioConstants {
 		public static final String COPY_ASSET_LIST = "assetList";
 		public static final String COPY_TIME_DIFF = "timeDiff";
 		
+		public static final String SERVICE_REQUEST_PRIORITY = "servicerequestpriority";
 		public static final String SERVICE_REQUESTS = "serviceRequests";
 		public static final String SERVICE_REQUEST = "serviceRequest";
 				
@@ -1568,6 +1569,8 @@ public class FacilioConstants {
 			classMap.put(OCCUPANT, OccupantsContext.class);
 			classMap.put(WEB_TAB_GROUP, WebTabGroupContext.class);
 
+			classMap.put(SERVICE_REQUEST, ServiceRequestContext.class);
+			classMap.put(SERVICE_REQUEST_PRIORITY, ServiceRequestPriorityContext.class);
 			
 			return classMap;
 		}

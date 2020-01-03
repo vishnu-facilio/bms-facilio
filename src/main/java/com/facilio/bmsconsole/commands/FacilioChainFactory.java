@@ -2106,4 +2106,11 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		return c;
 	}
+	
+	public static FacilioChain deleteServiceRequestsChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForServiceRequests());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
 }

@@ -110,6 +110,8 @@ public class ColumnFactory {
 		columnMap.put("contact-default", getDefaultContactColumns());
 		columnMap.put("occupant-default", getDefaultOccupantColumns());
 	
+		columnMap.put("serviceRequest-default", getDefaultServiceRequestColumns());
+		
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -886,6 +888,17 @@ public class ColumnFactory {
 		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("isPortalAccessNeeded", "Portal Access"));
 		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
+		return columns;
+	}
+	
+	public static List<ViewField> getDefaultServiceRequestColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("subject", "Subject"));
+		columns.add(new ViewField("site", "Site"));
+		columns.add(new ViewField("assignedTo", "Team / Staff"));
+		columns.add(new ViewField("prioriy", "Priority"));
+		columns.add(new ViewField("moduleState", "Status"));
+		columns.add(new ViewField("classification", "Classification"));
 		return columns;
 	}
 

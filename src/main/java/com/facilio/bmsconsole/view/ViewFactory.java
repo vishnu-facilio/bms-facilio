@@ -616,6 +616,12 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllContactView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.CONTACT, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllServiceRequests().setOrder(order++));
+		views.put("myopenservicerequests", getMyServiceRequets().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SERVICE_REQUEST, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -5481,7 +5487,47 @@ public class ViewFactory {
 
 		return condition;
 	}
+	
+	public static Condition getMyServiceRequestCondition() {
+		LookupField userField = new LookupField();
+		userField.setName("assignedTo");
+		userField.setColumnName("ASSIGNED_TO_ID");
+		userField.setDataType(FieldType.LOOKUP);
+		userField.setModule(ModuleFactory.getServiceRequestModule());
+		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
 
+		Condition myUserCondition = new Condition();
+		myUserCondition.setField(userField);
+		myUserCondition.setOperator(PickListOperators.IS);
+		myUserCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
+
+		return myUserCondition;
+	}
+
+	private static FacilioView getMyServiceRequets() {
+
+		Criteria criteria = new Criteria();
+		FacilioModule serviceRequestsModule = ModuleFactory.getServiceRequestModule();
+//		criteria.addAndCondition(getOpenStatusCondition());
+		criteria.addAndCondition(getMyServiceRequestCondition());
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedtime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(serviceRequestsModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView openTicketsView = new FacilioView();
+		openTicketsView.setName("myopenservicerequests");
+		openTicketsView.setDisplayName("My Service Requests");
+		openTicketsView.setCriteria(criteria);
+		openTicketsView.setSortFields(sortFields);
+
+		return openTicketsView;
+	}
+	
 	private static FacilioView getAllOccupantsView() {
 
 		FacilioView allView = new FacilioView();
@@ -5489,6 +5535,23 @@ public class ViewFactory {
 		allView.setDisplayName("All Occupants");
 		return allView;
 	}
+	private static FacilioView getAllServiceRequests() {
 
+		FacilioModule serviceRequestsModule = ModuleFactory.getServiceRequestModule();
 
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedtime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(serviceRequestsModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Service Requests");
+		allView.setSortFields(sortFields);
+
+		return allView;
+	}
 }
