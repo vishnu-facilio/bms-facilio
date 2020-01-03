@@ -36,7 +36,7 @@ public class ControllerUtilV2 {
     public ControllerUtilV2(long agentId, long orgId) {
         this.orgId = orgId;
         this.agentId = agentId;
-        //loadControllerListMap();
+        loadControllerListMap();
     }
 
     public static boolean discoverPoints(Long controllerId) {

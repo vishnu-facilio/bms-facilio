@@ -41,10 +41,18 @@ transactions:
 
       - id: "addAgent"
         request:
-          method: GET
-          endpoint: "{{ var.api_url }}/api/v2/agent/create?agentName=getApidTest&dataInterval=9990&siteId=2"
+          method: POST
+          endpoint: "{{ var.api_url }}/api/v2/agent/create"
           headers:
+            Content-Type: "application/json"
             Authorization: "Bearer {{authenticate.auth_token}}"
+            body: |
+              {
+               "agentName":"getApidTest",
+               "dataInterval":"9990",
+               "siteId":2
+               }
+
         expect:
           code: 200
           body:
