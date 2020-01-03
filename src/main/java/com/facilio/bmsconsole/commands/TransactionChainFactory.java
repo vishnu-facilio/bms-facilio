@@ -3851,9 +3851,8 @@ public class TransactionChainFactory {
 			c.addCommand(new ChangeVisitorInviteStateCommand());
 			c.addCommand(new LoadVisitorLoggingLookUpCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
-			c.addCommand(new ForkChainToInstantJobCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
-		//	c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+			c.addCommand(new ForkChainToInstantJobCommand()
+										.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			
 			return c;
