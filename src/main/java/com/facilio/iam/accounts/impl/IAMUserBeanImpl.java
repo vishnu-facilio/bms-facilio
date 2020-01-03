@@ -653,7 +653,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.innerJoin("UserSessions")
 				.on("Account_Users.USERID =UserSessions.USERID");
 		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		
 		if (isActive != null) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", isActive ? "1" : "0", NumberOperators.EQUALS));
