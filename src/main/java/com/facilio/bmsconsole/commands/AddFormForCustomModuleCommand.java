@@ -28,15 +28,15 @@ public class AddFormForCustomModuleCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		if (module.isCustom()) {
-		List<FormField> formFields = new ArrayList<>();
-		List<FormField> photoFields = new ArrayList<>();
+			List<FormField> formFields = new ArrayList<>();
+			List<FormField> photoFields = new ArrayList<>();
 //		List<FormField> siteFields = new ArrayList<>();
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
-		
+			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
+
 			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 			FacilioField field = fieldsAsMap.get("name");
 			if (field != null) {
@@ -48,13 +48,13 @@ public class AddFormForCustomModuleCommand extends FacilioCommand{
 				FormField formField = new FormField(photoField.getId(), photoField.getName(), photoField.getDisplayType(), photoField.getDisplayName(), Required.OPTIONAL, 0, 1);
 				photoFields.add(formField);
 			}
-			
+
 			FacilioField siteIdField = fieldsAsMap.get("siteId");
 			if (siteIdField != null) {
 				FormField formField = new FormField(siteIdField.getId(), siteIdField.getName(), siteIdField.getDisplayType(), siteIdField.getDisplayName(), Required.OPTIONAL, 0, 1);
 				formFields.add(formField);
 			}
-		
+
 			List<FormSection> sections = new ArrayList<>();
 			FormSection photoSection = new FormSection("", 0, photoFields, false);
 			sections.add(photoSection);

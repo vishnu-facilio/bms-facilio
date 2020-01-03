@@ -7328,5 +7328,34 @@ public class FieldFactory {
 		return getField(AgentConstants.LAST_MODIFIED_TIME, "LAST_MODIFIED_TIME", module, FieldType.NUMBER);
 	}
 
+	public static List<FacilioField> getWebTabGroupFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWebTabGroupModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("iconType", "ICON_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("route", "ROUTE", module, FieldType.STRING));
+		fields.add(getField("order", "TABGROUP_ORDER", module, FieldType.NUMBER));
+
+		return fields;
+	}
+
+	public static List<FacilioField> getWebTabFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWebTabModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		LookupField groupLookupField = (LookupField) getField("group", "GROUP_ID", module, FieldType.LOOKUP);
+		groupLookupField.setLookupModule(ModuleFactory.getWebTabGroupModule());
+		fields.add(groupLookupField);
+		fields.add(getField("type", "TYPE", module, FieldType.ENUM));
+		fields.add(getField("order", "TAB_ORDER", module, FieldType.NUMBER));
+		fields.add(getField("route", "ROUTE", module, FieldType.STRING));
+		fields.add(getField("config", "CONFIG", module, FieldType.STRING));
+
+		return fields;
+	}
 
 }

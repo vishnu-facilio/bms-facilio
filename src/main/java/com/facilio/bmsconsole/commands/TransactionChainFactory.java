@@ -899,7 +899,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
-		
+
 		public static FacilioChain insertReadingDataMetaForBulkResourceDuplication() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
@@ -4238,6 +4238,24 @@ public class TransactionChainFactory {
 	public static FacilioChain copySpecificAssetReadingToAnotherOrgChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new copyAssetReadingCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddOrUpdateTabGroup() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateTabGroupCommand());
+		return chain;
+	}
+
+	public static FacilioChain getDeleteTabGroup() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteTabGroupCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddOrUpdateTabChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateTabCommand());
 		return chain;
 	}
 }

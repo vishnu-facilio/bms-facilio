@@ -3042,4 +3042,20 @@ public class ModuleFactory {
 		module.setTableName("Occupants");
 		return module;
 	}
+
+	public static FacilioModule getWebTabGroupModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("webTabGroup");
+		module.setDisplayName("WebTab Group");
+		module.setTableName("WebTab_Group");
+		return module;
+	}
+
+	public static FacilioModule getWebTabModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("webTab");
+		module.setDisplayName("WebTab");
+		module.setTableName("WebTab");
+		return module;
+	}
 }

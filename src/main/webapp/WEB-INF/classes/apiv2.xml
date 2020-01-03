@@ -4824,5 +4824,23 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="webtab" namespace="/api/v2/tabGroup"
+			 extends="v2Api">
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="addOrUpdateTabGroup" />
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="deleteTabGroup" />
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="getAllWebTabGroup" />
+	</package>
+	<package name="webtab" namespace="/api/v2/tab"
+			 extends="v2Api">
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="addOrUpdateTab" />
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="deleteTabGroup" />
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.WebTabAction" method="getAllWebTabGroup" />
+	</package>
 	
 </struts>
