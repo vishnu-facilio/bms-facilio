@@ -1386,6 +1386,9 @@ public class FacilioConstants {
 		public static final String COPY_ASSET_LIST = "assetList";
 		public static final String COPY_TIME_DIFF = "timeDiff";
 		
+		public static final String SERVICE_REQUESTS = "serviceRequests";
+		public static final String SERVICE_REQUEST = "serviceRequest";
+				
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

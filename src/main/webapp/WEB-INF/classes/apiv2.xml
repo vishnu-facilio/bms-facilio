@@ -4849,4 +4849,22 @@
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabList" />
 	</package>
 	
+	<package name="servicerequests" namespace="/api/v2/servicerequests"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="addServiceRequest" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.OccupantAction" method="updateOccupants" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.OccupantAction" method="deleteOccupants" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.OccupantAction" method="getOccupantDetails" />
+		<action name="updatePortalAccess"
+			class="com.facilio.bmsconsole.actions.OccupantAction" method="updatePortalAccess" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.OccupantAction" method="getOccupantsList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
 </struts>

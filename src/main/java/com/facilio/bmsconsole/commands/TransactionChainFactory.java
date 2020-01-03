@@ -4270,6 +4270,13 @@ public class TransactionChainFactory {
 		chain.addCommand(new DeleteTabCommand());
 		return chain;
 	}
+	public static FacilioChain addServiceRequestChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForServiceRequests());
+		c.addCommand(new GenericAddModuleDataCommand());
+		
+		return c;
+	}
 }
 
 
