@@ -28,25 +28,25 @@ public class UnModeledDataCommand extends FacilioCommand {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		if(context.containsKey(AgentConstants.IS_NEW_AGENT) && (context.get(AgentConstants.IS_NEW_AGENT) != null) && (context.get(AgentConstants.IS_NEW_AGENT) instanceof Boolean)){
-			if((boolean)context.get(AgentConstants.IS_NEW_AGENT)){
+		if (context.containsKey(AgentConstants.IS_NEW_AGENT) && (context.get(AgentConstants.IS_NEW_AGENT) != null) && (context.get(AgentConstants.IS_NEW_AGENT) instanceof Boolean)) {
+			if ((boolean) context.get(AgentConstants.IS_NEW_AGENT)) {
 				isV2 = true;
 			}
 		}
-		Map<String, Map<String,String>> deviceData;
-		if (isV2) deviceData =(Map<String, Map<String,String>>) context.get("DEVICE_DATA_2");
-		else deviceData = (Map<String, Map<String,String>>) context.get(FacilioConstants.ContextNames.DEVICE_DATA);
-		long timeStamp=(long)context.get(FacilioConstants.ContextNames.TIMESTAMP);
-		Long controllerId=(Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-		List<Map<String, Object>> records=new ArrayList<Map<String,Object>>();
-		List<Map<String, Object>> pointsRecords=(List<Map<String, Object>>) context.get("POINTS_DATA_RECORD");
-		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
-			String deviceName=data.getKey();// controller name
-			Map<String,String> instanceMap= data.getValue(); // timeseries data
-			for(Map.Entry<String,String> map:instanceMap.entrySet()) {
-				String pointName=map.getKey();
-				String instanceVal=map.getValue();
-				if(instanceVal.equalsIgnoreCase("NaN")) {
+		Map<String, Map<String, String>> deviceData;
+		if (isV2) deviceData = (Map<String, Map<String, String>>) context.get("DEVICE_DATA_2");
+		else deviceData = (Map<String, Map<String, String>>) context.get(FacilioConstants.ContextNames.DEVICE_DATA);
+		long timeStamp = Long.parseLong(context.get(FacilioConstants.ContextNames.TIMESTAMP).toString());
+		Long controllerId = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
+		List<Map<String, Object>> records = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> pointsRecords = (List<Map<String, Object>>) context.get("POINTS_DATA_RECORD");
+		for (Map.Entry<String, Map<String, String>> data : deviceData.entrySet()) {
+			String deviceName = data.getKey();// controller name
+			Map<String, String> instanceMap = data.getValue(); // timeseries data
+			for (Map.Entry<String, String> map : instanceMap.entrySet()) {
+				String pointName = map.getKey();
+				String instanceVal = map.getValue();
+				if (instanceVal.equalsIgnoreCase("NaN")) {
 					continue;
 				}
 				Map<String, Object> record = new HashMap<String, Object>();
