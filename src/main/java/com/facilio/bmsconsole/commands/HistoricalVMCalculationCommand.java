@@ -25,7 +25,7 @@ import com.facilio.time.DateTimeUtil;
 
 public class HistoricalVMCalculationCommand extends FacilioCommand implements PostTransactionCommand {
 	
-	private static final Logger LOGGER = Logger.getLogger(HistoricalVMEnergyDataCalculatorJob.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(HistoricalVMCalculationCommand.class.getName());
 	
 	private HistoricalLoggerContext historicalLogger = null;
 	private Long jobId;

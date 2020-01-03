@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.EnergyMeterUtilAPI;
 import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -164,7 +165,7 @@ public class EnergyAction extends FacilioAction {
 		{
 			throw new Exception("Start time should be less than the Endtime");
 		}
-		DeviceAPI.runHistoricalVMBasedonHierarchyWithoutLoggers(startTime, endTime, vmList);
+		EnergyMeterUtilAPI.runHistoricalVMBasedonHierarchyWithoutLoggers(startTime, endTime, vmList);
 		setResult("Result", "Historical Calculation for the given interval has been started based on hierarchy");
 		return SUCCESS;	
 	}
@@ -175,7 +176,7 @@ public class EnergyAction extends FacilioAction {
 		{
 			throw new Exception("Start time should be less than the Endtime");
 		}
-		DeviceAPI.markDataGapforHistoricalPeriod(startTime, endTime, vmList);
+		EnergyMeterUtilAPI.markDataGapforHistoricalPeriod(startTime, endTime, vmList);
 		setResult("Result", "Data gap for the given interval will be marked");
 		
 		return SUCCESS;	
