@@ -894,6 +894,14 @@ public class TransactionChainFactory {
 			c.addCommand(ReadOnlyChainFactory.fetchModuleDataDetailsChain());
 			c.addCommand(new RecordsDuplicateCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
+			c.addCommand(new ModuleBasedSpecificCommand());
+			return c;
+		}
+		
+		public static FacilioChain insertReadingDataMetaForBulkResourceDuplication() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
+			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 			return c;
 		}
 		
