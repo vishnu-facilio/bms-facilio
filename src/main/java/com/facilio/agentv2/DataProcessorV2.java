@@ -238,7 +238,7 @@ public class DataProcessorV2
             /*ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             bean.processNewTimeSeries(payload,controllerTs);*/
         } catch (Exception e) {
-            LOGGER.info("Exception while processing timeseries data");
+            LOGGER.info("Exception while processing timeseries data ", e);
         }
     }
 
