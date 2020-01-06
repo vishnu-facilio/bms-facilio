@@ -116,7 +116,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				currentRDMList = getSupportingData(fields, startTime, endTime, resourceId);
 			}
 			if (currentRDMList != null && !currentRDMList.isEmpty()) {
-//					LOGGER.info("Current resource Support Fields RDM Values size : "+currentRDMList.size());
+				LOGGER.info("Current resource Support Fields RDM Values size : " + currentRDMList.size());
 				if (supportFieldsRDM == null) {
 					currentFields = currentRDMList;
 				}
@@ -190,16 +190,6 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			long timeTaken = (System.currentTimeMillis() - jobStartTime);
 			LOGGER.info("Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
 			LOGGER.info("Total Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" between "+startTime+" and "+endTime+" is "+timeTaken);
-			
-//			if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 134) {
-//				JSONObject json = new JSONObject();
-//				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com, vasanth@facilio.com");
-//				json.put("sender", "noreply@facilio.com");
-//				json.put("subject", "Historical Run completed for RuleLogger : "+jc.getJobId());
-//				json.put("message", "Total Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" between "+startTime+" and "+endTime+" is "+timeTaken);
-//
-//				FacilioFactory.getEmailClient().sendEmail(json);
-//			}
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
@@ -263,7 +253,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 						List<ReadingEventContext> currentEvent = (List<ReadingEventContext>) context.remove(EventConstants.EventContextNames.EVENT_LIST);
 						if (CollectionUtils.isNotEmpty(currentEvent)) {
 							latestEvent = currentEvent.get(0);
-							LOGGER.info("Event from history : "+FieldUtil.getAsJSON(latestEvent).toJSONString());
+//							LOGGER.info("Event from history : "+FieldUtil.getAsJSON(latestEvent).toJSONString());
 							readingEvents.addAll(currentEvent);
 						}
 					}
