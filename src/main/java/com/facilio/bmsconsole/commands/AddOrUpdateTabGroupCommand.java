@@ -34,6 +34,9 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
                 int lastOrderNumber = getLastOrderNumber(tabGroup.getAppId());
                 tabGroup.setOrder(lastOrderNumber + 1);
             }
+            else {
+                tabGroup.setOrder(-1);
+            }
 
             if (checkRouteAlreadyFound(tabGroup)) {
                 throw new IllegalArgumentException("Route is already found for this app");
@@ -63,7 +66,7 @@ public class AddOrUpdateTabGroupCommand extends FacilioCommand {
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getWebTabGroupModule().getTableName())
-                .select(Arrays.asList(FieldFactory.getField("order", "MAX(TABGROUP_ORDER)", FieldType.NUMBER)))
+                .select(FieldFactory.getWebTabGroupFields())
                 .andCondition(CriteriaAPI.getCondition("ROUTE", "route", tabGroup.getRoute(), StringOperators.IS));
 
         if (tabGroup.getId() > 0) {

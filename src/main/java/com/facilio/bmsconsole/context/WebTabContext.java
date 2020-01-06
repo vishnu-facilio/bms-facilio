@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.modules.FacilioEnum;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.Serializable;
 
@@ -24,12 +26,12 @@ public class WebTabContext implements Serializable {
         this.name = name;
     }
 
-    private WebTabGroupContext group;
-    public WebTabGroupContext getGroup() {
-        return group;
+    private long groupId;
+    public long getGroupId() {
+        return groupId;
     }
-    public void setGroup(WebTabGroupContext group) {
-        this.group = group;
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
     }
 
     private String route;
@@ -66,11 +68,23 @@ public class WebTabContext implements Serializable {
     }
 
     private JSONObject config;
-    public JSONObject getConfig() {
+    public JSONObject getConfigJSON() {
         return config;
     }
     public void setConfig(JSONObject config) {
         this.config = config;
+    }
+    public String getConfig() {
+        if (config != null) {
+            return config.toJSONString();
+        }
+        return null;
+    }
+    public void setConfig(String configString) {
+        try {
+            JSONParser parser = new JSONParser();
+            this.config = (JSONObject) parser.parse(configString);
+        } catch (Exception e) {}
     }
 
     public void validateConfig() {

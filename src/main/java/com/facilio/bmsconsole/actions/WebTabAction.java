@@ -54,7 +54,7 @@ public class WebTabAction extends FacilioAction {
     }
 
     public String deleteTabGroup() throws Exception {
-        FacilioChain chain = TransactionChainFactory.getDeleteTabGroup();
+        FacilioChain chain = TransactionChainFactory.getDeleteTabGroupChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ID, getId());
         chain.execute();
@@ -70,11 +70,39 @@ public class WebTabAction extends FacilioAction {
         this.tab = tab;
     }
 
+    private Long tabGroupId;
+    public Long getTabGroupId() {
+        return tabGroupId;
+    }
+    public void setTabGroupId(Long tabGroupId) {
+        this.tabGroupId = tabGroupId;
+    }
+
     public String addOrUpdateTab() throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.WEB_TAB, getTab());
         chain.execute();
+        return SUCCESS;
+    }
+
+    public String deleteTab() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getDeleteTabChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, getId());
+        chain.execute();
+
+        return SUCCESS;
+    }
+
+    public String getTabList() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getAllTabChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.WEB_TAB_GROUP_ID, getTabGroupId());
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.WEB_TABS, context.get(FacilioConstants.ContextNames.WEB_TABS));
+
         return SUCCESS;
     }
 }

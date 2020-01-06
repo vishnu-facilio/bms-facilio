@@ -7347,10 +7347,8 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
-		LookupField groupLookupField = (LookupField) getField("group", "GROUP_ID", module, FieldType.LOOKUP);
-		groupLookupField.setLookupModule(ModuleFactory.getWebTabGroupModule());
-		fields.add(groupLookupField);
-		fields.add(getField("type", "TYPE", module, FieldType.ENUM));
+		fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
+		fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
 		fields.add(getField("order", "TAB_ORDER", module, FieldType.NUMBER));
 		fields.add(getField("route", "ROUTE", module, FieldType.STRING));
 		fields.add(getField("config", "CONFIG", module, FieldType.STRING));

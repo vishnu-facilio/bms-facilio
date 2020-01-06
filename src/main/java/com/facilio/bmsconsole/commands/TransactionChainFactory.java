@@ -4247,7 +4247,7 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getDeleteTabGroup() {
+	public static FacilioChain getDeleteTabGroupChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteTabGroupCommand());
 		return chain;
@@ -4256,6 +4256,12 @@ public class TransactionChainFactory {
 	public static FacilioChain getAddOrUpdateTabChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateTabCommand());
+		return chain;
+	}
+
+	public static FacilioChain getDeleteTabChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteTabCommand());
 		return chain;
 	}
 }
