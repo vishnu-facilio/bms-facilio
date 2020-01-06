@@ -65,6 +65,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioChain moduleRecordsDuplicateChain = TransactionChainFactory.getModuleRecordsDuplicateChain();
 		FacilioContext context = moduleRecordsDuplicateChain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(FacilioConstants.ContextNames.STARTING_NUMBER, startingNumber);
 		context.put(FacilioConstants.ContextNames.DUPLICATE_OBJECT, duplicateObj);

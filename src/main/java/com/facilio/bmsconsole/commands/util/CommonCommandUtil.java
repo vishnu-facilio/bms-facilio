@@ -809,6 +809,30 @@ public class CommonCommandUtil {
 		activities.add(activity);
 		context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
 	}
+	
+	public static void addBulkActivityToContext(List<Long> parentIds, long ttime, ActivityType type, Map<Long, JSONObject> infoMap, FacilioContext context) {
+		List<ActivityContext> activities = (List<ActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);
+		if (activities == null) {
+			activities = new ArrayList<>();
+			for (int i = 0; i < parentIds.size(); i++) {
+				ActivityContext activity = new ActivityContext();
+				activity.setParentId(parentIds.get(i));
+				
+				if (ttime == -1) {
+					activity.setTtime(System.currentTimeMillis());
+				}
+				else {
+					activity.setTtime(ttime);
+				}
+				activity.setType(type);
+				activity.setInfo(infoMap.get(parentIds.get(i)));
+				activity.setDoneBy(AccountUtil.getCurrentUser());
+				activities.add(activity);		
+			}
+		}
+		context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
+	}
+	
     public static void addAlarmActivityToContext(long parentId, long ttime, ActivityType type, JSONObject info, FacilioContext context, long lastOccurrenceId) {
         AlarmActivityContext activity = new AlarmActivityContext();
         activity.setParentId(parentId);

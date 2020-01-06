@@ -895,6 +895,8 @@ public class TransactionChainFactory {
 			c.addCommand(new RecordsDuplicateCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new ModuleBasedSpecificCommand());
+			c.addCommand(new ConstructActivityForBulkRecordsCommand());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
