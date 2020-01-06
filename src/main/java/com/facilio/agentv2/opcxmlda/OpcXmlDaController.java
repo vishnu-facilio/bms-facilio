@@ -84,7 +84,7 @@ public class OpcXmlDaController extends Controller {
     public void processIdentifier(String identifier) throws Exception {
         if( ( identifier != null ) && ( ! identifier.isEmpty() ) ){
             String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
-            if( (uniques.length == 1) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_XML_DA) ) )
+            if( (uniques.length == 2) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_XML_DA) ) )
             {
                 setUrl(uniques[1]);
                 this.identifier = identifier;

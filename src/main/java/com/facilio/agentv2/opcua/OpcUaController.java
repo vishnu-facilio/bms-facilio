@@ -94,7 +94,7 @@ public class OpcUaController extends Controller {
     public void processIdentifier(String identifier) throws Exception {
         if( (identifier != null) && ( ! identifier.isEmpty() ) ){
             String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
-            if( (uniques.length == 2) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_UA) ) )
+            if( (uniques.length == 4) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_UA) ) )
             {
                 this.url = uniques[1];
                 this.securityMode = Integer.parseInt(uniques[2]);
