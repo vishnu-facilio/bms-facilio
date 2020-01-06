@@ -128,12 +128,13 @@ public class FieldDeviceApi
                 controller = ControllerUtilV2.getControllerFromJSON(device.getAgentId(), device.getControllerProps());
                 LOGGER.info(" controller formed is ->"+controller.getChildJSON());
                  ControllerMessenger.discoverPoints(controller);
+                 return true;
             } catch (Exception e) {
-                LOGGER.info("Exception while making Device bean from json -> "+deviceMap);
+                LOGGER.info("Exception while making Device bean from json -> " + deviceMap + "  ", e);
                 return false;
             }
         }
-        return true;
+        return false;
     }
 
 
