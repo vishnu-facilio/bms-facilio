@@ -26,7 +26,7 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		if (module != null) {
 			// add only for custom module
-			if (module.isCustom()) {
+			if (!module.isCustom()) {
 				return false;
 			}
 			
