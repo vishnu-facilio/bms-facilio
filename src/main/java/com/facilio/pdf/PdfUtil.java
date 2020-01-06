@@ -15,6 +15,7 @@ import com.facilio.executor.CommandExecutor;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.services.filestore.PublicFileUtil;
 
 public class PdfUtil {
 
@@ -94,6 +95,25 @@ public class PdfUtil {
                 }
 
 
+        }
+        return null;
+    }
+    
+    public static String exportUrlAsPublicFilePdf(String url, boolean isPublicUrl, String name, JSONObject additionalInfo, FileFormat... formats){      	
+        FileFormat format = FileFormat.PDF;
+        if (formats != null && formats.length > 0) {
+            format = formats[0];
+        }                
+        String pdfFileLocation = convertUrlToPdf(url, null, additionalInfo, format);         
+        File pdfFile = new File(pdfFileLocation);
+        if(pdfFileLocation != null) {
+	      	try {
+				String publicFileUrl = PublicFileUtil.createPublicFile(pdfFile, name != null ? name+format.getExtention() : pdfFile.getName(), format.getExtention().substring(1), format.getContentType(), -1);
+				return publicFileUrl;
+			        
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
         }
         return null;
     }
