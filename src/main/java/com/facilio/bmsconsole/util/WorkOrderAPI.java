@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.modules.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -29,7 +28,6 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.SpaceContext;
@@ -53,7 +51,13 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -2212,7 +2216,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
           long totalCountValLastQuarter = MapUtils.isNotEmpty(buildingMap) ? ((long)buildingMap.get("lastQuarterCount")) : 0;
 
           Map<String, Object> categoryWiseForBuilding = new HashMap<String, Object>();
-          categoryWiseForBuilding.put("avgRespTime", MapUtils.isNotEmpty(categoryWiseForBuildingThisMonth) ? (Math.round(((Number)categoryWiseForBuildingThisMonth.get("avg_response_time")).doubleValue()*100.0)/100.0) : 0.0);
+          categoryWiseForBuilding.put("avgRespTime", MapUtils.isNotEmpty(categoryWiseForBuildingThisMonth) && categoryWiseForBuildingThisMonth.get("avg_response_time") != null ? (Math.round(((Number)categoryWiseForBuildingThisMonth.get("avg_response_time")).doubleValue()*100.0)/100.0) : 0.0);
           categoryWiseForBuilding.put("unplannedCount", categoryUnplannedCountVal);
           categoryWiseForBuilding.put("totalCount", totalCountVal);
           categoryWiseForBuilding.put("lastAvgRespTime",  MapUtils.isNotEmpty(categoryWiseForBuildingLastMonth) ? categoryWiseForBuildingLastMonth.get("avg_response_time") != null ? Math.round(((Number)categoryWiseForBuildingLastMonth.get("avg_response_time")).doubleValue()*100.0)/100.0 : 0  : 0);
