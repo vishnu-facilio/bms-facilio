@@ -1159,6 +1159,8 @@ public class TransactionChainFactory {
 			c.addCommand(new SetValidationRulesContextCommand());
 			c.addCommand(new AddValidationRulesCommand());
 			c.addCommand(new AddKPIViolationRuleCommand());
+			c.addCommand(new SetFormulaFieldResourceStatusCommand());
+			c.addCommand(new ConstructFormulaDependenciesCommand());
 			return c;
 		}
 		
@@ -1167,6 +1169,8 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateFormulaCommand());
 			c.addCommand(new AddValidationRulesCommand());
 			//c.addCommand(new AddKPIViolationRuleCommand());
+			c.addCommand(new UpdateFormulaFieldResourceStatusCommand());
+			c.addCommand(new ConstructFormulaDependenciesCommand());
 			return c;
 		}
 		
@@ -4005,6 +4009,12 @@ public class TransactionChainFactory {
 		public static FacilioChain getExecuteHistoricalRuleAlarmProcessing() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new HistoricalAlarmProcessingCommand());
+			return c;
+		}
+
+		public static FacilioChain getExecuteFormulaFieldJobCalculationCommand() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new FormulaFieldJobCalculationCommand());
 			return c;
 		}
 

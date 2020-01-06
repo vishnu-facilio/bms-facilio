@@ -766,7 +766,9 @@ public class FacilioConstants {
 		public static final String HISTORICAL_FORMULA_FIELD_JOB_ID = "historicalFormulaFieldJobId";
 		public static final String HISTORICAL_OPERATIONAL_ALARM_PROCESSING_JOB_ID = "historicalOperationalAlarmProcessingJobId";
 		public static final String HISTORICAL_OPERATIONAL_EVENT_JOB_ID = "historicalOperationalEventJobId";
-
+		public static final String FORMULA_RESOURCE_JOB_ID = "formulaJobId";
+		public static final String FORMULA_FREQUENCY_TYPES="formulaFrequencyTypes";
+		
 		public static final String ASSET_BD_SOURCE_DETAILS = "assetbreakdownSourceDetails";
 		public static final String LAST_ASSET_BD_SOURCE_DETAILS_ID = "lastAssetBDSourceDetailId";
 
@@ -1106,6 +1108,8 @@ public class FacilioConstants {
 		public static final String FORMULA_UNIT_STRING = "formulaUnitString";
 		public static final String FORMULA_UNIT = "formulaUnit";
 		public static final String FORMULA_METRIC = "formulaMetric";
+		public static final String DEPENDENT_FIELD_RESOURCE_CONTEXT_LIST = "dependentFieldResourceContextList";
+		public static final String FORMULA_RESOURCE_STATUS_LIST="formulaFieldResourceStatusList";
 		public static final String IS_FORMULA_FIELD_OPERATION_FROM_M_AND_V = "isformulaFieldOppFromMandV";
 		
 		public static final String FORMULA_FIELD_TYPE = "formulaFieldType";

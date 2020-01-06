@@ -1439,6 +1439,22 @@ public class ModuleFactory {
 		return workflowRuleHistoricalLogsModule;
 	}
 	
+	public static FacilioModule getFormulaFieldDependenciesModule() {
+		FacilioModule formulaFieldDependenciesModule = new FacilioModule();
+		formulaFieldDependenciesModule.setName("formulaFieldDependenciesModule");
+		formulaFieldDependenciesModule.setDisplayName("Formula Field Dependencies Module");
+		formulaFieldDependenciesModule.setTableName("Formula_Field_Dependencies");
+		return formulaFieldDependenciesModule;
+	}
+	
+	public static FacilioModule getFormulaFieldResourceStatusModule() {
+		FacilioModule formulaFieldResourceStatusModule = new FacilioModule();
+		formulaFieldResourceStatusModule.setName("formulaFieldResourceStatusModule");
+		formulaFieldResourceStatusModule.setDisplayName("Formula Field Resource Status Module");
+		formulaFieldResourceStatusModule.setTableName("Formula_Field_Resource_Status");
+		return formulaFieldResourceStatusModule;
+	}
+	
 	public static FacilioModule getDashboardFolderModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Dashboard_Folder");

@@ -2081,6 +2081,11 @@
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getWorkflowRuleResourceHistoricalLogs">
 		</action>
+			
+		<action name="runMig"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="runMig">
+		</action>
 	</package>
 	<package name="virtualMeters"
 		namespace="/api/v2/virtualMeter"

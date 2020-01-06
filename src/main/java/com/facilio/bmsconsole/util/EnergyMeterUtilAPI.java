@@ -12,9 +12,11 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.jobs.FormulaLeafTriggerJob;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -24,6 +26,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.time.SecondsChronoUnit;
 
@@ -181,5 +184,16 @@ public class EnergyMeterUtilAPI {
 			}
 			
 		}
+	
+	public static void runMig () throws Exception {
+		AccountUtil.setCurrentAccount(1l);
+
+		JobContext jc = new JobContext();
+		jc.setJobId(1l);
+
+		FormulaLeafTriggerJob fLeaf = new FormulaLeafTriggerJob();
+		fLeaf.execute(jc);
+	}
+	
 
 }

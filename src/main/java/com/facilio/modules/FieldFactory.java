@@ -4174,9 +4174,41 @@ public class FieldFactory {
         createdTime.setColumnName("CREATED_TIME");
         createdTime.setModule(module);
         fields.add(createdTime);
+		return fields;
+	}
+	
+	public static List<FacilioField> getFormulaFieldResourceStatusModuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFormulaFieldResourceStatusModule();
 
-        return fields;
-    }
+		fields.add(getIdField(module));
+		fields.add(getField("formulaFieldId", "FORMULA_FIELD_ID", module, FieldType.NUMBER));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));	
+		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+		fields.add(getField("isLeaf", "IS_LEAF", module, FieldType.BOOLEAN));
+		fields.add(getField("actualStartTime", "ACTUAL_START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("calculationStartTime", "CALCULATION_START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("calculationEndTime", "CALCULATION_END_TIME", module, FieldType.NUMBER));
+		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("frequency", "FREQUENCY_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("interval", "DATA_INTERVAL", module, FieldType.NUMBER));	
+		return fields;
+	}
+	
+	public static List<FacilioField> getFormulaFieldDependenciesFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFormulaFieldDependenciesModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("parentFormulaResourceId", "PARENT_FORMULA_RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("dependentFormulaResourceId", "DEPENDENT_FORMULA_RESOURCE_ID", module, FieldType.NUMBER));
+		//fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
 
     public static List<FacilioField> getVirtualMeterRelFields() {
         List<FacilioField> fields = new ArrayList<>();
