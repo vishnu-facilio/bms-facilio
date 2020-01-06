@@ -1383,7 +1383,6 @@ public class FacilioConstants {
 		public static final String COPY_TARGET_ORG_ID = "targetOrgId";
 		public static final String COPY_START_TIME = "startTime";
 		public static final String COPY_END_TIME = "endTime";
-		public static final String COPY_MODULE_LIST = "moduleList";
 		public static final String COPY_ASSET_LIST = "assetList";
 		public static final String COPY_TIME_DIFF = "timeDiff";
 		

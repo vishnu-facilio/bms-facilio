@@ -14,7 +14,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
-public class CopyAssetReadingsData extends FacilioAction{
+public class CopyAssetReadingsData extends FacilioAction {
 
 	/**
 	 * 
@@ -26,94 +26,77 @@ public class CopyAssetReadingsData extends FacilioAction{
 	private long startTime = -1;
 	private long endTime = -1;
 	private long timeDiff = -1;
-	private String moduleList;
 	private String assetList;
-	
+
 	public String copyAssetReadings() throws Exception {
-		
-		JSONArray moduleArrayList = new JSONArray(moduleList);
+
 		JSONArray assetArrayList = new JSONArray(assetList);
 		JSONObject jsonObj = null;
-		List<Map<String,Object>> assets = new ArrayList<Map<String,Object>>();
+		List<Map<String, Object>> assets = new ArrayList<Map<String, Object>>();
 		for (int i = 0; i < assetArrayList.length(); i++) {
 			jsonObj = assetArrayList.getJSONObject(i);
 			Map<String, Object> dataValue = toMap(jsonObj);
 			assets.add(dataValue);
 		}
-		
+
 		FacilioChain context = TransactionChainFactory.copySpecificAssetReadingToAnotherOrgChain();
 		context.getContext().put(FacilioConstants.ContextNames.COPY_SOURCE_ORG_ID, getSourceOrgId());
 		context.getContext().put(FacilioConstants.ContextNames.COPY_TARGET_ORG_ID, getTargetOrgId());
 		context.getContext().put(FacilioConstants.ContextNames.COPY_START_TIME, getStartTime());
-		context.getContext().put(FacilioConstants.ContextNames.COPY_END_TIME, getEndTime());		
+		context.getContext().put(FacilioConstants.ContextNames.COPY_END_TIME, getEndTime());
 		context.getContext().put(FacilioConstants.ContextNames.COPY_TIME_DIFF, getTimeDiff());
-		context.getContext().put(FacilioConstants.ContextNames.COPY_MODULE_LIST, toList(moduleArrayList));
 		context.getContext().put(FacilioConstants.ContextNames.COPY_ASSET_LIST, assets);
 		context.execute();
-		
+
 		return SUCCESS;
 	}
-
 
 	public long getSourceOrgId() {
 		return sourceOrgId;
 	}
+
 	public void setSourceOrgId(long sourceOrgId) {
 		this.sourceOrgId = sourceOrgId;
 	}
+
 	public long getTargetOrgId() {
 		return targetOrgId;
 	}
+
 	public void setTargetOrgId(long targetOrgId) {
 		this.targetOrgId = targetOrgId;
 	}
+
 	public long getStartTime() {
 		return startTime;
 	}
+
 	public void setStartTime(long startTime) {
 		this.startTime = startTime;
 	}
+
 	public long getEndTime() {
 		return endTime;
 	}
+
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
 	}
-	public String getModuleList() {
-		return moduleList;
-	}
-	public void setModuleList(String moduleList) {
-		this.moduleList = moduleList;
-	}
-
 
 	public String getAssetList() {
 		return assetList;
 	}
 
-
 	public void setAssetList(String assetList) {
 		this.assetList = assetList;
 	}
-
 
 	public long getTimeDiff() {
 		return timeDiff;
 	}
 
-
 	public void setTimeDiff(long timeDiff) {
 		this.timeDiff = timeDiff;
-	}
-
-
-	private List<String> toList(JSONArray array) throws JSONException {
-		List<String> list = new ArrayList<>();
-		for (int i = 0; i < array.length(); i++) {
-			String value = (String) array.get(i);
-			list.add(value);
-		}
-		return list;
 	}
 
 	public static Map<String, Object> toMap(JSONObject object) throws JSONException {
