@@ -123,7 +123,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			}
 			for(String rdmfield:currentRDMList.keySet())
 			{
-				LOGGER.info(" Current RDM List RDM Values size : " + currentFields.get(rdmfield).size() + " field "+rdmfield );
+				LOGGER.info(" Current RDM List RDM Values size : " + currentRDMList.get(rdmfield).size() + " field "+rdmfield );
 			}
 			
 			if (currentRDMList != null && !currentRDMList.isEmpty()) {
