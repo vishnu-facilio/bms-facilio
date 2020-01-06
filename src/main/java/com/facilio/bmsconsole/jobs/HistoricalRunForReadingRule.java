@@ -111,12 +111,22 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			}
 			
 			Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
+			
+			for(String field:currentFields.keySet())
+			{
+				LOGGER.info("CurrentFields RDM Values size : " +currentFields.get(field).size() + " field "+field );
+			}
+			
 			Map<String, List<ReadingDataMeta>> currentRDMList = null;
 			if (fields != null) {
 				currentRDMList = getSupportingData(fields, startTime, endTime, resourceId);
 			}
+			for(String rdmfield:currentRDMList.keySet())
+			{
+				LOGGER.info(" Current RDM List RDM Values size : " + currentFields.get(rdmfield).size() + " field "+rdmfield );
+			}
+			
 			if (currentRDMList != null && !currentRDMList.isEmpty()) {
-				LOGGER.info("Current resource Support Fields RDM Values size : " + currentRDMList.size());
 				if (supportFieldsRDM == null) {
 					currentFields = currentRDMList;
 				}
