@@ -37,11 +37,11 @@ public class GenerateQrInviteUrlCommand extends FacilioCommand {
 				JSONObject size = new JSONObject();
 				size.put("width", 200);
 				size.put("height", 200);
-				String originalUrl = PdfUtil.exportUrlAsPublicFilePdf("https://app.facilio.com/app/qr?code=" + qrCode, true, null, size, -1,  FileFormat.IMAGE);
-				String baseUrl = FacilioProperties.getClientAppUrl();
-				if(StringUtils.isNotEmpty(originalUrl)) {
-					inviteVisitor.setQrUrl(baseUrl.concat(originalUrl));
-				}
+				String originalUrl = PdfUtil.exportUrlAsPdf("https://app.facilio.com/app/qr?code=" + qrCode, true, null, size, FileFormat.IMAGE);
+				//String baseUrl = FacilioProperties.getClientAppUrl();
+				//if(StringUtils.isNotEmpty(originalUrl)) {
+				inviteVisitor.setQrUrl(originalUrl);
+				//}
 				
 				inviteVisitor.setPassCode(passCode);
 				
