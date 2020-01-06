@@ -1837,6 +1837,36 @@ GAUGE_LAYOUT_5 ("gauge_layout_5") {
 			
 			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
 		}
+	},
+	
+	
+PM_READINGS_1 ("pmreadings_layout_1") {
+		
+		public JSONObject getParameters () {
+			JSONObject params = new JSONObject();
+			params.put("title", true);
+			params.put("pmId", true);
+			params.put("dateRange", true);
+			return params;
+		}
+		
+		public JSONObject getReturnValue () {
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", true);
+			returnValue.put("value", true);
+			return returnValue;
+		}
+		
+		public String getScript () {
+			StringBuilder sb = new StringBuilder();
+			
+			sb.append(
+					"result[\"title\"] = params.title;"
+					+ "result[\"value\"] = params;");
+					
+			
+			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
+		}
 	};
 	
 	private String name;
