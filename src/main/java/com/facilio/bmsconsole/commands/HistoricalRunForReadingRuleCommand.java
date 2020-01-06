@@ -76,7 +76,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 			{
 				switch(workflowRuleHistoricalLoggerContext.getStatusAsEnum()) {
 				case FAILED:
-					return false;
+					return true;
 				default:
 					break;
 				}
