@@ -102,6 +102,7 @@ public class ServiceRequestsAction extends FacilioAction{
 			FacilioChain c = TransactionChainFactory.addServiceRequestChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD, serviceRequest);
+			c.getContext().put(FacilioConstants.ContextNames.REQUESTER, serviceRequest.getRequester());
 			c.execute();
 			setResult(FacilioConstants.ContextNames.SERVICE_REQUEST, serviceRequest);
 

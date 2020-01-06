@@ -1883,7 +1883,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
-//		chain.addCommand(new LoadOccupantLookUpCommand());
+		chain.addCommand(new LoadServiceRequestLookupCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
@@ -1891,7 +1891,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getServcieRequestDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForServiceRequests());
-//		c.addCommand(new LoadOccupantLookUpCommand());
+		c.addCommand(new LoadServiceRequestLookupCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		
 		return c;
