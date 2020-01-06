@@ -4275,15 +4275,18 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForServiceRequests());
 		c.addCommand(new AddRequesterCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
-		
+		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		return c;
 	}
 	
 	public static FacilioChain updateServiceRequestChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForServiceRequests());
-		c.addCommand(new GenericUpdateListModuleDataCommand());
-		
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		return c;
 	}
 }

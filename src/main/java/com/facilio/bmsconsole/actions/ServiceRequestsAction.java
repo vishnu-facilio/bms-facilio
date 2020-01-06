@@ -97,6 +97,14 @@ public class ServiceRequestsAction extends FacilioAction{
 		this.serviceRequestIds = serviceRequestIds;
 	}
 	
+	private Long stateTransitionId;
+	public Long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(Long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+	
 	public String addServiceRequest() throws Exception {
 	
 			FacilioChain c = TransactionChainFactory.addServiceRequestChain();
@@ -111,9 +119,11 @@ public class ServiceRequestsAction extends FacilioAction{
 	
 	public String updateServiceRequests() throws Exception {
 		
-		if(!CollectionUtils.isEmpty(serviceRequests)) {
+		if(!CollectionUtils.isEmpty(serviceRequestIds)) {
 			FacilioChain c = TransactionChainFactory.updateServiceRequestChain();
-			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, serviceRequests);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD, serviceRequest);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, serviceRequestIds);
+			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.SERVICE_REQUESTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
