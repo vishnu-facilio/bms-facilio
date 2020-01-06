@@ -44,6 +44,7 @@ public class IdsAction extends AgentActionV2
 
     public String discoverDevicePoints(){
         try{
+            LOGGER.info(" discovering points for device " + getRecordIds());
             List<Long> deviceIds = getRecordIds();
             if( !deviceIds.isEmpty() ){
                 if(FieldDeviceApi.discoverPoints(deviceIds)){
