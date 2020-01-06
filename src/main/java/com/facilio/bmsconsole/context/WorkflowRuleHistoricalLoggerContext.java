@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+
 public class WorkflowRuleHistoricalLoggerContext {
 
 	private long id = -1;
@@ -156,6 +158,10 @@ public class WorkflowRuleHistoricalLoggerContext {
 			return status.getIntVal();
 		}
 		return -1;
+	}
+	
+	public Status getStatusAsEnum() {
+		return status;
 	}
 
 	public void setStatus(int statusint) {

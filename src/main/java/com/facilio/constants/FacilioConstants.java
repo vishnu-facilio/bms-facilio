@@ -607,6 +607,8 @@ public class FacilioConstants {
 		public static final String RUN_PARENT_METER = "runParentMeter";
 		public static final String HISTORICAL_VM_JOB_ID = "historicalVMJobId";
 		public static final String HISTORICAL_VM_JOB = "historicalVMJob";
+		public static final String HISTORICAL_RULE_JOB_ID = "historicalRuleJobId";
+		public static final String HISTORICAL_RULE_JOB = "historicalRuleJob";
 		public static final String HISTORICAL_FORMULA_FIELD_JOB_ID = "historicalFormulaFieldJobId";
 		
 		public static final String ASSET_BD_SOURCE_DETAILS = "assetbreakdownSourceDetails";

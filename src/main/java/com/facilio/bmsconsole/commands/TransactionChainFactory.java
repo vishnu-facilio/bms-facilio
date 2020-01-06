@@ -3655,6 +3655,12 @@ public class TransactionChainFactory {
 			c.addCommand(new HistoricalFormulaFieldCalculationCommand());
 			return c;
 		}
+		
+		public static FacilioChain getExecuteHistoricalRuleCalculation() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new HistoricalRunForReadingRuleCommand());
+			return c;
+		}
 
 	public static FacilioChain getAddModuleWorkflowRuleChain() {
 		FacilioChain chain = getDefaultChain();
