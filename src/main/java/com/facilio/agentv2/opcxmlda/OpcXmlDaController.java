@@ -84,11 +84,9 @@ public class OpcXmlDaController extends Controller {
     public void processIdentifier(String identifier) throws Exception {
         if( ( identifier != null ) && ( ! identifier.isEmpty() ) ){
             String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
-            if( (uniques.length == 4) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_XML_DA) ) )
+            if( (uniques.length == 1) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_XML_DA) ) )
             {
-                setUserName(uniques[1]);
-                setUrl(uniques[2]);
-                setPassword(uniques[3]);
+                setUrl(uniques[1]);
                 this.identifier = identifier;
             }else {
                 throw  new Exception(" Exceprion while processing identifier -- length or Type didnt match ");

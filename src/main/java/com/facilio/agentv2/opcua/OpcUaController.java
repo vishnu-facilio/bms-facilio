@@ -97,6 +97,8 @@ public class OpcUaController extends Controller {
             if( (uniques.length == 2) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_UA) ) )
             {
                 this.url = uniques[1];
+                this.securityMode = Integer.parseInt(uniques[2]);
+                this.securityPolicy = Integer.parseInt(uniques[3]);
                 this.identifier = identifier;
             }else {
                 throw  new Exception(" Exceprion while processing identifier -- length or Type didnt match ");
