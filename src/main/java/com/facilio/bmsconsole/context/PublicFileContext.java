@@ -14,7 +14,7 @@ public class PublicFileContext {
 	long id;
 	long orgId;
 	long fileId;
-	long expiresOn;
+	long expiresOn = -1;
 	String key;
 	FileInfo file;
 	public long getId() {

@@ -99,7 +99,7 @@ public class PdfUtil {
         return null;
     }
     
-    public static String exportUrlAsPublicFilePdf(String url, boolean isPublicUrl, String name, JSONObject additionalInfo, FileFormat... formats){      	
+    public static String exportUrlAsPublicFilePdf(String url, boolean isPublicUrl, String name, JSONObject additionalInfo, long expiry, FileFormat... formats){      	
         FileFormat format = FileFormat.PDF;
         if (formats != null && formats.length > 0) {
             format = formats[0];
@@ -108,7 +108,7 @@ public class PdfUtil {
         File pdfFile = new File(pdfFileLocation);
         if(pdfFileLocation != null) {
 	      	try {
-				String publicFileUrl = PublicFileUtil.createPublicFile(pdfFile, name != null ? name+format.getExtention() : pdfFile.getName(), format.getExtention().substring(1), format.getContentType(), -1);
+				String publicFileUrl = PublicFileUtil.createPublicFile(pdfFile, name != null ? name+format.getExtention() : pdfFile.getName(), format.getExtention().substring(1), format.getContentType(), expiry);
 				return publicFileUrl;
 			        
 			} catch (Exception e) {
