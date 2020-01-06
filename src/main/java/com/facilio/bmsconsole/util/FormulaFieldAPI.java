@@ -291,7 +291,7 @@ public class FormulaFieldAPI {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
 					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow, params, null, ignoreNullValues, false);
-					if (AccountUtil.getCurrentOrg().getId() == 169) {
+					if (AccountUtil.getCurrentOrg().getId() == 286l && resourceId == 1248194l) {
 						LOGGER.info("Result of Formula : " + fieldName + " for resource : " + resourceId + " : " + workflowResult+", ttime : "+iEndTime);
 					}
 					if(workflowResult != null) {

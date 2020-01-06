@@ -72,10 +72,14 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 									long startTime = getStartTime(formula, meta.getTtime());
 									ScheduleInfo schedule = FormulaFieldAPI.getSchedule(formula.getFrequencyEnum());
 									List<DateRange> intervals = schedule.getTimeIntervals(startTime, endTime);
+									if(AccountUtil.getCurrentOrg().getId() == 286l && resourceId == 1248194l) {
+										LOGGER.info("Interval list for for 1248194: "+intervals);
+									}
 									List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), true, false);
 									
 									if(AccountUtil.getCurrentOrg().getId() == 286l && resourceId == 1248194l) {
 										LOGGER.info("Readings startTime for 1248194: "+startTime);
+										LOGGER.info("Readings endTime for 1248194: "+endTime);
 										LOGGER.info("Readings for 1248194: "+currentReadings);
 									}
 									
