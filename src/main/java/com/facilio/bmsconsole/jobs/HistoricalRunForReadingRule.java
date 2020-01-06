@@ -74,7 +74,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			if (readingRule == null || readingRule.getMatchedResources() == null || readingRule.getMatchedResources().isEmpty()) {
 				return;
 			}
-			
+			LOGGER.info(" JobStartTime: "+jc.getJobId()+" Reading Rule : "+ruleId+" for resource : "+resourceId+" -- "+jobStartTime);	
 //			LOGGER.info("Historical execution of rule : "+readingRule.getId()+" for resources : "+readingRule.getMatchedResources().keySet());
 			Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
 			List<WorkflowFieldContext> fields = null;
@@ -126,6 +126,9 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				}
 			}
 			
+			if (AccountUtil.getCurrentOrg().getId() == 231) {
+				LOGGER.info(" ProcessStartTime: "+jc.getJobId()+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));		
+			}
 			long processStartTime = System.currentTimeMillis();
 			List<ReadingContext> readings = null;
 			
@@ -148,15 +151,25 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				WorkflowRuleHistoricalLoggerUtil.deleteReadingAlarm(readingRule.getId(), startTime, endTime, resourceId);
 			}		
 			
+			if (AccountUtil.getCurrentOrg().getId() == 231) {
+				LOGGER.info("Readings fetch Time for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));
+			}
 			List<ReadingEventContext> events = new ArrayList<>();	
 			int alarmCount = executeWorkflows(readingRule, readings, currentFields, fields, events);	
 			
+			if (AccountUtil.getCurrentOrg().getId() == 231) {
+				LOGGER.info("After Execute all workflows for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));
+			}
 			if (!events.isEmpty())
 			{
 				FacilioContext context = new FacilioContext();
 				context.put(EventConstants.EventContextNames.EVENT_LIST, events);
 				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
 				addEvent.execute(context);
+				
+				if (AccountUtil.getCurrentOrg().getId() == 231) {
+					LOGGER.info("After V2 chain for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));
+				}
 					
 				Integer alarmOccurrenceCount = (Integer) context.get(FacilioConstants.ContextNames.ALARM_COUNT);
 				if(alarmOccurrenceCount != null)
