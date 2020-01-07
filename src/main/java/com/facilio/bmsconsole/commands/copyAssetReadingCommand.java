@@ -95,13 +95,15 @@ public class copyAssetReadingCommand extends FacilioCommand {
 
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		try {
-			LOGGER.info("copy Asset Insert Started");
+			
 			FacilioModule targetModule = bean.getModule(module.getName());
 			if (targetModule == null) {
 				long moduleId = bean.addModule(module);
 				targetModule = bean.getModule(moduleId);
 			}
+			LOGGER.info("copy Asset Insert Started target AssetId is :"+targetAssetId);
 			AssetContext assetIdTarget = AssetsAPI.getAssetInfo(targetAssetId);
+			LOGGER.info("copy asset Readings Insert  module is "+targetModule.getName());
 			if (assetIdTarget == null) {
 				throw new IllegalArgumentException("Asset  doesn't exist in Target Org");
 			}
@@ -128,7 +130,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				}
 				readings.add(context);
 			}
-			LOGGER.info("copy asset Readings Insert  module is "+targetModule.getName()+" for asset "+assetIdTarget.getName());
+			
 			FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 			chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, targetModule.getName());
 			chain.getContext().put(FacilioConstants.ContextNames.READINGS, readings);
