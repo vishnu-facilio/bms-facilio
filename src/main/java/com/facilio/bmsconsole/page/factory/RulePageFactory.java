@@ -96,13 +96,13 @@ public class RulePageFactory extends PageFactory {
 		
 		addHistoryLogWidget(tab4Sec1);
 
-//		Tab tab5 = page.new Tab("actions", "actions");
-//		page.addTab(tab5);
-//
-//		Section tab5Sec1 = page.new Section();
-//		tab4.addSection(tab5Sec1);
-//
-//		addActionsWidget(tab5Sec1);
+		Tab tab5 = page.new Tab("actions", "actions");
+		page.addTab(tab5);
+
+		Section tab5Sec1 = page.new Section();
+		tab4.addSection(tab5Sec1);
+
+		addActionsWidget(tab5Sec1);
 
 		return page;
 	}

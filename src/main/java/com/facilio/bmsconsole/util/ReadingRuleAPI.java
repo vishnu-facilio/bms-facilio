@@ -792,7 +792,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		return null;
 	}
 
-	public static List<AlarmWorkflowRuleContext> getAlarmWorkflowRules(long ruleId) throws Exception {
+	public static List<WorkflowRuleContext> getAlarmWorkflowRules(long ruleId) throws Exception {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", String.valueOf(ruleId), NumberOperators.EQUALS));
 
@@ -809,7 +809,9 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", String.valueOf(ruleId), NumberOperators.EQUALS))
 				;
 		List<Map<String, Object>> list = builder.get();
-		List<AlarmWorkflowRuleContext> workflows = (List<AlarmWorkflowRuleContext>) FieldUtil.getAsBeanListFromMapList(list, AlarmWorkflowRuleContext.class);
+		// List<AlarmWorkflowRuleContext> workflows = (List<AlarmWorkflowRuleContext>) FieldUtil.getAsBeanListFromMapList(list, AlarmWorkflowRuleContext.class);
+		List<WorkflowRuleContext> workflows = WorkflowRuleAPI.getWorkFlowsFromMapList(list, true, true);
+
 		return workflows;
 	}
 }
