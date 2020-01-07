@@ -730,6 +730,9 @@ public class PointsAPI {
 
     public static List<Map<String, Object>> getPointsFromDb(List<String> pointNames, Controller controller) throws Exception {
         Criteria criteria = new Criteria();
+        LOGGER.info("GET_POINTS_FROM_DB: "+pointNames);
+        LOGGER.info("GET_POINTS_FROM_DB: "+controller.getId());
+
         if (controller != null) {
             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), String.valueOf(controller.getId()), NumberOperators.EQUALS));
         } else {
@@ -738,6 +741,7 @@ public class PointsAPI {
         criteria.addAndCondition(CriteriaAPI.getNameCondition(String.join(",",pointNames),ModuleFactory.getPointModule()));
 
         List<Map<String, Object>> pointsFromDb = getPointData(criteria);
+        LOGGER.info("POINTS_FROM_DB :" + pointsFromDb);
         return pointsFromDb;
     }
     private static List<Map<String,Object>> getPointData(Criteria criteriaList) throws Exception {
@@ -745,6 +749,8 @@ public class PointsAPI {
                 .table(ModuleFactory.getPointModule().getTableName())
                 .select(FieldFactory.getPointFields())
                 .andCriteria(criteriaList);
-        return builder.get();
+        List<Map<String, Object>> res =builder.get();
+        LOGGER.info(builder.toString());
+        return res;
     }
 }

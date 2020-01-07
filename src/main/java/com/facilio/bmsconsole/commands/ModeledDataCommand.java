@@ -45,11 +45,12 @@ public class ModeledDataCommand extends AgentV2Command {
 		if (isV2) {
 			LOGGER.info(" is v2");
 			Map<String, Map<String, String>> deviceData2 = (Map<String, Map<String, String>>) context.get("DEVICE_DATA_2");
-			List<Map<String, Object>> dataPointsValue = (List<Map<String, Object>>) context.get("DATA_POINTS");
+			List<Map<String, Object>> dataPointRecords = (List<Map<String, Object>>) context.get("DATA_POINTS");
 			Map<String, ReadingContext> iModuleVsReading = new HashMap<String, ReadingContext>();
 			Map<String, List<ReadingContext>> moduleVsReading = new HashMap<String, List<ReadingContext>>();
 			Long controllerId =-1L;
 			LOGGER.info(" deviceData2 "+deviceData2);
+			LOGGER.info(" dataPointsValue "+dataPointRecords);
 			for (Map.Entry<String, Map<String, String>> data : deviceData2.entrySet()){
 				String deviceName = data.getKey(); // controller name
 				if (deviceName.equals("UNKNOWN") ) {
@@ -58,7 +59,8 @@ public class ModeledDataCommand extends AgentV2Command {
 
 				else{
 					controllerId = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-					processKnownController(controllerId,iModuleVsReading,dataPointsValue,deviceName,timeStamp,data);
+					LOGGER.info("DataPointRecords : "+ dataPointRecords);
+					processKnownController(controllerId,iModuleVsReading,dataPointRecords,deviceName,timeStamp,data);
 
 				}
 
@@ -85,7 +87,7 @@ public class ModeledDataCommand extends AgentV2Command {
 
 			}
 
-			addPointDataToContext(context, iModuleVsReading, moduleVsReading, dataPointsValue);
+			addPointDataToContext(context, iModuleVsReading, moduleVsReading, dataPointRecords);
 			//logModelledDataCommand(context);
 
 			return false;

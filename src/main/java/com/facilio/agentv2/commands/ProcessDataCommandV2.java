@@ -31,6 +31,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                     if( containsCheck(AgentConstants.DATA,payload)){
                         JSONArray pointData = (JSONArray) payload.get(AgentConstants.DATA);
+                        LOGGER.info("Point data is "+pointData);
                         List<String> pointNames = new ArrayList<>();
                         JSONObject pointJSON;
                         Map<String, Map<String,String>> deviceData= new HashMap<>();
@@ -55,6 +56,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                                         }
                                         }
                                 }
+                                    LOGGER.info("DEVICE_DATA_2 "+deviceData);
                                  context.put("DEVICE_DATA_2", deviceData);
 
                             } else {
@@ -70,6 +72,7 @@ public class ProcessDataCommandV2 extends AgentV2Command {
                                         reformatDataPoint(pointRow);
                                     }
                                 }
+
                                 context.put("DATA_POINTS",pointsFromDb);
                             }
                             if(! pointsFromDb.isEmpty() && controller==null){
