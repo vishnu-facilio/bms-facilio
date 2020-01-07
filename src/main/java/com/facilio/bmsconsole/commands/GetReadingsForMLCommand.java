@@ -40,22 +40,13 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 		LOGGER.info("inside getReadingsforML");
 		List<MLVariableContext> mlVariable = mlContext.getMLVariable();
 		long time;
-		LOGGER.info("DATE : "+mlContext.getPredictionTime());
 		if(mlContext.getModelPath().equals("ratioCheck") || mlContext.getModelPath().equals("checkGam1") || mlContext.getModelPath().equals("buildGamModel")){
-			Calendar calendar = Calendar.getInstance();
-			Date date = calendar.getTime();
-			LOGGER.info("DATE 1 : "+date);
-			Date newDate = new Date(date.getYear(),date.getMonth(),date.getDate(),date.getHours(),0);
-			LOGGER.info("DATE 2 : "+newDate);
-			calendar.setTime(newDate);
-			time = calendar.getTimeInMillis();
-			LOGGER.info("DATE 3 : "+time);
+			time = mlContext.getPredictionTime()*1000;
 		}else{
 			time = System.currentTimeMillis();
 		}
 		
 		long currentTime = mlContext.isHistoric() ? mlContext.getExecutionEndTime() : time;
-		LOGGER.info("DATE 4 : "+currentTime);
 		if( FacilioProperties.isDevelopment() && !mlContext.isHistoric())
 		{
 			// for dev testing purpose time is moved back 
@@ -69,14 +60,10 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 		for(MLVariableContext variables:mlVariable)
 		{
 			long startTime = currentTime-variables.getMaxSamplingPeriod();
-			LOGGER.info("Start Time by prediction Time : "+(mlContext.getPredictionTime() - variables.getMaxSamplingPeriod()));
-			LOGGER.info("Start Time by system Time : "+startTime);
 			if(variables.getFutureSamplingPeriod()!=0L)
 			{
 				currentTime = currentTime + variables.getFutureSamplingPeriod();
 			}
-			LOGGER.info("End Time by prediction Time : "+mlContext.getPredictionTime());
-			LOGGER.info("End Time by system Time : "+currentTime);
 			SortedMap<Long,Object> data = new TreeMap<Long,Object>();
             FacilioField variableField = modBean.getField(variables.getFieldID());
             FacilioField parentField = modBean.getField(variables.getParentFieldID());
