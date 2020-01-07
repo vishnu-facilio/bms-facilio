@@ -10,6 +10,7 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -36,7 +37,7 @@ public class IAMUserUtil {
 	}
 
 	public static boolean changePassword(String password, String newPassword, long uId, long orgId) throws Exception {
-		IAMUser user = IAMUtil.getUserBean().getFacilioUser(orgId, uId);
+		IAMUser user = AccountUtil.getUserBean().getUser(orgId, uId);
 		if(user == null) {
 			return false;
 		}
