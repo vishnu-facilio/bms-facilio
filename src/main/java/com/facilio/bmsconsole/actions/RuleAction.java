@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.AlarmWorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 
 public class RuleAction extends  FacilioAction {
 
