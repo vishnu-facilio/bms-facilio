@@ -101,7 +101,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				long moduleId = bean.addModule(module);
 				targetModule = bean.getModule(moduleId);
 			}
-			LOGGER.info("copy Asset Insert Started target AssetId is :"+targetAssetId);
+			LOGGER.info("copy Asset Insert Started target AssetId is :"+targetAssetId + " and orgId is  : "+orgId);
 			AssetContext assetIdTarget = AssetsAPI.getAssetInfo(targetAssetId);
 			LOGGER.info("copy asset Readings Insert  module is "+targetModule.getName());
 			if (assetIdTarget == null) {
