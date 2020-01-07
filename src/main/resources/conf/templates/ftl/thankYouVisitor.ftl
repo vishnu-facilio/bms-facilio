@@ -33,11 +33,11 @@
                                                   </div>
                                     <#if (vLog.visitedSpace) ??>
                                     <div style="color: #000;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;font-size: 16px;padding-bottom: 30px;letter-spacing: 0.5px;">
-                                                You have successfully checked out of ${vLog.visitedSpace.name} on ${(vLog.checkOutTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}
+                                                You have successfully checked out of ${vLog.visitedSpace.name} on ${(vLog.checkOutTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}.
                                     </div>
                                     <#else>
                                     <div style="color: #000;font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;font-size: 16px;padding-bottom: 30px;letter-spacing: 0.5px;">
-                                                You have successfully checked out on ${(vLog.checkOutTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}
+                                                You have successfully checked out on ${(vLog.checkOutTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")}.
                                     </div>
                                     </#if>
                               </td>
