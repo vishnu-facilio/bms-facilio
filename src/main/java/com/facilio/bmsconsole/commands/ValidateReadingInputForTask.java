@@ -187,7 +187,16 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		{
 			isNextReading = true;
 			
-			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
+			ReadingContext previousValueReadingContext = getLatestInputReadingContext(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
+			if(previousValueReadingContext != null && taskContext.getReadingDataId() != -1 && (previousValueReadingContext.getId() == taskContext.getReadingDataId()))
+			{
+				previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", previousValueReadingContext.getTtime(), NumberOperators.LESS_THAN);
+			}
+			else if(previousValueReadingContext != null)
+			{
+				previousValue = (double) previousValueReadingContext.getReading(numberField.getName());
+			}
+			
 			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", (currentTask.getInputTime()+1000), NumberOperators.GREATER_THAN);
 		}
 		
@@ -468,6 +477,25 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			return value;
 		}
 		return -1;
+	}
+	
+	public ReadingContext getLatestInputReadingContext(NumberField numberField, ReadingDataMeta rdm, TaskContext currentTask, String OrderBy, long ttime, Operator<String> NumberOperator) throws Exception{
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(numberField.getModule().getName()));
+		
+		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+				.select(Collections.singletonList(numberField))
+				.module(numberField.getModule())
+				.beanClass(ReadingContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get(numberField.getName()),CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(rdm.getResourceId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(ttime), NumberOperator))
+				.orderBy(OrderBy).limit(1)
+				.skipUnitConversion();
+			
+		ReadingContext readingContext = selectBuilder.fetchFirst();
+		return readingContext;
 	}
 	
 	public static TaskErrorContext setIncrementalErrorMode(TaskContext currentTask, NumberField numberField, ReadingDataMeta rdm) throws Exception {
