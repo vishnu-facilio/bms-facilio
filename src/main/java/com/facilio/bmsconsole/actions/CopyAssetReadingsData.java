@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioChain;
@@ -41,7 +42,7 @@ public class CopyAssetReadingsData extends FacilioAction {
 			assets.add(dataValue);
 		}
 		try {
-			FacilioChain context = TransactionChainFactory.copySpecificAssetReadingToAnotherOrgChain();
+			FacilioChain context = ReadOnlyChainFactory.copySpecificAssetReadingToAnotherOrgChain();
 			context.getContext().put(FacilioConstants.ContextNames.COPY_SOURCE_ORG_ID, getSourceOrgId());
 			context.getContext().put(FacilioConstants.ContextNames.COPY_TARGET_ORG_ID, getTargetOrgId());
 			context.getContext().put(FacilioConstants.ContextNames.COPY_START_TIME, getStartTime());

@@ -1896,5 +1896,10 @@ public class ReadOnlyChainFactory {
 		
 		return c;
 	}
-	
+
+	public static FacilioChain copySpecificAssetReadingToAnotherOrgChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new copyAssetReadingCommand());
+		return chain;
+	}
 }

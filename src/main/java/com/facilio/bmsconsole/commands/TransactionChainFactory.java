@@ -4241,12 +4241,6 @@ public class TransactionChainFactory {
 		return c;
 	}
 
-	public static FacilioChain copySpecificAssetReadingToAnotherOrgChain() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new copyAssetReadingCommand());
-		return chain;
-	}
-
 	public static FacilioChain getAddOrUpdateTabGroup() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateTabGroupCommand());
