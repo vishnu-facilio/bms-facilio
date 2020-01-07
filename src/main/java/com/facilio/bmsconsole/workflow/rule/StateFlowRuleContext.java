@@ -95,11 +95,24 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 
 	@Override
 	public boolean evaluateCriteria(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		if (isDefaltStateFlow()) {
+			return true;
+		}
 		if (matchedFormLevel) {
-			matchedFormLevel = false;
 			return true;
 		}
 		return super.evaluateCriteria(moduleName, record, placeHolders, context);
+	}
+
+	@Override
+	public boolean evaluateWorkflowExpression(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		if (isDefaltStateFlow()) {
+			return true;
+		}
+		if (matchedFormLevel) {
+			return true;
+		}
+		return super.evaluateWorkflowExpression(moduleName, record, placeHolders, context);
 	}
 
 	@Override
@@ -108,6 +121,13 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		if (isDraft()) {
 			return false;
 		}
+
+		if (isDefaltStateFlow()) {
+			return true;
+		}
+
+		// Setting matchedFormLevel as false before evaluating
+		matchedFormLevel = false;
 
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
 		if (isFormLevel()) {
@@ -121,12 +141,10 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 
 					if (stateFlowId == getId()) {
 						matchedFormLevel = true;
+						return true;
 					}
-
-					return stateFlowId == getId();
 				}
 			}
-			return false;
 		}
 
 		return super.evaluateMisc(moduleName, record, placeHolders, context);
