@@ -34,8 +34,8 @@ public class MLResponseParser extends ActionSupport
 		try
 		{
 			log.info("ML ID and Result are "+ml_id+":::"+result+"::"+orgid+"::"+error);
-			if(error==null || error.isEmpty())
-			{
+//			if(error==null || error.isEmpty())
+//			{
 				AccountUtil.setCurrentAccount(orgid);
 				List<MLContext> mlContextList = MLUtil.getMLContext(ml_id);
 				if(mlContextList.isEmpty())
@@ -51,11 +51,11 @@ public class MLResponseParser extends ActionSupport
 				context.put(FacilioConstants.ContextNames.ML, mlContext);
 				FacilioChain c = FacilioChainFactory.addMLReadingChain();
 				c.execute(context);
-			}
-			else
-			{
-				sendErrorMail();
-			}
+//			}
+//			else
+//			{
+//				sendErrorMail();
+//			}
 			
 		}
 		catch(Exception e)

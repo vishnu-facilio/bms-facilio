@@ -48,6 +48,9 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 			List<ReadingContext> logReadingList = new ArrayList<>();
 			List<ReadingContext> predictReadingList = new ArrayList<>(); 
 			Boolean mlError = (Boolean) context.get("ML_ERROR");
+			if(mlError == null){
+				mlError = false;	
+			}
 			LOGGER.info("ML_ERROR : "+mlError);
 			if(mlError){
 				 ReadingContext newReading = new ReadingContext();

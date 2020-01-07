@@ -106,8 +106,6 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		if(StringUtils.isEmpty(result) || result.contains("Internal Server Error")){
 			LOGGER.fatal("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Response is not valid. RESULT : "+result);
 		    context.put("ML_ERROR", true);
-		}else{
-			context.put("ML_ERROR", false);
 		}
 		mlContext.setResult(result);
 	}catch(Exception e){
