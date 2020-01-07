@@ -95,6 +95,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		try {
+			LOGGER.info("copy Asset Insert Started");
 			FacilioModule targetModule = bean.getModule(module.getName());
 			if (targetModule == null) {
 				long moduleId = bean.addModule(module);
@@ -127,11 +128,12 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				}
 				readings.add(context);
 			}
-
+			LOGGER.info("copy asset Readings Insert  module is "+targetModule.getName()+" for asset "+assetIdTarget.getName());
 			FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 			chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, targetModule.getName());
 			chain.getContext().put(FacilioConstants.ContextNames.READINGS, readings);
 			chain.execute();
+			LOGGER.info("copy Asset Insert finished");
 		}catch(Exception e) {
 			LOGGER.info("Exception occurred in Copy Asset Update ",e);
 			throw e;
