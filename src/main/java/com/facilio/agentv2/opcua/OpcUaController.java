@@ -114,7 +114,7 @@ public class OpcUaController extends Controller {
             return identifier;
         }
         if( (url != null && ( ! url.isEmpty() ) ) ){
-            identifier = FacilioControllerType.OPC_UA.asInt()+IDENTIFIER_SEPERATOR+url;
+            identifier = FacilioControllerType.OPC_UA.asInt()+IDENTIFIER_SEPERATOR+url+securityMode+IDENTIFIER_SEPERATOR+securityPolicy;
             return identifier;
         }
         throw new Exception("Exception Occurred, parameters for identifier not set yet");

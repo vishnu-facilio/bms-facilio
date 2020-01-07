@@ -102,8 +102,8 @@ public class OpcXmlDaController extends Controller {
         if( (identifier != null ) && ( ! identifier.isEmpty() ) ){
             return identifier;
         }
-        if( isNotNull(userName) && isNotNull(url) && isNotNull(password) ){
-            identifier = FacilioControllerType.OPC_XML_DA.asInt()+IDENTIFIER_SEPERATOR+userName+IDENTIFIER_SEPERATOR+url+IDENTIFIER_SEPERATOR+password;
+        if( isNotNull(userName)  ){
+            identifier = FacilioControllerType.OPC_XML_DA.asInt()+IDENTIFIER_SEPERATOR+url;
             return identifier;
         }
         throw new Exception("Exception occurred , parameters for identifier not set yet");
