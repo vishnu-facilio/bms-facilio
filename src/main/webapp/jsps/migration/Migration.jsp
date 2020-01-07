@@ -1,3 +1,6 @@
+<%@page import="com.facilio.auth.actions.FacilioAuthAction"%>
+<%@page import="java.util.logging.Level"%>
+<%@page import="java.util.logging.Logger"%>
 <%@page import="org.apache.commons.chain.Context"%>
 <%@page import="com.facilio.bmsconsole.commands.FacilioCommand"%>
 <%@page import="com.facilio.chain.FacilioChain"%>
@@ -36,6 +39,7 @@
 	final class MigrationCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		final Logger LOGGER = Logger.getLogger(FacilioAuthAction.class.getName());
 		List<Organization> organizations = AccountUtil.getOrgBean().getOrgs();
 		List<FacilioField> fieldsFields = new ArrayList<>();
 		fieldsFields.addAll(FieldFactory.getSelectFieldFields());
@@ -52,6 +56,7 @@
 			long serviceRequestPriorityModuleId = modBean.addModule(serviceRequestPriority);
 			serviceRequestPriority.setModuleId(serviceRequestPriorityModuleId);
 			
+			if(modBean.getModule("ticketstatus") != null && modBean.getModule("resource") != null) {
 			List<FacilioField> serviceRequestPriorityFields = new ArrayList<>();
 			FacilioField spDisplayName = new FacilioField(serviceRequestPriority, "displayName", "Display Name", FieldDisplayType.TEXTBOX, "DISPLAY_NAME", FieldType.STRING, false, false, true, true);
 			modBean.addField(spDisplayName);
@@ -295,12 +300,15 @@
 			onHoldResumeStateFlow.setType(TransitionType.NORMAL);
 			onHoldResumeStateFlow.setStateFlowId(defaultStateFlowRule.getId());
 			WorkflowRuleAPI.addWorkflowRule(onHoldResumeStateFlow);
-			
+			LOGGER.log(Level.INFO, "Migrated upto org: "+ orgId);
+			} else {
+				LOGGER.log(Level.INFO, "Migration didn't happen for: " + orgId);
+			}
 		}
-		
+		LOGGER.log(Level.INFO, "Migration Completed");
 		return false;
 	}
-	}
+}
 %>
 
 <%
