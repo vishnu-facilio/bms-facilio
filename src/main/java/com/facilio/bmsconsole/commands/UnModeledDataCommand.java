@@ -59,7 +59,6 @@ public class UnModeledDataCommand extends FacilioCommand {
 					}
 					else {
 						pointId = getPointId(controllerId, pointName);
-						System.out.println("test "+ pointId);
 					}
 					if (pointId >= 0) {
 						record.put("instanceId", pointId);

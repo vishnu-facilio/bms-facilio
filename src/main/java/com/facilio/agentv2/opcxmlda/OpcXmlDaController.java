@@ -102,7 +102,7 @@ public class OpcXmlDaController extends Controller {
         if( (identifier != null ) && ( ! identifier.isEmpty() ) ){
             return identifier;
         }
-        if( isNotNull(userName)  ){
+        if( isNotNull(url)  ){
             identifier = FacilioControllerType.OPC_XML_DA.asInt()+IDENTIFIER_SEPERATOR+url;
             return identifier;
         }
