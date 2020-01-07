@@ -81,7 +81,7 @@ public class UnModeledDataCommand extends FacilioCommand {
 	private long getPointIdWithNullController(String pointName) throws Exception {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getPointModule().getTableName())
-				.select(FieldFactory.getPointsFields())
+				.select(FieldFactory.getPointFields())
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getPointModule()),pointName, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), CommonOperators.IS_EMPTY));
 		List<Map<String, Object>> rows = selectRecordBuilder.get();
