@@ -53,6 +53,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				List<FacilioModule> modules = bean.getSubModules(assetCategory.getAssetModuleID(), ModuleType.READING);
 
 				for (FacilioModule module : modules) {
+					LOGGER.info("copy asset Readings module is "+module.getName()+ "for category "+assetCategory.getName()+" for asset "+assetIdSource.getName());
 					List<FacilioField> fields = bean.getAllFields(module.getName());
 					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 					FacilioField parentField = fieldMap.get("parentId");
