@@ -961,6 +961,13 @@ public class FieldFactory {
 		placeHolder.setModule(module);
 		fields.add(placeHolder);
 
+		FacilioField accessType = new FacilioField();
+		accessType.setName("accessType");
+		accessType.setDataType(FieldType.NUMBER);
+		accessType.setColumnName("ACCESS_TYPE");
+		accessType.setModule(module);
+		fields.add(accessType);
+
 		return fields;
 	}
 
