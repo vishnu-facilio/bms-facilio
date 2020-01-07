@@ -31,7 +31,7 @@
                                       </div>
                                       <#else>
                                        <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;color:#474a51;font-size:20px;line-height:30px;text-align:left;min-width:auto!important;letter-spacing: 0.6px;">
-                                          ${vLog.visitor.name}  has successfully checked in on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} and is on their way to meet you!
+                                          ${vLog.visitor.name}  has successfully checked in on ${(vLog.checkInTime)?number_to_datetime?string("YYYY-MM-dd HH:mm:ss")} and is on the way to meet you!
                                      </div>
                                      </#if>
                                     </div>
