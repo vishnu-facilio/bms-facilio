@@ -69,12 +69,14 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 		for(MLVariableContext variables:mlVariable)
 		{
 			long startTime = currentTime-variables.getMaxSamplingPeriod();
-			LOGGER.info("DATE 5 : "+startTime);
+			LOGGER.info("Start Time by prediction Time : "+(mlContext.getPredictionTime() - variables.getMaxSamplingPeriod()));
+			LOGGER.info("Start Time by system Time : "+startTime);
 			if(variables.getFutureSamplingPeriod()!=0L)
 			{
 				currentTime = currentTime + variables.getFutureSamplingPeriod();
 			}
-			LOGGER.info("DATE 6 : "+currentTime);
+			LOGGER.info("End Time by prediction Time : "+mlContext.getPredictionTime());
+			LOGGER.info("End Time by system Time : "+currentTime);
 			SortedMap<Long,Object> data = new TreeMap<Long,Object>();
             FacilioField variableField = modBean.getField(variables.getFieldID());
             FacilioField parentField = modBean.getField(variables.getParentFieldID());
