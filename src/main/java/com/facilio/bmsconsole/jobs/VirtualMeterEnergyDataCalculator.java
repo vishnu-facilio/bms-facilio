@@ -112,11 +112,20 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 						List<MarkedReadingContext> markedList= DeviceAPI.validatedataGapCountForVMReadings(vmReadings, vm, false);										
 						if (vmReadings != null && markedList != null) {
 							hierarchicalMarkedList.addAll(markedList); //Grouping readings for all the meters in the same hierarchy	
-						}										
+						}	
+						
+						if (AccountUtil.getCurrentOrg().getId() == 231) {
+							LOGGER.info(" VM live readings starttime -- " + startTime + " VM Id --" + vm.getId() +" Job Id --" + jc.getJobId());
+							LOGGER.info(" VM live readings endTime -- " + endTime + " VM Id --" + vm.getId() +" Job Id --" + jc.getJobId());
+						}
 					}
 					
 					LOGGER.info(" GroupedVMList Size -- " + groupedVMList.size() + " Job Id --" + jc.getJobId());
 					LOGGER.info(" hierarchicalVMReadings Size -- " + hierarchicalVMReadings.size() + " Job Id --" + jc.getJobId());
+					
+					if (AccountUtil.getCurrentOrg().getId() == 231) {
+						LOGGER.info(" VM live readings at hierarchy endtime -- " + endTime + " hierarchy Id --" + hierarchy +" Job Id --" + jc.getJobId());
+					}
 					
 					DeviceAPI.insertVMReadingsBasedOnHierarchy(hierarchicalVMReadings,endTime,minutesInterval,true, false, hierarchicalMarkedList);						
 				}
