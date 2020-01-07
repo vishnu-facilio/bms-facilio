@@ -453,6 +453,9 @@ public class ProcessImportCommand extends FacilioCommand {
 						columnName = "PRIORITY";
 						fieldName = "priority";
 					}
+				} else if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) && lookupField.getName().equals("category")) {
+					columnName = "DISPLAY_NAME";
+					fieldName = "displayName";
 				}
 				SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder =  new SelectRecordsBuilder<>()
 												.module(lookupField.getLookupModule())
