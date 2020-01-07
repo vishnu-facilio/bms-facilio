@@ -1492,4 +1492,20 @@
 		
 		</workflow>
 	</template>
+	<template id="119">
+		<workflow>
+			<parameter name="org" type="String" />
+			<parameter name="org.domain" type="String" />
+			<parameter name="org.name" type="String" />
+			<parameter name="org.timezone" type="String" />
+			<parameter name="visitorlogging"
+				type="String" />
+			<parameter name="visitorlogging.id"
+				type="String" />
+			<expression name="vLog">
+				<function>resource.getVisitorLog(visitorlogging.id)
+				</function>
+			</expression>
+		</workflow>
+	</template>
 </workflows>

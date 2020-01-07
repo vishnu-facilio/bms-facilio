@@ -561,6 +561,7 @@ private static final long serialVersionUID = 1L;
 			FacilioChain c = TransactionChainFactory.updateVisitorLoggingRecordsChain();
 			VisitorManagementAPI.checkOutVisitorLogging(contactNumber, c.getContext());
 			if(c.getContext().get("visitorLogging") != null) {
+				c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 				c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, c.getContext().get("nextTransitionId"));
 				VisitorLoggingContext visitorLoggingContext = (VisitorLoggingContext) c.getContext().get("visitorLogging");
 				c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(visitorLoggingContext));

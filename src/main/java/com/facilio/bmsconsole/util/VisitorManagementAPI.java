@@ -1364,7 +1364,7 @@ public class VisitorManagementAPI {
 		ActionContext emailAction = new ActionContext();
 		emailAction.setActionType(ActionType.SMS_NOTIFICATION);
 		
-		emailAction.setDefaultTemplateId(91);
+		emailAction.setDefaultTemplateId(119);
 		//add rule,action and job
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);

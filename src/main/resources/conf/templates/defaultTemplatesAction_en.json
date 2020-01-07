@@ -1022,5 +1022,10 @@
 		"subject": "Attention Please ! VIP Visitor on Watchlist Arrived!",
 		"to": "<#if (vLog.host) ?? >${vLog.host.email}</#if>",
 		"message_ftl": "notifyVipVisitor"
+	},
+	"119": {
+		"name": "WELCOME_VISITOR_SMS",
+		"to": "${vLog.visitor.phone}",
+		"message_ftl": "welcomeSms"
 	}
 }
