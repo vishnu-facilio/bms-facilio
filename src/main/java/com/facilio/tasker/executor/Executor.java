@@ -27,7 +27,7 @@ public class Executor implements Runnable {
 
 	private static final int MAX_RETRY = 5;
 	private static final Logger LOGGER = LogManager.getLogger(Executor.class.getName());
-	private static final int JOB_TIMEOUT_BUFFER = 5000;
+	private static final int JOB_TIMEOUT_BUFFER = 0;
 
 	private ScheduledExecutorService executor = null;
 	private String name = null;
