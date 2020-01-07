@@ -137,7 +137,10 @@ public class AgentAction extends AgentActionV2 {
             LOGGER.info(" in device action " + points);
             if (!points.isEmpty()) {
                 for (Point point : points) {
-                    pointData.add(point.toJSON());
+                    JSONObject object = new JSONObject();
+                    object.putAll(point.toJSON());
+                    object.put(AgentConstants.CHILDJSON, point.getChildJSON());
+                    pointData.add(object);
                 }
             }
             setResult(AgentConstants.DATA, pointData);

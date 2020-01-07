@@ -12,6 +12,7 @@ import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -108,8 +109,11 @@ public class AgentIdAction extends AgentActionV2 {
         try {
                 Map<String, Controller> controllerData = ControllerApiV2.getAllControllersFromDb(getAgentId());
                 if ((controllerData != null) && (!controllerData.isEmpty())) {
+                    JSONObject object = new JSONObject();
                     for (Controller controller : controllerData.values()) {
-                        controllerArray.add(controller.toJSON());
+                        object.put(AgentConstants.CHILDJSON, controller.getChildJSON());
+                        object.putAll(controller.toJSON());
+                        controllerArray.add(object);
                     }
                     /*setResult(AgentConstants.RESULT, SUCCESS);*/
                     setResult(AgentConstants.DATA, controllerArray);
