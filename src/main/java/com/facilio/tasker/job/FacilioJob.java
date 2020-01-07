@@ -42,7 +42,7 @@ public abstract class FacilioJob implements Runnable {
 				return;
 			}
 			startTime = System.currentTimeMillis();
-			LOGGER.debug("Starting job " + jc.getJobId()+"-"+ jc.getJobName());
+			LOGGER.debug("Starting job " + jc.getJobKey());
 			retryExecutionCount++;
 
 			long orgId = jc.getOrgId();
