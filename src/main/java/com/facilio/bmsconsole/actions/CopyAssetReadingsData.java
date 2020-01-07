@@ -10,7 +10,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
@@ -38,15 +40,19 @@ public class CopyAssetReadingsData extends FacilioAction {
 			Map<String, Object> dataValue = toMap(jsonObj);
 			assets.add(dataValue);
 		}
-
-		FacilioChain context = TransactionChainFactory.copySpecificAssetReadingToAnotherOrgChain();
-		context.getContext().put(FacilioConstants.ContextNames.COPY_SOURCE_ORG_ID, getSourceOrgId());
-		context.getContext().put(FacilioConstants.ContextNames.COPY_TARGET_ORG_ID, getTargetOrgId());
-		context.getContext().put(FacilioConstants.ContextNames.COPY_START_TIME, getStartTime());
-		context.getContext().put(FacilioConstants.ContextNames.COPY_END_TIME, getEndTime());
-		context.getContext().put(FacilioConstants.ContextNames.COPY_TIME_DIFF, getTimeDiff());
-		context.getContext().put(FacilioConstants.ContextNames.COPY_ASSET_LIST, assets);
-		context.execute();
+		try {
+			FacilioChain context = TransactionChainFactory.copySpecificAssetReadingToAnotherOrgChain();
+			context.getContext().put(FacilioConstants.ContextNames.COPY_SOURCE_ORG_ID, getSourceOrgId());
+			context.getContext().put(FacilioConstants.ContextNames.COPY_TARGET_ORG_ID, getTargetOrgId());
+			context.getContext().put(FacilioConstants.ContextNames.COPY_START_TIME, getStartTime());
+			context.getContext().put(FacilioConstants.ContextNames.COPY_END_TIME, getEndTime());
+			context.getContext().put(FacilioConstants.ContextNames.COPY_TIME_DIFF, getTimeDiff());
+			context.getContext().put(FacilioConstants.ContextNames.COPY_ASSET_LIST, assets);
+			context.execute();
+		}catch(Exception e) {
+			throw e;
+		}
+		
 
 		return SUCCESS;
 	}
