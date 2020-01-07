@@ -1014,6 +1014,12 @@
 		<action name="fetchRuleActions"
 				class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
 				method="fetchRuleActions" />
+		<action name="addRuleActions"
+				class="com.facilio.bmsconsole.actions.RuleAction"
+				method="addRuleAction" />
+		<action name="updateRuleActions"
+				class="com.facilio.bmsconsole.actions.RuleAction"
+				method="updateRuleAction" />
 	</package>
 
 	<package name="alarmListApiv2" namespace="/api/v2/alarms/view"
