@@ -738,7 +738,7 @@ public class NewAlarmAPI {
 			{
 				if(alarmOccurrence.getAlarm().getId() != baseAlarm.getId() || baseAlarmContext == null)
 				{
-					throw new Exception ("Different/No Base Alarms in the historical interval which is rule/resource specific");
+					throw new Exception ("Different/No Base Alarms in the historical interval which is rule/resource specific, RuleID: " + ruleId + "; ResourceID: " + resourceId);
 				}
 
 				if (alarmOccurrence.getId() == (initialEdgeCaseAlarmOccurrence != null ? initialEdgeCaseAlarmOccurrence.getId() : -1) || (alarmOccurrence.getId() ==(finalEdgeCaseAlarmOccurrence != null ? finalEdgeCaseAlarmOccurrence.getId() : -1) && isNextClosestEvent)) {
