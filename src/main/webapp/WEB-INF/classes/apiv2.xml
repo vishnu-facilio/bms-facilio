@@ -306,6 +306,8 @@
 		<action name="rearrange"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="rearrangeStateFlows" />
+		<action name="changeStatus"
+				class="com.facilio.bmsconsole.actions.StateFlowAction" method="changeStatus" />
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="getStateFlowList" />

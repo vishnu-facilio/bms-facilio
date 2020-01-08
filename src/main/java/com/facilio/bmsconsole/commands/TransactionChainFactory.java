@@ -24,6 +24,8 @@ import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -2680,6 +2682,20 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getRearrangeStateFlows() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new ChangeTransitionExecutionOrderCommand());
+			return c;
+		}
+
+		public static FacilioChain getChangeStatusForStateflowChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new FacilioCommand() {
+				@Override
+				public boolean executeCommand(Context context) throws Exception {
+					WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+					WorkflowRuleAPI.updateWorkflowRule(rule);
+					return false;
+				}
+			});
 			c.addCommand(new ChangeTransitionExecutionOrderCommand());
 			return c;
 		}

@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -125,12 +127,6 @@ public class StateFlowAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 	}
 	
-	public String updateStateFlow() {
-		
-		return SUCCESS;
-	}
-	
-	
 	private StateFlowRuleContext stateFlow;
 	public StateFlowRuleContext getStateFlow() {
 		return stateFlow;
@@ -138,15 +134,7 @@ public class StateFlowAction extends FacilioAction {
 	public void setStateFlow(StateFlowRuleContext stateFlow) {
 		this.stateFlow = stateFlow;
 	}
-	
-//	private List<ActionContext> stateFlowActions;
-//	public List<ActionContext> getStateFlowActions() {
-//		return stateFlowActions;
-//	}
-//	public void setStateFlowActions(List<ActionContext> stateFlowActions) {
-//		this.stateFlowActions = stateFlowActions;
-//	}
-	
+
 	public String getStateFlowList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -224,7 +212,35 @@ public class StateFlowAction extends FacilioAction {
 		c.execute(context);
 		return SUCCESS;
 	}
-	
+
+	private Boolean status;
+	public Boolean getStatus() {
+		if (status == null) {
+			return false;
+		}
+		return status;
+	}
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+
+	public String changeStatus() throws Exception {
+		WorkflowRuleContext workFlow = new WorkflowRuleContext();
+		workFlow.setStatus(status);
+		workFlow.setId(getId());
+		WorkflowRuleAPI.updateWorkflowRule(workFlow);
+
+		FacilioChain chain = TransactionChainFactory.getChangeStatusForStateflowChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workFlow);
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_LIST, getStateFlows());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+
+		chain.execute();
+
+		return SUCCESS;
+	}
+
 	private Map<String, Object> data;
 	public Map<String, Object> getData() {
 		return data;
