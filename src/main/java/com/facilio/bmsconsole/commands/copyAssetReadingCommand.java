@@ -27,13 +27,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class copyAssetReadingCommand extends FacilioCommand {
-	private static final int LIMIT_GET_READINGS = 30000;// rows
+	private static final int LIMIT_GET_READINGS = 5;// rows
 	private static final Logger LOGGER = LogManager.getLogger(copyAssetReadingCommand.class.getName());
 
 	@Override
@@ -48,7 +47,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 		timeDiff = TimeUnit.HOURS.toMillis(timeDiff);
 		List<Map<String, Object>> assetList = (List<Map<String, Object>>) context
 				.get(FacilioConstants.ContextNames.COPY_ASSET_LIST);
-		int offsetValue = 1;
+		int offsetValue = 0;
 		boolean isData = true;
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
 		try {
@@ -60,24 +59,24 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				for (FacilioModule module : modules) {
 					LOGGER.info("copy asset Readings module is " + module.getName() + "for category "
 							+ assetCategory.getName() + " for asset " + assetIdSource.getName());
-					List<FacilioField> fields = bean.getAllFields(module.getName());
-					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-					FacilioField parentField = fieldMap.get("parentId");
-					FacilioField ttimeField = fieldMap.get("ttime");
 					while (isData) {
-
+						ModuleBean beanOrg = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
+						List<FacilioField> fields = beanOrg.getAllFields(module.getName());
+						Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+						FacilioField parentField = fieldMap.get("parentId");
+						FacilioField ttimeField = fieldMap.get("ttime");
 						SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
 								.select(fields).module(module).beanClass(ReadingContext.class)
 								.andCondition(CriteriaAPI.getCondition(parentField,
 										String.valueOf(assetIdSource.getId()), PickListOperators.IS))
 								.andCondition(CriteriaAPI.getCondition(ttimeField,
 										sourceOrgStartTime + "," + sourceOrgEndTime, DateOperators.BETWEEN))
-								.limit(LIMIT_GET_READINGS).offset(offsetValue);
+								.limit(LIMIT_GET_READINGS).orderBy("id").offset(offsetValue);
 
 						List<Map<String, Object>> prop = builder.getAsProps();
 						if (CollectionUtils.isNotEmpty(prop)) {
-							offsetValue = prop.size() + 1;
-
+							long val = prop.size();
+							offsetValue += (int) val;
 							AccountUtil.getTransactionalOrgBean(targetOrgId).copyReadingValue(prop, module, targetOrgId,
 									Long.valueOf((String) asset.get("targetAsset")), timeDiff, fields);
 						} else {
