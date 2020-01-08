@@ -2688,14 +2688,7 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getChangeStatusForStateflowChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new FacilioCommand() {
-				@Override
-				public boolean executeCommand(Context context) throws Exception {
-					WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
-					WorkflowRuleAPI.updateWorkflowRule(rule);
-					return false;
-				}
-			});
+			c.addCommand(new ChangeStateFlowStatusCommand());
 			c.addCommand(new ChangeTransitionExecutionOrderCommand());
 			return c;
 		}
