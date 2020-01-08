@@ -49,9 +49,10 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				.get(FacilioConstants.ContextNames.COPY_ASSET_LIST);
 		
 		boolean isData = true;
-		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
+		
 		try {
 			for (Map<String, Object> asset : assetList) {
+				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
 				AssetContext assetIdSource = AssetsAPI.getAssetInfo(Long.valueOf((String) asset.get("sourceAsset")));
 				AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(assetIdSource.getCategory().getId());
 				List<FacilioModule> modules = bean.getSubModules(assetCategory.getAssetModuleID(), ModuleType.READING);
