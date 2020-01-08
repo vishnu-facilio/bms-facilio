@@ -4679,6 +4679,14 @@
 		</action>
 	</package>
 	
+	<package name="visitorLoggingDashboardViews" namespace="/api/v2/visitorlogging/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
 		<package name="visitorlogging" namespace="/api/v2/visitorLogging"
 		extends="v2Api">
 		<action name="add"
