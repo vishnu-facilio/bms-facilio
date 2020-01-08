@@ -163,16 +163,17 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(parentModuleId);
 		
-		FacilioContext c = new FacilioContext();
-		c.put(FacilioConstants.ContextNames.RECORD, moduleRecord);
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.addCommand(new UpdateStateCommand());
+
+        FacilioContext c = chain.getContext();
+        c.put(FacilioConstants.ContextNames.RECORD, moduleRecord);
 		c.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
-		c.put("default_state_id", stateFlowContext.getDefaultStateId());
-		c.put("default_state", true);
-		c.put("default_state_flow_id", getId());
+		c.put(FacilioConstants.ContextNames.DEFAULT_STATE_ID, stateFlowContext.getDefaultStateId());
+		c.put(FacilioConstants.ContextNames.DEFAULT_STATE, true);
+		c.put(FacilioConstants.ContextNames.DEFAULT_STATE_FLOW_ID, getId());
 		
-		FacilioChain chain = FacilioChain.getTransactionChain();
-		chain.addCommand(new UpdateStateCommand());
-		chain.execute(c);
+		chain.execute();
 		
 		super.executeTrueActions(record, context, placeHolders);
 	}

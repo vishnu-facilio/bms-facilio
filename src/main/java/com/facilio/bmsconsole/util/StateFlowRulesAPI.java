@@ -116,8 +116,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	
 	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, FacilioStatus facilioStatus, boolean includeStateFlowChange, Context context) throws Exception {
 		if (facilioStatus == null) {
-			return;
-		} 
+			throw new IllegalArgumentException("Status cannot be empty");
+		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
