@@ -157,21 +157,22 @@ public class JobStore {
 		}
 	}
 	
-	public static long updateNextExecutionTimeAndCount(long jobId, String jobName, long nextExecutionTime, int executionCount) throws SQLException {
+	public static long updateNextExecutionTimeAndCount(long orgId, long jobId, String jobName, long nextExecutionTime, int executionCount) throws SQLException {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set NEXT_EXECUTION_TIME = ?, CURRENT_EXECUTION_COUNT = ?, STATUS = ?, EXECUTION_ERROR_COUNT = ? where JOBID = ? AND JOBNAME = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set NEXT_EXECUTION_TIME = ?, CURRENT_EXECUTION_COUNT = ?, STATUS = ?, EXECUTION_ERROR_COUNT = ? where ORGID = ? AND JOBID = ? AND JOBNAME = ?");
 			
 			pstmt.setLong(1, nextExecutionTime);
 			pstmt.setInt(2, executionCount);
 			pstmt.setInt(3, JobConstants.JOB_COMPLETED);
 			pstmt.setInt(4, JobConstants.INITIAL_EXECUTION_COUNT);
-			pstmt.setLong(5, jobId);
-			pstmt.setString(6, jobName);
+			pstmt.setLong(5, orgId);
+			pstmt.setLong(6, jobId);
+			pstmt.setString(7, jobName);
 			return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {
@@ -184,22 +185,23 @@ public class JobStore {
 		
 	}
 	
-	public static long setInActiveAndUpdateCount(long jobId, String jobName, int executionCount) throws SQLException {
+	public static long setInActiveAndUpdateCount(long orgId, long jobId, String jobName, int executionCount) throws SQLException {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ?, CURRENT_EXECUTION_COUNT = ?, STATUS = ?, JOB_SERVER_ID= ?, EXECUTION_ERROR_COUNT = ? where JOBID = ? AND JOBNAME = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ?, CURRENT_EXECUTION_COUNT = ?, STATUS = ?, JOB_SERVER_ID= ?, EXECUTION_ERROR_COUNT = ? where ORGID = ? AND JOBID = ? AND JOBNAME = ?");
 			
 			pstmt.setBoolean(1, JobConstants.DISABLED);
 			pstmt.setInt(2, executionCount);
 			pstmt.setInt(3, JobConstants.JOB_COMPLETED);
 			pstmt.setLong(4, JobConstants.DEFAULT_SERVER_ID);
 			pstmt.setInt(5, JobConstants.INITIAL_EXECUTION_COUNT);
-			pstmt.setLong(6, jobId);
-			pstmt.setString(7, jobName);
+			pstmt.setLong(6, orgId);
+			pstmt.setLong(7, jobId);
+			pstmt.setString(8, jobName);
             return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {
@@ -212,21 +214,22 @@ public class JobStore {
 		
 	}
 	
-	public static long setInActive(long jobId, String jobName) throws SQLException {
+	public static long setInActive(long orgId, long jobId, String jobName) throws SQLException {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ?, STATUS = ?, JOB_SERVER_ID= ?, EXECUTION_ERROR_COUNT = ? where JOBID = ? AND JOBNAME = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ?, STATUS = ?, JOB_SERVER_ID= ?, EXECUTION_ERROR_COUNT = ? where ORGID = ? AND JOBID = ? AND JOBNAME = ?");
 			
 			pstmt.setBoolean(1, JobConstants.DISABLED);
 			pstmt.setInt(2, JobConstants.JOB_COMPLETED);
 			pstmt.setLong(3, JobConstants.DEFAULT_SERVER_ID);
 			pstmt.setInt(4, JobConstants.INITIAL_EXECUTION_COUNT);
-			pstmt.setLong(5, jobId);
-			pstmt.setString(6, jobName);
+			pstmt.setLong(5, orgId);
+			pstmt.setLong(6, jobId);
+			pstmt.setString(7, jobName);
 			return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {
@@ -432,18 +435,19 @@ public class JobStore {
 		return pstmt;
 	}
 	
-	static int updateStartExecution(long jobId, String jobName, long jobStartTime, int jobExecutionCount) {
+	static int updateStartExecution(long orgId, long jobId, String jobName, long jobStartTime, int jobExecutionCount) {
 		int rowsUpdated = 0;
-		String query = "update Jobs set STATUS = 2, JOB_SERVER_ID = ?, CURRENT_EXECUTION_TIME = ?, EXECUTION_ERROR_COUNT = ? where JOBID = ? and JOBNAME= ? and CURRENT_EXECUTION_TIME = ? and EXECUTION_ERROR_COUNT = ?";
+		String query = "update Jobs set STATUS = 2, JOB_SERVER_ID = ?, CURRENT_EXECUTION_TIME = ?, EXECUTION_ERROR_COUNT = ? where ORGID = ? AND JOBID = ? and JOBNAME= ? and CURRENT_EXECUTION_TIME = ? and EXECUTION_ERROR_COUNT = ?";
 		try(Connection connection = FacilioConnectionPool.getInstance().getDirectConnection();
 			PreparedStatement statement = connection.prepareStatement(query)){
 			statement.setLong(1, ServerInfo.getServerId());
 			statement.setLong(2, System.currentTimeMillis());
 			statement.setInt(3, jobExecutionCount+1);
-			statement.setLong(4, jobId);
-			statement.setString(5, jobName);
-			statement.setLong(6, jobStartTime);
-			statement.setInt(7, jobExecutionCount);
+			statement.setLong(4, orgId);
+			statement.setLong(5, jobId);
+			statement.setString(6, jobName);
+			statement.setLong(7, jobStartTime);
+			statement.setInt(8, jobExecutionCount);
 			rowsUpdated = statement.executeUpdate();
 			LOGGER.debug("query : " + statement.toString());
 		} catch (SQLException e) {
@@ -488,18 +492,19 @@ public class JobStore {
 		return queryBuilder.toString();
 	}
 	
-public static long setInActiveStatusForJob(long jobId, String jobName, Boolean status) throws SQLException {
+	public static long setInActiveStatusForJob(long orgId, long jobId, String jobName, Boolean status) throws SQLException {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ? where JOBID = ? AND JOBNAME = ?");
+			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ? where ORGID = ? AND JOBID = ? AND JOBNAME = ?");
 			
 			pstmt.setBoolean(1, status ? JobConstants.ENABLED : JobConstants.DISABLED);
-			pstmt.setLong(2, jobId);
-			pstmt.setString(3, jobName);
+			pstmt.setLong(2, orgId);
+			pstmt.setLong(3, jobId);
+			pstmt.setString(4, jobName);
             return pstmt.executeUpdate();
 		}
 		catch(SQLException e) {

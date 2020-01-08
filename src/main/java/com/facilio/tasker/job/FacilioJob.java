@@ -37,7 +37,7 @@ public abstract class FacilioJob implements Runnable {
 		int status = 0;
 		try {
 			AccountUtil.cleanCurrentAccount();
-			if ( JobStore.updateStartExecution(jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount()) < 1 ) {
+			if ( JobStore.updateStartExecution(jc.getOrgId(), jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount()) < 1 ) {
 				executor.jobEnd(jc.getJobKey());
 				return;
 			}
@@ -110,9 +110,9 @@ public abstract class FacilioJob implements Runnable {
 	private void updateNextExecutionTime() {
 		try {
 			if (jc.getNextExecutionTime() != -1) {
-				JobStore.updateNextExecutionTimeAndCount(jc.getJobId(), jc.getJobName(), jc.getNextExecutionTime(), jc.getCurrentExecutionCount() + 1);
+				JobStore.updateNextExecutionTimeAndCount(jc.getOrgId(), jc.getJobId(), jc.getJobName(), jc.getNextExecutionTime(), jc.getCurrentExecutionCount() + 1);
 			} else {
-				JobStore.setInActiveAndUpdateCount(jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount() + 1);
+				JobStore.setInActiveAndUpdateCount(jc.getOrgId(), jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount() + 1);
 			}
 		} catch (SQLException e) {
 			LOGGER.error("Exception while updating next execution time ", e);
@@ -128,7 +128,7 @@ public abstract class FacilioJob implements Runnable {
 			LOGGER.error("Max retry exceeded for : "+jc+".\nSo making it inactive");
 			CommonCommandUtil.emailException("FacilioJob", "Max retry exceeded for Job : "+jc.getJobId()+" : "+ jc.getJobName(), "Since max retries exceeded for job : "+jc.getJobId()+"-"+jc.getJobName()+", making it inactive.");
 			try {
-				JobStore.setInActive(jc.getJobId(), jc.getJobName());
+				JobStore.setInActive(jc.getOrgId(), jc.getJobId(), jc.getJobName());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				LOGGER.error("Error ",e);

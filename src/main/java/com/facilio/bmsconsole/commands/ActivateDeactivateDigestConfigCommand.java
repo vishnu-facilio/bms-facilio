@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.DigestConfigAPI;
@@ -20,7 +21,7 @@ public class ActivateDeactivateDigestConfigCommand extends FacilioCommand{
 		if(config != null) {
 			Boolean status = (Boolean) context.get(FacilioConstants.ContextNames.STATUS);
 		    updateConfigStatus(status, configId);
-		    JobStore.setInActiveStatusForJob((Long)config.get("scheduledActionId"), FacilioConstants.Job.DIGEST_JOB_NAME, status);
+		    JobStore.setInActiveStatusForJob(AccountUtil.getCurrentOrg().getId(), (Long)config.get("scheduledActionId"), FacilioConstants.Job.DIGEST_JOB_NAME, status);
 		}
 		
 	    return false;
