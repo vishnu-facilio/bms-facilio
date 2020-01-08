@@ -107,6 +107,7 @@ public abstract class FacilioProcessor implements  Runnable {
             LOGGER.error("Exception while starting facilio processor ", e);
         } finally {
             getConsumer().close();
+            LOGGER.info("Closing consumer");
         }
     }
 }

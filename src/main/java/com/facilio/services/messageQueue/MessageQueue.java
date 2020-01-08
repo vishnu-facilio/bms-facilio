@@ -79,7 +79,7 @@ public abstract class MessageQueue {
     private void startProcessor(long orgId, String orgDomainName) {
         try {
             if(orgDomainName != null && STREAMS.contains(orgDomainName)) {
-                System.out.println("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
+                log.info("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
                 initiateProcessFactory(orgId,orgDomainName,"processor");
                 /*initiateProcessFactory(orgId, orgDomainName, "event");
                 initiateProcessFactory(orgId, orgDomainName, "timeSeries");

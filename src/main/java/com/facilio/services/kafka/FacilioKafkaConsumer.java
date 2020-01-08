@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.StringReader;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +42,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("value.deserializer", StringDeserializer.class.getName());
         props.put("max.partition.fetch.bytes", 3145728);
         props.put("auto.offset.reset", "latest");
-        props.put("max.poll.interval.ms", 2000000);
+        props.put("max.poll.interval.ms", 3600000);
         props.put("session.timeout.ms", 600000);
         props.put("heartbeat.interval.ms", 3000);
         props.put("group.instance.id", client);
@@ -56,7 +57,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     public List<FacilioRecord> getRecords(long timeout) {
         List<FacilioRecord> facilioRecords = new ArrayList<>();
         try {
-            ConsumerRecords<String, String> records = consumer.poll(timeout);
+            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(timeout));
             for (ConsumerRecord<String, String> record : records) {
                 StringReader reader = new StringReader(record.value());
                 JSONObject object = (JSONObject) parser.parse(reader);
@@ -99,5 +100,6 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
 
     public void close() {
         consumer.close();
+        LOGGER.info("Closed kafka consumer");
     }
 }
