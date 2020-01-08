@@ -67,13 +67,14 @@ public class AgentDownloadInterceptor implements Interceptor {
         LOGGER.info("Intercept called ");
         HttpParameters parameters = ActionContext.getContext().getParameters();
         String auth_key = parameters.get("token").toString();
-
+        LOGGER.info("Token : "+ auth_key);
         List<Map<String, Object>> res = getAgentVersionLogRow(auth_key);
+        LOGGER.info("Res : "+res);
 
         if(res.size()!=0) {
             if (res.get(0).containsKey(AgentConstants.CREATED_TIME)) {
                 long createdTime = (long) res.get(0).get(AgentConstants.CREATED_TIME);
-                if (System.currentTimeMillis() - createdTime < 3_600_000L) {
+                if ((System.currentTimeMillis() - createdTime) < 3_600_000L) {
                     actionInvocation.invoke();
                     return SUCCESS;
                 } else {
@@ -82,6 +83,6 @@ public class AgentDownloadInterceptor implements Interceptor {
             } else {
                 return "error";
             }
-        }else return "error";
+        }else return "notFound";
     }
 }
