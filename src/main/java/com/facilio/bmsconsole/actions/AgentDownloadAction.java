@@ -8,6 +8,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.io.output.TaggedOutputStream;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -100,7 +101,7 @@ public class AgentDownloadAction extends ActionSupport {
     private String getExeUrl(String token) throws Exception {
         long versionId = getVersionIdFromToken(token);
         this.version = ""+versionId;
-      
+        LOGGER.info("versionId"+versionId);
         if (versionId!=-1) {
             Collection<Long> vId = new ArrayList<>();
             vId.add(versionId);
@@ -111,6 +112,7 @@ public class AgentDownloadAction extends ActionSupport {
                             FieldFactory.getVersionIdField
                                     (ModuleFactory.getAgentVersionModule()),vId,NumberOperators.EQUALS));
             List<Map<String, Object>> row = selectRecordBuilder.get();
+            LOGGER.info("Agent_Version Record: "+row);
             if (row.get(0).containsKey("url")){
                 return row.get(0).get("url").toString();
             }
@@ -125,6 +127,8 @@ public class AgentDownloadAction extends ActionSupport {
                 .select(FieldFactory.getAgentVersionLogFields())
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAuthKeyField(ModuleFactory.getAgentVersionLogModule()),token, StringOperators.IS));
         List<Map<String, Object>> row = selectRecordBuilder.get();
+        LOGGER.info("TOKEN : "+ token);
+        LOGGER.info("Agent_VersionLog record : "+ row);
         if(row.get(0).containsKey("orgId")){
             this.orgId=row.get(0).get("orgId").toString();
         }
