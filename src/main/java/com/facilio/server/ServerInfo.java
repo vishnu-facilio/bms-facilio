@@ -66,6 +66,7 @@ public class ServerInfo extends TimerTask {
                 serverId = addServerInfo(ip);
             }*/
         } catch (UnknownHostException e) {
+            hostname = "-1";
             LOGGER.info("Unable to set IP ");
         }
     }
