@@ -42,6 +42,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("value.deserializer", StringDeserializer.class.getName());
         props.put("max.partition.fetch.bytes", 3145728);
         props.put("auto.offset.reset", "latest");
+        props.put("session.timeout.ms", 600000);
         props.put("group.instance.id", client);
         props.put("client.id", client);
         return props;
