@@ -1547,6 +1547,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain getDeleteDefaultResourcePhotoChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new DeleteDefaultResourcePhotoCommand());
+		return c;
+	}
+	
 	public static FacilioChain getPhotosChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new LoadAllFieldsCommand());

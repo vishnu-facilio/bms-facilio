@@ -235,6 +235,20 @@ public class PhotosAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, Collections.singletonList(file.getContentType()));
 		FacilioChain addPhotosChain = FacilioChainFactory.getDeletePhtotosChain();
 		addPhotosChain.execute(context);
+		if (FacilioConstants.ContextNames.BASE_SPACE_PHOTOS.equalsIgnoreCase(moduleName) || FacilioConstants.ContextNames.ASSET_PHOTOS.equalsIgnoreCase(moduleName)) {
+			try {
+				FacilioContext updateContext = new FacilioContext();
+				updateContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+				updateContext.put(FacilioConstants.ContextNames.RECORD_ID, parentId);
+				updateContext.put(FacilioConstants.ContextNames.PHOTO_ID, photoId);
+					
+					FacilioChain updateDefaultPhotoChain = FacilioChainFactory.getDeleteDefaultResourcePhotoChain();
+					updateDefaultPhotoChain.execute(updateContext);
+			}
+			catch (Exception e) {
+				log.info("Exception occurred ", e);
+			}
+		}
 		return SUCCESS;
 	}
 	
