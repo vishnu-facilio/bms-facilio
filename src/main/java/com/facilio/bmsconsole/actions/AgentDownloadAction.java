@@ -70,6 +70,7 @@ public class AgentDownloadAction extends ActionSupport {
             fileInputStream = new FileInputStream(file);
             return SUCCESS;
         }catch (Exception ex){
+            LOGGER.info(ex.getMessage());
             return "error";
         }
     }
