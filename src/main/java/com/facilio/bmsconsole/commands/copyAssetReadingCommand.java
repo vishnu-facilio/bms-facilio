@@ -32,7 +32,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class copyAssetReadingCommand extends FacilioCommand {
-	private static final int LIMIT_GET_READINGS = 5;// rows
+	private static final int LIMIT_GET_READINGS = 30000;// rows
 	private static final Logger LOGGER = LogManager.getLogger(copyAssetReadingCommand.class.getName());
 
 	@Override
@@ -47,7 +47,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 		timeDiff = TimeUnit.HOURS.toMillis(timeDiff);
 		List<Map<String, Object>> assetList = (List<Map<String, Object>>) context
 				.get(FacilioConstants.ContextNames.COPY_ASSET_LIST);
-		int offsetValue = 0;
+		
 		boolean isData = true;
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
 		try {
@@ -59,6 +59,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				for (FacilioModule module : modules) {
 					LOGGER.info("copy asset Readings module is " + module.getName() + "for category "
 							+ assetCategory.getName() + " for asset " + assetIdSource.getName());
+					int offsetValue = 0;
 					while (isData) {
 						ModuleBean beanOrg = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
 						List<FacilioField> fields = beanOrg.getAllFields(module.getName());
