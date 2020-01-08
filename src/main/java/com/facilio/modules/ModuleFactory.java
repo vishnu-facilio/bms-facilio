@@ -110,6 +110,7 @@ public class ModuleFactory {
         moduleMap.put(ContextNames.CONTACT, getContactModule());
 		moduleMap.put(FacilioConstants.ContextNames.WORKPERMIT, getWorkPermitModule());
 		moduleMap.put(ContextNames.OCCUPANT, getOccupantModule());
+		moduleMap.put(ContextNames.SERVICE_REQUEST, getServiceRequestModule());
 		return moduleMap;
 	}
 	

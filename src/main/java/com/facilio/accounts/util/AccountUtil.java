@@ -233,6 +233,7 @@ public class AccountUtil {
 		DEVICES(134217728),
 		VISITOR(268435456),
 		KPI (536870912),
+		SERVICE_REQUEST(1073741824)
 		;
 		
 		private long license;

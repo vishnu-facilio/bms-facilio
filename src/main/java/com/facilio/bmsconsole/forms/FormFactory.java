@@ -113,6 +113,7 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestForm())
 						.put(FacilioConstants.ContextNames.INSURANCE, getInsuranceForm())
 						.put(FacilioConstants.ContextNames.OCCUPANT, getOccupantForm())
+						.put(FacilioConstants.ContextNames.SERVICE_REQUEST, getServiceRequestForm())
 						.build())
         			
 				.build();
@@ -273,6 +274,7 @@ public class FormFactory {
 		List<FacilioForm> insuranceForm = Arrays.asList(getInsuranceForm(),getPortalInsuranceForm());
 		List<FacilioForm> watchListForm = Arrays.asList(getWatchListForm());
 		List<FacilioForm> occupantFormsList = Arrays.asList(getOccupantForm());
+		List<FacilioForm> serviceRequestFormsList = Arrays.asList(getServiceRequestForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -285,6 +287,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.VENDORS, getFormMap(vendorsForms))
 				.put(FacilioConstants.ContextNames.WATCHLIST, getFormMap(watchListForm))
 				.put(FacilioConstants.ContextNames.OCCUPANT, getFormMap(occupantFormsList))
+				.put(FacilioConstants.ContextNames.SERVICE_REQUEST,getFormMap(serviceRequestFormsList))
 				.build();
 	}
 	
@@ -1650,6 +1653,24 @@ public class FormFactory {
 		fields.add(new FormField("isPortalAccessNeeded", FieldDisplayType.DECISION_BOX, "Is Portal Access Needed", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("locatedSpace", FieldDisplayType.WOASSETSPACECHOOSER, "Located Space", Required.OPTIONAL, 6, 1));
 
+		return fields;
+	}
+
+	public static FacilioForm getServiceRequestForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("SERVICE REQUEST");
+		form.setName("default_serviceRequest_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getServiceRequestFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
+	private static List<FormField> getServiceRequestFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTBOX, "Description", Required.REQUIRED, 2, 1));
 		return fields;
 	}
 

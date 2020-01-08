@@ -894,9 +894,8 @@ public class ColumnFactory {
 	public static List<ViewField> getDefaultServiceRequestColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("subject", "Subject"));
-		columns.add(new ViewField("site", "Site"));
 		columns.add(new ViewField("assignedTo", "Team / Staff"));
-		columns.add(new ViewField("prioriy", "Priority"));
+		columns.add(new ViewField("priority", "Priority"));
 		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("classification", "Classification"));
 		return columns;
