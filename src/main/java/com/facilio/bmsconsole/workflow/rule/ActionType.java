@@ -1280,15 +1280,10 @@ public enum ActionType {
 							
 							if(file !=null )
 							{
-								
-								
-								
-									String htmlContentPublicUrl = PublicFileUtil.createPublicFile(file, "twilioImage", "jpeg", "image/jpeg");
-//									 htmlContentPublicUrl = htmlContentPublicUrl.replace("http://localhost:8080/", "https://ee765fb6.ngrok.io/");
-									obj.put("htmlContentPublicUrl", htmlContentPublicUrl);	
-									obj.put("message", "");
-								
-															
+								String htmlContentPublicUrl = PublicFileUtil.createPublicFile(file, "twilioImage", "jpeg", "image/jpeg");
+//								htmlContentPublicUrl = htmlContentPublicUrl.replace("http://localhost:8080/", "https://ee765fb6.ngrok.io/");
+								obj.put("htmlContentPublicUrl", htmlContentPublicUrl);	
+								obj.put("message", "");																						
 							}							
 						}
 						

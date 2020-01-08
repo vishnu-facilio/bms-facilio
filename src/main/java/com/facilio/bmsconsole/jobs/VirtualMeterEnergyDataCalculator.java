@@ -54,9 +54,6 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 				return;
 			}
 			int minutesInterval = getDefaultDataInterval();
-			if (AccountUtil.getCurrentOrg().getId() == 231) {
-				minutesInterval = 10;
-			}
 			long endTime = DateTimeUtil.getDateTime(System.currentTimeMillis()).truncatedTo(new SecondsChronoUnit(minutesInterval * 60)).toInstant().toEpochMilli();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField deltaField= modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
