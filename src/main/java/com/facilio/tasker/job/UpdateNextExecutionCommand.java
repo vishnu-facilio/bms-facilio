@@ -11,9 +11,9 @@ public class UpdateNextExecutionCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		JobContext jc = (JobContext) context.get(JobConstants.JOB_CONTEXT);
 		if(jc.getNextExecutionTime() != -1) {
-			JobStore.updateNextExecutionTimeAndCount(jc.getJobId(), jc.getJobName(),  jc.getNextExecutionTime(), jc.getCurrentExecutionCount()+1);
+			JobStore.updateNextExecutionTimeAndCount(jc.getOrgId(), jc.getJobId(), jc.getJobName(),  jc.getNextExecutionTime(), jc.getCurrentExecutionCount()+1);
 		} else {
-			JobStore.setInActiveAndUpdateCount(jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount()+1);
+			JobStore.setInActiveAndUpdateCount(jc.getOrgId(), jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount()+1);
 		}
 		return false;
 	}

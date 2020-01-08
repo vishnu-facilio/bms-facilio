@@ -3385,7 +3385,7 @@ public class PreventiveMaintenanceAPI {
 			}
 
 			if (nextExecutionTime > -1) {
-				JobStore.updateNextExecutionTimeAndCount(jc.getJobId(), jc.getJobName(), nextExecutionTime, jc.getCurrentExecutionCount());
+				JobStore.updateNextExecutionTimeAndCount(jc.getOrgId(), jc.getJobId(), jc.getJobName(), nextExecutionTime, jc.getCurrentExecutionCount());
 			}
 		}
 
