@@ -83,7 +83,7 @@ public class LabourContext extends ModuleBaseWithCustomFields {
 
 	private String email;
 	private String phone;
-	private double cost = -1;
+	private double cost = 0;
 	
 	public enum LabourUnitType {
 		HOURLY(1),
