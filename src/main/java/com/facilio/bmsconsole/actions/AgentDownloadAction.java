@@ -109,7 +109,7 @@ public class AgentDownloadAction extends ActionSupport {
                     .table(ModuleFactory.getAgentVersionModule().getTableName())
                     .select(FieldFactory.getAgentVersionFields())
                     .andCondition(CriteriaAPI.getCondition(
-                            FieldFactory.getVersionIdField
+                            FieldFactory.getIdField
                                     (ModuleFactory.getAgentVersionModule()),vId,NumberOperators.EQUALS));
             List<Map<String, Object>> row = selectRecordBuilder.get();
             LOGGER.info("Agent_Version Record: "+row);

@@ -74,6 +74,8 @@ public class AgentDownloadInterceptor implements Interceptor {
         if(res.size()!=0) {
             if (res.get(0).containsKey(AgentConstants.CREATED_TIME)) {
                 long createdTime = (long) res.get(0).get(AgentConstants.CREATED_TIME);
+                long cMillis = System.currentTimeMillis();
+                LOGGER.info("DIFF:" +(cMillis - createdTime));
                 if ((System.currentTimeMillis() - createdTime) < 3_600_000L) {
                     actionInvocation.invoke();
                     return SUCCESS;
@@ -83,6 +85,6 @@ public class AgentDownloadInterceptor implements Interceptor {
             } else {
                 return "error";
             }
-        }else return "notFound";
+        }else return "invaliedToken";
     }
 }
