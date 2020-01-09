@@ -48,7 +48,7 @@ public class SessionManager {
 		while (itr.hasNext()) {
 			String key = itr.next();
 			LiveSession liveSession = liveSessions.get(key);
-			if (liveSession.getLiveSessionType().equals(liveSessionType)) {
+			if (liveSession != null && liveSession.getLiveSessionType().equals(liveSessionType)) {
 				sessionList.add(liveSession);
 			}
 		}
@@ -64,7 +64,7 @@ public class SessionManager {
 		while (itr.hasNext()) {
 			String key = itr.next();
 			LiveSession liveSession = liveSessions.get(key);
-			if (liveSession.getLiveSessionType().equals(liveSessionType) && liveSession.getId() == id) {
+			if (liveSession != null && liveSession.getLiveSessionType().equals(liveSessionType) && liveSession.getId() == id) {
 				sessionList.add(liveSession);
 			}
 		}
