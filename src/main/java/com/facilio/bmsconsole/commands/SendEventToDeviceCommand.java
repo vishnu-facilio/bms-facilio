@@ -12,7 +12,8 @@ public class SendEventToDeviceCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		try {
-			FacilioService.runAsService(() ->  DevicesUtil.reloadConf(AccountUtil.getCurrentOrg().getId()));
+			long orgId = AccountUtil.getCurrentOrg().getId();
+			FacilioService.runAsService(() ->  DevicesUtil.reloadConf(orgId));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
