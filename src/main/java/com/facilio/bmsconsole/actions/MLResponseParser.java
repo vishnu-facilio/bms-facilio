@@ -3,19 +3,18 @@ package com.facilio.bmsconsole.actions;
 import java.time.ZoneId;
 import java.util.List;
 
-import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.util.MLUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.services.factory.FacilioFactory;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -25,22 +24,20 @@ public class MLResponseParser extends ActionSupport
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static org.apache.log4j.Logger log = LogManager.getLogger(MLResponseParser.class.getName());
-	
-	
+	private static final Logger LOGGER = Logger.getLogger(MLResponseParser.class.getName());
 	
 	public String parseResponse()
 	{
 		try
 		{
-			log.info("ML ID and Result are "+ml_id+":::"+result+"::"+orgid+"::"+error);
+			LOGGER.info("ML ID and Result are "+ml_id+":::"+result+"::"+orgid+"::"+error);
 //			if(error==null || error.isEmpty())
 //			{
 				AccountUtil.setCurrentAccount(orgid);
 				List<MLContext> mlContextList = MLUtil.getMLContext(ml_id);
 				if(mlContextList.isEmpty())
 				{
-					log.error("No ML Context present for "+ml_id);
+					LOGGER.error("No ML Context present for "+ml_id);
 					return ERROR;
 				}
 				MLContext mlContext = mlContextList.get(0);
@@ -60,7 +57,7 @@ public class MLResponseParser extends ActionSupport
 		}
 		catch(Exception e)
 		{
-			log.fatal("Exception while parsing mlContext"+ml_id, e);
+			LOGGER.fatal("Exception while parsing mlContext"+ml_id, e);
 			return ERROR;
 		}
 		
@@ -92,7 +89,7 @@ public class MLResponseParser extends ActionSupport
 		}
 		catch(Exception e)
 		{
-			log.fatal("Error while sending mail ",e);
+			LOGGER.fatal("Error while sending mail ",e);
 		}
 	}
 	
