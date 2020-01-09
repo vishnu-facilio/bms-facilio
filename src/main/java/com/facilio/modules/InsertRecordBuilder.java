@@ -20,6 +20,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FileField;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implements InsertBuilderIfc<E> {
 	
@@ -137,8 +138,8 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 		
 		checkForNull();
-		
-		List<FacilioModule> modules = splitModules();
+
+		List<Pair<FacilioModule, Long>> modules = splitModules();
 		Map<Long, List<FacilioField>> fieldMap = splitFields();
 		
 		long localId = getLocalId(modules);
@@ -153,9 +154,9 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		List<FileField> fileFields = new ArrayList<>();
 		
 		int currentLevel = 1;
-		for(FacilioModule currentModule : modules) {
-			
+		for(Pair<FacilioModule, Long> modulePair : modules) {
 			if(currentLevel >= level) {
+				FacilioModule currentModule = modulePair.getLeft();
 				List<FacilioField> currentFields = fieldMap.get(currentModule.getModuleId());
 				if(currentFields == null) {
 					currentFields = new ArrayList<>();
@@ -179,9 +180,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 																.table(currentModule.getTableName())
 																.fields(currentFields);
-				
+
+				long moduleId = modulePair.getRight();
 				for(Map<String, Object> beanProp : beanProps) {
-					beanProp.put("moduleId", currentModule.getModuleId());
+					beanProp.put("moduleId", moduleId);
 					insertBuilder.addRecord(beanProp);
 				}
 				
@@ -198,7 +200,6 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				if (CollectionUtils.isNotEmpty(insertBuilder.getFileFields())) {
 					fileFields.addAll(insertBuilder.getFileFields());
 				}
-				
 			}
 			currentLevel++;
 		}
@@ -243,11 +244,11 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 	}
 
-	private long getLocalId (List<FacilioModule> modules) throws Exception {
+	private long getLocalId (List<Pair<FacilioModule, Long>> modules) throws Exception {
 		long localId = -1;
 		if(isWithLocalIdModule) {
 			for (int i = modules.size() - 1; i >= 0; i--) {
-				FacilioModule module = modules.get(i);
+				FacilioModule module = modules.get(i).getLeft();
 				localId = ModuleLocalIdUtil.getAndUpdateModuleLocalId(module.getName(), records.size());
 				if (localId != -1) {
 					break;
@@ -255,17 +256,21 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 			
 			if (localId == -1) {
-				throw new IllegalArgumentException(modules.get(modules.size() - 1).getName()+" doesn't have last local id. This is not supposed to happen");
+				throw new IllegalArgumentException(modules.get(modules.size() - 1).getLeft().getName()+" doesn't have last local id. This is not supposed to happen");
 			}
 		}
 		return localId;
 	}
 	
-	private List<FacilioModule> splitModules() {
-		List<FacilioModule> modules = new ArrayList<>();
+	private List<Pair<FacilioModule, Long>> splitModules() {
+		List<Pair<FacilioModule, Long>> modules = new ArrayList<>();
 		FacilioModule extendModule = module;
+		long commonModuleId = -1;
 		while(extendModule != null) {
-			modules.add(0, extendModule);
+			if (commonModuleId == -1 && extendModule.hideFromParents()) {
+				commonModuleId = extendModule.getModuleId();
+			}
+			modules.add(0, Pair.of(extendModule, commonModuleId == -1 ? extendModule.getModuleId() : commonModuleId));
 			extendModule = extendModule.getExtendModule();
 		}
 		

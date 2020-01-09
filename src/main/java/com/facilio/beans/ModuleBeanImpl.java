@@ -89,6 +89,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			currentModule.setShowAsView(rs.getBoolean("SHOW_AS_VIEW"));
 			currentModule.setDescription(rs.getString("DESCRIPTION"));
 			currentModule.setCreatedTime(rs.getLong("CREATED_TIME"));
+			currentModule.setHideFromParents(rs.getBoolean("HIDE_FROM_PARENTS"));
 			long createdById = rs.getLong("CREATED_BY");
 			if (createdById > 0) {
 				User user = new User();
@@ -1153,7 +1154,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw new IllegalArgumentException("Module Type cannot be null during addition of modules");
 		}
 		
-		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, MODULE_TYPE, DATA_INTERVAL, DESCRIPTION, CREATED_BY, CREATED_TIME, STATE_FLOW_ENABLED, IS_CUSTOM) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, HIDE_FROM_PARENTS, MODULE_TYPE, DATA_INTERVAL, DESCRIPTION, CREATED_BY, CREATED_TIME, STATE_FLOW_ENABLED, IS_CUSTOM) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		ResultSet rs = null;
 		try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setLong(1, getOrgId());
@@ -1174,39 +1175,46 @@ public class ModuleBeanImpl implements ModuleBean {
 			else {
 				pstmt.setNull(5, Types.BIGINT);
 			}
-			
-			pstmt.setInt(6, module.getType());
-			
-			if (module.getDataInterval() != -1) {
-				pstmt.setInt(7, module.getDataInterval());
+
+			if (module.getHideFromParents() != null) {
+				pstmt.setBoolean(6, module.hideFromParents());
 			}
 			else {
-				pstmt.setNull(7, Types.INTEGER);
+				pstmt.setNull(6, Types.BOOLEAN);
+			}
+			
+			pstmt.setInt(7, module.getType());
+			
+			if (module.getDataInterval() != -1) {
+				pstmt.setInt(8, module.getDataInterval());
+			}
+			else {
+				pstmt.setNull(8, Types.INTEGER);
 			}
 			
 			if (StringUtils.isNotEmpty(module.getDescription())) {
-				pstmt.setString(8, module.getDescription());
+				pstmt.setString(9, module.getDescription());
 			}
 			else {
-				pstmt.setNull(8, Types.VARCHAR);
+				pstmt.setNull(9, Types.VARCHAR);
 			}
 			
 			if (module.isCustom() && AccountUtil.getCurrentUser() != null) {
-				pstmt.setLong(9, AccountUtil.getCurrentUser().getId());
-			}
-			else {
-				pstmt.setNull(9, Types.BIGINT);
-			}
-			
-			if (module.isCustom()) {
-				pstmt.setLong(10, System.currentTimeMillis());
+				pstmt.setLong(10, AccountUtil.getCurrentUser().getId());
 			}
 			else {
 				pstmt.setNull(10, Types.BIGINT);
 			}
+			
+			if (module.isCustom()) {
+				pstmt.setLong(11, System.currentTimeMillis());
+			}
+			else {
+				pstmt.setNull(11, Types.BIGINT);
+			}
 
-			pstmt.setBoolean(11, module.isStateFlowEnabled());
-			pstmt.setBoolean(12, module.isCustom());
+			pstmt.setBoolean(12, module.isStateFlowEnabled());
+			pstmt.setBoolean(13, module.isCustom());
 			
 			if (pstmt.executeUpdate() < 1) {
 				throw new Exception("Unable to add Module");
