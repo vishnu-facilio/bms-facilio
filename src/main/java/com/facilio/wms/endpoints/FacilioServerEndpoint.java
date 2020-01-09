@@ -78,8 +78,8 @@ public class FacilioServerEndpoint
 		
 			String idToken = null;
 			String deviceToken = null;
-			LiveSession.LiveSessionType sessionType = null;
-			LiveSession.LiveSessionSource sessionSource = null;
+			LiveSession.LiveSessionType sessionType = LiveSession.LiveSessionType.APP;
+			LiveSession.LiveSessionSource sessionSource = LiveSession.LiveSessionSource.WEB;
 			
 			List<String> cookieValues = headers.get("cookie");
 			if (cookieValues != null && cookieValues.size() > 0) {
