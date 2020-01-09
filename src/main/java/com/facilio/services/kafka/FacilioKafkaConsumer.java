@@ -37,7 +37,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         Properties props = new Properties();
         props.put("bootstrap.servers", FacilioProperties.getKafkaConsumer());
         props.put("group.id", consumerGroup);
-        //props.put("enable.auto.commit", "false");
+        props.put("enable.auto.commit", "false");
         props.put("key.deserializer", StringDeserializer.class.getName());
         props.put("value.deserializer", StringDeserializer.class.getName());
         props.put("max.partition.fetch.bytes", 31457280);
@@ -45,7 +45,6 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("session.timeout.ms", 600000);
         props.put("group.instance.id", client);
         props.put("client.id", client);
-        props.put("request.timeout.ms", 360000);
         props.put("max.poll.interval.ms",300000);
         return props;
     }
@@ -94,7 +93,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     public void subscribe(String topic) {
         if(topicPartition == null) {
             topicPartition = new TopicPartition(topic, 0);
-            consumer.assign(Collections.singletonList(topicPartition));
+            consumer.subscribe(Collections.singletonList(topic));
         }
     }
 
