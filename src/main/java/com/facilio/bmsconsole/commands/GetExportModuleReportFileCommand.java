@@ -48,6 +48,8 @@ private static final String ALIAS = "alias";
 		
 		report = (com.facilio.report.context.ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		FileFormat fileFormat = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
+		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		
 		String fileUrl = null;
 		String fileName = "Report Data";
 		if (StringUtils.isNotEmpty(report.getName())) {
@@ -66,7 +68,7 @@ private static final String ALIAS = "alias";
 			fileUrl = ExportUtil.exportData(fileFormat, fileName, table, isS3Url);
 		}
 		else {
-			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getModule().getName(), report.getId(), fileFormat);
+			StringBuilder url = getClientUrl(module, report.getId(), fileFormat);
 			String chartType = (String) context.get("chartType");
 			if (chartType != null) {
 				url.append("&charttype=").append(chartType);
@@ -440,21 +442,35 @@ private static final String ALIAS = "alias";
 //		return records;
 //	}
 	
-	private StringBuilder getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
+	private StringBuilder getClientUrl(FacilioModule module, Long reportId, FileFormat fileFormat) {
 		// moduleName = FacilioConstants.ContextNames.ENERGY_DATA_READING;	// Temp
 		StringBuilder url = new StringBuilder(FacilioProperties.getConfig("clientapp.url")).append("/app/");
-		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER) || moduleName.equals(ContextNames.ASSET_BREAKDOWN) ) {
-			url.append("wo");
+		String moduleName = module.getName();
+		Map<String, String> moduleVsRoute = new HashMap<>();
+		moduleVsRoute.put(ContextNames.ASSET, "at");
+		moduleVsRoute.put(ContextNames.ASSET_BREAKDOWN, "at");
+		moduleVsRoute.put(ContextNames.ALARM, "fa");
+		moduleVsRoute.put(ContextNames.ALARM_OCCURRENCE, "fa");
+		moduleVsRoute.put(ContextNames.READING_ALARM_OCCURRENCE, "fa");
+		moduleVsRoute.put(ContextNames.ML_ALARM_OCCURRENCE, "fa");
+		moduleVsRoute.put(ContextNames.VIOLATION_ALARM_OCCURRENCE, "fa");
+		moduleVsRoute.put(ContextNames.BASE_EVENT, "fa");
+		moduleVsRoute.put(ContextNames.TENANT, "home");
+		moduleVsRoute.put(ContextNames.VENDORS, "home");
+		moduleVsRoute.put(ContextNames.CONTACT, "home");
+		moduleVsRoute.put(ContextNames.VISITOR_LOGGING, "vi");
+		moduleVsRoute.put(ContextNames.VISITOR, "vi");
+		moduleVsRoute.put(ContextNames.WATCHLIST, "vi");
+		if (module.isCustom()) {
+			url.append("ca");
 		}
-		else if (moduleName.equals(FacilioConstants.ContextNames.ALARM)) {
-			url.append("fa");
-		}
-		else if(moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
-			url.append("at");
+		else if (moduleVsRoute.containsKey(moduleName)) {
+			url.append(moduleVsRoute.get(moduleName));
 		}
 		else {
-			url.append("em");
+			url.append("wo");
 		}
+		
 		if (reportId > 0) {
 			url.append("/reports/newview/").append(reportId);			
 		}
