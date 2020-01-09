@@ -625,7 +625,7 @@ public class FormsAPI {
 		}
 		List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
 		
-		forms = getAsFormSiteRelationListMap(forms);
+		forms = getAsFormSiteRelationListMap(forms, spaces);
 		
 		
 
@@ -639,7 +639,7 @@ public class FormsAPI {
 			
 	}
 	
-	private static List<FacilioForm> getAsFormSiteRelationListMap(List<FacilioForm> forms) throws Exception {
+	private static List<FacilioForm> getAsFormSiteRelationListMap(List<FacilioForm> forms, List<Long> spaces) throws Exception {
 		if (forms != null && forms.size() > 0) {
 			List<Long> formIds = forms.stream().map(FacilioForm::getId).collect(Collectors.toList());
 			StringJoiner ids = new StringJoiner(",");
@@ -652,7 +652,9 @@ public class FormsAPI {
 			
 			List<FormSiteRelationContext> props = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), FormSiteRelationContext.class);
 			Map<Long, List<Long>> formVsSite = new HashMap<>();
-			if (props != null) {
+			List<FacilioForm> siteAssociatedFormsList = new ArrayList<>();
+			List<FacilioForm> siteDisassociatedFormsList = new ArrayList<>();
+			if (props != null && props.size() > 0) {
 			for (FormSiteRelationContext prop : props) {
 				Long formId = (Long) prop.getFormId();
 				Long siteId = (Long) prop.getSiteId();
@@ -667,6 +669,23 @@ public class FormsAPI {
 			for (FacilioForm form: forms) {
 				if (formVsSite.get(form.getId()) != null) {
 					form.setSiteIds(formVsSite.get(form.getId()));
+				}
+				if (spaces != null && spaces.size() > 0) {
+					if (form.getSiteIds() != null && form.getSiteIds().size() > 0 ) {
+						siteAssociatedFormsList.add(form);
+					}
+					else {
+						siteDisassociatedFormsList.add(form);
+					}
+				}
+			}
+			if (spaces != null && spaces.size() > 0) {
+				if (siteDisassociatedFormsList  != null && siteDisassociatedFormsList.size() > 0) {
+					siteAssociatedFormsList.addAll(siteDisassociatedFormsList);
+				}
+				if (siteAssociatedFormsList  != null && siteAssociatedFormsList.size() > 0) {
+					forms = new ArrayList<>();
+					forms = siteAssociatedFormsList;				
 				}
 			}
 			}
