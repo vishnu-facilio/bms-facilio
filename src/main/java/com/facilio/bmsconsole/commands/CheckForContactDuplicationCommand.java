@@ -17,8 +17,8 @@ public class CheckForContactDuplicationCommand extends FacilioCommand{
 		List<ContactsContext> contacts = (List<ContactsContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(CollectionUtils.isNotEmpty(contacts)) {
 			for(ContactsContext contact : contacts) {
-			   if(ContactsAPI.checkForDuplicateContact(contact)) {
-				   throw new IllegalArgumentException("A contact with the same email already exists");
+			   if(ContactsAPI.checkForDuplicateContact(contact, true)) {
+				   throw new IllegalArgumentException("A contact with the same phone number already exists");
 			   }
 			}
 		}

@@ -180,7 +180,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 			woTool.setParentTransactionId(ToolsApi.getToolTransactionsForRequestedLineItem(lineItem.getId()).getId());
 			
 		}
-		int duration = 0;
+		double duration = 0;
 		if (woTool.getDuration() <= 0) {
 			if (woTool.getIssueTime() <= 0) {
 				woTool.setIssueTime(workorder.getEstimatedStart());
@@ -194,9 +194,9 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 				}
 			}
 		} else {
-			duration = (int) (woTool.getDuration() / (1000 * 60 * 60));
+			duration = (woTool.getDuration() / (1000 * 60 * 60));
 			if (woTool.getIssueTime() >= 0) {
-				woTool.setReturnTime(woTool.getIssueTime() + woTool.getDuration());
+				woTool.setReturnTime(woTool.getIssueTime() + (long)woTool.getDuration());
 			}
 		}
 		woTool.setTransactionType(TransactionType.WORKORDER);

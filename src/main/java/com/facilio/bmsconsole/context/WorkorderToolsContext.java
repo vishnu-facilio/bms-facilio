@@ -34,13 +34,13 @@ public class WorkorderToolsContext extends ToolTransactionContext {
 		this.returnTime = returnTime;
 	}
 
-	private long duration = -1;
+	private double duration = -1;
 
-	public void setDuration(long duration) {
+	public void setDuration(double duration) {
 		this.duration = duration;
 	}
 
-	public long getDuration() {
+	public double getDuration() {
 		return duration;
 	}
 	

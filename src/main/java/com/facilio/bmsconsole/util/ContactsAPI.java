@@ -292,15 +292,15 @@ public class ContactsAPI {
 			
 	}
 	
-	public static boolean checkForDuplicateContact(ContactsContext contact) throws Exception {
-		ContactsContext contactExisiting = getContact(contact.getEmail());
+	public static boolean checkForDuplicateContact(ContactsContext contact, boolean isPhone) throws Exception {
+		ContactsContext contactExisiting = getContact(isPhone ? contact.getPhone() : contact.getEmail(), isPhone);
 		if(contactExisiting != null && contact.getId() != contactExisiting.getId()) {
 			return true;
 		}
 		return false;
 	}
 	
-	public static ContactsContext getContact(String email) throws Exception {
+	public static ContactsContext getContact(String email, boolean isPhone) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.CONTACT);
@@ -311,12 +311,19 @@ public class ContactsAPI {
 														;
 		
 		if(StringUtils.isNotEmpty(email)) {
-			builder.andCondition(CriteriaAPI.getCondition("EMAIL", "email", String.valueOf(email), StringOperators.IS));
+			if(isPhone) {
+				builder.andCondition(CriteriaAPI.getCondition("PHONE", "phone", String.valueOf(email), StringOperators.IS));
+			}
+			else {
+				builder.andCondition(CriteriaAPI.getCondition("EMAIL", "email", String.valueOf(email), StringOperators.IS));
+			}
 		}
 		
 		ContactsContext records = builder.fetchFirst();
 		return records;
 	}
+	
+	
 
 	
 }

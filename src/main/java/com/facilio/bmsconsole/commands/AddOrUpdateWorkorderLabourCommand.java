@@ -86,7 +86,7 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 		woLabour.setEndTime(workorderLabour.getEndTime());
 		woLabour.setDuration(workorderLabour.getDuration());
 		woLabour.setId(workorderLabour.getId());
-		int duration = 0;
+		double duration = 0;
 		if (woLabour.getDuration() <= 0) {
 			if (woLabour.getStartTime() <= 0) {
 				woLabour.setStartTime(workorder.getEstimatedStart());
@@ -100,9 +100,10 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 				duration = 0;
 			}
 		} else {
-			duration = (int) (woLabour.getDuration());
+			duration = woLabour.getDuration();
 			if (woLabour.getStartTime() > 0) {
-				woLabour.setEndTime(woLabour.getStartTime() + (woLabour.getDuration() * 60 * 60 * 1000));
+				long durationVal = (long) (woLabour.getDuration() * 60 * 60 * 1000);
+				woLabour.setEndTime(woLabour.getStartTime() + durationVal);
 			}
 		}
 		
@@ -150,13 +151,14 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 
 	}
 	
-	public static int getEstimatedWorkDuration(long issueTime, long returnTime) {
-		long duration = -1;
+	public static double getEstimatedWorkDuration(long issueTime, long returnTime) {
+		double duration = -1;
 		if (issueTime != -1 && returnTime != -1) {
 			duration = returnTime - issueTime;
 		}
-		int hours = (int) ((duration / (1000 * 60 * 60)));
-		return hours;
+		
+		double hours = ((duration / (1000 * 60 * 60)));
+		return Math.round(hours*10.0)/10.0;
 	}
 
 	

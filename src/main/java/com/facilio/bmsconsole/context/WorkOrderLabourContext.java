@@ -35,13 +35,13 @@ public class WorkOrderLabourContext extends ModuleBaseWithCustomFields {
 		this.endTime = endTime;
 	}
 
-	private long duration = -1;
+	private double duration = 0;
 
-	public void setDuration(long duration) {
+	public void setDuration(double duration) {
 		this.duration = duration;
 	}
 
-	public long getDuration() {
+	public double getDuration() {
 		return duration;
 	}
 	
