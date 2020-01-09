@@ -73,9 +73,13 @@
 	 <job name='testMLHistoricalJob' classname='com.facilio.bmsconsole.jobs.DefaultMLHistoricalJob' transactionTimeout='7200000'/>
 	 <job name='AddMLJob' classname='com.facilio.bmsconsole.jobs.AddMLJob' transactionTimeout='7200000'/>
 	 <job name='testMLSplitJob' classname='com.facilio.bmsconsole.jobs.DefaultMLSplitHistoricalJob' transactionTimeout='7200000'/>
-
 	 <job name='StateFlowScheduledRule' classname='com.facilio.bmsconsole.jobs.StateFlowScheduledRuleJob' transactionTimeout='900000' />
 
+     <job name='HistoricalJob' classname='com.facilio.bmsconsole.jobs.HistoricalJob' transactionTimeout='7200000'/>
+	 <job name='SplitHistoricalJob' classname='com.facilio.bmsconsole.jobs.SplitHistoricalJob' transactionTimeout='7200000'/>
+	 <job name='AnomalyEventJob' classname='com.facilio.bmsconsole.jobs.AnomalyEventJob' transactionTimeout='7200000' />
+     <job name='InitiateSplitJob' classname='com.facilio.bmsconsole.jobs.InitiateSplitJob' transactionTimeout='7200000' />
+     
 	 <!-- Facilio DemoJob -->
 	 <job name='DemoRollUpJob' classname='com.facilio.bmsconsole.jobs.DemoRollUpJob' transactionTimeout='900000'/> 
 	 <!-- Facilio DeltaCalculation -->
