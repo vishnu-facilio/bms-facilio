@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -25,10 +26,12 @@ public class GetCardDataCommand extends FacilioCommand {
 		CardLayout cardLayout = (CardLayout) context.get(FacilioConstants.ContextNames.CARD_LAYOUT);
 		WidgetCardContext cardContext = (WidgetCardContext) context.get(FacilioConstants.ContextNames.CARD_CONTEXT);
 		WorkflowContext workflow = (WorkflowContext) context.get(WorkflowV2Util.WORKFLOW_CONTEXT);
-		
+		List<Object> paramsList = (List<Object>) context.get(WorkflowV2Util.WORKFLOW_PARAMS);
+				
 		if (workflow != null) {
 			FacilioChain workflowChain = TransactionChainFactory.getExecuteWorkflowChain();
 			workflowChain.getContext().put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+			workflowChain.getContext().put(WorkflowV2Util.WORKFLOW_PARAMS, paramsList);
 			
 			workflowChain.execute();
 			
