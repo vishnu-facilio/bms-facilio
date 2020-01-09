@@ -1,17 +1,36 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
 import com.facilio.agent.DeleteAgentCommand;
-import com.facilio.agent.commands.*;
+import com.facilio.agent.commands.AckUpdateCommand;
+import com.facilio.agent.commands.AcknowledgeMessageCommand;
+import com.facilio.agent.commands.AddAgentMessageCommand;
+import com.facilio.agent.commands.AddAgentMetricsCommand;
+import com.facilio.agent.commands.AddLogChainCommand;
+import com.facilio.agent.commands.AgentCreate;
+import com.facilio.agent.commands.AgentEditCommand;
+import com.facilio.agent.commands.UpdateAgentDetailsCommand;
+import com.facilio.agent.commands.UpdateAgentMessageCommand;
+import com.facilio.agent.commands.UpdateAgentMetricsCommand;
+import com.facilio.agent.commands.UpdateAgentTableCommand;
 import com.facilio.agentIntegration.AddIntegrationCommand;
 import com.facilio.agentIntegration.UpdateIntegrationCommand;
 import com.facilio.agentIntegration.wattsense.AgentIntegrationDeleteCommand;
 import com.facilio.agentv2.AddAgent;
 import com.facilio.agentv2.UpdateAgentCommand;
-import com.facilio.agentv2.commands.*;
+import com.facilio.agentv2.commands.AckIotMessageCommand;
+import com.facilio.agentv2.commands.DeletePointCommand;
+import com.facilio.agentv2.commands.ProcessDataCommandV2;
+import com.facilio.agentv2.commands.SendRemovePointsCommand;
+import com.facilio.agentv2.commands.SendResetCommand;
+import com.facilio.agentv2.commands.SubscribeUnsbscribeCommand;
+import com.facilio.agentv2.commands.UpdatePointsConfiguredCommand;
+import com.facilio.agentv2.commands.unconfigurePointsCommand;
 import com.facilio.agentv2.controller.commands.AddDevicesCommand;
 import com.facilio.agentv2.controller.commands.FieldDevicesToControllerCommand;
 import com.facilio.agentv2.device.commands.DeleteFieldDevice;
@@ -19,22 +38,41 @@ import com.facilio.agentv2.device.commands.getFieldDevicesCommand;
 import com.facilio.agentv2.iotmessage.AddAndSendIotMessageCommand;
 import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
+import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.mv.command.*;
-import com.facilio.workflows.command.*;
-import org.apache.commons.chain.Context;
+import com.facilio.mv.command.AddMVAdjustmentCommand;
+import com.facilio.mv.command.AddMVBaselineCommand;
+import com.facilio.mv.command.AddMVProjectCommand;
+import com.facilio.mv.command.ConstructBaselineFormulaWithAdjustmentCommand;
+import com.facilio.mv.command.DeleteMVProjectCommand;
+import com.facilio.mv.command.ScheduleMVFormulaCalculationJob;
+import com.facilio.mv.command.UpdateMVAdjustmentCommand;
+import com.facilio.mv.command.UpdateMVBaselineCommand;
+import com.facilio.mv.command.UpdateMVProjectCommand;
+import com.facilio.mv.command.ValidateMVProjectCommand;
+import com.facilio.workflows.command.AddNameSpaceCommand;
+import com.facilio.workflows.command.AddScheduledWorkflowCommand;
+import com.facilio.workflows.command.AddUserFunctionCommand;
+import com.facilio.workflows.command.AddWorkflowCommand;
+import com.facilio.workflows.command.DeleteNameSpaceCommand;
+import com.facilio.workflows.command.DeleteScheduledWorkflowCommand;
+import com.facilio.workflows.command.DeleteWorkflowCommand;
+import com.facilio.workflows.command.ExecuteWorkflowCommand;
+import com.facilio.workflows.command.GetDefaultWorkflowContext;
+import com.facilio.workflows.command.UpdateNameSpaceCommand;
+import com.facilio.workflows.command.UpdateUserFunctionCommand;
+import com.facilio.workflows.command.UpdateWorkflowCommand;
+import com.facilio.workflows.command.updateScheduledWorkflowCommand;
 
 public class TransactionChainFactory {
 
@@ -1240,6 +1278,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getExportModuleReportFileChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+			c.addCommand(new GetModuleFromReportContextCommand());
 			c.addCommand(new GetExportModuleReportFileCommand());
 			return c;
 		}
