@@ -1055,6 +1055,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain getDeleteKPICommand() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DeleteKPICommand());
+			return c;
+		}
+		
 		public static FacilioChain getPMReadingCorrectionChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ValidatePMReadingCorrection());

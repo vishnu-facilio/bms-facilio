@@ -245,14 +245,52 @@ public class KPIAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String addOrUpdateKpi() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateKPICommand();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.KPI, kpi);
+		chain.execute();
+		
+		setResult(ContextNames.KPI, kpi);
+		
+		return SUCCESS;
+	}
+	
 	public String kpiList() throws Exception {
 		
 		FacilioChain chain = ReadOnlyChainFactory.getKPIListChain();
 		FacilioContext context = chain.getContext();
 		constructListContext(context);
+		if (fetchCurrentValue != null && fetchCurrentValue) {
+			context.put("fetchCurrentValue", fetchCurrentValue);
+		}
 		chain.execute();
 		
-		setResult(ContextNames.KPI_LIST, context.get(ContextNames.KPI_LIST));
+		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
+		}
+		else {
+			setResult(ContextNames.KPI_LIST, context.get(ContextNames.KPI_LIST));
+		}
+		
+		return SUCCESS;
+	}
+	
+	private Boolean fetchCurrentValue;
+	public Boolean getFetchCurrentValue() {
+		return fetchCurrentValue;
+	}
+	public void setFetchCurrentValue(Boolean fetchCurrentValue) {
+		this.fetchCurrentValue = fetchCurrentValue;
+	}
+	
+	public String delteKpi() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.getDeleteKPICommand();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.ID, id);
+		chain.execute();
+		setResult(ContextNames.RESULT, "success");
 		
 		return SUCCESS;
 	}

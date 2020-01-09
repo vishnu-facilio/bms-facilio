@@ -532,10 +532,23 @@
 			<param name="permission">ENERGY_ANALYTICS</param>
 		</action>
 		
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.KPIAction"
+			method="addOrUpdateKpi">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+		</action>
+		
 		<action name="list" class="com.facilio.bmsconsole.actions.KPIAction"
 			method="kpiList">
 			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
+		</action>
+		
+		<action name="count" class="com.facilio.bmsconsole.actions.KPIAction"
+			method="kpiList">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+			<param name="fetchCount">true</param>
 		</action>
 		
 		<action name="value" class="com.facilio.bmsconsole.actions.KPIAction"
@@ -546,6 +559,10 @@
 		
 		<action name="metrics" class="com.facilio.bmsconsole.actions.KPIAction"
 			method="kpiMetrics">
+		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.KPIAction"
+			method="delteKpi">
 		</action>
 		
 		<action name="*" class="com.facilio.bmsconsole.actions.KPIAction"

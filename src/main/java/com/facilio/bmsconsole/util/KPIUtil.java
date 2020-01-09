@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -157,6 +157,10 @@ public class KPIUtil {
 	}
 	
 	public static KPIContext getKPI(long id) throws Exception {
+		return getKPI(id, true);
+	}
+	
+	public static KPIContext getKPI(long id,  boolean fetchCurrentValue) throws Exception {
 		FacilioModule module = ModuleFactory.getKpiModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -164,33 +168,50 @@ public class KPIUtil {
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
-		KPIContext kpi = fetchKPIFromProps(selectBuilder.get()).get(0);
-		Criteria criteria = CriteriaAPI.getCriteria(kpi.getCriteriaId());
-		kpi.setCriteria(criteria);
-		List<FacilioField> kpiMetrics = getKPIMetrics(kpi.getModule());
-		FacilioField metricField = (FacilioField) kpiMetrics.stream().filter(metric -> {
-			if (kpi.getMetricId() != -1) {
-				return kpi.getMetricId() == metric.getFieldId();
-			}
-			else{
-				return kpi.getMetricName().equals(metric.getName());
-			}
-		}).findFirst().get();
-		kpi.setMetric(metricField);
+		return fetchKPIFromProps(selectBuilder.get(), fetchCurrentValue).get(0);
 		
-		kpi.setCurrentValue(getKPIValue(kpi));
-		
-		return kpi;
 	}
 	
-	public static List<KPIContext> fetchKPIFromProps(List<Map<String, Object>> props) throws Exception {
+	public static List<KPIContext> fetchKPIFromProps(List<Map<String, Object>> props, boolean fetchCurrentValue) throws Exception {
 		if (CollectionUtils.isNotEmpty(props)) {
 			List<KPIContext> kpis = FieldUtil.getAsBeanListFromMapList(props, KPIContext.class);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			Map<String, List<FacilioField>> metrics = new HashMap<>();
+			
+			List<Long> ids = kpis.stream().map(KPIContext::getCriteriaId).collect(Collectors.toList());
+			Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(ids);
+			
 			for(KPIContext kpi: kpis) {
-				kpi.setModule(modBean.getModule(kpi.getModuleId()));
+				FacilioModule module = modBean.getModule(kpi.getModuleId());
+				kpi.setModule(module);
+				
+				List<FacilioField> kpiMetrics;
+				if (!metrics.containsKey(module.getName())) {
+					kpiMetrics = getKPIMetrics(module);
+					metrics.put(module.getName(), kpiMetrics);
+				}
+				else {
+					kpiMetrics = metrics.get(module.getName());
+				}
+				 
+				
 				if (kpi.getDateFieldId() != -1) {
 					kpi.setDateField(modBean.getField(kpi.getDateFieldId()));
+				}
+				if (fetchCurrentValue) {
+					kpi.setCriteria(criteriaMap.get(kpi.getCriteriaId()));
+					
+					FacilioField metricField = (FacilioField) kpiMetrics.stream().filter(metric -> {
+						if (kpi.getMetricId() != -1) {
+							return kpi.getMetricId() == metric.getFieldId();
+						}
+						else{
+							return kpi.getMetricName().equals(metric.getName());
+						}
+					}).findFirst().get();
+					kpi.setMetric(metricField);
+					
+					kpi.setCurrentValue(getKPIValue(kpi));
 				}
 			}
 			
@@ -199,45 +220,7 @@ public class KPIUtil {
 		return null;
 	}
 	
-	
-	public static void addKPI(KPIContext kpi) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, Exception {
-		validateKPI(kpi);
-		updateChildIds(kpi);
-		
-		if (kpi.getModuleId() == -1) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			kpi.setModuleId(modBean.getModule(kpi.getModuleName()).getModuleId());
-		}
-		if (StringUtils.isNotEmpty(kpi.getMetricName())) {
-			if (kpi.getMetricName().equals("count")) {
-				kpi.setAggr(null);
-			}
-		}
-		
-		kpi.setActive(true);
-		kpi.setCreatedTime(System.currentTimeMillis());
-		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getKpiModule().getTableName())
-				.fields(FieldFactory.getKPIFields())
-				;
-		long id = insertBuilder.insert(FieldUtil.getAsProperties(kpi));
-		kpi.setId(id);
-	}
-	
-	private static void validateKPI(KPIContext kpi) throws Exception {
-		if (kpi.getWorkflow() == null && kpi.getCriteria() == null) {
-			throw new IllegalArgumentException("Workflow or Criteria is mandatory");
-		}
-		if (kpi.getModuleId() == -1 && kpi.getModuleName() == null) {
-			throw new IllegalArgumentException("Module is mandatory");
-		}
-		if (kpi.getAggr() == -1 && (kpi.getMetricId() != -1 || !kpi.getMetricName().equals("count")) ) {
-			throw new IllegalArgumentException("Aggregation is mandatory for this metric");
-		}
-	}
-	
-	private static void updateChildIds(KPIContext kpi) throws Exception {
+	public static void updateChildIds(KPIContext kpi) throws Exception {
 		if (kpi.getWorkflow() != null) {
 			long workflowId = WorkflowUtil.addWorkflow(kpi.getWorkflow());
 			kpi.setWorkflowId(workflowId);
@@ -249,9 +232,18 @@ public class KPIUtil {
 		}
 	}
 	
+	public static void deleteKPIChilds(KPIContext kpi) throws Exception {
+		if (kpi.getCriteriaId() != -1) {
+			CriteriaAPI.deleteCriteria(kpi.getCriteriaId());
+		}
+		else if (kpi.getWorkflowId() != -1) {
+			WorkflowUtil.deleteWorkflow(kpi.getWorkflowId());
+		}
+	}
+	
 	public static List<FacilioField> getKPIMetrics(FacilioModule module) throws Exception {
 		FacilioField countField = FieldFactory.getCountField(module).get(0);
-		countField.setDisplayName("Number of "+module.getDisplayName()+"s");
+		countField.setDisplayName("Number of "+module.getDisplayName()+"s");	
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countField);
 		fields.addAll((List<FacilioField>) ReportFactoryFields.getReportFields(module.getName()).get("metrics"));
@@ -269,7 +261,7 @@ public class KPIUtil {
 		FacilioField metric = kpi.getMetric();
 		FacilioField dateField = kpi.getDateField();
 		if (dateField != null) {
-			criteria.addAndCondition(CriteriaAPI.getCondition(dateField, kpi.getDateOperatorEnum()));
+			criteria.addAndCondition(CriteriaAPI.getCondition(dateField, kpi.getDateValue(), kpi.getDateOperatorEnum()));
 		}
 		
 		/*Map<String, Object> params = new HashMap<>();

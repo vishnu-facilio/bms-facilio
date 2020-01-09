@@ -31,6 +31,7 @@ public class GetKPIListCommand extends FacilioCommand {
 		
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		boolean fetchCurrentValue = (boolean) context.getOrDefault("fetchCurrentValue", false);
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
@@ -53,7 +54,7 @@ public class GetKPIListCommand extends FacilioCommand {
 			return false;
 		}
 		
-		builder.select(fields);
+		builder.select(fields).orderBy(fieldMap.get("createdTime").getCompleteColumnName() + " DESC");
 		
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
@@ -68,7 +69,7 @@ public class GetKPIListCommand extends FacilioCommand {
 			builder.limit(perPage);
 		}
 		
-		List<KPIContext> kpis = KPIUtil.fetchKPIFromProps(builder.get());
+		List<KPIContext> kpis = KPIUtil.fetchKPIFromProps(builder.get(), fetchCurrentValue);
 
 		
 		context.put(ContextNames.KPI_LIST, kpis);

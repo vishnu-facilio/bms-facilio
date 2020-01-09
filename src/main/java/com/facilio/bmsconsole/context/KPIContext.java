@@ -240,7 +240,7 @@ public class KPIContext implements Serializable {
 	}
 	
 	private DateOperators dateOperator;
-	public int getDateOperatorId() {
+	public int getDateOperator() {
 		if (dateOperator != null) {
 			return dateOperator.getOperatorId();
 		}
@@ -258,6 +258,13 @@ public class KPIContext implements Serializable {
 		}
 	}
 	
+	private String dateValue;
+	public String getDateValue() {
+		return dateValue;
+	}
+	public void setDateValue(String dateValue) {
+		this.dateValue = dateValue;
+	}
 
 	private AggregateOperator aggr;
 	public int getAggr() {

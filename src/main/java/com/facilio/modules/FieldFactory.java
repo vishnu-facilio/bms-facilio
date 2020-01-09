@@ -5396,6 +5396,7 @@ public class FieldFactory {
 		fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
 		fields.add(getField("dateFieldId", "DATE_FIELD_ID", module, FieldType.LOOKUP));
 		fields.add(getField("dateOperator", "DATE_OPERATOR", module, FieldType.NUMBER));
+		fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
 		fields.add(getField("aggr", "AGGREGATION", module, FieldType.NUMBER));
 		fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
