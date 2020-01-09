@@ -34,6 +34,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.wms.constants.WmsEventType;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
 
@@ -156,7 +157,7 @@ public class UpdateAlarmCommand extends FacilioCommand {
 					WmsEvent event = new WmsEvent();
 					event.setNamespace("alarm");
 					event.setAction("newAlarm");
-					event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+					event.setEventType(WmsEventType.Module.RECORD_UPDATE);
 					event.addData("record", record);
 					event.addData("sound", true);
 					

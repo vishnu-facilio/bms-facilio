@@ -27,16 +27,4 @@ public class WmsNotification extends Message {
 	public JSONObject getNotification() {
 		return (JSONObject) super.getData("notification");
 	}
-	
-	public static enum WmsEventType {
-		USER_STATUS,
-		RECORD_UPDATE,
-		OTER;
-	}
-	
-	public static enum WmsUserStatus {
-		ONLINE,
-		IDLE,
-		OFFLINE;
-	}
 }

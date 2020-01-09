@@ -49,6 +49,7 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.wms.constants.WmsEventType;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
 
@@ -292,7 +293,7 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 					if (alarms.get(0).getTypeEnum() == Type.READING_ALARM) {
 						WmsEvent event = new WmsEvent();
 						event.setNamespace("newAlarm");
-						event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+						event.setEventType(WmsEventType.Module.RECORD_UPDATE);
 						JSONObject record = new JSONObject();
 						record.put("id", alarms.get(0).getId());
 						event.setAction("refetch");

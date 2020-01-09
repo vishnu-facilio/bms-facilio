@@ -27,7 +27,8 @@ import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.context.ScreenDashboardRelContext;
 import com.facilio.service.FacilioService;
-import com.facilio.wms.message.WmsRemoteScreenMessage;
+import com.facilio.wms.constants.WmsEventType;
+import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
 
 public class ScreenUtil {
@@ -100,7 +101,7 @@ public class ScreenUtil {
 		List<RemoteScreenContext> remoteScreens = getAllRemoteScreen(screen.getId());
 		if (remoteScreens != null && remoteScreens.size() > 0) {
 			for (RemoteScreenContext remoteScreen : remoteScreens) {
-				WmsApi.sendRemoteMessage(remoteScreen.getId(), new WmsRemoteScreenMessage().setAction(WmsRemoteScreenMessage.RemoteScreenAction.REFRESH));
+				WmsApi.sendEventToRemoteScreen(remoteScreen.getId(), new WmsEvent().setEventType(WmsEventType.RemoteScreen.REFRESH));
 			}
 		}
 	}
@@ -110,7 +111,7 @@ public class ScreenUtil {
 		List<RemoteScreenContext> remoteScreens = getAllRemoteScreen(screen.getId());
 		if (remoteScreens != null && remoteScreens.size() > 0) {
 			for (RemoteScreenContext remoteScreen : remoteScreens) {
-				WmsApi.sendRemoteMessage(remoteScreen.getId(), new WmsRemoteScreenMessage().setAction(WmsRemoteScreenMessage.RemoteScreenAction.REFRESH));
+				WmsApi.sendEventToRemoteScreen(remoteScreen.getId(), new WmsEvent().setEventType(WmsEventType.RemoteScreen.REFRESH));
 			}
 		}
 		

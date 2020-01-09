@@ -1840,7 +1840,7 @@ GAUGE_LAYOUT_5 ("gauge_layout_5") {
 	},
 	
 	
-PM_READINGS_1 ("pmreadings_layout_1") {
+	PMREADINGS_LAYOUT_1 ("pmreadings_layout_1") {
 		
 		public JSONObject getParameters () {
 			JSONObject params = new JSONObject();
@@ -1858,14 +1858,7 @@ PM_READINGS_1 ("pmreadings_layout_1") {
 		}
 		
 		public String getScript () {
-			StringBuilder sb = new StringBuilder();
-			
-			sb.append(
-					"result[\"title\"] = params.title;"
-					+ "result[\"value\"] = params;");
-					
-			
-			return CardUtil.appendCardPrefixSuffixScript(sb.toString());
+			return null;
 		}
 	};
 	

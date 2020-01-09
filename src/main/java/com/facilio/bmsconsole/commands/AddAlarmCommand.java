@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.wms.constants.WmsEventType;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
 
@@ -72,7 +73,7 @@ public class AddAlarmCommand extends FacilioCommand {
 					WmsEvent event = new WmsEvent();
 					event.setNamespace("alarm");
 					event.setAction("newAlarm");
-					event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+					event.setEventType(WmsEventType.Module.RECORD_UPDATE);
 					event.addData("record", record);
 					event.addData("sound", true);
 					

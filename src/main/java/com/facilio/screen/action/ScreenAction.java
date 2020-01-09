@@ -8,7 +8,8 @@ import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.service.FacilioService;
-import com.facilio.wms.message.WmsRemoteScreenMessage;
+import com.facilio.wms.constants.WmsEventType;
+import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -175,7 +176,7 @@ public class ScreenAction extends ActionSupport {
 	public String refreshRemoteScreen() throws Exception {
 		
 		if(remoteScreenContext != null) {
-			WmsApi.sendRemoteMessage(remoteScreenContext.getId(), new WmsRemoteScreenMessage().setAction(WmsRemoteScreenMessage.RemoteScreenAction.REFRESH));
+			WmsApi.sendEventToRemoteScreen(remoteScreenContext.getId(), new WmsEvent().setEventType(WmsEventType.RemoteScreen.REFRESH));
 		}
 		return SUCCESS;
 	}
@@ -184,7 +185,7 @@ public class ScreenAction extends ActionSupport {
 		
 		if(remoteScreenContext != null) {
 			if(FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.updateRemoteScreen(remoteScreenContext)) > 0) {
-				WmsApi.sendRemoteMessage(remoteScreenContext.getId(), new WmsRemoteScreenMessage().setAction(WmsRemoteScreenMessage.RemoteScreenAction.REFRESH));
+				WmsApi.sendEventToRemoteScreen(remoteScreenContext.getId(), new WmsEvent().setEventType(WmsEventType.RemoteScreen.REFRESH));
 			}
 		}
 		return SUCCESS;
@@ -194,7 +195,7 @@ public class ScreenAction extends ActionSupport {
 		
 		if(remoteScreenContext != null) {
 			if(FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.deleteRemoteScreen(remoteScreenContext)) > 0) {
-				WmsApi.sendRemoteMessage(remoteScreenContext.getId(), new WmsRemoteScreenMessage().setAction(WmsRemoteScreenMessage.RemoteScreenAction.REFRESH));
+				WmsApi.sendEventToRemoteScreen(remoteScreenContext.getId(), new WmsEvent().setEventType(WmsEventType.RemoteScreen.REFRESH));
 			}
 		}
 		return SUCCESS;

@@ -73,7 +73,6 @@ import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.DevicesAPI;
-import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.InventoryApi;
@@ -88,6 +87,8 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
 import com.facilio.screen.util.ScreenUtil;
+import com.facilio.wms.endpoints.LiveSession.LiveSessionSource;
+import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -420,7 +421,7 @@ public class LoginAction extends FacilioAction {
 		data.put("sites", SpaceAPI.getAllSites());
 		
 		Map<String, Object> config = new HashMap<>();
-		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId()));
+		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.APP, LiveSessionSource.WEB));
 		config.put("payment_endpoint", getPaymentEndpoint());
 		Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
 		config.put("build", buildinfo);
@@ -500,7 +501,7 @@ public class LoginAction extends FacilioAction {
 		data.put("connectedScreen", remoteScreen);
 
 		Map<String, Object> config = new HashMap<>();
-		config.put("ws_endpoint", WmsApi.getRemoteWebsocketEndpoint(remoteScreen.getId()));
+		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(remoteScreen.getId(), LiveSessionType.REMOTE_SCREEN, LiveSessionSource.WEB));
 
 		account.put("data", data);
 		account.put("config", config);
@@ -561,7 +562,7 @@ public class LoginAction extends FacilioAction {
 				data.put("visitorKiosk",visitorKioskCtx);
 			}
 			
-			config.put("ws_endpoint", WmsApi.getRemoteWebsocketEndpoint(connectedDevice.getId()));
+			config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(device.getId(), LiveSessionType.DEVICE, ((device.getDeviceTypeEnum()==DeviceType.VISITOR_KIOSK) ? LiveSessionSource.TABLET : LiveSessionSource.WEB)));
 		}
 		
 		
@@ -802,7 +803,7 @@ public class LoginAction extends FacilioAction {
 		account.put("appProps", appProps);
 		
 		Map<String, Object> config = new HashMap<>();
-		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId()));
+		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId(), LiveSessionType.APP, LiveSessionSource.WEB));
 		config.put("payment_endpoint", getPaymentEndpoint());
 		Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
 		config.put("build", buildinfo);

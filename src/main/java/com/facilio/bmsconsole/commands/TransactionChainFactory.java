@@ -2995,7 +2995,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getExecuteCardWorkflowChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GetCardWorkflowCommand());
-			c.addCommand(getExecuteWorkflowChain());
+			c.addCommand(new GetCardDataCommand());
 			return c;
 		}
 
@@ -3994,6 +3994,7 @@ public class TransactionChainFactory {
 		c.addCommand(new AddContactsAsRequesterCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateVendorPrimaryContactLookUpCommand());
+		c.addCommand(new SendEventToDeviceCommand());
 
 		return c;
 	}
@@ -4053,6 +4054,7 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForVisitorType());
 		c.addCommand(new GenericAddModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new SendEventToDeviceCommand());
 		return c;
 	}
 
@@ -4060,6 +4062,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVisitorType());
 		c.addCommand(new GenericUpdateModuleDataCommand());
+		c.addCommand(new SendEventToDeviceCommand());
 		return c;
 	}
 
@@ -4075,12 +4078,14 @@ public class TransactionChainFactory {
 	{
 		FacilioChain c=getDefaultChain();
 		c.addCommand(new AddVisitorTypeCommand());
+		c.addCommand(new SendEventToDeviceCommand());
 		return c;
 	}
 	public static FacilioChain getUpdateVisitorTypeSettingChain()
 	{
 		FacilioChain c=getDefaultChain();
 		c.addCommand(new UpdateVisitorSettingsCommand());
+		c.addCommand(new SendEventToDeviceCommand());
 		return c;
 	}
 

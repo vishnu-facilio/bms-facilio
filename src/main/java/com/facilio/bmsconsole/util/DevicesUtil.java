@@ -21,6 +21,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.screen.context.RemoteScreenContext;
+import com.facilio.wms.constants.WmsEventType;
+import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
+import com.facilio.wms.message.WmsEvent;
+import com.facilio.wms.util.WmsApi;
 
 public class DevicesUtil {
 
@@ -152,8 +156,34 @@ public static int disconnectDevice(long deviceId, long orgId) throws Exception {
 	.andCondition(CriteriaAPI.getCondition("DEVICE_ID", "deviceId",deviceId+"", NumberOperators.EQUALS))
 	.andCondition(CriteriaAPI.getCondition("ORGID", "orgId",  orgId+"", NumberOperators.EQUALS));
 	
+	WmsApi.sendEventToDevice(deviceId, new WmsEvent().setEventType(WmsEventType.Device.DISCONNECT));
 	
 	return deleteRecordBuilder.delete();
+}
+
+public static void reloadConf(long orgId) throws Exception {
+	
+	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+	
+	builder.table(ModuleFactory.getConnectedDevicesModule().getTableName());
+	builder.select(FieldFactory.getConnectedDeviceFields());
+	builder.andCondition(CriteriaAPI.getOrgIdCondition(orgId, ModuleFactory.getConnectedDevicesModule()));
+	
+	List<Map<String, Object>> props = builder.get();
+	
+	
+	if(props!=null && props.size()>0)
+	{
+		for (Map<String, Object> prop : props) {
+			ConnectedDeviceContext connectedDeviceContext = FieldUtil.getAsBeanFromMap(prop, ConnectedDeviceContext.class);
+			reloadConf(connectedDeviceContext.getDeviceId(), orgId);
+		}
+	}
+}
+
+public static void reloadConf(long deviceId, long orgId) throws Exception {
+	
+	WmsApi.sendEventToDevice(deviceId, new WmsEvent().setEventType(WmsEventType.Device.RELOAD_CONF));
 }
 
 public static ConnectedDeviceContext getConnectedDevice(Long connectedDeviceId) throws Exception {

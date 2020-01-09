@@ -26,26 +26,27 @@ import com.facilio.services.kafka.FacilioKafkaProducer;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.procon.producer.FacilioProducer;
 import com.facilio.wms.endpoints.FacilioClientEndpoint;
+import com.facilio.wms.endpoints.LiveSession.LiveSessionSource;
+import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.endpoints.SessionManager;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.WmsChatMessage;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.message.WmsNotification;
 import com.facilio.wms.message.WmsPublishResponse;
-import com.facilio.wms.message.WmsRemoteScreenMessage;
 
 public class WmsApi
 {
 	private static final Logger LOGGER = Logger.getLogger(WmsApi.class.getName());
 	private static String kinesisNotificationTopic = "notifications";
 	
-	private static String WEBSOCKET_URL = "ws://localhost:8080/websocket";
+	private static String WEBSOCKET_URL = "ws://localhost:8080/ROOT/websocket";
 	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
 	private static FacilioProducer producer;
 	
 	static {
 		if(!FacilioProperties.isDevelopment()) {
-			String socketUrl = FacilioProperties.getConfig("app.domain");
+			String socketUrl = FacilioProperties.getConfig("wms.domain");
 			if (socketUrl != null) {
 				WEBSOCKET_URL = "wss://"+socketUrl+"/websocket";
 			}
@@ -85,12 +86,8 @@ public class WmsApi
 	}
 	
 	
-	public static String getWebsocketEndpoint(long uid) {
-		return WEBSOCKET_URL + "/" + uid;
-	}
-	
-	public static String getRemoteWebsocketEndpoint(long id) {
-		return WEBSOCKET_URL + "/remote/" + id;
+	public static String getWebsocketEndpoint(long id, LiveSessionType liveSessionType, LiveSessionSource liveSessionSource) {
+		return WEBSOCKET_URL + "/" + id + "?" + "type=" + liveSessionType.name() + "&source=" + liveSessionSource.name();
 	}
 	
 	public static void sendEvent(long to, WmsEvent event) throws IOException, EncodeException
@@ -100,11 +97,22 @@ public class WmsApi
 		sendMessage(toList, event);
 	}
 	
-	public static void sendRemoteMessage(long to, WmsRemoteScreenMessage remoteMessage) throws IOException, EncodeException
+	public static void sendEventToDevice(long to, WmsEvent event) throws IOException, EncodeException
 	{
+		event.setSessionType(LiveSessionType.DEVICE);
+		
 		List<Long> toList = new ArrayList<>();
 		toList.add(to);
-		sendMessage(toList, remoteMessage);
+		sendMessage(toList, event);
+	}
+	
+	public static void sendEventToRemoteScreen(long to, WmsEvent event) throws IOException, EncodeException
+	{
+		event.setSessionType(LiveSessionType.REMOTE_SCREEN);
+		
+		List<Long> toList = new ArrayList<>();
+		toList.add(to);
+		sendMessage(toList, event);
 	}
 	
 	public static void broadCastMessage( Message message) throws IOException, EncodeException
@@ -169,8 +177,6 @@ public class WmsApi
 			}
 		}
 	}
-
-
 
 	private static void sendToKinesis(JSONObject object) {
 		try {

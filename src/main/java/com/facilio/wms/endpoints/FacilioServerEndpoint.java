@@ -1,8 +1,11 @@
 package com.facilio.wms.endpoints;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
@@ -11,9 +14,15 @@ import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageDecoder;
 import com.facilio.wms.message.MessageEncoder;
@@ -23,35 +32,127 @@ import com.facilio.wms.message.MessageEncoder;
  * @author Shivaraj
  */
 @ServerEndpoint(
-        value="/websocket/{uid}",
+        value="/websocket/{id}",
+        configurator = FacilioServerConfigurator.class,
         decoders = MessageDecoder.class,
         encoders = MessageEncoder.class
 )
 public class FacilioServerEndpoint 
 {
     private final Logger log = Logger.getLogger(getClass().getName());
+    
+    private static final String HANDSHAKE_REQUEST = "handshakereq";
+    private static final String SESSION_TYPE = "type";
+    private static final String SESSION_SOURCE = "source";
+    private static final String AUTH_TOKEN = "token";
 
     private Session session;
     private static final Set<FacilioServerEndpoint> endpoints = new CopyOnWriteArraySet<FacilioServerEndpoint>();
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("uid") long uid) throws IOException, EncodeException 
+    public void onOpen(Session session, @PathParam("id") long id) throws Exception 
     {
-//    	System.out.println("Session started uid ::" +uid + ":::sessionid" + session.getId());
-        this.session = session;
-        endpoints.add(this);
-        
-        SessionManager.UserSession us = new SessionManager.UserSession().setUid(uid).setSession(session).setCreatedTime(System.currentTimeMillis());
-        SessionManager.getInstance().addUserSession(us);
+    	LiveSession liveSession = validateSession(id, session);
+    	if (liveSession != null) {
+    		
+    		log.log(Level.INFO, "Session started => " + liveSession);
+    		
+    		this.session = session;
+	        endpoints.add(this);
+	        
+	        SessionManager.getInstance().addLiveSession(liveSession);
+    	}
+    	else {
+    		throw new Exception("Invalid user!");
+    	}
+    }
+    
+    private LiveSession validateSession(long id, Session session) throws Exception {
+    	
+    	HandshakeRequest hreq = (HandshakeRequest) session.getUserProperties().get(HANDSHAKE_REQUEST);
+		
+		Map<String, List<String>> headers = hreq.getHeaders();
+		Map<String, List<String>> params = hreq.getParameterMap();
+		
+		if (headers != null || params != null) {
+		
+			String idToken = null;
+			String deviceToken = null;
+			LiveSession.LiveSessionType sessionType = null;
+			LiveSession.LiveSessionSource sessionSource = null;
+			
+			List<String> cookieValues = headers.get("cookie");
+			if (cookieValues != null && cookieValues.size() > 0) {
+				for (String cookie : cookieValues.get(0).split(";")) {
+					if (cookie.split("=").length > 1) {
+						String key = cookie.split("=")[0].trim();
+						String value = cookie.split("=")[1].trim();
+						
+						if ("fc.idToken.facilio".equals(key)) {
+							idToken = value;
+						}
+						else if ("fc.deviceTokenNew".equals(key)) {
+							deviceToken = value;
+						}
+					}
+				}
+			}
+			
+			List<String> authHeader = headers.get("Authorization");
+			if (authHeader != null && authHeader.size() > 0) {
+				if (authHeader.get(0).startsWith("Bearer facilio ")) {
+					idToken = authHeader.get(0).replace("Bearer facilio ", "");
+				}
+				else if (authHeader.get(0).startsWith("Bearer device ")) {
+					deviceToken = authHeader.get(0).replace("Bearer device ", "");
+				}
+			}
+			
+			if (params.containsKey(SESSION_TYPE)) {
+				sessionType = LiveSession.LiveSessionType.valueOf(params.get(SESSION_TYPE).get(0));
+			}
+			
+			if (params.containsKey(SESSION_SOURCE)) {
+				sessionSource = LiveSession.LiveSessionSource.valueOf(params.get(SESSION_SOURCE).get(0));
+			}
+			
+			if (params.containsKey(AUTH_TOKEN) && sessionType != null) {
+				if (sessionType == LiveSessionType.DEVICE) {
+					deviceToken = params.get(AUTH_TOKEN).get(0);
+				}
+				else {
+					idToken = params.get(AUTH_TOKEN).get(0);
+				}
+			}
+			
+			if (idToken != null) {
+				IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(idToken, false, null, "app");
+				if (iamAccount == null) {
+					throw new Exception("Invalid auth!");
+				}
+			}
+			else if (deviceToken != null) {
+				DecodedJWT verifiedJwt = IAMUserBeanImpl.validateJWT(deviceToken, "auth0");
+				if (verifiedJwt == null) {
+					throw new Exception("Invalid auth!");
+				}
+			}
+			
+			LiveSession liveSession = new LiveSession().setId(id).setSession(session).setCreatedTime(System.currentTimeMillis()).setLiveSessionType(sessionType).setLiveSessionSource(sessionSource);
+			return liveSession;
+		}
+		else {
+			throw new Exception("Invalid params!");
+		}
     }
 
     @OnMessage
     public void onMessage(Session session, Message message) throws IOException, EncodeException 
     {
-//    	System.out.println("Session started message to ::" +session.getPathParameters()+ ":::sessionid" + session.getId()+"  msg: "+message.getContent()+"  cc: "+message);
+    	System.out.println("Session started message to ::" +session.getPathParameters()+ ":::sessionid" + session.getId()+"  msg: "+message.getContent()+"  cc: "+message);
     	
-    	long uid = Long.parseLong(session.getPathParameters().get("uid"));
-    	message.setTo(uid);
+    	long id = Long.parseLong(session.getPathParameters().get("id"));
+    	message.setTo(id);
     	if ("subscribe".equalsIgnoreCase(message.getAction())) {
     		PubSubManager.getInstance().subscribe(message);
     	}
@@ -61,32 +162,24 @@ public class FacilioServerEndpoint
     	else if (message.getContent() != null && message.getContent().get("ping") != null) {
     		message.getContent().put("ping", "pong");
     		session.getBasicRemote().sendObject(message);
+    		
+    		SessionManager.getInstance().getLiveSession(session.getId()).setLastMsgTime(System.currentTimeMillis());
     	}
     }
-    
-//    @OnMessage
-//    public void onMessage(Session session, String message) throws IOException {
-//    	System.out.println("Session started message: ::sessionid" + session.getId()+"  msg: "+message);
-//    	if ("ping".equalsIgnoreCase(message)) {
-//    		session.getBasicRemote().sendText("pong");
-//    	}
-//    }
 
     @OnClose
     public void onClose(Session session) throws IOException, EncodeException 
     {
-//    	System.out.println("Session started closed" +session.getId());
+    	System.out.println("Session started closed" +session.getId());
     	endpoints.remove(this);
-    	SessionManager.getInstance().removeUserSession(session.getId());
+    	SessionManager.getInstance().removeLiveSession(session.getId());
     	session.close();
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) 
     {
-//    	System.out.println("Session started Error" +throwable.getMessage());
-//        log.warning(throwable.toString());
-//        throwable.printStackTrace();
+    	System.out.println("Session started Error" +throwable.getMessage());
     }
 
     public static void broadcast(Message message) throws IOException, EncodeException 
@@ -99,33 +192,4 @@ public class FacilioServerEndpoint
             }
         }
     }
-
-//    public static void sendMessage(Message message) throws IOException, EncodeException 
-//    {
-//    	System.out.println("Sending message TO:: "+message.getTo()+"  MSG:: "+message.getContent());
-//    	List<FacilioServerEndpoint> sessions = getSessions(message.getTo());
-//    	if (sessions != null) {
-//    		for (FacilioServerEndpoint endpoint : sessions) 
-//        	{
-//        		synchronized(endpoint) {
-//        			endpoint.session.getBasicRemote().sendObject(message);
-//        		}
-//        	}
-//    	}
-//    	else {
-//    		System.out.println("SESSIONS IS NULL :: "+message.getTo()+"  MSG:: "+message.getContent());
-//    	}
-////        for (FacilioServerEndpoint endpoint : endpoints) 
-////        {
-////            synchronized(endpoint) 
-////            {
-////            	List<FacilioServerEndpoint> sessions = getSessions(message.getTo());
-////            	System.out.println("Sending message2 :: " + endpoint.session.getId());
-////            	System.out.println("Sending message3 ::" + sessions);
-////                if (sessions.contains(endpoint.session.getId())) {
-////                    endpoint.session.getBasicRemote().sendObject(message);
-////                }
-////            }
-////        }
-//    }
 }

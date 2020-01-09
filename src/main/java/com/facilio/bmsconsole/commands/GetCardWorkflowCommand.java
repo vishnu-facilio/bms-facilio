@@ -28,13 +28,7 @@ public class GetCardWorkflowCommand extends FacilioCommand {
 		Long cardId = (Long) context.get(FacilioConstants.ContextNames.CARD_ID);
 		
 		if (cardContext != null) {
-			List<Object> paramsList = new ArrayList<Object>();
-			paramsList.add(cardContext.getCardParams());
-			
-			WorkflowContext workflow = getWorkflowContext(cardContext);
-			
-			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-			context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramsList);
+			setWorkflowContext(context, cardContext);
 		}
 		else if (cardId != null) {
 			
@@ -48,43 +42,55 @@ public class GetCardWorkflowCommand extends FacilioCommand {
 			if (props != null && !props.isEmpty()) {
 				WidgetCardContext widgetCardContext = FieldUtil.getAsBeanFromMap(props.get(0), WidgetCardContext.class);
 				
-				List<Object> paramsList = new ArrayList<Object>();
-				paramsList.add(widgetCardContext.getCardParams());
-				
-				WorkflowContext workflow = getWorkflowContext(widgetCardContext);
-				
 				context.put(FacilioConstants.ContextNames.CARD_CONTEXT, widgetCardContext);
-				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-				context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramsList);
+				
+				setWorkflowContext(context, widgetCardContext);
 			}
 			else {
-				
+				throw new IllegalArgumentException("No such card found with the given id.");
 			}
 		}
 		return false;
 	}
 	
 	
-	private WorkflowContext getWorkflowContext(WidgetCardContext cardContext) throws Exception {
+	private void setWorkflowContext(Context context, WidgetCardContext cardContext) throws Exception {
 		
 		CardLayout cl = CardLayout.getCardLayout(cardContext.getCardLayout());
 		
-		WorkflowContext workflow = new WorkflowContext();
-		workflow.setIsV2Script(true);
-		
-		if (cardContext.getScriptMode() == WidgetCardContext.ScriptMode.CUSTOM_SCRIPT) {
-			if (cardContext.getCustomScript() != null) {
-				workflow.setWorkflowV2String(cardContext.getCustomScript());
+		if (cl != null) {
+			context.put(FacilioConstants.ContextNames.CARD_LAYOUT, cl);
+			
+			WorkflowContext workflow = new WorkflowContext();
+			workflow.setIsV2Script(true);
+			
+			if (cardContext.getScriptMode() == WidgetCardContext.ScriptMode.CUSTOM_SCRIPT) {
+				if (cardContext.getCustomScript() != null) {
+					workflow.setWorkflowV2String(cardContext.getCustomScript());
+				}
+				else if (cardContext.getCustomScriptId() != null) {
+					workflow = WorkflowUtil.getWorkflowContext(cardContext.getCustomScriptId());
+					cardContext.setCustomScript(workflow.getWorkflowV2String());
+				}
+				
+				List<Object> paramsList = new ArrayList<Object>();
+				paramsList.add(cardContext.getCardParams());
+				
+				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+				context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramsList);
 			}
-			else if (cardContext.getCustomScriptId() != null) {
-				workflow = WorkflowUtil.getWorkflowContext(cardContext.getCustomScriptId());
-				cardContext.setCustomScript(workflow.getWorkflowV2String());
+			else if (cl.getScript() != null) {
+				workflow.setWorkflowV2String(cl.getScript());
+				
+				List<Object> paramsList = new ArrayList<Object>();
+				paramsList.add(cardContext.getCardParams());
+				
+				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+				context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramsList);
 			}
 		}
 		else {
-			workflow.setWorkflowV2String(cl.getScript());
+			throw new IllegalArgumentException("Invalid card layout.");
 		}
-		
-		return workflow;
 	}
 }

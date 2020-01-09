@@ -4,11 +4,14 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
+
 /**
  * Created by Shivaraj on 16/05/2017.
  */
 public class Message 
 {
+	private LiveSessionType sessionType = LiveSessionType.APP;
 	private MessageType messageType;
 	private long from;
 	private long to;
@@ -18,6 +21,7 @@ public class Message
 	private long timestamp;
 
 	private static final Logger LOGGER = LogManager.getLogger(Message.class.getName());
+	private static final String SESSION_TYPE = "sessionType";
 	private static final String MESSAGE_TYPE = "messageType";
 	private static final String TO = "to";
 	private static final String FROM = "from";
@@ -48,6 +52,15 @@ public class Message
 	
 	public Message setMessageType(String messageType) {
 		this.messageType = MessageType.valueOf(messageType);
+		return this;
+	}
+	
+	public LiveSessionType getSessionType() {
+		return this.sessionType;
+	}
+
+	public Message setSessionType(LiveSessionType sessionType) {
+		this.sessionType = sessionType;
 		return this;
 	}
 	
@@ -118,6 +131,7 @@ public class Message
 		this.timestamp = System.currentTimeMillis();
 		
 		JSONObject object = new JSONObject();
+		object.put(SESSION_TYPE, getSessionType().toString());
 		object.put(MESSAGE_TYPE, getMessageType().toString());
 		object.put(FROM, getFrom());
 		object.put(TO, getTo());
@@ -132,6 +146,9 @@ public class Message
 		Message message = new Message();
 		if (object.containsKey(MESSAGE_TYPE)) {
 			message.setMessageType(MessageType.valueOf((String)object.get(MESSAGE_TYPE)));
+		}
+		if (object.containsKey(SESSION_TYPE)) {
+			message.setSessionType(LiveSessionType.valueOf((String)object.get(SESSION_TYPE)));
 		}
 		if(object.containsKey(FROM)) {
 			try {

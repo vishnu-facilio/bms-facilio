@@ -312,6 +312,7 @@ public class FacilioConstants {
 		public static final String CARD_CONTEXT = "cardContext";
 		public static final String CARD_ID = "cardId";
 		public static final String CARD_RETURN_VALUE = "cardReturnValue";
+		public static final String CARD_LAYOUT = "cardLayout";
 		public static final String ALARM_ACTIVITY = "alarmActivity";
 		
 		public static final String ML_ANOMALY_ALARM = "mlAnomalyAlarm";

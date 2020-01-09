@@ -4,8 +4,6 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class CardAction extends FacilioAction {
 	
@@ -42,10 +40,8 @@ public class CardAction extends FacilioAction {
 		
 		chain.execute();
 			
-		WorkflowContext workflow = (WorkflowContext) chain.getContext().get(WorkflowV2Util.WORKFLOW_CONTEXT);
-		
 		setResult("cardContext", chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT));
-		setResult("data", workflow.getReturnValue());
+		setResult("data", chain.getContext().get(FacilioConstants.ContextNames.CARD_RETURN_VALUE));
 		return SUCCESS;
 	}
 }

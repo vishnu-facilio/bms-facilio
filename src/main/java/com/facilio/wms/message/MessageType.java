@@ -5,7 +5,6 @@ public enum MessageType {
 	NOTIFICATION,
 	CHAT,
 	SYSTEM,
-	REMOTE_SCREEN,
 	PUBLISH,
 	BROADCAST,
 	PUBSUB;
