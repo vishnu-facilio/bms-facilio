@@ -15,7 +15,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -27,6 +26,10 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class CriteriaAPI extends BaseCriteriaAPI {
+	
+	public static long addCriteria(Criteria criteria) throws Exception {
+		return addCriteria(criteria, AccountUtil.getCurrentOrg().getOrgId());
+	}
 	
 	public static long addCriteria(Criteria criteria, long orgId) throws Exception {
 		if(criteria != null) {
@@ -135,6 +138,10 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 														.andCondition(CriteriaAPI.getCondition("CRITERIAID", "criteriaId", String.valueOf(id), NumberOperators.EQUALS))
 														;
 		deleteBuilder.delete();
+	}
+	
+	public static Criteria getCriteria(long id) throws Exception {
+		return getCriteria(AccountUtil.getCurrentOrg().getId(), id);
 	}
 	
 	public static Criteria getCriteria(long orgId, long id) throws Exception {

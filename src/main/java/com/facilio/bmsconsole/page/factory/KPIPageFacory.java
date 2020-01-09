@@ -34,8 +34,10 @@ public class KPIPageFacory extends PageFactory {
 		Tab tab2 = page.new Tab("kpiViewer", "kpiViewer");
 		page.addTab(tab2);
 		
-		Tab tab3 = page.new Tab("kpiViolations", "violationsList");
-		page.addTab(tab3);
+		if (formulaField.getMatchedResourcesIds().size() > 1) {
+			Tab tab3 = page.new Tab("kpiViolations", "violationsList");
+			page.addTab(tab3);
+		}
 
 		Tab tab4 = page.new Tab("kpiLog", "formulaLog");
 		page.addTab(tab4);

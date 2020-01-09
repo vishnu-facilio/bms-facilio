@@ -5,6 +5,7 @@ import java.util.List;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.KPICategoryContext;
+import com.facilio.bmsconsole.context.KPIContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.chain.FacilioChain;
@@ -31,7 +32,7 @@ public class KPIAction extends FacilioAction {
 	
 	public String getAllKPICategories() throws Exception {
 		
-		setResult(KPIUtil.KPI_CATEGORY_CONTEXTS, KPIUtil.getAllKPIContext());
+		setResult(KPIUtil.KPI_CATEGORY_CONTEXTS, KPIUtil.getAllKPICategories());
 		return SUCCESS;
 	}
 	
@@ -215,5 +216,79 @@ public class KPIAction extends FacilioAction {
 	}
 	public void setResourceIds(List<Long> resourceIds) {
 		this.resourceIds = resourceIds;
+	}
+	
+	private KPIContext kpi;
+	public KPIContext getKpi() {
+		return kpi;
+	}
+	public void setKpi(KPIContext kpi) {
+		this.kpi = kpi;
+	}
+	
+	private long id;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	public String addKpi() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateKPICommand();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.KPI, kpi);
+		chain.execute();
+		
+		setResult(ContextNames.KPI, kpi);
+		
+		return SUCCESS;
+	}
+	
+	public String kpiList() throws Exception {
+		
+		FacilioChain chain = ReadOnlyChainFactory.getKPIListChain();
+		FacilioContext context = chain.getContext();
+		constructListContext(context);
+		chain.execute();
+		
+		setResult(ContextNames.KPI_LIST, context.get(ContextNames.KPI_LIST));
+		
+		return SUCCESS;
+	}
+	
+	public String kpiMetrics() throws Exception {
+		
+		FacilioChain chain = ReadOnlyChainFactory.getKPIMetricsChain();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.MODULE_NAME, moduleName);
+		chain.execute();
+		setResult("metrics", context.get(ContextNames.FIELDS));
+		
+		return SUCCESS;
+	}
+	
+	public String kpiDetails() throws Exception {
+		
+		KPIContext kpi = KPIUtil.getKPI(id);
+		setResult(ContextNames.KPI, kpi);
+		
+		return SUCCESS;
+	}
+	
+	public String fetchValue() throws Exception {
+		
+		Object value = KPIUtil.getKPIValue(id);
+		setResult("value", value);
+		
+		return SUCCESS;
+	}
+	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
 	}
 }

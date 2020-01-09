@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.facilio.activity.AlarmActivityContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,10 +33,13 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityContext;
 import com.facilio.activity.ActivityType;
+import com.facilio.activity.AlarmActivityContext;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -45,6 +47,7 @@ import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.util.FacilioTablePrinter;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -75,11 +78,8 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.queue.FAWSQueue;
-import com.facilio.queue.FacilioObjectQueue;
 import com.facilio.queue.FacilioQueueException;
 import com.facilio.services.factory.FacilioFactory;
-import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
@@ -598,50 +598,63 @@ public class CommonCommandUtil {
     }
     
     public static Pair<Double, Double> getSafeLimitForField(long fieldId) throws Exception {
-    	Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", String.valueOf(fieldId), NumberOperators.EQUALS));
-        criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
-        List<ReadingRuleContext> readingRules = ReadingRuleAPI.getReadingRules(criteria);
-        Double min = null;
+    		Double min = null;
         Double max = null;
-        if (readingRules != null && !readingRules.isEmpty()) {
-        	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
-            Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
-            new HashMap<>();
-            
-        	for (ReadingRuleContext r:  readingRules) {
-        		long workflowId = r.getWorkflowId();
-        		if (workflowId != -1) {
-        			r.setWorkflow(workflowMap.get(workflowId));
-        		}
-        		if (r.getWorkflow().getResultEvaluator().equals("(b!=-1&&a<b)||(c!=-1&&a>c)")) {
-        			
-        			List <ExpressionContext> expresions = new ArrayList<>();
-        			for(WorkflowExpression worklfowExp : r.getWorkflow().getExpressions()) {
-        				
-        				if(worklfowExp instanceof ExpressionContext) {
-        					expresions.add((ExpressionContext) worklfowExp);
-        				}
-        			}
-        			Optional<ExpressionContext> exp = expresions.stream().filter(e -> {return e.getName().equals("b");}).findFirst();
-        			if (exp.isPresent()) {
-        				min = Double.parseDouble((String) exp.get().getConstant());
-        				if (min == -1) {
-        					min = null;
-        				}
-        			}
-        			
-        			exp = expresions.stream().filter(e -> {return e.getName().equals("c");}).findFirst();
-        			if (exp.isPresent()) {
-        				max = Double.parseDouble((String) exp.get().getConstant());
-        				if (max == -1) {
-        					max = null;
-        				}
-        			}
-        		}
-        	}
-        }
-    	return Pair.of(min, max);
+        
+    		FormulaFieldContext field = FormulaFieldAPI.getFormulaFieldFromReadingField(fieldId);
+    		if (field != null && field.getFormulaFieldTypeEnum() == FormulaFieldType.ENPI && (field.getMinTarget() > 0 || field.getTarget() > 0 ) ) {
+    	        if (field.getMinTarget() > 0) {
+    	        		min = field.getMinTarget();
+    	        }
+    	        else if (field.getTarget() > 0) {
+    	        		max = field.getTarget();
+    	        }
+    		}
+    		else {
+    			Criteria criteria = new Criteria();
+    	        criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", String.valueOf(fieldId), NumberOperators.EQUALS));
+    	        criteria.addAndCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.VALIDATION_RULE.getIntVal()), NumberOperators.EQUALS));
+    	        List<ReadingRuleContext> readingRules = ReadingRuleAPI.getReadingRules(criteria);
+    	        
+    	        if (readingRules != null && !readingRules.isEmpty()) {
+    	        	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
+    	            Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
+    	            new HashMap<>();
+    	            
+    	        	for (ReadingRuleContext r:  readingRules) {
+    	        		long workflowId = r.getWorkflowId();
+    	        		if (workflowId != -1) {
+    	        			r.setWorkflow(workflowMap.get(workflowId));
+    	        		}
+    	        		if (r.getWorkflow().getResultEvaluator().equals("(b!=-1&&a<b)||(c!=-1&&a>c)")) {
+    	        			
+    	        			List <ExpressionContext> expresions = new ArrayList<>();
+    	        			for(WorkflowExpression worklfowExp : r.getWorkflow().getExpressions()) {
+    	        				
+    	        				if(worklfowExp instanceof ExpressionContext) {
+    	        					expresions.add((ExpressionContext) worklfowExp);
+    	        				}
+    	        			}
+    	        			Optional<ExpressionContext> exp = expresions.stream().filter(e -> {return e.getName().equals("b");}).findFirst();
+    	        			if (exp.isPresent()) {
+    	        				min = Double.parseDouble((String) exp.get().getConstant());
+    	        				if (min == -1) {
+    	        					min = null;
+    	        				}
+    	        			}
+    	        			
+    	        			exp = expresions.stream().filter(e -> {return e.getName().equals("c");}).findFirst();
+    	        			if (exp.isPresent()) {
+    	        				max = Double.parseDouble((String) exp.get().getConstant());
+    	        				if (max == -1) {
+    	        					max = null;
+    	        				}
+    	        			}
+    	        		}
+    	        	}
+    	        }
+    		}
+    		return Pair.of(min, max);
     }
 
 	public static void loadTaskLookups(List<TaskContext> tasks) throws Exception {

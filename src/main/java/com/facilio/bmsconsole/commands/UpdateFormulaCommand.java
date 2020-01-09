@@ -9,19 +9,16 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.KPIUtil;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -210,17 +207,14 @@ public class UpdateFormulaCommand extends FacilioCommand {
 	}
 	
 	private void updateTarget(FormulaFieldContext newFormula, FormulaFieldContext oldFormula) throws Exception {
-		long oldCriteriaId = oldFormula.getViolationRule().getCriteriaId();
 		
-		Criteria criteria = KPIUtil.getViolationCriteria(newFormula, oldFormula.getReadingField());
-		long newCriteriaId = CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getOrgId());
+		FacilioChain chain = TransactionChainFactory.updateWorkflowRuleChain();
+		FacilioContext updateWorkflowContext = chain.getContext();
+		ReadingRuleContext oldReadingRule = (ReadingRuleContext) oldFormula.getViolationRule();
+		KPIUtil.setViolationCriteria(newFormula, oldFormula.getReadingField(),oldReadingRule);
 		
-		WorkflowRuleContext newRule = new WorkflowRuleContext();
-		newRule.setCriteriaId(newCriteriaId);
-		newRule.setId(oldFormula.getViolationRule().getId());
-		WorkflowRuleAPI.updateWorkflowRule(newRule);
-		
-		CriteriaAPI.deleteCriteria(oldCriteriaId);
+		updateWorkflowContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, oldReadingRule);
+		chain.execute();
 	}
 	
 	private DateRange getRange(FormulaFieldContext formula, JSONObject props) throws Exception {

@@ -1,11 +1,24 @@
 package com.facilio.bmsconsole.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.KPICategoryContext;
+import com.facilio.bmsconsole.context.KPIContext;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -13,10 +26,16 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.report.context.ReportFactoryFields;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.contexts.DBParamContext;
+import com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl;
 
 public class KPIUtil {
 	
@@ -72,7 +91,7 @@ public class KPIUtil {
 		return null;
 	}
 	
-	public static List<KPICategoryContext> getAllKPIContext() throws Exception {
+	public static List<KPICategoryContext> getAllKPICategories() throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getKPICategoryFields())
@@ -86,9 +105,212 @@ public class KPIUtil {
 		return null;
 	}
 	
-	public static Criteria getViolationCriteria (FormulaFieldContext formula, FacilioField readingField) throws Exception {
+	
+	public static void setViolationCriteria (FormulaFieldContext formula, FacilioField readingField, ReadingRuleContext violationRule) throws Exception {
+		
+		NumberOperators operator = null;
+		String value = null;
+		
+		ActionContext action = new ActionContext();
+		action.setActionType(ActionType.ADD_VIOLATION_ALARM);
+		
+		List<Map<String, Object>> fieldMatchers = new ArrayList<>();
+		
+		JSONObject templateJson = new JSONObject();
+		Map<String, Object> fieldObj = new HashMap<>();
+		fieldObj.put("field", "message");
+		
+		StringBuilder valueString = new StringBuilder(formula.getName());
+		if (formula.getTarget() == -1) {	// Alarm would have occurred because min target was specified and reading violated it
+			operator = NumberOperators.LESS_THAN;
+			value = String.valueOf(formula.getMinTarget());
+			valueString.append(" is lesser than ").append(formula.getMinTarget());
+		}
+		else if (formula.getMinTarget() == -1) {
+			operator = NumberOperators.GREATER_THAN;
+			value = String.valueOf(formula.getTarget());
+			valueString.append(" is greater than ").append(formula.getTarget());
+		}
+		else {
+			operator = NumberOperators.NOT_BETWEEN; 
+			value = formula.getMinTarget() + "," + formula.getTarget();
+			valueString.append(" is not within the safe limit of ").append(formula.getMinTarget()).append(" - ").append(formula.getTarget());
+		}
+		
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(readingField, String.valueOf(formula.getTarget()), NumberOperators.GREATER_THAN));
-		return criteria;
+		criteria.addAndCondition(CriteriaAPI.getCondition(readingField, value, operator));
+		violationRule.setCriteria(criteria);
+		
+		fieldObj.put("value", valueString.toString());
+		fieldMatchers.add(fieldObj);
+		
+		fieldObj = new HashMap<>();
+		fieldObj.put("field", "formulaId");
+		fieldObj.put("value", formula.getId());
+		
+		fieldMatchers.add(fieldObj);
+		templateJson.put("fieldMatcher", fieldMatchers);
+		
+		action.setTemplateJson(templateJson);
+		violationRule.setActions(Collections.singletonList(action));
+		violationRule.setPercentage(value);
+	}
+	
+	public static KPIContext getKPI(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getKpiModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getKPIFields())
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getIdCondition(id, module))
+														;
+		KPIContext kpi = fetchKPIFromProps(selectBuilder.get()).get(0);
+		Criteria criteria = CriteriaAPI.getCriteria(kpi.getCriteriaId());
+		kpi.setCriteria(criteria);
+		List<FacilioField> kpiMetrics = getKPIMetrics(kpi.getModule());
+		FacilioField metricField = (FacilioField) kpiMetrics.stream().filter(metric -> {
+			if (kpi.getMetricId() != -1) {
+				return kpi.getMetricId() == metric.getFieldId();
+			}
+			else{
+				return kpi.getMetricName().equals(metric.getName());
+			}
+		}).findFirst().get();
+		kpi.setMetric(metricField);
+		
+		kpi.setCurrentValue(getKPIValue(kpi));
+		
+		return kpi;
+	}
+	
+	public static List<KPIContext> fetchKPIFromProps(List<Map<String, Object>> props) throws Exception {
+		if (CollectionUtils.isNotEmpty(props)) {
+			List<KPIContext> kpis = FieldUtil.getAsBeanListFromMapList(props, KPIContext.class);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(KPIContext kpi: kpis) {
+				kpi.setModule(modBean.getModule(kpi.getModuleId()));
+				if (kpi.getDateFieldId() != -1) {
+					kpi.setDateField(modBean.getField(kpi.getDateFieldId()));
+				}
+			}
+			
+			return kpis;
+		}
+		return null;
+	}
+	
+	
+	public static void addKPI(KPIContext kpi) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, Exception {
+		validateKPI(kpi);
+		updateChildIds(kpi);
+		
+		if (kpi.getModuleId() == -1) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			kpi.setModuleId(modBean.getModule(kpi.getModuleName()).getModuleId());
+		}
+		if (StringUtils.isNotEmpty(kpi.getMetricName())) {
+			if (kpi.getMetricName().equals("count")) {
+				kpi.setAggr(null);
+			}
+		}
+		
+		kpi.setActive(true);
+		kpi.setCreatedTime(System.currentTimeMillis());
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getKpiModule().getTableName())
+				.fields(FieldFactory.getKPIFields())
+				;
+		long id = insertBuilder.insert(FieldUtil.getAsProperties(kpi));
+		kpi.setId(id);
+	}
+	
+	private static void validateKPI(KPIContext kpi) throws Exception {
+		if (kpi.getWorkflow() == null && kpi.getCriteria() == null) {
+			throw new IllegalArgumentException("Workflow or Criteria is mandatory");
+		}
+		if (kpi.getModuleId() == -1 && kpi.getModuleName() == null) {
+			throw new IllegalArgumentException("Module is mandatory");
+		}
+		if (kpi.getAggr() == -1 && (kpi.getMetricId() != -1 || !kpi.getMetricName().equals("count")) ) {
+			throw new IllegalArgumentException("Aggregation is mandatory for this metric");
+		}
+	}
+	
+	private static void updateChildIds(KPIContext kpi) throws Exception {
+		if (kpi.getWorkflow() != null) {
+			long workflowId = WorkflowUtil.addWorkflow(kpi.getWorkflow());
+			kpi.setWorkflowId(workflowId);
+			kpi.setWorkflow(null);
+		}
+		if (kpi.getCriteria() != null) {
+			long criteriaId = CriteriaAPI.addCriteria(kpi.getCriteria());
+			kpi.setCriteriaId(criteriaId);
+		}
+	}
+	
+	public static List<FacilioField> getKPIMetrics(FacilioModule module) throws Exception {
+		FacilioField countField = FieldFactory.getCountField(module).get(0);
+		countField.setDisplayName("Number of "+module.getDisplayName()+"s");
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countField);
+		fields.addAll((List<FacilioField>) ReportFactoryFields.getReportFields(module.getName()).get("metrics"));
+		return fields;
+	}
+	
+	public static Object getKPIValue(long kpiId) throws Exception {
+		KPIContext kpi = getKPI(kpiId);
+		return kpi.getCurrentValue();
+	}
+	
+	public static Object getKPIValue(KPIContext kpi) throws Exception {
+		FacilioModule module = kpi.getModule();
+		Criteria criteria = kpi.getCriteria();
+		FacilioField metric = kpi.getMetric();
+		FacilioField dateField = kpi.getDateField();
+		if (dateField != null) {
+			criteria.addAndCondition(CriteriaAPI.getCondition(dateField, kpi.getDateOperatorEnum()));
+		}
+		
+		/*Map<String, Object> params = new HashMap<>();
+		params.put("field", metric.getName());
+		params.put("aggregation", NumberAggregateOperator.SUM.name());
+		
+		List<Object> paramList = new ArrayList<>();
+		paramList.add(module.getName());
+		paramList.add(criteria);
+		paramList.add(params);*/
+		
+		
+		/*FacilioChain chain = TransactionChainFactory.getExecuteDefaultWorkflowChain();
+		FacilioContext context = chain.getContext();
+		context.put(WorkflowV2Util.DEFAULT_WORKFLOW_ID, 109);
+		context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramList);
+		chain.execute();
+		
+		System.out.println(context.get(WorkflowV2Util.WORKFLOW_CONTEXT));
+		System.out.println(context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));*/
+		
+		DBParamContext dbParamContext = new DBParamContext();
+		dbParamContext.setFieldName(metric.getName());
+		dbParamContext.setCriteria(criteria);
+		if (kpi.getAggr() != -1) {
+			dbParamContext.setAggregateString(kpi.getAggrEnum().getStringValue());
+		}
+		else if (StringUtils.isNotEmpty(kpi.getMetricName()) && kpi.getMetricName().equals("count")) {
+			dbParamContext.setFieldName("id");
+			dbParamContext.setAggregateString(kpi.getMetricName());
+		}
+		
+		List<Object> params = new ArrayList<>();
+		params.add(module);
+		params.add(dbParamContext);
+		
+		FacilioModuleFunctionImpl function = new FacilioModuleFunctionImpl();
+		Object obj = function.fetch(params);
+		if (obj == null) {
+			return 0;
+		}
+		return obj;
 	}
 }

@@ -5377,6 +5377,32 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getKPIFields() {
+		FacilioModule module = ModuleFactory.getKpiModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+		fields.add(getField("moduleId", "MODULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("metricId", "METRIC_FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("metricName", "METRIC_NAME", module, FieldType.STRING));
+		fields.add(getField("kpiCategory", "KPI_CATEGORY", module, FieldType.LOOKUP));
+		fields.add(getField("minTarget", "MIN_TARGET", module, FieldType.DECIMAL));
+		fields.add(getField("target", "TARGET", module, FieldType.DECIMAL));
+		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+		fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
+		fields.add(getField("dateFieldId", "DATE_FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("dateOperator", "DATE_OPERATOR", module, FieldType.NUMBER));
+		fields.add(getField("aggr", "AGGREGATION", module, FieldType.NUMBER));
+		fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getReadingRuleFlapsFields() {
 		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();

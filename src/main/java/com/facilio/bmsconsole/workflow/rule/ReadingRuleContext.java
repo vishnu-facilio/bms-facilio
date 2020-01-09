@@ -1115,12 +1115,12 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 				case GREATER_THAN_EQUAL:
 					msgBuilder.append("exceeded ");
 					break;
-				/*case BETWEEN:
+				case BETWEEN:
 					msgBuilder.append("between ");
 					break;
 				case NOT_BETWEEN:
 					msgBuilder.append("not between ");
-					break;*/
+					break;
 				}
 		}
 		else if (operator instanceof BooleanOperators) {

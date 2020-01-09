@@ -927,10 +927,11 @@ public class ReadingAction extends FacilioAction {
 
 	public String allFormulasOfType() throws Exception {
 		
-		FacilioChain getAllENPIsChain = FacilioChainFactory.getAllFormulasOfTypeChain();
+		FacilioChain getAllENPIsChain = ReadOnlyChainFactory.getAllFormulasOfTypeChain();
 		
 		FacilioContext context = getAllENPIsChain.getContext();
 		constructListContext(context);
+		context.put(ContextNames.MODULE_NAME, ContextNames.FORMULA_FIELD);
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD_TYPE, type);
 		
 		getAllENPIsChain.execute();

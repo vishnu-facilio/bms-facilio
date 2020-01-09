@@ -118,7 +118,6 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("actualWorkStart"));
 		selectedFields.add(fields.get("actualWorkEnd"));
 		selectedFields.add(fields.get("actualWorkDuration"));
-		selectedFields.add(fields.get("estimatedWorkDuration"));
 		selectedFields.add(fields.get("priority"));
 		selectedFields.add(fields.get("category"));
 		selectedFields.add(fields.get("assignedTo"));

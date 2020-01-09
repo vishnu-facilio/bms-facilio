@@ -1010,7 +1010,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-
+		
+		public static FacilioChain getAddOrUpdateKPICommand() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateKPICommand());
+			return c;
+		}
+		
 		public static FacilioChain getPMReadingCorrectionChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ValidatePMReadingCorrection());

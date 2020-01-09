@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
 
 public class GetAllFormulasOfTypeCommand extends FacilioCommand {
@@ -22,13 +23,15 @@ public class GetAllFormulasOfTypeCommand extends FacilioCommand {
 		if (type != null) {
 			
 			JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+			Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+			
 			boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 			if (fetchCount) {
-				context.put(ContextNames.COUNT, FormulaFieldAPI.getFormulaFieldCount(type));
+				context.put(ContextNames.COUNT, FormulaFieldAPI.getFormulaFieldCount(type, filterCriteria));
 				return false;
 			}
 			
-			List<FormulaFieldContext> formulas = FormulaFieldAPI.getAllFormulaFieldsOfType(type, true, pagination);
+			List<FormulaFieldContext> formulas = FormulaFieldAPI.getAllFormulaFieldsOfType(type, true, filterCriteria, pagination);
 			if (formulas == null) {
 				return false;
 			}

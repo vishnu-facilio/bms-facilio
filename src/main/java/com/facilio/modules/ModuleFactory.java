@@ -1549,6 +1549,14 @@ public class ModuleFactory {
 		return enpi;
 	}
 	
+	public static FacilioModule getKpiModule() {
+		FacilioModule enpi = new FacilioModule();
+		enpi.setName("kpi");
+		enpi.setDisplayName("KPI");
+		enpi.setTableName("Module_KPIs");
+		return enpi;
+	}
+	
 	public static FacilioModule getKPICategoryModule() {
 		FacilioModule enpi = new FacilioModule();
 		enpi.setName("kpiCategory");

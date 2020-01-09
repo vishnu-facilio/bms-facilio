@@ -24,10 +24,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.HistoricalLoggerContext;
-import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
@@ -41,7 +38,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -205,6 +201,10 @@ public class FormulaFieldAPI {
 	}
 	
 	public static FormulaFieldContext getFormulaField(long id, boolean fetchChildren) throws Exception {
+		return getFormulaField(id, false, fetchChildren);
+	}
+	
+	public static FormulaFieldContext getFormulaField(long id, boolean fetchFormulaOnly, boolean fetchChildren) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -214,7 +214,7 @@ public class FormulaFieldAPI {
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		
-		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get(), fetchChildren);
+		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get(), fetchFormulaOnly, fetchChildren);
 		if (enpiList != null && !enpiList.isEmpty()) {
 			return enpiList.get(0);
 		}
@@ -336,7 +336,7 @@ public class FormulaFieldAPI {
 		return null;
 	}
 	
-	public static List<FormulaFieldContext> getAllFormulaFieldsOfType(FormulaFieldType type, boolean fetchResources, JSONObject pagination) throws Exception {
+	public static List<FormulaFieldContext> getAllFormulaFieldsOfType(FormulaFieldType type, boolean fetchResources, Criteria criteria, JSONObject pagination) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -346,7 +346,12 @@ public class FormulaFieldAPI {
 														.table(module.getTableName())
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(formulaType, String.valueOf(type.getValue()), NumberOperators.EQUALS))
+														.orderBy(fieldMap.get("createdTime").getColumnName() + " desc")
 														;
+		
+		if (criteria != null) {
+			selectBuilder.andCriteria(criteria);
+		}
 		
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
@@ -365,7 +370,7 @@ public class FormulaFieldAPI {
 		return getFormulaFieldsFromProps(selectBuilder.get(), fetchResources);
 	}
 	
-	public static long getFormulaFieldCount(FormulaFieldType type) throws Exception {
+	public static long getFormulaFieldCount(FormulaFieldType type, Criteria criteria) throws Exception {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();
 		List<FacilioField> fields = FieldFactory.getFormulaFieldFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -376,6 +381,10 @@ public class FormulaFieldAPI {
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(formulaType, String.valueOf(type.getValue()), NumberOperators.EQUALS))
 														;
+		if(criteria != null && !criteria.isEmpty()) {
+			selectBuilder.andCriteria(criteria);
+		}
+		
 		int count = 0;
 		Map<String, Object> props = selectBuilder.fetchFirst();
 		if (MapUtils.isNotEmpty(props)) {
@@ -486,11 +495,15 @@ public class FormulaFieldAPI {
 				FacilioModule module = modBean.getModule(formula.getModuleId());
 				formula.setModule(module);
 				
+				if (fetchFormulaOnly) {
+					continue;
+				}
+				
 				formulaList.add(formula);
 				workflowIds.add(formula.getWorkflowId());
 				fetchInclusions(formula);
 				fetchMatchedResources(formula, fetchResources);
-				setKPITarget(formula, modBean);
+				setKPITarget(formula);
 				if (fetchResources && formula.getResourceId() != -1) {
 					resourceIds.add(formula.getResourceId());
 				}
@@ -1159,7 +1172,7 @@ public class FormulaFieldAPI {
 		return -1;
 	}
 	
-	private static void setKPITarget(FormulaFieldContext formula, ModuleBean modBean) throws Exception {
+	private static void setKPITarget(FormulaFieldContext formula) throws Exception {
 		if (formula.getViolationRuleId() != -1) {
 			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(formula.getViolationRuleId(), true, false);
 			formula.setViolationRule(rule);
@@ -1167,12 +1180,20 @@ public class FormulaFieldAPI {
 			formula.setTarget(Double.parseDouble(condition.getValue()));*/
 			if (formula.getMatchedResourcesIds().size() == 1) {
 				long resourceId = formula.getMatchedResourcesIds().get(0);
-				long fieldId = formula.getReadingFieldId();
-				FacilioField field = modBean.getField(fieldId);
-				ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(resourceId, field);
-				formula.setCurrentValue(rdm.getValue());
+				Object value = getFormulaCurrentValue(resourceId, formula.getReadingField());
+				formula.setCurrentValue(value);
 			}
 		}
+	}
+	
+	public static Object getFormulaCurrentValue(long formulaId, long resourceId) throws Exception {
+		FormulaFieldContext formula = getFormulaField(formulaId, true, false);
+		return getFormulaCurrentValue(resourceId, formula.getReadingField());
+	}
+	
+	private static Object getFormulaCurrentValue(long resourceId, FacilioField field) throws Exception {
+		ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(resourceId, field);
+		return rdm.getValue();
 	}
 
 	public static boolean isLatestTimeBasedOnFrequency(FacilioFrequency frequency, long ttime) {
@@ -1204,5 +1225,49 @@ public class FormulaFieldAPI {
 		}
 		
 		return ttime >= latestTime;
+	}
+	
+	public static DateRange getRange(FormulaFieldContext formula, JSONObject props) throws Exception {
+		long currentTime = DateTimeUtil.getCurrenTime();
+		DateRange range = null;
+		switch (formula.getTriggerTypeEnum()) {
+			case PRE_LIVE_READING:
+				return null;
+			case POST_LIVE_READING:
+				if (props == null || props.isEmpty()) {
+					return null;
+				}
+				range = FieldUtil.getAsBeanFromJson(props, DateRange.class);
+				if (range.getStartTime() == -1) {
+					return null;
+				}
+				if (range.getEndTime() == -1) {
+					range.setEndTime(currentTime);
+				}
+				break;
+			case SCHEDULE:
+				if (props == null || props.isEmpty()) {
+					range = new DateRange(FormulaFieldAPI.getStartTimeForHistoricalCalculation(formula), currentTime);
+					if((range.getStartTime() == -1) || (range.getEndTime() == -1))
+					{
+						range = null;
+					}
+				}
+				else {
+					range = FieldUtil.getAsBeanFromJson(props, DateRange.class);
+					if (range.getStartTime() == -1) {
+						range = new DateRange(FormulaFieldAPI.getStartTimeForHistoricalCalculation(formula), currentTime);
+					}
+					if (range.getEndTime() == -1) {
+						range.setEndTime(currentTime);
+					}
+					if((range.getStartTime() == -1) || (range.getEndTime() == -1))
+					{
+						range = null;
+					}
+				}
+				break;
+		}
+		return range;
 	}
 }

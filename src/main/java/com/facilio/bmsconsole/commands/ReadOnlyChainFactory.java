@@ -1646,6 +1646,14 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new KPIListGroupingCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getAllFormulasOfTypeChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GetAllFormulasOfTypeCommand());
+		chain.addCommand(new GetReadingFieldsCommand());
+		return chain;
+	}
 
 	public static FacilioChain getAllCustomButtonChain() {
 		FacilioChain chain = getDefaultChain();
@@ -1901,5 +1909,18 @@ public class ReadOnlyChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new copyAssetReadingCommand());
 		return chain;
+	}
+	
+	public static FacilioChain getKPIMetricsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetKPIMetricsCommand());
+		return c;
+	}
+	
+	public static FacilioChain getKPIListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GetKPIListCommand());
+		return c;
 	}
 }

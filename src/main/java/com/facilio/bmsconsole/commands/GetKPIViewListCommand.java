@@ -10,6 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
@@ -70,6 +71,7 @@ public class GetKPIViewListCommand extends FacilioCommand {
 				.table(formulaTable)
 				.innerJoin(rdmModule.getTableName()).on(fieldMap.get("readingFieldId").getCompleteColumnName()+"="+rdmFieldMap.get("fieldId").getCompleteColumnName())
 				.innerJoin(resourceTable).on(rdmFieldMap.get("resourceId").getCompleteColumnName()+"="+resourceTable+".ID")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formulaFieldType"), String.valueOf(FormulaFieldType.ENPI.getValue()),  NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("frequency"), String.valueOf(frequency.getValue()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", StringOperators.ISN_T))
 				.andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), CommonOperators.IS_NOT_EMPTY));
