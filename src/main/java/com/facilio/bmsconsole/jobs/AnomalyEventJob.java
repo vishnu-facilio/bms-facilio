@@ -30,7 +30,7 @@ import com.facilio.tasker.job.JobContext;
 
 public class AnomalyEventJob extends FacilioJob {
 
-	private static final Logger LOGGER = Logger.getLogger(AddAnomalyEventJob.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(AnomalyEventJob.class.getName());
 
 	private static DecimalFormat df = new DecimalFormat("#.##");
 	@Override
@@ -40,7 +40,7 @@ public class AnomalyEventJob extends FacilioJob {
 			JSONObject props= new JSONObject(BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName()).toString());
 	        generateAnomalyEvents(props);
 		}catch(Exception e){
-			LOGGER.fatal("ERROR in AddAnomalyEventJob"+e);
+			LOGGER.fatal("ERROR in AnomalyEventJob"+e);
 			e.printStackTrace();
 			throw e;
 		}
