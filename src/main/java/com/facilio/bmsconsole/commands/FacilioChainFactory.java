@@ -773,7 +773,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForSpace());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddSpaceCommand());
-		c.addCommand(getCategoryReadingsChain());
+		c.addCommand(getSpaceReadingsChain());
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		return c;
 	}

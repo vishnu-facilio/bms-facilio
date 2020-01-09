@@ -39,6 +39,7 @@ public class AddSpaceCommand extends FacilioCommand {
 			space.setId(id);
 			SpaceAPI.updateHelperFields(space);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+			context.put(FacilioConstants.ContextNames.PARENT_ID, id);
 		}
 		else 
 		{
