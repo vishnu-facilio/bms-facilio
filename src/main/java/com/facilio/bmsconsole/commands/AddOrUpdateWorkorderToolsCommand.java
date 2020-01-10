@@ -187,16 +187,16 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 			}
 			if (woTool.getReturnTime() <= 0) {
 				woTool.setReturnTime(workorder.getEstimatedEnd());
-				if (woTool.getIssueTime() >= 0) {
-					duration = getEstimatedWorkDuration(woTool.getIssueTime(), woTool.getReturnTime());
-				} else {
-					duration = 0;
-				}
+			}
+			if (woTool.getIssueTime() >= 0 && woTool.getReturnTime() >= 0) {
+				duration = getEstimatedWorkDuration(woTool.getIssueTime(), woTool.getReturnTime());
+			} else {
+				duration = 0;
 			}
 		} else {
-			duration = (woTool.getDuration() / (1000 * 60 * 60));
+			duration = (woTool.getDuration() / (60 * 60));
 			if (woTool.getIssueTime() >= 0) {
-				woTool.setReturnTime(woTool.getIssueTime() + (long)woTool.getDuration());
+				woTool.setReturnTime((long) (woTool.getIssueTime() + (woTool.getDuration() * 1000)));
 			}
 		}
 		woTool.setTransactionType(TransactionType.WORKORDER);
@@ -252,7 +252,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 						(FacilioContext) context);
 			}
 		}
-
+        woTool.setDuration(duration * 60 * 60);
 		return woTool;
 	}
 
@@ -311,13 +311,14 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 
 	}
 
-	public static int getEstimatedWorkDuration(long issueTime, long returnTime) {
-		long duration = -1;
+	public static double getEstimatedWorkDuration(long issueTime, long returnTime) {
+		double duration = -1;
 		if (issueTime != -1 && returnTime != -1) {
 			duration = returnTime - issueTime;
 		}
-		int hours = (int) ((duration / (1000 * 60 * 60)));
-		return hours;
+		
+		double hours = ((duration / (1000 * 60 * 60)));
+		return Math.round(hours*10.0)/10.0;
 	}
 
 	public static ToolTypesContext getToolType(long id) throws Exception {

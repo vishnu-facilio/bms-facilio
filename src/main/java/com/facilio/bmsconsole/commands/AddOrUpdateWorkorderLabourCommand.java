@@ -114,7 +114,7 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 		}
 		woLabour.setCost(costOccured);
 		woLabour.setLabour(labour);
-		woLabour.setDuration(duration);
+		woLabour.setDuration(duration * 60 * 60);
 		return woLabour;
 	}
 
