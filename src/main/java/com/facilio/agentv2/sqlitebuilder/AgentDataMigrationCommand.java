@@ -23,9 +23,16 @@ public class AgentDataMigrationCommand extends AgentV2Command {
     public boolean executeCommand(Context context) throws Exception {
         if (containsCheck(AgentConstants.AGENT_ID, context)) {
             long agentId = Long.parseLong(String.valueOf(context.get(AgentConstants.AGENT_ID)));
-            String fileLocation = System.getProperties().getProperty("java.io.tmpdir") + File.separator + AccountUtil.getCurrentOrg().getOrgId() + File.separator + agentId + ".db";
-            LOGGER.info("migrated db file location->" + fileLocation);
-            File file = new File(fileLocation);
+            String path = System.getProperties().getProperty("java.io.tmpdir") + File.separator + AccountUtil.getCurrentOrg().getOrgId();
+            File directory = new File(path);
+            if (!directory.exists()) {
+                if (!directory.mkdir()) {
+                    throw new Exception(" directory " + path + " cant be created");
+                }
+            }
+            String fileName = agentId + ".db";
+            File file = new File(path + File.separator + fileName);
+            LOGGER.info("migrated db file location->" + fileName);
             Map<Long, FacilioControllerType> controllerIdsType = ControllerApiV2.getControllerIds(agentId);
             LOGGER.info(" controllers " + controllerIdsType);
             SQLiteUtil.createAlternateConnection(file);
@@ -41,6 +48,8 @@ public class AgentDataMigrationCommand extends AgentV2Command {
                 LOGGER.info(" file id ->" + fileId);
             }
         }
+
+
         return false;
     }
 }
