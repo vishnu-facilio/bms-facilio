@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -21,12 +23,17 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 
 public class ValidateAndSetResetCounterMetaCommand extends FacilioCommand {
-
+	private static final Logger LOGGER = LogManager.getLogger(ValidateAndSetResetCounterMetaCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, ReadingDataMeta> metaMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
+		Boolean isCopyReading = (Boolean) context.get("IS_COPY_READING");
+		
+		if(isCopyReading == true) {
+			LOGGER.info("####Asset Copy Reading execution in ValidateAndSetResetCounterMetaCommand start time : "+ System.currentTimeMillis());
+		}
 		if (metaMap == null || metaMap.isEmpty() || readingMap == null || readingMap.isEmpty()) {
 			return false;
 		}else{

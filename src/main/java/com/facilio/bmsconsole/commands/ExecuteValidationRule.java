@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -32,9 +34,15 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
 public class ExecuteValidationRule extends FacilioCommand {
-
+	private static final Logger LOGGER = LogManager.getLogger(ExecuteValidationRule.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+
+		Boolean isCopyReading = (Boolean) context.get("IS_COPY_READING");
+		
+		if(isCopyReading == true) {
+			LOGGER.info("####Asset Copy Reading execution in ExecuteValidationRule start time : "+ System.currentTimeMillis());
+		}
 		Boolean doValidation = (Boolean) context.get(FacilioConstants.ContextNames.DO_VALIDTION);
 		if (doValidation == null || !doValidation) {
 			return false;

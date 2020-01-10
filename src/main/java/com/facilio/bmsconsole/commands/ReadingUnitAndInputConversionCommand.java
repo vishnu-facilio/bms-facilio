@@ -30,7 +30,11 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
+		Boolean isCopyReading = (Boolean) context.get("IS_COPY_READING");
 		
+		if(isCopyReading == true) {
+			LOGGER.info("####Asset Copy Reading execution in ReadingUnitAndInputConversionCommand start time : "+ System.currentTimeMillis());
+		}
 		if (readingMap != null && !readingMap.isEmpty()) {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			

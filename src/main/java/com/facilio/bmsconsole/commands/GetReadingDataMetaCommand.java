@@ -27,6 +27,11 @@ public class GetReadingDataMetaCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
+		Boolean isCopyReading = (Boolean) context.get("IS_COPY_READING");
+		
+		if(isCopyReading == true) {
+			LOGGER.info("####Asset Copy Reading execution in GetReadingDataMetaCommand start time : "+ System.currentTimeMillis());
+		}
 		
 		if (readingMap != null && !readingMap.isEmpty()) {
 			Map<String, ReadingDataMeta> readingDataMeta = null;

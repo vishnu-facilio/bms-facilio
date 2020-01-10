@@ -155,10 +155,11 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				}
 				readings.add(context);
 			}
-
+			Boolean isCopyReading = true;
 			FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 			chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, targetModule.getName());
 			chain.getContext().put(FacilioConstants.ContextNames.READINGS, readings);
+			chain.getContext().put("IS_COPY_READING",isCopyReading);
 			chain.execute();
 			LOGGER.info("copy Asset Insert finished");
 		} catch (Exception e) {
