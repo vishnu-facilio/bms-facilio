@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class OpcUaController extends Controller {
+public class OpcUaControllerContext extends Controller {
 
     public static final String ASSETCATEGORY = FacilioConstants.ContextNames.OPC_UA_CONTROLLER_MODULE_NAME;
-    private static final Logger LOGGER = LogManager.getLogger(OpcUaController.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(OpcUaControllerContext.class.getName());
 
 
     private String url;
@@ -30,72 +30,86 @@ public class OpcUaController extends Controller {
     private int securityPolicy = -1;
 
 
-
-    public OpcUaController() {
-        super();
+    public OpcUaControllerContext() {
+        setControllerType(FacilioControllerType.OPC_UA.asInt());
     }
 
-    public OpcUaController(long agentId, long orgId) throws Exception {
+    public OpcUaControllerContext(long agentId, long orgId) throws Exception {
         super(agentId, orgId);
         setControllerType(FacilioControllerType.OPC_UA.asInt());
     }
 
-
-    public void setUrl(String url) { this.url = url; }
-    public String getUrl() { return url; }
-
-    public void setCertPath(String certPath) { this.certPath = certPath; }
-    public String getCertPath() { return certPath; }
-
-    public void setSecurityMode(int securityMode) {
-        this.securityMode = securityMode;
-    }
-    public int getSecurityMode() { return securityMode; }
-
-    public void setSecurityPolicy(int securityPolicy) {
-        this.securityPolicy = securityPolicy;
-    }
-    public int getSecurityPolicy() { return securityPolicy; }
-
-    public String getModuleName() { return ASSETCATEGORY; }
-
-    public static OpcUaController getBacnetControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
+    public static OpcUaControllerContext getBacnetControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
         if (controllerMap == null || controllerMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
         }
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
-        if( containsValueCheck(AgentConstants.IDENTIFIER,controllerMap) ){
-            OpcUaController controller = new OpcUaController(agentId, orgId);
-            controller.processIdentifier(  (String) controllerMap.get(AgentConstants.IDENTIFIER) );
-            if(containsValueCheck(AgentConstants.SECURITY_MODE,controllerMap)){
+        if (containsValueCheck(AgentConstants.IDENTIFIER, controllerMap)) {
+            OpcUaControllerContext controller = new OpcUaControllerContext(agentId, orgId);
+            controller.processIdentifier((String) controllerMap.get(AgentConstants.IDENTIFIER));
+            if (containsValueCheck(AgentConstants.SECURITY_MODE, controllerMap)) {
                 controller.setSecurityMode(Math.toIntExact((Long) controllerMap.get(AgentConstants.SECURITY_MODE)));
             }
-            if(containsValueCheck(AgentConstants.SECURITY_POLICY,controllerMap)){
+            if (containsValueCheck(AgentConstants.SECURITY_POLICY, controllerMap)) {
                 controller.setSecurityPolicy(Math.toIntExact((Long) controllerMap.get(AgentConstants.SECURITY_POLICY)));
             }
-            return (OpcUaController) controller.getControllerFromJSON(controllerMap);
+            return (OpcUaControllerContext) controller.getControllerFromJSON(controllerMap);
         }
-        if( containsValueCheck(AgentConstants.URL,controllerMap) && containsValueCheck(AgentConstants.CERT_PATH,controllerMap) )
-            {
-            OpcUaController controller = new OpcUaController(agentId, orgId);
+        if (containsValueCheck(AgentConstants.URL, controllerMap) && containsValueCheck(AgentConstants.CERT_PATH, controllerMap)) {
+            OpcUaControllerContext controller = new OpcUaControllerContext(agentId, orgId);
             //controller.setModuleName(ASSETCATEGORY);
             if(containsValueCheck(AgentConstants.SECURITY_MODE,controllerMap)){
                 controller.setSecurityMode(Math.toIntExact((Long) controllerMap.get(AgentConstants.SECURITY_MODE)));
             }
-            if(containsValueCheck(AgentConstants.SECURITY_POLICY,controllerMap)){
+            if (containsValueCheck(AgentConstants.SECURITY_POLICY, controllerMap)) {
                 controller.setSecurityPolicy(Math.toIntExact((Long) controllerMap.get(AgentConstants.SECURITY_POLICY)));
             }
-            return (OpcUaController) controller.getControllerFromJSON(controllerMap);
+            return (OpcUaControllerContext) controller.getControllerFromJSON(controllerMap);
         }
-        throw  new Exception(" Mandatory fields like "+AgentConstants.URL+","+AgentConstants.CERT_PATH+" might be missing from input parameter -> "+controllerMap);
+        throw new Exception(" Mandatory fields like " + AgentConstants.URL + "," + AgentConstants.CERT_PATH + " might be missing from input parameter -> " + controllerMap);
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setCertPath(String certPath) {
+        this.certPath = certPath;
+    }
+
+    public String getCertPath() {
+        return certPath;
+    }
+
+    public void setSecurityMode(int securityMode) {
+        this.securityMode = securityMode;
+    }
+
+    public int getSecurityMode() {
+        return securityMode;
+    }
+
+    public void setSecurityPolicy(int securityPolicy) {
+        this.securityPolicy = securityPolicy;
+    }
+
+    public int getSecurityPolicy() {
+        return securityPolicy;
+    }
+
+    public String getModuleName() {
+        return ASSETCATEGORY;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 
     public void processIdentifier(String identifier) throws Exception {
-        if( (identifier != null) && ( ! identifier.isEmpty() ) ){
+        if ((identifier != null) && (!identifier.isEmpty())) {
             String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
-            if( (uniques.length == 4) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_UA) ) )
-            {
+            if ((uniques.length == 4) && ((FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_UA))) {
                 this.url = uniques[1];
                 this.securityMode = Integer.parseInt(uniques[2]);
                 this.securityPolicy = Integer.parseInt(uniques[3]);

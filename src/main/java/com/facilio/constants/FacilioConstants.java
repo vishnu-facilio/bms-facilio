@@ -1,13 +1,13 @@
 package com.facilio.constants;
 
 import com.facilio.activity.ActivityContext;
-import com.facilio.agentv2.bacnet.BacnetIpController;
+import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.modbusrtu.ModbusRtuController;
-import com.facilio.agentv2.modbustcp.ModbusTcpController;
+import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
+import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.niagara.NiagaraController;
-import com.facilio.agentv2.opcua.OpcUaController;
-import com.facilio.agentv2.opcxmlda.OpcXmlDaController;
+import com.facilio.agentv2.opcua.OpcUaControllerContext;
+import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
@@ -1441,11 +1441,11 @@ public class FacilioConstants {
 			classMap.put(HEAT_PUMP, HeatPumpContext.class);
 			classMap.put(UTILITY_METER, UtilityMeterContext.class);
 
-			classMap.put(MODBUS_TCP_CONTROLLER_MODULE_NAME, ModbusTcpController.class);
-			classMap.put(MODBUS_RTU_CONTROLLER_MODULE_NAME, ModbusRtuController .class);
-			classMap.put(BACNET_IP_CONTROLLER_MODULE_NAME, BacnetIpController.class);
-			classMap.put(OPC_UA_CONTROLLER_MODULE_NAME, OpcUaController.class);
-			classMap.put(OPC_XML_DA_CONTROLLER_MODULE_NAME, OpcXmlDaController.class);
+			classMap.put(MODBUS_TCP_CONTROLLER_MODULE_NAME, ModbusTcpControllerContext.class);
+			classMap.put(MODBUS_RTU_CONTROLLER_MODULE_NAME, ModbusRtuControllerContext.class);
+			classMap.put(BACNET_IP_CONTROLLER_MODULE_NAME, BacnetIpControllerContext.class);
+			classMap.put(OPC_UA_CONTROLLER_MODULE_NAME, OpcUaControllerContext.class);
+			classMap.put(OPC_XML_DA_CONTROLLER_MODULE_NAME, OpcXmlDaControllerContext.class);
 			classMap.put(NIAGARA_CONTROLLER_MODULE_NAME, NiagaraController.class);
 			classMap.put(CONTROLLER_MODULE_NAME, Controller.class);
 			//classMap.put(MISC_CONTROLLER_MODULE_NAME, MiscController.class);
@@ -1460,7 +1460,7 @@ public class FacilioConstants {
 			classMap.put(HDD_READING, ReadingContext.class);
 			classMap.put(UTILITY_BILL_READING, ReadingContext.class);
 			classMap.put(WATER_METER, WaterMeterContext.class);
-			classMap.put(CHILLER_SECONDARY_PUMP, ChillerSecondaryPumpContext.class);	
+			classMap.put(CHILLER_SECONDARY_PUMP, ChillerSecondaryPumpContext.class);
 			classMap.put(INVENTORY, InventoryContext.class);
 			classMap.put(INVENTORY_VENDOR, InventoryVendorContext.class);
 			classMap.put(INVENTORY_VENDORS, InventoryVendorContext.class);

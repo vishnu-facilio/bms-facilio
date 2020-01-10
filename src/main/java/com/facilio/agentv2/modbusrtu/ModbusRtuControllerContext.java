@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ModbusRtuController extends Controller {
+public class ModbusRtuControllerContext extends Controller {
 
-    private static final Logger LOGGER = LogManager.getLogger(ModbusRtuController.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ModbusRtuControllerContext.class.getName());
 
     public static final String ASSETCATEGORY = FacilioConstants.ContextNames.MODBUS_RTU_CONTROLLER_MODULE_NAME;
 
@@ -28,20 +28,24 @@ public class ModbusRtuController extends Controller {
     private Long networkId = -1L;
     int slaveId = -1;
 
-    public ModbusRtuController(long agentId, long orgId) throws Exception {
-        new ModbusRtuController(agentId,orgId,null);
-    }
-    public ModbusRtuController(long agentId, long orgId, String identifier) throws Exception {
-        super(agentId, orgId);
-        processIdentifier(identifier);
-        setControllerType( FacilioControllerType.MODBUS_RTU.asInt());
+    public ModbusRtuControllerContext(long agentId, long orgId) throws Exception {
+        new ModbusRtuControllerContext(agentId, orgId, null);
     }
 
-    public ModbusRtuController() { }
+    public ModbusRtuControllerContext(long agentId, long orgId, String identifier) throws Exception {
+        super(agentId, orgId);
+        processIdentifier(identifier);
+        setControllerType(FacilioControllerType.MODBUS_RTU.asInt());
+    }
+
+    public ModbusRtuControllerContext() {
+        setControllerType(FacilioControllerType.MODBUS_RTU.asInt());
+    }
 
     public Long getNetworkId() {
         return networkId;
     }
+
     public void setNetworkId(Long networkId) {
         this.networkId = networkId;
     }
@@ -55,23 +59,23 @@ public class ModbusRtuController extends Controller {
 
     public String getModuleName() { return ASSETCATEGORY; }
 
-    public static ModbusRtuController getModbusRtuControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
+    public static ModbusRtuControllerContext getModbusRtuControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
         if (controllerMap == null || controllerMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
         }
-        long orgId =  AccountUtil.getCurrentOrg().getOrgId();
-        if(containsValueCheck(AgentConstants.IDENTIFIER,controllerMap) ){
-            ModbusRtuController controller = new ModbusRtuController(agentId,orgId, (String) controllerMap.get(AgentConstants.IDENTIFIER));
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        if (containsValueCheck(AgentConstants.IDENTIFIER, controllerMap)) {
+            ModbusRtuControllerContext controller = new ModbusRtuControllerContext(agentId, orgId, (String) controllerMap.get(AgentConstants.IDENTIFIER));
             controller.getControllerFromJSON(controllerMap);
-            ModbusRtuController controller1 = controller;
-            return (ModbusRtuController) controller.getControllerFromJSON(controllerMap);
+            ModbusRtuControllerContext controller1 = controller;
+            return (ModbusRtuControllerContext) controller.getControllerFromJSON(controllerMap);
         }
-        if(containsValueCheck(AgentConstants.SLAVE_ID,controllerMap) && containsValueCheck(AgentConstants.NETWORK_ID,controllerMap)){
-            ModbusRtuController controller = new ModbusRtuController(agentId,orgId);
+        if (containsValueCheck(AgentConstants.SLAVE_ID, controllerMap) && containsValueCheck(AgentConstants.NETWORK_ID, controllerMap)) {
+            ModbusRtuControllerContext controller = new ModbusRtuControllerContext(agentId, orgId);
             controller.setSlaveId(Math.toIntExact(JsonUtil.getLong(controllerMap.get(AgentConstants.SLAVE_ID))));
             controller.setNetworkId(JsonUtil.getLong(controllerMap.get(AgentConstants.NETWORK_ID)));
             controller.makeIdentifier();
-            return (ModbusRtuController) controller.getControllerFromJSON(controllerMap);
+            return (ModbusRtuControllerContext) controller.getControllerFromJSON(controllerMap);
         }
         throw new Exception("Mandatory fields like "+AgentConstants.SLAVE_ID+" and "+ AgentConstants.IP_ADDRESS+" are missing form input parameters "+controllerMap);
     }

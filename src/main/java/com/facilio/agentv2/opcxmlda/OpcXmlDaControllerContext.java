@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class OpcXmlDaController extends Controller {
+public class OpcXmlDaControllerContext extends Controller {
 
     private String url;
     private String userName;
@@ -26,27 +26,46 @@ public class OpcXmlDaController extends Controller {
     public static final String ASSETCATEGORY = FacilioConstants.ContextNames.OPC_XML_DA_CONTROLLER_MODULE_NAME;
     private String identifier;
 
-    private static final Logger LOGGER = LogManager.getLogger(OpcXmlDaController.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(OpcXmlDaControllerContext.class.getName());
 
 
-    public OpcXmlDaController(long agentId, long orgId) throws Exception {
-        new OpcXmlDaController(agentId,orgId,null);
+    public OpcXmlDaControllerContext(long agentId, long orgId) throws Exception {
+        new OpcXmlDaControllerContext(agentId, orgId, null);
     }
 
-    public OpcXmlDaController(long agentId, long orgId, String identifier) throws Exception {
+    public OpcXmlDaControllerContext(long agentId, long orgId, String identifier) throws Exception {
         super(agentId, orgId);
         processIdentifier(identifier);
         setControllerType(FacilioControllerType.OPC_XML_DA.asInt());
     }
 
-    public OpcXmlDaController() {
+    public OpcXmlDaControllerContext() {
+        setControllerType(FacilioControllerType.OPC_XML_DA.asInt());
     }
 
-    public String getModuleName() { return ASSETCATEGORY; }
+    public static OpcXmlDaControllerContext getOpcXmlDaControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
+        if (controllerMap == null || controllerMap.isEmpty()) {
+            throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
+        }
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        if (containsValueCheck(AgentConstants.IDENTIFIER, controllerMap)) {
+            OpcXmlDaControllerContext controller = new OpcXmlDaControllerContext(agentId, orgId, (String) controllerMap.get(AgentConstants.IDENTIFIER));
+            return (OpcXmlDaControllerContext) controller.getControllerFromJSON(controllerMap);
+        }
+        if (containsValueCheck(AgentConstants.USER_NAME, controllerMap) && containsValueCheck(AgentConstants.URL, controllerMap) && containsValueCheck(AgentConstants.PASSWORD, controllerMap)) {
+            OpcXmlDaControllerContext controller = new OpcXmlDaControllerContext(agentId, orgId);
+            controller.setUserName(String.valueOf(controllerMap.get(AgentConstants.USER_NAME)));
+            controller.setUrl(String.valueOf(controllerMap.get(AgentConstants.URL)));
+            controller.setPassword(String.valueOf(controllerMap.get(AgentConstants.PASSWORD)));
+            return (OpcXmlDaControllerContext) controller.getControllerFromJSON(controllerMap);
+        }
+        throw new Exception(" Mandatory fields like " + AgentConstants.USER_NAME + "," + AgentConstants.URL + "," + AgentConstants.PASSWORD + " OR " + AgentConstants.IDENTIFIER + " might be missing from input parameter -> " + controllerMap);
+    }
 
+    public String getModuleName() {
+        return ASSETCATEGORY;
+    }
 
-
-    public String getUrl() { return url; }
     public void setUrl(String url) {
         this.url = url;
     }
@@ -54,44 +73,32 @@ public class OpcXmlDaController extends Controller {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getUserName() { return userName; }
-    public String getPassword() { return password; }
+    public String getUserName() {
+        return userName;
+    }
 
+    public String getPassword() {
+        return password;
+    }
 
-    public static OpcXmlDaController getOpcXmlDaControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
-        if (controllerMap == null || controllerMap.isEmpty()) {
-            throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
-        }
-        long orgId = AccountUtil.getCurrentOrg().getOrgId();
-        if( containsValueCheck(AgentConstants.IDENTIFIER,controllerMap) ){
-            OpcXmlDaController controller = new OpcXmlDaController(agentId,orgId, (String) controllerMap.get(AgentConstants.IDENTIFIER));
-            return (OpcXmlDaController) controller.getControllerFromJSON(controllerMap);
-        }
-        if( containsValueCheck(AgentConstants.USER_NAME,controllerMap) && containsValueCheck(AgentConstants.URL,controllerMap) && containsValueCheck(AgentConstants.PASSWORD,controllerMap)){
-            OpcXmlDaController controller = new OpcXmlDaController(agentId,orgId);
-            controller.setUserName(String.valueOf(controllerMap.get(AgentConstants.USER_NAME)));
-            controller.setUrl(String.valueOf(controllerMap.get(AgentConstants.URL)));
-            controller.setPassword(String.valueOf(controllerMap.get(AgentConstants.PASSWORD)));
-            return (OpcXmlDaController) controller.getControllerFromJSON(controllerMap);
-        }
-        throw  new Exception(" Mandatory fields like "+AgentConstants.USER_NAME+","+AgentConstants.URL+","+AgentConstants.PASSWORD+" OR "+AgentConstants.IDENTIFIER+" might be missing from input parameter -> "+controllerMap);
+    public String getUrl() {
+        return url;
     }
 
     public void processIdentifier(String identifier) throws Exception {
-        if( ( identifier != null ) && ( ! identifier.isEmpty() ) ){
+        if ((identifier != null) && (!identifier.isEmpty())) {
             String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
-            if( (uniques.length == 2) && ( (FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_XML_DA) ) )
-            {
+            if ((uniques.length == 2) && ((FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_XML_DA))) {
                 setUrl(uniques[1]);
                 this.identifier = identifier;
-            }else {
-                throw  new Exception(" Exceprion while processing identifier -- length or Type didnt match ");
+            } else {
+                throw new Exception(" Exceprion while processing identifier -- length or Type didnt match ");
             }
-
         }else {
             throw new Exception("Exception Occurred, identifier can't be null or empty ->"+identifier);
         }

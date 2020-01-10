@@ -8,13 +8,13 @@ import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
+import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ public class AgentIdAction extends AgentActionV2 {
 
 
     @NotNull
-    @Min(value = 1,message = "agentId can't be less than 1")
     private Long agentId;
 
 
@@ -158,12 +157,79 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String getThreadDump(){
         try {
-                setResult(AgentConstants.DATA,AgentMessenger.getThreadDump(agentId));
-                setResult(AgentConstants.RESULT,SUCCESS);
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getThreadDump command ",e);
-            setResult(AgentConstants.RESULT,ERROR);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResult(AgentConstants.DATA, AgentMessenger.getThreadDump(agentId));
+            setResult(AgentConstants.RESULT, SUCCESS);
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getThreadDump command ", e);
+            setResult(AgentConstants.RESULT, ERROR);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+        }
+        return SUCCESS;
+    }
+
+    public String migrate() {
+        try {
+            LOGGER.info(" here ");
+            long fileId = SqliteBridge.migrateAgentData(getAgentId());
+            if (fileId > 0) {
+                setResult(AgentConstants.RESULT, SUCCESS);
+                setResult(AgentConstants.FIELD_ID, fileId);
+                return SUCCESS;
+            } else {
+                setResult(AgentConstants.RESULT, ERROR);
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while migrating data", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+        }
+        return SUCCESS;
+    }
+
+    public String getAgentLogs() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("DUMMY", "DATA");
+        jsonObject.put(AgentConstants.ID, 1);
+        jsonObject.put(AgentConstants.ORGID, 1);
+        jsonObject.put(AgentConstants.AGENT_ID, getAgentId());
+        jsonObject.put(AgentConstants.COMMAND, 251);
+        jsonObject.put(AgentConstants.STATUS, 140);
+        jsonObject.put(AgentConstants.MESSAGE_ID, 1254);
+        jsonObject.put(AgentConstants.TIMESTAMP, 258468752);
+        jsonObject.put(AgentConstants.CREATED_TIME, 258468792);
+        JSONArray array = new JSONArray();
+        array.add(jsonObject);
+        array.add(jsonObject);
+        array.add(jsonObject);
+        setResult(AgentConstants.DATA, array);
+        setResult(AgentConstants.RESULT, SUCCESS);
+        return SUCCESS;
+    }
+
+    public String getAgentMetrics() {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            JSONArray array = new JSONArray();
+
+            jsonObject.put(AgentConstants.ID, 1);
+            jsonObject.put(AgentConstants.ORGID, 1);
+            jsonObject.put(AgentConstants.AGENT_ID, getAgentId());
+            jsonObject.put(AgentConstants.PUBLISH_TYPE, 1);
+            jsonObject.put(AgentConstants.NUMBER_OF_MSGS, 101010);
+            jsonObject.put(AgentConstants.SIZE, 808080);
+            jsonObject.put(AgentConstants.LAST_MODIFIED_TIME, 978546214);
+            jsonObject.put(AgentConstants.CREATED_TIME, 978545214);
+
+            array.add(jsonObject);
+            array.add(jsonObject);
+            array.add(jsonObject);
+
+            setResult(AgentConstants.DATA, array);
+            setResult(AgentConstants.RESULT, SUCCESS);
+            return SUCCESS;
+        } catch (Exception e) {
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResult(AgentConstants.RESULT, ERROR);
+            LOGGER.info("Exception while getting agentMetrics for ->" + getAgentId());
         }
         return SUCCESS;
     }

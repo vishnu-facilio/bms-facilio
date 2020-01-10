@@ -5,7 +5,7 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
-import com.facilio.agentv2.bacnet.BacnetIpPoint;
+import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscPoint;
@@ -123,7 +123,7 @@ public class PointsAPI {
                     return OpcXmlDaPoint.getPointFromMap(payload);
                 case BACNET_IP:
                     LOGGER.info(" making bacnet point");
-                    return BacnetIpPoint.getPointFromMap(payload);
+                    return BacnetIpPointContext.getPointFromMap(payload);
                 case NIAGARA:
                     return NiagaraPoint.getPointFromMap(payload);
                 case MISC:
@@ -587,7 +587,7 @@ public class PointsAPI {
             case MISC:
                 return MiscPoint.class;
             case BACNET_IP:
-                return BacnetIpPoint.class;
+                return BacnetIpPointContext.class;
             case LON_WORKS:
             case MODBUS_IP:
                 return ModbusTcpPoint.class;

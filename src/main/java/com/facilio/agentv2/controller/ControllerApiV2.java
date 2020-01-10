@@ -6,14 +6,14 @@ import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
-import com.facilio.agentv2.bacnet.BacnetIpController;
+import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.misc.MiscController;
-import com.facilio.agentv2.modbusrtu.ModbusRtuController;
-import com.facilio.agentv2.modbustcp.ModbusTcpController;
+import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
+import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.niagara.NiagaraController;
-import com.facilio.agentv2.opcua.OpcUaController;
-import com.facilio.agentv2.opcxmlda.OpcXmlDaController;
+import com.facilio.agentv2.opcua.OpcUaControllerContext;
+import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -208,17 +208,21 @@ public class ControllerApiV2 {
         Map<String, Controller> controllerMap = new HashMap<>();
         try {
             FacilioChain getControllerChain = getFetchControllerChain(controllerType);
+            if (getControllerChain == null) {
+                LOGGER.info(" controller chaing cant be null ");
+                return controllerMap;
+            }
             FacilioContext context = getControllerChain.getContext();
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.CONTROLLER_MODULE_NAME);
-            if(fields == null || fields.isEmpty()){
+            if (fields == null || fields.isEmpty()) {
                 return controllerMap;
             }
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
             Criteria criteria = new Criteria();
-            if(agentId > 0){
+            if (agentId > 0) {
                 criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
-                context.put(FacilioConstants.ContextNames.FILTER_CRITERIA,criteria);
+                context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
             }
 
             if (controllerId > 0) {
@@ -248,9 +252,9 @@ public class ControllerApiV2 {
         return new HashMap<>();
     }
 
-    public static Controller getController(long agentId, FacilioControllerType controllerType) {
+    public static Controller getController(long deviceId, FacilioControllerType controllerType) {
         try {
-            Controller controller = fetchController(agentId, controllerType);
+            Controller controller = fetchController(deviceId, controllerType);
             return controller;
         } catch (Exception e) {
             LOGGER.info("Exception while getting controller");
@@ -298,7 +302,8 @@ public class ControllerApiV2 {
         FacilioContext context = getControllerChain.getContext();
         String moduleName = getControllerModuleName(controllerType);
         if (moduleName == null || moduleName.isEmpty()) {
-            throw new Exception("Exception Occurred, Module name is null or empty " + moduleName);
+            LOGGER.info("Exception Occurred, Module name is null or empty " + moduleName + "   for ");
+            return null;
         }
         context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
         return getControllerChain;
@@ -321,22 +326,22 @@ public class ControllerApiV2 {
         List<Condition> conditions = new ArrayList<>();
         switch (controllerType) {
             case BACNET_IP:
-                conditions.addAll((new BacnetIpController()).getControllerConditions(controllerIdentifier));
+                conditions.addAll((new BacnetIpControllerContext()).getControllerConditions(controllerIdentifier));
                 break;
             case MODBUS_RTU:
-                conditions.addAll(new ModbusRtuController().getControllerConditions(controllerIdentifier));
+                conditions.addAll(new ModbusRtuControllerContext().getControllerConditions(controllerIdentifier));
                 break;
             case OPC_XML_DA:
-                conditions.addAll(new OpcXmlDaController().getControllerConditions(controllerIdentifier));
+                conditions.addAll(new OpcXmlDaControllerContext().getControllerConditions(controllerIdentifier));
                 break;
             case OPC_UA:
-                conditions.addAll(new OpcUaController().getControllerConditions(controllerIdentifier));
+                conditions.addAll(new OpcUaControllerContext().getControllerConditions(controllerIdentifier));
                 break;
             case NIAGARA:
                 conditions.addAll(new NiagaraController().getControllerConditions(controllerIdentifier));
                 break;
             case MODBUS_IP:
-                conditions.addAll(new ModbusTcpController().getControllerConditions(controllerIdentifier));
+                conditions.addAll(new ModbusTcpControllerContext().getControllerConditions(controllerIdentifier));
                 break;
             case MISC:
                 conditions.addAll(new MiscController().getControllerConditions(controllerIdentifier));
@@ -354,17 +359,17 @@ public class ControllerApiV2 {
     public static String getControllerModuleName(FacilioControllerType controllerType){
         switch (controllerType) {
             case MODBUS_IP:
-                return ModbusTcpController.ASSETCATEGORY;
+                return ModbusTcpControllerContext.ASSETCATEGORY;
             case MODBUS_RTU:
-                return ModbusRtuController.ASSETCATEGORY;
+                return ModbusRtuControllerContext.ASSETCATEGORY;
             case OPC_UA:
-                return OpcUaController.ASSETCATEGORY;
+                return OpcUaControllerContext.ASSETCATEGORY;
             case OPC_XML_DA:
-                return OpcXmlDaController.ASSETCATEGORY;
+                return OpcXmlDaControllerContext.ASSETCATEGORY;
             case NIAGARA:
                 return NiagaraController.ASSETCATEGORY;
             case BACNET_IP:
-                return BacnetIpController.ASSETCATEGORY;
+                return BacnetIpControllerContext.ASSETCATEGORY;
             case MISC:
                 return FacilioConstants.ContextNames.MISC_CONTROLLER_MODULE_NAME;
             case REST:
@@ -552,29 +557,50 @@ public class ControllerApiV2 {
     }
 
     public static void resetConfiguredPoints(Long controllerId) throws Exception {
-        if(checkForController(controllerId)){
+        if (checkForController(controllerId)) {
             PointsAPI.resetConfiguredPoints(controllerId);
         }
 
+    }
+
+    public static void main(String[] args) {
+        System.out.println(" hello ");
     }
 
     public static boolean checkForFieldDeviceController(long deviceId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
                 .select(new ArrayList<>())
-                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT,FieldFactory.getIdField(MODULE))
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getField(AgentConstants.DEVICE_ID,"DEVICE_ID",MODULE,FieldType.NUMBER), String.valueOf(deviceId),NumberOperators.EQUALS));
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(MODULE))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getField(AgentConstants.DEVICE_ID, "DEVICE_ID", MODULE, FieldType.NUMBER), String.valueOf(deviceId), NumberOperators.EQUALS));
         List<Map<String, Object>> records = builder.get();
-        if( ! records.isEmpty()){
-            LOGGER.info(" resord "+records);
+        if (!records.isEmpty()) {
+            LOGGER.info(" resord " + records);
             long count = (long) records.get(0).get(AgentConstants.ID);
-            LOGGER.info(" select device controller query -> "+builder.toString());
+            LOGGER.info(" select device controller query -> " + builder.toString());
             return (count > 0);
-        }
-        else{
+        } else {
             LOGGER.info(" no rows selected ");
         }
         return false;
 
+    }
+
+    public static Map<Long, FacilioControllerType> getControllerIds(long agentId) throws Exception {
+        List<FacilioField> idTypefields = new ArrayList<>();
+        idTypefields.add(FieldFactory.getIdField(MODULE));
+        idTypefields.add(FieldFactory.getControllerTypeField(MODULE));
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(MODULE.getTableName())
+                .select(idTypefields)
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+        //.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getPointFields()).get(AgentConstants.POINT_TYPE), String.valueOf(type.asInt()),NumberOperators.EQUALS));
+        List<Map<String, Object>> results = builder.get();
+        if ((results != null) && (!results.isEmpty())) {
+            Map<Long, FacilioControllerType> ids = new HashMap<>();
+            results.forEach(row -> ids.put((Long) row.get(AgentConstants.ID), FacilioControllerType.valueOf(Integer.parseInt(String.valueOf(row.get(AgentConstants.CONTROLLER_TYPE))))));
+            return ids;
+        }
+        return new HashMap<>();
     }
 }

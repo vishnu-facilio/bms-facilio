@@ -59,7 +59,6 @@ public class AgentApiV2 {
     }
 
     private static List<FacilioAgent> getAgents(String agentName, AgentType type, boolean getDeleted) throws Exception {
-        List<FacilioAgent> agentList = new ArrayList<>();
 
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
         FacilioContext context = new FacilioContext();
@@ -210,10 +209,6 @@ public class AgentApiV2 {
             LOGGER.info("Exception occurred, agent can't be null to update ");
         }
         return false;
-    }
-
-    public static void main(String[] args) {
-        System.out.println((List<FacilioField>) FIELDSMAP.values());
     }
 
     public static boolean updateAgent(FacilioAgent agent) throws Exception {

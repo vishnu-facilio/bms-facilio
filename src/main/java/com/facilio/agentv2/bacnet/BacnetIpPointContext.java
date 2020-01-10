@@ -10,22 +10,24 @@ import org.json.simple.JSONObject;
 
 import java.util.Map;
 
-public class BacnetIpPoint extends Point {
+public class BacnetIpPointContext extends Point {
 
-    private static final Logger LOGGER = LogManager.getLogger(BacnetIpPoint.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(BacnetIpPointContext.class.getName());
 
 
-    private long instanceNumber=-1;
-    private int instanceType=-1;
+    private long instanceNumber = -1;
+    private int instanceType = -1;
+
     @Deprecated
-    private BacnetIpPoint() { }
+    private BacnetIpPointContext() {
+    }
 
     @Override
     public FacilioControllerType getControllerType() {
         return FacilioControllerType.BACNET_IP;
     }
 
-    public BacnetIpPoint(long agentId, long controllerId) {
+    public BacnetIpPointContext(long agentId, long controllerId) {
         super(agentId, controllerId);
     }
 
@@ -57,7 +59,7 @@ public class BacnetIpPoint extends Point {
         if (containsValueCheck(AgentConstants.INSTANCE_NUMBER, pointMap) && containsValueCheck(AgentConstants.INSTANCE_TYPE, pointMap)) {
           JSONObject jsonObject = new JSONObject();
           jsonObject.putAll(pointMap);
-          BacnetIpPoint point = FieldUtil.getAsBeanFromJson(jsonObject,BacnetIpPoint.class);
+            BacnetIpPointContext point = FieldUtil.getAsBeanFromJson(jsonObject, BacnetIpPointContext.class);
           return point;
         }
         throw new Exception(" Mandatory fields like " + AgentConstants.INSTANCE_NUMBER + "," + AgentConstants.INSTANCE_TYPE + " might be missing form input params -> " + pointMap);

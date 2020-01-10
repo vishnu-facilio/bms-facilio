@@ -19,13 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class BacnetIpController extends Controller {
+public class BacnetIpControllerContext extends Controller {
 
-    private static final Logger LOGGER = LogManager.getLogger(BacnetIpController.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(BacnetIpControllerContext.class.getName());
 
     public static final String ASSETCATEGORY = FacilioConstants.ContextNames.BACNET_IP_CONTROLLER_MODULE_NAME;
-    @JsonIgnore
-    public String getModuleName() { return ASSETCATEGORY; }
+
+    public BacnetIpControllerContext() {
+        setControllerType(FacilioControllerType.BACNET_IP.asInt());
+    }
 
     @Override
     public long getAgentId() {
@@ -44,13 +46,31 @@ public class BacnetIpController extends Controller {
     @JsonIgnore
     private String identifier;
 
-    public BacnetIpController() { }
-
-    public BacnetIpController(long agentId, long orgId) throws Exception {
+    public BacnetIpControllerContext(long agentId, long orgId) throws Exception {
         super(agentId, orgId);
         this.agentId = agentId;
         //processIdentifier(identifier);
         setControllerType(FacilioControllerType.BACNET_IP.asInt());
+    }
+
+    public static BacnetIpControllerContext getBacnetControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
+        if (controllerMap == null || controllerMap.isEmpty()) {
+            throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
+        }
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        if (containsValueCheck(AgentConstants.IDENTIFIER, controllerMap)) {
+            BacnetIpControllerContext controller = new BacnetIpControllerContext(agentId, orgId);
+            controller.processIdentifier((String) controllerMap.get(AgentConstants.IDENTIFIER));
+            return (BacnetIpControllerContext) controller.getControllerFromJSON(controllerMap);
+        }
+        if (containsValueCheck(AgentConstants.INSTANCE_NUMBER, controllerMap) && containsValueCheck(AgentConstants.IP_ADDRESS, controllerMap) && containsValueCheck(AgentConstants.NETWORK_NUMBER, controllerMap)) {
+            BacnetIpControllerContext controller = new BacnetIpControllerContext(agentId, orgId);
+            controller.setIpAddress((String) controllerMap.get(AgentConstants.IP_ADDRESS));
+            controller.setInstanceNumber(Math.toIntExact((Long) controllerMap.get(AgentConstants.INSTANCE_NUMBER)));
+            controller.setNetworkNumber(Math.toIntExact((Long) controllerMap.get(AgentConstants.NETWORK_NUMBER)));
+            return (BacnetIpControllerContext) controller.getControllerFromJSON(controllerMap);
+        }
+        throw new Exception(" Mandatory fields like " + AgentConstants.INSTANCE_NUMBER + "," + AgentConstants.IP_ADDRESS + "," + AgentConstants.NETWORK_NUMBER + " might be missing from input parameter -> " + controllerMap);
     }
 
     /*public BacnetIpController(long agentId, long orgId) throws Exception {
@@ -58,9 +78,13 @@ public class BacnetIpController extends Controller {
     }*/
 
 
+    public int getInstanceNumber() {
+        return instanceNumber;
+    }
 
-    public int getInstanceNumber() { return instanceNumber; }
-    public void setInstanceNumber(int instanceNumber) { this.instanceNumber = instanceNumber; }
+    public void setInstanceNumber(int instanceNumber) {
+        this.instanceNumber = instanceNumber;
+    }
 
     public int getNetworkNumber() { return networkNumber; }
     public void setNetworkNumber(int networkNumber) { this.networkNumber = networkNumber; }
@@ -98,25 +122,9 @@ public class BacnetIpController extends Controller {
         throw new Exception(" Parameters not set yet " + instanceNumber + "- -" + networkNumber + "- -" + ipAddress);
     }
 
-
-    public static BacnetIpController getBacnetControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
-        if (controllerMap == null || controllerMap.isEmpty()) {
-            throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
-        }
-        long orgId = AccountUtil.getCurrentOrg().getOrgId();
-        if (containsValueCheck(AgentConstants.IDENTIFIER, controllerMap)) {
-            BacnetIpController controller = new BacnetIpController(agentId, orgId);
-            controller.processIdentifier( (String) controllerMap.get(AgentConstants.IDENTIFIER));
-            return (BacnetIpController) controller.getControllerFromJSON(controllerMap);
-        }
-        if (containsValueCheck(AgentConstants.INSTANCE_NUMBER, controllerMap) && containsValueCheck(AgentConstants.IP_ADDRESS, controllerMap) && containsValueCheck(AgentConstants.NETWORK_NUMBER, controllerMap)) {
-            BacnetIpController controller = new BacnetIpController(agentId, orgId);
-            controller.setIpAddress((String) controllerMap.get(AgentConstants.IP_ADDRESS));
-            controller.setInstanceNumber(Math.toIntExact((Long) controllerMap.get(AgentConstants.INSTANCE_NUMBER)));
-            controller.setNetworkNumber(Math.toIntExact((Long) controllerMap.get(AgentConstants.NETWORK_NUMBER)));
-            return (BacnetIpController) controller.getControllerFromJSON(controllerMap);
-        }
-        throw new Exception(" Mandatory fields like " + AgentConstants.INSTANCE_NUMBER + "," + AgentConstants.IP_ADDRESS + "," + AgentConstants.NETWORK_NUMBER + " might be missing from input parameter -> " + controllerMap);
+    @JsonIgnore
+    public String getModuleName() {
+        return ASSETCATEGORY;
     }
 
     @Override

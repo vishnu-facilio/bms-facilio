@@ -11,7 +11,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -136,7 +135,6 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		}
 		
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
-		LOGGER.info(" select query ->"+builder.toString());
 		/*LOGGER.info("- - - - select controllers - - - - "+builder.toString());*/
 		if (fetchCount) {
 			if (CollectionUtils.isNotEmpty(records)) {

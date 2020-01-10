@@ -58,9 +58,18 @@ public class DataProcessorV2
     }
 
 
-
     private static long getQuarterHourStartTime(long currTime) {
         return 0;
+    }
+
+    public static void main(String[] args) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 1; i <= 1000; i++) {
+            if (i % 3 == 0) {
+                stringBuilder.append(i);
+            }
+        }
+        System.out.println(stringBuilder.toString());
     }
 
     public boolean processRecord(JSONObject payload) {
@@ -120,16 +129,26 @@ public class DataProcessorV2
                     Controller controller = cU.getControllerFromAgentPayload(payload);
 
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
-                    if (controller != null)
+                    if (controller != null) {
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
-                    else
+                    } else {
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, null);
+                    }
 
-                    processTimeSeries(timeSeriesPayload, controller);
+                    processTimeSeries(timeSeriesPayload, controller, true);
 
                     break;
                 case COV:
-                    processCOV(payload, agentName);
+                    controller = cU.getControllerFromAgentPayload(payload);
+
+                    timeSeriesPayload = (JSONObject) payload.clone();
+                    if (controller != null) {
+                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
+                    } else {
+                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, null);
+                    }
+
+                    processTimeSeries(timeSeriesPayload, controller, false);
                     //processTimeSeries(payload,)
                 default:
                     throw new Exception("No such Publish type " + publishType.name());
@@ -201,47 +220,47 @@ public class DataProcessorV2
         return false;
     }
 
-    private void processTimeSeries(JSONObject payload, Controller controller) {
+    private boolean processTimeSeries(JSONObject payload, Controller controller, boolean isTimeSeries) {
         LOGGER.info(" calling timeseries processer chain v2");
         try {
             FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
             FacilioContext context = chain.getContext();
             context.put(AgentConstants.IS_NEW_AGENT, true);
             //TODO
-            context.put(AgentConstants.CONTROLLER,controller);
-            if (controller!=null) {
-                context.put(AgentConstants.CONTROLLER_ID,controller.getId());
-                context.put(AgentConstants.AGENT_ID,controller.getAgentId());
-            }
-            else {
-                context.put(AgentConstants.CONTROLLER_ID,-1L);
-                if (payload.containsKey("agent")){
-                long agentId =getAgentId(payload.get("agent").toString());
-                    if (agentId>0) {
+            context.put(AgentConstants.CONTROLLER, controller);
+            if (controller != null) {
+                context.put(AgentConstants.CONTROLLER_ID, controller.getId());
+                context.put(AgentConstants.AGENT_ID, controller.getAgentId());
+            } else {
+                context.put(AgentConstants.CONTROLLER_ID, -1L);
+                if (payload.containsKey("agent")) {
+                    long agentId = getAgentId(payload.get("agent").toString());
+                    if (agentId > 0) {
                         context.put(AgentConstants.AGENT_ID, agentId);
                     }
-                }
-                else  throw new Exception("Agent missing in payload");
+                } else throw new Exception("Agent missing in payload");
             }
-            context.put(AgentConstants.DATA,payload);
-            context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
-            if(payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)){
+            context.put(AgentConstants.DATA, payload);
+            context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, isTimeSeries);
+            if (payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)) {
                 LOGGER.info(" timestamp long instance check " + (payload.get(AgentConstants.TIMESTAMP) instanceof Long));
                 LOGGER.info(" timestamp String instance check " + (payload.get(AgentConstants.TIMESTAMP) instanceof String));
                 context.put(AgentConstants.TIMESTAMP, payload.get(AgentConstants.TIMESTAMP));
-            }else {
-                context.put(AgentConstants.TIMESTAMP,System.currentTimeMillis());
+            } else {
+                context.put(AgentConstants.TIMESTAMP, System.currentTimeMillis());
             }
             chain.execute();
             LOGGER.info(" done processes data command ");
-            for (Object key : context.keySet()) {
+            /*for (Object key : context.keySet()) {
                 LOGGER.info(key+"->"+context.get(key));
-            }
+            }*/
+            return true;
             /*ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             bean.processNewTimeSeries(payload,controllerTs);*/
         } catch (Exception e) {
             LOGGER.info("Exception while processing timeseries data ", e);
         }
+        return false;
     }
 
     private long getAgentId(String agent) throws Exception {

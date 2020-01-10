@@ -1,9 +1,5 @@
 package com.facilio.modules;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
@@ -12,6 +8,10 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.constants.FacilioConstants.ModuleNames;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.fields.FacilioField;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ModuleFactory {
 
@@ -1548,7 +1548,7 @@ public class ModuleFactory {
 		enpi.setTableName("Formula_Field");
 		return enpi;
 	}
-	
+
 	public static FacilioModule getKpiModule() {
 		FacilioModule enpi = new FacilioModule();
 		enpi.setName("kpi");
@@ -1556,7 +1556,7 @@ public class ModuleFactory {
 		enpi.setTableName("Module_KPIs");
 		return enpi;
 	}
-	
+
 	public static FacilioModule getKPICategoryModule() {
 		FacilioModule enpi = new FacilioModule();
 		enpi.setName("kpiCategory");
@@ -2041,13 +2041,21 @@ public class ModuleFactory {
 		opcUAPointModule.setTableName("OPC_UA_Point");
 		return opcUAPointModule;
 	}
-	
+
 	public static FacilioModule getOPCXmlDAPointModule() {
 		FacilioModule opcXmlDAPointModule = new FacilioModule();
 		opcXmlDAPointModule.setName("opcXmlDAPoint");
 		opcXmlDAPointModule.setDisplayName("OPCXMLDAPoint");
 		opcXmlDAPointModule.setTableName("OPC_XML_DA_Point");
 		return opcXmlDAPointModule;
+	}
+
+	public static FacilioModule getRtuNetworkModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(AgentConstants.MODBUS_RTU_NETWORK_MODULE);
+		module.setTableName("Rtu_Network");
+		module.setDisplayName(" modbus rtu network ");
+		return module;
 	}
 
 	public static FacilioModule getMiscPointModule() {
@@ -2057,7 +2065,7 @@ public class ModuleFactory {
 		opcXmlDAPointModule.setTableName("Misc_Point");
 		return opcXmlDAPointModule;
 	}
-	
+
 	public static FacilioModule getUnmodeledDataModule() {
 		FacilioModule syncModule = new FacilioModule();
 		syncModule.setName("unmodeledData");
@@ -3067,12 +3075,28 @@ public class ModuleFactory {
 		module.setTableName("WebTab");
 		return module;
 	}
-	
+
 	public static FacilioModule getServiceRequestModule() {
 		FacilioModule ticketStatusModule = new FacilioModule();
 		ticketStatusModule.setName(FacilioConstants.ContextNames.SERVICE_REQUEST);
 		ticketStatusModule.setDisplayName("Service Requests");
 		ticketStatusModule.setTableName("Service_Requests");
 		return ticketStatusModule;
+	}
+/*
+	public static FacilioModule getAgentMetricsV2Module() {
+		FacilioModule module = new FacilioModule();
+		module.setName(AgentConstants.AGENT_METRICS_MODULE);
+		module.setDisplayName(" agent metrics v2 module");
+		module.setTableName("AgentMetrics");
+		return module;
+	}*/
+
+	public static FacilioModule getAgentV2LogModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(AgentConstants.AGENT_V2_LOG_MODULE);
+		module.setTableName("Agent_V2_Log");
+		module.setDisplayName("agent v2 log");
+		return module;
 	}
 }

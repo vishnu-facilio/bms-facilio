@@ -2,15 +2,15 @@ package com.facilio.agentv2.controller;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.bacnet.BacnetIpController;
+import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscController;
-import com.facilio.agentv2.modbusrtu.ModbusRtuController;
-import com.facilio.agentv2.modbustcp.ModbusTcpController;
+import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
+import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.niagara.NiagaraController;
-import com.facilio.agentv2.opcua.OpcUaController;
-import com.facilio.agentv2.opcxmlda.OpcXmlDaController;
+import com.facilio.agentv2.opcua.OpcUaControllerContext;
+import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -93,7 +93,6 @@ public class ControllerUtilV2 {
     public static Controller getControllerFromJSON(long agentId, Map<String, Object> controllerJSON) {
         Controller controller = null;
         try {
-
             if (controllerJSON != null && (!controllerJSON.isEmpty())) {
                 if (containsValueCheck(AgentConstants.TYPE, controllerJSON)) {
                     FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact((Long) controllerJSON.get(AgentConstants.TYPE)));
@@ -102,25 +101,25 @@ public class ControllerUtilV2 {
                             controller = NiagaraController.getNiagaraControllerFromMap(agentId, controllerJSON);
                             break;
                         case BACNET_IP:
-                            controller = BacnetIpController.getBacnetControllerFromMap(agentId, controllerJSON);
+                            controller = BacnetIpControllerContext.getBacnetControllerFromMap(agentId, controllerJSON);
                             break;
                         case OPC_XML_DA:
-                            controller = OpcXmlDaController.getOpcXmlDaControllerFromMap(agentId, controllerJSON);
+                            controller = OpcXmlDaControllerContext.getOpcXmlDaControllerFromMap(agentId, controllerJSON);
                             break;
                         case BACNET_MSTP:
                             throw new Exception(" No implementation for " + FacilioControllerType.BACNET_MSTP.asString() + " controller");
                         case MODBUS_RTU:
-                            controller = ModbusRtuController.getModbusRtuControllerFromMap(agentId, controllerJSON);
+                            controller = ModbusRtuControllerContext.getModbusRtuControllerFromMap(agentId, controllerJSON);
                             break;
                         case MODBUS_IP:
-                            controller = ModbusTcpController.getModbusTcpControllerFromMap(controllerJSON);
+                            controller = ModbusTcpControllerContext.getModbusTcpControllerFromMap(controllerJSON);
                             break;
                         case LON_WORKS:
                             throw new Exception(" No implementation for " + FacilioControllerType.LON_WORKS.asString() + " controller");
                         case KNX:
                             throw new Exception(" No implementation for " + FacilioControllerType.KNX.asString() + " controller");
                         case OPC_UA:
-                            controller = OpcUaController.getBacnetControllerFromMap(agentId, controllerJSON);
+                            controller = OpcUaControllerContext.getBacnetControllerFromMap(agentId, controllerJSON);
                             break;
                         case MISC:
                             controller = MiscController.getMiscControllerFromJSON(agentId, controllerJSON);
@@ -181,9 +180,9 @@ public class ControllerUtilV2 {
         return controller;
     }
 
-    public static BacnetIpController makeBacnetIpController(long orgId, long agentId, String identifier) {
+    public static BacnetIpControllerContext makeBacnetIpController(long orgId, long agentId, String identifier) {
         try {
-            BacnetIpController controller = new BacnetIpController(agentId, orgId);
+            BacnetIpControllerContext controller = new BacnetIpControllerContext(agentId, orgId);
             controller.processIdentifier(identifier);
             return controller;
         } catch (Exception e) {
@@ -204,9 +203,9 @@ public class ControllerUtilV2 {
         return false;
     }
 
-    public static ModbusTcpController makeModbusTcoController(long orgId, long agentId, String identifier) {
+    public static ModbusTcpControllerContext makeModbusTcoController(long orgId, long agentId, String identifier) {
         try {
-            ModbusTcpController controller = new ModbusTcpController(agentId, orgId);
+            ModbusTcpControllerContext controller = new ModbusTcpControllerContext(agentId, orgId);
             controller.processIdentifier(identifier);
             return controller;
         } catch (Exception e) {

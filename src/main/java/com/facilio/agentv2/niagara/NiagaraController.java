@@ -29,6 +29,7 @@ public class NiagaraController extends Controller {
     private String identifier;
 
     public NiagaraController() {
+        setControllerType(FacilioControllerType.NIAGARA.asInt());
     }
 
     public NiagaraController(long agentId, long orgId) throws Exception {

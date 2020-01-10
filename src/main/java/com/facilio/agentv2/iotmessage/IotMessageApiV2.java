@@ -2,7 +2,6 @@ package com.facilio.agentv2.iotmessage;
 
 import com.amazonaws.services.iot.client.*;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentKeys;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.Status;
@@ -211,18 +210,24 @@ public class IotMessageApiV2 {
 			return;
 		}*/
 
-        Long agentId;
+        /*Long agentId;
         if(object.containsKey(AgentKeys.AGENT_ID)){
-            agentId = (Long) object.remove(AgentKeys.AGENT_ID);
+            *//*agentId = (Long) object.remove(AgentKeys.AGENT_ID);*//*
         }
         else if (object.containsKey(AgentConstants.AGENT_ID)){
+*//*
             agentId = (Long) object.get(AgentConstants.AGENT_ID);
+*//*
         }
         else {
             return;
-        }
-        LOGGER.info(" Iot Message is "+object);
-        if( FacilioProperties.isOnpremise()) {
+        }*/
+       /* LOGGER.info(" Iot Message is "+object);
+        if(true){ //TODO to be removed
+            LOGGER.info(" skipping iot comm for local testing ");
+            return;
+        }*/
+        if (FacilioProperties.isOnpremise()) {
             publishToRabbitMQ(client, object);
         } else {
             publishToAwsIot(client, object);

@@ -126,9 +126,12 @@ public class FieldDeviceApi
             try{
                 device = FieldUtil.getAsBeanFromMap(deviceMap, Device.class);
                 controller = ControllerUtilV2.getControllerFromJSON(device.getAgentId(), device.getControllerProps());
-                LOGGER.info(" controller formed is ->"+controller.getChildJSON());
-                 ControllerMessenger.discoverPoints(controller);
-                 return true;
+                if (controller == null) {
+                    throw new Exception(" controller cant be created ");
+                }
+                LOGGER.info(" controller formed is ->" + controller.getChildJSON());
+                ControllerMessenger.discoverPoints(controller);
+                return true;
             } catch (Exception e) {
                 LOGGER.info("Exception while making Device bean from json -> " + deviceMap + "  ", e);
                 return false;

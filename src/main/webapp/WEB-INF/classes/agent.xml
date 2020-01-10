@@ -84,7 +84,7 @@
         </action>
 
         <!--3-->
-        <action name="create" class="com.facilio.agentv2.actions.AddAgentAction" method="addAgent">
+        <action name="create" class="com.facilio.agentv2.actions.AddAgentAction" method="createAgent">
         </action>
 
         <!--4-->
@@ -121,6 +121,9 @@
 
         <!--12-->
         <action name="downloadAgent" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method="downloadAgent">
+        </action>
+
+        <action name="metrice" class="com.facilio.agentv2.actions.AgentIdAction" method="getMetrics">
         </action>
     </package>
 
@@ -230,8 +233,43 @@
 
         <action name="get" class="com.facilio.agentv2.actions.DeviceIdActions" method="device">
         </action>
-
     </package>
 
+    <package name="dbMigration" namespace="/api/v2/db" extends="agent">
+        <action name="migrate" class="com.facilio.agentv2.actions.AgentIdAction" method="migrate">
+        </action>
+    </package>
+
+    <package name="modbus" namespace="/api/v2/modbus" extends="agent">
+        <action name="addController" class="com.facilio.agentv2.actions.ModbusControllerAction"
+                method="addModbusController">
+        </action>
+    </package>
+
+    <package name="opcDa" namespace="/api/v2/opcda" extends="agent">
+        <action name="addController" class="com.facilio.agentv2.actions.OpcDaControllerAction" method="addController">
+        </action>
+    </package>
+
+
+    <package name="opcUa" namespace="/api/v2/opcUa" extends="agent">
+        <action name="addController" class="com.facilio.agentv2.actions.OpcUaControllerAction" method="addController">
+        </action>
+    </package>
+
+    <package name="rtuNetwork" namespace="/api/v2/rtuNetwork" extends="agent">
+        <action name="add" class="com.facilio.agentv2.actions.RtuNetworkAction" method="addRtuNetwork">
+        </action>
+    </package>
+
+    <package name="agentLogs" namespace="/api/v2/agent/logs" extends="agent">
+        <action name="list" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentLogs">
+        </action>
+    </package>
+
+    <package name="agentMetrics" namespace="/api/v2/agent/metrics" extends="agent">
+        <action name="list" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentMetrics">
+        </action>
+    </package>
 
 </struts>

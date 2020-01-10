@@ -10,14 +10,13 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-public class AgentCreate extends FacilioCommand
-{
-    private static final Logger LOGGER = LogManager.getLogger(AgentCreate.class.getName());
+public class AgentAddCommand extends FacilioCommand {
+    private static final Logger LOGGER = LogManager.getLogger(AgentAddCommand.class.getName());
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long agentId;
-        if( !context.containsKey(FacilioConstants.ContextNames.PAY_LOAD )){
+        if (!context.containsKey(FacilioConstants.ContextNames.PAY_LOAD)) {
             return false;
         }
         JSONObject payload = (JSONObject) context.get(FacilioConstants.ContextNames.PAY_LOAD);

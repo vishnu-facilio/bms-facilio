@@ -138,4 +138,15 @@ public class AgentConstants
     public static final String NUMBER_OF_MSGS = "numberOfMessages";
     public static final String SIZE = "size";
     public static final String CHILDJSON = "childJson";
+    public static final String DB_FILE = "dbFile";
+    public static final String MODBUS_RTU_NETWORK_MODULE = "modbusRtuNetworkModule";
+    public static final String CONFIG_TYPE = "configType";
+    public static final String NETWORK_CONFIGURATION = "networkConfiguration";
+    public static final String CONTROLLER_CONFIGURATION = "controllerConfiguration";
+    public static final String CONFIGURE = "configure";
+    public static final String MODBUS_NETWORK = "modbusNetwork";
+    public static final String RTU_NETWORK = "rtuNetwork";
+    public static final String FILE_ID = "fileId";
+    public static final String AGENT_V2_LOG_MODULE = "agentV2Log";
+    public static final String ACTUAL_TIME = "actualTime";
 }

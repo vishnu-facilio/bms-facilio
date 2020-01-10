@@ -26,6 +26,7 @@ public class MiscController extends Controller {
     public static final String ASSETCATEGORY = FacilioConstants.ContextNames.MISC_CONTROLLER_MODULE_NAME;
 
     public MiscController() {
+        setControllerType(FacilioControllerType.MISC.asInt());
     }
 
     @JsonIgnore

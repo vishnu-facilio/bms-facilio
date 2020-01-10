@@ -3,6 +3,8 @@ package com.facilio.agentv2.actions;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -38,8 +40,9 @@ public class AddAgentAction extends AgentActionV2
     public void setSiteId(Long siteId) { this.siteId = siteId; }
 
 
-    public String addAgent() {
+    public String createAgent() {
         try {
+            FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
             FacilioAgent agent = new FacilioAgent();
             agent.setName(getAgentName());
             agent.setInterval(getDataInterval());
