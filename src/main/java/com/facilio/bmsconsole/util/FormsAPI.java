@@ -652,8 +652,6 @@ public class FormsAPI {
 			
 			List<FormSiteRelationContext> props = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), FormSiteRelationContext.class);
 			Map<Long, List<Long>> formVsSite = new HashMap<>();
-			List<FacilioForm> siteAssociatedFormsList = new ArrayList<>();
-			List<FacilioForm> siteDisassociatedFormsList = new ArrayList<>();
 			if (props != null && props.size() > 0) {
 			for (FormSiteRelationContext prop : props) {
 				Long formId = (Long) prop.getFormId();
@@ -670,25 +668,9 @@ public class FormsAPI {
 				if (formVsSite.get(form.getId()) != null) {
 					form.setSiteIds(formVsSite.get(form.getId()));
 				}
-				if (spaces != null && spaces.size() > 0) {
-					if (form.getSiteIds() != null && form.getSiteIds().size() > 0 ) {
-						siteAssociatedFormsList.add(form);
-					}
-					else {
-						siteDisassociatedFormsList.add(form);
-					}
-				}
-			}
-			if (spaces != null && spaces.size() > 0) {
-				if (siteDisassociatedFormsList  != null && siteDisassociatedFormsList.size() > 0) {
-					siteAssociatedFormsList.addAll(siteDisassociatedFormsList);
-				}
-				if (siteAssociatedFormsList  != null && siteAssociatedFormsList.size() > 0) {
-					forms = new ArrayList<>();
-					forms = siteAssociatedFormsList;				
-				}
 			}
 			}
+
 		}
 		// TODO Auto-generated method stub
 		return forms;

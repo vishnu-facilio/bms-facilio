@@ -46,7 +46,25 @@ public class GetFormListCommand extends FacilioCommand {
 				stateFlowMap.put(rule.getId(), rule);
 			}
 		}
-
+		
+		List<FacilioForm> siteAssociatedFormsList = new ArrayList<>();
+		List<FacilioForm> siteDisassociatedFormsList = new ArrayList<>();
+		
+		for (FacilioForm form: formsList) {
+				if (form.getSiteIds() != null && form.getSiteIds().size() > 0 ) {
+					siteAssociatedFormsList.add(form);
+				}
+				else {
+					siteDisassociatedFormsList.add(form);
+				}
+		}
+		if (siteDisassociatedFormsList  != null && siteDisassociatedFormsList.size() > 0) {
+			siteAssociatedFormsList.addAll(siteDisassociatedFormsList);
+		}
+		if (siteAssociatedFormsList  != null && siteAssociatedFormsList.size() > 0) {
+			formsList = new ArrayList<>();
+			formsList = siteAssociatedFormsList;				
+		}
 		context.put(FacilioConstants.ContextNames.FORMS, formsList);
 		context.put(FacilioConstants.ContextNames.STATE_FLOW_LIST, stateFlowMap);
 		return false;
