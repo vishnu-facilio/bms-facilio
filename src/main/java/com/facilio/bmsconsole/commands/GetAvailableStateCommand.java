@@ -38,8 +38,6 @@ public class GetAvailableStateCommand extends FacilioCommand {
 				LOGGER.debug("### time taken inside getAvailableState: " + this.getClass().getSimpleName() + ": " + (System.currentTimeMillis() - currentTime));
 				context.put("availableStates", availableState);
 			}
-		} else {
-			throw new IllegalArgumentException("Record not found");
 		}
 		return false;
 	}
