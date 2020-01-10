@@ -194,9 +194,11 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 				duration = 0;
 			}
 		} else {
-			duration = (woTool.getDuration() / (60 * 60));
+			duration = (woTool.getDuration() / (1000 * 60 * 60));
+			//duration = (woTool.getDuration() / (60 * 60));
 			if (woTool.getIssueTime() >= 0) {
-				woTool.setReturnTime((long) (woTool.getIssueTime() + (woTool.getDuration() * 1000)));
+				woTool.setReturnTime((long) (woTool.getIssueTime() + woTool.getDuration()));
+				//woTool.setReturnTime((long) (woTool.getIssueTime() + (woTool.getDuration() * 1000)));
 			}
 		}
 		woTool.setTransactionType(TransactionType.WORKORDER);
@@ -252,7 +254,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 						(FacilioContext) context);
 			}
 		}
-        woTool.setDuration(duration * 60 * 60);
+//        woTool.setDuration(duration * 60 * 60);
 		return woTool;
 	}
 
