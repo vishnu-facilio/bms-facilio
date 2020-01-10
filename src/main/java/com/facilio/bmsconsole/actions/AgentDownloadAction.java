@@ -7,16 +7,13 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.services.factory.FacilioFactory;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.commons.io.output.TaggedOutputStream;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 
 public class AgentDownloadAction extends ActionSupport {
@@ -58,9 +55,9 @@ public class AgentDownloadAction extends ActionSupport {
     public String downloadAgent() throws Exception {
         try {
             LOGGER.info("Download Agent called");
-            String url = getExeUrl(getToken());
-            LOGGER.info("Agent Download " + url);
-            File file = downloadExeFrom(url);
+            String path = getExeUrl(getToken());
+            LOGGER.info("Agent Download " + path);
+            File file = downloadExeFrom(path);
             if (file==null){
                 LOGGER.info("File is null");
                 return "error";
@@ -76,26 +73,32 @@ public class AgentDownloadAction extends ActionSupport {
         }
     }
 
-    private File downloadExeFrom(String url) throws IOException {
-            BufferedInputStream inputStream = new BufferedInputStream(new URL(url).openStream());
+    private File downloadExeFrom(String url) throws Exception {
+            InputStream inputStream = FacilioFactory.getFileStore().getSecretFile(url);
+
             String key = "Org_"+this.orgId
                     + "Agent_"+ this.agentId
                     + "Version_"+ this.version
                     + System.currentTimeMillis()
                     +"agent.tmp";
-             FileOutputStream fileOS = new FileOutputStream(key) ;
-            byte[] data = new byte[1024];
-            int byteContent;
-            while ((byteContent = inputStream.read(data, 0, 1024)) != -1) {
-                fileOS.write(data, 0, byteContent);
+
+        File file = new File("/tmp/"+key);
+
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+
+            int read;
+            byte[] bytes = new byte[1024];
+
+            while (inputStream!=null && (read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
             }
 
-            File file = new File(key);
-            if (file.exists())
-            return file;
-            else return null;
+        } catch (IOException e) {
+            LOGGER.info("Error while downloading Agent Exe "+e.getMessage());
+        }
 
 
+        return file;
     }
 
     private String getExeUrl(String token) throws Exception {

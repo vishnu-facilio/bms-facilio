@@ -204,7 +204,7 @@ public class FacilioContextListener implements ServletContextListener {
 				}
 
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.info("Error while downloading Google app credentials "+e.getMessage());
 			}
 
 	}
