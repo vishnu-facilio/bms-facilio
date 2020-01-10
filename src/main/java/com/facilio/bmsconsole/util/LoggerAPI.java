@@ -117,7 +117,7 @@ public class LoggerAPI {
 					.select(fields)
 					.table(loggerModule.getTableName())
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), ""+ parentId, NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getConditionFromList("RESOURCE_ID", "resourceId", resourceIds, NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), resourceIds, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ LoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> props = selectBuilder.get();

@@ -80,11 +80,13 @@ public class WorkflowRuleHistoricalLoggerUtil {
 	
 	public static List<WorkflowRuleHistoricalLoggerContext> getActiveRuleHistoricalLogger(long ruleId, List<Long> resourceIds) throws Exception {
 		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleHistoricalLoggerFields());
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), resourceIds, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getConditionFromList("RESOURCE_ID", "resourceId", resourceIds, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
