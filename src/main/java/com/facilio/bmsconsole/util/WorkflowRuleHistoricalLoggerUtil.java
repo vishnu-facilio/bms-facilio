@@ -222,33 +222,34 @@ public class WorkflowRuleHistoricalLoggerUtil {
 					for(Map<String, Object> prop :propsList)
 					{
 						WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = workflowRuleHistoricalLoggerContextMap.get((long) prop.get("loggerGroupId"));
-						if(prop.get("count") != null) {
-							workflowRuleHistoricalLoggerContext.setResourceLogCount((long) prop.get("count"));
-							
-						}
-						if(prop.get("sum") != null)
+						if(workflowRuleHistoricalLoggerContext != null)
 						{
-							workflowRuleHistoricalLoggerContext.setTotalChildAlarmCount(Integer.valueOf(String.valueOf(prop.get("sum"))));
-						}
-						
-						workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
-						
-						long loggerGroupId = (long) prop.get("loggerGroupId");
-						List<WorkflowRuleHistoricalLoggerContext> activeChildLoggers = getGroupedInProgressWorkflowRuleHistoricalLoggers(loggerGroupId);
-						if(activeChildLoggers == null || activeChildLoggers.isEmpty())
-						{
-							workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
-							workflowRuleHistoricalLoggerContext.setResolvedLogCount(workflowRuleHistoricalLoggerContext.getResourceLogCount());					
-						}
-						else
-						{
-							if(activeChildLoggers != null && workflowRuleHistoricalLoggerContext.getResourceLogCount() > 0 && workflowRuleHistoricalLoggerContext.getResourceLogCount() >= activeChildLoggers.size())
-							{
-								long resolvedResourceCount = workflowRuleHistoricalLoggerContext.getResourceLogCount() - activeChildLoggers.size();
-								workflowRuleHistoricalLoggerContext.setResolvedLogCount(resolvedResourceCount);
+							if(prop.get("count") != null) {
+								workflowRuleHistoricalLoggerContext.setResourceLogCount((long) prop.get("count"));	
 							}
-						}	
-						
+							if(prop.get("sum") != null)
+							{
+								workflowRuleHistoricalLoggerContext.setTotalChildAlarmCount(Integer.valueOf(String.valueOf(prop.get("sum"))));
+							}
+							
+							workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
+							
+							long loggerGroupId = (long) prop.get("loggerGroupId");
+							List<WorkflowRuleHistoricalLoggerContext> activeChildLoggers = getGroupedInProgressWorkflowRuleHistoricalLoggers(loggerGroupId);
+							if(activeChildLoggers == null || activeChildLoggers.isEmpty())
+							{
+								workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
+								workflowRuleHistoricalLoggerContext.setResolvedLogCount(workflowRuleHistoricalLoggerContext.getResourceLogCount());					
+							}
+							else
+							{
+								if(activeChildLoggers != null && workflowRuleHistoricalLoggerContext.getResourceLogCount() > 0 && workflowRuleHistoricalLoggerContext.getResourceLogCount() >= activeChildLoggers.size())
+								{
+									long resolvedResourceCount = workflowRuleHistoricalLoggerContext.getResourceLogCount() - activeChildLoggers.size();
+									workflowRuleHistoricalLoggerContext.setResolvedLogCount(resolvedResourceCount);
+								}
+							}
+						}			
 					}		
 				}
 				
