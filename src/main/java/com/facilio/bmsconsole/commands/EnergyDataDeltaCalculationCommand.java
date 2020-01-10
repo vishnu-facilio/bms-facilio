@@ -40,12 +40,6 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 		if (historyReading != null && historyReading==true) {
 			return false;
 		}
-		
-		Boolean isCopyReading = (Boolean) context.get("IS_COPY_READING");
-		
-		if(isCopyReading == true) {
-			LOGGER.info("####Asset Copy Reading execution in EnergyDataDeltaCalculationCommand start time : "+ System.currentTimeMillis());
-		}
 
 		Map<String, ReadingDataMeta> metaMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		if(metaMap==null || metaMap.isEmpty()) {

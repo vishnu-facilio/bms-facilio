@@ -34,11 +34,6 @@ public class CalculatePreFormulaCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		Map<String, ReadingDataMeta> rdm = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
-		Boolean isCopyReading = (Boolean) context.get("IS_COPY_READING");
-		
-		if(isCopyReading == true) {
-			LOGGER.info("####Asset Copy Reading execution in CalculatePreFormulaCommand start time : "+ System.currentTimeMillis());
-		}
 		if (readingMap != null && !readingMap.isEmpty()) {
 			long processStarttime = System.currentTimeMillis();
 			Map<String, List<FormulaFieldContext>> formulaMap = FormulaFieldAPI.getActivePreFormulasOfModule(readingMap.keySet());

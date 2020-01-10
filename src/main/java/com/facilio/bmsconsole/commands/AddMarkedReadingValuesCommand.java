@@ -20,11 +20,6 @@ public class AddMarkedReadingValuesCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		List<MarkedReadingContext> markedList= (List<MarkedReadingContext>)context.get(FacilioConstants.ContextNames.MARKED_READINGS);
-		Boolean isCopyReading = (Boolean) context.get("IS_COPY_READING");
-		
-		if(isCopyReading == true) {
-			LOGGER.info("####Asset Copy Reading execution in AddMarkedReadingValuesCommand start time : "+ System.currentTimeMillis());
-		}
 		if(markedList==null || markedList.isEmpty()) {
 			return false;
 		}

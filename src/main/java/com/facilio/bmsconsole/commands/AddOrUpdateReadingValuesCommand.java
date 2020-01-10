@@ -37,11 +37,7 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
-		Boolean isCopyReading = (Boolean) context.get("IS_COPY_READING");
 		
-		if(isCopyReading == true) {
-			LOGGER.info("####Asset Copy Reading execution in AddOrUpdateReadingValuesCommand start time : "+ System.currentTimeMillis());
-		}
 		Boolean updateLastReading = (Boolean) context.get(FacilioConstants.ContextNames.UPDATE_LAST_READINGS);
 		if (updateLastReading == null) {
 			updateLastReading = true;

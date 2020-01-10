@@ -35,11 +35,6 @@ public class CalculateDeltaCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
-		Boolean isCopyReading = (Boolean) context.get("IS_COPY_READING");
-		
-		if(isCopyReading == true) {
-			LOGGER.info("####Asset Copy Reading execution in CalculateDeltaCommand start time : "+ System.currentTimeMillis());
-		}
 		if (readingMap != null && !readingMap.isEmpty()) {
 			Map<String, ReadingDataMeta> rdmMap = (Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
