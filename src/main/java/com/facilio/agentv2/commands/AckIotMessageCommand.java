@@ -8,22 +8,11 @@ import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
 public class AckIotMessageCommand extends AgentV2Command {
 
     private static final Logger LOGGER = LogManager.getLogger(AckIotMessageCommand.class.getName());
 
-
-    public static void main(String[] args) {
-        try {
-            System.out.println(" Hello ");
-            String str = null;
-            System.out.println(str.toLowerCase());
-        } catch (Exception e) {
-            System.out.println("exception ");
-        }
-    }
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -40,18 +29,18 @@ public class AckIotMessageCommand extends AgentV2Command {
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
         if (containsCheck(AgentConstants.ID, context)) {
             long msgId = (long) context.get(AgentConstants.ID);
+/*
             if (containsCheck(AgentConstants.DATA, context)) {
-                JSONObject payload = (JSONObject) context.get(AgentConstants.DATA);
-
+*/
                 if (containsCheck(AgentConstants.STATUS, context)) {
                     Status status = (Status) context.get(AgentConstants.STATUS);
                     bean.acknowledgeNewPublishedMessage(msgId, status);
                 } else {
                     throw new Exception(" error with key status ->" + context);
                 }
-            } else {
+            /*}*/ /*else {
                 throw new Exception(" error with key status ->" + context);
-            }
+            }*/
         }else {
             throw new Exception(" error with key status ->"+context);
         }

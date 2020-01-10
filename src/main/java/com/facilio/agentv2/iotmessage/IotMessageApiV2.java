@@ -6,6 +6,7 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -196,7 +197,9 @@ public class IotMessageApiV2 {
 
 
     public static void publishIotMessage(IotData data) throws Exception {
+        long agentId = data.getAgentId();
         for (IotMessage message : data.getMessages()) {
+            LogsApi.logIotCommand(agentId,message.getId(),data.getFacilioCommand(),null);
             message.getMessageData().put("msgid", message.getId());
             publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), message.getMessageData());
             //FacilioContext context = new FacilioContext();
@@ -206,22 +209,10 @@ public class IotMessageApiV2 {
     }
 
     private static void publishIotMessage(String client, JSONObject object) throws Exception {
-		/*if (!FacilioProperties.isProduction()) {
+		if (!FacilioProperties.isProduction()) {
 			return;
-		}*/
+		}
 
-        /*Long agentId;
-        if(object.containsKey(AgentKeys.AGENT_ID)){
-            *//*agentId = (Long) object.remove(AgentKeys.AGENT_ID);*//*
-        }
-        else if (object.containsKey(AgentConstants.AGENT_ID)){
-*//*
-            agentId = (Long) object.get(AgentConstants.AGENT_ID);
-*//*
-        }
-        else {
-            return;
-        }*/
        /* LOGGER.info(" Iot Message is "+object);
         if(true){ //TODO to be removed
             LOGGER.info(" skipping iot comm for local testing ");

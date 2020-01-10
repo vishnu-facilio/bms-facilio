@@ -122,7 +122,7 @@ public class DataProcessorV2
                 case ACK:
                     LOGGER.info(" iamcvijay logs processing ack");
                     payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
-                    ackUtil.processAgentAck(payload, agentName, orgId);
+                    ackUtil.processAgentAck(payload, agent.getId(), orgId);
                     //processLog(payload, agent.getId(), recordId);
                     break;
                 case TIMESERIES:

@@ -8,6 +8,7 @@ import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
+import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
@@ -186,22 +187,14 @@ public class AgentIdAction extends AgentActionV2 {
     }
 
     public String getAgentLogs() {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("DUMMY", "DATA");
-        jsonObject.put(AgentConstants.ID, 1);
-        jsonObject.put(AgentConstants.ORGID, 1);
-        jsonObject.put(AgentConstants.AGENT_ID, getAgentId());
-        jsonObject.put(AgentConstants.COMMAND, 251);
-        jsonObject.put(AgentConstants.STATUS, 140);
-        jsonObject.put(AgentConstants.MESSAGE_ID, 1254);
-        jsonObject.put(AgentConstants.TIMESTAMP, 258468752);
-        jsonObject.put(AgentConstants.CREATED_TIME, 258468792);
-        JSONArray array = new JSONArray();
-        array.add(jsonObject);
-        array.add(jsonObject);
-        array.add(jsonObject);
-        setResult(AgentConstants.DATA, array);
-        setResult(AgentConstants.RESULT, SUCCESS);
+        try {
+            setResult(AgentConstants.DATA, LogsApi.getMetrics(agentId, -1, -1));
+            setResult(AgentConstants.RESULT, SUCCESS);
+            return SUCCESS;
+        }catch (Exception e){
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            LOGGER.info("Exception whiel getting agent logs for ->"+agentId+"  ",e);
+        }
         return SUCCESS;
     }
 
