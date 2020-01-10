@@ -149,6 +149,7 @@ public class ExportPointsDataAPI {
 				.on("Points.ASSET_CATEGORY_ID="+"Asset_Categories.ID")
 				.leftJoin(ModuleFactory.getFieldsModule().getTableName())
 				.on("Points.FIELD_ID="+"Fields.FIELDID")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("configureStatus"),String.valueOf(CONFI_STATUS) ,StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"),String.valueOf(controllerId) ,StringOperators.IS));
 
