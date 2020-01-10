@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -12,6 +13,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.OccupantsContext;
 import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
@@ -105,6 +107,14 @@ public class ServiceRequestsAction extends FacilioAction{
 		this.stateTransitionId = stateTransitionId;
 	}
 	
+	private Map<String, List<WorkflowRuleContext>> stateFlows;
+	public Map<String, List<WorkflowRuleContext>> getStateFlows() {
+		return stateFlows;
+	}
+	public void setStateFlows(Map<String, List<WorkflowRuleContext>> stateFlows) {
+		this.stateFlows = stateFlows;
+	}
+	
 	public String addServiceRequest() throws Exception {
 	
 			FacilioChain c = TransactionChainFactory.addServiceRequestChain();
@@ -177,7 +187,9 @@ public class ServiceRequestsAction extends FacilioAction{
 		}
 		else {
 			serviceRequests = (List<ServiceRequestContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
+			setStateFlows((Map<String, List<WorkflowRuleContext>>) chain.getContext().get("stateFlows"));
 			setResult(FacilioConstants.ContextNames.SERVICE_REQUESTS, serviceRequests);
+			setResult("stateFlows", getStateFlows());
 		}
 		
 		return SUCCESS;

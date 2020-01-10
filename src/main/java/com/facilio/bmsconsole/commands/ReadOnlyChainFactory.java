@@ -1893,6 +1893,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new LoadServiceRequestLookupCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new GetStateflowsForModuleDataListCommand());
 		return chain;
 	}
 	
