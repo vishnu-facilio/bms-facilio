@@ -159,7 +159,7 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 		}
 		
 		double hours = ((duration / (1000 * 60 * 60)));
-		return Math.round(hours*10.0)/10.0;
+		return Math.round(hours*100.0)/100.0;
 	}
 
 	
