@@ -255,6 +255,8 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 			}
 		}
 //        woTool.setDuration(duration * 60 * 60);
+		woTool.setDuration(duration * 60 * 60 * 1000);
+		
 		return woTool;
 	}
 
