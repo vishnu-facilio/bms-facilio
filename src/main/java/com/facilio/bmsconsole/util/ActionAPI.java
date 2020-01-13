@@ -32,11 +32,13 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.cb.context.ChatBotIntentAction;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -188,6 +190,50 @@ public class ActionAPI {
 
 	}
 	
+	public static List<ChatBotIntentAction> getActionsFromChatBotIntent(long intentId) throws Exception {
+		
+		List<FacilioField> cbIntentActionFields = FieldFactory.getCBIntentActionFields();
+		List<FacilioField> actionFields = FieldFactory.getActionFields();
+		
+		Map<String, FacilioField> cbActionFieldMap = FieldFactory.getAsMap(cbIntentActionFields);
+		
+		Map<String, FacilioField> actionFieldMap = FieldFactory.getAsMap(actionFields);
+		
+		actionFields.addAll(cbIntentActionFields);
+		
+		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
+				.select(actionFields)
+				.table(ModuleFactory.getActionModule().getTableName())
+				.innerJoin(ModuleFactory.getCBIntentActionModule().getTableName())
+				.on(ModuleFactory.getActionModule().getTableName()+".ID = "+ ModuleFactory.getCBIntentActionModule().getTableName() +".ACTION_ID")
+				.andCondition(CriteriaAPI.getCondition(cbActionFieldMap.get("intentId"), intentId+"", NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(actionFieldMap.get("status"), Boolean.TRUE.toString(),BooleanOperators.IS));
+		
+		List<Map<String, Object>> props = actionBuilder.get();
+		
+		if(props != null && props.size() > 0) {
+			List<ChatBotIntentAction> actions = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				ActionContext action = FieldUtil.getAsBeanFromMap(prop, ActionContext.class);
+				
+				if(action.getTemplateId() != -1) {
+					action.setTemplate(TemplateAPI.getTemplate(action.getTemplateId())); //Template should be obtained from some api
+				}
+				if(action.getActionTypeEnum().isTemplateNeeded() && action.getTemplate() == null) {
+					throw new IllegalArgumentException("Invalid template for action : "+action.getId());
+				}
+				
+				ChatBotIntentAction cbAction = FieldUtil.getAsBeanFromMap(prop, ChatBotIntentAction.class);
+				
+				cbAction.setAction(action);
+				
+				actions.add(cbAction);
+			}
+			return actions;
+		}
+		return null;
+	}
+	
 	private static List<ActionContext> getActionsFromPropList(List<Map<String, Object>> props) throws Exception {
 		if(props != null && props.size() > 0) {
 			List<ActionContext> actions = new ArrayList<>();
@@ -304,6 +350,7 @@ public class ActionAPI {
 							case ALARM_IMPACT_ACTION:
 							case IMPACTS:
 							case WORKFLOW_ACTION:
+							case WORKFLOW_ACTION_WITH_LIST_PARAMS:
 								setWorkflowTemplate(action,rule,Type.WORKFLOW);
 								break;
 							case CONTROL_ACTION:

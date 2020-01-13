@@ -53,6 +53,10 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.cards.util.ChatBotUtil;
+import com.facilio.cb.context.ChatBotIntent;
+import com.facilio.cb.context.ChatBotSession;
+import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -1140,14 +1144,9 @@ public enum ActionType {
 			chain.execute(context);
 			}
 			catch (Exception e) {
-				System.out.println(e);
+				LOGGER.error("Exception occurred on workflow Action", e);
 			}
 
-//			Map<String,Object> currentRecordMap = new HashMap<>();
-//			
-//			currentRecordMap.put("record", currentRecord);
-//			
-//			WorkflowUtil.getWorkflowExpressionResult(workflowContext, currentRecordMap);
 		}
 
 		@Override
@@ -1352,7 +1351,71 @@ public enum ActionType {
 		public boolean isTemplateNeeded() {
 			return false;
 		}
-	}
+	},
+	CHAT_BOT_INTENT_RESPONSE (29) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
+		{
+
+			try {
+				
+				ChatBotIntent chatBotIntent = (ChatBotIntent)context.get(ChatBotConstants.CHAT_BOT_INTENT);
+				
+				String response = ChatBotConstants.getDefaultIntentResponse(chatBotIntent.getName());
+				
+				context.put(ChatBotConstants.CHAT_BOT_RESPONSE_STRING, response);
+				
+			}
+			catch (Exception e) {
+				LOGGER.error("Exception occurred on workflow Action", e);
+			}
+		}
+
+		@Override
+		public boolean isTemplateNeeded()
+		{
+			return false;
+		}
+
+	},
+	
+	WORKFLOW_ACTION_WITH_LIST_PARAMS(30) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
+		{
+
+			try {
+			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
+			workflowContext.setLogNeeded(true);
+
+			List<Object> currentRecordList = (List<Object>)currentRecord;
+
+			FacilioChain chain = TransactionChainFactory.getExecuteWorkflowChain();
+			
+			FacilioContext newContext = chain.getContext();
+			
+			newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
+			newContext.put(WorkflowV2Util.WORKFLOW_PARAMS, currentRecordList);
+
+			chain.execute();
+			
+			context.put(ChatBotConstants.CHAT_BOT_RESPONSE_STRING, workflowContext.getLogString());
+			}
+			catch (Exception e) {
+				LOGGER.error("Exception occurred on workflow Action", e);
+			}
+
+		}
+
+		@Override
+		public boolean isTemplateNeeded()
+		{
+			return false;
+		}
+
+	},
 	
 	;
 	

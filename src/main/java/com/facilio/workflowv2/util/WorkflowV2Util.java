@@ -55,6 +55,7 @@ public class WorkflowV2Util {
 	private static JSONObject workflowTemplates = new JSONObject();
 	
 	public static final String WORKFLOW_CONTEXT = "workflow";
+	public static final String WORKFLOW_LOG_STRING = "workflowLogString";
 	public static final String WORKFLOW_USER_FUNCTION_CONTEXT = "workflowUserFunction";
 	public static final String WORKFLOW_USER_FUNCTION_CONTEXTS = "workflowUserFunctions";
 	public static final String WORKFLOW_NAMESPACE_CONTEXT = "workflowNameSpace";

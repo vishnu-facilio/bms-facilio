@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesComman
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
@@ -4332,6 +4333,34 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		//chain.addCommand();
 		return chain;
+	}
+	
+	public static FacilioChain HandleChatBotMessageChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new HandleChatBotMessageCommand());
+		return c;
+	}
+	
+	public static FacilioChain HandleChatBotSessionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetCurrentActiveModel());
+		c.addCommand(new PrepareChatBotForMlAPICommand());
+		c.addCommand(new SendToMlApiCommand());
+		c.addCommand(new HandleInvalidQueryMessages());
+		c.addCommand(new ExecuteActionAndSetResponseForSessionCommand());
+		return c;
+	}
+	
+	public static FacilioChain HandleChatBotSessionConversationChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetCurrentActiveModel());
+		c.addCommand(new GetCurrentSession());
+		c.addCommand(new PrepareChatBotForMlAPICommand());
+		c.addCommand(new SendToMlApiCommand());
+		c.addCommand(new HandleTerminateSessionCommand());
+		c.addCommand(new HandleInvalidQueryMessages());
+		c.addCommand(new ExecuteActionAndSetResponseForConversationCommand());
+		return c;
 	}
 }
 

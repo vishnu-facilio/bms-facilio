@@ -107,13 +107,14 @@ public class ActionContext implements Serializable {
 	public boolean executeAction(Map<String, Object> placeHolders, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 		if(template != null) {
 			JSONObject actionObj = template.getTemplate(placeHolders);
-			String type = placeHolders.get("mailType") != null ? placeHolders.get("mailType").toString() : null;
-			if(actionObj != null && (!actionObj.containsKey("mailType") || actionObj.get("mailType") == null)) {
-				actionObj.put("mailType", type);
+			
+			if(placeHolders != null) {
+				String type = placeHolders.get("mailType") != null ? placeHolders.get("mailType").toString() : null;
+				if(actionObj != null && (!actionObj.containsKey("mailType") || actionObj.get("mailType") == null)) {
+					actionObj.put("mailType", type);
+				}
 			}
-			if (AccountUtil.getCurrentOrg().getId() == 151 && actionType == ActionType.BULK_EMAIL_NOTIFICATION) {
-				LOGGER.info("Email json : "+actionObj.toJSONString());
-			}
+
 			actionType.performAction(actionObj, context, currentRule, currentRecord);
 		}
 		else {

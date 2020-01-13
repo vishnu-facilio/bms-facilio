@@ -7413,6 +7413,133 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getCBModelFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCBModelModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("type", "APP_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("mlModel", "ML_MODEL_STRING", module, FieldType.STRING));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getCBModelVersionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCBModelVersionModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("modelId", "MODEL_ID", module, FieldType.NUMBER));
+		fields.add(getField("versionNo", "VERSION_NO", module, FieldType.NUMBER));
+		fields.add(getField("mlModel", "ML_MODEL_ID", module, FieldType.STRING));
+		fields.add(getField("latestVersion", "IS_LATEST_VERSION", module, FieldType.BOOLEAN));
+		fields.add(getField("accuracyRate", "ACCURACY_RATE", module, FieldType.DECIMAL));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getCBIntentFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCBIntentModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("modelVersionId", "MODEL_VERSION_ID", module, FieldType.NUMBER));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+		fields.add(getField("contextWorkflowId", "CONTEXT_WORKFLOW_ID", module, FieldType.NUMBER));
+		fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
+		fields.add(getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN));
+		fields.add(getField("withParams", "IS_WITH_PARAMS", module, FieldType.BOOLEAN));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getCBIntentActionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCBIntentActionModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("intentId", "INTENT_ID", module, FieldType.NUMBER));
+		fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
+		fields.add(getField("response", "RESPONSE", module, FieldType.STRING));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getCBIntentInvokeSamplesFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCBIntentInvokeSamplesModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("intentId", "INTENT_ID", module, FieldType.NUMBER));
+		fields.add(getField("sample", "SAMPLE", module, FieldType.STRING));
+		fields.add(getField("sampleLocalId", "SAMPLE_LOCAL_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getCBIntentParamFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCBIntentParamModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("intentId", "INTENT_ID", module, FieldType.NUMBER));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("askAs", "ASK_AS", module, FieldType.STRING));
+		fields.add(getField("mlType", "ML_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("dataType", "DATA_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("localId", "LOCAL_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getCBSessionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCBSessionModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("userId", "USER_ID", module, FieldType.NUMBER));
+		fields.add(getField("intentId", "INTENT_ID", module, FieldType.NUMBER));
+		fields.add(getField("query", "QUERY", module, FieldType.STRING));
+		fields.add(getField("response", "RESPONSE", module, FieldType.STRING));
+		fields.add(getField("state", "STATE", module, FieldType.NUMBER));
+		fields.add(getField("requiredParamCount", "REQUIRED_PARAM_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("recievedParamCount", "RECIEVED_PARAM_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("parentSessionId", "PARENT_SESSION_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getCBSessionConversationFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCBSessionConversationModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("sessionId", "SESSION_ID", module, FieldType.NUMBER));
+		fields.add(getField("parentConversationId", "PARENT_CONVERSATION_ID", module, FieldType.NUMBER));
+		fields.add(getField("query", "QUERY", module, FieldType.STRING));
+		fields.add(getField("response", "RESPONSE", module, FieldType.STRING));
+		fields.add(getField("state", "STATE", module, FieldType.NUMBER));
+		fields.add(getField("intentParamId", "INTENT_PARAM_ID", module, FieldType.NUMBER));
+		fields.add(getField("requestedTime", "REQUESTED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("respondedTime", "RESPONDED_TIME", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getCBSessionParamsFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getCBSessionParamsModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("sessionId", "SESSION_ID", module, FieldType.NUMBER));
+		fields.add(getField("intentParamId", "INTENT_PARAM_ID", module, FieldType.NUMBER));
+		fields.add(getField("value", "VALUE", module, FieldType.STRING));
+
+		return fields;
+	}
 
 	public static FacilioField getControllerTypeField(FacilioModule module) {
 		return getField(AgentConstants.CONTROLLER_TYPE, "Controller_Type", FieldType.NUMBER);

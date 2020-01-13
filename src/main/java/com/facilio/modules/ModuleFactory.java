@@ -600,6 +600,42 @@ public class ModuleFactory {
 		alarmFollowersModule.setTableName("AlarmFollowers");
 		return alarmFollowersModule;
 	}
+	
+	public static FacilioModule getCBModelModule() {
+		return constructModule("cbmodel", "Chat Bot Model", "CB_Model");
+	}
+	
+	public static FacilioModule getCBModelVersionModule() {
+		return constructModule("cbmodelversion", "Chat Bot Model Version", "CB_Model_Versions");
+	}
+	
+	public static FacilioModule getCBIntentModule() {
+		return constructModule("cbintent", "Chat Bot Intent", "CB_Intent");
+	}
+	
+	public static FacilioModule getCBIntentActionModule() {
+		return constructModule("cbintentaction", "Chat Bot Intent Action", "CB_Intent_Action");
+	}
+	
+	public static FacilioModule getCBIntentInvokeSamplesModule() {
+		return constructModule("cbintentinvokesamples", "Chat Bot Intent Invoke Samples", "CB_Intent_Invoke_Sample");
+	}
+	
+	public static FacilioModule getCBIntentParamModule() {
+		return constructModule("cbintentparam", "Chat Intent Param", "CB_Intent_Params");
+	}
+	
+	public static FacilioModule getCBSessionModule() {
+		return constructModule("cbsession", "Chat Bot Session", "CB_Session");
+	}
+	
+	public static FacilioModule getCBSessionConversationModule() {
+		return constructModule("cbsessionconversation", "Chat Bot Session Conversation", "CB_Session_Conversation");
+	}
+	
+	public static FacilioModule getCBSessionParamsModule() {
+		return constructModule("cbsessionparams", "Chat Bot Session Params", "CB_Session_Params");
+	}
 
 	public static FacilioModule getTemplatesModule() {
 		FacilioModule templatesModule = new FacilioModule();
