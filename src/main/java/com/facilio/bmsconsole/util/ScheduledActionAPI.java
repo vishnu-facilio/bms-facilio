@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.ScheduledActionContext;
@@ -16,7 +17,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.tasker.job.JobStore;
 
 public class ScheduledActionAPI {
 	
@@ -51,7 +51,7 @@ public class ScheduledActionAPI {
 	public static void deleteScheduledAction (long id, String jobName) throws Exception {
 		ScheduledActionContext schAction = getScheduledAction(id);
 		FacilioModule module = ModuleFactory.getScheduledActionModule();
-		JobStore.deleteJob(id,jobName);
+		FacilioTimer.deleteJob(id,jobName);
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 													.table(module.getTableName())
 													.andCondition(CriteriaAPI.getIdCondition(id, module));

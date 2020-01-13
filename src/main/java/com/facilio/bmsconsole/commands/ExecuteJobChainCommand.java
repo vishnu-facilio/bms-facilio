@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.db.util.DBConf;
+import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -17,7 +20,7 @@ public class ExecuteJobChainCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		Long jobId = (Long)context.get(FacilioConstants.ContextNames.JOB);
 		String jobName = (String)context.get(FacilioConstants.ContextNames.JOB_NAME);
-		JobContext jc = JobStore.getJob(jobId, jobName);
+		JobContext jc = FacilioTimer.getJob(jobId, jobName);
 		if(jobName.equals("ScheduledRuleExecution")) {
 			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId());
 

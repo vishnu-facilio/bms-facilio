@@ -2740,7 +2740,7 @@ public class FieldFactory {
 		jobId.setModule(module);
 		fields.add(jobId);
 
-		/*fields.add(getOrgIdField(module));*/
+		fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
 
 		FacilioField jobName = new FacilioField();
 		jobName.setName("jobName");

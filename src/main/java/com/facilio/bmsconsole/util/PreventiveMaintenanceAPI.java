@@ -3349,51 +3349,51 @@ public class PreventiveMaintenanceAPI {
 		return CollectionUtils.isEmpty(workOrderContexts);
 	}
 
-	public static void migrateJobs(long orgid) throws Exception {
-		Connection conn = null;
-		PreparedStatement getPstmt = null;
-		ResultSet rs = null;
-
-		List<JobContext> jcs = new ArrayList<>();
-
-		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE IS_ACTIVE = 1 AND IS_PERIODIC = 1 AND EXECUTION_ERROR_COUNT < 5 AND ORGID = "+orgid);
-
-
-			rs = getPstmt.executeQuery();
-			while(rs.next()) {
-				jcs.add(getJobFromRS(rs));
-			}
-		}
-		catch(SQLException e) {
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(conn, getPstmt, rs);
-		}
-
-		for (JobContext jc: jcs) {
-			long lastExecutionTime = jc.getJobStartTime();
-			if (lastExecutionTime == 0) {
-				lastExecutionTime = DateTimeUtil.getCurrenTime();
-			}
-			lastExecutionTime = lastExecutionTime / 1000;
-
-			long nextExecutionTime = -1;
-			if (jc.getSchedule() != null) {
-				nextExecutionTime = jc.getSchedule().nextExecutionTime(jc.getJobStartTime() / 1000);
-			}
-			else if (jc.getPeriod() > 0) {
-				nextExecutionTime = jc.getPeriod() + lastExecutionTime;
-			}
-
-			if (nextExecutionTime > -1) {
-				JobStore.updateNextExecutionTimeAndCount(jc.getOrgId(), jc.getJobId(), jc.getJobName(), nextExecutionTime, jc.getCurrentExecutionCount());
-			}
-		}
-
-	}
+//	public static void migrateJobs(long orgid) throws Exception {
+//		Connection conn = null;
+//		PreparedStatement getPstmt = null;
+//		ResultSet rs = null;
+//
+//		List<JobContext> jcs = new ArrayList<>();
+//
+//		try {
+//			conn = FacilioConnectionPool.INSTANCE.getConnection();
+//			getPstmt = conn.prepareStatement("SELECT * FROM Jobs WHERE IS_ACTIVE = 1 AND IS_PERIODIC = 1 AND EXECUTION_ERROR_COUNT < 5 AND ORGID = "+orgid);
+//
+//
+//			rs = getPstmt.executeQuery();
+//			while(rs.next()) {
+//				jcs.add(getJobFromRS(rs));
+//			}
+//		}
+//		catch(SQLException e) {
+//			throw e;
+//		}
+//		finally {
+//			DBUtil.closeAll(conn, getPstmt, rs);
+//		}
+//
+//		for (JobContext jc: jcs) {
+//			long lastExecutionTime = jc.getJobStartTime();
+//			if (lastExecutionTime == 0) {
+//				lastExecutionTime = DateTimeUtil.getCurrenTime();
+//			}
+//			lastExecutionTime = lastExecutionTime / 1000;
+//
+//			long nextExecutionTime = -1;
+//			if (jc.getSchedule() != null) {
+//				nextExecutionTime = jc.getSchedule().nextExecutionTime(jc.getJobStartTime() / 1000);
+//			}
+//			else if (jc.getPeriod() > 0) {
+//				nextExecutionTime = jc.getPeriod() + lastExecutionTime;
+//			}
+//
+//			if (nextExecutionTime > -1) {
+//				JobStore.updateNextExecutionTimeAndCount(jc.getOrgId(), jc.getJobId(), jc.getJobName(), nextExecutionTime, jc.getCurrentExecutionCount());
+//			}
+//		}
+//
+//	}
 
 
 	private static long getMinWorkOrder(long pmId, long triggerId) throws Exception {

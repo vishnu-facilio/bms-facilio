@@ -3332,11 +3332,11 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static FacilioChain executeJobChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new ExecuteJobChainCommand());
-			return c;
-		}
+//		public static FacilioChain executeJobChain() {
+//			FacilioChain c = getDefaultChain();
+//			c.addCommand(new ExecuteJobChainCommand());
+//			return c;
+//		}
 		
 		public static FacilioChain getActiveContractAssociatedAssetChain() {
 			FacilioChain c = getDefaultChain();

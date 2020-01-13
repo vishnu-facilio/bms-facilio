@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.DigestConfigContext;
@@ -23,7 +24,6 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.tasker.job.JobStore;
 
 public class DigestConfigAPI {
 
@@ -83,7 +83,7 @@ public class DigestConfigAPI {
 			List<DigestConfigContext> configsBeans = FieldUtil.getAsBeanListFromMapList(configs, DigestConfigContext.class);
 			for(DigestConfigContext digestConfig : configsBeans) {
 				ScheduledActionContext schAction = ScheduledActionAPI.getScheduledAction(digestConfig.getScheduledActionId());
-				JobContext job = JobStore.getJob(digestConfig.getScheduledActionId(), FacilioConstants.Job.DIGEST_JOB_NAME);
+				JobContext job = FacilioTimer.getJob(digestConfig.getScheduledActionId(), FacilioConstants.Job.DIGEST_JOB_NAME);
 				ScheduleInfo info = job.getSchedule();
 				schAction.setFrequency(info.getFrequencyType());
 				digestConfig.setScheduledActionId(schAction.getId());

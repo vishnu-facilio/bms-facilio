@@ -377,11 +377,12 @@ public class JobStore {
 	
 
 	
-	public static void deleteJob(long jobId, String jobName) throws SQLException {
-		String deleteSql = "DELETE FROM Jobs WHERE JOBID = ? AND JOBNAME = ?";
+	public static void deleteJob(long orgId, long jobId, String jobName) throws SQLException {
+		String deleteSql = "DELETE FROM Jobs WHERE ORGID = ? AND JOBID = ? AND JOBNAME = ?";
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(deleteSql)) {
-			pstmt.setLong(1, jobId);
-			pstmt.setString(2, jobName);
+			pstmt.setLong(1, orgId);
+			pstmt.setLong(2, jobId);
+			pstmt.setString(3, jobName);
 			if(pstmt.executeUpdate() < 1) {
 				System.out.println("Deletion failed with Job ID : "+jobId+" and Jobname : "+jobName);
 			}
@@ -397,20 +398,20 @@ public class JobStore {
 		}
 	}
 	
-	public static int deleteJobs(List<Long> jobIds, String jobName) throws Exception {
+	public static int deleteJobs(long orgId, List<Long> jobIds, String jobName) throws Exception {
 		FacilioModule module = ModuleFactory.getJobsModule();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getJobFields());
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("orgId"), String.valueOf(orgId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobId"), jobIds, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), jobName, StringOperators.IS));
 		
 		return deleteBuilder.delete();
 	}
 	
-	public static List<JobContext> getJobs(List<Long> jobIds, String jobName) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = getPStmt(conn, jobIds, jobName); ResultSet rs = pstmt.executeQuery()) {
+	public static List<JobContext> getJobs(long orgId, List<Long> jobIds, String jobName) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = getPStmt(conn, orgId, jobIds, jobName); ResultSet rs = pstmt.executeQuery()) {
 			List<JobContext> jcs = new ArrayList<>();
 			while (rs.next()) {
 				 jcs.add(getJobFromRS(rs));
@@ -423,11 +424,12 @@ public class JobStore {
 		}
 	}
 	
-	private static PreparedStatement getPStmt(Connection conn, List<Long> ids, String jobName) throws SQLException {
+	private static PreparedStatement getPStmt(Connection conn, long orgId, List<Long> ids, String jobName) throws SQLException {
 		String q = createQuery(ids.size());
 		PreparedStatement pstmt = conn.prepareStatement(q);
-		pstmt.setString(1, jobName);
-		int i = 2;
+		pstmt.setLong(1, orgId);
+		pstmt.setString(2, jobName);
+		int i = 3;
 		for (Long id: ids) {
 			pstmt.setLong(i, id);
 			i++;
@@ -457,8 +459,8 @@ public class JobStore {
 		return rowsUpdated;
 	}
 	
-	public static JobContext getJob(long jobId, String jobName) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = getPStmt(conn, jobId, jobName); ResultSet rs = pstmt.executeQuery()) {
+	public static JobContext getJob(long orgId, long jobId, String jobName) throws SQLException, JsonParseException, JsonMappingException, IOException, ParseException {
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = getPStmt(conn, orgId, jobId, jobName); ResultSet rs = pstmt.executeQuery()) {
 			if(rs.next()) {
 				return getJobFromRS(rs);
 			}
@@ -472,17 +474,18 @@ public class JobStore {
 		}
 	}
 
-	private static PreparedStatement getPStmt(Connection conn, long jobId, String jobName) throws SQLException {
-		String sql = "SELECT * FROM Jobs WHERE JOBID = ? AND JOBNAME = ?";
+	private static PreparedStatement getPStmt(Connection conn, long orgId, long jobId, String jobName) throws SQLException {
+		String sql = "SELECT * FROM Jobs WHERE ORGID = ? AND JOBID = ? AND JOBNAME = ?";
 		PreparedStatement pstmt = conn.prepareStatement(sql);
-		pstmt.setLong(1, jobId);
-		pstmt.setString(2, jobName);
+		pstmt.setLong(1, orgId);
+		pstmt.setLong(2, jobId);
+		pstmt.setString(3, jobName);
 		
 		return pstmt;
 	}
 	
 	private static String createQuery(int length) {
-		String query = "SELECT * FROM Jobs WHERE JOBNAME = ? AND JOBID in (";
+		String query = "SELECT * FROM Jobs WHERE ORGID = ? AND JOBNAME = ? AND JOBID in (";
 		StringBuilder queryBuilder = new StringBuilder(query);
 		for( int i = 0; i< length; i++){
 			queryBuilder.append(" ?");
@@ -492,7 +495,7 @@ public class JobStore {
 		return queryBuilder.toString();
 	}
 	
-	public static long setInActiveStatusForJob(long orgId, long jobId, String jobName, Boolean status) throws SQLException {
+	public static int setStatusForJob(long orgId, long jobId, String jobName, boolean status) throws SQLException {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -501,7 +504,7 @@ public class JobStore {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ? where ORGID = ? AND JOBID = ? AND JOBNAME = ?");
 			
-			pstmt.setBoolean(1, status ? JobConstants.ENABLED : JobConstants.DISABLED);
+			pstmt.setBoolean(1, status);
 			pstmt.setLong(2, orgId);
 			pstmt.setLong(3, jobId);
 			pstmt.setString(4, jobName);

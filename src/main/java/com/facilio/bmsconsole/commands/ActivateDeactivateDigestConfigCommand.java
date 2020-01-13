@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.DigestConfigAPI;
@@ -21,7 +22,13 @@ public class ActivateDeactivateDigestConfigCommand extends FacilioCommand{
 		if(config != null) {
 			Boolean status = (Boolean) context.get(FacilioConstants.ContextNames.STATUS);
 		    updateConfigStatus(status, configId);
-		    JobStore.setInActiveStatusForJob(AccountUtil.getCurrentOrg().getId(), (Long)config.get("scheduledActionId"), FacilioConstants.Job.DIGEST_JOB_NAME, status);
+		    if (status) {
+				FacilioTimer.activateJob((Long)config.get("scheduledActionId"), FacilioConstants.Job.DIGEST_JOB_NAME);
+			}
+		    else {
+				FacilioTimer.inActivateJob((Long)config.get("scheduledActionId"), FacilioConstants.Job.DIGEST_JOB_NAME);
+			}
+//		    JobStore.setInActiveStatusForJob(AccountUtil.getCurrentOrg().getId(), , status);
 		}
 		
 	    return false;

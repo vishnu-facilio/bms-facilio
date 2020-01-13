@@ -138,19 +138,33 @@ public class FacilioTimer {
 	}
 	
 	public static void deleteJob(long jobId, String jobName) throws Exception {
-		FacilioService.runAsService(() -> JobStore.deleteJob(jobId, jobName));
+		long orgId = getCurrentOrgId();
+		FacilioService.runAsService(() -> JobStore.deleteJob(orgId, jobId, jobName));
 	}
 	
 	public static void deleteJobs(List<Long> jobIds, String jobName) throws Exception {
-		FacilioService.runAsService(() -> JobStore.deleteJobs(jobIds, jobName));
+		long orgId = getCurrentOrgId();
+		FacilioService.runAsService(() -> JobStore.deleteJobs(orgId, jobIds, jobName));
 	}
 	
 	public static JobContext getJob(long jobId, String jobName) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> JobStore.getJob(jobId, jobName));
+		long orgId = getCurrentOrgId();
+		return FacilioService.runAsServiceWihReturn(() -> JobStore.getJob(orgId, jobId, jobName));
 	}
 	
 	public static List<JobContext> getJobs(List<Long> jobIds, String jobName) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> JobStore.getJobs(jobIds, jobName));
+		long orgId = getCurrentOrgId();
+		return FacilioService.runAsServiceWihReturn(() -> JobStore.getJobs(orgId, jobIds, jobName));
+	}
+
+	public static int activateJob(long jobId, String jobName) throws Exception {
+		long orgId = getCurrentOrgId();
+		return FacilioService.runAsServiceWihReturn(() -> JobStore.setStatusForJob(orgId, jobId, jobName, true));
+	}
+
+	public static int inActivateJob(long jobId, String jobName) throws Exception {
+		long orgId = getCurrentOrgId();
+		return FacilioService.runAsServiceWihReturn(() -> JobStore.setStatusForJob(orgId, jobId, jobName, false));
 	}
 	
 	private static long getCurrentOrgId() {

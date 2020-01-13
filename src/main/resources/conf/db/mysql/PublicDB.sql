@@ -349,5 +349,5 @@ CREATE TABLE IF NOT EXISTS Secret_File (
 
 -- Insert Queries
 -- Add entry in Jobs for workorderemail parser
-INSERT INTO Jobs (JOBID, JOBNAME, IS_ACTIVE, IS_PERIODIC, PERIOD, NEXT_EXECUTION_TIME, EXECUTOR_NAME) VALUES (1, 'WorkOrderRequestEmailParser', true, true, 60, UNIX_TIMESTAMP()+30,'priority');
+INSERT INTO Jobs (ORGID, JOBID, JOBNAME, IS_ACTIVE, IS_PERIODIC, PERIOD, NEXT_EXECUTION_TIME, EXECUTOR_NAME) VALUES (-1, 1, 'WorkOrderRequestEmailParser', true, true, 60, UNIX_TIMESTAMP()+30,'priority');
 
