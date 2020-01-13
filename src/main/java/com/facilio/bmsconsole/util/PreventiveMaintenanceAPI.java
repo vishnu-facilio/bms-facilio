@@ -95,10 +95,14 @@ public class PreventiveMaintenanceAPI {
 
 	public static long getStartTime(PreventiveMaintenance pm, ScheduleActions action, PMTriggerContext trigger) {
 		long startTime = -1;
+		long triggerStartTime = getStartTimeInSecond(trigger.getStartTime());
 		if (action == ScheduleActions.INIT) {
-			startTime = getStartTimeInSecond(trigger.getStartTime());
+			startTime = triggerStartTime;
 		} else if (action == ScheduleActions.GENERATION || action == ScheduleActions.NIGHTLY) {
 			startTime = pm.getWoGeneratedUpto();
+			if (triggerStartTime > startTime) {
+			    startTime = triggerStartTime;
+            }
 		}
 		return startTime;
 	}
