@@ -31,6 +31,14 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
     public FacilioKafkaConsumer(String client, String consumerGroup, String topic) {
         consumer = new KafkaConsumer<>(getConsumerProperties(client, consumerGroup));
         subscribe(topic);
+        if(FacilioProperties.getConfig(consumerGroup) != null) {
+            long offset = Long.parseLong(FacilioProperties.getConfig(consumerGroup));
+            consumer.seek(topicPartition, offset);
+        } else {
+            if(FacilioProperties.isProduction()) {
+                System.exit(121);
+            }
+        }
     }
 
     private Properties getConsumerProperties(String client, String consumerGroup) {
