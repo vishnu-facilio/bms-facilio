@@ -38,10 +38,11 @@ public class SentryUtil {
                         LOGGER.log(Level.ERROR, "Cannot log to sentry");
                     }
                 }
-                if (contextMap.containsKey("url")) {
-                    sentryClient.sendMessage(contextMap.get("url"));
+                if (contextMap.containsKey("url") && contextMap.containsKey("orgId") ) {
 
-                }
+                        String message = contextMap.get("url") + contextMap.get("orgId");
+                        sentryClient.sendMessage(message);
+                    }
             }
         } catch (Exception e) {
             LOGGER.log(Level.ERROR, "Cannot log to sentry server project");
