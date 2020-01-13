@@ -6,8 +6,11 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.KPIContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -75,6 +78,44 @@ public class GetCardDataCommand extends FacilioCommand {
 	
 				returnValue.put("title", title);
 				returnValue.put("value", workOrderContexts);
+				break;
+			}
+		case KPICARD_LAYOUT_1:
+			{
+				String title = (String) cardParams.get("title");
+				String kpiType = (String) cardParams.get("kpiType");
+				String dateRange = (String) cardParams.get("dateRange");
+				String dateField = (String) cardParams.get("dateField");
+				JSONObject kpiConfig = (JSONObject) cardParams.get("kpi");
+				Long kpiId = (Long) kpiConfig.get("kpiId");
+				Long parentId = (Long) kpiConfig.get("parentId");
+				String yAggr = (String) kpiConfig.get("yAggr");
+				
+				Object cardValue = null;
+				
+				if ("module".equalsIgnoreCase(kpiType)) {
+					try {
+						KPIContext kpiContext = KPIUtil.getKPI(kpiId, false);
+						if (dateRange != null) {
+							kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
+						}
+						cardValue = KPIUtil.getKPIValue(kpiContext);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				else if ("reading".equalsIgnoreCase(kpiType)) {
+					try {
+						cardValue = FormulaFieldAPI.getFormulaCurrentValue(kpiId, parentId);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				returnValue.put("title", title);
+				returnValue.put("value", cardValue);
 				break;
 			}
 		default:

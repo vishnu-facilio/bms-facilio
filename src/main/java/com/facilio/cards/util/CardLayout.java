@@ -1860,6 +1860,27 @@ GAUGE_LAYOUT_5 ("gauge_layout_5") {
 		public String getScript () {
 			return null;
 		}
+	},
+	
+	KPICARD_LAYOUT_1 ("kpicard_layout_1") {
+		public JSONObject getParameters () {
+			JSONObject params = new JSONObject();
+			params.put("title", true);
+			params.put("kpi", true);
+			params.put("dateRange", true);
+			return params;
+		}
+		
+		public JSONObject getReturnValue () {
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", true);
+			returnValue.put("value", true);
+			return returnValue;
+		}
+		
+		public String getScript () {
+			return null;
+		}
 	};
 	
 	private String name;
