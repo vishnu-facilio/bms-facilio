@@ -45,7 +45,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("session.timeout.ms", 600000);
         props.put("group.instance.id", client);
         props.put("client.id", client);
-        props.put("max.poll.interval.ms",300000);
+        props.put("max.poll.interval.ms",3000000);
         return props;
     }
 
