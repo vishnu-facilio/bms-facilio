@@ -153,6 +153,10 @@ public class GetAllFieldsCommand extends FacilioCommand {
 			fields.addAll(FieldFactory.getSystemFields(mod));
 		}
 		
+		if (moduleName.equals("workorder")) {
+			fields.add(FieldFactory.getSiteIdField());
+		}
+		
 		JSONObject meta = new JSONObject();
 		meta.put("name", moduleName);
 		meta.put("module", mod);

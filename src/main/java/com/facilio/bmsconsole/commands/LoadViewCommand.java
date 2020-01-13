@@ -262,8 +262,15 @@ public class LoadViewCommand extends FacilioCommand {
 			String modulesName;
 			String fieldsName;
 			if (view.getFields().get(i).getField() == null && view.getFields().get(i).getName() == null) {
-			modulesName = FieldFactory.getSystemField(view.getFields().get(i).getFieldName(),module).getModule().getName();
-			fieldsName = view.getFields().get(i).getFieldName();
+//				Temporary handling for Deyari
+			if (view.getFields().get(i).getFieldName().equals("siteId") && moduleName.equals("workorder")) {
+				modulesName = moduleName;
+				fieldsName	= view.getFields().get(i).getFieldName();
+			}
+			else {
+				modulesName = FieldFactory.getSystemField(view.getFields().get(i).getFieldName(),module).getModule().getName();
+				fieldsName = view.getFields().get(i).getFieldName();
+			}
 			}
 			else {
  			modulesName = view.getFields().get(i).getField().getModule().getName();
@@ -300,6 +307,13 @@ public class LoadViewCommand extends FacilioCommand {
 				fieldNames.put(systemField.getName(), systemField.getDisplayName());
 				
 			}
+		}
+		
+//		Temporary handling for Deyari
+		if (moduleName.equals("workorder")) {
+			FacilioField siteField = FieldFactory.getSiteIdField(module);
+				fieldNames.put(siteField.getName(), siteField.getDisplayName());
+				
 		}
 		view.setFieldDisplayNames(fieldNames);
 	}
