@@ -39,11 +39,8 @@ public class SentryUtil {
                     }
                 }
                 if (contextMap.containsKey("url") && contextMap.containsKey("orgId") ) {
-                        long orgIdCustomer = Long.parseLong(contextMap.get("orgId"));
-                        if (orgIdCustomer == 78 || orgIdCustomer == 183 || orgIdCustomer == 146 || orgIdCustomer == 246 || orgIdCustomer == 176 ) {
-                            String message = contextMap.get("url") + contextMap.get("orgId");
-                            sentryClient.sendMessage(message);
-                        }
+                    sentryClient.sendMessage(contextMap.get("url"));
+
                     }
             }
         } catch (Exception e) {
