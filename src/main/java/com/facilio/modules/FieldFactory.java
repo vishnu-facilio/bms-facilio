@@ -43,7 +43,7 @@ public class FieldFactory {
 		lookupModuleVsSortFieldName.put("invite",  Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("visitor",  Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("host",  Pair.of("name", true));
-
+		lookupModuleVsSortFieldName.put("servicerequestpriority", Pair.of("sequenceNumber", true));
 		return lookupModuleVsSortFieldName;
 	}
 
