@@ -12,3 +12,5 @@ deploy.sh
 src/main/java/test/
 node_modules/
 src/main/webapp/META-INF/context\.xml
+*.iml
+.metadata
