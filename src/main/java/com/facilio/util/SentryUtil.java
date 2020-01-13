@@ -39,7 +39,10 @@ public class SentryUtil {
                     }
                 }
                 if (contextMap.containsKey("url") && contextMap.containsKey("orgId") ) {
-                    sentryClient.sendMessage(contextMap.get("url"));
+                    int orgId = Integer.parseInt(contextMap.get("orgId"));
+                    if (orgId  != 155 ) {
+                        sentryClient.sendMessage(contextMap.get("url"));
+                    }
 
                     }
             }
