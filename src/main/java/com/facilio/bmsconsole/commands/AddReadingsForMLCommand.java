@@ -107,9 +107,19 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 						 
 						 LOGGER.info("Asset Details are "+mlContext.getAssetDetails());
 						 
-						 newReading.addReading("predictedTime", mlContext.getPredictionTime());
-						 logReadingList.add(newReading);
-						 predictReadingList.add(newUpdatedReading);
+						 boolean readingExist = newReading.getReadings().entrySet().stream().anyMatch(f-> !(f.getKey().equals("mlRunning") || 
+								 (f.getKey().equals("errorCode") && Long.parseLong(f.getValue().toString()) == -1 ) ));
+						 if(readingExist){
+							 newReading.addReading("predictedTime", mlContext.getPredictionTime());
+							 logReadingList.add(newReading);
+						 }
+						 
+						 readingExist = newUpdatedReading.getReadings().entrySet().stream().anyMatch(f-> !(f.getKey().equals("mlRunning") || 
+								 (f.getKey().equals("errorCode") && Long.parseLong(f.getValue().toString()) == -1 ) ));
+						 
+						 if(readingExist){
+							 predictReadingList.add(newUpdatedReading);
+						 }
 					 }
 				}
 			}
@@ -122,12 +132,18 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 				 catch(Exception e)
 				 {
 					 LOGGER.error("Error while updating Predicted Reading", e);
-//					 AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), e.toString());
 				 }
 			 }
 			 if(!logReadingList.isEmpty())
 			 {
-				 updateReading(logModule,logReadingList);
+				 try
+				 {
+					 updateReading(logModule,logReadingList);
+				 }
+				 catch(Exception e)
+				 {
+					 LOGGER.error("Error while updating Log Reading", e);
+					 throw e;				 }
 			 }
 			
 		}
