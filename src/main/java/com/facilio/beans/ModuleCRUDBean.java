@@ -116,4 +116,7 @@ public interface ModuleCRUDBean {
 	public boolean addPoint(Point point) throws Exception;
 	
 	public FileInfo getFile(long fileId) throws Exception;
+	
+	public long addServcieRequestFromEmail(ServiceRequestContext serviceRequest, List<File> attachedFiles,
+			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception;
 }

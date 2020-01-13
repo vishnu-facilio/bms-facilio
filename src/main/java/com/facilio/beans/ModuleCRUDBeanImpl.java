@@ -1219,6 +1219,29 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FileInfo fileInfo = fs.getFileInfo(fileId);
 		return fileInfo;
 	}
+
+	@Override
+	public long addServcieRequestFromEmail(ServiceRequestContext serviceRequest, List<File> attachedFiles,
+			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception {
+		if (serviceRequest != null) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.REQUESTER, serviceRequest.getRequester());
+			context.put(FacilioConstants.ContextNames.RECORD, serviceRequest);
+
+			if (attachedFiles != null && !attachedFiles.isEmpty() && attachedFileNames != null && !attachedFileNames.isEmpty() && attachedFilesContentType != null && !attachedFilesContentType.isEmpty()) {
+				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, attachedFiles);
+		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, attachedFileNames);
+		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, attachedFilesContentType);
+		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.SERVICE_REQUEST_ATTACHMENT);
+			}
+
+			Command addServiceRequest = TransactionChainFactory.addServiceRequestChain();
+			addServiceRequest.execute(context);
+
+			return serviceRequest.getId();
+		}
+		return 0;
+	}
 }
 
 

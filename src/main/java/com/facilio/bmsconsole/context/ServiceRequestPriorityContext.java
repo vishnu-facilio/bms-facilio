@@ -16,6 +16,12 @@ public class ServiceRequestPriorityContext extends ModuleBaseWithCustomFields {
 			return priority;
 		}
 	}
+	
+	public ServiceRequestPriorityContext() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public ServiceRequestPriorityContext(String priority, int sequenceNumber, String colour, String displayName, Boolean isDefault) {
 		super();
 		this.displayName = displayName;

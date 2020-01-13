@@ -1390,6 +1390,7 @@ public class FacilioConstants {
 		public static final String SERVICE_REQUEST_PRIORITY = "servicerequestpriority";
 		public static final String SERVICE_REQUESTS = "serviceRequests";
 		public static final String SERVICE_REQUEST = "serviceRequest";
+		public static final String SERVICE_REQUEST_ATTACHMENT = "servicerequestsattachments";
 				
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

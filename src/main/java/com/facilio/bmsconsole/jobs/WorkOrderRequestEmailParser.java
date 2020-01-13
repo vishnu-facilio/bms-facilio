@@ -20,8 +20,11 @@ import org.apache.log4j.Logger;
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.context.ServiceRequestContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -65,10 +68,14 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 					try {
 						String s3Id = (String) emailProp.get("s3MessageId");
 						S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id);
-						long requestId = createWorkOrderRequest(rawEmail);
-//						if (requestId != -1) { //Marked as processed even if no request is created because of no matching support email
-							updateEmailProp((long) emailProp.get("id"), requestId);
-//						}
+						if(AccountUtil.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
+							createServiceRequest(rawEmail);
+						} else {
+							long requestId = createWorkOrderRequest(rawEmail);
+	//						if (requestId != -1) { //Marked as processed even if no request is created because of no matching support email
+								updateEmailProp((long) emailProp.get("id"), requestId);
+	//						}
+						}
 					}
 					catch(Exception e) {
 						LOGGER.error("Exception occurred ", e);
@@ -90,6 +97,58 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
 		updateBuilder.update(updateIsProcessed);
 		updateIsProcessed.remove("requestId");
+	}
+	
+	private long createServiceRequest(S3Object rawEmail) throws Exception{
+		MimeMessage emailMsg = new MimeMessage(null, rawEmail.getObjectContent());
+		MimeMessageParser parser = new MimeMessageParser(emailMsg);
+		parser.parse();
+		SupportEmailContext supportEmail = getSupportEmail(parser); 
+		if(supportEmail != null) {
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
+			ServiceRequestContext serviceRequestContext = new ServiceRequestContext();
+			User requester = new User();
+			requester.setEmail(parser.getFrom());
+			serviceRequestContext.setSubject(parser.getSubject());
+			if (parser.getPlainContent() != null) {
+				serviceRequestContext.setDescription(StringUtils.trim(parser.getPlainContent()));
+			} 
+			else {
+				serviceRequestContext.setDescription(StringUtils.trim(parser.getHtmlContent()));
+			}
+			List<DataSource> attachments = parser.getAttachmentList();
+			List<File> attachedFiles = null;
+			List<String> attachedFilesFileName = null;
+			List<String> attachedFilesContentType = null;
+			if (attachments != null && !attachments.isEmpty()) {
+				LOGGER.info("Attachment List : "+attachments);
+				attachedFiles = new ArrayList<>();
+				attachedFilesFileName = new ArrayList<>();
+				attachedFilesContentType = new ArrayList<>();
+				
+				for (DataSource attachment : attachments) {
+					if (attachment.getName() != null) {
+						attachedFilesFileName.add(attachment.getName());
+						attachedFilesContentType.add(attachment.getContentType());
+						
+						File file = File.createTempFile(attachment.getName(), "");
+						FileUtils.copyInputStreamToFile(attachment.getInputStream(), file);
+						attachedFiles.add(file);
+					}
+				}
+				LOGGER.info("Parsed Attachments : "+attachedFiles);
+			}
+			serviceRequestContext.setSiteId(supportEmail.getSiteId());
+			
+			serviceRequestContext.setSourceType(ServiceRequestContext.SourceType.EMAIL_REQUEST);
+			
+			serviceRequestContext.setRequester(requester);
+			
+			long requestId = bean.addServcieRequestFromEmail(serviceRequestContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+			LOGGER.info("Added servicerequest from Email Parser : " + requestId );
+			return requestId;
+		}
+		return -1;
 	}
 	
 	private long createWorkOrderRequest(S3Object rawEmail) throws Exception {
