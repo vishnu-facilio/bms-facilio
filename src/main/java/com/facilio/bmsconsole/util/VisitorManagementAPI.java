@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
+import com.facilio.db.util.DBConf;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -2427,7 +2428,7 @@ public class VisitorManagementAPI {
 			@Override
 			public void disable(Long recordId, Long moduleId) throws Exception {
 				// TODO Auto-generated method stub
-				FacilioService.runAsService(() -> JobStore.deleteJob(moduleId, FacilioConstants.Job.AUTO_CHECKOUT_JOB_NAME));	
+				FacilioService.runAsService(() -> JobStore.deleteJob(DBConf.getInstance().getCurrentOrgId(), moduleId, FacilioConstants.Job.AUTO_CHECKOUT_JOB_NAME));
 			}
 
 		};
