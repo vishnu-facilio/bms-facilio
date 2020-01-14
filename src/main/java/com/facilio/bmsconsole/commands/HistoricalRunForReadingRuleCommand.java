@@ -68,7 +68,6 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 			long jobStartTime = System.currentTimeMillis();
 			
 			jobId = (long) jobContext.get(FacilioConstants.ContextNames.HISTORICAL_RULE_JOB_ID);
-			String jobName = (String) jobContext.get(FacilioConstants.ContextNames.HISTORICAL_RULE_JOB);
 			
 			workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(jobId);
 			
@@ -82,12 +81,11 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 				}
 				
 				workflowRuleHistoricalLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
-				
-				JSONObject props = BmsJobUtil.getJobProps(jobId, jobName);
-				Long startTime = (Long) props.get("startTime");
-				Long endTime = (Long) props.get("endTime");
-				Long resourceId = (Long) props.get("resourceId");
-				Long ruleId = (Long) props.get("ruleId");
+	
+				Long startTime = workflowRuleHistoricalLoggerContext.getStartTime();
+				Long endTime = workflowRuleHistoricalLoggerContext.getEndTime();
+				Long resourceId = workflowRuleHistoricalLoggerContext.getResourceId();
+				Long ruleId = workflowRuleHistoricalLoggerContext.getRuleId();
 
 				ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
 				if (readingRule == null || readingRule.getMatchedResources() == null || readingRule.getMatchedResources().isEmpty()) {

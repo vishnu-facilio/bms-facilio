@@ -60,7 +60,6 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		try {
 			FacilioChain chain = TransactionChainFactory.getExecuteHistoricalRuleCalculation();
 			chain.getContext().put(FacilioConstants.ContextNames.HISTORICAL_RULE_JOB_ID, jc.getJobId());
-			chain.getContext().put(FacilioConstants.ContextNames.HISTORICAL_RULE_JOB,jc.getJobName());
 			chain.execute();
 		}
 		catch(Exception HistoricalRuleException) {

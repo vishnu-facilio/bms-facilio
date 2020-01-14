@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
@@ -110,19 +111,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			
 			for(Long loggerId:workflowRuleHistoricalLoggerMap.keySet())
 			{
-				Long resourceId = workflowRuleHistoricalLoggerMap.get(loggerId).getResourceId();
-				if(resourceId != null) {
-					
-					JSONObject jobprop = new JSONObject();
-					jobprop.put("startTime", range.getStartTime());
-					jobprop.put("endTime", range.getEndTime());
-					jobprop.put("ruleId", rule.getId());
-					jobprop.put("resourceId", resourceId);
-
-					BmsJobUtil.deleteJobWithProps(loggerId, "HistoricalRunForReadingRule");
-					BmsJobUtil.scheduleOneTimeJobWithProps(loggerId, "HistoricalRunForReadingRule", 30, "history", jobprop);
-					
-				}
+				FacilioTimer.scheduleOneTimeJobWithDelay(loggerId, "HistoricalRunForReadingRule", 30, "history");				
 			}
 		}
 		
