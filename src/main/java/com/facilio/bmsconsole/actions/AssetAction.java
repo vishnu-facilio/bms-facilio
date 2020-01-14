@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
@@ -106,6 +107,11 @@ public class AssetAction extends FacilioAction {
 			long categoryId=-1;
 			if(assetCategory!=null && assetCategory.getId() != 0) {
 				categoryId=assetCategory.getId();
+			}
+			if (asset.getSpace() == null) {
+				BaseSpaceContext assetLocation = new BaseSpaceContext();
+				assetLocation.setId(asset.getSiteId());
+				asset.setSpace(assetLocation);
 			}
 			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
 			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
