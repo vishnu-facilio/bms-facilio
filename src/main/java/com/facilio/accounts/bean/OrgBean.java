@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
@@ -47,6 +48,8 @@ public interface OrgBean {
 	public List getEnergyMeterList() throws Exception ;
 
 	public int getFeatureLicense() throws Exception;
+	
+	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception;
 
 	public long addLicence(long summodule) throws Exception;
 	

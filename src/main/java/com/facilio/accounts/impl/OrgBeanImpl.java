@@ -16,6 +16,7 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.UserUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -319,6 +320,11 @@ public class OrgBeanImpl implements OrgBean {
 			return (int) modulemap.get("module");
 		}
 		return -1;
+	}
+	
+	@Override
+	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception {
+		return AccountUtil.isFeatureEnabled(featureLicense);
 	}
 
 	public long  addLicence(long summodule) throws Exception{
