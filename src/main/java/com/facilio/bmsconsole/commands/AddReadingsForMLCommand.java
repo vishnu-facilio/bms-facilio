@@ -107,14 +107,10 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 						 
 						 LOGGER.info("Asset Details are "+mlContext.getAssetDetails());
 						 
-						 boolean readingExist = newReading.getReadings().entrySet().stream().anyMatch(f-> !(f.getKey().equals("mlRunning") || 
-								 (f.getKey().equals("errorCode") && Long.parseLong(f.getValue().toString()) == -1 ) ));
-						 if(readingExist){
-							 newReading.addReading("predictedTime", mlContext.getPredictionTime());
-							 logReadingList.add(newReading);
-						 }
+						 newReading.addReading("predictedTime", mlContext.getPredictionTime());
+					 	 logReadingList.add(newReading);
 						 
-						 readingExist = newUpdatedReading.getReadings().entrySet().stream().anyMatch(f-> !(f.getKey().equals("mlRunning") || 
+						 boolean readingExist = newUpdatedReading.getReadings().entrySet().stream().anyMatch(f-> !(f.getKey().equals("mlRunning") || 
 								 (f.getKey().equals("errorCode") && Long.parseLong(f.getValue().toString()) == -1 ) ));
 						 
 						 if(readingExist){
