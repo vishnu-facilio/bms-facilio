@@ -2145,6 +2145,7 @@ public class FieldFactory {
 		fields.add(isProcessField);
 
 		fields.add(getField("requestId", "REQUEST_ID", module, FieldType.NUMBER));
+		fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
 
 		return fields;
 	}
