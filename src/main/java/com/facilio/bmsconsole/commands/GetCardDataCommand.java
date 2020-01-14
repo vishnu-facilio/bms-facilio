@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -86,10 +87,23 @@ public class GetCardDataCommand extends FacilioCommand {
 				String kpiType = (String) cardParams.get("kpiType");
 				String dateRange = (String) cardParams.get("dateRange");
 				String dateField = (String) cardParams.get("dateField");
-				JSONObject kpiConfig = (JSONObject) cardParams.get("kpi");
-				Long kpiId = (Long) kpiConfig.get("kpiId");
-				Long parentId = (Long) kpiConfig.get("parentId");
-				String yAggr = (String) kpiConfig.get("yAggr");
+				 
+				Long kpiId;
+				Long parentId;
+				String yAggr;
+				if (cardParams.get("kpi") instanceof JSONObject) {
+					JSONObject kpiConfig = (JSONObject) cardParams.get("kpi");
+					kpiId = (Long) kpiConfig.get("kpiId");
+					parentId = (Long) kpiConfig.get("parentId");
+					yAggr = (String) kpiConfig.get("yAggr");
+				} else if (cardParams.get("kpi") instanceof Map) {
+					Map<String, Object> kpiConfig = (Map<String, Object>) cardParams.get("kpi");
+					kpiId = (Long) kpiConfig.get("kpiId");
+					parentId = (Long) kpiConfig.get("parentId");
+					yAggr = (String) kpiConfig.get("yAggr");
+				} else {
+					throw new IllegalStateException();
+				}
 				
 				Object cardValue = null;
 				
