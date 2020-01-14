@@ -35,7 +35,6 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -69,8 +68,8 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 					try {
 						String s3Id = (String) emailProp.get("s3MessageId");
 						S3Object rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id);
-						long requestId = createWorkOrderRequest((long) emailProp.get("id"), rawEmail);
-						updateEmailProp((long) emailProp.get("id"), requestId);
+						createWorkOrderRequest((long) emailProp.get("id"), rawEmail);
+						
 //						updateEmailProp((long) emailProp.get("id"), requestId);
 //						if(AccountUtil.isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
 //							createServiceRequest(rawEmail);
@@ -92,8 +91,9 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 		}
 	}
 	
-	private void updateEmailProp(long id, long requestId) throws Exception {
+	private void updateEmailProp(long id, long requestId, long orgId) throws Exception {
 		updateIsProcessed.put("requestId",requestId);
+		updateIsProcessed.put("orgId", orgId);
 		FacilioModule module = ModuleFactory.getWorkOrderRequestEMailModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.fields(FieldFactory.getWorkorderEmailFields())
@@ -101,16 +101,19 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
 		updateBuilder.update(updateIsProcessed);
 		updateIsProcessed.remove("requestId");
+		updateIsProcessed.remove("orgId");
 	}
 	
 	
-	private long createWorkOrderRequest(long emailpropId, S3Object rawEmail) throws Exception {
+	private void createWorkOrderRequest(long emailpropId, S3Object rawEmail) throws Exception {
 		MimeMessage emailMsg = new MimeMessage(null, rawEmail.getObjectContent());
 		MimeMessageParser parser = new MimeMessageParser(emailMsg);
 		parser.parse();
 		SupportEmailContext supportEmail = getSupportEmail(parser); 
-		
+		long requestId = -1;
+		long orgId = -1;
 		if(supportEmail != null) {
+			orgId = supportEmail.getOrgId();
 			if (AccountUtil.getOrgBean(supportEmail.getOrgId()).isFeatureEnabled(FeatureLicense.SERVICE_REQUEST)) {
 				ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
 				ServiceRequestContext serviceRequestContext = new ServiceRequestContext();
@@ -146,9 +149,8 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				serviceRequestContext.setSiteId(supportEmail.getSiteId());
 				serviceRequestContext.setSourceType(ServiceRequestContext.SourceType.EMAIL_REQUEST);
 				serviceRequestContext.setRequester(requester);
-				long requestId = bean.addServcieRequestFromEmail(serviceRequestContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
-				LOGGER.info("Added servicerequest from Email Parser : " + requestId );		
-				return requestId;
+				requestId = bean.addServcieRequestFromEmail(serviceRequestContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+				LOGGER.info("Added servicerequest from Email Parser : " + requestId );	
 			}
 			else {
 				ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
@@ -198,12 +200,11 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
 				
 				workorderContext.setRequester(requester);
-				long requestId = bean.addWorkOrderFromEmail(workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
+				requestId = bean.addWorkOrderFromEmail(workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
 				LOGGER.info("Added Workorder from Email Parser : " + requestId );
-				return requestId;
 			}
 		}
-		return -1;
+		updateEmailProp(emailpropId, requestId, orgId);
 	}
 	
 	private SupportEmailContext getSupportEmail(MimeMessageParser parser) throws Exception {
