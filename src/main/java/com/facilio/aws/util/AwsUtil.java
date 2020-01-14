@@ -38,6 +38,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.transaction.SystemException;
 
+import com.amazonaws.ClientConfiguration;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.collections4.CollectionUtils;
@@ -267,7 +268,8 @@ public class AwsUtil
     
     public static AmazonS3 getAmazonS3Client() {
     	if (AWS_S3_CLIENT == null) {
-        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).build();
+    		ClientConfiguration configuration = new ClientConfiguration().withMaxConnections(100).withConnectionTimeout(3000).withMaxErrorRetry(3);
+        	AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).withClientConfiguration(configuration).build();
     	}
     	return AWS_S3_CLIENT;
     }
