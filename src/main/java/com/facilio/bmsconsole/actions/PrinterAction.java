@@ -38,7 +38,8 @@ public class PrinterAction extends FacilioAction{
     {
 		FacilioChain deleteChain=TransactionChainFactory.getDeletePrinterChain();
 		FacilioContext context=deleteChain.getContext();		
-		context.put(FacilioConstants.ContextNames.ID,printer.getId());
+		context.put(FacilioConstants.ContextNames.ID,getPrinter().getId());
+		context.put(FacilioConstants.ContextNames.RECORD,getPrinter());
 		deleteChain.execute();
 		return SUCCESS;		
     }

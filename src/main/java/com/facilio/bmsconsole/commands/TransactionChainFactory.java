@@ -4175,6 +4175,7 @@ public class TransactionChainFactory {
 	{
 		FacilioChain chain =getDefaultChain();
 		chain.addCommand(new AddOrUpdatePrinterCommand());
+		chain.addCommand(new SendMessageOnPrinterChangeCommand());
 		return chain;
 	}
 
@@ -4193,7 +4194,10 @@ public class TransactionChainFactory {
 	}
 	public static FacilioChain getDeletePrinterChain() {
 		FacilioChain c = getDefaultChain();		
+		//for delete sending message before actual delete as ,printer ID will not be in db on delete
+		c.addCommand(new SendMessageOnPrinterChangeCommand());
 		c.addCommand(new DeletePrinterCommand());
+		
 		return c;
 	}
 
