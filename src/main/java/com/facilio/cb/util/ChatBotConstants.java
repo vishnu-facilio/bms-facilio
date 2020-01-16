@@ -35,6 +35,8 @@ public class ChatBotConstants {
 	
 	public static final String CHAT_BOT_MODEL = "chatBotModel";
 	
+	public static final String CHAT_BOT_MODEL_VERSION = "chatBotModelVersion";
+	
 	public static final String CHAT_BOT_RESPONSE_STRING = "chatBotResponseString";
 	
 	public static final String CHAT_BOT_INTENT = "chatBotIntent";
@@ -42,7 +44,7 @@ public class ChatBotConstants {
 	public static final String CHAT_BOT_ML_RESPONSE = "chatBotMLResponse";
 	
 	public static final String CHAT_BOT_INTENT_NOT_FOUND_INTENT = "system_intent_not_fount_intent";
-	public static final String CHAT_BOT_SESSION_TERMINATE_INTENT = "system_terminate_session";
+	public static final String CHAT_BOT_SESSION_TERMINATE_INTENT = "system_terminate_session_intent";
 	
 	public static final String CHAT_BOT_INTENT_PARAM_INVALID_MESSAGE = "The given value seems to be invalid.\n";
 	

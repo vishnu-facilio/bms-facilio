@@ -29,6 +29,7 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 				FacilioChain chain = TransactionChainFactory.HandleChatBotSessionConversationChain();
 				
 				lastWaitingForParamConversation.setResponse(chatMessageQuery);
+				lastWaitingForParamConversation.setChatBotSession(waitingForParamSession);
 				
 				FacilioContext newcontext = chain.getContext();
 				newcontext.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, lastWaitingForParamConversation);

@@ -57,6 +57,15 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
 //			c.addCommand(new PopulateDefaultConnectionsCommand());
+//			c.addCommand(new PopulateDefaultChatBotIntentCommand());
+
+			return c;
+		}
+		
+		public static FacilioChain getpopulateDefaultChatBotIntnetChain() {
+			FacilioChain c = getDefaultChain();
+
+			c.addCommand(new PopulateDefaultChatBotIntentCommand());
 
 			return c;
 		}
@@ -2575,7 +2584,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddConnectionCommand());
 			return c;
 		}
-
+		
 		public static FacilioChain getUpdateConnectionChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UpdateConnectionCommand());
@@ -4347,7 +4356,7 @@ public class TransactionChainFactory {
 	
 	public static FacilioChain HandleChatBotSessionChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new GetCurrentActiveModel());
+		c.addCommand(new GetOrAddCurrentActiveModel());
 		c.addCommand(new PrepareChatBotForMlAPICommand());
 		c.addCommand(new SendToMlApiCommand());
 		c.addCommand(new HandleInvalidQueryMessages());
@@ -4357,13 +4366,19 @@ public class TransactionChainFactory {
 	
 	public static FacilioChain HandleChatBotSessionConversationChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new GetCurrentActiveModel());
-		c.addCommand(new GetCurrentSession());
+		c.addCommand(new GetOrAddCurrentActiveModel());
 		c.addCommand(new PrepareChatBotForMlAPICommand());
 		c.addCommand(new SendToMlApiCommand());
 		c.addCommand(new HandleTerminateSessionCommand());
 		c.addCommand(new HandleInvalidQueryMessages());
 		c.addCommand(new ExecuteActionAndSetResponseForConversationCommand());
+		return c;
+	}
+	
+	public static FacilioChain getAddChatBotIntentChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetOrAddCurrentActiveModel());
+		c.addCommand(new AddChatBotIntentCommand());
 		return c;
 	}
 }

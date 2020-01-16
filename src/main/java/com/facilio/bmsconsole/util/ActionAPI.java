@@ -530,7 +530,12 @@ public class ActionAPI {
 		workflowTemplate.getResultWorkflowContext().setWorkflowString(null);
 		Long workflowId = WorkflowUtil.addWorkflow(workflowTemplate.getResultWorkflowContext());
 		
-		workflowTemplate.setName(rule.getName()+"_json_template");
+		if(rule != null) {
+			workflowTemplate.setName(rule.getName()+"_json_template");
+		}
+		else {
+			workflowTemplate.setName("json_template");
+		}
 		workflowTemplate.setType(templateType);
 		workflowTemplate.setResultWorkflowId(workflowId);
 		

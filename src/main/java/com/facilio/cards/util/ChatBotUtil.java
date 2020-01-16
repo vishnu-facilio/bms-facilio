@@ -9,6 +9,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotIntentAction;
+import com.facilio.cb.context.ChatBotIntentInvokeSample;
 import com.facilio.cb.context.ChatBotIntentParam;
 import com.facilio.cb.context.ChatBotModel;
 import com.facilio.cb.context.ChatBotModel.App_Type;
@@ -100,6 +101,9 @@ public class ChatBotUtil {
 		if (props != null && !props.isEmpty()) {
 			ChatBotSession chatBotSession = FieldUtil.getAsBeanFromMap(props.get(0), ChatBotSession.class);
 			if(chatBotSession.getState() == ChatBotSession.State.INVALID_QUERY.getIntVal()) {
+				if(chatBotSession.getIntentId() > 0) {
+					chatBotSession.setIntent(getIntent(chatBotSession.getIntentId()));
+				}
 				return chatBotSession;
 			}
 		}
@@ -415,6 +419,9 @@ public class ChatBotUtil {
 		if (props != null && !props.isEmpty()) {
 			ChatBotSession chatBotSession = FieldUtil.getAsBeanFromMap(props.get(0), ChatBotSession.class);
 			if(chatBotSession.getState() == ChatBotSession.State.WAITING_FOR_PARAMS.getIntVal()) {
+				if(chatBotSession.getIntentId() > 0) {
+					chatBotSession.setIntent(getIntent(chatBotSession.getIntentId()));
+				}
 				return chatBotSession;
 			}
 		}
@@ -444,6 +451,108 @@ public class ChatBotUtil {
 			}
 		}
 		return null;
+	}
+
+	public static void addChatbotIntent(ChatBotIntent chatBotIntent) throws Exception {
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getCBIntentModule().getTableName())
+				.fields(FieldFactory.getCBIntentFields());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(chatBotIntent);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+
+		chatBotIntent.setId((Long) props.get("id"));
+	}
+
+	public static void addChatbotIntentParam(ChatBotIntentParam params) throws Exception {
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getCBIntentParamModule().getTableName())
+				.fields(FieldFactory.getCBIntentParamFields());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(params);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+
+		params.setId((Long) props.get("id"));
+	}
+
+	public static void addChatbotIntentInvokeSample(ChatBotIntentInvokeSample invokeSample) throws Exception {
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getCBIntentInvokeSamplesModule().getTableName())
+				.fields(FieldFactory.getCBIntentInvokeSamplesFields());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(invokeSample);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+
+		invokeSample.setId((Long) props.get("id"));
+	}
+
+	public static void addChatbotIntentAction(ChatBotIntentAction cbaction) throws Exception {
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getCBIntentActionModule().getTableName())
+				.fields(FieldFactory.getCBIntentActionFields());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(cbaction);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+
+		cbaction.setId((Long) props.get("id"));
+	}
+	
+	public static ChatBotModel prepareAndAddDefaultModel() throws Exception {
+		
+		ChatBotModel model = new ChatBotModel();
+		
+		model.setOrgId(AccountUtil.getCurrentOrg().getId());
+		model.setType(ChatBotModel.App_Type.APP.getIntVal());
+		model.setMlModel("dummy_String");
+		
+		return addModel(model);
+	}
+	
+	public static ChatBotModel addModel(ChatBotModel model) throws Exception {
+		
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getCBModelModule().getTableName())
+				.fields(FieldFactory.getCBModelFields());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(model);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+
+		model.setId((Long) props.get("id"));
+		return model;
+	}
+
+	public static ChatBotModelVersion prepareAndAddModelVersion(ChatBotModel model) throws Exception {
+		
+		ChatBotModelVersion modelVersion = new ChatBotModelVersion();
+		
+		modelVersion.setLatestVersion(true);
+		modelVersion.setOrgId(AccountUtil.getCurrentOrg().getId());
+		modelVersion.setAccuracyRate(40);
+		modelVersion.setVersionNo(1);
+		modelVersion.setMlModel("dummy_String");
+		modelVersion.setModelId(model.getId());
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getCBModelVersionModule().getTableName())
+				.fields(FieldFactory.getCBModelVersionFields());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(modelVersion);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+
+		modelVersion.setId((Long) props.get("id"));
+		return modelVersion;
+		
 	}
 
 }

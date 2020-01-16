@@ -1,0 +1,82 @@
+- 
+   name: "system_greet_intent"
+   displayName: "System Greeting Intent"
+   type: 1
+   actions:
+    - 
+        action: 
+            actionType: 29
+            status: 1
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "hi"
+    -
+        sampleLocalId : 2
+        sample: "hello"
+         
+- 
+   name: "system_intent_not_fount_intent"
+   displayName: "System Intent not Fount Intent"
+   type: 1
+   actions:
+      - 
+        action: 
+            actionType: 29
+            status: 1
+            
+- 
+   name: "system_terminate_session_intent"
+   displayName: "System Terminate Session Intent"
+   type: 1
+   actions:
+    - 
+        action: 
+            actionType: 29
+            status: 1
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "exit"
+    -
+        sampleLocalId : 2
+        sample: "stop it"
+    -
+        sampleLocalId : 3
+        sample: "terminate"
+         
+- 
+   name: "system_greet_me_intent"
+   displayName: "System Greet Me Intent"
+   type: 1
+   withParams : true
+   params:
+   -
+      name : 'firstName'
+      askAs : 'Enter Your First Name?'
+      dataType : 1
+      mlType : 1
+      localId : 1
+   -
+      name : 'secondName'
+      askAs : 'What is your Second Name?'
+      dataType : 1
+      mlType : 1
+      localId : 2
+   actions:
+    - 
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'void test (String firstName,String secondName) { log "hello "+ firstName +" "+secondName;}'   
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "greet me"
+    -
+       sampleLocalId : 2
+       sample: "wish me"

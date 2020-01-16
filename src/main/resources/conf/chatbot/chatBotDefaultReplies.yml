@@ -1,13 +1,13 @@
-system_greet: 
+system_greet_intent: 
     - "Hi"
     - "Hello"
-    - "Holla"
+    - "Hey"
     
 system_intent_not_fount_intent: 
     - "I can't Understand"
     - "Please rephrase your sentence"
     - "try some other word"
     
-system_terminate_session:
+system_terminate_session_intent:
    - "OK, I've cancelled your request."
    - "Fine, I will cancel your request."

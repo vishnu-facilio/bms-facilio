@@ -30,7 +30,7 @@ public class SendToMlApiCommand extends FacilioCommand {
 				accuracy = 0.6789;
 			}
 			else if(chatBotSessionConversation.getResponse().contains("exit")) {
-				intent = "system_terminate_session";
+				intent = "system_terminate_session_intent";
 				accuracy = 0.6789;
 			}
 			else {
@@ -54,7 +54,7 @@ public class SendToMlApiCommand extends FacilioCommand {
 			String intentName = null;
 			double accuracy;
 			if(session.getQuery().equals("hi")) {
-				intentName = "system_greet";
+				intentName = "system_greet_intent";
 				accuracy = 0.6789;
 			}
 			else if (session.getQuery().equals("create a wo")) {
@@ -62,11 +62,11 @@ public class SendToMlApiCommand extends FacilioCommand {
 				accuracy = 0.7789;
 			}
 			else if (session.getQuery().contains("what")) {
-				intentName = "print_my_name";
+				intentName = "system_greet_me_intent";
 				accuracy = 0.7789;
 			}
 			else {
-				intentName = "system_greet"; 
+				intentName = "system_greet_intent"; 
 				accuracy = 0.1789;
 			}
 			

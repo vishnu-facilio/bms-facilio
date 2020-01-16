@@ -26,7 +26,26 @@ public class ChatBotIntent {
 	boolean withParams;
 	Intent_Type type;
 	List<ChatBotIntentAction> actions;
+	List<ChatBotIntentInvokeSample> invokeSamples;
 	
+	List<ChatBotIntentParam> params;
+	
+	public List<ChatBotIntentParam> getParams() {
+		return params;
+	}
+
+	public void setParams(List<ChatBotIntentParam> params) {
+		this.params = params;
+	}
+
+	public List<ChatBotIntentInvokeSample> getInvokeSamples() {
+		return invokeSamples;
+	}
+
+	public void setInvokeSamples(List<ChatBotIntentInvokeSample> invokeSamples) {
+		this.invokeSamples = invokeSamples;
+	}
+
 	public List<ChatBotIntentAction> getActions() {
 		return actions;
 	}
