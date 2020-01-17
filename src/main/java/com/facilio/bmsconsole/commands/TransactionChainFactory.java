@@ -4311,13 +4311,19 @@ public class TransactionChainFactory {
 	public static FacilioChain addServiceRequestChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForServiceRequests());
-		c.addCommand(new AddRequesterCommand());
-		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new AddRequesterForServiceRequestCommand());
+		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AttachmentContextCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		return c;
+	}
+	
+	public static FacilioChain getAddRequesterChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddRequesterCommand());
 		return c;
 	}
 
