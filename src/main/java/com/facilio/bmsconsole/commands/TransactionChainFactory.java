@@ -57,16 +57,17 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
 //			c.addCommand(new PopulateDefaultConnectionsCommand());
-//			c.addCommand(new PopulateDefaultChatBotIntentCommand());
-
+//			c.addCommand(getpopulateDefaultChatBotIntnetChain());
 			return c;
 		}
 		
-		public static FacilioChain getpopulateDefaultChatBotIntnetChain() {
+		public static FacilioChain getpopulateDefaultChatBotIntentChain() {
 			FacilioChain c = getDefaultChain();
 
+			c.addCommand(new ParseDefaultChatBotIntentCommand());
+			c.addCommand(new AddOrUpdateIntentToMLCommand());
+			c.addCommand(new GetOrAddCurrentActiveModel());
 			c.addCommand(new PopulateDefaultChatBotIntentCommand());
-
 			return c;
 		}
 
@@ -4378,6 +4379,12 @@ public class TransactionChainFactory {
 	public static FacilioChain getAddChatBotIntentChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetOrAddCurrentActiveModel());
+		c.addCommand(new AddChatBotIntentCommand());
+		return c;
+	}
+	
+	public static FacilioChain getAddOrUpdateChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddChatBotIntentCommand());
 		return c;
 	}

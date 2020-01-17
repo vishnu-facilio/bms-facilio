@@ -18,7 +18,7 @@
 - 
    name: "system_intent_not_fount_intent"
    displayName: "System Intent not Fount Intent"
-   type: 1
+   type: 3
    actions:
       - 
         action: 

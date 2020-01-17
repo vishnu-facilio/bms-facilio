@@ -3,7 +3,7 @@ package com.facilio.cb.command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.cards.util.ChatBotUtil;
+import com.facilio.cb.util.ChatBotUtil;
 import com.facilio.cb.context.ChatBotSessionConversation;
 import com.facilio.cb.util.ChatBotConstants;
 

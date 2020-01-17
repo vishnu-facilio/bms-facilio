@@ -1,22 +1,19 @@
 package com.facilio.cb.command;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.cards.util.ChatBotUtil;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotIntentParam;
 import com.facilio.cb.context.ChatBotMLResponse;
-import com.facilio.cb.context.ChatBotModel;
 import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSessionConversation;
 import com.facilio.cb.context.ChatBotSessionParam;
-import com.facilio.cb.context.ChatBotSession.State;
 import com.facilio.cb.util.ChatBotConstants;
+import com.facilio.cb.util.ChatBotUtil;
 
 public class ExecuteActionAndSetResponseForConversationCommand extends FacilioCommand {
 

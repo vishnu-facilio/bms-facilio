@@ -9,7 +9,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.cards.util.ChatBotUtil;
+import com.facilio.cb.util.ChatBotUtil;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotIntentAction;
 import com.facilio.cb.context.ChatBotIntentInvokeSample;

@@ -35,11 +35,15 @@ public class ChatBotConstants {
 	
 	public static final String CHAT_BOT_MODEL = "chatBotModel";
 	
+	public static final String CHAT_BOT_ML_MODEL_NAME = "chatBotMLModelName";
+	
 	public static final String CHAT_BOT_MODEL_VERSION = "chatBotModelVersion";
 	
 	public static final String CHAT_BOT_RESPONSE_STRING = "chatBotResponseString";
 	
 	public static final String CHAT_BOT_INTENT = "chatBotIntent";
+	
+	public static final String CHAT_BOT_INTENT_LIST = "chatBotIntentList";
 	
 	public static final String CHAT_BOT_ML_RESPONSE = "chatBotMLResponse";
 	

@@ -1,4 +1,4 @@
-package com.facilio.cards.util;
+package com.facilio.cb.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -505,13 +505,13 @@ public class ChatBotUtil {
 		cbaction.setId((Long) props.get("id"));
 	}
 	
-	public static ChatBotModel prepareAndAddDefaultModel() throws Exception {
+	public static ChatBotModel prepareAndAddDefaultModel(String mlModelName) throws Exception {
 		
 		ChatBotModel model = new ChatBotModel();
 		
 		model.setOrgId(AccountUtil.getCurrentOrg().getId());
 		model.setType(ChatBotModel.App_Type.APP.getIntVal());
-		model.setMlModel("dummy_String");
+		model.setMlModel(mlModelName);
 		
 		return addModel(model);
 	}
@@ -539,7 +539,7 @@ public class ChatBotUtil {
 		modelVersion.setOrgId(AccountUtil.getCurrentOrg().getId());
 		modelVersion.setAccuracyRate(40);
 		modelVersion.setVersionNo(1);
-		modelVersion.setMlModel("dummy_String");
+		modelVersion.setMlModel(model.getMlModel());
 		modelVersion.setModelId(model.getId());
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()

@@ -1,18 +1,14 @@
 package com.facilio.cb.command;
 
-import java.util.Map;
-
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountConstants.UserType;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.cards.util.ChatBotUtil;
 import com.facilio.cb.context.ChatBotModel;
-import com.facilio.cb.context.ChatBotModelVersion;
 import com.facilio.cb.context.ChatBotModel.App_Type;
+import com.facilio.cb.context.ChatBotModelVersion;
 import com.facilio.cb.util.ChatBotConstants;
+import com.facilio.cb.util.ChatBotUtil;
 
 public class GetOrAddCurrentActiveModel extends FacilioCommand {
 
@@ -26,7 +22,7 @@ public class GetOrAddCurrentActiveModel extends FacilioCommand {
 		ChatBotModel model = ChatBotUtil.getActiveModel(appType);
 		
 		if(model == null) {
-			model = ChatBotUtil.prepareAndAddDefaultModel();
+			model = ChatBotUtil.prepareAndAddDefaultModel((String)context.get(ChatBotConstants.CHAT_BOT_ML_MODEL_NAME));
 			
 			ChatBotModelVersion modelVersion = ChatBotUtil.prepareAndAddModelVersion(model);
 			

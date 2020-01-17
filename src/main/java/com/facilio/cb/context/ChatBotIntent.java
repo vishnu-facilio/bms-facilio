@@ -7,12 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.cards.util.ChatBotUtil;
 import com.facilio.cb.util.ChatBotConstants;
-import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class ChatBotIntent {
 
@@ -162,7 +157,8 @@ public class ChatBotIntent {
 
 	public enum Intent_Type {
 		SYSTEM(1, "System"),
-		USET(2, "User"),
+		USER(2, "User"),
+		SYSTEM_SERVER(3,"System Server");
 		;
 
 		int intVal;
