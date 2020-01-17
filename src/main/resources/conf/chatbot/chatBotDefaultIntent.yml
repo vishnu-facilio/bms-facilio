@@ -14,6 +14,9 @@
     -
         sampleLocalId : 2
         sample: "hello"
+    -
+        sampleLocalId : 3
+        sample: "Hai"
          
 - 
    name: "system_intent_not_fount_intent"
@@ -80,3 +83,76 @@
     -
        sampleLocalId : 2
        sample: "wish me"
+       
+- 
+   name: "system_create_wo_intent"
+   displayName: "System create wo Intent"
+   type: 1
+   withParams : true
+   params:
+   -
+      name : 'subject'
+      askAs : 'Enter the Subject?'
+      dataType : 1
+      mlType : 1
+      localId : 1
+   -
+      name : 'description'
+      askAs : 'tell us something more'
+      dataType : 1
+      mlType : 1
+      localId : 2
+   actions:
+    - 
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'void test(String subject,String description){
+    
+                                         wo = {};
+                                         wo.subject = subject;
+                                         wo.description = description;
+                                           
+                                         cri = {
+                                           criteria : [id != 0],
+                                           limit : 1,
+                                           orderBy : "id" asc,
+                                         };
+                                         
+                                         site = Module("site").fetch(cri)[0];
+                                         
+                                         wo.site = site.id;
+                                         
+                                         WorkOrder().add(wo);
+                                         
+                                         log "Workorder created Successfully.";
+                                       }'   
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "create wo"
+    -
+       sampleLocalId : 2
+       sample: "create a wo"
+    -
+       sampleLocalId : 3
+       sample: "create workorder"
+    -
+       sampleLocalId : 4
+       sample: "create a workorder"
+    -
+       sampleLocalId : 5
+       sample: "file a workorder"
+    -
+       sampleLocalId : 6
+       sample: "file wo"
+    -
+       sampleLocalId : 7
+       sample: "make a workorder"
+    -
+       sampleLocalId : 8
+       sample: "make wo"

@@ -1,16 +1,23 @@
 package com.facilio.workflowv2.modulefunctions;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Command;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext.SourceType;
 import com.facilio.bmsconsole.context.JobPlanContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
@@ -21,9 +28,12 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 
@@ -39,6 +49,51 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 	
 	public List<Map<String, Object>> getTopNTechnicians(List<Object> objects) throws Exception{
 		return WorkOrderAPI.getTopNTechnicians(objects.get(0).toString(), Long.valueOf(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()));
+	}
+	
+	@Override
+	public void add(List<Object> objects) throws Exception {
+
+		Object insertObject = objects.get(1);
+		
+		List<WorkOrderContext> workorders = new ArrayList<WorkOrderContext>();
+		if(insertObject instanceof Map) {
+
+			WorkOrderContext wo = FieldUtil.getAsBeanFromMap((Map<String, Object>) insertObject, WorkOrderContext.class);
+			
+			workorders.add(wo);
+		}
+		else if (insertObject instanceof Collection) {
+			
+			List<Object> insertList = (List<Object>)insertObject;
+			
+			for(Object insert :insertList) {
+				WorkOrderContext wo = FieldUtil.getAsBeanFromMap((Map<String, Object>) insert, WorkOrderContext.class);
+				workorders.add(wo);
+			}
+		}
+		
+		for(WorkOrderContext workorder :workorders) {
+			
+			if (workorder.getSourceTypeEnum() == null) {
+				workorder.setSourceType(TicketContext.SourceType.WEB_ORDER);
+			}
+			
+			FacilioChain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
+			FacilioContext context = addWorkOrder.getContext();
+
+			context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
+			if (AccountUtil.getCurrentUser() == null) {
+				context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
+			}
+			
+			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+			
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+
+			addWorkOrder.execute();
+		}
+		
 	}
 	
 	@Override
