@@ -156,10 +156,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		String[] userObj = token.split(USER_TOKEN_REGEX);
 		IAMUser user = null;
 		if(userObj.length == 4) {
-			user = new IAMUser();
-			user.setOrgId(Long.parseLong(userObj[0]));
-			user.setUid(Long.parseLong(userObj[1]));
-			user.setEmail(userObj[2]);
+			user = getFacilioUser(Long.parseLong(userObj[0]), Long.parseLong(userObj[1]));
 		}
 		return user;
 	}
@@ -249,7 +246,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	public boolean acceptUserv2(IAMUser user) throws Exception {
-		if(user != null) {
+		if(user != null && user.isActive()) {
 			FacilioField isDefaultOrg = new FacilioField();
 			isDefaultOrg.setName("isDefaultOrg");
 			isDefaultOrg.setDataType(FieldType.BOOLEAN);

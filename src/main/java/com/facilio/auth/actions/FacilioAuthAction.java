@@ -467,10 +467,6 @@ public class FacilioAuthAction extends FacilioAction {
 			AccountUtil.setCurrentAccount(new Account(org, us));
 		}
 		
-		if (AccountUtil.getCurrentOrg().getId() == 75) {
-			LOGGER.info("validate user link email invitation" + user.getEmail());
-			LOGGER.info("validate user link username  invitation" + user.getName());
-		}
 		if (user != null) {
 			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 			invitation.put("email", user.getEmail());

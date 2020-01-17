@@ -290,7 +290,10 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public User validateUserInvite(String token) throws Exception {
 		IAMUser iamUser = IAMUserUtil.validateUserInviteToken(token);
-		return new User(iamUser);
+		if(iamUser != null && iamUser.isActive()) {
+			return new User(iamUser);
+		}
+		return null;
 		
 	}
 
@@ -935,47 +938,37 @@ public class UserBeanImpl implements UserBean {
 	public boolean acceptUser(User user) throws Exception {
 		// TODO Auto-generated method stub
 		    User appUser = getUser(user.getOrgId(), user.getUid());
-			FacilioField inviteAcceptStatus = new FacilioField();
-			inviteAcceptStatus.setName("inviteAcceptStatus");
-			inviteAcceptStatus.setDataType(FieldType.BOOLEAN);
-			inviteAcceptStatus.setColumnName("INVITATION_ACCEPT_STATUS");
-			inviteAcceptStatus.setModule(AccountConstants.getAppOrgUserModule());
-
-//			FacilioField isDefaultOrg = new FacilioField();
-//			isDefaultOrg.setName("isDefaultOrg");
-//			isDefaultOrg.setDataType(FieldType.BOOLEAN);
-//			isDefaultOrg.setColumnName("ISDEFAULT");
-//			isDefaultOrg.setModule(AccountConstants.getAppOrgUserModule());
-
-//			FacilioField userStatus = new FacilioField();
-//			userStatus.setName("userStatus");
-//			userStatus.setDataType(FieldType.BOOLEAN);
-//			userStatus.setColumnName("USER_STATUS");
-//			userStatus.setModule(AccountConstants.getAppOrgUserModule());
-
-			List<FacilioField> fields = new ArrayList<>();
-			fields.add(inviteAcceptStatus);
-		//	fields.add(userStatus);
-			//fields.add(isDefaultOrg);
-
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getAppOrgUserModule().getTableName()).fields(fields)
-					.andCustomWhere("ORG_USERID = ?", appUser.getOuid());
-
-			Map<String, Object> props = new HashMap<>();
-			props.put("inviteAcceptStatus", true);
-			//props.put("isDefaultOrg", true);
-		//	props.put("userStatus", true);
-
-			int updatedRows = updateBuilder.update(props);
-			if (updatedRows > 0) {
-				appUser = getInvitedUser(appUser.getOuid());
-				if (appUser != null) {
-					updateUserEntry(appUser);
-					// LicenseApi.updateUsedLicense(user.getLicenseEnum());
-					return true;
+		    if(appUser != null && appUser.isActive()) {
+				FacilioField inviteAcceptStatus = new FacilioField();
+				inviteAcceptStatus.setName("inviteAcceptStatus");
+				inviteAcceptStatus.setDataType(FieldType.BOOLEAN);
+				inviteAcceptStatus.setColumnName("INVITATION_ACCEPT_STATUS");
+				inviteAcceptStatus.setModule(AccountConstants.getAppOrgUserModule());
+	
+				List<FacilioField> fields = new ArrayList<>();
+				fields.add(inviteAcceptStatus);
+			//	fields.add(userStatus);
+				//fields.add(isDefaultOrg);
+	
+				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+						.table(AccountConstants.getAppOrgUserModule().getTableName()).fields(fields)
+						.andCustomWhere("ORG_USERID = ?", appUser.getOuid());
+	
+				Map<String, Object> props = new HashMap<>();
+				props.put("inviteAcceptStatus", true);
+				//props.put("isDefaultOrg", true);
+			//	props.put("userStatus", true);
+	
+				int updatedRows = updateBuilder.update(props);
+				if (updatedRows > 0) {
+					appUser = getInvitedUser(appUser.getOuid());
+					if (appUser != null) {
+						updateUserEntry(appUser);
+						// LicenseApi.updateUsedLicense(user.getLicenseEnum());
+						return true;
+					}
 				}
-			}
+		    }
 		return false;
 	}
 
