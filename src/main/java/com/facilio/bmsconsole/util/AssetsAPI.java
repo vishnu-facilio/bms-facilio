@@ -387,6 +387,23 @@ public class AssetsAPI {
 		}
 		return assetId;
 	}
+
+	public static AssetCategoryContext getCategoryByDisplayName(String name) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
+				.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
+				.beanClass(AssetCategoryContext.class)
+				.andCustomWhere("DISPLAY_NAME = ?", name);
+
+		List<AssetCategoryContext> categories = selectBuilder.get();
+
+		if(categories != null && !categories.isEmpty()) {
+			return categories.get(0);
+		}
+		return null;
+	}
 	
 	public static AssetCategoryContext getCategory(String name) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

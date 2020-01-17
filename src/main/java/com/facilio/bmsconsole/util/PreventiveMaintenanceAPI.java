@@ -3826,7 +3826,7 @@ public class PreventiveMaintenanceAPI {
 		long newSpaceCategoryId = -1L;
 
 		if (assetCateg != null) {
-			newAssetCategoryId = AssetsAPI.getCategory(assetCateg.getName()).getId();
+			newAssetCategoryId = AssetsAPI.getCategoryByDisplayName(assetCateg.getName()).getId();
 		}
 
 		if (spaceCategoryContext != null) {
@@ -3972,7 +3972,7 @@ public class PreventiveMaintenanceAPI {
 					return null;
 				}
 
-				AssetCategoryContext newAssetCateg = AssetsAPI.getCategory(oldAssetCateg.getName());
+				AssetCategoryContext newAssetCateg = AssetsAPI.getCategoryByDisplayName(oldAssetCateg.getName());
 
 				newTaskSectionTemplate.setAssetCategoryId(newAssetCateg.getId());
 			}
