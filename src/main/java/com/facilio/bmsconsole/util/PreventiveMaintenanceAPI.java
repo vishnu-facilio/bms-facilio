@@ -21,10 +21,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.facilio.bmsconsole.commands.CorrectPMTriggerSelection;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.GetSpaceCategoriesCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.jobs.FailedPMNewScheduler;
+import com.facilio.bmsconsole.templates.*;
 import com.facilio.db.builder.*;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.modules.*;
@@ -52,11 +56,7 @@ import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
-import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate.AttachmentRequiredEnum;
-import com.facilio.bmsconsole.templates.Template;
-import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -3642,6 +3642,409 @@ public class PreventiveMaintenanceAPI {
 		}
 
 		return jc;
+	}
+
+
+	public static void importPM(long pmId, long fromOrg, long toOrg) throws Exception {
+		AccountUtil.setCurrentAccount(fromOrg);
+		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+			LOGGER.log(Level.WARN, "org is missing");
+			return;
+		}
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, pmId);
+
+		FacilioChain pmSummary = FacilioChainFactory.getNewPreventiveMaintenanceSummaryChain();
+		pmSummary.execute(context);
+
+		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
+		WorkOrderContext wo = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		Map<Long, List<TaskContext>> taskMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+		Map<Long, List<TaskContext>> preReqMap = (Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_MAP);
+		List<TaskContext> taskList = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
+		List<TaskContext> preReqList = (List<TaskContext>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_LIST);
+		List<PrerequisiteApproversTemplate> prerequisiteApproversTemplateList = (List<PrerequisiteApproversTemplate>) context.get(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES);
+		List<TaskSectionTemplate> sectionTemplatesList = (List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS);
+		List<TaskSectionTemplate> preReqSectionTemplatesList = (List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS);
+		List<PMReminder> pmReminderList = (List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS);
+		long typeId = wo.getType().getId();
+		wo.setType(TicketAPI.getType(fromOrg, typeId));
+		if (wo.getCategory() != null && wo.getCategory().getId() != -1L) {
+			wo.setCategory(TicketAPI.getCategory(fromOrg, wo.getCategory().getId()));
+		}
+
+		if (wo.getPriority() != null && wo.getPriority().getId() != -1L) {
+			wo.setPriority(TicketAPI.getPriority(fromOrg, wo.getPriority().getId()));
+		}
+		AssetCategoryContext assetCateg = null;
+		if (pm.getAssetCategoryId() != null && pm.getAssetCategoryId() != -1) {
+			assetCateg = getAssetCateg(pm.getAssetCategoryId());
+		}
+
+		SpaceCategoryContext spaceCategoryContext = null;
+		if (pm.getSpaceCategoryId() != null && pm.getSpaceCategoryId() != -1) {
+			spaceCategoryContext = getSpaceCateg(pm.getSpaceCategoryId());
+		}
+
+		Long baseSpaceId = pm.getBaseSpaceId();
+		ResourceContext resource = null;
+		if (baseSpaceId != null) {
+			 resource = ResourceAPI.getResource(baseSpaceId);
+		}
+
+		List<PMResourcePlannerContext> resourcePlanners = pm.getResourcePlanners();
+		List<PMResourcePlannerContext> newResourcePlanners = new ArrayList<>();
+
+		if (resourcePlanners != null) {
+			for (PMResourcePlannerContext resourcePlannerContext: resourcePlanners) {
+				ResourceContext rpResource = ResourceAPI.getResource(resourcePlannerContext.getResourceId());
+
+				ResourceContext newResource = getNewResource(rpResource.getName(), fromOrg, toOrg);
+
+				if (newResource == null) {
+					return;
+				}
+
+				AccountUtil.setCurrentAccount(fromOrg);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.WARN, "org is missing");
+					return;
+				}
+
+				PMResourcePlannerContext newResourcePlanner = new PMResourcePlannerContext();
+				newResourcePlanners.add(newResourcePlanner);
+
+				newResourcePlanner.setResourceId(newResource.getId());
+				List<PMResourcePlannerReminderContext> pmResourcePlannerReminderContexts = resourcePlannerContext.getPmResourcePlannerReminderContexts();
+				List<PMResourcePlannerReminderContext> newPmResourcePlannerReminderContexts = new ArrayList<>();
+				newResourcePlanner.setPmResourcePlannerReminderContexts(newPmResourcePlannerReminderContexts);
+
+				if (pmResourcePlannerReminderContexts != null) {
+					for (PMResourcePlannerReminderContext pmResourcePlannerReminderContext: pmResourcePlannerReminderContexts) {
+						PMResourcePlannerReminderContext newPmResourcePlannerReminderContext = new PMResourcePlannerReminderContext();
+						newPmResourcePlannerReminderContext.setReminderName(pmResourcePlannerReminderContext.getReminderName());
+						newPmResourcePlannerReminderContexts.add(newPmResourcePlannerReminderContext);
+					}
+				}
+
+				List<PMTriggerContext> triggerContexts = resourcePlannerContext.getTriggerContexts();
+				List<PMTriggerContext> newTriggerContexts = new ArrayList<>();
+				newResourcePlanner.setTriggerContexts(newTriggerContexts);
+
+				for (PMTriggerContext trigger: triggerContexts) {
+					PMTriggerContext newtrigger = new PMTriggerContext();
+					newtrigger.setName(trigger.getName());
+					newTriggerContexts.add(newtrigger);
+				}
+			}
+		}
+
+
+		List<PMIncludeExcludeResourceContext> includeExcludeResourceContexts = pm.getPmIncludeExcludeResourceContexts();
+		List<PMIncludeExcludeResourceContext> newIncludeExcludeResourceContexts = new ArrayList<>();
+
+		if (includeExcludeResourceContexts != null) {
+			for (PMIncludeExcludeResourceContext includeExcludeResourceContext: includeExcludeResourceContexts) {
+				PMIncludeExcludeResourceContext newIncludeExcludeResourceContext = new PMIncludeExcludeResourceContext();
+				ResourceContext resource1 = ResourceAPI.getResource(includeExcludeResourceContext.getResourceId());
+
+				ResourceContext newResource = getNewResource(resource1.getName(), fromOrg, toOrg);
+				if (newResource == null) {
+					return;
+				}
+
+				AccountUtil.setCurrentAccount(fromOrg);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.WARN, "org is missing");
+					return;
+				}
+
+				newIncludeExcludeResourceContext.setResourceId(newResource.getId());
+				newIncludeExcludeResourceContext.setIsInclude(includeExcludeResourceContext.getIsInclude());
+				newIncludeExcludeResourceContext.setParentType(includeExcludeResourceContext.getParentType());
+
+				newIncludeExcludeResourceContexts.add(newIncludeExcludeResourceContext);
+			}
+		}
+
+
+		List<PMTriggerContext> newPmTriggerContexts = new ArrayList<>();
+		if (pm.getTriggers() != null) {
+			for (PMTriggerContext pmTriggerContext: pm.getTriggers()) {
+				PMTriggerContext newPmTrigger = new PMTriggerContext();
+				newPmTrigger.setName(pmTriggerContext.getName());
+				newPmTrigger.setTriggerType(pmTriggerContext.getTriggerType());
+				newPmTrigger.setStartTime(pmTriggerContext.getStartTime());
+				newPmTrigger.setSchedule(pmTriggerContext.getSchedule());
+				newPmTrigger.setEndTime(pmTriggerContext.getEndTime());
+				newPmTrigger.setStartReading(pmTriggerContext.getStartReading());
+				newPmTrigger.setEndReading(pmTriggerContext.getEndReading());
+				newPmTrigger.setReadingInterval(pmTriggerContext.getReadingInterval());
+				newPmTrigger.setFrequency(pmTriggerContext.getFrequency());
+				newPmTrigger.setTriggerExecutionSource(pmTriggerContext.getTriggerExecutionSource());
+
+				newPmTriggerContexts.add(newPmTrigger);
+			}
+		}
+
+		ResourceContext siteResource = ResourceAPI.getResource(wo.getSiteId());
+
+		AccountUtil.setCurrentAccount(toOrg);
+		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+			LOGGER.log(Level.WARN, "org is missing");
+			return;
+		}
+
+		FacilioContext addContext = new FacilioContext();
+
+		wo.setRequester(null);
+		if(pmReminderList != null) {
+			pm.setReminders(pmReminderList);
+		}
+
+		ResourceContext newResource = null;
+		if (resource != null) {
+			newResource = getNewResource(resource.getName(), fromOrg, toOrg);
+		}
+
+		ResourceContext newSiteResource = getNewResource(siteResource.getName(), fromOrg, toOrg);
+		ResourceContext woResource = null;
+		if (wo.getResource() != null && wo.getResource().getId() != -1L) { woResource = getNewResource(wo.getResource().getName(), fromOrg, toOrg); }
+
+		TicketCategoryContext ticketCategoryContext = null;
+		if (wo.getCategory() != null) {
+			ticketCategoryContext = TicketAPI.getCategory(toOrg, wo.getCategory().getName());
+		}
+
+		TicketPriorityContext ticketPriorityContext = null;
+		if(wo.getPriority() != null) {
+			ticketPriorityContext = TicketAPI.getPriority(toOrg, wo.getPriority().getPriority());
+		}
+
+		long newAssetCategoryId = -1L;
+		long newSpaceCategoryId = -1L;
+
+		if (assetCateg != null) {
+			newAssetCategoryId = AssetsAPI.getCategory(assetCateg.getName()).getId();
+		}
+
+		if (spaceCategoryContext != null) {
+			newSpaceCategoryId = getSpaceCateg(spaceCategoryContext.getName()).getId();
+		}
+
+		addContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, constructPM(pm, newResource != null ? newResource.getId(): -1L, newSiteResource.getSiteId(), newResourcePlanners, newIncludeExcludeResourceContexts, newPmTriggerContexts, newAssetCategoryId, newSpaceCategoryId));
+		addContext.put(FacilioConstants.ContextNames.WORK_ORDER, constructWO(wo, TicketAPI.getType(toOrg, wo.getType().getName()),ticketCategoryContext, ticketPriorityContext, woResource, newSiteResource.getSiteId()));
+		//addContext.put(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES, prerequisiteApproversTemplateList);
+		addContext.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, constructTaskSectionTemplates(sectionTemplatesList, fromOrg, toOrg));
+		addContext.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Template.Type.PM_WORKORDER);
+
+//		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
+//		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
+//		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+//		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
+
+		FacilioChain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
+		addTemplate.execute(addContext);
+	}
+
+	private static SpaceCategoryContext getSpaceCateg(String name) throws Exception {
+		Context context = new FacilioContext();
+		GetSpaceCategoriesCommand getSpaceCategoriesCommand = new GetSpaceCategoriesCommand();
+		getSpaceCategoriesCommand.executeCommand(context);
+		List<SpaceCategoryContext> spaceCategories = (List<SpaceCategoryContext>) context.get(FacilioConstants.ContextNames.SPACECATEGORIESLIST);
+		return spaceCategories.stream().filter(i -> i.getName() == name).collect(Collectors.toList()).get(0);
+	}
+
+	private static SpaceCategoryContext getSpaceCateg(long id) throws Exception {
+		Context context = new FacilioContext();
+		GetSpaceCategoriesCommand getSpaceCategoriesCommand = new GetSpaceCategoriesCommand();
+		getSpaceCategoriesCommand.executeCommand(context);
+		List<SpaceCategoryContext> spaceCategories = (List<SpaceCategoryContext>) context.get(FacilioConstants.ContextNames.SPACECATEGORIESLIST);
+		return spaceCategories.stream().filter(i -> i.getId() == id).collect(Collectors.toList()).get(0);
+	}
+
+	private static AssetCategoryContext getAssetCateg(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
+				.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
+				.beanClass(AssetCategoryContext.class)
+				.andCustomWhere("ID = ?", id);
+
+		List<AssetCategoryContext> categories = selectBuilder.get();
+
+		if(categories != null && !categories.isEmpty()) {
+			return categories.get(0);
+		}
+		return null;
+	}
+
+	private static ResourceContext getNewResource(String name, long fromOrg, long toOrg) throws Exception {
+		AccountUtil.setCurrentAccount(toOrg);
+		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+			LOGGER.log(Level.WARN, "org is missing");
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		List<FacilioField> allFields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+		Map<String, FacilioField> asMap = FieldFactory.getAsMap(allFields);
+
+		Criteria cr = new Criteria();
+		cr.addAndCondition(CriteriaAPI.getCondition(asMap.get("name"), name, StringOperators.IS));
+
+		SelectRecordsBuilder<ResourceContext> resourceBuilder = new SelectRecordsBuilder<ResourceContext>()
+				.select(allFields).module(module)
+				.beanClass(ResourceContext.class).andCriteria(cr);
+
+		List<ResourceContext> resources = resourceBuilder.get();
+		if (resources != null && !resources.isEmpty()) {
+			return resources.get(0);
+		}
+		return null;
+	}
+
+
+	private static WorkOrderContext constructWO(WorkOrderContext oldWo, TicketTypeContext type, TicketCategoryContext ticketCategoryContext, TicketPriorityContext priorityContext, ResourceContext newResource, long newSiteId) {
+		WorkOrderContext newWO = new WorkOrderContext();
+		newWO.setType(type);
+		newWO.setCategory(ticketCategoryContext);
+		newWO.setPriority(priorityContext);
+		newWO.setSubject(oldWo.getSubject());
+		newWO.setDescription(oldWo.getDescription());
+		newWO.setDuration(oldWo.getDuration());
+		newWO.setEstimatedWorkDuration(oldWo.getEstimatedWorkDuration());
+		newWO.setIsSignatureRequired(oldWo.getIsSignatureRequired());
+		newWO.setQrEnabled(oldWo.getQrEnabled());
+		newWO.setSiteId(newSiteId);
+		newWO.setPhotoMandatory(oldWo.getPhotoMandatory());
+		newWO.setResource(newResource);
+		return newWO;
+	}
+
+	private static PreventiveMaintenance constructPM(PreventiveMaintenance oldPM, Long newBaseSpaceId, long newSiteId, List<PMResourcePlannerContext> newResourcePlanners, List<PMIncludeExcludeResourceContext> newIncludeExcludeResourceContexts, List<PMTriggerContext> newPmTriggerContexts, long newAssetCategoryId, long newSpaceCategoryId) {
+		PreventiveMaintenance newPm = new PreventiveMaintenance();
+		newPm.setTitle(oldPM.getTitle());
+		newPm.setPreventOnNoTask(oldPM.getPreventOnNoTask());
+		newPm.setPmCreationType(oldPM.getPmCreationType());
+		newPm.setBaseSpaceId(newBaseSpaceId);
+		newPm.setAssignmentType(oldPM.getAssignmentType());
+		newPm.setSiteId(newSiteId);
+		newPm.setResourcePlanners(newResourcePlanners);
+		newPm.setAssetCategoryId(newAssetCategoryId);
+		newPm.setSpaceCategoryId(newSpaceCategoryId);
+		newPm.setPmIncludeExcludeResourceContexts(newIncludeExcludeResourceContexts);
+		newPm.setTriggers(newPmTriggerContexts);
+
+		return newPm;
+	}
+
+	private static List<TaskSectionTemplate> constructTaskSectionTemplates(List<TaskSectionTemplate> oldTaskSectionTemplates, long fromOrg, long toOrg) throws Exception {
+		AccountUtil.setCurrentAccount(toOrg);
+		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+			LOGGER.log(Level.WARN, "org is missing");
+			return null;
+		}
+		List<TaskSectionTemplate> newTaskSectionTemplates = new ArrayList<>();
+		for (TaskSectionTemplate taskSectionTemplate: oldTaskSectionTemplates) {
+			TaskSectionTemplate newTaskSectionTemplate = new TaskSectionTemplate();
+			newTaskSectionTemplate.setName(taskSectionTemplate.getName());
+			newTaskSectionTemplate.setInputType(taskSectionTemplate.getInputType());
+			newTaskSectionTemplate.setAttachmentRequired(taskSectionTemplate.getAttachmentRequired());
+			newTaskSectionTemplate.setAdditionInfo(taskSectionTemplate.getAdditionInfo());
+			newTaskSectionTemplate.setAssignmentType(taskSectionTemplate.getAssignmentType());
+			Long oldAssetCategoryId = taskSectionTemplate.getAssetCategoryId();
+
+			if (oldAssetCategoryId != null && oldAssetCategoryId != -1) {
+				AccountUtil.setCurrentAccount(fromOrg);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.WARN, "org is missing");
+					return null;
+				}
+
+				AssetCategoryContext oldAssetCateg = getAssetCateg(oldAssetCategoryId);
+
+				AccountUtil.setCurrentAccount(toOrg);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.WARN, "org is missing");
+					return null;
+				}
+
+				AssetCategoryContext newAssetCateg = AssetsAPI.getCategory(oldAssetCateg.getName());
+
+				newTaskSectionTemplate.setAssetCategoryId(newAssetCateg.getId());
+			}
+
+			Long oldSpaceCategoryId = taskSectionTemplate.getSpaceCategoryId();
+
+			if (oldSpaceCategoryId != null && oldSpaceCategoryId != -1) {
+				AccountUtil.setCurrentAccount(fromOrg);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.WARN, "org is missing");
+					return null;
+				}
+
+				SpaceCategoryContext oldSpaceCateg = getSpaceCateg(oldSpaceCategoryId);
+
+				AccountUtil.setCurrentAccount(toOrg);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.WARN, "org is missing");
+					return null;
+				}
+
+				SpaceCategoryContext newSpaceCateg = getSpaceCateg(oldSpaceCateg.getName());
+				newTaskSectionTemplate.setSpaceCategoryId(newSpaceCateg.getId());
+			}
+
+			List<TaskTemplate> taskTemplates = new ArrayList<>();
+			newTaskSectionTemplate.setTaskTemplates(taskTemplates);
+
+			newTaskSectionTemplates.add(newTaskSectionTemplate);
+
+			for (TaskTemplate taskTemplate: taskSectionTemplate.getTaskTemplates()) {
+				TaskTemplate newTaskTemplate = new TaskTemplate();
+				newTaskTemplate.setName(taskTemplate.getName());
+				newTaskTemplate.setDescription(taskTemplate.getDescription());
+				newTaskTemplate.setAttachmentRequired(taskTemplate.getAttachmentRequired());
+				newTaskTemplate.setSequence(taskTemplate.getSequence());
+				newTaskTemplate.setAssignmentType(taskTemplate.getAssignmentType());
+				newTaskTemplate.setInputType(taskTemplate.getInputType());
+				newTaskTemplate.setAdditionInfo(taskTemplate.getAdditionInfo());
+
+				if (newTaskTemplate.getAdditionInfo() != null) {
+					newTaskTemplate.getAdditionInfo().remove("readingField");
+				}
+
+				if (taskTemplate.getReadingFieldId() != -1 && taskTemplate.getInputType() == 2) {
+					AccountUtil.setCurrentAccount(fromOrg);
+					if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+						LOGGER.log(Level.WARN, "org is missing");
+						return null;
+					}
+
+					ModuleBean oldModBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioField oldReadingField = oldModBean.getField(taskTemplate.getReadingFieldId());
+					long moduleId = oldReadingField.getModuleId();
+					FacilioModule oldModule = oldModBean.getModule(moduleId);
+
+					AccountUtil.setCurrentAccount(toOrg);
+					if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+						LOGGER.log(Level.WARN, "org is missing");
+						return null;
+					}
+
+					ModuleBean newModBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioField newReadingField = newModBean.getField(oldReadingField.getName(), oldModule.getName());
+
+					newTaskTemplate.setReadingFieldId(newReadingField.getId());
+				}
+
+				taskTemplates.add(newTaskTemplate);
+			}
+		}
+		return newTaskSectionTemplates;
 	}
 
 

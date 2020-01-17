@@ -1755,6 +1755,15 @@
 			</result>
 		</action>
 
+		<action name="importPM" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+				method="importPM">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">pmId</param>
+			</result>
+		</action>
+
 		<action name="generateSchedule" class="com.facilio.bmsconsole.actions.PMAction"
 				method="generateSchedule">
 			<param name="moduleName">planned</param>

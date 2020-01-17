@@ -278,6 +278,14 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	private long fromOrgId;
+	private long toOrgId;
+
+	public String importPM() throws Exception {
+		PreventiveMaintenanceAPI.importPM(pmId, fromOrgId, toOrgId);
+		return SUCCESS;
+	}
+
 	public String addPreventiveMaintenance(FacilioContext context) throws Exception {
 
 		workorder.setRequester(null);
@@ -2741,5 +2749,21 @@ public class WorkOrderAction extends FacilioAction {
 
 	public void setLimit(int limit) {
 		this.limit = limit;
+	}
+
+	public long getFromOrgId() {
+		return fromOrgId;
+	}
+
+	public void setFromOrgId(long fromOrgId) {
+		this.fromOrgId = fromOrgId;
+	}
+
+	public long getToOrgId() {
+		return toOrgId;
+	}
+
+	public void setToOrgId(long toOrgId) {
+		this.toOrgId = toOrgId;
 	}
 }

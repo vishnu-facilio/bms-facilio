@@ -320,7 +320,31 @@ public class TicketAPI {
 		return builder.get();
 	}
 
-	public static List<TicketTypeContext> getPlannedTypes(long orgId) throws Exception
+	public static TicketTypeContext getType(long orgId, String name) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketTypeContext> builder = new SelectRecordsBuilder<TicketTypeContext>()
+				.table("TicketType")
+				.moduleName(FacilioConstants.ContextNames.TICKET_TYPE)
+				.beanClass(TicketTypeContext.class)
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_TYPE))
+				.andCustomWhere("ORGID = ? AND NAME=?", orgId,name)
+				.orderBy("ID");
+		return builder.get().get(0);
+	}
+
+	public static TicketTypeContext getType(long orgId, long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketTypeContext> builder = new SelectRecordsBuilder<TicketTypeContext>()
+				.table("TicketType")
+				.moduleName(FacilioConstants.ContextNames.TICKET_TYPE)
+				.beanClass(TicketTypeContext.class)
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_TYPE))
+				.andCustomWhere("ORGID = ? AND ID=?", orgId, id)
+				.orderBy("ID");
+		return builder.get().get(0);
+	}
+
+		public static List<TicketTypeContext> getPlannedTypes(long orgId) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		SelectRecordsBuilder<TicketTypeContext> builder = new SelectRecordsBuilder<TicketTypeContext>()
@@ -385,6 +409,20 @@ public class TicketAPI {
 															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_PRIORITY))
 															.andCustomWhere("ORGID = ? AND PRIORITY = ?", orgId, priority)
 															.orderBy("ID");
+		List<TicketPriorityContext> categories = builder.get();
+		return categories.get(0);
+	}
+
+	public static TicketPriorityContext getPriority(long orgId, long id) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketPriorityContext> builder = new SelectRecordsBuilder<TicketPriorityContext>()
+				.table("TicketPriority")
+				.moduleName(FacilioConstants.ContextNames.TICKET_PRIORITY)
+				.beanClass(TicketPriorityContext.class)
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_PRIORITY))
+				.andCustomWhere("ORGID = ? AND ID = ?", orgId, id)
+				.orderBy("ID");
 		List<TicketPriorityContext> categories = builder.get();
 		return categories.get(0);
 	}
