@@ -292,6 +292,9 @@ public class S3FileStore extends FileStore {
 		}
 		boolean objectExists = false;
 		String staticBucket = FacilioProperties.getConfig("static.bucket");
+		if( ! (FacilioProperties.isDevelopment() && FacilioProperties.isProduction())) {
+			newVersion = "facilio-client/"+newVersion;
+		}
 		if(staticBucket != null) {
 			AmazonS3 s3Client = getClient();
 			objectExists = s3Client.doesObjectExist(staticBucket, newVersion+"/js/app.js");
