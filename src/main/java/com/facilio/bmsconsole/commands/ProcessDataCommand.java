@@ -28,7 +28,7 @@ public class ProcessDataCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 
 		JSONObject payLoad = (JSONObject) context.get(FacilioConstants.ContextNames.PAY_LOAD);
-		if (AccountUtil.getCurrentOrg().getId() == 146) {
+		if (AccountUtil.getCurrentOrg().getId() == 297) {
 			LOGGER.info("Payload : " + payLoad);
 		}
 		Iterator<String> keyList = payLoad.keySet().iterator();

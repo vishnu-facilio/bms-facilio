@@ -109,7 +109,10 @@ public class ModeledDataCommand extends AgentV2Command {
 			if (TimeSeriesAPI.isStage()) {
 				LOGGER.debug("Inside ModeledDataCommand####### deviceData: " + deviceData);
 			}
-
+			if(AccountUtil.getCurrentOrg().getId() == 297) {
+				LOGGER.info("Device Data : "+deviceData);
+			}
+			
 			for (Map.Entry<String, Map<String, String>> data : deviceData.entrySet()) {
 				String deviceName = data.getKey(); // controller name
 
@@ -143,6 +146,10 @@ public class ModeledDataCommand extends AgentV2Command {
 						Long resourceId = (Long) dataPoints.get("resourceId");
 						Long fieldId = (Long) dataPoints.get("fieldId");
 						if (fieldId != null && resourceId != null) {
+							if(AccountUtil.getCurrentOrg().getId() == 297) {
+								LOGGER.info("Testing BECO 2 controller");	
+							}
+							
 							if(deviceName.equals("BECO 2") && pointName.equals("Cooling Capacity Enable|dac-8")) {
 								LOGGER.info("InsatanceName and deviceName is in Points and commissioned");
 							}
