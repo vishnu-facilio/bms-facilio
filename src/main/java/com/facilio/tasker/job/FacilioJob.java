@@ -3,6 +3,7 @@ package com.facilio.tasker.job;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.jobs.JobLogger;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.executor.Executor;
 import com.facilio.util.SentryUtil;
@@ -46,7 +47,7 @@ public abstract class FacilioJob implements Runnable {
 			retryExecutionCount++;
 
 			long orgId = jc.getOrgId();
-			if(orgId != -1) {
+			if(orgId > 0) {
 				AccountUtil.setCurrentAccount(orgId);
 				AccountUtil.setReqUri(jc.getJobName());
 				if (jc.getLoggerLevel() != -1) {
@@ -57,10 +58,15 @@ public abstract class FacilioJob implements Runnable {
 				AccountUtil.setTimeZone(jc.getTimezone());
 			}
 			jc.setNextExecutionTime(getNextExecutionTime());
-			FacilioContext context = new FacilioContext();
-			context.put(JobConstants.JOB_CONTEXT, jc);
-			context.put(JobConstants.FACILIO_JOB, this);
-			JobConstants.ChainFactory.jobExecutionChain(jc.getTransactionTimeout()).execute(context);
+
+			if (orgId <= 0 || AccountUtil.getCurrentAccount() != null) { //To prevent execution of job with invalid org
+				FacilioChain executionChain = JobConstants.ChainFactory.jobExecutionChain(jc.getTransactionTimeout());
+				FacilioContext context = executionChain.getContext();
+				context.put(JobConstants.JOB_CONTEXT, jc);
+				context.put(JobConstants.FACILIO_JOB, this);
+				executionChain.execute();
+			}
+
 			status = 1;
 			executor.jobEnd(jc.getJobKey());
 		}
