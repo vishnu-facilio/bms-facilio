@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
-import com.facilio.db.util.DBConf;
+import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -2031,13 +2031,13 @@ public class VisitorManagementAPI {
 	public static void saveAutoCheckOutVisitorsPrefs (Map<String, Object> map) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.VISITOR);
-		JobContext job = new JobContext();
-		job.setJobName(FacilioConstants.Job.AUTO_CHECKOUT_JOB_NAME);
-		job.setActive(true);
-		job.setExecutorName("facilio");
-		job.setIsPeriodic(true);
-		job.setOrgId(AccountUtil.getCurrentOrg().getId());
-		
+//		JobContext job = new JobContext();
+//		job.setJobName(FacilioConstants.Job.AUTO_CHECKOUT_JOB_NAME);
+//		job.setActive(true);
+//		job.setExecutorName("facilio");
+//		job.setIsPeriodic(true);
+//		job.setOrgId(AccountUtil.getCurrentOrg().getId());
+
 		ScheduleInfo info = new ScheduleInfo();
 		info.setFrequencyType(FrequencyType.DAILY);
 		List<String> timeList = new ArrayList<String>();
@@ -2048,10 +2048,11 @@ public class VisitorManagementAPI {
 			String dateFormatted = formatter.format(date.getHour()) + ":" + formatter.format(date.getMinute());
 			timeList.add(dateFormatted);
 			info.setTimes(timeList);
-			job.setJobId(module.getModuleId());
-			job.setSchedule(info);
-			job.setExecutionTime(info.nextExecutionTime(System.currentTimeMillis() / 1000));
-			FacilioService.runAsService(() -> JobStore.addJob(job));		
+//			job.setJobId(module.getModuleId());
+//			job.setSchedule(info);
+//			job.setExecutionTime(info.nextExecutionTime(System.currentTimeMillis() / 1000));
+			FacilioTimer.scheduleCalendarJob(module.getModuleId(), FacilioConstants.Job.AUTO_CHECKOUT_JOB_NAME, System.currentTimeMillis(), info, "facilio");
+//			FacilioService.runAsService(() -> JobStore.addJob(job));
 		}
 	}
 	
@@ -2428,7 +2429,7 @@ public class VisitorManagementAPI {
 			@Override
 			public void disable(Long recordId, Long moduleId) throws Exception {
 				// TODO Auto-generated method stub
-				FacilioService.runAsService(() -> JobStore.deleteJob(DBConf.getInstance().getCurrentOrgId(), moduleId, FacilioConstants.Job.AUTO_CHECKOUT_JOB_NAME));
+				FacilioTimer.deleteJob(moduleId, FacilioConstants.Job.AUTO_CHECKOUT_JOB_NAME);
 			}
 
 		};
