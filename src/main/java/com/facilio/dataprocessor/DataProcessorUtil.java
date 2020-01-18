@@ -46,7 +46,7 @@ public class DataProcessorUtil {
     private String orgDomainName;
 
     private String errorStream;
-    private HashMap<String, HashMap<String, Long>> deviceMessageTime = new HashMap<>();
+    private HashMap<String, HashMap<String, Long>> deviceVsPublishTypeVsMessageTime = new HashMap<>();
     private AgentUtil agentUtil;
     private DevicePointsUtil devicePointsUtil;
     private AckUtil ackUtil;
@@ -168,6 +168,9 @@ public class DataProcessorUtil {
             long lastMessageReceivedTime = System.currentTimeMillis();
             if (payLoad.containsKey(AgentKeys.TIMESTAMP)) {
                 Object lastTime = payLoad.get(AgentKeys.TIMESTAMP);
+                if (payLoad.containsKey("actual_timestamp")){
+                    lastTime = payLoad.get("actual_timestamp");
+                }
                 lastMessageReceivedTime = lastTime instanceof Long ? (Long) lastTime : Long.parseLong(lastTime.toString());
             }
 
@@ -187,10 +190,12 @@ public class DataProcessorUtil {
 
 
             long i = 0;
-            HashMap<String, Long> dataTypeLastMessageTime = deviceMessageTime.getOrDefault(deviceId, new HashMap<>());
-            long deviceLastMessageTime = dataTypeLastMessageTime.getOrDefault(dataType, 0L);
+            HashMap<String, Long> publishTypeVsLastMessageTime = deviceVsPublishTypeVsMessageTime.getOrDefault(deviceId, new HashMap<>());
+            long deviceLastMessageTime = publishTypeVsLastMessageTime.getOrDefault(dataType, 0L);
+
+
             if(AccountUtil.getCurrentOrg().getId() == 297) {
-            	LOGGER.info("Incomming data in DataProcessor for BECONET : "+payLoad);
+                LOGGER.info("Incomming data in DataProcessor for BECONET : "+payLoad);
             }
             if (deviceLastMessageTime != lastMessageReceivedTime) {
                 switch (publishType) {
@@ -224,8 +229,8 @@ public class DataProcessorUtil {
 
                 }
 
-                dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
-                deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
+                publishTypeVsLastMessageTime.put(dataType, lastMessageReceivedTime);
+                deviceVsPublishTypeVsMessageTime.put(deviceId, publishTypeVsLastMessageTime);
             } else {
                 LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType + " data : " + record.getData());
             }
