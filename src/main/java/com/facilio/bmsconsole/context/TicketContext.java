@@ -491,4 +491,12 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
+	
+	private ServiceRequestContext serviceRequest;
+	public ServiceRequestContext getServiceRequest() {
+		return serviceRequest;
+	}
+	public void setServiceRequest(ServiceRequestContext serviceRequest) {
+		this.serviceRequest = serviceRequest;
+	}
 }
