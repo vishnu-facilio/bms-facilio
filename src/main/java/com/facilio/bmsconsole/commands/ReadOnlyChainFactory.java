@@ -1001,6 +1001,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetModuleListCommand());
 		return c;
 	}
+	
+	public static FacilioChain getModulesList() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetModulesListCommand());
+		return c;
+	}
 
 	public static FacilioChain getInventoryRequestListChain() {
 		FacilioChain chain = getDefaultChain();

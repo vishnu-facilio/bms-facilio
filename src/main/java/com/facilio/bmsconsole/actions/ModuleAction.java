@@ -112,6 +112,18 @@ public class ModuleAction extends FacilioAction {
 		setResult("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
 		return SUCCESS;
 	}
+	
+	public String v2GetModulesList() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getModulesList();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
+		context.put(FacilioConstants.ContextNames.FETCH_DEFAULT_MODULES, defaultModules);
+		
+		chain.execute();
+		
+		setResult("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
+		return SUCCESS;
+	}
 
 	public String v2GetModule() throws Exception {
 		FacilioChain c = ReadOnlyChainFactory.getModuleDetails();
