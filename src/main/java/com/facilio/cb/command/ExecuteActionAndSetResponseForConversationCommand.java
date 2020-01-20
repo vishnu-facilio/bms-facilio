@@ -38,6 +38,8 @@ public class ExecuteActionAndSetResponseForConversationCommand extends FacilioCo
 				
 				List<Object> props = ChatBotUtil.fetchAllSessionParams(chatBotSessionConversation.getSessionId());
 				
+				context.put(ChatBotConstants.CHAT_BOT_INTENT, intent);
+				
 				String response = intent.executeActions(context, props);
 				
 				ChatBotSession session = chatBotSessionConversation.getChatBotSession();

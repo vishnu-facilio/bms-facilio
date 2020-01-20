@@ -3,11 +3,48 @@ system_greet_intent:
     - "Hello"
     - "Hey"
     
+system_greet_question_1_intent: 
+    - "Fine, thank you"
+    - "I'm good"
+    - "I’m fine"
+    - "Pretty good"
+    - "Very well, thanks"
+    
+system_name_query_intent: 
+    - "That's great"
+    - "Much appreciated"
+    - "Brilliant"
+    - "Cheers"
+    - "Okay"
+    - "Lovely"
+    - "Cool"
+    - "Awesome"
+    - "Alright"
+    
 system_intent_not_fount_intent: 
-    - "I can't Understand"
+    - "I can't understand"
     - "Please rephrase your sentence"
-    - "try some other word"
+    - "Try some other word"
     
 system_terminate_session_intent:
-   - "OK, I've cancelled your request."
-   - "Fine, I will cancel your request."
+   - "OK, I've cancelled your request"
+   - "Fine, I will cancel your request"
+
+system_what_is_workorder_question_intent:
+   - "A work order is usually a task or a job for a customer, that can be scheduled or assigned to someone. Such an order may be from a customer request or created internally within the organization"
+   
+system_vm_create_page_direction_intent:
+   - "You can go to Settings -> Energy Analytics -> Energy Meters and create a new virtual meter. or just click this link https://app.facilio.com/app/setup/energyanalytics/energymeters"
+   
+system_facilio_blog_page_query_intent:
+   - "You can find our blog here https://blog.facilio.com"
+   
+system_what_is_your_age_intent:
+   - "I was launched in 2020, so I'm pretty young."
+   - "I'm still pretty new"
+   
+system_what_is_your_gender_intent:
+   - "I dont't have a gender."
+   - "I'm gender neutral"
+   
+   

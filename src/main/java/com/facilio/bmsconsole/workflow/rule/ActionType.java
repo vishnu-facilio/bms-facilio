@@ -1369,19 +1369,13 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
 		{
-
-			try {
 				
-				ChatBotIntent chatBotIntent = (ChatBotIntent)context.get(ChatBotConstants.CHAT_BOT_INTENT);
+			ChatBotIntent chatBotIntent = (ChatBotIntent)context.get(ChatBotConstants.CHAT_BOT_INTENT);
+			
+			String response = ChatBotConstants.getDefaultIntentResponse(chatBotIntent.getName());
+			
+			context.put(ChatBotConstants.CHAT_BOT_RESPONSE_STRING, response);
 				
-				String response = ChatBotConstants.getDefaultIntentResponse(chatBotIntent.getName());
-				
-				context.put(ChatBotConstants.CHAT_BOT_RESPONSE_STRING, response);
-				
-			}
-			catch (Exception e) {
-				LOGGER.error("Exception occurred on workflow Action", e);
-			}
 		}
 
 		@Override

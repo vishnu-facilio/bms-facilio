@@ -105,12 +105,18 @@ public class ChatBotIntentParam {
 
 	public enum ML_Type {
 		
-		PERSON(1, "Person"),
-		TIME(2, "Time"),
+		PERSON(1, "Person",""),
+		TIME(2, "Time",""),
+		SUBJECT(3, "Time","message_subject"),
 		;
 
 		int intVal;
 		String name;
+		String mlname;
+
+		public String getMLName() {
+			return mlname;
+		}
 
 		public int getIntVal() {
 			return intVal;
@@ -120,9 +126,10 @@ public class ChatBotIntentParam {
 			return name;
 		}
 
-		private ML_Type(int intVal, String name) {
+		private ML_Type(int intVal, String name,String mlname) {
 			this.intVal = intVal;
 			this.name = name;
+			this.mlname = mlname;
 		}
 
 		private static final Map<Integer, ML_Type> optionMap = Collections.unmodifiableMap(initTypeMap());

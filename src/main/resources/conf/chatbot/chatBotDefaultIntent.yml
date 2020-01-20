@@ -2,6 +2,7 @@
    name: "system_greet_intent"
    displayName: "System Greeting Intent"
    type: 1
+   localId : 1
    actions:
     - 
         action: 
@@ -17,11 +18,75 @@
     -
         sampleLocalId : 3
         sample: "Hai"
+        
+- 
+   name: "system_greet_question_1_intent"
+   displayName: "System Greeting Question Intent"
+   type: 1
+   localId : 2
+   actions:
+    - 
+        action: 
+            actionType: 29
+            status: 1
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "how are you"
+    -
+        sampleLocalId : 2
+        sample: "What’s up"
+    -
+        sampleLocalId : 3
+        sample: "How are you doing"
+    -
+        sampleLocalId : 4
+        sample: "How do you do"
+    -
+        sampleLocalId : 5
+        sample: "Whazzup"
+        
+        
+- 
+   name: "system_name_query_intent"
+   displayName: "System Name Query Intent"
+   type: 1
+   localId : 3
+   withParams : true
+   params:
+   -
+      name : 'myname'
+      askAs : "I don't have a name, can you suggest a name for me?"
+      dataType : 1
+      mlType : 1
+      localId : 1
+   actions:
+    - 
+        action: 
+            actionType: 29
+            status: 1
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "what is your name"
+    -
+        sampleLocalId : 2
+        sample: "What do you call yourself"
+    -
+        sampleLocalId : 3
+        sample: "What are you named"
+    -
+        sampleLocalId : 4
+        sample: "may i have your name"
+    -
+        sampleLocalId : 5
+        sample: "How may I address you"
          
 - 
    name: "system_intent_not_fount_intent"
    displayName: "System Intent not Fount Intent"
    type: 3
+   localId : 4
    actions:
       - 
         action: 
@@ -32,6 +97,7 @@
    name: "system_terminate_session_intent"
    displayName: "System Terminate Session Intent"
    type: 1
+   localId : 5
    actions:
     - 
         action: 
@@ -47,47 +113,12 @@
     -
         sampleLocalId : 3
         sample: "terminate"
-         
-- 
-   name: "system_greet_me_intent"
-   displayName: "System Greet Me Intent"
-   type: 1
-   withParams : true
-   params:
-   -
-      name : 'firstName'
-      askAs : 'Enter Your First Name?'
-      dataType : 1
-      mlType : 1
-      localId : 1
-   -
-      name : 'secondName'
-      askAs : 'What is your Second Name?'
-      dataType : 1
-      mlType : 1
-      localId : 2
-   actions:
-    - 
-        action: 
-            actionType: 30
-            status: 1
-            templateJson: 
-                type: 18
-                resultWorkflowContext :
-                   isV2Script : true
-                   workflowV2String : 'void test (String firstName,String secondName) { log "hello "+ firstName +" "+secondName;}'   
-   invokeSamples:
-    -
-       sampleLocalId : 1
-       sample: "greet me"
-    -
-       sampleLocalId : 2
-       sample: "wish me"
        
 - 
    name: "system_create_wo_intent"
    displayName: "System create wo Intent"
    type: 1
+   localId : 7
    withParams : true
    params:
    -
@@ -156,3 +187,129 @@
     -
        sampleLocalId : 8
        sample: "make wo"
+       
+- 
+   name: "system_what_is_workorder_question_intent"
+   displayName: "System what is workorder question Intent"
+   type: 1
+   localId : 8
+   actions:
+    - 
+        action: 
+            actionType: 29
+            status: 1
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "what is workorder"
+    -
+        sampleLocalId : 2
+        sample: "what is wo"
+        
+- 
+   name: "system_vm_create_page_direction_intent"
+   displayName: "System vm create page direction Intent"
+   type: 1
+   localId : 9
+   actions:
+    - 
+        action: 
+            actionType: 29
+            status: 1
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "where can i create a vm"
+    -
+        sampleLocalId : 2
+        sample: "where can i create a virtual meter"
+    -
+        sampleLocalId : 3
+        sample: "how can i create a virtual meter"
+    -
+        sampleLocalId : 4
+        sample: "how can i create a vm"
+    -
+        sampleLocalId : 5
+        sample: "how to create a vm"
+    -
+        sampleLocalId : 6
+        sample: "how to create a virtual meter"
+    -
+        sampleLocalId : 7
+        sample: "where to create a virtual meter"
+    -
+        sampleLocalId : 8
+        sample: "where to create a vm"
+        
+- 
+   name: "system_facilio_blog_page_query_intent"
+   displayName: "System facilio blog page query Intent"
+   type: 1
+   localId : 10
+   actions:
+    - 
+        action: 
+            actionType: 29
+            status: 1
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "where can i find your blog"
+    -
+        sampleLocalId : 2
+        sample: "where can i find blog posts"
+    -
+        sampleLocalId : 3
+        sample: "how to view facilio blog"
+    -
+        sampleLocalId : 4
+        sample: "how to view blog"
+    -
+        sampleLocalId : 5
+        sample: "give me your blog address"
+    -
+        sampleLocalId : 6
+        sample: "where to find your blog"
+    -
+        sampleLocalId : 7
+        sample: "where to find your facilio blog"
+        
+- 
+   name: "system_what_is_your_age_intent"
+   displayName: "System what is your age Intent"
+   type: 1
+   localId : 12
+   actions:
+    - 
+        action: 
+            actionType: 29
+            status: 1
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "what is your age"
+    -
+        sampleLocalId : 2
+        sample: "how old are you"
+    -
+        sampleLocalId : 3
+        sample: "may i have your age"
+        
+- 
+   name: "system_what_is_your_gender_intent"
+   displayName: "System what is your age Intent"
+   type: 1
+   localId : 12
+   actions:
+    - 
+        action: 
+            actionType: 29
+            status: 1
+   invokeSamples:
+    -
+        sampleLocalId : 1
+        sample: "what is your gender"
+    -
+        sampleLocalId : 2
+        sample: "may i have your gender"
