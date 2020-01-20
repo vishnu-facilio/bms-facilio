@@ -121,7 +121,7 @@ public class ModuleAction extends FacilioAction {
 		
 		chain.execute();
 		
-		setResult("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
+		setResult("modules", context.get(FacilioConstants.ContextNames.MODULE_LIST));
 		return SUCCESS;
 	}
 

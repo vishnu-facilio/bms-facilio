@@ -49,8 +49,8 @@ public class GetModulesListCommand extends FacilioCommand {
         customModules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
         
         Map<String, List<FacilioModule>> modules = new HashMap<String, List<FacilioModule>>();
-        modules.put("systemModule", sysytemModules);
-        modules.put("customModule", customModules);
+        modules.put("systemModules", sysytemModules);
+        modules.put("customModules", customModules);
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         
