@@ -3014,8 +3014,7 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getExecuteCardWorkflowChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new GetCardWorkflowCommand());
-			c.addCommand(new GetCardDataCommand());
+			c.addCommand(new ExecuteCardWorkflowCommand());
 			return c;
 		}
 
