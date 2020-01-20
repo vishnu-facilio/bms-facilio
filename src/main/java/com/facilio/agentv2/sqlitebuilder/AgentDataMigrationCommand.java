@@ -13,6 +13,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 public class AgentDataMigrationCommand extends AgentV2Command {
@@ -32,6 +33,7 @@ public class AgentDataMigrationCommand extends AgentV2Command {
             }
             String fileName = agentId + ".db";
             File file = new File(path + File.separator + fileName);
+            createNewFile(file);
             LOGGER.info("migrated db file location->" + fileName);
             Map<Long, FacilioControllerType> controllerIdsType = ControllerApiV2.getControllerIds(agentId);
             LOGGER.info(" controllers " + controllerIdsType);
@@ -45,11 +47,19 @@ public class AgentDataMigrationCommand extends AgentV2Command {
             if (fileId > 0) {
                 context.put(AgentConstants.FILE_ID, fileId);
             } else {
-                LOGGER.info(" file id ->" + fileId);
+                throw new Exception(" fileId cant be less than 1, ->"+fileId);
             }
         }
-
-
         return false;
     }
+
+    private void createNewFile(File file) throws IOException {
+        if( ! file.createNewFile()){
+            LOGGER.info(" file already present ");
+            file.delete();
+            file.createNewFile();
+        }
+    }
+
+
 }

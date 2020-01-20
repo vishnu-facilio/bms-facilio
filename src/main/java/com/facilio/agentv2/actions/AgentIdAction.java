@@ -170,7 +170,6 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String migrate() {
         try {
-            LOGGER.info(" here ");
             long fileId = SqliteBridge.migrateAgentData(getAgentId());
             if (fileId > 0) {
                 setResult(AgentConstants.RESULT, SUCCESS);

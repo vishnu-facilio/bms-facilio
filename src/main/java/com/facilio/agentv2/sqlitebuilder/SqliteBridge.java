@@ -26,6 +26,8 @@ public class SqliteBridge {
             migrationChain.execute();
             if (context.containsKey(AgentConstants.FIELD_ID)) {
                 return (long) context.get(AgentConstants.FIELD_ID);
+            }else {
+                LOGGER.info(AgentConstants.FIELD_ID+" is missing from context ");
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred while migrating Agentdata for agentId " + agentId + "   ", e);

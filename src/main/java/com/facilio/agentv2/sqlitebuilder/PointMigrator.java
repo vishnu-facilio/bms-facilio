@@ -24,6 +24,7 @@ public class PointMigrator {
             FacilioControllerType controllerType = controllerIdsType.get(controllerId);
             if (controllerType != null) {
                 List<Point> points = PointsAPI.getControllerPoints(controllerType, controllerId);
+                LOGGER.info(" controllerId -> "+controllerId+"    points -> "+points.size());
                 addPointsToSqlite(points, controllerType);
             } else {
                 LOGGER.info(" controllerType cant be null ->" + controllerId);
