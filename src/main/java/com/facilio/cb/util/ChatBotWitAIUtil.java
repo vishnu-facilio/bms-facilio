@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -15,9 +17,12 @@ import org.json.simple.JSONObject;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotModel;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.rabbitmq.http.client.HttpException;
 
 public class ChatBotWitAIUtil {
+	
+	private static final Logger LOGGER = Logger.getLogger(ChatBotWitAIUtil.class.getName());
 	
 	
 	public static final String MAIN_APP_TOKEN = "H7REGEA6BYHYRG5FZRQAPREILVZHS6F6";
@@ -60,15 +65,21 @@ public class ChatBotWitAIUtil {
 		      String response = new String(responseBody);
 		      
 		      System.out.println(response);
+		      
+		      LOGGER.log(Level.SEVERE, "text -- "+text);
+		      LOGGER.log(Level.SEVERE, "response -- "+response);
 		      JSONObject responseJson = FacilioUtil.parseJson(response);
+		      
 		      
 		      return responseJson;
 
 		    } catch (HttpException e) {
 		      System.err.println("Fatal protocol violation: " + e.getMessage());
+		      LOGGER.log(Level.SEVERE, "Fatal protocol violation: " + e.getMessage());
 		      e.printStackTrace();
 		    } catch (IOException e) {
 		      System.err.println("Fatal transport error: " + e.getMessage());
+		      LOGGER.log(Level.SEVERE, "Fatal transport error: " + e.getMessage());
 		      e.printStackTrace();
 		    } finally {
 		      method.releaseConnection();
