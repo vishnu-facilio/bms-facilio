@@ -8,7 +8,7 @@ public class BACNetUtil {
 	    	ANALOG_VALUE(true),
 	    	BINARY_INPUT,
 	    	BINARY_OUTPUT(true),
-	    	BINARY_VALUE(true),
+	    	BINARY_VALUE(true),	// 5
 	    	CALENDAR,
 	    	COMMAND,
 	    	DEVICE,
@@ -16,13 +16,13 @@ public class BACNetUtil {
 	    	FILE,
 	    	GROUP,
 	    	LOOP,
-	    	MULTI_STATE_INPUT,
+	    	MULTI_STATE_INPUT,	// 13
 	    	MULTI_STATE_OUTPUT(true),
 	    	NOTIFICATION_CLASS,
 	    	PROGRAM,
 	    	SCHEDULE,
 	    	AVERAGING,
-	    	MULTI_STATE_VALUE,
+	    	MULTI_STATE_VALUE,	// 19
 	    	TREND_LOG,
 	    	LIFE_SAFETY_POINT,
 	    	LIFE_SAFETY_ZONE,
