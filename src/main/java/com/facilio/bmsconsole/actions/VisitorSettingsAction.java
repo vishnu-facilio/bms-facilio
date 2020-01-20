@@ -1,9 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.VisitorSettingsContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -33,6 +36,16 @@ public class VisitorSettingsAction extends FacilioAction
 		this.visitorType = visitorType;
 	}
 
+	
+private List<FacilioForm> forms;
+	
+	public void setForms(List<FacilioForm> forms) {
+		this.forms = forms;
+	}
+	
+	public List<FacilioForm> getForms() {
+		return this.forms;
+	}
 	public String addVisitorType() throws Exception	
 	{
 		FacilioChain chain=TransactionChainFactory.getAddVisitorTypeSettingChain();
@@ -41,6 +54,18 @@ public class VisitorSettingsAction extends FacilioAction
 		chain.execute();
 		return SUCCESS;
 	}
+	
+	//duplicating initForms from FormAction.Java
+	public String updateFormListFields() throws Exception{
+	
+	FacilioChain c = TransactionChainFactory.getUpdateVisitorFormsChain();
+	c.getContext().put(ContextNames.FORMS_LIST, this.getForms());
+	c.execute();
+	setResult(ContextNames.FORMS_RESPONSE_LIST, c.getContext().get(ContextNames.FORMS_RESPONSE_LIST));
+	return SUCCESS;
+	}
+	
+	
 	
 	public String fetchVisitorSettings() throws Exception{
 		FacilioChain chain=ReadOnlyChainFactory.getFetchVisitorTypeSettingChain();

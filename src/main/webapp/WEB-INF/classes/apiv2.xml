@@ -4777,6 +4777,8 @@
 			class="com.facilio.bmsconsole.actions.VisitorSettingsAction" method="fetchVisitorSettings" />
 			<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorSettingsAction" method="updateVisitorSettings" />
+			<action name="initForms"
+			class="com.facilio.bmsconsole.actions.VisitorSettingsAction" method="updateFormListFields" />
 		
 	</package>
 	<package name="pythonai" namespace="/api/v2/ai" extends="v2Api">

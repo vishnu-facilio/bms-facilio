@@ -4393,6 +4393,14 @@ public class TransactionChainFactory {
 		c.addCommand(new AddChatBotIntentCommand());
 		return c;
 	}
+	
+	public static FacilioChain getUpdateVisitorFormsChain()
+	{
+		FacilioChain c=getDefaultChain();
+		c.addCommand(getUpdateFormListFieldsChain());
+		c.addCommand(new SendEventToDeviceCommand());
+		return c;
+	}
 }
 
 
