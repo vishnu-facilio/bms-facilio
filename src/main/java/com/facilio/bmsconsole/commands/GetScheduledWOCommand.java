@@ -1,10 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -85,16 +81,17 @@ public class GetScheduledWOCommand extends FacilioCommand {
 		Map<Long, PMTriggerContext> pmTriggerMap = new HashMap<>();
 
 		Map<Long,Map<Long,List<Map<String, Object>>>> pmTriggerTimeBasedGroupedMap = new HashMap<>();
-		List<Long> resourceIds = new ArrayList<>();
+		Set<Long> resourceIds = new HashSet<>();
 		Map<Long,WorkorderTemplate> workorderTemplateMap = new HashMap<>();
+
+		fillResourceIds(pmJobsMap, pmTriggersMap, pms, resourceIds);
+
+		Map<Long, ResourceContext> resourceAsMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+
 		for(PreventiveMaintenance pm : pms)
 		{
 			List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
 			if (pmTrigggers != null && !pmTrigggers.isEmpty()) {
-				if(pm.getWoTemplate() != null && pm.getWoTemplate().getResourceIdVal() != -1 && !resourceIds.contains(pm.getWoTemplate().getResourceIdVal()))
-				{
-					resourceIds.add(pm.getWoTemplate().getResourceIdVal());
-				}
 				for (PMTriggerContext trigger : pmTrigggers) {
 					if(trigger.getSchedule() != null) {
 						pmTriggerMap.put(trigger.getId(), trigger);
@@ -119,11 +116,8 @@ public class GetScheduledWOCommand extends FacilioCommand {
 											pmJob.put("template", template);
 										}
 										if(pmJob.get("resourceId") != null) {
-											ResourceContext resource = ResourceAPI.getResource((long) pmJob.get("resourceId"));
+											ResourceContext resource = resourceAsMap.get(pmJob.get("resourceId"));
 											pmJob.put("resource", resource);
-											if (!resourceIds.contains(pmJob.get("resourceId"))) {
-												resourceIds.add((long) pmJob.get("resourceId"));
-											}
 										}
 										if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE && currentCalendarView != null && currentCalendarView.equals("planned")) {
 											Long executionTime = (Long) pmJob.get("nextExecutionTime");
@@ -156,9 +150,36 @@ public class GetScheduledWOCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGER_VS_PMJOB_MAP, pmTriggerTimeBasedGroupedMap);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST, pmJobList);
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST, pmTriggerMap);
-			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES, ResourceAPI.getResourceAsMapFromIds(resourceIds));
+			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES, resourceAsMap);
 		}
 		
 		return false;
+	}
+
+	private void fillResourceIds(Map<Long, List<Map<String, Object>>> pmJobsMap, Map<Long, List<PMTriggerContext>> pmTriggersMap, List<PreventiveMaintenance> pms, Set<Long> resourceIds) {
+		for (PreventiveMaintenance pm: pms) {
+			List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
+			if(pm.getWoTemplate() != null && pm.getWoTemplate().getResourceIdVal() != -1 && !resourceIds.contains(pm.getWoTemplate().getResourceIdVal()))
+			{
+				resourceIds.add(pm.getWoTemplate().getResourceIdVal());
+			}
+			for (PMTriggerContext trigger : pmTrigggers) {
+				if(trigger.getSchedule() != null) {
+					switch(pm.getTriggerTypeEnum()) {
+						case ONLY_SCHEDULE_TRIGGER:
+							List<Map<String, Object>> pmJobs = pmJobsMap.get(trigger.getId());
+							if(pmJobs != null && !pmJobs.isEmpty()) {
+								for(Map<String, Object> pmJob : pmJobs) {
+									if(pmJob.get("resourceId") != null) {
+										if (!resourceIds.contains(pmJob.get("resourceId"))) {
+											resourceIds.add((long) pmJob.get("resourceId"));
+										}
+									}
+								}
+							}
+					}
+				}
+			}
+		}
 	}
 }
