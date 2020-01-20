@@ -52,6 +52,14 @@ public class ServiceCatalogAction extends FacilioAction {
         this.searchString = searchString;
     }
 
+    private Boolean fetchFullForm = false;
+    public Boolean getFetchFullForm() {
+        return fetchFullForm;
+    }
+    public void setFetchFullForm(Boolean fetchFullForm) {
+        this.fetchFullForm = fetchFullForm;
+    }
+
     public String addOrUpdateServiceCatalog() throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateServiceCatalogChain();
         FacilioContext context = chain.getContext();
@@ -70,6 +78,8 @@ public class ServiceCatalogAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.GROUP_ID, groupId);
         context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
         context.put(FacilioConstants.ContextNames.SEARCH, searchString);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+        context.put(FacilioConstants.ContextNames.FETCH_FULL_FORM, fetchFullForm);
 
         chain.execute();
 

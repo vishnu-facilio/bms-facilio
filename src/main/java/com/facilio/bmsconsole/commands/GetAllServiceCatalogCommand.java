@@ -60,20 +60,37 @@ public class GetAllServiceCatalogCommand extends FacilioCommand {
             builder.andCondition(CriteriaAPI.getCondition("NAME", "name", searchString, StringOperators.CONTAINS));
         }
 
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        if (StringUtils.isNotEmpty(moduleName)) {
+            FacilioModule module = modBean.getModule(moduleName);
+            if (module != null) {
+                builder.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+            }
+        }
+
         List<Map<String, Object>> maps = builder.get();
         List<ServiceCatalogContext> serviceCatalogs = FieldUtil.getAsBeanListFromMapList(maps, ServiceCatalogContext.class);
         if (CollectionUtils.isNotEmpty(serviceCatalogs)) {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
             List<Long> ids = new ArrayList<>();
             for (ServiceCatalogContext serviceCatalog : serviceCatalogs) {
                 ids.add(serviceCatalog.getFormId());
             }
-            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                    .table(ModuleFactory.getFormModule().getTableName())
-                    .select(FieldFactory.getFormFields())
-                    .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getFormModule()));
-            List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), FacilioForm.class);
+
+            Boolean fetchFullForm = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_FULL_FORM);
+            if (fetchFullForm == null) {
+                fetchFullForm = false;
+            }
+
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getFormModule()));
+            List<FacilioForm> forms = FormsAPI.getDBFormList(null, (FacilioForm.FormType) null, criteria, null, fetchFullForm);
+//            GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//                    .table(ModuleFactory.getFormModule().getTableName())
+//                    .select(FieldFactory.getFormFields())
+//                    .andCondition(CriteriaAPI.getIdCondition(ids, ModuleFactory.getFormModule()));
+//            List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), FacilioForm.class);
             Map<Long, FacilioForm> formMap = forms.stream().collect(Collectors.toMap(FacilioForm::getId, Function.identity()));
 
             for (ServiceCatalogContext serviceCatalog : serviceCatalogs) {
