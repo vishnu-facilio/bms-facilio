@@ -1,21 +1,24 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ProcessWorkOrderImportCommand extends FacilioCommand {
 
@@ -46,6 +49,9 @@ public class ProcessWorkOrderImportCommand extends FacilioCommand {
 			if (tempWo.getStatus() != null && tempWo.getStatus().getId() > 0) {
 				tempWo.setModuleState(tempWo.getStatus());
 			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+			tempWo.setStateFlowId(StateFlowRulesAPI.getDefaultStateFlow(woModule).getId());
 			tempWo.setApprovalRuleId(-1);
 			tempWo.setSiteId(readingContext.getSiteId());
 			bulkWorkOrderContext.addContexts(tempWo, null,null,null);
