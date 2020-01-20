@@ -30,17 +30,11 @@ public class CopyAssetReadingsData extends FacilioAction {
 	private long endTime = -1;
 	private long timeDiff = -1;
 	private String assetList;
-
+	private long targetModuleIdList;
+	private long sourceModuleIdList;
 	public String copyAssetReadings() throws Exception {
 
-		JSONArray assetArrayList = new JSONArray(assetList);
-		JSONObject jsonObj = null;
-		List<Map<String, Object>> assets = new ArrayList<Map<String, Object>>();
-		for (int i = 0; i < assetArrayList.length(); i++) {
-			jsonObj = assetArrayList.getJSONObject(i);
-			Map<String, Object> dataValue = toMap(jsonObj);
-			assets.add(dataValue);
-		}
+		
 		try {
 			FacilioChain context = ReadOnlyChainFactory.copySpecificAssetReadingToAnotherOrgChain();
 			context.getContext().put(FacilioConstants.ContextNames.COPY_SOURCE_ORG_ID, getSourceOrgId());
@@ -48,7 +42,9 @@ public class CopyAssetReadingsData extends FacilioAction {
 			context.getContext().put(FacilioConstants.ContextNames.COPY_START_TIME, getStartTime());
 			context.getContext().put(FacilioConstants.ContextNames.COPY_END_TIME, getEndTime());
 			context.getContext().put(FacilioConstants.ContextNames.COPY_TIME_DIFF, getTimeDiff());
-			context.getContext().put(FacilioConstants.ContextNames.COPY_ASSET_LIST, assets);
+			context.getContext().put(FacilioConstants.ContextNames.COPY_ASSET_LIST, conversionToList(assetList));
+			context.getContext().put("TARGET_MODULE_LIST", targetModuleIdList);
+			context.getContext().put("SOURCE_MODULE_LIST", sourceModuleIdList);
 			context.execute();
 		}catch(Exception e) {
 			throw e;
@@ -106,6 +102,18 @@ public class CopyAssetReadingsData extends FacilioAction {
 		this.timeDiff = timeDiff;
 	}
 
+	public long getSourceModuleIdList() {
+		return sourceModuleIdList;
+	}
+
+	public void setSourceModuleIdList(long sourceModuleIdList) {
+		this.sourceModuleIdList = sourceModuleIdList;
+	}
+
+	public void setTargetModuleIdList(long targetModuleIdList) {
+		this.targetModuleIdList = targetModuleIdList;
+	}
+
 	public static Map<String, Object> toMap(JSONObject object) throws JSONException {
 		Map<String, Object> map = new HashMap<String, Object>();
 
@@ -117,5 +125,17 @@ public class CopyAssetReadingsData extends FacilioAction {
 			map.put(key, value);
 		}
 		return map;
+	}
+	
+	private List<Map<String,Object>> conversionToList(String assetList) throws JSONException{
+		JSONArray assetArrayList = new JSONArray(assetList);
+		JSONObject jsonObj = null;
+		List<Map<String, Object>> assets = new ArrayList<Map<String, Object>>();
+		for (int i = 0; i < assetArrayList.length(); i++) {
+			jsonObj = assetArrayList.getJSONObject(i);
+			Map<String, Object> dataValue = toMap(jsonObj);
+			assets.add(dataValue);
+		}
+		return assets ;
 	}
 }

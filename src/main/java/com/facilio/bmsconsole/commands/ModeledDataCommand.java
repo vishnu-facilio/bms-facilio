@@ -109,9 +109,6 @@ public class ModeledDataCommand extends AgentV2Command {
 			if (TimeSeriesAPI.isStage()) {
 				LOGGER.debug("Inside ModeledDataCommand####### deviceData: " + deviceData);
 			}
-			if(AccountUtil.getCurrentOrg().getId() == 297) {
-				LOGGER.info("Device Data : "+deviceData);
-			}
 			
 			for (Map.Entry<String, Map<String, String>> data : deviceData.entrySet()) {
 				String deviceName = data.getKey(); // controller name

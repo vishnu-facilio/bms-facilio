@@ -43,6 +43,8 @@ public class copyAssetReadingCommand extends FacilioCommand {
 		long sourceOrgStartTime = (long) context.get(FacilioConstants.ContextNames.COPY_START_TIME);
 		long sourceOrgEndTime = (long) context.get(FacilioConstants.ContextNames.COPY_END_TIME);
 		long timeDiff = (long) context.get(FacilioConstants.ContextNames.COPY_TIME_DIFF);
+		long targetModuleIdList = (long) context.get("TARGET_MODULE_LIST");
+		long sourceModuleIdList = (long) context.get("SOURCE_MODULE_LIST");
 		timeDiff = TimeUnit.HOURS.toMillis(timeDiff);
 		List<Map<String, Object>> assetList = (List<Map<String, Object>>) context
 				.get(FacilioConstants.ContextNames.COPY_ASSET_LIST);
@@ -55,7 +57,17 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				AssetContext assetIdSource = AssetsAPI.getAssetInfo(Long.valueOf((String) asset.get("sourceAsset")));
 				AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(assetIdSource.getCategory().getId());
 				List<FacilioModule> modules = bean.getSubModules(assetCategory.getAssetModuleID(), ModuleType.READING);
+				FacilioModule sourceMod  = null;
+				if(sourceModuleIdList !=0) {
+					sourceMod = bean.getModule(sourceModuleIdList);
+					if(sourceMod != null) {
+						modules.clear();
+						modules.add(sourceMod);
+					}
 
+				}
+				
+				
 				for (FacilioModule module : modules) {
 					LOGGER.info("copy asset Readings module is " + module.getName() + "for category "
 							+ assetCategory.getName() + " for asset " + assetIdSource.getName());
@@ -79,7 +91,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 							long val = prop.size();
 							offsetValue += (int) val;
 							AccountUtil.getTransactionalOrgBean(targetOrgId).copyReadingValue(prop, module, targetOrgId,
-									Long.valueOf((String) asset.get("targetAsset")), timeDiff, fields);
+									Long.valueOf((String) asset.get("targetAsset")), timeDiff, fields,targetModuleIdList);
 						} else {
 							break;
 						}
@@ -97,7 +109,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 	}
 
 	public static void insertAssetCopyValue(List<Map<String, Object>> prop, FacilioModule module, long orgId,
-			long targetAssetId, long timeDiff, List<FacilioField> fields) throws Exception {
+			long targetAssetId, long timeDiff, List<FacilioField> fields, long targetmodId) throws Exception {
 
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		try {
@@ -105,7 +117,12 @@ public class copyAssetReadingCommand extends FacilioCommand {
 			if (assetIdTarget == null) {
 				throw new IllegalArgumentException("Asset  doesn't exist in Target Org");
 			}
-			FacilioModule targetModule = bean.getModule(module.getName());
+			FacilioModule targetModule = null;
+			if(targetmodId != 0) {
+				targetModule = bean.getModule(targetmodId);
+			}else {
+				targetModule = bean.getModule(module.getName());
+			}
 
 			if (targetModule == null) {
 				List<FacilioField> field = new ArrayList<>();

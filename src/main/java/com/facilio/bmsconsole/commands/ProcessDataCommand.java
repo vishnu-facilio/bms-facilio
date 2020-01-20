@@ -1,7 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
 
-import com.facilio.accounts.util.AccountUtil;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -12,12 +22,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeseries.TimeSeriesAPI;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.*;
 
 
 public class ProcessDataCommand extends FacilioCommand {
@@ -28,9 +32,7 @@ public class ProcessDataCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 
 		JSONObject payLoad = (JSONObject) context.get(FacilioConstants.ContextNames.PAY_LOAD);
-		if (AccountUtil.getCurrentOrg().getId() == 297) {
-			LOGGER.info("Payload : " + payLoad);
-		}
+	
 		Iterator<String> keyList = payLoad.keySet().iterator();
 		List<Map<String, Object>> pointsStat = null;
 		Criteria criteriaList = new Criteria();
