@@ -1077,7 +1077,7 @@ public class FieldFactory {
 	public static FacilioField getSiteIdField(FacilioModule module) {
 		FacilioField field = new FacilioField();
 		field.setName("siteId");
-		field.setDisplayName("Site Id");
+		field.setDisplayName("Site");
 		field.setDataType(FieldType.NUMBER);
 		field.setColumnName("SITE_ID");
 		field.setDefault(true);
