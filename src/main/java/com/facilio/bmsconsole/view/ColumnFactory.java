@@ -895,7 +895,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("subject", "Subject"));
 		columns.add(new ViewField("assignedTo", "Team / Staff"));
-		columns.add(new ViewField("priority", "Priority"));
+		columns.add(new ViewField("urgency", "Urgency"));
 		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("classification", "Classification"));
 		return columns;

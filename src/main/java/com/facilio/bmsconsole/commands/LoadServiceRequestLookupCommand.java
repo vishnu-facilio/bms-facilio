@@ -28,7 +28,7 @@ public class LoadServiceRequestLookupCommand extends FacilioCommand {
 		}
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
-		LookupField priorityField = (LookupField) fieldsAsMap.get("priority");
+		LookupField priorityField = (LookupField) fieldsAsMap.get("urgency");
 		LookupField requesterField = (LookupField) fieldsAsMap.get("requester");
 		additionaLookups.add(priorityField);
 		additionaLookups.add(requesterField);

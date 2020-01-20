@@ -94,13 +94,13 @@ public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 		return sourceType;
 	}
 	
-	private ServiceRequestPriorityContext priority;
-	public ServiceRequestPriorityContext getPriority() {
-		return priority;
+	private ServiceRequestPriorityContext urgency;
+	public ServiceRequestPriorityContext getUrgency() {
+		return urgency;
 	}
 	
-	public void setPriority(ServiceRequestPriorityContext priority) {
-		this.priority = priority;
+	public void setUrgency(ServiceRequestPriorityContext priority) {
+		this.urgency = priority;
 	}
 	
 	private Classification classification;
