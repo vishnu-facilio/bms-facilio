@@ -1135,7 +1135,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	public Long genericInsert(Context context) throws Exception {
-		LOGGER.info("iamcvijaylogs inside generic insert ");
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder();
 		if (context.containsKey(ContextNames.MODULE)) {
 			FacilioModule module = (FacilioModule) context.get(ContextNames.MODULE);

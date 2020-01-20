@@ -48,16 +48,16 @@ public class LogsApi
     public static boolean logAgentMessages(long agentId,long msgId,FacilioCommand command,Status status,long actualTime){
         if((agentId > 0)){
             if(msgId > 0){
-                if(command != null){
+               /* if(command != null){*/
                     long currTime = System.currentTimeMillis();
-                    if(actualTime < currTime){
+                    if(actualTime <= currTime){
                         return addLog(agentId,msgId,command,status,actualTime,currTime) > 0;
                     }else {
                         LOGGER.info(" Exception while adding agent message  log, actual time can't be greater than curr time");
                     }
-                }else {
+                /*}else {
                     LOGGER.info("Exception while adding agent message  log, command cant be null");
-                }
+                }*/
             }else {
                 LOGGER.info("Exception while adding agent message  log, msgid cant be less than 1 ");
             }

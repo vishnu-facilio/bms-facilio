@@ -120,10 +120,8 @@ public class DataProcessorV2
                     processStatus = processDevicePoints(agent, payload);
                     break;
                 case ACK:
-                    LOGGER.info(" iamcvijay logs processing ack");
                     payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
-                    ackUtil.processAgentAck(payload, agent.getId(), orgId);
-                    //processLog(payload, agent.getId(), recordId);
+                    processStatus = ackUtil.processAgentAck(payload, agent.getId(), orgId);
                     break;
                 case TIMESERIES:
                     Controller controller = cU.getControllerFromAgentPayload(payload);

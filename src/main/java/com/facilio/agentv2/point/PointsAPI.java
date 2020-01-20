@@ -101,7 +101,6 @@ public class PointsAPI {
     }
 
     public static Point getPointFromJSON(Map<String, Object> payload) throws Exception {
-        LOGGER.info("iamcvijay point from json -> " + payload);
         if (containsValueCheck(AgentConstants.POINT_TYPE, payload)) {
             FacilioControllerType controllerType;
             controllerType = FacilioControllerType.valueOf(JsonUtil.getInt(payload.get(AgentConstants.POINT_TYPE)));

@@ -37,23 +37,28 @@ public class AckUtil
         }
     }
 
-    public void processAgentAck(JSONObject payload, long agentId, long orgId) throws Exception {
+    public boolean processAgentAck(JSONObject payload, long agentId, long orgId) throws Exception {
             if(payload.containsKey(AgentConstants.MESSAGE_ID)){
                 long msgId = Long.parseLong( payload.get(AgentConstants.MESSAGE_ID).toString() );
-                int status = ((Number) payload.get(AgentConstants.STATUS)).intValue();
-                long timeStamp = System.currentTimeMillis();
-                if (payload.containsKey(payload.get(AgentConstants.TIMESTAMP)) && (payload.get(AgentConstants.TIMESTAMP) != null)) {
-                    timeStamp = Long.parseLong(payload.get(AgentConstants.TIMESTAMP).toString());
+                if(payload.containsKey(AgentConstants.STATUS)){
+                    int status = ((Number) payload.get(AgentConstants.STATUS)).intValue();
+                    long timeStamp = System.currentTimeMillis();
+                    if (payload.containsKey(payload.get(AgentConstants.TIMESTAMP)) && (payload.get(AgentConstants.TIMESTAMP) != null)) {
+                        timeStamp = Long.parseLong(payload.get(AgentConstants.TIMESTAMP).toString());
+                    }
+                    LogsApi.logAgentMessages(agentId,msgId,null,Status.valueOf(status),timeStamp);
+                    FacilioChain chain = TransactionChainFactory.getAckProcessorChain();
+                    FacilioContext context = chain.getContext();
+                    context.put(AgentConstants.ID, msgId);
+                    context.put(AgentConstants.STATUS, Status.valueOf(status));
+                    context.put(AgentConstants.ORGID, orgId);
+                    chain.execute();
+                    return true;
+                }else {
+                    throw new Exception(" status missing from payload ");
                 }
-                LogsApi.logAgentMessages(agentId,msgId,null,Status.valueOf(status),timeStamp);
-                FacilioChain chain = TransactionChainFactory.getAckProcessorChain();
-                FacilioContext context = chain.getContext();
-                context.put(AgentConstants.ID, msgId);
-                context.put(AgentConstants.STATUS, Status.valueOf(status));
-                context.put(AgentConstants.ORGID, orgId);
-                chain.execute();
             }else {
-                throw new Exception(" msgid is not present in payload ");
+                throw new Exception(" msgid missing from payload ");
             }
 
 

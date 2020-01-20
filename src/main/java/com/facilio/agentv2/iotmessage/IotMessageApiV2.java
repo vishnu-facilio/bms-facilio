@@ -37,7 +37,6 @@ public class IotMessageApiV2 {
     private static final int MAX_BUFFER = 45000; //45000 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
 
     public static boolean acknowdledgeMessage(long id, Status status) throws Exception {
-        LOGGER.info(" processing ak in NewIotMEssageAPI");
         int rowUpdated = 0;
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getIotMessageFields());
         List<FacilioField> fields = new ArrayList<>();
@@ -153,7 +152,6 @@ public class IotMessageApiV2 {
                 .fields(FieldFactory.getIotMessageFields());
         long createdTime = System.currentTimeMillis();
         for (IotMessage iotMessage : messages) {
-            LOGGER.info(" adding message " + FieldUtil.getAsProperties(iotMessage));
             iotMessage.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
             iotMessage.setParentId(parentId);
             iotMessage.setSentTime(createdTime);
