@@ -132,6 +132,34 @@ public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 		return classification;
 	}
 	
+	private ServiceRequestType requestType;
+	public int getRequestType() {
+		if(requestType!=null) {
+			return requestType.getIntVal();
+		} else {
+			return -1;
+		}
+	}
+	
+	public String getRequestTypeVal() {
+		if(requestType != null) {
+			return requestType.getStringVal();
+		}
+		return null;
+	}
+	
+	public void setRequestType(int type) {
+		this.requestType =ServiceRequestType.serviceRequestTypeMap.get(type);
+	}
+	
+	public void seRequestType(ServiceRequestType requestType) {
+		this.requestType = requestType;
+	}
+	
+	public ServiceRequestType getRequestTypeEnum() {
+		return requestType;
+	}
+	
 	public static enum SourceType {
 		
 		WEB_REQUEST(1, "Web Request"),
@@ -212,5 +240,52 @@ public class ServiceRequestContext extends ModuleBaseWithCustomFields{
 		public Map<Integer, Classification> getAllClassification() {
 			return classificationType;
 		}
+	}
+	
+	public static enum ServiceRequestType {
+		
+		FEEDBACK(1, "Feedback"),
+		RATING(2, "Rating"),
+		;
+		
+		private int intVal;
+		private String strVal;
+		
+		private ServiceRequestType(int intVal, String strVal) {
+			this.intVal = intVal;
+			this.strVal = strVal;
+		}
+		
+		public int getIntVal() {
+			return intVal;
+		}
+		public String getStringVal() {
+			return strVal;
+		}
+		
+		public static ServiceRequestType getServiceRequestTyp(int val) {
+			return serviceRequestTypeMap.get(val);
+		}
+		
+		private static final Map<Integer, ServiceRequestType> serviceRequestTypeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, ServiceRequestType> initTypeMap() {
+			Map<Integer, ServiceRequestType> serviceRequestType = new HashMap<>();
+			
+			for(ServiceRequestType type : values()) {
+				serviceRequestType.put(type.getIntVal(), type);
+			}
+			return serviceRequestType;
+		}
+		public Map<Integer, ServiceRequestType> getAllServiceRequestType() {
+			return serviceRequestTypeMap;
+		}
+	}
+	
+	private int ratingVal;
+	public int getRatingVal() {
+		return ratingVal;
+	}
+	public void setRatingVal(int ratingVal) {
+		this.ratingVal = ratingVal;
 	}
 }
