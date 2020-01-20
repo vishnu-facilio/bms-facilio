@@ -114,31 +114,34 @@ public class HistoricalLoggerUtil {
 				.andCondition(CriteriaAPI.getCondition("DEPENDENT_ID", "dependentId", "", CommonOperators.IS_EMPTY))
 				.orderBy("STATUS,CREATED_TIME DESC");
 		
-				List<Map<String, Object>> props = selectBuilder.get();
-				
-				List<HistoricalLoggerContext> historicalLoggers = new ArrayList<HistoricalLoggerContext>();
-				
-				List<Long> resourceIds = new ArrayList<Long>();
-				if (props != null && !props.isEmpty()) {
-					for(Map<String, Object> prop : props ) {
-						HistoricalLoggerContext historicalLogger = FieldUtil.getAsBeanFromMap(prop, HistoricalLoggerContext.class);
-						historicalLoggers.add(historicalLogger);
-						resourceIds.add(historicalLogger.getParentId());
-					}
-				}
-									
-				List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
-				Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
-				
-				for(ResourceContext resource:resources)
-				{
-					resourcesMap.put(resource.getId(), resource);
-				}
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<HistoricalLoggerContext> historicalLoggers = new ArrayList<HistoricalLoggerContext>();
+		
+		List<Long> resourceIds = new ArrayList<Long>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props ) {
+				HistoricalLoggerContext historicalLogger = FieldUtil.getAsBeanFromMap(prop, HistoricalLoggerContext.class);
+				historicalLoggers.add(historicalLogger);
+				resourceIds.add(historicalLogger.getParentId());
+			}
+		}
 							
-				for(HistoricalLoggerContext historicalLogger :historicalLoggers) {
-					historicalLogger.setParentResourceContext(resourcesMap.get(historicalLogger.getParentId()));
-				}
-				return historicalLoggers;
+		List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
+		Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
+		
+		if(resources != null && !resources.isEmpty())
+		{
+			for(ResourceContext resource:resources)
+			{
+				resourcesMap.put(resource.getId(), resource);
+			}
+						
+			for(HistoricalLoggerContext historicalLogger :historicalLoggers) {
+				historicalLogger.setParentResourceContext(resourcesMap.get(historicalLogger.getParentId()));
+			}				
+		}
+		return historicalLoggers;
 	}
 	
 	public static List<HistoricalLoggerContext> getGroupedHistoricalLogger(Long loggerGroupId) throws Exception {
@@ -148,32 +151,32 @@ public class HistoricalLoggerUtil {
 			.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
 			.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", ""+loggerGroupId, NumberOperators.EQUALS));
 
-			List<Map<String, Object>> props = selectBuilder.get();
-			List<HistoricalLoggerContext> historicalLoggers = new ArrayList<HistoricalLoggerContext>();
-			
-			List<Long> resourceIds = new ArrayList<Long>();
-			
-			if (props != null && !props.isEmpty()) {
-				for(Map<String, Object> prop : props ) {
-					HistoricalLoggerContext historicalLogger = FieldUtil.getAsBeanFromMap(prop, HistoricalLoggerContext.class);
-					historicalLoggers.add(historicalLogger);
-					resourceIds.add(historicalLogger.getParentId());
-				}
-				
-				List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
-				Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
-				
-				for(ResourceContext resource:resources)
-				{
-					resourcesMap.put(resource.getId(), resource);
-				}
-				
-				for(HistoricalLoggerContext historicalLogger :historicalLoggers) {
-					historicalLogger.setParentResourceContext(resourcesMap.get(historicalLogger.getParentId()));
-				}
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<HistoricalLoggerContext> historicalLoggers = new ArrayList<HistoricalLoggerContext>();
+		
+		List<Long> resourceIds = new ArrayList<Long>();
+		
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props ) {
+				HistoricalLoggerContext historicalLogger = FieldUtil.getAsBeanFromMap(prop, HistoricalLoggerContext.class);
+				historicalLoggers.add(historicalLogger);
+				resourceIds.add(historicalLogger.getParentId());
 			}
 			
-			return historicalLoggers;
+			List<ResourceContext> resources = ResourceAPI.getResources(resourceIds,true);
+			Map<Long, ResourceContext> resourcesMap = new LinkedHashMap<Long, ResourceContext>();
+			
+			for(ResourceContext resource:resources)
+			{
+				resourcesMap.put(resource.getId(), resource);
+			}
+			
+			for(HistoricalLoggerContext historicalLogger :historicalLoggers) {
+				historicalLogger.setParentResourceContext(resourcesMap.get(historicalLogger.getParentId()));
+			}
+		}
+		
+		return historicalLoggers;
 
 	}
 	
