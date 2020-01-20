@@ -43,6 +43,9 @@ public class ProcessWorkOrderImportCommand extends FacilioCommand {
 			if (tempWo.getDueDate() == 0) {
 				tempWo.setDueDate(-1);
 			}
+			if (tempWo.getStatus() != null && tempWo.getStatus().getId() > 0) {
+				tempWo.setModuleState(tempWo.getStatus());
+			}
 			tempWo.setApprovalRuleId(-1);
 			tempWo.setSiteId(readingContext.getSiteId());
 			bulkWorkOrderContext.addContexts(tempWo, null,null,null);

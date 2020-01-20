@@ -60,7 +60,7 @@ public class ProcessImportCommand extends FacilioCommand {
 		boolean isNewLookupFormat = isNewLookupFormat(importProcessContext);
 		for(Map<String, Object> row: allRows) {
 			ImportProcessLogContext rowLogContext = FieldUtil.getAsBeanFromMap(row, ImportProcessLogContext.class);
-			ImportRowContext rowContext = new ImportRowContext();
+			ImportRowContext rowContext;
 			
 			if(rowLogContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue()){
 				rowContext = rowLogContext.getRowContexts().get(0);
@@ -305,6 +305,8 @@ public class ProcessImportCommand extends FacilioCommand {
 								try {
 									if ((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) && lookupField.getName().equals("department")) {
 										isSkipSpecialLookup = true;
+									} else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) && lookupField.getName().equals("resource")) {
+										isSkipSpecialLookup = true;
 									}
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -437,7 +439,7 @@ public class ProcessImportCommand extends FacilioCommand {
 						+ lookupField.getLookupModule().getTableName() + " with value -- " + value);
 
 				
-				ArrayList<FacilioField> fieldsList = new ArrayList<FacilioField>();
+				ArrayList<FacilioField> fieldsList;
 				
 				fieldsList = new ArrayList<>(bean.getAllFields(lookupField.getLookupModule().getName()));
 				fieldsList.add(FieldFactory.getIdField(lookupField.getLookupModule()));
@@ -452,6 +454,9 @@ public class ProcessImportCommand extends FacilioCommand {
 					} else if (lookupField.getName().equals("priority")) {
 						columnName = "PRIORITY";
 						fieldName = "priority";
+					} else if (lookupField.getName().equals("moduleState")) {
+						columnName = "DISPLAY_NAME";
+						fieldName = "displayName";
 					}
 				} else if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) && lookupField.getName().equals("category")) {
 					columnName = "DISPLAY_NAME";
