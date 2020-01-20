@@ -56,15 +56,16 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
 				AssetContext assetIdSource = AssetsAPI.getAssetInfo(Long.valueOf((String) asset.get("sourceAsset")));
 				AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(assetIdSource.getCategory().getId());
-				List<FacilioModule> modules = bean.getSubModules(assetCategory.getAssetModuleID(), ModuleType.READING);
+				List<FacilioModule> modules = new ArrayList<FacilioModule>() ;
+				
 				FacilioModule sourceMod  = null;
 				if(sourceModuleIdList !=0) {
 					sourceMod = bean.getModule(sourceModuleIdList);
 					if(sourceMod != null) {
-						modules.clear();
 						modules.add(sourceMod);
 					}
-
+				}else {
+					modules = bean.getSubModules(assetCategory.getAssetModuleID(), ModuleType.READING);
 				}
 				
 				
