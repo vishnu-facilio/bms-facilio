@@ -99,7 +99,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				StringBuilder uniqueString = new StringBuilder();
 				ImportRowContext rowContext = new ImportRowContext();
 				row_no++;
-				LOGGER.severe("row_no -- " + row_no);
+				LOGGER.info("row_no -- " + row_no);
 				Row row = rowItr.next();
 
 				if (row.getPhysicalNumberOfCells() <= 0) {
@@ -238,9 +238,8 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 					}
 					
 				}
-				
-				LOGGER.severe("UNIQUE STRING!!!!!!!!!");
-				LOGGER.severe(uniqueString.toString());
+
+				LOGGER.info("UNIQUE STRING -- " + uniqueString.toString());
 				if(!groupedContext.containsKey(uniqueString.toString())) {
 					List<ImportRowContext> rowContexts = new ArrayList<ImportRowContext>();
 					rowContexts.add(rowContext);
@@ -255,8 +254,8 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);
 		context.put(ImportAPI.ImportProcessConstants.ROW_COUNT, row_no);
 		workbook.close();
-		LOGGER.severe(groupedContext.toString());
-		LOGGER.severe("Data Parsing for Import " + importProcessContext.getId() + " is complete");
+		LOGGER.info(groupedContext.toString());
+		LOGGER.info("Data Parsing for Import " + importProcessContext.getId() + " is complete");
 		
 		return false;
 	}

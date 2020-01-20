@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.Map;
 
+import com.facilio.modules.FieldFactory;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -17,20 +19,22 @@ public class GetBaseSpaceChildrenCommand extends FacilioCommand{
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+
 		Long spaceId = (Long) context.get(FacilioConstants.ContextNames.SPACE_ID);
 		String spaceType = (String) context.get(FacilioConstants.ContextNames.SPACE_TYPE);
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		Boolean isZOne = (Boolean) context.get(FacilioConstants.ContextNames.IS_ZONE);
-		
+
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 																	.select(fields)
 																	.table(module.getTableName())
 																	.moduleName(module.getName())
-																	.beanClass(BaseSpaceContext.class);
+																	.beanClass(BaseSpaceContext.class)
+																	.orderBy(fieldMap.get("name").getColumnName());
 		
 		if (BaseSpaceContext.SpaceType.SITE.getStringVal().equalsIgnoreCase(spaceType)) {
 			StringBuilder builder = new StringBuilder("BaseSpace.SITE_ID = ? AND (BaseSpace.SPACE_TYPE = ? ");
