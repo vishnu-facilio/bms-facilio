@@ -440,11 +440,14 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getNewAgentIdField(module));
 		fields.add(getField(AgentConstants.COMMAND, "COMMAND", module, FieldType.NUMBER));
-		fields.add(getField(AgentConstants.MESSAGE_ID, "MSGID", module, FieldType.NUMBER));
+		fields.add(getAgentV2MsgIdField(module));
 		fields.add(getField(AgentConstants.STATUS, "STATUS", module, FieldType.NUMBER));
 		fields.add(getField(AgentConstants.ACTUAL_TIME, "ACTUAL_TIME", module, FieldType.NUMBER));
-		fields.add(getField(AgentConstants.CREATED_TIME, "CREATED_TIME", module, FieldType.NUMBER));
+		fields.add(getCreatedTime(module));
 		return fields;
+	}
+	public static FacilioField getAgentV2MsgIdField(FacilioModule module){
+		return 	getField(AgentConstants.MESSAGE_ID, "MSGID", module, FieldType.NUMBER);
 	}
 
 	/**
@@ -585,7 +588,7 @@ public class FieldFactory {
 		return getField(AgentIntegrationKeys.PROP_VALUE,"PROP_VALUE",module,FieldType.STRING);
 	}
 	public static FacilioField getCreatedTime(FacilioModule module) {
-		return getField(AgentKeys.CREATED_TIME,"CREATED_TIME",module,FieldType.NUMBER);
+		return getField(AgentConstants.CREATED_TIME,"CREATED_TIME",module,FieldType.NUMBER);
 	}
 
 	public static List<FacilioField> getFormFieldsFields() {

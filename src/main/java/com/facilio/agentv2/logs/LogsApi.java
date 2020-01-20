@@ -94,7 +94,8 @@ public class LogsApi
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
                 .select(FIELDS)
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS))
+                .orderBy(FieldFactory.getAgentV2MsgIdField(MODULE).getColumnName()+" DESC,"+FieldFactory.getCreatedTime(MODULE).getColumnName()+" DESC");
         if (limit > 0) {
             selectRecordBuilder.limit(limit);
         }
