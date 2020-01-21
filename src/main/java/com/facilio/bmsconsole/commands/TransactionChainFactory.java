@@ -4330,6 +4330,7 @@ public class TransactionChainFactory {
 	public static FacilioChain updateServiceRequestChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForServiceRequests());
+		c.addCommand(new AddRequesterCommand());
 		c.addCommand(new GenericUpdateModuleDataCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());

@@ -156,6 +156,7 @@ public class ServiceRequestsAction extends FacilioAction {
 			c.getContext().put(FacilioConstants.ContextNames.RECORD, serviceRequest);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, serviceRequestIds);
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+			c.getContext().put(FacilioConstants.ContextNames.REQUESTER, serviceRequest.getRequester());
 			c.execute();
 			setResult(FacilioConstants.ContextNames.SERVICE_REQUESTS,
 					c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
