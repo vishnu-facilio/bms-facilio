@@ -1675,7 +1675,7 @@ public class FormFactory {
 		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("urgency", FieldDisplayType.LOOKUP_SIMPLE, "Urgency", Required.OPTIONAL, "servicerequestpriority", 6, 1));
-//		fields.add(new FormField("classification", FieldDisplayType.CLASSIFICATION, "Classification", Required.OPTIONAL, "classification" , 7, 1));
+		fields.add(new FormField("classification", FieldDisplayType.SELECTBOX, "Classification", Required.OPTIONAL, "classification" , 7, 1));
 		return fields;
 	}
 
