@@ -9,11 +9,11 @@ import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscPoint;
-import com.facilio.agentv2.modbusrtu.ModbusRtuPoint;
-import com.facilio.agentv2.modbustcp.ModbusTcpPoint;
+import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
+import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import com.facilio.agentv2.niagara.NiagaraPoint;
-import com.facilio.agentv2.opcua.OpcUaPoint;
-import com.facilio.agentv2.opcxmlda.OpcXmlDaPoint;
+import com.facilio.agentv2.opcua.OpcUaPointContext;
+import com.facilio.agentv2.opcxmlda.OpcXmlDaPointContext;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -113,13 +113,13 @@ public class PointsAPI {
             LOGGER.info(" controller type ->"+controllerType.asInt());
             switch (controllerType) {
                 case MODBUS_RTU:
-                    return ModbusRtuPoint.getPointFromMap(payload);
+                    return ModbusRtuPointContext.getPointFromMap(payload);
                 case MODBUS_IP:
-                    return ModbusTcpPoint.getPointFromMap(payload);
+                    return ModbusTcpPointContext.getPointFromMap(payload);
                 case OPC_UA:
-                    return OpcUaPoint.getPointFromMap(payload);
+                    return OpcUaPointContext.getPointFromMap(payload);
                 case OPC_XML_DA:
-                    return OpcXmlDaPoint.getPointFromMap(payload);
+                    return OpcXmlDaPointContext.getPointFromMap(payload);
                 case BACNET_IP:
                     LOGGER.info(" making bacnet point");
                     return BacnetIpPointContext.getPointFromMap(payload);
@@ -581,7 +581,7 @@ public class PointsAPI {
             case REST:
             case CUSTOM:
             case OPC_UA:
-                return OpcUaPoint.class;
+                return OpcUaPointContext.class;
             case KNX:
             case MISC:
                 return MiscPoint.class;
@@ -589,11 +589,11 @@ public class PointsAPI {
                 return BacnetIpPointContext.class;
             case LON_WORKS:
             case MODBUS_IP:
-                return ModbusTcpPoint.class;
+                return ModbusTcpPointContext.class;
             case MODBUS_RTU:
-                return ModbusRtuPoint.class;
+                return ModbusRtuPointContext.class;
             case OPC_XML_DA:
-                return OpcXmlDaPoint.class;
+                return OpcXmlDaPointContext.class;
             case BACNET_MSTP:
             default:
                 throw new Exception(" No implementation for "+type.asString()+" point");

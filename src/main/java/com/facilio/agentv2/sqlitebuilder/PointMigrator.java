@@ -2,9 +2,16 @@ package com.facilio.agentv2.sqlitebuilder;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
+import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
+import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
+import com.facilio.agentv2.opcua.OpcUaPointContext;
+import com.facilio.agentv2.opcxmlda.OpcXmlDaPointContext;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.sqlUtils.contexts.bacnet.BACnetPoint;
+import com.facilio.sqlUtils.contexts.modbus.ModbusPoint;
+import com.facilio.sqlUtils.contexts.opc.ua.OpcUaPoint;
+import com.facilio.sqlUtils.contexts.opc.xmlda.OpcXmlDaPoint;
 import com.facilio.sqlUtils.sqllite.SQLiteUtil;
 import com.facilio.sqlUtils.utilities.FacilioJavaPoint;
 import org.apache.log4j.LogManager;
@@ -69,12 +76,16 @@ public class PointMigrator {
                 pointToInsert = getAgentBacnetIpPoint((BacnetIpPointContext) point);
                 break;
             case MODBUS_IP:
+                pointToInsert = getAgentMosbusIpPoint((ModbusTcpPointContext)point);
                 break;
             case MODBUS_RTU:
+                pointToInsert = getAgentModbusRtuPoint((ModbusRtuPointContext)point);
                 break;
             case OPC_UA:
+                pointToInsert = getAgentOpcUaPoint((OpcUaPointContext)point);
                 break;
             case OPC_XML_DA:
+                pointToInsert = getAgentOpcXmlDaPoints((OpcXmlDaPointContext)point);
                 break;
             case NIAGARA:
             case BACNET_MSTP:
@@ -91,9 +102,56 @@ public class PointMigrator {
         return false;
     }
 
+    private static FacilioJavaPoint getAgentMosbusIpPoint(ModbusTcpPointContext point) throws Exception {
+        if(point != null){
+            ModbusPoint agentPoint = new ModbusPoint(point.getControllerId());
+            agentPoint.setOffset(point.getRegisterNumber());
+            agentPoint.setModbusDatatype(point.getModbusDataType());
+            agentPoint.setFunctionCode(point.getFunctionCode());
+            return agentPoint;
+        }else {
+            throw new Exception(" point cant be null ");
+        }
+    }
+
+    private static FacilioJavaPoint getAgentModbusRtuPoint(ModbusRtuPointContext point) throws Exception {
+        if(point != null){
+            ModbusPoint agentPoint = new ModbusPoint(point.getControllerId());
+            agentPoint.setFunctionCode(point.getFunctionCode());
+            agentPoint.setModbusDatatype(point.getModbusDataType());
+            agentPoint.setOffset(point.getRegisterNumber());
+            return agentPoint;
+        }else {
+            throw new Exception(" point cant be null ");
+        }
+    }
+
+    private static FacilioJavaPoint getAgentOpcUaPoint(OpcUaPointContext point) throws Exception {
+        if(point != null){
+            OpcUaPoint agentPoint = new OpcUaPoint();
+            agentPoint.setIdentifier(point.getIdentifier());
+            agentPoint.setNamespace(point.getNamespace());
+            toAgentPoint(agentPoint,point);
+            return agentPoint;
+        }else {
+            throw new Exception(" point cant be null ");
+        }
+    }
+
+    private static FacilioJavaPoint getAgentOpcXmlDaPoints(OpcXmlDaPointContext point) throws Exception {
+        if(point != null){
+            OpcXmlDaPoint agentPoint = new OpcXmlDaPoint();
+            agentPoint.setPath(point.getPath());
+            toAgentPoint(agentPoint,point);
+            return agentPoint;
+        }else{
+            throw new Exception(" point cant be null ");
+        }
+    }
+
     private static FacilioJavaPoint getAgentBacnetIpPoint(BacnetIpPointContext point) throws Exception {
-        BACnetPoint agentPoint = new BACnetPoint(Math.toIntExact(point.getInstanceNumber()), point.getInstanceType());
         if (point != null) {
+            BACnetPoint agentPoint = new BACnetPoint(Math.toIntExact(point.getInstanceNumber()), point.getInstanceType());
             toAgentPoint(agentPoint, point);
             return agentPoint;
         } else {
@@ -101,7 +159,7 @@ public class PointMigrator {
         }
     }
 
-    private static void toAgentPoint(BACnetPoint agentPoint, BacnetIpPointContext point) {
+    private static void toAgentPoint(FacilioJavaPoint agentPoint, Point point) {
         agentPoint.setControllerId(point.getControllerId());
         agentPoint.setName(point.getName());
         agentPoint.setDataType(point.getDataType());

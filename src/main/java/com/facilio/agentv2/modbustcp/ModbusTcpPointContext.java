@@ -10,15 +10,15 @@ import org.json.simple.JSONObject;
 
 import java.util.Map;
 
-public class ModbusTcpPoint extends Point {
+public class ModbusTcpPointContext extends Point {
 
-    private static final Logger LOGGER = LogManager.getLogger(ModbusTcpPoint.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ModbusTcpPointContext.class.getName());
 
-    public ModbusTcpPoint(long agentId, long controllerId) {
+    public ModbusTcpPointContext(long agentId, long controllerId) {
         super(agentId, controllerId);
     }
     @Deprecated
-    private ModbusTcpPoint() { }
+    private ModbusTcpPointContext() { }
 
     private int registerNumber = -1;
     private int functionCode = -1;
@@ -52,7 +52,7 @@ public class ModbusTcpPoint extends Point {
             return point.getPointFromMap(pointMap);*/
             JSONObject jsonObject = new JSONObject();
             jsonObject.putAll(pointMap);
-            return FieldUtil.getAsBeanFromJson(jsonObject,ModbusTcpPoint.class);
+            return FieldUtil.getAsBeanFromJson(jsonObject, ModbusTcpPointContext.class);
         }
         throw new Exception(" Mandatory fields like "+AgentConstants.REGISTER_NUMBER+" , "+AgentConstants.MODBUS_DATA_TYPE+" , "+AgentConstants.FUNCTION_CODE+" might be missing form input params -> "+pointMap);
     }

@@ -9,9 +9,9 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.Map;
-public class OpcXmlDaPoint extends Point {
+public class  OpcXmlDaPointContext extends Point {
 
-    private static final Logger LOGGER = LogManager.getLogger(OpcXmlDaPoint.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(OpcXmlDaPointContext.class.getName());
 
     private String path;
 
@@ -25,13 +25,13 @@ public class OpcXmlDaPoint extends Point {
         return FacilioControllerType.OPC_XML_DA;
     }
 
-    public OpcXmlDaPoint(long agentId, long controllerId) {
+    public OpcXmlDaPointContext(long agentId, long controllerId) {
         super(agentId, controllerId);
     }
     @Deprecated
-    public OpcXmlDaPoint() { }
+    public OpcXmlDaPointContext() { }
 
-    public static OpcXmlDaPoint getPointFromMap( Map<String,Object> pointMap) throws Exception {
+    public static OpcXmlDaPointContext getPointFromMap(Map<String,Object> pointMap) throws Exception {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
@@ -41,7 +41,7 @@ public class OpcXmlDaPoint extends Point {
             return (OpcXmlDaPoint) point.getPointFromMap(pointMap);*/
            JSONObject jsonObject = new JSONObject();
            jsonObject.putAll(pointMap);
-           return FieldUtil.getAsBeanFromJson(jsonObject,OpcXmlDaPoint.class);
+           return FieldUtil.getAsBeanFromJson(jsonObject, OpcXmlDaPointContext.class);
         }
         throw new Exception("Mandatory fields like "+AgentConstants.PATH+" might be missing from the input parameter -> "+pointMap);
     }

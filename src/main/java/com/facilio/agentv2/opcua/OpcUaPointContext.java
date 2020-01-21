@@ -10,9 +10,9 @@ import org.json.simple.JSONObject;
 
 import java.util.Map;
 
-public class OpcUaPoint extends Point {
+public class OpcUaPointContext extends Point {
 
-    private static final Logger LOGGER = LogManager.getLogger(OpcUaPoint.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(OpcUaPointContext.class.getName());
 
 
     private int namespace;
@@ -37,11 +37,11 @@ public class OpcUaPoint extends Point {
         return FacilioControllerType.OPC_UA;
     }
 
-    public OpcUaPoint(long agentId, long controllerId) {
+    public OpcUaPointContext(long agentId, long controllerId) {
         super(agentId, controllerId);
     }
     @Deprecated
-    public OpcUaPoint() { }
+    public OpcUaPointContext() { }
 
     public static Point getPointFromMap( Map<String,Object> pointMap) throws Exception {
         if (pointMap == null || pointMap.isEmpty()) {
@@ -54,7 +54,7 @@ public class OpcUaPoint extends Point {
             return point.getPointFromMap(pointMap);*/
            JSONObject jsonObject = new JSONObject();
            jsonObject.putAll(pointMap);
-           return FieldUtil.getAsBeanFromJson(jsonObject,OpcUaPoint.class);
+           return FieldUtil.getAsBeanFromJson(jsonObject, OpcUaPointContext.class);
         }
         throw  new  Exception("Mandatory fields like "+AgentConstants.NAMESPACE+" , "+AgentConstants.IDENTIFIER+"  might be missing from input parameter -> "+pointMap);
     }
