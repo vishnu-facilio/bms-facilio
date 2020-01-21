@@ -432,7 +432,11 @@ public class ProcessImportCommand extends FacilioCommand {
 				Object value = colVal.get(key);
 				
 				if(value == null) {
-					return null;
+					if (!lookupField.isRequired()) {
+						return null;
+					} else {
+						throw new Exception("Field value missing under column " + importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()) + ".");
+					}
 				}
 				
 				LOGGER.info("getLookupProps -- " + lookupField.getColumnName() + " facilioField.getModule() - "
@@ -448,13 +452,10 @@ public class ProcessImportCommand extends FacilioCommand {
 				String columnName = "NAME";
 				String fieldName = "name";
 				if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) || lookupField.getModule().getName().equals(FacilioConstants.ContextNames.TICKET)) {
-					if (lookupField.getName().equals("status")) {
-						columnName = "STATUS";
-						fieldName = "status";
-					} else if (lookupField.getName().equals("priority")) {
+					if (lookupField.getName().equals("priority")) {
 						columnName = "PRIORITY";
 						fieldName = "priority";
-					} else if (lookupField.getName().equals("moduleState")) {
+					} else if (lookupField.getName().equals("moduleState") || lookupField.getName().equals("status")) {
 						columnName = "DISPLAY_NAME";
 						fieldName = "displayName";
 					}
@@ -525,6 +526,13 @@ public class ProcessImportCommand extends FacilioCommand {
 		
 		
 		try {
+			if(value == null) {
+				if (!lookupField.isRequired()) {
+					return null;
+				} else {
+					throw new Exception("Field value missing under column " + importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()) + ".");
+				}
+			}
 			String moduleName;
 			if(lookupField.getLookupModule() == null && lookupField.getSpecialType() != null) {
 				moduleName = lookupField.getSpecialType();
@@ -532,11 +540,6 @@ public class ProcessImportCommand extends FacilioCommand {
 			else {
 				moduleName = lookupField.getLookupModule().getName();
 			}
-			
-//			if(value == null && (moduleName.equals("users") == false) && (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) == false)) {
-//				throw new Exception("Field value missing under column " + importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()) + ".");
-//			}
-			
 			switch (moduleName) {
 			case "workorder": {
 				User user = AccountUtil.getUserBean().getUser(value.toString());
