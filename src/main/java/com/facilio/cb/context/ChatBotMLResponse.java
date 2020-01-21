@@ -11,16 +11,16 @@ public class ChatBotMLResponse {
 	
 	String answer;
 	
-	Map<String,Object> mlParams;
+	Map<String,String> mlParams;
 	
-	public Map<String, Object> getMlParams() {
+	public Map<String, String> getMlParams() {
 		return mlParams;
 	}
-	public void setMlParams(Map<String, Object> mlParams) {
+	public void setMlParams(Map<String, String> mlParams) {
 		this.mlParams = mlParams;
 	}
-	public void addMlParams(String key,Object value) {
-		this.mlParams = this.mlParams == null ? new HashMap<String, Object>() : this.mlParams; 
+	public void addMlParams(String key,String value) {
+		this.mlParams = this.mlParams == null ? new HashMap<String, String>() : this.mlParams; 
 		this.mlParams.put(key, value);
 	}
 	public String getAnswer() {

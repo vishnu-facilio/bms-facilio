@@ -96,6 +96,10 @@ public class ChatBotIntentParam {
 		}
 		return -1;
 	}
+	
+	public ML_Type getMlTypeEnum() {
+		return mlType;
+	}
 
 
 	public void setMlType(int mlType) {

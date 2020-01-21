@@ -1,5 +1,8 @@
 package com.facilio.cb.command;
 
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -32,16 +35,57 @@ public class ExecuteActionAndSetResponseForSessionCommand extends FacilioCommand
 		session.setIntent(intent);
 		
 		if(intent.isWithParams()) {
+			
 			session.setState(State.WAITING_FOR_PARAMS.getIntVal());
-			session.setRequiredParamCount(intent.getChatBotIntentParamMap().size());
 			
 			ChatBotUtil.addChatBotSession(session);
 			
-			ChatBotIntentParam firstParam = intent.getChatBotIntentParamMap().get(1);
+			int requriedCount = intent.getChatBotIntentParamList().size();
 			
-			ChatBotSessionConversation chatBotSessionConversation = ChatBotUtil.constructCBSessionConversationParams(firstParam, session,null);
+			if(chatBotMLResponse.getMlParams() != null) {
+				
+				for(int i=0;i<intent.getChatBotIntentParamList().size();i++) {
+					
+					ChatBotIntentParam chatBotParam = intent.getChatBotIntentParamList().get(i);
+					
+					if(chatBotMLResponse.getMlParams() != null && chatBotMLResponse.getMlParams().get(chatBotParam.getMlTypeEnum().getMLName()) != null) {
+						
+						ChatBotUtil.addSessionParam(chatBotParam.getIntentId(), session.getId(), chatBotMLResponse.getMlParams().get(chatBotParam.getMlTypeEnum().getMLName()));
+						
+						intent.getChatBotIntentParamList().remove(i);
+					}
+				}
+			}
 			
-			context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, chatBotSessionConversation);
+			int recievedCount  = requriedCount - intent.getChatBotIntentParamList().size();
+			
+			session.setRequiredParamCount(requriedCount);
+			session.setRecievedParamCount(recievedCount);
+			
+			if(recievedCount == requriedCount) {
+				
+				List<Object> props = ChatBotUtil.fetchAllSessionParams(session.getId());
+				
+				context.put(ChatBotConstants.CHAT_BOT_INTENT, intent);
+				
+				String response = intent.executeActions(context, props);
+				
+				session.setResponse(response);
+				session.setState(ChatBotSession.State.RESPONDED.getIntVal());
+				
+				context.put(ChatBotConstants.CHAT_BOT_SESSION, session);
+				context.put(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED, true);
+				
+			}
+			else {
+				
+				ChatBotIntentParam nextParam = intent.getChatBotIntentParamList().get(0);
+				
+				ChatBotSessionConversation chatBotSessionConversation = ChatBotUtil.constructCBSessionConversationParams(nextParam, session,null,null);
+				
+				context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, chatBotSessionConversation);
+			}
+			ChatBotUtil.updateChatBotSession(session);
 		}
 		else {
 			if(session.getState() < 0) {

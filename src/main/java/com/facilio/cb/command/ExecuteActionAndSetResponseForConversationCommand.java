@@ -30,7 +30,11 @@ public class ExecuteActionAndSetResponseForConversationCommand extends FacilioCo
 			
 			ChatBotUtil.updateChatBotSessionConversation(chatBotSessionConversation);
 			
-			addSessionParam(chatBotSessionConversation,chatBotMLResponse);
+			ChatBotUtil.addSessionParam(chatBotSessionConversation.getIntentParamId(),chatBotSessionConversation.getChatBotSession().getId(),chatBotMLResponse.getAnswer());
+			
+			chatBotSessionConversation.getChatBotSession().setRecievedParamCount(chatBotSessionConversation.getChatBotSession().getRecievedParamCount()+1);
+			
+			ChatBotUtil.updateChatBotSession(chatBotSessionConversation.getChatBotSession());
 			
 			if(chatBotSessionConversation.getChatBotSession().getRequiredParamCount() == chatBotSessionConversation.getChatBotSession().getRecievedParamCount()) {
 				
@@ -53,11 +57,9 @@ public class ExecuteActionAndSetResponseForConversationCommand extends FacilioCo
 			}
 			else {
 				
-				int recievedParamCount = chatBotSessionConversation.getChatBotSession().getRecievedParamCount();
+				List<ChatBotIntentParam> remainingIntentParamList = ChatBotUtil.fetchRemainingChatBotIntentParams(chatBotSessionConversation.getChatBotSession().getIntent().getId(),chatBotSessionConversation.getChatBotSession().getId());
 				
-				ChatBotIntentParam nextParam = chatBotSessionConversation.getChatBotSession().getIntent().getChatBotIntentParamMap().get(recievedParamCount+1);
-				
-				ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructCBSessionConversationParams(nextParam, chatBotSessionConversation.getChatBotSession(),null);
+				ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructCBSessionConversationParams(remainingIntentParamList.get(0), chatBotSessionConversation.getChatBotSession(),null,null);
 				
 				context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
 			}
@@ -69,25 +71,12 @@ public class ExecuteActionAndSetResponseForConversationCommand extends FacilioCo
 			
 			ChatBotIntentParam intentParam = ChatBotUtil.getIntentParams(chatBotSessionConversation.getIntentParamId());
 			
-			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructCBSessionConversationParams(intentParam, chatBotSessionConversation.getChatBotSession(),chatBotSessionConversation);
+			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructCBSessionConversationParams(intentParam, chatBotSessionConversation.getChatBotSession(),chatBotSessionConversation,null);
 			
 			context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
 		}
 			
 		return false;
-	}
-	
-	private void addSessionParam(ChatBotSessionConversation chatBotSessionConversation, ChatBotMLResponse chatBotMLResponse) throws Exception {
-		
-		ChatBotSessionParam sessionParam = new ChatBotSessionParam();
-		
-		sessionParam.setOrgId(AccountUtil.getCurrentOrg().getId());
-		sessionParam.setIntentParamId(chatBotSessionConversation.getIntentParamId());
-		sessionParam.setSessionId(chatBotSessionConversation.getSessionId());
-		sessionParam.setValue(chatBotMLResponse.getAnswer());
-		
-		
-		ChatBotUtil.addSessionParams(sessionParam,chatBotSessionConversation.getChatBotSession());
 	}
 	
 }

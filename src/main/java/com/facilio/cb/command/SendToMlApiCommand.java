@@ -88,7 +88,8 @@ public class SendToMlApiCommand extends FacilioCommand {
 //						JSONObject mlTypeJson = (JSONObject)mlTypesList.get(0);
 //						
 //						if((Boolean)mlTypeJson.get("suggested")) {
-//							
+//							String value = (String) mlTypeJson.get("value");
+//							mlResponse.addMlParams(mlDataType.getMLName(), value);
 //						}
 //					}
 //				}

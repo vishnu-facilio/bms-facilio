@@ -69,15 +69,15 @@ public class ChatBotIntent {
 		return returnString.toString();
 	}
 	
-	Map<Integer,ChatBotIntentParam> chatBotIntentParamMap;
+	List<ChatBotIntentParam> chatBotIntentParamList;
 
 
-	public Map<Integer, ChatBotIntentParam> getChatBotIntentParamMap() {
-		return chatBotIntentParamMap;
+	public List<ChatBotIntentParam> getChatBotIntentParamList() {
+		return chatBotIntentParamList;
 	}
 
-	public void setChatBotIntentParamMap(Map<Integer, ChatBotIntentParam> chatBotIntentParamMap) {
-		this.chatBotIntentParamMap = chatBotIntentParamMap;
+	public void setChatBotIntentParamList(List<ChatBotIntentParam> chatBotIntentParamList) {
+		this.chatBotIntentParamList = chatBotIntentParamList;
 	}
 
 	public long getId() {
