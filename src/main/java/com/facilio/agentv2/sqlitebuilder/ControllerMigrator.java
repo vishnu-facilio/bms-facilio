@@ -31,7 +31,7 @@ public class ControllerMigrator {
             if (controllerIdsType != null) {
                 Controller controller = ControllerApiV2.getControllerIdType(controllerId, controllerIdsType.get(controllerId));
                 LOGGER.info(" got controller " + controller.getName());
-                if (addControllersToSqlite(controller, controllerType)) {
+                if ( ! addControllersToSqlite(controller, controllerType)) {
                     LOGGER.info("failed adding controller " + controller.getName());
                 }
             } else {

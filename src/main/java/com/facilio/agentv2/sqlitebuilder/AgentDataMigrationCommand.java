@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class AgentDataMigrationCommand extends AgentV2Command {
-    private static final Logger LOGGER = LogManager.getLogger(SqliteBridge.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AgentDataMigrationCommand.class.getName());
 
 
     @Override

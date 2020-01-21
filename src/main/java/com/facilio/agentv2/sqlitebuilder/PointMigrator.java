@@ -39,7 +39,9 @@ public class PointMigrator {
             if (controllerType != null) {
                 for (Point point : points) {
                     /*try {*/
-                    addPointToSqlite(point, controllerType);
+                    if ( ! addPointToSqlite(point, controllerType)) {
+                        LOGGER.info(" failed adding point "+point.getId());
+                    }
                     /*catch (Exception e){
                         LOGGER.info(" exception while adding point of type "+controllerType+"    "+e);
                     }*/
@@ -52,7 +54,7 @@ public class PointMigrator {
         }
     }
 
-    private static void addPointToSqlite(Point point, FacilioControllerType controllerType) throws Exception {
+    private static boolean addPointToSqlite(Point point, FacilioControllerType controllerType) throws Exception {
         if (point == null) {
             throw new Exception(" point cant be null");
         }
@@ -84,8 +86,9 @@ public class PointMigrator {
                 LOGGER.info(" No implemenration found for point of type " + controllerType.asString());
         }
         if (pointToInsert != null) {
-            SQLiteUtil.addPoint(pointToInsert);
+            return SQLiteUtil.addPoint(pointToInsert) > 0;
         }
+        return false;
     }
 
     private static FacilioJavaPoint getAgentBacnetIpPoint(BacnetIpPointContext point) throws Exception {
