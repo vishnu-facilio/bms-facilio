@@ -187,7 +187,8 @@ public class ReadingAnalysisContext {
 		HEAT_MAP("Heat Map Analysis"),
 		REGRESSION("Regression Analysis"),
 		READINGS("Readings Analysis"),
-		SITE("Site Analysis")
+		SITE("Site Analysis"),
+		TREE_MAP("Tree Map Analysis")
 		;
 		
 		private String strVal;
