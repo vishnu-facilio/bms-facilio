@@ -22,6 +22,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
@@ -66,6 +67,7 @@ public class FieldUtil {
 		nonModuleClasses.add(SortField.class);
 		nonModuleClasses.add(FacilioView.class);
 		nonModuleClasses.add(FacilioForm.class);
+		nonModuleClasses.add(FormField.class);
 		return nonModuleClasses;
 	}
 
