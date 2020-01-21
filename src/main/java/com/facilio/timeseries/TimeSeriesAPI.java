@@ -831,10 +831,12 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 
 		Criteria criteria = new Criteria();
 		
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
-		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(6), NumberOperators.LESS_THAN));
-		if (AccountUtil.getCurrentOrg().getOrgId() == 297) {
-			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), "13,14,19", NumberOperators.EQUALS));
+		if (!fetchAllTypes) {
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(6), NumberOperators.LESS_THAN));
+			if (AccountUtil.getCurrentOrg().getOrgId() == 297) {
+				criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), "13,14,19", NumberOperators.EQUALS));
+			}
 		}
 		
 		if (searchText != null) {
