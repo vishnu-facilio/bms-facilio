@@ -4104,6 +4104,7 @@ public class TransactionChainFactory {
 	{
 		FacilioChain c=getDefaultChain();
 		c.addCommand(new UpdateVisitorSettingsCommand());
+		c.addCommand(new SyncVisitorSettingsWithFormCommand());
 		c.addCommand(new SendEventToDeviceCommand());
 		return c;
 	}
