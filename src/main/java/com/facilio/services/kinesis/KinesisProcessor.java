@@ -138,18 +138,19 @@ public class KinesisProcessor implements IRecordProcessor {
             String data = "";
             try {
                 JSONObject jsonData = byteDataToJSON( record.getData());
-                jsonData.put("timestamp", "" + record.getApproximateArrivalTimestamp().getTime());
+                long timestamp = record.getApproximateArrivalTimestamp().getTime();
+                jsonData.put("timestamp", timestamp);
                 jsonData.put("key", record.getPartitionKey());
                 jsonData.put("sequenceNumber", record.getSequenceNumber());
                 FacilioRecord facilioRecord = new FacilioRecord(record.getPartitionKey(), jsonData);
+                facilioRecord.setTimeStamp(timestamp);
                 facilioRecord.setId(record.getSequenceNumber());
-                System.out.println(" json data " + facilioRecord.getData());
                 return facilioRecord;
             } catch (Exception e) {
                 LOGGER.info("Exception occurred while converting kinesis record to facilio record ", e);
             }
         }
-    return null;
+        return null;
     }
 
     private static JSONObject byteDataToJSON(ByteBuffer byteData) throws Exception {
