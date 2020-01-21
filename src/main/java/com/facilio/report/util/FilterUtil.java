@@ -1,6 +1,5 @@
 package com.facilio.report.util;
 
-import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
 import org.apache.log4j.LogManager;
@@ -19,7 +18,7 @@ import com.facilio.time.DateTimeUtil;
 public class FilterUtil {
 	private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(FilterUtil.class.getName());
 	
-	public static Criteria getTimeFilterCriteria(DateRange datRange, String moduleName, JSONObject calendarObj) throws Exception {
+	public static Criteria getTimeFilterCriteria(DateRange dateRange, String moduleName, JSONObject calendarObj) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField timeField = modBean.getField("ttime", moduleName);
@@ -29,7 +28,7 @@ public class FilterUtil {
 			JSONArray days = (JSONArray)calendarObj.get("days");
 			JSONObject intervals = (JSONObject)calendarObj.get("time");
 			if((days != null && !days.isEmpty()) || (intervals != null && !intervals.isEmpty())) {
-				ZonedDateTime start = DateTimeUtil.getDateTime(datRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(datRange.getEndTime(), false);
+				ZonedDateTime start = DateTimeUtil.getDateTime(dateRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(dateRange.getEndTime(), false);
 				do {
 				    if (days.contains(new Long(start.getDayOfWeek().getValue())) || days.isEmpty()) {
 				    	if(intervals != null && !intervals.isEmpty()) {
@@ -58,6 +57,13 @@ public class FilterUtil {
 			}
 			return timeFilterCriteria;
 		}
+		return null;
+	}
+	
+	public static Criteria getDataFilterCriteria(DateRange datRange, String moduleName, JSONObject calendarObj) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField timeField = modBean.getField("ttime", moduleName);
+		Criteria timeFilterCriteria = new Criteria();
 		return null;
 	}
 	private static boolean isValidObj(JSONObject calendarObj) {

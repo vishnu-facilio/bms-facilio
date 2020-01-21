@@ -1382,6 +1382,7 @@ public class FacilioConstants {
 		public static final String IS_DOWNLOAD = "isDownload";
 		
 		public static final Object TIME_FILTER = "timeFilter";
+		public static final Object DATA_FILTER = "dataFilter";
 		public static final String PRINTERS = "printers";
 		public static final String VISITOR_KIOSKS = "visitorKiosks";
 		

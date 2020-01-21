@@ -78,6 +78,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 	private FacilioModule baseModule;
 	private ModuleBean modBean;
 	private JSONObject timeFilter;
+	private JSONObject dataFilter;
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -85,6 +86,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		timeFilter = (JSONObject) context.get(FacilioConstants.ContextNames.TIME_FILTER);
+		dataFilter = (JSONObject) context.get(FacilioConstants.ContextNames.DATA_FILTER);
 		
 		if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
 			return false;
@@ -378,6 +380,12 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 		
 		if(timeFilter != null && !timeFilter.isEmpty()) {
+			Criteria timeFilterCriteria = FilterUtil.getTimeFilterCriteria(report.getDateRange(), dp.getxAxis().getModuleName(), timeFilter);
+			if(timeFilterCriteria != null && !timeFilterCriteria.isEmpty()){
+				newSelectBuilder.andCriteria(timeFilterCriteria);
+			}
+		}
+		if(dataFilter != null && !dataFilter.isEmpty()) {
 			Criteria timeFilterCriteria = FilterUtil.getTimeFilterCriteria(report.getDateRange(), dp.getxAxis().getModuleName(), timeFilter);
 			if(timeFilterCriteria != null && !timeFilterCriteria.isEmpty()){
 				newSelectBuilder.andCriteria(timeFilterCriteria);

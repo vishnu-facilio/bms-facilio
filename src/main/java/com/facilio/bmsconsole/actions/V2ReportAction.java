@@ -338,6 +338,11 @@ public class V2ReportAction extends FacilioAction {
 		if(timeFilter != null) {
 			context.put(FacilioConstants.ContextNames.TIME_FILTER, (JSONObject) parser.parse(timeFilter));
 		}
+		if(dataFilter != null) {
+			context.put(FacilioConstants.ContextNames.DATA_FILTER, (JSONObject) parser.parse(dataFilter));
+		}
+		
+		
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}
 	
@@ -1774,6 +1779,14 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setTimeFilter(String timeFilter) {
 		this.timeFilter = timeFilter;
+	}
+	
+	private String dataFilter;
+	public String getDataFilter () {
+		return dataFilter;
+	}
+	public void setDataFilter(String dataFilter) {
+		this.dataFilter = dataFilter;
 	}
 
 	private AggregateOperator xAggr;
