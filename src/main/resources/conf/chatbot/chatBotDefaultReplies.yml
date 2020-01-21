@@ -6,7 +6,7 @@ system_greet_intent:
 system_greet_question_1_intent: 
     - "Fine, thank you"
     - "I'm good"
-    - "I’m fine"
+    - "I'm fine"
     - "Pretty good"
     - "Very well, thanks"
     

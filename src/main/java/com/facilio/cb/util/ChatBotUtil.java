@@ -537,7 +537,7 @@ public class ChatBotUtil {
 		
 		modelVersion.setLatestVersion(true);
 		modelVersion.setOrgId(AccountUtil.getCurrentOrg().getId());
-		modelVersion.setAccuracyRate(40);
+		modelVersion.setAccuracyRate(ChatBotConstants.DEFAULT_ACCURACY_RATE);
 		modelVersion.setVersionNo(1);
 		modelVersion.setMlModel(model.getMlModel());
 		modelVersion.setModelId(model.getId());
