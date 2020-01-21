@@ -84,10 +84,10 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 			checkParam(objects);
 			
 			String string = objects[0].toString();
-			int index1 = (int) objects[1];
+			int index1 = Double.valueOf(objects[1].toString()).intValue();
 			
 			if(objects[2] != null) {
-				int index2 = (int) objects[2];
+				int index2 = Double.valueOf(objects[2].toString()).intValue();
 				return string.substring(index1, index2);
 			}
 			return string.substring(index1);
