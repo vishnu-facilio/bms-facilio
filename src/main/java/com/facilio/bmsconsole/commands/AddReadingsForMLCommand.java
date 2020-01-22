@@ -51,7 +51,6 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 			if(mlError == null){
 				mlError = false;	
 			}
-			LOGGER.info("ML_ERROR : "+mlError);
 			if(mlError){
 				 ReadingContext newReading = new ReadingContext();
 				 ReadingContext newUpdatedReading = new ReadingContext();
@@ -139,7 +138,8 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 				 catch(Exception e)
 				 {
 					 LOGGER.error("Error while updating Log Reading", e);
-					 throw e;				 }
+					 throw e;				 
+				 }
 			 }
 			
 		}
