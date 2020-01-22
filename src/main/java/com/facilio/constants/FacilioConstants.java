@@ -168,6 +168,7 @@ public class FacilioConstants {
 		public static final String FETCH_COUNT = "fetchCount";
 		public static final String FETCH_SELECTED_FIELDS = "fetchSelectedFields";
 		public static final String FETCH_CUSTOM_FIELDS = "fetchCustomFields";
+		public static final String FETCH_AS_MAP = "fetchAsMap";
 		public static final String RECORD_COUNT = "recordCount";
 		public static final String ROWS_UPDATED = "rowsUpdated";
 		public static final String EVENT_TYPE = "eventType";

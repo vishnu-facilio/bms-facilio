@@ -198,7 +198,15 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 				selectBuilder.fetchLookup((LookupField) fieldMap.get("trigger"));
 			}
 		}
-		 workOrders = selectBuilder.get();
+		boolean fetchAsMap = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_AS_MAP, false);
+		if (count == null && fetchAsMap) {
+			List<Map<String, Object>> props = selectBuilder.getAsProps();
+			context.put("props", props);
+			return false;
+		}
+		else {
+			workOrders = selectBuilder.get();
+		}
 	}
 
 		if (count != null) {

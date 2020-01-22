@@ -1929,6 +1929,7 @@ public class WorkOrderAction extends FacilioAction {
 		if (isCalendarApi()) {
 			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getCalendarSelectFields());
 			context.put(FacilioConstants.ContextNames.FETCH_CUSTOM_FIELDS, true);
+			context.put(FacilioConstants.ContextNames.FETCH_AS_MAP, true);
 		}
 		else if (getSelectFields() != null) {
  			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getSelectFields());			
@@ -1949,12 +1950,16 @@ public class WorkOrderAction extends FacilioAction {
 			setWoCount((long) context.get(FacilioConstants.ContextNames.WORK_ORDER_COUNT));
 			System.out.println("data" + getWoCount() + getViewName());
 		}
+		else if (isCalendarApi()) {
+			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, context.get("props"));
+		}
 		else {
 			if(getShowViewsCount()) {
 				setSubViewsCount((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.SUB_VIEW_COUNT));
 				setSubView((String) context.get(FacilioConstants.ContextNames.SUB_VIEW));
 			}
 			setWorkOrders((List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
+			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}
 		setStateFlows((Map<String, List<WorkflowRuleContext>>) context.get("stateFlows"));
 		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
@@ -2512,7 +2517,6 @@ public class WorkOrderAction extends FacilioAction {
 	public String v2workOrderList() throws Exception {
 		
 		workOrderList();
-		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		if (getCount() != null) {
 			setResult(FacilioConstants.ContextNames.WORK_ORDER_COUNT, woCount);	
 		}
@@ -2522,7 +2526,6 @@ public class WorkOrderAction extends FacilioAction {
 		if (getShowViewsCount()) {
 			setResult(FacilioConstants.ContextNames.SUB_VIEW_COUNT, subViewsCount);
 		}
-		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		setResult("stateFlows", stateFlows);
 		return SUCCESS;
 	}
