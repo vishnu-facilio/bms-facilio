@@ -1,34 +1,20 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.AddConnectionCommand;
-import com.facilio.bmsconsole.context.ConnectionApiContext;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.amazonaws.HttpMethod;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ConnectionApiContext;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.context.ConnectionContext.State;
 import com.facilio.bmsconsole.context.ConnectionParamContext;
@@ -43,6 +29,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.CryptoUtils;
+import com.facilio.services.FacilioHttpUtils;
 import com.facilio.time.DateTimeUtil;
 
 public class ConnectionUtil {
@@ -81,22 +68,18 @@ public class ConnectionUtil {
 
 			case OAUTH2:
 				validateOauth2Connection(connectionContext);
-				if(urlString.contains(QUERY_STRING_SEPERATOR)) {
-					urlString = urlString + PARAM_SEPERATOR;
-				}
-				else {
-					urlString = urlString + QUERY_STRING_SEPERATOR;
-				}
 				headerParam.put("Authorization", "Bearer "+connectionContext.getAccessToken());
-				urlString = urlString + ACCESS_TOKEN_STRING + EQUALS + connectionContext.getAccessToken();
+				
 				break;
 			case BASIC:
 				if(connectionContext.getConnectionParams() != null) {
 					for(ConnectionParamContext connectionParams : connectionContext.getConnectionParams()) {
-						if (connectionParams.isProperty())
+						if (connectionParams.isProperty()) {
 							headerParam.put(connectionParams.getKey(), connectionParams.getValue());
-						else
+						}
+						else {
 							params.put(connectionParams.getKey(),connectionParams.getValue());
+						}
 					}
 				}
 				break;
@@ -124,7 +107,7 @@ public class ConnectionUtil {
 			break;
 		}
 	}
-
+	
 	private static void getAuthToken(ConnectionContext connectionContext) throws Exception {
 
 		if(connectionContext.getStateEnum() == State.AUTHORIZED || connectionContext.getStateEnum() == State.AUTH_TOKEN_GENERATED) {
@@ -138,12 +121,12 @@ public class ConnectionUtil {
 				params.put(CLIENT_ID_STRING, connectionContext.getClientId());
 				params.put(CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
 				
-				params.put(AUTHORIZATION_STRING, "Basic " + Base64.getEncoder().encodeToString(new String(connectionContext.getClientId() + ":" + connectionContext.getClientSecretId()).getBytes()));
+//				params.put(AUTHORIZATION_STRING, "Basic " + Base64.getEncoder().encodeToString(new String(connectionContext.getClientId() + ":" + connectionContext.getClientSecretId()).getBytes()));
 				
 				params.put(GRANT_TYPE_STRING, GRANT_TYPE_AUTH_TOKEN);
 				params.put(REDIRECT_URI_STRING, connectionContext.getCallBackURL());
-				params.put(ACCESS_TYPE_STRING, ACCESS_TYPE_OFFLINE);
-				params.put(SECRET_STATE, connectionContext.getSecretStateKey());
+//				params.put(ACCESS_TYPE_STRING, ACCESS_TYPE_OFFLINE);
+//				params.put(SECRET_STATE, connectionContext.getSecretStateKey());
 
 				String res = getUrlResult(url, params, HttpMethod.POST,null,null,null);
 				JSONParser parser = new JSONParser();
@@ -164,7 +147,7 @@ public class ConnectionUtil {
 					updateConnectionContext(connectionContext);
 				}
 				else {
-					//throw new Exception("Required Param is Missing in Response - "+resultJson.toJSONString());
+					throw new Exception("Required Param is Missing in Response - "+resultJson.toJSONString());
 				}
 			}
 
@@ -208,146 +191,137 @@ public class ConnectionUtil {
 
 	private static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method,Map<String,String> headerParam,String bodyString,String bodyType) throws Exception {
 
-		HttpsURLConnection conn = null;
+		
 		if(method == HttpMethod.GET) {
-			conn  = handleGetConnection(urlString,params,headerParam);
+			return FacilioHttpUtils.doHttpGet(urlString, headerParam, params);
 		}
 		else if(method == HttpMethod.POST) {
-			conn  = handlePostConnection(urlString,params,bodyString,bodyType,headerParam);
+			if(bodyString != null && bodyType != null) {
+				headerParam = headerParam == null ? new HashMap<>() : headerParam; 
+				headerParam.put("Content-Type", bodyType);
+			}
+			else if (params != null && !params.isEmpty()) {
+				headerParam = headerParam == null ? new HashMap<>() : headerParam; 
+				headerParam.put("Content-Type", "application/x-www-form-urlencoded");
+			}
+			return FacilioHttpUtils.doHttpPost(urlString, headerParam, params,bodyString);
 		}
-
-		conn.connect();
-
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new InputStreamReader(conn.getInputStream(),Charset.forName(DEFAULT_CHARSET_NAME)));
-		}
-		catch(IOException e) {
-			br = new BufferedReader(new InputStreamReader(conn.getErrorStream(),Charset.forName(DEFAULT_CHARSET_NAME)));
-		}
-
-  	   	String input;
-  	   	StringBuffer output = new StringBuffer();
-  	   	while ((input = br.readLine()) != null){
-  	   		output.append(input);
-  	   	}
-  	   	conn.disconnect();
-  	   	return output.toString();
+		return null;
 	}
 
-	private static HttpsURLConnection handlePostConnection(String urlString, Map<String, String> params,String bodyString,String bodyType, Map<String, String> headerParam) throws Exception {
+//	private static HttpsURLConnection handlePostConnection(String urlString, Map<String, String> params,String bodyString,String bodyType, Map<String, String> headerParam) throws Exception {
+//
+//		URL url = new URL(urlString);
+//
+//		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+//		conn.setDoInput(true);
+//		conn.setDoOutput(true);
+//		conn.setRequestMethod(HttpMethod.POST.name());
+//		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
+//		
+//		if(headerParam != null && !headerParam.isEmpty()) {
+//			for(String key : headerParam.keySet()) {
+//				conn.setRequestProperty(key, headerParam.get(key));
+//			}
+//		}
+//
+//		String actualBodyString = null;
+//		if(params != null && !params.isEmpty()) {
+//
+//			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//
+//			List<NameValuePair> paramsList = new ArrayList<NameValuePair>();
+//
+//			for(String key :params.keySet()) {
+//				paramsList.add(new BasicNameValuePair(key, params.get(key)));
+//			}
+//
+//			actualBodyString = getQuery(paramsList);
+//		}
+//		else if(bodyString != null && bodyType != null) {
+//			conn.setRequestProperty("Content-Type", bodyType);
+//			actualBodyString = bodyString;
+//		}
+//		if(actualBodyString != null) {
+//
+//			OutputStream os	= conn.getOutputStream();
+//
+//			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, DEFAULT_CHARSET_NAME));
+//
+//			writer.write(actualBodyString);
+//			writer.flush();
+//			writer.close();
+//			os.close();
+//		}
+//		return conn;
+//	}
 
-		URL url = new URL(urlString);
+//	private static HttpsURLConnection handleGetConnection(String urlString, Map<String, String> params, Map<String, String> headerParam) throws Exception {
+//
+//		String queryString = "";
+//		if(params != null && !params.isEmpty()) {
+//
+//			StringBuilder queryStringBuilder = new StringBuilder();
+//			for(String key :params.keySet()) {
+//				queryStringBuilder.append(key);
+//				queryStringBuilder.append(EQUALS);
+//				queryStringBuilder.append(params.get(key));
+//				queryStringBuilder.append(PARAM_SEPERATOR);
+//			}
+//			queryString = queryStringBuilder.subSequence(0, queryStringBuilder.length()-1).toString();
+//		}
+//		if(queryString != null && !queryString.isEmpty()) {
+//
+//			if(urlString.contains(QUERY_STRING_SEPERATOR)) {
+//				urlString = urlString + PARAM_SEPERATOR;
+//			}
+//			else {
+//				urlString = urlString + QUERY_STRING_SEPERATOR;
+//			}
+//			urlString = urlString+queryString;
+//		}
+//
+//		URL url = new URL(urlString);
+//		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+//
+//		conn.setDoInput(true);
+//		conn.setDoOutput(true);
+//		conn.setRequestMethod(HttpMethod.GET.name());
+//		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
+//		conn.setDoInput(true);
+//		conn.setDoOutput(true);
+//		
+//		if(headerParam != null && !headerParam.isEmpty()) {
+//			for(String key : headerParam.keySet()) {
+//				conn.setRequestProperty(key, headerParam.get(key));
+//			}
+//		}
+//
+//		return conn;
+//	}
 
-		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-		conn.setDoInput(true);
-		conn.setDoOutput(true);
-		conn.setRequestMethod(HttpMethod.POST.name());
-		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
-		
-		if(headerParam != null && !headerParam.isEmpty()) {
-			for(String key : headerParam.keySet()) {
-				conn.setRequestProperty(key, headerParam.get(key));
-			}
-		}
-
-		String actualBodyString = null;
-		if(params != null && !params.isEmpty()) {
-
-			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-			List<NameValuePair> paramsList = new ArrayList<NameValuePair>();
-
-			for(String key :params.keySet()) {
-				paramsList.add(new BasicNameValuePair(key, params.get(key)));
-			}
-
-			actualBodyString = getQuery(paramsList);
-		}
-		else if(bodyString != null && bodyType != null) {
-			conn.setRequestProperty("Content-Type", bodyType);
-			actualBodyString = bodyString;
-		}
-		if(actualBodyString != null) {
-
-			OutputStream os	= conn.getOutputStream();
-
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, DEFAULT_CHARSET_NAME));
-
-			writer.write(actualBodyString);
-			writer.flush();
-			writer.close();
-			os.close();
-		}
-		return conn;
-	}
-
-	private static HttpsURLConnection handleGetConnection(String urlString, Map<String, String> params, Map<String, String> headerParam) throws Exception {
-
-		String queryString = "";
-		if(params != null && !params.isEmpty()) {
-
-			StringBuilder queryStringBuilder = new StringBuilder();
-			for(String key :params.keySet()) {
-				queryStringBuilder.append(key);
-				queryStringBuilder.append(EQUALS);
-				queryStringBuilder.append(params.get(key));
-				queryStringBuilder.append(PARAM_SEPERATOR);
-			}
-			queryString = queryStringBuilder.subSequence(0, queryStringBuilder.length()-1).toString();
-		}
-		if(queryString != null && !queryString.isEmpty()) {
-
-			if(urlString.contains(QUERY_STRING_SEPERATOR)) {
-				urlString = urlString + PARAM_SEPERATOR;
-			}
-			else {
-				urlString = urlString + QUERY_STRING_SEPERATOR;
-			}
-			urlString = urlString+queryString;
-		}
-
-		URL url = new URL(urlString);
-		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-
-		conn.setDoInput(true);
-		conn.setDoOutput(true);
-		conn.setRequestMethod(HttpMethod.GET.name());
-		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
-		conn.setDoInput(true);
-		conn.setDoOutput(true);
-		
-		if(headerParam != null && !headerParam.isEmpty()) {
-			for(String key : headerParam.keySet()) {
-				conn.setRequestProperty(key, headerParam.get(key));
-			}
-		}
-
-		return conn;
-	}
-
-	private static String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
-	{
-	    StringBuilder result = new StringBuilder();
-	    boolean first = true;
-
-	    for (NameValuePair pair : params)
-	    {
-	        if (first)
-	            first = false;
-	        else
-	            result.append("&");
-
-	        String value = pair.getValue();
-	        value = value.replaceAll("<br>", "\n");
-
-	        result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
-	        result.append("=");
-	        result.append(URLEncoder.encode(value, "UTF-8"));
-	    }
-
-	    return result.toString();
-	}
+//	private static String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
+//	{
+//	    StringBuilder result = new StringBuilder();
+//	    boolean first = true;
+//
+//	    for (NameValuePair pair : params)
+//	    {
+//	        if (first)
+//	            first = false;
+//	        else
+//	            result.append("&");
+//
+//	        String value = pair.getValue();
+//	        value = value.replaceAll("<br>", "\n");
+//
+//	        result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
+//	        result.append("=");
+//	        result.append(URLEncoder.encode(value, "UTF-8"));
+//	    }
+//
+//	    return result.toString();
+//	}
 
 
 	public static ConnectionContext getConnection(long connectionId) throws Exception {

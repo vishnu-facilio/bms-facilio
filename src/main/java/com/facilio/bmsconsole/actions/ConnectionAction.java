@@ -51,11 +51,12 @@ public class ConnectionAction extends FacilioAction {
 	
 	public String addConnection() throws Exception {
 		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
 		
 		FacilioChain chain = TransactionChainFactory.getAddConnectionChain();
-		chain.execute(context);
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
+		
+		chain.execute();
 		
 		setResult("connection", connectionContext);
 		return SUCCESS;
@@ -68,11 +69,12 @@ public class ConnectionAction extends FacilioAction {
 		}
 		connectionContext = ConnectionUtil.getConnectionFromSecretStateString(state);
 		connectionContext.setAuthCode(code);
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
 		
 		FacilioChain chain = TransactionChainFactory.getUpdateConnectionChain();
-		chain.execute(context);
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
+		
+		chain.execute();
 		
 		setResult("connection", connectionContext);
 		return SUCCESS;
@@ -80,11 +82,11 @@ public class ConnectionAction extends FacilioAction {
 	
 	public String updateConnection() throws Exception {
 		
-		FacilioContext context = new FacilioContext();
+		FacilioChain chain = TransactionChainFactory.getUpdateConnectionChain();
+		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
 		
-		FacilioChain chain = TransactionChainFactory.getUpdateConnectionChain();
-		chain.execute(context);
+		chain.execute();
 		
 		setResult("connection", connectionContext);
 		return SUCCESS;
@@ -99,14 +101,14 @@ public class ConnectionAction extends FacilioAction {
 
 	public String deleteConnection() throws Exception {
 	
-	FacilioContext context = new FacilioContext();
-	context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
-	
-	FacilioChain chain = TransactionChainFactory.getDeleteConnectionChain();
-	chain.execute(context);
-	
-	setResult("connection", connectionContext);
-	return SUCCESS;
+		FacilioChain chain = TransactionChainFactory.getDeleteConnectionChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
+		
+		chain.execute();
+		
+		setResult("connection", connectionContext);
+		return SUCCESS;
 	}
 
 }

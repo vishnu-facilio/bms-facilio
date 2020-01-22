@@ -1,9 +1,11 @@
 package com.facilio.workflows.functions;
 
+import java.text.SimpleDateFormat;
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -669,6 +671,36 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 				operator = (DateOperators) operators.get(name);
 				return operator.getOperatorId();
 			}
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	GET_RFC_3339_FORMATED_DATE_STRING(33,"getRFC3339FormatedDateString") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			long time = (long) Double.parseDouble(objects[0].toString());
+			
+			return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(new Date(time));
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	GET_MILLISEC_FROM_RFC_3339_FORMATED_DATE_STRING(33,"getMilliSecondFromRFC3339FormatedDateString") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			String timeString = objects[0].toString();
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+			Date date = sdf.parse(timeString);
+			long millis = date.getTime();
+			
+			return millis;
+			
 		};
 		public void checkParam(Object... objects) throws Exception {
 
