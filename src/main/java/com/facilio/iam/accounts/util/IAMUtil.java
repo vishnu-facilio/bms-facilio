@@ -34,6 +34,7 @@ public class IAMUtil {
 		return orgBean;
 	}
 
+	/* Removing as there's no usage of the method
 	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap,
 			Map<String, Object> placeHolders) throws Exception {
 		if (beanMap != null) {
@@ -76,6 +77,7 @@ public class IAMUtil {
 			}
 		}
 	}
+	*/
 
 	public static IAMAccount getCurrentAccount(Organization org, IAMUser user) {
 		IAMAccount account = new IAMAccount(org, null);
