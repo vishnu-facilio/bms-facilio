@@ -292,6 +292,7 @@ public class TransactionChainFactory {
 			c.addCommand(new FetchOldWorkOrdersCommand());
 			c.addCommand(new VerifyApprovalCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
+			c.addCommand(new AddRequesterCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
 			c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
 			c.addCommand(new ToVerifyStateFlowTransitionForStart());
