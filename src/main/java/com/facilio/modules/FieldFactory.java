@@ -7424,6 +7424,18 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getNewPermissionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getNewPermissionModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("roleId", "ROLE_ID", module, FieldType.NUMBER));
+		fields.add(getField("tabId", "TAB_ID", module, FieldType.NUMBER));
+		fields.add(getField("permission", "PERMISSION", module, FieldType.NUMBER));
+	
+		return fields;
+	}
+	
 	public static List<FacilioField> getCBModelFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getCBModelModule();

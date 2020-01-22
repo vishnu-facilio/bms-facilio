@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE struts PUBLIC
     "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
@@ -4902,6 +4903,16 @@
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="deleteTab" />
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabList" />
+	</package>
+	
+	<package name="tabPermissions" namespace="/api/v2/tab/permissions"
+			 extends="v2Api">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.NewPermissionAction" method="addNewPermissions" />
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.NewPermissionAction" method="deleteNewPermissions" />
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.NewPermissionAction" method="getTabPermissions" />
 	</package>
 	
 	<package name="chatbot" namespace="/api/v2/cb" extends="v2Api">

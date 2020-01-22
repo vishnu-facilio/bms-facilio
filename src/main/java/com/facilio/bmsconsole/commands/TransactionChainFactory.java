@@ -4305,9 +4305,21 @@ public class TransactionChainFactory {
 	public static FacilioChain getAddOrUpdateTabChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateTabCommand());
+		chain.addCommand(new AddNewPermissionCommand());
 		return chain;
 	}
 
+	public static FacilioChain getAddNewPermissionChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddNewPermissionCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getDeleteNewPermissionChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteNewPermissionCommand());
+		return chain;
+	}
 	public static FacilioChain getDeleteTabChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeleteTabCommand());

@@ -1887,6 +1887,12 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 	
+	public static FacilioChain getTabPermissionChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetTabPermissionsCommand());
+		return chain;
+	}
+	
 	public static FacilioChain getServiceRequestsListChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForServiceRequests());
