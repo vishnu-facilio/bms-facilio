@@ -73,7 +73,7 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
                 workOrder.setPriority(lowPriority);
             }
 
-            if(workOrder.getDuration() != -1) {
+            if(workOrder.getDuration() != -1 && workOrder.getDueDate() < 0) {
                 workOrder.setDueDate(workOrder.getCreatedTime()+(workOrder.getDuration()*1000));
             }
 

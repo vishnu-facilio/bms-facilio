@@ -20,6 +20,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.EnumField;
@@ -451,6 +452,11 @@ public class ProcessImportCommand extends FacilioCommand {
 
 				String columnName = "NAME";
 				String fieldName = "name";
+
+				SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder =  new SelectRecordsBuilder<>()
+						.module(lookupField.getLookupModule())
+						.select(fieldsList);
+
 				if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) || lookupField.getModule().getName().equals(FacilioConstants.ContextNames.TICKET)) {
 					if (lookupField.getName().equals("priority")) {
 						columnName = "PRIORITY";
@@ -458,16 +464,15 @@ public class ProcessImportCommand extends FacilioCommand {
 					} else if (lookupField.getName().equals("moduleState") || lookupField.getName().equals("status")) {
 						columnName = "DISPLAY_NAME";
 						fieldName = "displayName";
+						selectBuilder.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", String.valueOf(importProcessContext.getModule().getModuleId()), NumberOperators.EQUALS));
 					}
 				} else if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) && lookupField.getName().equals("category")) {
 					columnName = "DISPLAY_NAME";
 					fieldName = "displayName";
 				}
-				SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder =  new SelectRecordsBuilder<>()
-												.module(lookupField.getLookupModule())
-												.select(fieldsList)
-												.andCustomWhere("LOWER(" + columnName + ") = ?", value.toString().toLowerCase());
-				
+
+				selectBuilder.andCondition(CriteriaAPI.getCondition(columnName, fieldName, value.toString().toLowerCase().trim(), StringOperators.IS));
+
 				List<Map<String, Object>> props = selectBuilder.getAsProps();
 
 				if (props.isEmpty()) {
