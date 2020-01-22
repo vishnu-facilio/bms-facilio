@@ -845,8 +845,10 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			searchCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), searchText, StringOperators.CONTAINS));
 			criteria.andCriteria(searchCriteria);
 		}
-
-		builder.andCriteria(criteria);
+		
+		if (!criteria.isEmpty()) {
+			builder.andCriteria(criteria);
+		}
 
 		if (configuredOnly != null) {
 			Criteria inUseCriteria = new Criteria();
