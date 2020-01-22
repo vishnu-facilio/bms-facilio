@@ -176,7 +176,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FacilioCommand() {
 			@Override
 			public boolean executeCommand(Context context) throws Exception {
-				context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(context.get(FacilioConstants.ContextNames.WORK_ORDER)));
+				Object o = context.get(FacilioConstants.ContextNames.WORK_ORDER);
+				if (o != null) {
+					context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(o));
+				}
 				return false;
 			}
 		});

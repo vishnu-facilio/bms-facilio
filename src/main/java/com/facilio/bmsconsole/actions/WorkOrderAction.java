@@ -1400,7 +1400,7 @@ public class WorkOrderAction extends FacilioAction {
 
 		FacilioChain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
 		updateWorkOrder.execute(context);
-		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		rowsUpdated = (Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		setWorkOrders((List<WorkOrderContext>) context.get(ContextNames.RECORD_LIST));
 	}
 	catch (Exception e) {
@@ -2474,6 +2474,9 @@ public class WorkOrderAction extends FacilioAction {
 	
 	public String v2viewWorkOrder() throws Exception {
 		viewWorkOrder();
+		if (workorder == null) {
+			workorder = new WorkOrderContext();
+		}
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		setResult(FacilioConstants.ContextNames.AVAILABLE_STATES, getAvailableStates());
 		setResult(FacilioConstants.ContextNames.CURRENT_STATE, getCurrentState());
@@ -2495,7 +2498,9 @@ public class WorkOrderAction extends FacilioAction {
 	public String v2addWorkOrder() throws Exception {
 		addWorkOrder();
 		v2viewWorkOrder();
-		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workorder.getModifiedTime());
+		if (workorder != null) {
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workorder.getModifiedTime());
+		}
 		return SUCCESS;
 	}
 	

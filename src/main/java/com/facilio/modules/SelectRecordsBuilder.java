@@ -58,6 +58,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private boolean isAggregation = false;
 	private Map<String, LookupField> lookupFields;
 
+	private boolean skipPermission;
+
 	private Set<String> criteriaJoinTables;
 	//Need where condition builder for custom field
 	
@@ -85,6 +87,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			this.where = new WhereBuilder(selectBuilder.where);
 		}
 		this.joinBuilder = new StringBuilder(selectBuilder.joinBuilder);
+
+		this.skipPermission = selectBuilder.skipPermission;
 	}
 	
 	public SelectRecordsBuilder (int level) {
@@ -258,6 +262,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	@Override
 	public SelectRecordsBuilder<E> forUpdate() {
 		this.builder.forUpdate();
+		return this;
+	}
+
+	public SelectRecordsBuilder<E> skipPermission() {
+		this.skipPermission = true;
 		return this;
 	}
 
@@ -460,17 +469,19 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 
 	private void handlePermissionAndScope() {
-		if (AccountUtil.getCurrentUser() != null) {
-			if (module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-				Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
-				if(scopeCriteria != null) {
-					builder.andCriteria(scopeCriteria);
-				}
+		if (!skipPermission) {
+			if (AccountUtil.getCurrentUser() != null) {
+				if (module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+					Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
+					if (scopeCriteria != null) {
+						builder.andCriteria(scopeCriteria);
+					}
 
-				if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2 && AccountUtil.getCurrentUser().getRole() != null) {
-					Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(module.getName(),"read");
-					if(permissionCriteria != null) {
-						builder.andCriteria(permissionCriteria);
+					if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2 && AccountUtil.getCurrentUser().getRole() != null) {
+						Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(module.getName(), "read");
+						if (permissionCriteria != null) {
+							builder.andCriteria(permissionCriteria);
+						}
 					}
 				}
 			}
