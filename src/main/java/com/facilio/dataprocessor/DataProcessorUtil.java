@@ -193,10 +193,6 @@ public class DataProcessorUtil {
             HashMap<String, Long> publishTypeVsLastMessageTime = deviceVsPublishTypeVsMessageTime.getOrDefault(deviceId, new HashMap<>());
             long deviceLastMessageTime = publishTypeVsLastMessageTime.getOrDefault(dataType, 0L);
 
-
-            if(AccountUtil.getCurrentOrg().getId() == 297) {
-                LOGGER.info("Incomming data in DataProcessor for BECONET : "+payLoad);
-            }
             if (deviceLastMessageTime != lastMessageReceivedTime) {
                 switch (publishType) {
                     case timeseries:
