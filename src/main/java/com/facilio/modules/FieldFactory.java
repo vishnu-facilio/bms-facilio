@@ -3146,8 +3146,10 @@ public class FieldFactory {
 		fields.add(getField("accessToken", "ACCESS_TOKEN", module, FieldType.STRING));
 		fields.add(getField("authCode", "AUTH_CODE", module, FieldType.STRING));
 		fields.add(getField("refreshToken", "REFRESH_TOKEN", module, FieldType.STRING));
-		fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));
+		fields.add(getField("expiryTime", "ACCESS_EXPIRY_TIME", module, FieldType.NUMBER));
+		fields.add(getField("refreshTokenExpiryTime", "REFRESH_EXPIRY_TIME", module, FieldType.NUMBER));
 		fields.add(getField("secretStateKey", "SECRET_STATE_KEY", module, FieldType.STRING));
+		fields.add(getField("accessTokenSetting", "ACCESS_TOKEN_SETTING", module, FieldType.NUMBER));
 
 		fields.add(getSystemField("sysCreatedTime", module));
 		fields.add(getSystemField("sysModifiedTime", module));

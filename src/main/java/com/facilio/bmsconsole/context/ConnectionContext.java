@@ -27,8 +27,21 @@ public class ConnectionContext {
 	String callBackURL;
 	List<ConnectionParamContext> connectionParams;
 	long expiryTime = -1l;
+	long refreshTokenExpiryTime = -1l;
 	String secretStateKey;
+	Access_Token_Setting accessTokenSetting;
 	
+	public int getAccessTokenSetting() {
+		if(accessTokenSetting != null) {
+			return accessTokenSetting.getValue();
+		}
+		return -1;
+	}
+	public void setAccessTokenSetting(int accessTokenSetting) {
+		if(accessTokenSetting > 0) {
+			this.accessTokenSetting = Access_Token_Setting.valueOf(accessTokenSetting);
+		}
+	}
 	public String getSecretStateKey() {
 		return secretStateKey;
 	}
@@ -40,6 +53,13 @@ public class ConnectionContext {
 	}
 	public void setConnectionParams(List<ConnectionParamContext> connectionParams) {
 		this.connectionParams = connectionParams;
+	}
+	
+	public long getRefreshTokenExpiryTime() {
+		return refreshTokenExpiryTime;
+	}
+	public void setRefreshTokenExpiryTime(long refreshTokenExpiryTime) {
+		this.refreshTokenExpiryTime = refreshTokenExpiryTime;
 	}
 	
 	List<ConnectionApiContext> connectionApis;
@@ -237,6 +257,22 @@ public class ConnectionContext {
 		}
 	}
 	
+	public enum Access_Token_Setting {
+		
+		CLIENT_DETAILS_ENCODED_AS_AUTH_PARAM;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static Access_Token_Setting valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
 	public enum State {
 		CREATED,
 		CLIENT_ID_MAPPED,
@@ -303,14 +339,11 @@ public class ConnectionContext {
 	public String getCallBackURL() {
 		if(id > 0) {
 			String protocol = "";
-			if(FacilioProperties.isDevelopment()) {
-				protocol = "http://";
-			}
-			else {
+			if(!FacilioProperties.isDevelopment()) {
 				protocol = "https://";
 			}
 			String domain = FacilioProperties.getAppDomain();
-			callBackURL = protocol+ domain +"/api/v2/connection/callBack";
+			callBackURL = "https://app.facilio.com/api/v2/connection/callBack";
 			return callBackURL;
 		}
 		return null;
@@ -355,4 +388,5 @@ public class ConnectionContext {
 				+ ", sysModifiedTime=" + sysModifiedTime + ", sysCreatedBy="  + ", sysModifiedBy="
 				+ sysModifiedBy + "]";
 	}
+	
 }

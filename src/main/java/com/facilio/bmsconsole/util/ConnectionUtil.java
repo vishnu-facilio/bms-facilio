@@ -14,16 +14,21 @@ import org.json.simple.parser.JSONParser;
 
 import com.amazonaws.HttpMethod;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ConnectionApiContext;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.context.ConnectionContext.State;
 import com.facilio.bmsconsole.context.ConnectionParamContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -49,6 +54,7 @@ public class ConnectionUtil {
 	public static final String ACCESS_TYPE_OFFLINE = "offline";
 	public static final String ACCESS_TOKEN_STRING = "access_token";
 	public static final String EXPIRES_IN_STRING = "expires_in";
+	public static final String REFRESH_TOKEN_EXPIRES_IN_STRING = "x_refresh_token_expires_in";
 	public static final String REFRESH_TOKEN_STRING = "refresh_token";
 	public static final String GRANT_TYPE_AUTH_TOKEN = "authorization_code";
 	public static final String DEFAULT_CHARSET_NAME = "UTF-8";
@@ -98,7 +104,11 @@ public class ConnectionUtil {
 			break;
 
 		case AUTH_TOKEN_GENERATED:
-				if(connectionContext.getExpiryTime() <= DateTimeUtil.getCurrenTime()) {
+				if(connectionContext.getRefreshTokenExpiryTime() > 0 && connectionContext.getRefreshTokenExpiryTime() <= DateTimeUtil.getCurrenTime()) {
+					invalidateConnection(connectionContext);
+					validateOauth2Connection(connectionContext);
+				}
+				else if(connectionContext.getExpiryTime() <= DateTimeUtil.getCurrenTime()) {
 					getAuthToken(connectionContext);
 				}
 			break;
@@ -108,6 +118,17 @@ public class ConnectionUtil {
 		}
 	}
 	
+	private static void invalidateConnection(ConnectionContext connectionContext) throws Exception {
+		
+		connectionContext.setState(ConnectionContext.State.CLIENT_ID_MAPPED.getValue());
+		connectionContext.setAuthCode("");
+		connectionContext.setAccessToken("");
+		connectionContext.setRefreshToken("");
+		connectionContext.setExpiryTime(-99);
+		
+		NewTransactionService.newTransaction(() ->  ConnectionUtil.updateConnectionContext(connectionContext));
+	}
+
 	private static void getAuthToken(ConnectionContext connectionContext) throws Exception {
 
 		if(connectionContext.getStateEnum() == State.AUTHORIZED || connectionContext.getStateEnum() == State.AUTH_TOKEN_GENERATED) {
@@ -116,23 +137,27 @@ public class ConnectionUtil {
 				String url = connectionContext.getAccessTokenUrl();
 
 				Map<String,String> params = new HashMap<>();
+				
+				Map<String,String> headerParams = new HashMap<>();
 
 				params.put(CODE_STRING, connectionContext.getAuthCode());
-				params.put(CLIENT_ID_STRING, connectionContext.getClientId());
-				params.put(CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
 				
-//				params.put(AUTHORIZATION_STRING, "Basic " + Base64.getEncoder().encodeToString(new String(connectionContext.getClientId() + ":" + connectionContext.getClientSecretId()).getBytes()));
+				if(connectionContext.getAccessTokenSetting() > 0 && connectionContext.getAccessTokenSetting() == ConnectionContext.Access_Token_Setting.CLIENT_DETAILS_ENCODED_AS_AUTH_PARAM.getValue()) {
+					
+					headerParams.put(AUTHORIZATION_STRING, "Basic " + Base64.getEncoder().encodeToString(new String(connectionContext.getClientId() + ":" + connectionContext.getClientSecretId()).getBytes()));
+				}
+				else {
+					params.put(CLIENT_ID_STRING, connectionContext.getClientId());
+					params.put(CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
+				}
 				
 				params.put(GRANT_TYPE_STRING, GRANT_TYPE_AUTH_TOKEN);
 				params.put(REDIRECT_URI_STRING, connectionContext.getCallBackURL());
 				params.put(ACCESS_TYPE_STRING, ACCESS_TYPE_OFFLINE);
-//				params.put(SECRET_STATE, connectionContext.getSecretStateKey());
 
-				String res = getUrlResult(url, params, HttpMethod.POST,null,null,null);
+				String res = getUrlResult(url, params, HttpMethod.POST,headerParams,null,null);
 				JSONParser parser = new JSONParser();
 				JSONObject resultJson = (JSONObject) parser.parse(res);
-
-				System.out.println("res ------ "+resultJson);
 
 				if(resultJson.containsKey(ACCESS_TOKEN_STRING) && resultJson.containsKey(EXPIRES_IN_STRING) && resultJson.containsKey(REFRESH_TOKEN_STRING)) {
 					connectionContext.setAccessToken((String)resultJson.get(ACCESS_TOKEN_STRING));
@@ -143,6 +168,15 @@ public class ConnectionUtil {
 					expireTimeInSec = expireTimeInSec - 60;
 
 					connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
+					
+					if(resultJson.containsKey(REFRESH_TOKEN_EXPIRES_IN_STRING)) {
+						
+						long refreshTokenExpireTimeInSec = (long) resultJson.get(REFRESH_TOKEN_EXPIRES_IN_STRING);
+						
+						refreshTokenExpireTimeInSec = refreshTokenExpireTimeInSec - 6000;
+						
+						connectionContext.setRefreshTokenExpiryTime(DateTimeUtil.getCurrenTime() + (refreshTokenExpireTimeInSec * 1000));
+					}
 
 					updateConnectionContext(connectionContext);
 				}
@@ -165,8 +199,6 @@ public class ConnectionUtil {
 				String res = getUrlResult(url, params, HttpMethod.POST,null,null,null);
 				JSONParser parser = new JSONParser();
 				JSONObject resultJson = (JSONObject) parser.parse(res);
-
-				System.out.println("res ------ "+resultJson);
 
 				if(resultJson.containsKey(ACCESS_TOKEN_STRING) && resultJson.containsKey(EXPIRES_IN_STRING)) {
 					connectionContext.setAccessToken((String)resultJson.get(ACCESS_TOKEN_STRING));
@@ -208,121 +240,6 @@ public class ConnectionUtil {
 		}
 		return null;
 	}
-
-//	private static HttpsURLConnection handlePostConnection(String urlString, Map<String, String> params,String bodyString,String bodyType, Map<String, String> headerParam) throws Exception {
-//
-//		URL url = new URL(urlString);
-//
-//		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-//		conn.setDoInput(true);
-//		conn.setDoOutput(true);
-//		conn.setRequestMethod(HttpMethod.POST.name());
-//		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
-//		
-//		if(headerParam != null && !headerParam.isEmpty()) {
-//			for(String key : headerParam.keySet()) {
-//				conn.setRequestProperty(key, headerParam.get(key));
-//			}
-//		}
-//
-//		String actualBodyString = null;
-//		if(params != null && !params.isEmpty()) {
-//
-//			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-//
-//			List<NameValuePair> paramsList = new ArrayList<NameValuePair>();
-//
-//			for(String key :params.keySet()) {
-//				paramsList.add(new BasicNameValuePair(key, params.get(key)));
-//			}
-//
-//			actualBodyString = getQuery(paramsList);
-//		}
-//		else if(bodyString != null && bodyType != null) {
-//			conn.setRequestProperty("Content-Type", bodyType);
-//			actualBodyString = bodyString;
-//		}
-//		if(actualBodyString != null) {
-//
-//			OutputStream os	= conn.getOutputStream();
-//
-//			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, DEFAULT_CHARSET_NAME));
-//
-//			writer.write(actualBodyString);
-//			writer.flush();
-//			writer.close();
-//			os.close();
-//		}
-//		return conn;
-//	}
-
-//	private static HttpsURLConnection handleGetConnection(String urlString, Map<String, String> params, Map<String, String> headerParam) throws Exception {
-//
-//		String queryString = "";
-//		if(params != null && !params.isEmpty()) {
-//
-//			StringBuilder queryStringBuilder = new StringBuilder();
-//			for(String key :params.keySet()) {
-//				queryStringBuilder.append(key);
-//				queryStringBuilder.append(EQUALS);
-//				queryStringBuilder.append(params.get(key));
-//				queryStringBuilder.append(PARAM_SEPERATOR);
-//			}
-//			queryString = queryStringBuilder.subSequence(0, queryStringBuilder.length()-1).toString();
-//		}
-//		if(queryString != null && !queryString.isEmpty()) {
-//
-//			if(urlString.contains(QUERY_STRING_SEPERATOR)) {
-//				urlString = urlString + PARAM_SEPERATOR;
-//			}
-//			else {
-//				urlString = urlString + QUERY_STRING_SEPERATOR;
-//			}
-//			urlString = urlString+queryString;
-//		}
-//
-//		URL url = new URL(urlString);
-//		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-//
-//		conn.setDoInput(true);
-//		conn.setDoOutput(true);
-//		conn.setRequestMethod(HttpMethod.GET.name());
-//		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
-//		conn.setDoInput(true);
-//		conn.setDoOutput(true);
-//		
-//		if(headerParam != null && !headerParam.isEmpty()) {
-//			for(String key : headerParam.keySet()) {
-//				conn.setRequestProperty(key, headerParam.get(key));
-//			}
-//		}
-//
-//		return conn;
-//	}
-
-//	private static String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
-//	{
-//	    StringBuilder result = new StringBuilder();
-//	    boolean first = true;
-//
-//	    for (NameValuePair pair : params)
-//	    {
-//	        if (first)
-//	            first = false;
-//	        else
-//	            result.append("&");
-//
-//	        String value = pair.getValue();
-//	        value = value.replaceAll("<br>", "\n");
-//
-//	        result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
-//	        result.append("=");
-//	        result.append(URLEncoder.encode(value, "UTF-8"));
-//	    }
-//
-//	    return result.toString();
-//	}
-
 
 	public static ConnectionContext getConnection(long connectionId) throws Exception {
 
@@ -432,10 +349,10 @@ public class ConnectionUtil {
 	}
 
 	private static void fillState(ConnectionContext connectionContext) {
-		if(connectionContext.getAccessToken() != null) {
+		if(connectionContext.getAccessToken() != null && !connectionContext.getAccessToken().isEmpty()) {
 			connectionContext.setState(ConnectionContext.State.AUTH_TOKEN_GENERATED.getValue());
 		}
-		else if(connectionContext.getAuthCode() != null) {
+		else if(connectionContext.getAuthCode() != null && !connectionContext.getAuthCode().isEmpty()) {
 			connectionContext.setState(ConnectionContext.State.AUTHORIZED.getValue());
 		}
 		else if(connectionContext.getClientId() != null && connectionContext.getClientSecretId() != null) {

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ConnectionContext;
@@ -14,8 +13,9 @@ public class GetAccessTokenForConnectionCommand extends FacilioCommand  {
 		
 		ConnectionContext connectionContext = (ConnectionContext) context.get(FacilioConstants.ContextNames.CONNECTION);
 		
-		
-		ConnectionUtil.validateOauth2Connection(connectionContext);
+		if(connectionContext.getStateEnum() == ConnectionContext.State.AUTHORIZED) {
+			ConnectionUtil.validateOauth2Connection(connectionContext);
+		}
 		
 		return false;
 	}
