@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.exceptions.importExceptions;
 
-public class ImportModuleMissingException extends Exception{
+public class ImportLookupModuleValueNotFoundException extends Exception{
 
     private int row_no;
     private String columnName;
     private String moduleName;
 
-    public ImportModuleMissingException(String moduleName,int row_no, String columnName, Exception e){
+    public ImportLookupModuleValueNotFoundException(String moduleName, int row_no, String columnName, Exception e){
         super(e);
         this.row_no = row_no;
         this.columnName = columnName;
@@ -14,7 +14,7 @@ public class ImportModuleMissingException extends Exception{
     }
 
     public String getClientMessage() {
-        return moduleName + " under column " + columnName + " in row " + row_no + " not found.";
+        return moduleName + " under column " + columnName + " in row " + row_no + " not found. Kindly Add Record before Importing.";
     }
 
 }
