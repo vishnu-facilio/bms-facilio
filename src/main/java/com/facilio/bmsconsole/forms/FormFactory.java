@@ -1676,6 +1676,8 @@ public class FormFactory {
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("urgency", FieldDisplayType.LOOKUP_SIMPLE, "Urgency", Required.OPTIONAL, "servicerequestpriority", 6, 1));
 		fields.add(new FormField("classification", FieldDisplayType.SELECTBOX, "Classification", Required.OPTIONAL, "classification" , 7, 1));
+		fields.add(new FormField("requestType", FieldDisplayType.SELECTBOX, "Request Type", Required.OPTIONAL, "requestType" , 8, 1));
+		fields.add(new FormField("ratingVal", FieldDisplayType.NUMBER, "Rating", Required.OPTIONAL, 9, 1));
 		return fields;
 	}
 
