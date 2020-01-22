@@ -78,18 +78,25 @@ public class KafkaProcessor extends FacilioProcessor {
                 }
             }*/
 
-            if( true ){
-                try {
-                    if( ! dataProcessorUtil.processRecord(record) ){
-                        LOGGER.info("Exception while processing ->"+record.getData());
+            try {
+                if(orgId == 78) {
+                    Long offset = Long.parseLong(recordId);
+                    if (offset < 88286 || offset > 120799L) {
+                        if( ! dataProcessorUtil.processRecord(record) ){
+                            LOGGER.info("Exception while processing ->"+record.getData());
                         }
-                    getConsumer().commit(record);
-                }catch (Exception e){
-                        LOGGER.info("Exception occurred while processing  ",e);
+                    }
+                } else {
+                    if (!dataProcessorUtil.processRecord(record)) {
+                        LOGGER.info("Exception while processing ->" + record.getData());
+                    }
                 }
-                continue;
-
+                getConsumer().commit(record);
+            } catch (Exception e){
+                    LOGGER.info("Exception occurred while processing  ",e);
             }
+
+
 
             /*boolean alarmCreated = false;
             long numberOfRows = 0;
@@ -111,7 +118,7 @@ public class KafkaProcessor extends FacilioProcessor {
                 JSONObject payLoad = (JSONObject) parser.parse(data);
                 if(payLoad.containsKey(AgentConstants.VERSION) && ( ("2".equalsIgnoreCase((String)payLoad.get(AgentConstants.VERSION))))){
                     if(processorV2 != null){
-                        LOGGER.info(" newProcessor payload -> "+payLoad);
+                        LOGGER.info(" newProcekinesisssor payload -> "+payLoad);
                         try {
                             processorV2.processNewAgentData(payLoad);
                         }catch (Exception newProcessorException){
