@@ -2477,6 +2477,15 @@ public class WorkOrderAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+
+	public String v2BulkAddWorkOrder() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getAddBulkWorkOrderChain();
+		FacilioContext context = chain.getContext();
+		context.put(ContextNames.WORK_ORDER_LIST, getWorkOrders());
+		chain.execute();
+
+		return SUCCESS;
+	}
 	
 	public String v2addWorkOrder() throws Exception {
 		addWorkOrder();

@@ -714,6 +714,13 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">CREATE</param>
 		</action>
+		
+		<action name="bulkAdd"
+				class="com.facilio.bmsconsole.actions.WorkOrderAction"
+				method="v2BulkAddWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+		</action>
 
 		<action name="activity"
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"
