@@ -4403,6 +4403,12 @@ public class TransactionChainFactory {
 		c.addCommand(new SendEventToDeviceCommand());
 		return c;
 	}
+
+	public static FacilioChain getAddBulkWorkOrderChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddBulkWOCommand());
+		return chain;
+	}
 }
 
 
