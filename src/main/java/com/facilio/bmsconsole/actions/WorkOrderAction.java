@@ -1395,6 +1395,9 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+
+//		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
+
 		FacilioChain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
 		updateWorkOrder.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -2484,9 +2487,11 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(ContextNames.WORK_ORDER_LIST, getWorkOrders());
 		chain.execute();
 
+		setResult(ContextNames.WORK_ORDER_LIST, context.get(ContextNames.WORK_ORDER_LIST));
+
 		return SUCCESS;
 	}
-	
+
 	public String v2addWorkOrder() throws Exception {
 		addWorkOrder();
 		v2viewWorkOrder();
