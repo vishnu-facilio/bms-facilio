@@ -71,11 +71,10 @@ public class FacilioHttpUtils {
 
             CloseableHttpResponse response = client.execute(post);
             int status = response.getStatusLine().getStatusCode();
-            if(status != 200) {
-                LOGGER.info("\nSending 'POST' request to URL : " + url);
-                LOGGER.info("Post parameters : " + post.getEntity());
-                LOGGER.info("Response Code : " + status);
-            }
+            	
+            LOGGER.info("\nSending 'POST' request to URL : " + url);
+            LOGGER.info("Post parameters : " + post.getEntity());
+            LOGGER.info("Response Code : " + status);
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             String line = "";
@@ -123,11 +122,10 @@ public class FacilioHttpUtils {
 
             CloseableHttpResponse response = client.execute(get);
             int status = response.getStatusLine().getStatusCode();
-            if(status != 200) {
-                LOGGER.info("\nSending 'GET' request to URL : " + url);
-                LOGGER.info("get parameters : " + params);
-                LOGGER.info("Response Code : " + status);
-            }
+            
+            LOGGER.info("\nSending 'GET' request to URL : " + url);
+            LOGGER.info("get parameters : " + params);
+            LOGGER.info("Response Code : " + status);
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             String line = "";

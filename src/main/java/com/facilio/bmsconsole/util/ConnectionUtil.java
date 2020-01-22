@@ -57,7 +57,7 @@ public class ConnectionUtil {
 	public static final String EQUALS = "=";
 	public static final String QUERY_STRING_SEPERATOR = "?";
 	public static final String PARAM_SEPERATOR = "&";
-
+	
 	public static String getUrlResult(ConnectionContext connectionContext,String urlString,Map<String,String> params,HttpMethod method,String bodyString,String bodyType,Map<String,String> headerParam) throws Exception {
 
 		params = params == null ? new HashMap<>() : params;
@@ -87,7 +87,7 @@ public class ConnectionUtil {
 		return getUrlResult(urlString, params, method,headerParam,bodyString,bodyType);
 	}
 
-	private static void validateOauth2Connection(ConnectionContext connectionContext) throws Exception {
+	public static void validateOauth2Connection(ConnectionContext connectionContext) throws Exception {
 
 		switch(connectionContext.getStateEnum()) {
 		case CREATED:
@@ -125,7 +125,7 @@ public class ConnectionUtil {
 				
 				params.put(GRANT_TYPE_STRING, GRANT_TYPE_AUTH_TOKEN);
 				params.put(REDIRECT_URI_STRING, connectionContext.getCallBackURL());
-//				params.put(ACCESS_TYPE_STRING, ACCESS_TYPE_OFFLINE);
+				params.put(ACCESS_TYPE_STRING, ACCESS_TYPE_OFFLINE);
 //				params.put(SECRET_STATE, connectionContext.getSecretStateKey());
 
 				String res = getUrlResult(url, params, HttpMethod.POST,null,null,null);
