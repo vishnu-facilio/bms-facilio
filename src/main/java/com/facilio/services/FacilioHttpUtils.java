@@ -82,6 +82,7 @@ public class FacilioHttpUtils {
             while ((line = rd.readLine()) != null) {
                 result.append(line);
             }
+            LOGGER.info("result : " + result);
         } catch (Exception e) {
             LOGGER.info("Executing doHttpPost ::::url:::" + url, e);
         } finally {
@@ -133,6 +134,7 @@ public class FacilioHttpUtils {
             while ((line = rd.readLine()) != null) {
                 result.append(line);
             }
+            LOGGER.info("result : " + result);
         } catch (Exception e) {
             LOGGER.info("Executing doHttpGet ::::url:::" + url, e);
         } finally {
