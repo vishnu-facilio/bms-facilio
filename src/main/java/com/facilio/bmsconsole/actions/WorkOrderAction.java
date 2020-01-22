@@ -1929,7 +1929,7 @@ public class WorkOrderAction extends FacilioAction {
 		if (isCalendarApi()) {
 			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getCalendarSelectFields());
 			context.put(FacilioConstants.ContextNames.FETCH_CUSTOM_FIELDS, true);
-			context.put(FacilioConstants.ContextNames.FETCH_AS_MAP, true);
+//			context.put(FacilioConstants.ContextNames.FETCH_AS_MAP, true);
 		}
 		else if (getSelectFields() != null) {
  			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getSelectFields());			
@@ -1950,9 +1950,9 @@ public class WorkOrderAction extends FacilioAction {
 			setWoCount((long) context.get(FacilioConstants.ContextNames.WORK_ORDER_COUNT));
 			System.out.println("data" + getWoCount() + getViewName());
 		}
-		else if (isCalendarApi()) {
+		/*else if (isCalendarApi()) {
 			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, context.get("props"));
-		}
+		}*/
 		else {
 			if(getShowViewsCount()) {
 				setSubViewsCount((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.SUB_VIEW_COUNT));
