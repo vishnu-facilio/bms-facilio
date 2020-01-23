@@ -7416,6 +7416,7 @@ public class FieldFactory {
 		fields.add(getField("iconType", "ICON_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("route", "ROUTE", module, FieldType.STRING));
 		fields.add(getField("order", "TABGROUP_ORDER", module, FieldType.NUMBER));
+		fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
 
 		return fields;
 	}
