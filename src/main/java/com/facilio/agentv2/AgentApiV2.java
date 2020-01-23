@@ -141,14 +141,19 @@ public class AgentApiV2 {
         agent.setLastModifiedTime(agent.getCreatedTime());
         context.put(AgentConstants.AGENT, agent);
         chain.execute(context);
-        Long agentId = (Long) context.get(AgentConstants.AGENT_ID);
-        if ((agentId != null) && (agentId > 0)) {
-            agent.setId(agentId);
-            return agentId;
-        } else {
-            LOGGER.info("Failed adding agent " + agent.getName());
+        if(context.containsKey(AgentConstants.AGENT_ID)){
+
+            Long agentId = (Long) context.get(AgentConstants.AGENT_ID);
+            if ((agentId != null) && (agentId > 0)) {
+                agent.setId(agentId);
+                return agentId;
+            } else {
+                LOGGER.info("Failed adding agent " + agent.getName());
+                throw new Exception(" Agent added but agentId can't be obtained -> "+agentId);
+            }
+        }else {
+            throw new Exception(" Agent added but context is missing agentId ");
         }
-        return -1;
     }
 
 

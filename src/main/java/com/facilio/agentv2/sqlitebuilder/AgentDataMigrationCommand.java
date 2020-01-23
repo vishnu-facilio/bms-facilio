@@ -13,7 +13,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
 public class AgentDataMigrationCommand extends AgentV2Command {
@@ -24,17 +23,8 @@ public class AgentDataMigrationCommand extends AgentV2Command {
     public boolean executeCommand(Context context) throws Exception {
         if (containsCheck(AgentConstants.AGENT_ID, context)) {
             long agentId = Long.parseLong(String.valueOf(context.get(AgentConstants.AGENT_ID)));
-            String path = System.getProperties().getProperty("java.io.tmpdir") + File.separator + AccountUtil.getCurrentOrg().getOrgId();
-            File directory = new File(path);
-            if (!directory.exists()) {
-                if (!directory.mkdir()) {
-                    throw new Exception(" directory " + path + " cant be created");
-                }
-            }
-            String fileName = agentId + ".db";
-            File file = new File(path + File.separator + fileName);
-            createNewFile(file);
-            LOGGER.info("migrated db file location->" + fileName);
+            SqliteBridge bridge = new SqliteBridge();
+            File file = bridge.getSqliteFile(agentId);
             Map<Long, FacilioControllerType> controllerIdsType = ControllerApiV2.getControllerIds(agentId);
             LOGGER.info(" controllers " + controllerIdsType);
             SQLiteUtil.createAlternateConnection(file);
@@ -44,22 +34,16 @@ public class AgentDataMigrationCommand extends AgentV2Command {
             FileStore fs = FacilioFactory.getFileStoreFromOrg(AccountUtil.getCurrentOrg().getOrgId());
             long fileId = fs.addFile(file.getName(), file, "application/vnd.sqlite3");
             LOGGER.info(" fileId is ->" + fileId);
-            if (fileId > 0) {
-                context.put(AgentConstants.FILE_ID, fileId);
-            } else {
+            context.put(AgentConstants.FILE_ID, fileId);
+
+            if (fileId <= 0) {
                 throw new Exception(" fileId cant be less than 1, ->"+fileId);
             }
         }
         return false;
     }
 
-    private void createNewFile(File file) throws IOException {
-        if( ! file.createNewFile()){
-            LOGGER.info(" file already present ");
-            file.delete();
-            file.createNewFile();
-        }
-    }
+
 
 
 }

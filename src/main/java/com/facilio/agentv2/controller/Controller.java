@@ -164,16 +164,16 @@ public abstract class Controller extends AssetContext {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         if(moduleName != null){
             List<FacilioField> fields = modBean.getAllFields(moduleName);
-            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-            setFieldsMap(fieldsMap);
+            Map<String, FacilioField> fieldsMap1 = FieldFactory.getAsMap(fields);
+            fieldsMap=fieldsMap1;
             return fieldsMap;
         }else {
             throw new Exception(" module name cant be null");
         }
     }
-    @JsonIgnore
-    public static void setFieldsMap(Map<String, FacilioField> fieldsMap) { Controller.fieldsMap = fieldsMap; }
-
+   /* @JsonIgnore
+    private static void setFieldsMap(Map<String, FacilioField> fieldsMap) { Controller.fieldsMap = fieldsMap; }
+*/
 
     /**
      * Gives Controller as JSON including child controller's details.

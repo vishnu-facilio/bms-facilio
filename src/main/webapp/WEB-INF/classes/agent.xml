@@ -236,6 +236,8 @@
     </package>
 
     <package name="dbMigration" namespace="/api/v2/db" extends="agent">
+        <action name="getSqlite" class="com.facilio.agentv2.actions.AgentIdAction" method="getSqlite">
+        </action>
         <action name="migrate" class="com.facilio.agentv2.actions.AgentIdAction" method="migrate">
         </action>
     </package>

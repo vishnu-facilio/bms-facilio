@@ -168,12 +168,12 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public String migrate() {
+    public String getSqlite() {
         try {
             long fileId = SqliteBridge.migrateAgentData(getAgentId());
             if (fileId > 0) {
                 setResult(AgentConstants.RESULT, SUCCESS);
-                setResult(AgentConstants.FIELD_ID, fileId);
+                setResult(AgentConstants.FILE_ID, fileId);
                 return SUCCESS;
             } else {
                 setResult(AgentConstants.RESULT, ERROR);
@@ -181,6 +181,17 @@ public class AgentIdAction extends AgentActionV2 {
         } catch (Exception e) {
             LOGGER.info("Exception occurred while migrating data", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
+        }
+        return SUCCESS;
+    }
+
+    public String migrate(){
+        try{
+            SqliteBridge.migrateToNewAgent(getAgentId());
+            setResult(AgentConstants.RESULT,SUCCESS);
+        }catch (Exception e){
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            LOGGER.info("Exception occurred while migrating to new Agent "+getAgentId());
         }
         return SUCCESS;
     }

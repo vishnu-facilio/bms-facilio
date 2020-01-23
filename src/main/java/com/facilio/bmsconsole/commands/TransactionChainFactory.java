@@ -20,6 +20,7 @@ import com.facilio.agentv2.iotmessage.AddAndSendIotMessageCommand;
 import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentDataMigrationCommand;
+import com.facilio.agentv2.sqlitebuilder.AgentMigratorCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
@@ -4340,9 +4341,15 @@ public class TransactionChainFactory {
 		return c;
 	}
 
-	public static FacilioChain getagentDataMigrationChain() {
+	public static FacilioChain getagentV2DataSqlite() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AgentDataMigrationCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAgentMigrationChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AgentMigratorCommand());
 		return chain;
 	}
 

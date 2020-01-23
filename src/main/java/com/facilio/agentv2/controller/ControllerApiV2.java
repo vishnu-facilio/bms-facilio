@@ -52,7 +52,7 @@ public class ControllerApiV2 {
      * AgentId from controller is used to check if such an agent exists and if yes, it gets the agent and uses its site id for controller(siteId is mandatory).
      * This method also takes care of createdTime, LastModifiedTime, sets category
      * @param controller
-     * @return a {@link Controller} if all goes well else returns null
+     * @return controllerId
      **/
     public static long addController(Controller controller) {
         try {
@@ -60,19 +60,7 @@ public class ControllerApiV2 {
             if( agentId > 0){
                 FacilioAgent agent = AgentApiV2.getAgent(agentId);
                 if(agent != null){
-                    FacilioChain addControllerChain = TransactionChainFactory.getAddControllerChain();
-                    FacilioContext context = addControllerChain.getContext();
-                    String assetCategoryName = ControllerApiV2.getControllerModuleName(FacilioControllerType.valueOf(controller.getControllerType()));
-                    AssetCategoryContext asset = AssetsAPI.getCategory(assetCategoryName);
-                    controller.setCategory(asset);
-                    controller.setCreatedTime(System.currentTimeMillis());
-                    controller.setId(-1);
-                    controller.setLastModifiedTime(System.currentTimeMillis());
-                    controller.setSiteId(agent.getSiteId());
-                    context.put(FacilioConstants.ContextNames.RECORD,controller);
-                    context.put(FacilioConstants.ContextNames.MODULE_NAME,controller.getModuleName());
-                    addControllerChain.execute();
-                    return (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+                    return addController(controller,agent);
                 }else {
                     throw new Exception(" No agent for id -> "+agentId);
                 }
@@ -83,6 +71,41 @@ public class ControllerApiV2 {
             LOGGER.info("Exception occurred ",e);
         }
         return -1;
+    }
+
+    public static long addController(Controller controller, FacilioAgent agent) throws Exception {
+        if(controller != null){
+            if(agent != null){
+                FacilioChain addControllerChain = TransactionChainFactory.getAddControllerChain();
+                FacilioContext context = addControllerChain.getContext();
+                String assetCategoryName = ControllerApiV2.getControllerModuleName(FacilioControllerType.valueOf(controller.getControllerType()));
+                LOGGER.info(" ass cat name "+assetCategoryName);
+                LOGGER.info(" controller "+FieldUtil.getAsJSON(controller));
+                AssetCategoryContext asset = AssetsAPI.getCategory(assetCategoryName);
+                controller.setCategory(asset);
+                controller.setCreatedTime(System.currentTimeMillis());
+                controller.setId(-1);
+                controller.setActive(true);
+                controller.setLastModifiedTime(System.currentTimeMillis());
+                if((agent.getSiteId()  > 0) ){
+                    controller.setSiteId(agent.getSiteId());
+                }else {
+                    throw new Exception(" agent's siteId can't be less than 1");
+                }
+                context.put(FacilioConstants.ContextNames.RECORD,controller);
+                context.put(FacilioConstants.ContextNames.MODULE_NAME,controller.getModuleName());
+                addControllerChain.execute();
+                if(context.containsKey(FacilioConstants.ContextNames.RECORD_ID)){
+                    return (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+                }else {
+                    throw new Exception(" controller added but context is missing controllerId ");
+                }
+            }else {
+                throw new Exception(" agent can't be null ");
+            }
+        }else {
+            throw new Exception(" controller can't be null ");
+        }
     }
 
     /**
@@ -563,7 +586,15 @@ public class ControllerApiV2 {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        Controller controller = new OpcXmlDaControllerContext();
+        controller.setActive(true);
+        //((BacnetIpControllerContext)controller).setInstanceNumber(1);
+        controller.setAgentId(1);
+        controller.setControllerType(6);
+        System.out.println(" controlleType "+controller.getControllerType());
+        System.out.print(" controller "+FieldUtil.getAsJSON(controller));
+
         System.out.println(" hello ");
     }
 
