@@ -8,11 +8,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.ReadingAction;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -125,41 +127,8 @@ public class copyAssetReadingCommand extends FacilioCommand {
 			}else {
 				targetModule = bean.getModule(module.getName());
 			}
-			if(targetModule != null) {
-				List<FacilioField> targetModuleFields = bean.getAllFields(targetModule.getName());
-				List<FacilioField> insertfield = new ArrayList<>();
-				for(FacilioField field:fields) {
-					String sourceFieldName = field.getName();
-					FacilioField tempfield = new FacilioField();
-					for(FacilioField itr : targetModuleFields) {
-						
-						if (itr.getName().equals(sourceFieldName) || itr.getName().equals("actualTtime") || itr.getName().equals("ttime")
-								|| itr.getName().equals("date") || itr.getName().equals("week")
-								|| itr.getName().equals("day") || itr.getName().equals("hour")
-								|| itr.getName().equals("parentId") || itr.getName().equals("month")) {
-							continue;
-						}
-						if(!itr.getName().equals(sourceFieldName)) {
-							tempfield.setColumnName(itr.getColumnName());
-							tempfield.setName(itr.getName());
-							tempfield.setDataType(itr.getDataTypeEnum());
-							tempfield.setDisplayName(itr.getDisplayName());
-						}
-						insertfield.add(tempfield);
-					}
-				}
-				FacilioChain addReadingChain = TransactionChainFactory.getAddReadingsChain();
-				addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE,FacilioConstants.ContextNames.ASSET_CATEGORY);
-				addReadingChain.getContext().put(FacilioConstants.ContextNames.READING_NAME,targetModule.getName());
-				addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, insertfield);
-				addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,assetIdTarget.getCategory().getId());
-				addReadingChain.execute();
-				targetModule = (FacilioModule) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE);
-				if(targetModule == null) {
-					List<FacilioModule> modules = (List<FacilioModule>) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE_LIST);
-					targetModule = modules.get(0);
-				}
-			}else if (targetModule == null) {
+
+			if (targetModule == null) {
 				List<FacilioField> field = new ArrayList<>();
 				for (FacilioField itr : fields) {
 					FacilioField tempfield = new FacilioField();
@@ -188,18 +157,15 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,
 						assetIdTarget.getCategory().getId());
 				addReadingChain.execute();
-				targetModule = (FacilioModule) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE);
+				 targetModule = (FacilioModule) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE);
 				if(targetModule == null) {
 					List<FacilioModule> modules = (List<FacilioModule>) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE_LIST);
 					targetModule = modules.get(0);
 				}
 			}
-			 
-			
-			
+
 			LOGGER.info("copy Asset Insert Started target AssetId is :" + targetAssetId + " and module is  : "
 					+ targetModule.getName());
-
 			List<ReadingContext> readings = new ArrayList<ReadingContext>();
 			for (int i = 0; i < prop.size(); i++) {
 				ReadingContext context = new ReadingContext();
