@@ -12,6 +12,7 @@ import com.facilio.agentv2.modbusrtu.RtuNetworkContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
+import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
@@ -204,7 +205,13 @@ public class AgentMessenger {
                     FacilioContext context = new FacilioContext();
                     JSONObject controllerData = controllerContext.getChildJSON();
                     context.put(AgentConstants.DATA, controllerData);
-                    IotData data = constructNewIotAgentMessage(controllerContext.getAgentId(), FacilioCommand.CONFIGURE, context, FacilioControllerType.valueOf(controllerContext.getControllerType()));
+                    IotData data;
+                    if (controllerContext.getControllerType()== ControllerType.OPC_DA.getKey() || controllerContext.getControllerType() == ControllerType.OPC_UA.getKey()){
+                        data = constructNewIotAgentMessage(controllerContext.getAgentId(), FacilioCommand.ADD_CONTROLLER, context, FacilioControllerType.valueOf(controllerContext.getControllerType()));
+
+                    }else{
+                        data = constructNewIotAgentMessage(controllerContext.getAgentId(), FacilioCommand.CONFIGURE, context, FacilioControllerType.valueOf(controllerContext.getControllerType()));
+                    }
                     MessengerUtil.addAndPublishNewAgentData(data);
                     return true;
                 } else {
