@@ -46,7 +46,7 @@ public class CardAction extends FacilioAction {
 			setResult("state", chain.getContext().get(FacilioConstants.ContextNames.CARD_STATE));
 		}
 		else {
-			setResult("state", cardContext.getCardState());
+			setResult("state", ((WidgetCardContext) chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT)).getCardState());
 		}
 		return SUCCESS;
 	}
