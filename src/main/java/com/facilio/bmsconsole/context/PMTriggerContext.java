@@ -83,8 +83,21 @@ public class PMTriggerContext implements Serializable {
 	}
 	
 	public String getScheduleMsg() {
-		if(schedule != null) {
-			return schedule.getDescription(startTime);
+		int triggerExecutionSource = getTriggerExecutionSource();
+		TriggerExectionSource triggerExectionSourceEnum = TriggerExectionSource.valueOf(triggerExecutionSource);
+		if (triggerExectionSourceEnum == null) {
+			return null;
+		}
+		switch(triggerExectionSourceEnum) {
+			case SCHEDULE:
+				if(schedule != null) {
+					return schedule.getDescription(startTime);
+				}
+				break;
+			case USER:
+				return "Manual";
+			case CUSTOM:
+				return "Custom";
 		}
 		return null;
 	}
@@ -198,6 +211,87 @@ public class PMTriggerContext implements Serializable {
 	public void setSharingContext(SharingContext<SingleSharingContext> sharingContext) {
 		this.sharingContext = sharingContext;
 	}
+
+	private ExecuteOn executeOn;
+
+	private long executionOffset = -1L;
+
+	private long customModuleId = -1L;
+
+	private long fieldId = -1L;
+
+	private String customModuleName;
+
+	private String dateFieldName;
+
+	public ExecuteOn getExecuteOnEnum() {
+		return this.executeOn;
+	}
+
+	public void setExecuteOn(int executeOn) { this.executeOn = ExecuteOn.valueOf(executeOn); }
+	public int getExecuteOn() {
+		if (executeOn != null) {
+			return executeOn.getVal();
+		}
+		return -1;
+	}
+
+	public long getExecutionOffset() {
+		return executionOffset;
+	}
+
+	public void setExecutionOffset(long executionOffset) {
+		this.executionOffset = executionOffset;
+	}
+
+	public long getCustomModuleId() {
+		return customModuleId;
+	}
+
+	public void setCustomModuleId(long customModuleId) {
+		this.customModuleId = customModuleId;
+	}
+
+	public long getFieldId() {
+		return fieldId;
+	}
+
+	public void setFieldId(long fieldId) {
+		this.fieldId = fieldId;
+	}
+
+	public String getCustomModuleName() {
+		return customModuleName;
+	}
+
+	public void setCustomModuleName(String customModuleName) {
+		this.customModuleName = customModuleName;
+	}
+
+	public String getDateFieldName() {
+		return dateFieldName;
+	}
+
+	public void setDateFieldName(String dateFieldName) {
+		this.dateFieldName = dateFieldName;
+	}
+
+	public enum ExecuteOn {
+		ON,
+		AFTER,
+		BEFORE;
+
+		public int getVal() {
+			return ordinal() + 1;
+		}
+		private static final ExecuteOn[] EXECUTE_ONS = ExecuteOn.values();
+		public static ExecuteOn valueOf(int type) {
+			if (type > 0 && type <= EXECUTE_ONS.length) {
+				return EXECUTE_ONS[type - 1];
+			}
+			return null;
+		}
+	}
 	
 	public enum TriggerType {
 		
@@ -221,7 +315,8 @@ public class PMTriggerContext implements Serializable {
 		SCHEDULE,
 		READING,
 		ALARMRULE,
-		USER
+		USER,
+		CUSTOM
 		;
 		
 		public int getVal() {

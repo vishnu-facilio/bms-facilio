@@ -149,6 +149,35 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 
 	@Override
+	public List<FacilioModule> getCustomModulesWithDateFieldList() throws Exception {
+		FacilioModule moduleModule = ModuleFactory.getModuleModule();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(moduleModule.getTableName())
+				.select(FieldFactory.getModuleFields())
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(1), NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition("IS_CUSTOM", "custom", String.valueOf(true), BooleanOperators.IS))
+				.andCustomWhere("exists(select 1 from Fields WHERE Fields.MODULEID = Modules.MODULEID AND Fields.DATA_TYPE IN (6, 5))");
+
+		List<Map<String, Object>> props = builder.get();
+		for (Map<String, Object> prop: props) {
+			if (prop.containsKey("createdBy")) {
+				User user = new User();
+				user.setId((Long) prop.get("createdBy"));
+				prop.put("createdBy", user);
+			}
+		}
+
+		List<FacilioModule> modules = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
+
+		for (FacilioModule module: modules) {
+			List<FacilioField> modFields = getAllFields(module.getName());
+			List<FacilioField> dateFields = modFields.stream().filter(i -> i.getDataType() == 6 || i.getDataType() == 5).collect(Collectors.toList());
+			module.setFields(dateFields);
+		}
+		return modules;
+	}
+
+	@Override
 	public List<FacilioModule> getModuleList(ModuleType moduleType, boolean onlyCustom) throws Exception {
 		FacilioModule moduleModule = ModuleFactory.getModuleModule();
 

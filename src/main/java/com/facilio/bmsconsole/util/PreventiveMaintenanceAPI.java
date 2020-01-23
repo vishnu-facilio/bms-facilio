@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.util;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalTime;
@@ -21,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.facilio.bmsconsole.commands.CorrectPMTriggerSelection;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -30,10 +28,8 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.jobs.FailedPMNewScheduler;
 import com.facilio.bmsconsole.templates.*;
 import com.facilio.db.builder.*;
-import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.modules.*;
 import com.facilio.tasker.job.JobContext;
-import com.facilio.tasker.job.JobStore;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -86,12 +82,10 @@ import com.google.common.collect.Multimap;
 import org.json.simple.parser.ParseException;
 
 import static com.facilio.bmsconsole.templates.Template.Type.PM_PRE_REQUEST_SECTION;
-import static com.facilio.bmsconsole.templates.Template.Type.PM_TASK_SECTION;
 
 public class PreventiveMaintenanceAPI {
 	
 	private static final Logger LOGGER = Logger.getLogger(PreventiveMaintenanceAPI.class.getName());
-	public static final int PM_CALCULATION_DAYS = 62;
 
 	public static long getStartTime(PreventiveMaintenance pm, ScheduleActions action, PMTriggerContext trigger) {
 		long startTime = -1;

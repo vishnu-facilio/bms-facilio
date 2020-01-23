@@ -311,6 +311,19 @@ public class ModuleAction extends FacilioAction {
 	public void setCategoryId(long categoryId) {
 		this.categoryId = categoryId;
 	}
+
+	public String modulesWithDateFields() throws Exception {
+		FacilioChain fetchModules = FacilioChainFactory.getAllModulesWithDateField();
+		FacilioContext context = fetchModules.getContext();
+		fetchModules.execute(context);
+
+		List<FacilioModule> modules = (List<FacilioModule>) context.get(ContextNames.MODULE_LIST);
+		setModules(modules);
+		setResult("modules", getModules());
+		return SUCCESS;
+	}
+
+	private List<FacilioModule> modules;
 	
 	public String metadata() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -723,5 +736,13 @@ public class ModuleAction extends FacilioAction {
 	}
 	public void setIds(List<Long> ids) {
 		this.ids = ids;
+	}
+
+	public List<FacilioModule> getModules() {
+		return modules;
+	}
+
+	public void setModules(List<FacilioModule> modules) {
+		this.modules = modules;
 	}
 }

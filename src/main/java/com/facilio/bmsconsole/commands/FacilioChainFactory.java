@@ -1450,6 +1450,12 @@ public class FacilioChainFactory {
 		c.addCommand(new GetReadingFieldsCommand());
 		return c;
 	}
+
+	public static FacilioChain getAllModulesWithDateField() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new GetModulesWithDateFieldCommand());
+		return c;
+	}
 	
 	public static FacilioChain getAllFieldsChain () {
 		FacilioChain c = FacilioChain.getNonTransactionChain();

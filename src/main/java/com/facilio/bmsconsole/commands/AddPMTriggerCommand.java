@@ -102,6 +102,9 @@ public class AddPMTriggerCommand extends FacilioCommand {
 				case SCHEDULE:
 //				trigger.setStartTime(System.currentTimeMillis());
 					break;
+				case CUSTOM:
+					addScheduleRuleForTrigger(trigger, pm);
+					break;
 			}
 			insertBuilder.addRecord(FieldUtil.getAsProperties(trigger));
 		}
@@ -135,5 +138,32 @@ public class AddPMTriggerCommand extends FacilioCommand {
 				SharingAPI.addSharing(sharingContext, userTrigger.getId(), ModuleFactory.getPMExecSharingModule());
 			}
 		}
+	}
+
+	private void addScheduleRuleForTrigger(PMTriggerContext trigger, PreventiveMaintenance pm) throws Exception {
+		WorkflowRuleContext rule = new WorkflowRuleContext();
+		rule.setDateFieldId(trigger.getFieldId());
+		rule.setModuleId(trigger.getCustomModuleId());
+		rule.setInterval(trigger.getExecutionOffset());
+		rule.setRuleType(WorkflowRuleContext.RuleType.PM_CUSTOM_TRIGGER_RULE);
+		rule.setName(trigger.getName()+"_"+System.currentTimeMillis());
+		if (trigger.getExecuteOnEnum() == PMTriggerContext.ExecuteOn.ON) {
+			rule.setScheduleType(WorkflowRuleContext.ScheduledRuleType.ON);
+		} else if (trigger.getExecuteOnEnum() == PMTriggerContext.ExecuteOn.AFTER) {
+			rule.setScheduleType(WorkflowRuleContext.ScheduledRuleType.AFTER);
+		} else if (trigger.getExecuteOnEnum() == PMTriggerContext.ExecuteOn.BEFORE) {
+			rule.setScheduleType(WorkflowRuleContext.ScheduledRuleType.BEFORE);
+		}
+		rule.setSiteId(pm.getSiteId());
+		rule.setActivityType(EventType.SCHEDULED);
+		long ruleId = WorkflowRuleAPI.addWorkflowRule(rule);
+		trigger.setRuleId(ruleId);
+		ActionContext action = new ActionContext();
+		action.setActionType(ActionType.EXECUTE_PM);
+		action.setStatus(true);
+
+		List<ActionContext> actions = Collections.singletonList(action);
+		ActionAPI.addActions(actions);
+		ActionAPI.addWorkflowRuleActionRel(ruleId, actions);
 	}
 }

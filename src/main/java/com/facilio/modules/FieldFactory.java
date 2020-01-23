@@ -4964,6 +4964,10 @@ public class FieldFactory {
 		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("triggerExecutionSource", "TRIGGER_EXECUTION_SOURCE", module, FieldType.NUMBER));
 		fields.add(getField("custom", "IS_CUSTOM", module, FieldType.BOOLEAN));
+		fields.add(getField("executeOn", "EXECUTE_ON", module, FieldType.NUMBER));
+		fields.add(getField("executionOffset", "EXECUTION_OFFSET", module, FieldType.NUMBER));
+		fields.add(getField("customModuleId", "CUSTOM_MODULEID", module, FieldType.NUMBER));
+		fields.add(getField("fieldId", "DATE_FIELDID", module, FieldType.NUMBER));
 
 		return fields;
 	}

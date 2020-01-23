@@ -829,6 +829,11 @@
 		</action>
 	</package>
 
+	<package name="pm" namespace="/api/v2/pm" extends="v2Api">
+		<action name="getModulesForTrigger" class="com.facilio.bmsconsole.actions.ModuleAction" method="modulesWithDateFields">
+		</action>
+	</package>
+
 	<package name="workOrderNewCalendarCountApiV2"
 		namespace="/api/v2/workorders/newcalendar/count" extends="v2Api">
 		<action name="*"

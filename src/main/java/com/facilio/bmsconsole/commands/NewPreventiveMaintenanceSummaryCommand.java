@@ -11,8 +11,10 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -133,7 +135,8 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 	        	taskMap.entrySet().stream().map(Entry::getValue).flatMap(List::stream).forEach(t -> t.setReadingRules(fieldVsRules.get(t.getReadingFieldId())));
 	        }
 		}
-        
+
+		fillTriggerExtras(pm);
 		TicketAPI.loadTicketLookups(Arrays.asList(workorder));
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
@@ -181,6 +184,23 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		context.put(FacilioConstants.ContextNames.PM_REMINDERS, reminders);
 		
 		return false;
+	}
+
+	private void fillTriggerExtras(PreventiveMaintenance pm) throws Exception {
+		List<PMTriggerContext> triggers = pm.getTriggers();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		if (!CollectionUtils.isEmpty(triggers)) {
+			for (PMTriggerContext trigger: triggers) {
+				if (trigger.getCustomModuleId() > -1) {
+					trigger.setCustomModuleName(modBean.getModule(trigger.getCustomModuleId()).getName());
+				}
+
+				if (trigger.getFieldId() > -1) {
+					trigger.setDateFieldName(modBean.getField(trigger.getFieldId(), trigger.getCustomModuleId()).getName());
+				}
+			}
+		}
 	}
 
 	private List<TaskSectionTemplate> fillSectionTemplate(WorkorderTemplate template,List<TaskSectionTemplate> sectionTemplate) {
