@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -124,7 +125,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 			}else {
 				targetModule = bean.getModule(module.getName());
 			}
-
+			
 			if (targetModule == null) {
 				List<FacilioField> field = new ArrayList<>();
 				for (FacilioField itr : fields) {
@@ -154,9 +155,49 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,
 						assetIdTarget.getCategory().getId());
 				addReadingChain.execute();
-				targetModule = bean.getModule(module.getName());
+				targetModule = (FacilioModule) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE);
+				if(targetModule == null) {
+					List<FacilioModule> modules = (List<FacilioModule>) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE_LIST);
+					targetModule = modules.get(0);
+				}
 			}
-
+			 
+			if(targetModule != null) {
+				List<FacilioField> targetModuleFields = bean.getAllFields(targetModule.getName());
+				List<FacilioField> insertfield = new ArrayList<>();
+				for(FacilioField field:fields) {
+					String sourceFieldName = field.getName();
+					FacilioField tempfield = new FacilioField();
+					for(FacilioField itr : targetModuleFields) {
+						
+						if (itr.getName().equals(sourceFieldName) || itr.getName().equals("actualTtime") || itr.getName().equals("ttime")
+								|| itr.getName().equals("date") || itr.getName().equals("week")
+								|| itr.getName().equals("day") || itr.getName().equals("hour")
+								|| itr.getName().equals("parentId") || itr.getName().equals("month")) {
+							continue;
+						}
+						if(!itr.getName().equals(sourceFieldName)) {
+							tempfield.setColumnName(itr.getColumnName());
+							tempfield.setName(itr.getName());
+							tempfield.setDataType(itr.getDataTypeEnum());
+							tempfield.setDisplayName(itr.getDisplayName());
+						}
+						insertfield.add(tempfield);
+					}
+				}
+				FacilioChain addReadingChain = TransactionChainFactory.getAddReadingsChain();
+				addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE,FacilioConstants.ContextNames.ASSET_CATEGORY);
+				addReadingChain.getContext().put(FacilioConstants.ContextNames.READING_NAME,targetModule.getName());
+				addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, insertfield);
+				addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,assetIdTarget.getCategory().getId());
+				addReadingChain.execute();
+				targetModule = (FacilioModule) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE);
+				if(targetModule == null) {
+					List<FacilioModule> modules = (List<FacilioModule>) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE_LIST);
+					targetModule = modules.get(0);
+				}
+			}
+			
 			LOGGER.info("copy Asset Insert Started target AssetId is :" + targetAssetId + " and module is  : "
 					+ targetModule.getName());
 
