@@ -133,30 +133,31 @@ public class AddOrUpdateLabourContractCommand extends FacilioCommand{
 	}
 		
 	private void addLabourRecords(List<LabourContractLineItemContext> lineItems,FacilioModule labourModule, List<FacilioField> labourFields) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule locationModule = modBean.getModule("location");
-		List<FacilioField> locationFields = modBean.getAllFields(locationModule.getName());
-		List<LabourContext> newLabourRecords = new ArrayList<LabourContext>();
-		List<LocationContext> newLocationRecords = new ArrayList<LocationContext>();
-		
-		for(LabourContractLineItemContext lineItem :lineItems ) {
-			if(lineItem.getLabour().getId() == -1) {
-			   //add empty location object
-				LocationContext location = new LocationContext();
-				location.setName(lineItem.getLabour().getName()+"_Location");
-				location.setLat(1.1);
-				location.setLng(1.1);
-				newLocationRecords.add(location);
-				lineItem.getLabour().setLocation(location);
-				lineItem.getLabour().setAvailability(true);
-				newLabourRecords.add(lineItem.getLabour());
+		if(CollectionUtils.isNotEmpty(lineItems)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule locationModule = modBean.getModule("location");
+			List<FacilioField> locationFields = modBean.getAllFields(locationModule.getName());
+			List<LabourContext> newLabourRecords = new ArrayList<LabourContext>();
+			List<LocationContext> newLocationRecords = new ArrayList<LocationContext>();
+			
+			for(LabourContractLineItemContext lineItem :lineItems ) {
+				if(lineItem.getLabour().getId() == -1) {
+				   //add empty location object
+					LocationContext location = new LocationContext();
+					location.setName(lineItem.getLabour().getName()+"_Location");
+					location.setLat(1.1);
+					location.setLng(1.1);
+					newLocationRecords.add(location);
+					lineItem.getLabour().setLocation(location);
+					lineItem.getLabour().setAvailability(true);
+					newLabourRecords.add(lineItem.getLabour());
+				}
+			}
+			ContractsAPI.addRecord(false,newLocationRecords, locationModule, locationFields);
+			if(!CollectionUtils.isEmpty(newLabourRecords)) {
+				ContractsAPI.addRecord(true,newLabourRecords, labourModule, labourFields);
 			}
 		}
-		ContractsAPI.addRecord(false,newLocationRecords, locationModule, locationFields);
-		if(!CollectionUtils.isEmpty(newLabourRecords)) {
-			ContractsAPI.addRecord(true,newLabourRecords, labourModule, labourFields);
-		}
 	}
-	
 	
 	}
