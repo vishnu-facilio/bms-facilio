@@ -4397,46 +4397,32 @@
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="termsAndConditionsList">
-			<param name="moduleName">inventory</param>
-			<param name="permission">READ</param>
 		</action>
 		<action name="getById"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="termsAndConditionsDetails">
-			<param name="moduleName">inventory</param>
-			<param name="permission">READ</param>
 		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="addTermsAndConditions">
-			<param name="moduleName">inventory</param>
-			<param name="permission">CREATE,UPDATE</param>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="updateTermsAndConditions">
-			<param name="moduleName">inventory</param>
-			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="deleteTermsAndConditions">
-			<param name="moduleName">inventory</param>
-			<param name="permission">DELETE</param>
 		</action>
 		<action name="termsAndConditionsCount"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="termsAndConditionsCount">
-			<param name="moduleName">inventory</param>
-			<param name="permission">READ</param>
 		</action>
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.TermsAndConditionsAction"
 			method="termsAndConditionsList">
 			<param name="viewName">{1}</param>
-			<param name="moduleName">inventory</param>
-			<param name="permission">READ</param>
 		</action>
 
 
