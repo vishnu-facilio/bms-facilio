@@ -596,7 +596,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (criteria != null) {
 			Condition condition = criteria.getConditions().get("1");
 			long lastValue = new Double(record.getReading(condition.getFieldName()).toString()).longValue();
-			ReadingRuleAPI.updateLastValueInReadingRule(getRuleGroupId(), lastValue);
+			ReadingRuleAPI.updateLastValueInReadingRule(getId(), lastValue);
 		}
 	}
 	

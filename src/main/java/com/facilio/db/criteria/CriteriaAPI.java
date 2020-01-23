@@ -113,7 +113,7 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 						condition.setCriteriaValueId(condition.getCriteriaValue().getCriteriaId());
 					}
 				}
-				if (condition.getOperator().isDynamicOperator()) {
+				if (condition.getOperator().isDynamicOperator() || condition.isExpressionValue()) {
 					condition.setComputedWhereClause(null);
 				}
 				else {
