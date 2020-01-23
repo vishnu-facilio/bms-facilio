@@ -42,6 +42,12 @@ public class CardAction extends FacilioAction {
 			
 		setResult("cardContext", chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT));
 		setResult("data", chain.getContext().get(FacilioConstants.ContextNames.CARD_RETURN_VALUE));
+		if (chain.getContext().get(FacilioConstants.ContextNames.CARD_STATE) != null) {
+			setResult("state", chain.getContext().get(FacilioConstants.ContextNames.CARD_STATE));
+		}
+		else {
+			setResult("state", cardContext.getCardState());
+		}
 		return SUCCESS;
 	}
 }

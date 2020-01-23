@@ -636,6 +636,29 @@
 				return resultMap;
 			}"
 		},
+		"10": {
+			"description" : "Conditional Formatting",
+			"usage" : "ApplyConditionalFormatting",
+			"workflow" : "Map applyConditionalFormatting(List variables,Map conditionalFormattings,Map cardState){
+				if(conditionalFormattings != null) {
+				
+					for each index,formating in conditionalFormattings.conditionalFormatting {
+								        
+						if(formating.get(\"criteria\") != null && formating.get(\"styles\") != null) {
+							json = formating.get(\"criteria\");
+							criteria1 = NameSpace(\"criteria\").get(json); 
+							res = criteria1.evaluate(variables);
+							if(res) {
+								returnMap = {};
+								returnMap[\"styles\"] = formating.styles;
+								return returnMap;
+							}
+						}
+					}
+				}
+				return null;
+			}"
+		},
 		"46": {
 			"description" : "ML Deviation",
 			"usage" : "AnomalySummary",
