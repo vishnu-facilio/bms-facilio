@@ -6677,6 +6677,15 @@ VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, 'KioskType');
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) 
 VALUES (${orgId}, @Devices_MODULE_ID, 'connectedTime', 'Connected Time', 7, 'CONNECTED_TIME', 6, false, false, true);
 
+INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) 
+VALUES (${orgId}, @Devices_MODULE_ID, 'onlineStatus', 'Online Status', 5, 'ONLINE_STATUS', 4, false, false, true);
+INSERT INTO BooleanFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
+
+INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) 
+VALUES (${orgId}, @Devices_MODULE_ID, 'lastSeenOnlineTime', 'Last seen online', 7, 'LAST_SEEN_ONLINE_TIME', 6, false, false, true);
+
+INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) 
+VALUES (${orgId}, @Devices_MODULE_ID, 'lastActivityTime', 'Last activity time', 7, 'LAST_ACTIVITY_TIME', 6, false, false, true);
 -- Visitor type picklist field
 
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE) VALUES (${orgId}, 'visitorType', 'Visitor Type', 'VisitorType', @PICK_LIST_MODULE_TYPE);

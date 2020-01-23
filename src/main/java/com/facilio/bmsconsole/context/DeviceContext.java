@@ -78,7 +78,33 @@ public class DeviceContext extends AssetContext {
 	private KioskType kioskType;
 	private ResourceContext associatedResource;
 	Boolean isDeviceConnected;
+	private Boolean onlineStatus;
+	private long lastSeenOnlineTime;
+	private long lastActivityTime;
 
+	public long getLastActivityTime() {
+		return lastActivityTime;
+	}
+
+	public void setLastActivityTime(long lastActivityTime) {
+		this.lastActivityTime = lastActivityTime;
+	}
+
+	public long getLastSeenOnlineTime() {
+		return lastSeenOnlineTime;
+	}
+
+	public void setLastSeenOnlineTime(long lastSeenOnlineTime) {
+		this.lastSeenOnlineTime = lastSeenOnlineTime;
+	}
+
+	public Boolean getOnlineStatus() {
+		return onlineStatus;
+	}
+
+	public void setOnlineStatus(Boolean onlineStatus) {
+		this.onlineStatus = onlineStatus;
+	}
 
 	public Boolean getIsDeviceConnected() {
 		return isDeviceConnected;
