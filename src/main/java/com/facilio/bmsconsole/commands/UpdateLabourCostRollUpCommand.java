@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LabourContext;
@@ -27,7 +28,7 @@ public class UpdateLabourCostRollUpCommand extends FacilioCommand {
 		FacilioModule labourModule = modBean.getModule(FacilioConstants.ContextNames.LABOUR);
 		
 		LabourContractContext labourcontract = (LabourContractContext)context.get(FacilioConstants.ContextNames.RECORD);
-		if(labourcontract != null) {
+		if(labourcontract != null && CollectionUtils.isNotEmpty(labourcontract.getLineItems())) {
 			for(LabourContractLineItemContext lineItem : labourcontract.getLineItems()) {
 				Map<String, Object> updateMap = new HashMap<>();
 				FacilioField costField = modBean.getField("cost", labourModule.getName());
