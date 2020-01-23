@@ -17,6 +17,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -54,12 +55,12 @@ public class FacilioHttpUtils {
                     post.setHeader(key, value);
                 }
             }
-            if(bodyContent != null)
+            if(bodyContent != null)							// first preference to body content
             {
                 HttpEntity entity = new ByteArrayEntity(bodyContent.getBytes(StandardCharsets.UTF_8));
                 post.setEntity(entity);
             }
-            if(params != null)
+            else if(params != null && !params.isEmpty())
             {
                 List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
                 for (String key : params.keySet()) {
