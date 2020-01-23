@@ -16,6 +16,7 @@ public class WorkflowRuleHistoricalLoggerContext {
 	private ResourceContext resourceContext;
 	private Status status;
 	private long alarmCount;
+	private long ruleResourceLoggerId;
 	private long loggerGroupId;
 	private long resourceLogCount;
 	private long resolvedLogCount;
@@ -114,6 +115,14 @@ public class WorkflowRuleHistoricalLoggerContext {
 		this.createdTime = createdTime;
 	}
 	
+	public long getRuleResourceLoggerId() {
+		return ruleResourceLoggerId;
+	}
+
+	public void setRuleResourceLoggerId(long ruleResourceLoggerId) {
+		this.ruleResourceLoggerId = ruleResourceLoggerId;
+	}
+
 	public long getLoggerGroupId() {
 		return loggerGroupId;
 	}
@@ -213,6 +222,8 @@ public class WorkflowRuleHistoricalLoggerContext {
 		IN_PROGRESS(1),
 		RESOLVED(2),
 		FAILED(3),
+		EVENT_GENERATING_STATE(4),
+		ALARM_PROCESSING_STATE(5)
 		;
 
 		int intVal;

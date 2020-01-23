@@ -174,11 +174,23 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 		if (MapUtils.isNotEmpty(eventsMap)) {
 			for (Type type : eventsMap.keySet()) {
 				String moduleName = NewEventAPI.getEventModuleName(type);
-				InsertRecordBuilder<BaseEventContext> builder = new InsertRecordBuilder<BaseEventContext>()
-						.moduleName(moduleName)
-						.fields(modBean.getAllFields(moduleName));
-				builder.addRecords(eventsMap.get(type));
-				builder.save();
+				List<BaseEventContext> moduleEventList = eventsMap.get(type);
+				for(BaseEventContext event:moduleEventList) {
+					if (event.getId() > 0) {
+						UpdateRecordBuilder<BaseEventContext> builder = new UpdateRecordBuilder<BaseEventContext>()
+								.moduleName(moduleName)
+								.andCondition(CriteriaAPI.getIdCondition(event.getId(), modBean.getModule(moduleName)))
+								.fields(modBean.getAllFields(moduleName));
+						builder.update(event);
+					}
+					else
+					{
+						InsertRecordBuilder<BaseEventContext> builder = new InsertRecordBuilder<BaseEventContext>()
+								.moduleName(moduleName)
+								.fields(modBean.getAllFields(moduleName));
+						builder.insert(event);			
+					}		
+				}				
 			}
 		}
 

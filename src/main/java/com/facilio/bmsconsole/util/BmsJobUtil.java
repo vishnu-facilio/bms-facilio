@@ -75,7 +75,7 @@ public class BmsJobUtil {
 		FacilioTimer.deleteJobs(jobIds, jobName);
 	}
 	
-	private static void addJobProps(long jobId, String jobName, JSONObject props) throws Exception {
+	public static void addJobProps(long jobId, String jobName, JSONObject props) throws Exception {
 		if (props != null && !props.isEmpty()) {
 			Map<String, Object> record = new HashMap<>();
 			record.put("jobId", jobId);
