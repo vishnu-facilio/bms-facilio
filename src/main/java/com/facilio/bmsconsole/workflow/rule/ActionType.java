@@ -39,6 +39,7 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -49,11 +50,13 @@ import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViolationEventContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.util.CallUtil;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NotificationAPI;
@@ -851,7 +854,7 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) throws Exception {
-			addWorkOrder(obj, context, currentRecord, SourceType.WORKFLOW_RULE);
+			addWorkOrder(obj, SourceType.WORKFLOW_RULE, null);
 		}
 
 	},
@@ -1226,7 +1229,9 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) throws Exception {
 			try {
-				addWorkOrder(obj, context, currentRecord, SourceType.TASK_DEVIATION);
+				TaskContext task = (TaskContext) currentRecord;
+				List<AttachmentContext> attachments = AttachmentsAPI.getAttachments("taskattachments", task.getId());
+				addWorkOrder(obj, SourceType.TASK_DEVIATION, attachments);
 			}
 			catch(Exception e) {
 				LOGGER.error("Exception occurred on creating deviation workorders", e);
@@ -1590,7 +1595,7 @@ public enum ActionType {
 		StateFlowRulesAPI.updateState(moduleData, module, status, false, context);
 	}
 	
-	private static void addWorkOrder (JSONObject obj, Context context, Object currentRecord, SourceType sourceType) throws Exception {
+	private static void addWorkOrder (JSONObject obj, SourceType sourceType, List<AttachmentContext> attachments) throws Exception {
 		// TODO Auto-generated method stub
 
 		LOGGER.debug("Action::Add Workorder::"+obj);
@@ -1600,6 +1605,8 @@ public enum ActionType {
 		FacilioContext woContext = new FacilioContext();
 		woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 		woContext.put(FacilioConstants.ContextNames.TASK_MAP, wo.getTaskList());
+		woContext.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, attachments);
+		woContext.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 
 		FacilioChain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(woContext);

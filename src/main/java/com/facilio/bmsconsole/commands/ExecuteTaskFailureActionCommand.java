@@ -39,7 +39,7 @@ public class ExecuteTaskFailureActionCommand extends FacilioCommand implements S
 						Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 						CommonCommandUtil.appendModuleNameInKey(ContextNames.TASK, ContextNames.TASK, FieldUtil.getAsProperties(task), placeHolders);
 						CommonCommandUtil.appendModuleNameInKey(ContextNames.WORK_ORDER, ContextNames.WORK_ORDER, FieldUtil.getAsProperties(woMap.get(task.getParentTicketId())), placeHolders);
-						action.executeAction(placeHolders, null, null, null);
+						action.executeAction(placeHolders, null, null, task);
 					}
 				}
 			}
