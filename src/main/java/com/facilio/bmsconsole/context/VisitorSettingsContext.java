@@ -19,6 +19,14 @@ public class VisitorSettingsContext implements Serializable {
 	String ndaContent;
 	Boolean approvalRequiredForInvite;
 	
+	private Boolean faceRecognitionEnabled;
+	
+	public Boolean getFaceRecognitionEnabled() {
+		return faceRecognitionEnabled;
+	}
+	public void setFaceRecognitionEnabled(Boolean faceRecognitionEnabled) {
+		this.faceRecognitionEnabled = faceRecognitionEnabled;
+	}
 	public Boolean getApprovalRequiredForInvite() {
 		return approvalRequiredForInvite;
 	}
