@@ -58,6 +58,7 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
                         .fields(FieldFactory.getWebTabFields())
                         .andCondition(CriteriaAPI.getIdCondition(tab.getId(), ModuleFactory.getWebTabModule()));
                 builder.update(FieldUtil.getAsProperties(tab));
+                context.put(FacilioConstants.ContextNames.WEB_TAB_ID, tab.getId());
             }
             else {
                 GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()

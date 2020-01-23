@@ -3095,6 +3095,14 @@ public class ModuleFactory {
 		module.setTableName("Occupants");
 		return module;
 	}
+	
+	public static FacilioModule getApplicationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("application");
+		module.setDisplayName("Application");
+		module.setTableName("Application");
+		return module;
+	}
 
 	public static FacilioModule getWebTabGroupModule() {
 		FacilioModule module = new FacilioModule();

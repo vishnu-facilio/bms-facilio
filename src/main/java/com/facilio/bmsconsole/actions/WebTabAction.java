@@ -82,6 +82,7 @@ public class WebTabAction extends FacilioAction {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateTabChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.WEB_TAB, getTab());
+        context.put(FacilioConstants.ContextNames.NEW_PERMISSIONS, tab.getPermissions());
         chain.execute();
         return SUCCESS;
     }

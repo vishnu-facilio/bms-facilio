@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE struts PUBLIC
     "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
@@ -4886,6 +4885,17 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="applications" namespace="/api/v2/application"
+	extends="v2Api">
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="addOrUpdateApplication" />
+		<action name="delete" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="deleteTabGroup" />
+		<action name="list" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="getAllApplication" />
+		<action name="markAsDefault" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="markApplicationAsDefault" />
+	</package>
 	<package name="webtabGroup" namespace="/api/v2/tabGroup"
 			 extends="v2Api">
 		<action name="addOrUpdate"
@@ -4904,15 +4914,15 @@
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabList" />
 	</package>
-	
+
 	<package name="tabPermissions" namespace="/api/v2/tab/permissions"
-			 extends="v2Api">
+		extends="v2Api">
 		<action name="add"
-				class="com.facilio.bmsconsole.actions.NewPermissionAction" method="addNewPermissions" />
+			class="com.facilio.bmsconsole.actions.NewPermissionAction" method="addNewPermissions" />
 		<action name="delete"
-				class="com.facilio.bmsconsole.actions.NewPermissionAction" method="deleteNewPermissions" />
+			class="com.facilio.bmsconsole.actions.NewPermissionAction" method="deleteNewPermissions" />
 		<action name="list"
-				class="com.facilio.bmsconsole.actions.NewPermissionAction" method="getTabPermissions" />
+			class="com.facilio.bmsconsole.actions.NewPermissionAction" method="getTabPermissions" />
 	</package>
 	
 	<package name="chatbot" namespace="/api/v2/cb" extends="v2Api">

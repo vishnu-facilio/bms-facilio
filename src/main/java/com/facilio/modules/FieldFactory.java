@@ -7395,6 +7395,17 @@ public class FieldFactory {
 	public static FacilioField getLastModifiedTimeField(FacilioModule module) {
 		return getField(AgentConstants.LAST_MODIFIED_TIME, "LAST_MODIFIED_TIME", module, FieldType.NUMBER);
 	}
+	
+	public static List<FacilioField> getApplicationFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getApplicationModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("name", "APPLICATION_NAME", module, FieldType.STRING));
+		fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
+
+		return fields;
+	}
 
 	public static List<FacilioField> getWebTabGroupFields() {
 		List<FacilioField> fields = new ArrayList<>();

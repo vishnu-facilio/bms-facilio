@@ -4290,6 +4290,18 @@ public class TransactionChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getAddOrUpdateApplication() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateApplicationCommand());
+		return chain;
+	}
+	
+	public static FacilioChain markApplicationAsDefault() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new MarkApplicationAsDefaultCommand());
+		return chain;
+	}
+	
 	public static FacilioChain getAddOrUpdateTabGroup() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateTabGroupCommand());

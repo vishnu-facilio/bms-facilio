@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.modules.FacilioEnum;
 import org.json.simple.JSONObject;
@@ -7,6 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class WebTabContext implements Serializable {
 
@@ -134,4 +136,21 @@ public class WebTabContext implements Serializable {
             return getName();
         }
     }
+    
+    private List<NewPermission> permissions;
+    public List<NewPermission> getPermissions() {
+		return permissions;
+	}
+    public void setPermissions(List<NewPermission> permissions) {
+		this.permissions = permissions;
+	}
+    
+    private List<Long> moduleIds;
+    public List<Long> getModuleIds() {
+		return moduleIds;
+	}
+    public void setModuleIds(List<Long> moduleIds) {
+		this.moduleIds = moduleIds;
+	}
+    
 }

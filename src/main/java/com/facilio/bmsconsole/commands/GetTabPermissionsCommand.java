@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -23,8 +24,8 @@ public class GetTabPermissionsCommand extends FacilioCommand{
                     .table(ModuleFactory.getNewPermissionModule().getTableName())
                     .select(FieldFactory.getNewPermissionFields())
                     .andCondition(CriteriaAPI.getCondition("TAB_ID", "tabId", String.valueOf(tabId), NumberOperators.EQUALS));
-            List<WebTabContext> tabs = FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabContext.class);
-            context.put(FacilioConstants.ContextNames.PERMISSIONS, tabs);
+            List<NewPermission> permissions = FieldUtil.getAsBeanListFromMapList(builder.get(), NewPermission.class);
+            context.put(FacilioConstants.ContextNames.PERMISSIONS, permissions);
 		}
 		
 		return false;

@@ -124,6 +124,9 @@ public class FacilioConstants {
 		public static final String WEB_TABS = "webTabs";
 		public static final String NEW_PERMISSIONS = "newPermission";
 		public static final String WEB_TAB_ID = "webTabId";
+		
+		public static final String APPLICATION = "application";
+		public static final String APPLICATION_ID = "applicationId";
 			
 		public static final String APP_ID = "appId";
 		public static final String FETCH_FULL_FORM = "fetchFullForm";
