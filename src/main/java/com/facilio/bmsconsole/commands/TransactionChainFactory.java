@@ -1019,7 +1019,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ValidateAndSetResetCounterMetaCommand());
 			c.addCommand(new AddResetCounterMetaCommand());
 			c.addCommand(new AddMarkedReadingValuesCommand());
-			c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud com.facilio.agentIntegration
+//			c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud com.facilio.agentIntegration
 			c.addCommand(new ReadingUnitConversionToDisplayUnit());
 			return c;
 		}
