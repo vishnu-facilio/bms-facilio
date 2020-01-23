@@ -386,7 +386,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			}
 		}
 		if(dataFilter != null && !dataFilter.isEmpty()) {
-			Criteria timeFilterCriteria = FilterUtil.getTimeFilterCriteria(report.getDateRange(), dp.getxAxis().getModuleName(), timeFilter);
+			Criteria timeFilterCriteria = FilterUtil.getDataFilterCriteria(dp.getxAxis().getModuleName(), dataFilter);
 			if(timeFilterCriteria != null && !timeFilterCriteria.isEmpty()){
 				newSelectBuilder.andCriteria(timeFilterCriteria);
 			}
