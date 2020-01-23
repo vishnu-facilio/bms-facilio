@@ -4890,7 +4890,7 @@
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="addOrUpdateApplication" />
 		<action name="delete" class="com.facilio.bmsconsole.actions.ApplicationAction"
-			method="deleteTabGroup" />
+			method="deleteApplication" />
 		<action name="list" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getAllApplication" />
 		<action name="markAsDefault" class="com.facilio.bmsconsole.actions.ApplicationAction"

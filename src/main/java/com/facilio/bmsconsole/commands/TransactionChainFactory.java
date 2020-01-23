@@ -4302,6 +4302,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 	
+	public static FacilioChain getDeleteApplicationsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteApplicationCommand());
+		return chain;
+	}
+	
 	public static FacilioChain getAddOrUpdateTabGroup() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateTabGroupCommand());

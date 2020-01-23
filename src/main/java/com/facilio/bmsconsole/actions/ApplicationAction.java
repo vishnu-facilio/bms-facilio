@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -33,6 +35,14 @@ public class ApplicationAction extends FacilioAction {
 	public void setAppId(long appId) {
 		this.appId = appId;
 	}
+	
+	private List<Long> appIds;
+	public List<Long> getAppIds() {
+		return appIds;
+	}
+	public void setAppIds(List<Long> appIds) {
+		this.appIds = appIds;
+	}
 
 	public String addOrUpdateApplication() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateApplication();
@@ -54,6 +64,14 @@ public class ApplicationAction extends FacilioAction {
 	
 	public String markApplicationAsDefault() throws Exception {
 		FacilioChain chain = TransactionChainFactory.markApplicationAsDefault();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
+		chain.execute();
+		return SUCCESS;
+	}
+	
+	public String deleteApplication() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getDeleteApplicationsChain();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
 		chain.execute();
