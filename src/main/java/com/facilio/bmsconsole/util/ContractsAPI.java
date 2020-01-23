@@ -486,7 +486,7 @@ public class ContractsAPI {
 		List<FormField> fields = new ArrayList<FormField>();
 		fields.add(new FormField("days", FieldDisplayType.NUMBER, "How many days before the payment date has to be notified?", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("to", FieldDisplayType.MULTI_USER_LIST, "Select User", Required.REQUIRED,"users", 1, 1));
-//		fields.add(new FormField("time", FieldDisplayType.TIME, "Enter Time", Required.REQUIRED,1, 1));
+		fields.add(new FormField("time", FieldDisplayType.TIME, "Enter Time", Required.REQUIRED,1, 1));
 		
 		formSection.setFields(fields);
 		sections.add(formSection);
@@ -531,7 +531,7 @@ public class ContractsAPI {
 		event.setActivityType(EventType.SCHEDULED);
 		workflowRuleContext.setEvent(event);
 		workflowRuleContext.setScheduleType(ScheduledRuleType.BEFORE);
-//		workflowRuleContext.setTime((String)map.get("time"));
+		workflowRuleContext.setTime((String)map.get("time"));
 		
 		Condition condition = new Condition();
 		condition.setFieldName("status");
