@@ -2216,8 +2216,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new AssociateDefaultTermsToPoCommand());
 			chain.addCommand(getPurchaseOrderTotalCostChain()); //update purchase order total cost
 			chain.addCommand(new AddPurchaseRequestOrderRelation());
-			chain.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE)));
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE));
 			chain.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 		
