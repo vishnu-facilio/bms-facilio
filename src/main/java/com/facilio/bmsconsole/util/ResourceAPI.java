@@ -115,6 +115,28 @@ public class ResourceAPI {
 		// LOGGER.error("builder -- "+resourceBuilder);
 		return resources;
 	}
+	
+	// Use this when only name for resource is needed
+	public static Map<Long, Map<String, Object>> getResourceMapFromIds(Collection<Long> resourceIds, boolean fetchDeleted) throws Exception {
+		if (resourceIds == null || resourceIds.isEmpty()) {
+			return Collections.EMPTY_MAP;
+		}
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE));
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(fieldMap.get("name"));
+		fields.add(fieldMap.get("resourceType"));
+
+		SelectRecordsBuilder<ResourceContext> selectBuilder = new SelectRecordsBuilder<ResourceContext>().select(fields)
+				.module(module).beanClass(ResourceContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(resourceIds, module));
+		if (fetchDeleted) {
+			selectBuilder.fetchDeleted();
+		}
+		return selectBuilder.getAsMapProps();
+	}
 
 	public static Map<Long, ResourceContext> getResourceAsMapFromIds(Collection<Long> resourceIds) throws Exception {
 

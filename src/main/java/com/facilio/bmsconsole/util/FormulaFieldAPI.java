@@ -1178,7 +1178,7 @@ public class FormulaFieldAPI {
 			formula.setViolationRule(rule);
 			/*Condition condition = rule.getCriteria().getConditions().values().stream().findFirst().get();
 			formula.setTarget(Double.parseDouble(condition.getValue()));*/
-			if (formula.getMatchedResourcesIds().size() == 1) {
+			if (formula.getMatchedResourcesIds() != null && formula.getMatchedResourcesIds().size() == 1) {
 				long resourceId = formula.getMatchedResourcesIds().get(0);
 				Object value = getFormulaCurrentValue(resourceId, formula.getReadingField());
 				formula.setCurrentValue(value);

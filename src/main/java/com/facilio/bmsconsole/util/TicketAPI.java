@@ -1496,7 +1496,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			} else {
 				AssetContext asset = AssetsAPI.getAssetInfo(resource.getId(), false); //check deleted ?
 				if (asset.getSpaceId() > 0) {
-					BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(asset.getSpaceId());
+					BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(asset.getSpaceId(), true);
 					if (baseSpace.getSpaceTypeEnum() == SpaceType.SITE) {
 						resourceSiteId = baseSpace.getId();
 					} else {

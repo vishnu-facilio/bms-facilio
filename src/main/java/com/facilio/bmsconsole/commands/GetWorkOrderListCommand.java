@@ -2,8 +2,11 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
@@ -15,6 +18,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
@@ -39,17 +43,18 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		
+
 		List<Long> woIds = new ArrayList<>();
 		woIds = (List<Long>) context.get(FacilioConstants.ContextNames.WO_IDS);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		String count = (String) context.get(FacilioConstants.ContextNames.WO_LIST_COUNT);
 		boolean isApproval = (Boolean) context.get(FacilioConstants.ContextNames.IS_APPROVAL);
-		
+		List<String> selectFields = (List<String>) context.get(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS);
+
 		List<FacilioField> fields;
-		
-		 List<Map<String, Object>> subViewsCount = null;
+
+		List<Map<String, Object>> subViewsCount = null;
 		if (count != null) {
 			FacilioField countFld = new FacilioField();
 			countFld.setName("count");
@@ -64,21 +69,21 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 				context.put(FacilioConstants.ContextNames.SUB_VIEW_COUNT, subViewsCount);
 			}
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			
-			List<String> selectFields = (List<String>) context.get(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS);
+
+
 			if (CollectionUtils.isNotEmpty(selectFields)) {
 				List<FacilioField> fieldsToSelect = new ArrayList<>();
 				boolean fetchCustomFields = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_CUSTOM_FIELDS, false);
 				if (fetchCustomFields) {
 					fieldsToSelect.addAll(fields.stream().filter(field -> !field.isDefault()).collect(Collectors.toList()));
 				}
-				
+
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 				fieldsToSelect.addAll(selectFields.stream().map(fieldName -> fieldMap.get(fieldName)).collect(Collectors.toList()));
 				fields = fieldsToSelect;
 			}
 		}
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("workorder");
 		List<WorkOrderContext> workOrders;
@@ -89,125 +94,128 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 					.beanClass(WorkOrderContext.class)
 					.select(fields)
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module),StringUtils.join(woIds, ","),NumberOperators.EQUALS));
-			
+
 			workOrders = selectBuilder.get();
 		}
 		else {
-		SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
-				.table(dataTableName)
-				.moduleName(moduleName)
-				.beanClass(WorkOrderContext.class)
-				.select(fields)
-				.maxLevel(0);
-		
-		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
-		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
-		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
-		if (filterCriteria != null) {
-			selectBuilder.andCriteria(filterCriteria);
-		}
-		if (( filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
-			selectBuilder.andCriteria(view.getCriteria());
-		}
-		
-		String subView = (String) context.get(FacilioConstants.ContextNames.SUB_VIEW);
-		if (subView != null && !subView.isEmpty()) {
-			Criteria subViewCriteria = ViewFactory.getCriteriaForView(subView, ModuleFactory.getWorkOrdersModule());
-			if (subViewCriteria != null && !subViewCriteria.isEmpty()) {
-				selectBuilder.andCriteria(subViewCriteria);
+			SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+					.table(dataTableName)
+					.moduleName(moduleName)
+					.beanClass(WorkOrderContext.class)
+					.select(fields)
+					.maxLevel(0);
+
+			JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
+			Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+			Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
+			if (filterCriteria != null) {
+				selectBuilder.andCriteria(filterCriteria);
 			}
-		}
-		else if (subViewsCount != null && !subViewsCount.isEmpty()) {
-			String defaultSubView = (String) subViewsCount.get(0).get("name");
-			selectBuilder.andCriteria(ViewFactory.getCriteriaForView(defaultSubView, ModuleFactory.getWorkOrdersModule()));
-			context.put(FacilioConstants.ContextNames.SUB_VIEW, defaultSubView);
-		}
-
-		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
-		if (searchCriteria != null) {
-			selectBuilder.andCriteria(searchCriteria);
-			//			selectBuilderCount.andCriteria(searchCriteria);
-		}
-
-		String criteriaIds = (String) context.get(FacilioConstants.ContextNames.CRITERIA_IDS);
-		if (criteriaIds != null) {
-			String[] ids = criteriaIds.split(",");
-			for(int i = 0; i < ids.length; i++) {
-				Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), Long.parseLong(ids[i]));
-				selectBuilder.andCriteria(criteria);
-				//				selectBuilderCount.andCriteria(criteria);
+			if (( filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
+				selectBuilder.andCriteria(view.getCriteria());
 			}
-		}
 
-//		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
-//		if(scopeCriteria != null)
-//		{
-//			selectBuilder.andCriteria(scopeCriteria);
-//		}
-//
-//		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
-//			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(moduleName,"read");
-//			if(permissionCriteria != null) {
-//				selectBuilder.andCriteria(permissionCriteria);
-//			}
-//		}
+			String subView = (String) context.get(FacilioConstants.ContextNames.SUB_VIEW);
+			if (subView != null && !subView.isEmpty()) {
+				Criteria subViewCriteria = ViewFactory.getCriteriaForView(subView, ModuleFactory.getWorkOrdersModule());
+				if (subViewCriteria != null && !subViewCriteria.isEmpty()) {
+					selectBuilder.andCriteria(subViewCriteria);
+				}
+			}
+			else if (subViewsCount != null && !subViewsCount.isEmpty()) {
+				String defaultSubView = (String) subViewsCount.get(0).get("name");
+				selectBuilder.andCriteria(ViewFactory.getCriteriaForView(defaultSubView, ModuleFactory.getWorkOrdersModule()));
+				context.put(FacilioConstants.ContextNames.SUB_VIEW, defaultSubView);
+			}
 
-		if(context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) != null && (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) != -1)
-		{
-			selectBuilder.andCustomWhere("Tickets.DUE_DATE BETWEEN ? AND ?", (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) * 1000, (Long) context.get(FacilioConstants.ContextNames.WO_DUE_ENDTIME) * 1000);
-		}
-		Boolean fetchAllTypes = (Boolean) context.get(ContextNames.WO_FETCH_ALL);
-		if (!isApproval && !isUpcomingView(view) && (fetchAllTypes == null || !fetchAllTypes)) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("STATUS_ID", "status", TicketAPI.getStatus("preopen").getId()+"", NumberOperators.NOT_EQUALS));
+			Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
+			if (searchCriteria != null) {
+				selectBuilder.andCriteria(searchCriteria);
+				//			selectBuilderCount.andCriteria(searchCriteria);
+			}
 
-		}
-		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
-		if (orderBy != null && !orderBy.isEmpty()) {
-			selectBuilder.orderBy(orderBy);
-		}
-		if (count != null) {
-			selectBuilder.setAggregation();
-		}
-		else {
-			JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-			if (pagination != null) {
-				int page = (int) pagination.get("page");
-				int perPage = (int) pagination.get("perPage");
+			String criteriaIds = (String) context.get(FacilioConstants.ContextNames.CRITERIA_IDS);
+			if (criteriaIds != null) {
+				String[] ids = criteriaIds.split(",");
+				for(int i = 0; i < ids.length; i++) {
+					Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), Long.parseLong(ids[i]));
+					selectBuilder.andCriteria(criteria);
+					//				selectBuilderCount.andCriteria(criteria);
+				}
+			}
 
-				if (perPage != -1) {
-					int offset = ((page-1) * perPage);
-					if (offset < 0) {
-						offset = 0;
+			//		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
+			//		if(scopeCriteria != null)
+			//		{
+			//			selectBuilder.andCriteria(scopeCriteria);
+			//		}
+			//
+			//		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+			//			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(moduleName,"read");
+			//			if(permissionCriteria != null) {
+			//				selectBuilder.andCriteria(permissionCriteria);
+			//			}
+			//		}
+
+			if(context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) != null && (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) != -1)
+			{
+				selectBuilder.andCustomWhere("Tickets.DUE_DATE BETWEEN ? AND ?", (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) * 1000, (Long) context.get(FacilioConstants.ContextNames.WO_DUE_ENDTIME) * 1000);
+			}
+			Boolean fetchAllTypes = (Boolean) context.get(ContextNames.WO_FETCH_ALL);
+			if (!isApproval && !isUpcomingView(view) && (fetchAllTypes == null || !fetchAllTypes)) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition("STATUS_ID", "status", TicketAPI.getStatus("preopen").getId()+"", NumberOperators.NOT_EQUALS));
+
+			}
+			String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+			if (orderBy != null && !orderBy.isEmpty()) {
+				selectBuilder.orderBy(orderBy);
+			}
+			if (count != null) {
+				selectBuilder.setAggregation();
+			}
+			else {
+				JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+				if (pagination != null) {
+					int page = (int) pagination.get("page");
+					int perPage = (int) pagination.get("perPage");
+
+					if (perPage != -1) {
+						int offset = ((page-1) * perPage);
+						if (offset < 0) {
+							offset = 0;
+						}
+
+						selectBuilder.offset(offset);
+						selectBuilder.limit(perPage);
 					}
 
-					selectBuilder.offset(offset);
-					selectBuilder.limit(perPage);
+					if (perPage == -1 && (filters == null || !filters.containsKey("createdTime"))) {
+						throw new IllegalArgumentException("createdTime filter is mandatory");
+					}
+				}
+				boolean fetchTriggers = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_TRIGGERS, false);
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+				if(fieldMap.get("vendor") != null) {
+					selectBuilder.fetchLookup((LookupField) fieldMap.get("vendor"));
+				}
+				if (fetchTriggers) {
+					selectBuilder.fetchLookup((LookupField) fieldMap.get("trigger"));
 				}
 
-				if (perPage == -1 && (filters == null || !filters.containsKey("createdTime"))) {
-					throw new IllegalArgumentException("createdTime filter is mandatory");
+				// Used for calendar api
+				boolean fetchAsMap = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_AS_MAP, false);
+				if (fetchAsMap) {
+					selectBuilder.fetchLookup((LookupField) fieldMap.get("assignedTo"));
+					selectBuilder.fetchLookup((LookupField) fieldMap.get("assignmentGroup"));
+					List<Map<String, Object>> props = selectBuilder.getAsProps();
+					setWorkorderLookupPropMap(props);
+					context.put("props", props);
+					return false;
 				}
 			}
-			boolean fetchTriggers = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_TRIGGERS, false);
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-			if(fieldMap.get("vendor") != null) {
-				selectBuilder.fetchLookup((LookupField) fieldMap.get("vendor"));
-			}
-			if (fetchTriggers) {
-				
-				selectBuilder.fetchLookup((LookupField) fieldMap.get("trigger"));
-			}
-		}
-		boolean fetchAsMap = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_AS_MAP, false);
-		if (count == null && fetchAsMap) {
-			List<Map<String, Object>> props = selectBuilder.getAsProps();
-			context.put("props", props);
-			return false;
-		}
-		else {
+
 			workOrders = selectBuilder.get();
 		}
-	}
 
 		if (count != null) {
 			if (workOrders != null && !workOrders.isEmpty()) {
@@ -229,6 +237,44 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 		return view.getName().startsWith("upcoming");
 	}
 	
+	private void setWorkorderLookupPropMap(List<Map<String, Object>> props) throws Exception {
+		if (CollectionUtils.isNotEmpty(props)) {
+			Set<Long> resourceIds = new HashSet<>();
+			for(Map<String, Object> prop: props) {
+				Map<String, Object> resource = (Map<String, Object>) prop.get("resource");
+				if (resource != null) {
+					resourceIds.add((Long) resource.get("id"));
+				}
+			}
+			Map<Long, Map<String, Object>> resourceMap = new HashMap<>();
+			if (!resourceIds.isEmpty()) {
+				resourceMap = ResourceAPI.getResourceMapFromIds(resourceIds, true);
+			}
+			for(Map<String, Object> prop: props) {
+				Map<String, Object> resource = (Map<String, Object>) prop.get("resource");
+				if (resource != null) {
+					Map<String, Object> resourceDetails = resourceMap.get(resource.get("id"));
+					resource.put("name", resourceDetails.get("name"));
+					resource.put("resourceType", resourceDetails.get("resourceType"));
+				}
+				Map<String, Object> assignedTo = (Map<String, Object>) prop.get("assignedTo");
+				if (assignedTo != null) {
+					Map<String, Object> user = new HashMap<>();
+					user.put("id", assignedTo.get("id"));
+					user.put("name", assignedTo.get("name"));
+					prop.put("assignedTo", user);
+				}
+				Map<String, Object> assignmentGroup = (Map<String, Object>) prop.get("assignmentGroup");
+				if (assignmentGroup != null) {
+					Map<String, Object> group = new HashMap<>();
+					group.put("id", assignmentGroup.get("id"));
+					group.put("name", assignmentGroup.get("name"));
+					prop.put("assignmentGroup", group);
+				}
+			}
+		}
+	}
+
 	private List<Map<String, Object>> setSubViewCount(FacilioView view) throws Exception {
 		List<Map<String, Object>> subViews = ViewFactory.getSubViewsCriteria(FacilioConstants.ContextNames.WORK_ORDER, view.getName());
 		if (subViews != null) {
@@ -238,7 +284,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 		}
 		return subViews;
 	}
-	
+
 	private void setWorkOrderCount (Map<String, Object>subView, Criteria viewCriteria) throws Exception {
 		FacilioModule workorderModule = ModuleFactory.getWorkOrdersModule();
 		String woTable = workorderModule.getTableName();
@@ -248,14 +294,14 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 				.innerJoin(ticketTable)
 				.on(woTable+".ID=" + ticketTable+ ".ID")
 				.select(Collections.singletonList( FieldFactory.getField("count", "COUNT(WorkOrders.ID)", FieldType.NUMBER)))
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderModule))
+				//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderModule))
 				.andCriteria(viewCriteria);
-		
+
 		Criteria subViewcriteria = (Criteria) subView.get("criteria");
 		if (subViewcriteria != null && !subViewcriteria.isEmpty()) {
 			selectBuilder.andCriteria(subViewcriteria);
 		}
-		
+
 		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(workorderModule.getName());
 		if(scopeCriteria != null)
 		{
@@ -266,7 +312,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 		if(permissionCriteria != null) {
 			selectBuilder.andCriteria(permissionCriteria);
 		}
-		
+
 		long count = 0;
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -274,5 +320,5 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 		}
 		subView.put("count", count);
 	}
-	
+
 }

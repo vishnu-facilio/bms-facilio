@@ -390,6 +390,10 @@ public class SpaceAPI {
 	}
 	
 	public static BaseSpaceContext getBaseSpace(long id) throws Exception {
+		return getBaseSpace(id, false);
+	}
+	
+	public static BaseSpaceContext getBaseSpace(long id, boolean fetchDeleted) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
@@ -403,6 +407,10 @@ public class SpaceAPI {
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		
 		List<BaseSpaceContext> spaces = selectBuilder.get();
+		
+		if (fetchDeleted) {
+			selectBuilder.fetchDeleted();
+		}
 		
 		if(spaces != null && !spaces.isEmpty()) {
 			return spaces.get(0);
