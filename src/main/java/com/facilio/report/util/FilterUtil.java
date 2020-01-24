@@ -85,6 +85,7 @@ public class FilterUtil {
 				FacilioModule module = field.getModule();
 				
 				FacilioField parentIdField = modBean.getField("parentId", module.getName());
+				FacilioField ttimeField = modBean.getField("ttime", module.getName());
 				
 				String value = (String) dataFilter.get("value");
 				int operatorId = ((Number) dataFilter.get("operatorId")).intValue();
@@ -92,7 +93,7 @@ public class FilterUtil {
 				
 				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 						.table(module.getTableName())
-						.select(Collections.singletonList(timeField))
+						.select(Collections.singletonList(ttimeField))
 						.andCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), NumberOperators.EQUALS))
 						.andCondition(CriteriaAPI.getCondition(field, value, operator));
 						;
