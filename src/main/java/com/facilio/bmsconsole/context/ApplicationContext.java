@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class ApplicationContext implements Serializable{
 	private long id = -1;
@@ -36,6 +37,12 @@ public class ApplicationContext implements Serializable{
 		return false;
 	}
 
-	
+	private List<WebTabGroupContext> webTabGroups;
+	public List<WebTabGroupContext> getWebTabGroups() {
+		return webTabGroups;
+	}
+	public void setWebTabGroups(List<WebTabGroupContext> webTabGroups) {
+		this.webTabGroups = webTabGroups;
+	}
 
 }

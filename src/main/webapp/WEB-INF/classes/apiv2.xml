@@ -4901,7 +4901,7 @@
 		</action>
 	</package>
 	<package name="applications" namespace="/api/v2/application"
-	extends="v2Api">
+		extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="addOrUpdateApplication" />
 		<action name="delete" class="com.facilio.bmsconsole.actions.ApplicationAction"
@@ -4910,6 +4910,13 @@
 			method="getAllApplication" />
 		<action name="markAsDefault" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="markApplicationAsDefault" />
+	</package>
+	<package name="fetchApplicationDetails" namespace="/api/v2/application/fetchDetails"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ApplicationAction"
+			method="getApplicationDetails">
+			<param name="appId">{1}</param>
+		</action>
 	</package>
 	<package name="webtabGroup" namespace="/api/v2/tabGroup"
 			 extends="v2Api">

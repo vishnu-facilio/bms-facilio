@@ -77,5 +77,14 @@ public class ApplicationAction extends FacilioAction {
 		chain.execute();
 		return SUCCESS;
 	}
+	
+	public String getApplicationDetails() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getApplicationDetails();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
+		return SUCCESS;
+	}
 
 }

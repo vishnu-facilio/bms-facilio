@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class WebTabGroupContext implements Serializable {
 
@@ -51,4 +52,12 @@ public class WebTabGroupContext implements Serializable {
     public void setOrder(int order) {
         this.order = order;
     }
+    
+    private List<WebTabContext> webTabs;
+    public List<WebTabContext> getWebTabs() {
+		return webTabs;
+	}
+    public void setWebTabs(List<WebTabContext> webTabs) {
+		this.webTabs = webTabs;
+	}
 }
