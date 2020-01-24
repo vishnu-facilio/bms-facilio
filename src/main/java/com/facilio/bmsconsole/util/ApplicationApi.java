@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.accounts.dto.NewPermission;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -91,5 +93,20 @@ public class ApplicationApi {
 				.andCondition(CriteriaAPI.getCondition("NewPermission.TAB_ID", "tabId", String.valueOf(webTabId), NumberOperators.EQUALS));
 		List<NewPermission> permissions = FieldUtil.getAsBeanListFromMapList(builder.get(), NewPermission.class);
 		return permissions;
+	}
+	
+	public static List<Long> getModuleIdsForTab(long tabId) throws Exception {
+		List<Long> ids = new ArrayList<Long>();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getTabIdAppIdMappingModule().getTableName())
+				.select(FieldFactory.getTabIdAppIdMappingFields())
+				.andCondition(CriteriaAPI.getCondition("TABID_MODULEID_APPID_MAPPING.TAB_ID", "tabId", String.valueOf(tabId), NumberOperators.EQUALS));
+		List<TabIdAppIdMappingContext> tabidMappings = FieldUtil.getAsBeanListFromMapList(builder.get(), TabIdAppIdMappingContext.class);
+		if(tabidMappings!=null && !tabidMappings.isEmpty()) {
+			for(TabIdAppIdMappingContext tabIdAppIdMappingContext :tabidMappings ) {
+				ids.add(tabIdAppIdMappingContext.getModuleId());
+			}
+		}
+		return ids;
 	}
 }
