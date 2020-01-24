@@ -36,10 +36,10 @@ public class FilterUtil {
 		if(calendarObj != null && !calendarObj.isEmpty()) {
 			JSONArray days = (JSONArray)calendarObj.get("days");
 			JSONObject intervals = (JSONObject)calendarObj.get("time");
-			if((days != null && !days.isEmpty()) || (intervals != null && !intervals.isEmpty())) {
+			if((days != null && !days.isEmpty()) && (intervals != null && !intervals.isEmpty())) {
 				ZonedDateTime start = DateTimeUtil.getDateTime(dateRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(dateRange.getEndTime(), false);
 				do {
-				    if (days.contains(new Long(start.getDayOfWeek().getValue())) || days.isEmpty()) {
+				    if (days.contains(new Long(start.getDayOfWeek().getValue()))) {
 				    	if(intervals != null && !intervals.isEmpty()) {
 				    		for (Object key : intervals.keySet()) {
 					            String keyStr = (String)key;
