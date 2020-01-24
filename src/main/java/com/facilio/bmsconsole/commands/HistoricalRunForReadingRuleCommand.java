@@ -97,7 +97,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 
 				workflowRuleHistoricalLoggerContext.setCalculationStartTime(jobStartTime);
 				LOGGER.info("Historical Rule Job Started for JobId: "+ jobId +" Reading Rule : "+ruleId+" for resource : "+resourceId+ " at the JobStartTime: "+ jobStartTime);	
-
+				
 				Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
 				List<WorkflowFieldContext> fields = null;
 				AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingRule.getId()),null);
@@ -158,44 +158,13 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 					endTime = readings.get(readings.size() - 1).getTtime();
 					int alarmCount = executeWorkflows(readingRule, readings, currentFields, fields, events);
 					
-					for(ReadingEventContext readingEvent:events)
-					{
-						readingEvent.setRuleId(ruleId);
-						readingEvent.setRule(readingRule);
-						readingEvent.setResource(ResourceAPI.getResource(resourceId));
-						readingEvent.setMessageKey(readingEvent.constructMessageKey());
-						readingEvent.setAlarmOccurrence(null);
-						readingEvent.setBaseAlarm(null); //insert events and trigger parent					
-					}
-					
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					String moduleName = NewEventAPI.getEventModuleName(Type.READING_ALARM);
-					InsertRecordBuilder<ReadingEventContext> builder = new InsertRecordBuilder<ReadingEventContext>()
-							.moduleName(moduleName)
-							.fields(modBean.getAllFields(moduleName));
-					builder.addRecords(events);
-					builder.save();
+					insertEventsWithoutAlarmOccurrenceProcessed(events, ruleId);
 							
 					LOGGER.info("Process Time taken for Historical Run for RuleLogger: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
-					LOGGER.info("Total Job Time taken for Historical Run for RuleLogger: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));
-					
-					workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
-					workflowRuleHistoricalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
-					NewTransactionService.newTransaction(() -> WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext));	
-					
-					List<Long> activeRuleResourceGroupedLoggerIds = WorkflowRuleHistoricalLoggerUtil.getActiveGroupedRuleResourceWorkflowRuleHistoricalLoggerIds(workflowRuleHistoricalLoggerContext.getRuleResourceLoggerId()); //checking all childs completion
-					if(activeRuleResourceGroupedLoggerIds.size() == 0)
-					{
-						WorkflowRuleHistoricalLoggerContext parentRuleResourceLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(workflowRuleHistoricalLoggerContext.getRuleResourceLoggerId()); //fetching the parent
-						parentRuleResourceLoggerContext.setStartTime(DateTimeUtil.getCurrenTime());
-						parentRuleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());		
-						int rowsUpdated = WorkflowRuleHistoricalLoggerUtil.updateEventGeneratingParentWorkflowRuleHistoricalLogger(parentRuleResourceLoggerContext);
-						if(rowsUpdated == 1)
-						{
-							FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerContext.getId(), "HistoricalRuleAlarmProcessing", 30, "history");
-						}
-					}			
-				}										
+					LOGGER.info("Total Job Time taken for Historical Run for RuleLogger: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));			
+				}
+				
+				WorkflowRuleHistoricalLoggerUtil.updateRuleLoggerContextToResolvedState(workflowRuleHistoricalLoggerContext);
 			}		
 		}
 		catch (Exception historicalRuleException) {
@@ -206,10 +175,22 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 		
 		return false;
 	}
-
 	@Override
 	public boolean postExecute() throws Exception {
-		// TODO Auto-generated method stub
+		
+		List<Long> activeRuleResourceGroupedLoggerIds = WorkflowRuleHistoricalLoggerUtil.getActiveGroupedRuleResourceWorkflowRuleHistoricalLoggerIds(workflowRuleHistoricalLoggerContext.getRuleResourceLoggerId()); //checking all childs completion
+		if(activeRuleResourceGroupedLoggerIds.size() == 0)
+		{
+			WorkflowRuleHistoricalLoggerContext parentRuleResourceLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(workflowRuleHistoricalLoggerContext.getRuleResourceLoggerId()); //fetching the parent
+			parentRuleResourceLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
+			parentRuleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());		
+			int rowsUpdated = WorkflowRuleHistoricalLoggerUtil.updateEventGeneratingParentWorkflowRuleHistoricalLogger(parentRuleResourceLoggerContext);
+			if(rowsUpdated == 1)
+			{
+				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerContext.getId(), "HistoricalRuleAlarmProcessing", 30, "history");
+			}
+		}
+		
 		return false;
 	}
 	public void onError() throws Exception {
@@ -519,5 +500,26 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 																;
 		
 		return selectBuilder.get();
+	}
+	
+
+	private void insertEventsWithoutAlarmOccurrenceProcessed(List<ReadingEventContext> events, long ruleId) throws Exception 
+	{	
+		for(ReadingEventContext readingEvent:events)
+		{
+			readingEvent.setRuleId(ruleId);
+			readingEvent.setSeverity(AlarmAPI.getAlarmSeverity(readingEvent.getSeverityString()));
+			readingEvent.setMessageKey(readingEvent.constructMessageKey());
+			readingEvent.setAlarmOccurrence(null);
+			readingEvent.setBaseAlarm(null);				
+		}
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String moduleName = NewEventAPI.getEventModuleName(Type.READING_ALARM);
+		InsertRecordBuilder<ReadingEventContext> builder = new InsertRecordBuilder<ReadingEventContext>()
+				.moduleName(moduleName)
+				.fields(modBean.getAllFields(moduleName));
+		builder.addRecords(events);
+		builder.save();	
 	}
 }

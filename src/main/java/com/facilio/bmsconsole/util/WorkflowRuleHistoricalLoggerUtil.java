@@ -29,6 +29,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
 
 public class WorkflowRuleHistoricalLoggerUtil {
 	
@@ -321,6 +322,12 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				return workflowRuleHistoricalLoggerContextMap.values();
 	}
 	
+	public static void updateRuleLoggerContextToResolvedState(WorkflowRuleHistoricalLoggerContext parentRuleResourceLoggerContext) throws Exception {
+		parentRuleResourceLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
+		parentRuleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
+		updateWorkflowRuleHistoricalLogger(parentRuleResourceLoggerContext);	
+	}
+	
 	public static void updateWorkflowRuleHistoricalLogger(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -344,7 +351,6 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		int rowsUpdated = updateBuilder.update(props);
 		return rowsUpdated;
 	}
-	
 	
 	public static void deleteWorkflowRuleHistoricalLogger(long id) throws SQLException {
 		

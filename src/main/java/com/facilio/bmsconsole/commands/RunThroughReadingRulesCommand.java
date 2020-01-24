@@ -160,6 +160,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		workflowRuleHistoricalLoggerContext.setLoggerGroupId(loggerGroupId);
 		workflowRuleHistoricalLoggerContext.setStartTime(range.getStartTime());
 		workflowRuleHistoricalLoggerContext.setEndTime(range.getEndTime());
+		workflowRuleHistoricalLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
 		workflowRuleHistoricalLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
 		workflowRuleHistoricalLoggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
 		return workflowRuleHistoricalLoggerContext;	

@@ -65,25 +65,13 @@ public class HistoricalAlarmOccurrenceDeletionJob extends FacilioJob {
 		long lesserStartTime = modifiedDateRange.getStartTime();
 		long greaterEndTime = modifiedDateRange.getEndTime();
 		
-		JSONObject props = new JSONObject();
-		props.put("ruleId", ruleId);
-		props.put("resourceId", resourceId);
-		props.put("startTime", lesserStartTime);
-		props.put("endTime", greaterEndTime);
-		BmsJobUtil.addJobProps(parentRuleResourceLoggerId, "HistoricalRuleAlarmProcessing", props);  //To reprocess the alarms with the modified daterange in which it was deleted
+		saveJobPropsForAlarmProcessing(parentRuleResourceLoggerId, ruleId, resourceId, lesserStartTime, greaterEndTime);	//To reprocess the alarms with the modified daterange in which it was deleted
+		 		
+		updateParentRuleResourceLoggerToEventGeneratingState(parentRuleResourceLoggerContext);
 		
-		parentRuleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.EVENT_GENERATING_STATE.getIntVal());
-		parentRuleResourceLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
-		WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(parentRuleResourceLoggerContext);	
-		
-		List<Long> ruleResourceGroupedLoggerIds = WorkflowRuleHistoricalLoggerUtil.getGroupedRuleResourceWorkflowRuleHistoricalLoggerIds(parentRuleResourceLoggerId);
-		for(Long loggerId:ruleResourceGroupedLoggerIds)
-		{
-			FacilioTimer.scheduleOneTimeJobWithDelay(loggerId, "HistoricalRunForReadingRule", 30, "history"); //For events, splitted start and end time would be fetched from the loggers
-		}	
+		triggerGroupedTimeSplitRuleResourceLoggers(parentRuleResourceLoggerId);	
 	}
-	
-	
+
 	public static DateRange deleteEntireAlarmOccurrences(long ruleId, long resourceId, long startTime, long endTime) throws Exception 
 	{		
 		List<AlarmOccurrenceContext> alarmOccurrenceList = NewAlarmAPI.getAllAlarmOccurrences(ruleId, startTime, endTime, resourceId);
@@ -172,5 +160,28 @@ public class HistoricalAlarmOccurrenceDeletionJob extends FacilioJob {
 		builder.andCriteria(criteria);
 		builder.delete();			
 	}
-		
+	
+	private static void saveJobPropsForAlarmProcessing(long parentRuleResourceLoggerId, long ruleId, long resourceId, long lesserStartTime, long greaterEndTime) throws Exception {
+		JSONObject props = new JSONObject();
+		props.put("ruleId", ruleId);
+		props.put("resourceId", resourceId);
+		props.put("startTime", lesserStartTime);
+		props.put("endTime", greaterEndTime);
+		BmsJobUtil.addJobProps(parentRuleResourceLoggerId, "HistoricalRuleAlarmProcessing", props); 		
+	}
+	
+	public static void updateParentRuleResourceLoggerToEventGeneratingState(WorkflowRuleHistoricalLoggerContext parentRuleResourceLoggerContext) throws Exception {
+		parentRuleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.EVENT_GENERATING_STATE.getIntVal());
+		parentRuleResourceLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
+		WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(parentRuleResourceLoggerContext);
+	}	
+	
+	public static void triggerGroupedTimeSplitRuleResourceLoggers(long parentRuleResourceLoggerId) throws Exception {
+		List<Long> ruleResourceGroupedLoggerIds = WorkflowRuleHistoricalLoggerUtil.getGroupedRuleResourceWorkflowRuleHistoricalLoggerIds(parentRuleResourceLoggerId);
+		for(Long loggerId:ruleResourceGroupedLoggerIds)
+		{
+			FacilioTimer.scheduleOneTimeJobWithDelay(loggerId, "HistoricalRunForReadingRule", 30, "history"); //For events, splitted start and end time would be fetched from the loggers
+		}				
+	}
+
 }
