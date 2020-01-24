@@ -3143,12 +3143,20 @@ public class ModuleFactory {
 		module.setDisplayName("agent v2 log");
 		return module;
 	}
-	
+
 	public static FacilioModule getNewPermissionModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(FacilioConstants.ContextNames.NEW_PERMISSIONS);
 		module.setTableName("NewPermission");
 		module.setDisplayName("New Permissions");
+		return module;
+	}
+
+	public static FacilioModule getAgentAlarmsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("agentAlarm");
+		module.setTableName("Agent_Alarm");
+		module.setDisplayName("Agent Alarm");
 		return module;
 	}
 }

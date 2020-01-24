@@ -174,13 +174,13 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		RCA_ALARM,
 		READING_RCA_ALARM,
 		BMS_ALARM,
-		VIOLATION_ALARM
-		;
-		
+		VIOLATION_ALARM,
+		AGENT_ALARM;
+
 		public int getIndex() {
 			return ordinal() + 1;
 		}
-		
+
 		@Override
 		public String getValue() {
 			return name();
