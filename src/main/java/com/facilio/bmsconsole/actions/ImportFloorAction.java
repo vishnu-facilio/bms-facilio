@@ -75,7 +75,7 @@ public class ImportFloorAction {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(FloorContext.class)
-																	.andCondition(CriteriaAPI.getCondition(field, floorName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field, floorName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	;
 		List<FloorContext> spaces = selectBuilder.get();
 		
@@ -100,7 +100,7 @@ public class ImportFloorAction {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(FloorContext.class)
-																	.andCondition(CriteriaAPI.getCondition(field, floorName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field, floorName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field1, ""+buildingId, StringOperators.IS))
 																	;
 		List<FloorContext> spaces = selectBuilder.get();

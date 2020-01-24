@@ -482,7 +482,7 @@ public class ProcessImportCommand extends FacilioCommand {
 					fieldName = "displayName";
 				}
 
-				selectBuilder.andCondition(CriteriaAPI.getCondition(columnName, fieldName, value.toString().toLowerCase().trim(), StringOperators.IS));
+				selectBuilder.andCondition(CriteriaAPI.getCondition(columnName, fieldName, value.toString().toLowerCase().trim().replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS));
 
 				List<Map<String, Object>> props = selectBuilder.getAsProps();
 
@@ -743,7 +743,7 @@ public class ProcessImportCommand extends FacilioCommand {
 		 
 		 if(buildingName != null && !buildingName.equals("")) {
 			 if(siteId != null) {
-				 buildingId = buildingMeta.getBuildingId(siteId,buildingName);
+				 buildingId = buildingMeta.getBuildingId(siteId, buildingName);
 			 }
 			 else {
 				 List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
@@ -844,7 +844,7 @@ public class ProcessImportCommand extends FacilioCommand {
 																		.select(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE))
 																		.module(module)
 																		.beanClass(ResourceContext.class)
-																		.andCustomWhere("NAME = ?",name)
+																		.andCustomWhere("NAME = ?", name.replace(",", StringOperators.DELIMITED_COMMA))
 																		;
 		if (fetchDeleted) {
 			resourceBuilder.fetchDeleted();

@@ -74,7 +74,7 @@ public class ImportBuildingAction {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
-																	.andCondition(CriteriaAPI.getCondition(field, buildingName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field, buildingName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	;
 		List<BuildingContext> spaces = selectBuilder.get();
 		
@@ -98,7 +98,7 @@ public class ImportBuildingAction {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
-																	.andCondition(CriteriaAPI.getCondition(field, buildingName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field, buildingName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field1, ""+siteId, NumberOperators.EQUALS))
 																	;
 		List<BuildingContext> spaces = selectBuilder.get();

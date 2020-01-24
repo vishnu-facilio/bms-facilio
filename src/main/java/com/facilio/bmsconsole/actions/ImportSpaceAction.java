@@ -113,7 +113,7 @@ public class ImportSpaceAction {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(SpaceContext.class)
-																	.andCondition(CriteriaAPI.getCondition(field, spaceName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field, spaceName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	;
 		List<SpaceContext> spaces = selectBuilder.get();
 		
@@ -137,7 +137,7 @@ public class ImportSpaceAction {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(SpaceContext.class)
-																	.andCondition(CriteriaAPI.getCondition(field, spaceName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field, spaceName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field1, ""+floorId, StringOperators.IS))
 																	;
 		List<SpaceContext> spaces = selectBuilder.get();
@@ -164,7 +164,7 @@ public class ImportSpaceAction {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(SpaceContext.class)
-																	.andCondition(CriteriaAPI.getCondition(field, spaceName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field, spaceName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field1, ""+buildingId, StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field2, "", CommonOperators.IS_EMPTY))
 																	;
@@ -192,7 +192,7 @@ public class ImportSpaceAction {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(SpaceContext.class)
-																	.andCondition(CriteriaAPI.getCondition(field, spaceName, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field, spaceName.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field1, ""+siteId, StringOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(field2, "", CommonOperators.IS_EMPTY))
 																	.andCondition(CriteriaAPI.getCondition(field3, "", CommonOperators.IS_EMPTY))

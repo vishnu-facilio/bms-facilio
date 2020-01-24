@@ -71,7 +71,7 @@ public class ImportSiteAction {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(SiteContext.class)
-																	.andCondition(CriteriaAPI.getCondition(field, name, StringOperators.IS))
+																	.andCondition(CriteriaAPI.getCondition(field, name.replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
 																	;
 		List<SiteContext> spaces = selectBuilder.get();
 		

@@ -246,7 +246,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 		String moduleName = importProcessContext.getModule().getName();
 		int insertLimit = 10000;
 		int splitSize = (readingsEntireList.size()/insertLimit) +1;
-		LOGGER.severe("splitSize ----- "+splitSize);
+		LOGGER.info("Update Data: splitSize ----- "+splitSize);
 		for(int i=0 ; i < splitSize; i++) {
 			
 			int fromValue = i*insertLimit;
@@ -307,7 +307,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 	public static void updateNotNull(ImportProcessContext importProcessContext, List<ReadingContext> readingsEntireList ) throws Exception {
 		int insertLimit = 10000;
 		int splitSize = (readingsEntireList.size()/insertLimit) +1;
-		LOGGER.severe("splitSize ----- "+splitSize);
+		LOGGER.info("splitSize ----- "+splitSize);
 		for(int i=0 ; i < splitSize; i++) {
 			
 			int fromValue = i*insertLimit;
@@ -407,7 +407,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			
 			int insertLimit = 10000;
 			int splitSize = (readingsEntireList.size()/insertLimit) + 1;
-			LOGGER.severe("splitSize ----- "+splitSize);
+			LOGGER.info("splitSize ----- "+splitSize);
 			List<ReadingContext> readingsList;
 			for(int i=0 ; i < splitSize; i++) {
 				
