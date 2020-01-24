@@ -1,6 +1,11 @@
 package com.facilio.workflows.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -10,7 +15,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,9 +26,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.LogManager;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,8 +38,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.BaseLineAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -51,7 +50,6 @@ import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BaseLineContext.AdjustType;
@@ -61,6 +59,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.conditions.context.ElseContext;
 import com.facilio.workflows.conditions.context.ElseIfContext;
@@ -350,7 +349,6 @@ public class WorkflowUtil {
 			workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
 			List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
 			workflowContext.setParameters(parameterContexts);
-			
 		}
 		else {
 			workflowContext.fillFunctionHeaderFromScript();
@@ -360,6 +358,9 @@ public class WorkflowUtil {
 			}
 			workflowContext.setParams(params);
 		}
+		
+		List<ParameterContext> globalParameterContexts = validateAndGetGlobalParameters(workflowContext,paramMap);
+		workflowContext.setGlobalParameters(globalParameterContexts);
 		
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
@@ -1184,6 +1185,35 @@ public class WorkflowUtil {
 		}
 		return paramterContexts;
 		
+	}
+	
+	public static List<ParameterContext> validateAndGetGlobalParameters(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
+		
+		List<ParameterContext> paramterContexts = getGlobalParamsList();
+		if(paramterContexts != null && !paramterContexts.isEmpty() && paramMap != null) {
+			
+			for(ParameterContext parameterContext:paramterContexts) {
+				Object value = paramMap.get(parameterContext.getName());
+				
+				if(value != null) {
+					parameterContext.setValue(value);
+					
+					workflowContext.addVariableResultMap(parameterContext.getName(), value);
+				}
+			}
+		}
+		return paramterContexts;
+		
+	}
+	
+	private static List<ParameterContext> getGlobalParamsList() {
+		
+		List<ParameterContext> paramterContexts = new ArrayList<>();
+		
+		paramterContexts.add(new ParameterContext("previousValue", null));
+		paramterContexts.add(new ParameterContext("previousValueRecievedTime", null));
+		
+		return paramterContexts;
 	}
 	
 	public static boolean checkType(ParameterContext parameterContext,Object value) throws Exception {

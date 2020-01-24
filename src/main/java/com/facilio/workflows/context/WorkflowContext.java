@@ -105,6 +105,7 @@ public class WorkflowContext implements Serializable {
 	String workflowString;
 	String workflowV2String;
 	List<ParameterContext> parameters;
+	List<ParameterContext> globalParameters;
 	List<Object> params;							// for v2 workflow
 	
 	boolean isParsedV2Script;
@@ -318,6 +319,21 @@ public class WorkflowContext implements Serializable {
 		}
 		this.parameters.add(parameter);
 	}
+	
+	public List<ParameterContext> getGlobalParameters() {
+		return globalParameters;
+	}
+
+	public void setGlobalParameters(List<ParameterContext> globalParameters) {
+		this.globalParameters = globalParameters;
+	}
+	
+	public void addGlobalParamater(ParameterContext parameter) {
+		if(this.globalParameters == null) {
+			this.globalParameters = new ArrayList<>();
+		}
+		this.globalParameters.add(parameter);
+	}
 
 	public String getResultEvaluator() {
 		return resultEvaluator;
@@ -453,6 +469,13 @@ public class WorkflowContext implements Serializable {
 		for(ParameterContext parameter:parameters) {
 			variableResultMap.put(parameter.getName(), parameter.getValue());
 		}
+		
+		if(globalParameters != null && !globalParameters.isEmpty()) {
+			for(ParameterContext parameter:globalParameters) {
+				variableResultMap.put(parameter.getName(), parameter.getValue());
+			}
+		}
+		
 		if (expressions != null) {
 			
 			WorkflowUtil.executeExpression(expressions,this);

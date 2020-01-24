@@ -808,6 +808,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			if (meta != null) {
 				Object prevValue = meta.getValue();
 				rulePlaceHolders.put("previousValue", FacilioUtil.castOrParseValueAsPerType(readingField, prevValue));
+				rulePlaceHolders.put("previousValueRecievedTime", meta.getTtime());
 			}
 			rulePlaceHolders.put("resourceId", ((ReadingContext) record).getParentId());
 			rulePlaceHolders.put("inputValue", ((ReadingContext) record).getReading(readingField.getName()));
