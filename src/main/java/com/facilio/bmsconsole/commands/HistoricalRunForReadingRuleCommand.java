@@ -43,6 +43,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.events.constants.EventConstants;
@@ -157,6 +158,18 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 					startTime = readings.get(0).getTtime();
 					endTime = readings.get(readings.size() - 1).getTtime();
 					int alarmCount = executeWorkflows(readingRule, readings, currentFields, fields, events);
+					
+					ReadingEventContext finalEventOfCurrentJobInterval = events.get(events.size() - 1);
+					if(finalEventOfCurrentJobInterval.getCreatedTime() == endTime && !finalEventOfCurrentJobInterval.getSeverityString().equals("Clear"))
+					{
+						ReadingContext nextSingleReading = fetchNextSingleReading(readingRule, resourceId, endTime);
+						ReadingEventContext nextJobFirstEvent = new ReadingEventContext();
+						executeWorkflows(readingRule, Collections.singletonList(nextSingleReading), currentFields, fields, Collections.singletonList(nextJobFirstEvent));
+						if(nextJobFirstEvent.getSeverityString().equals("Clear"))
+						{
+						//	events.add(nextJobFirstEvent);
+						}
+					}
 					
 					insertEventsWithoutAlarmOccurrenceProcessed(events, ruleId);
 							
@@ -502,7 +515,25 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 		return selectBuilder.get();
 	}
 	
-
+	private ReadingContext fetchNextSingleReading(ReadingRuleContext readingRule, long resourceId, long endTime) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(readingRule.getReadingField().getModule().getName());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField parentField = fieldMap.get("parentId");
+		FacilioField ttimeField = fieldMap.get("ttime");
+		
+		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+																.select(fields)
+																.module(readingRule.getReadingField().getModule())
+																.beanClass(ReadingContext.class)
+																.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(resourceId), PickListOperators.IS))
+																.andCondition(CriteriaAPI.getCondition(ttimeField, ""+endTime, NumberOperators.GREATER_THAN))
+																.andCondition(CriteriaAPI.getCondition(readingRule.getReadingField(), CommonOperators.IS_NOT_EMPTY))
+																.orderBy("TTIME").limit(1)
+																;
+		
+		return selectBuilder.fetchFirst();
+	}
 	private void insertEventsWithoutAlarmOccurrenceProcessed(List<ReadingEventContext> events, long ruleId) throws Exception 
 	{	
 		for(ReadingEventContext readingEvent:events)
