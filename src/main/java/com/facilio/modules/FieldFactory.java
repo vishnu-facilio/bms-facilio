@@ -7449,6 +7449,18 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getTabIdAppIdMappingFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getTabIdAppIdMappingModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+		fields.add(getField("tabId", "TAB_ID", module, FieldType.NUMBER));
+		fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
+	
+		return fields;
+	}
+	
 	public static List<FacilioField> getCBModelFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getCBModelModule();

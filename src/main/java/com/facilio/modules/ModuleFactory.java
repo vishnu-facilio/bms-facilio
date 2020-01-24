@@ -3151,4 +3151,12 @@ public class ModuleFactory {
 		module.setDisplayName("New Permissions");
 		return module;
 	}
+	
+	public static FacilioModule getTabIdAppIdMappingModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("tabIdAppIdMapping");
+		module.setTableName("TABID_MODULEID_APPID_MAPPING");
+		module.setDisplayName("Tab IdApp Id Mapping");
+		return module;
+	}
 }

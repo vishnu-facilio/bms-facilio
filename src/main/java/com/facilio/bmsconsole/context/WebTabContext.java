@@ -153,4 +153,12 @@ public class WebTabContext implements Serializable {
 		this.moduleIds = moduleIds;
 	}
     
+    private long appId;
+    public long getAppId() {
+		return appId;
+	}
+    public void setAppId(long appId) {
+		this.appId = appId;
+	}
+    
 }
