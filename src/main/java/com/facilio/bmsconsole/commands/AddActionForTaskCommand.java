@@ -89,7 +89,7 @@ public class AddActionForTaskCommand extends FacilioCommand {
 					}
 					
 					FormField descriptionField = fieldMap.get("description");
-					if (descriptionField.getValue() == null) {
+					if (descriptionField != null && descriptionField.getValue() == null) {	
 						FormField field = new FormField();
 						field.setId(descriptionField.getId());
 						String value = "Deviation work order created from the task ${task.subject} of ${workorder.subject} work order. \n\n Task Value - ${task.inputValue}";
