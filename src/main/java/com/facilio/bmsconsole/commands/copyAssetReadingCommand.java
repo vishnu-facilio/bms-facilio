@@ -132,6 +132,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				String createModule = module.getName();
 				createModule = createModule.split("_")[0];
 				targetModule = createNewModule(assetIdTarget,createModule,fields);
+				targetModuleName = targetModule.getName();
 			}else {
 				if(CollectionUtils.isNotEmpty(fields)) {
 					targetModuleName  = targetModule.getName();
