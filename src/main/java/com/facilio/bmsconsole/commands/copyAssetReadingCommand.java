@@ -127,14 +127,14 @@ public class copyAssetReadingCommand extends FacilioCommand {
 			}else {
 				targetModule = bean.getModule(module.getName());
 			}
-
+			String targetModuleName = "";
 			if (targetModule == null) {
 				String createModule = module.getName();
 				createModule = createModule.split("_")[0];
 				targetModule = createNewModule(assetIdTarget,createModule,fields);
 			}else {
 				if(CollectionUtils.isNotEmpty(fields)) {
-					String targetModuleName  = targetModule.getName();
+					targetModuleName  = targetModule.getName();
 					boolean isNextSubModule = false;
 					int count = 0;
 					while(true) {
@@ -147,6 +147,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 							String newModule = module.getName();
 							newModule = newModule.split("_")[0];
 							targetModule = createNewModule(assetIdTarget,newModule,fields);
+							targetModuleName = targetModule.getName();
 							break;
 						}
 						List<String> checksourceFields = getFieldsName(fields);
@@ -164,7 +165,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 			}
 
 			LOGGER.info("copy Asset Insert Started target AssetId is :" + targetAssetId + " and module is  : "
-					+ targetModule.getName());
+					+ targetModuleName);
 			List<ReadingContext> readings = new ArrayList<ReadingContext>();
 			for (int i = 0; i < prop.size(); i++) {
 				ReadingContext context = new ReadingContext();
@@ -190,7 +191,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 			}
 
 			FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
-			chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, targetModule.getName());
+			chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, targetModuleName);
 			chain.getContext().put(FacilioConstants.ContextNames.READINGS, readings);
 			chain.execute();
 			LOGGER.info("copy Asset Insert finished");
