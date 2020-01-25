@@ -149,7 +149,9 @@ public class copyAssetReadingCommand extends FacilioCommand {
 							targetModule = createNewModule(assetIdTarget,newModule,fields);
 							break;
 						}
-						boolean isExistingField = targetFields.containsAll(fields);
+						List<String> checksourceFields = getFieldsName(fields);
+						List<String> checkTargetFields = getFieldsName(targetFields);
+						boolean isExistingField = checkTargetFields.containsAll(checksourceFields);
 						if(isExistingField) {
 							break;
 						}else {
@@ -197,6 +199,22 @@ public class copyAssetReadingCommand extends FacilioCommand {
 			throw e;
 		}
 
+	}
+
+	private static List<String> getFieldsName(List<FacilioField> fields) {
+
+		List<String> newFields = new ArrayList<String>();
+		for(FacilioField itr:fields) {
+			if (itr.getName().equals("actualTtime") || itr.getName().equals("ttime")
+					|| itr.getName().equals("date") || itr.getName().equals("week")
+					|| itr.getName().equals("day") || itr.getName().equals("hour")
+					|| itr.getName().equals("parentId") || itr.getName().equals("month")) {
+				continue;
+			}else {
+				newFields.add(itr.getName());
+			}
+		}
+		return newFields;
 	}
 
 	private static FacilioModule createNewModule(AssetContext assetIdTarget, String module, List<FacilioField> fields) throws Exception {
