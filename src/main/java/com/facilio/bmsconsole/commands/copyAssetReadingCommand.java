@@ -129,38 +129,33 @@ public class copyAssetReadingCommand extends FacilioCommand {
 			}
 
 			if (targetModule == null) {
-				List<FacilioField> field = new ArrayList<>();
-				for (FacilioField itr : fields) {
-					FacilioField tempfield = new FacilioField();
-					if (itr.getName().equals("actualTtime") || itr.getName().equals("ttime")
-							|| itr.getName().equals("date") || itr.getName().equals("week")
-							|| itr.getName().equals("day") || itr.getName().equals("hour")
-							|| itr.getName().equals("parentId") || itr.getName().equals("month")) {
-						continue;
-					} else {
-						tempfield.setColumnName(itr.getColumnName());
-						tempfield.setName(itr.getName());
-						tempfield.setDataType(itr.getDataTypeEnum());
-						tempfield.setDisplayName(itr.getDisplayName());
+				targetModule = createNewModule(assetIdTarget,module.getName(),fields);
+			}else {
+				if(CollectionUtils.isNotEmpty(fields)) {
+					String targetModuleName  = targetModule.getName();
+					boolean isNextSubModule = false;
+					int count = 0;
+					while(true) {
+						if(isNextSubModule) {
+							targetModuleName = targetModuleName.split("_")[0];
+							targetModuleName = targetModuleName+"_"+count;
+						}
+						List<FacilioField> targetFields = bean.getAllFields(targetModuleName);
+						if(CollectionUtils.isEmpty(targetFields)) {
+							String newModule = module.getName();
+							newModule = newModule.split("_")[0];
+							targetModule = createNewModule(assetIdTarget,newModule,fields);
+							break;
+						}
+						boolean isExistingField = targetFields.containsAll(fields);
+						if(isExistingField) {
+							break;
+						}else {
+							isNextSubModule =true;
+							count++;
+						}
 					}
-					field.add(tempfield);
-				}
-
-				FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
-				addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE,
-						FacilioConstants.ContextNames.ASSET_CATEGORY);
-				addReadingChain.getContext().put(FacilioConstants.ContextNames.READING_NAME, module.getName());
-				addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, field);
-				addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Readings_3");
-				addReadingChain.getContext().put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE,
-						ModuleFactory.getAssetCategoryReadingRelModule());
-				addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,
-						assetIdTarget.getCategory().getId());
-				addReadingChain.execute();
-				 targetModule = (FacilioModule) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE);
-				if(targetModule == null) {
-					List<FacilioModule> modules = (List<FacilioModule>) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE_LIST);
-					targetModule = modules.get(0);
+					
 				}
 			}
 
@@ -202,4 +197,42 @@ public class copyAssetReadingCommand extends FacilioCommand {
 
 	}
 
+	private static FacilioModule createNewModule(AssetContext assetIdTarget, String module, List<FacilioField> fields) throws Exception {
+		List<FacilioField> field = new ArrayList<>();
+		FacilioModule targetModule = null;
+		for (FacilioField itr : fields) {
+			FacilioField tempfield = new FacilioField();
+			if (itr.getName().equals("actualTtime") || itr.getName().equals("ttime")
+					|| itr.getName().equals("date") || itr.getName().equals("week")
+					|| itr.getName().equals("day") || itr.getName().equals("hour")
+					|| itr.getName().equals("parentId") || itr.getName().equals("month")) {
+				continue;
+			} else {
+				tempfield.setColumnName(itr.getColumnName());
+				tempfield.setName(itr.getName());
+				tempfield.setDataType(itr.getDataTypeEnum());
+				tempfield.setDisplayName(itr.getDisplayName());
+			}
+			field.add(tempfield);
+		}
+
+		FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
+		addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE,
+				FacilioConstants.ContextNames.ASSET_CATEGORY);
+		addReadingChain.getContext().put(FacilioConstants.ContextNames.READING_NAME, module);
+		addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, field);
+		addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Readings_3");
+		addReadingChain.getContext().put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE,
+				ModuleFactory.getAssetCategoryReadingRelModule());
+		addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,
+				assetIdTarget.getCategory().getId());
+		addReadingChain.getContext().put(FacilioConstants.ContextNames.MAX_FIELDS_PER_MODULE, 10);
+		addReadingChain.execute();
+		 targetModule = (FacilioModule) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE);
+		if(targetModule == null) {
+			List<FacilioModule> modules = (List<FacilioModule>) addReadingChain.getContext().get(FacilioConstants.ContextNames.MODULE_LIST);
+			targetModule = modules.get(0);
+		}
+		return targetModule;
+	}
 }
