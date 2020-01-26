@@ -248,9 +248,8 @@ public  class AgentUtil
                        raiseAgentAlarm(agentName, agentId);
                    }
                    if (status == 1) {
-                       if (isExistsAgentAlarmFor(agentId)) {
-                           dropAgentAlarm(agentName, agentId);
-                       }
+                        dropAgentAlarm(agentName, agentId);
+
                    }
                }
 
@@ -301,17 +300,6 @@ public  class AgentUtil
         return 0;
     }
 
-    private boolean isExistsAgentAlarmFor(long agentId) {
-        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(ModuleFactory.getAgentAlarmsModule().getTableName())
-                .innerJoin(ModuleFactory.getBaseAlarmModule().getTableName())
-                .on(ModuleFactory.getBaseAlarmModule().getTableName() + ".MODULEID=" + ModuleFactory.getAgentAlarmsModule().getTableName() + ".MODULEID")
-                .select(FieldFactory.getAgentAlarmFields())
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getAgentAlarmsModule()), Collections.singleton(agentId), NumberOperators.EQUALS));
-
-        return true;
-    }
-
     private void dropAgentAlarm(String agentName, long agentId) throws Exception {
         AgentEventContext event = new AgentEventContext();
         event.setEventMessage("Agent: " + agentName + " has regained connection with the Facilio cloud @ " + DateTime.now());
@@ -329,23 +317,23 @@ public  class AgentUtil
 
     }
 
-    private void raiseAgentAlarm(String agentName, long agentId) throws Exception {
+        private void raiseAgentAlarm(String agentName, long agentId) throws Exception {
 
-        AgentEventContext event = new AgentEventContext();
-        event.setEventMessage("Agent: " + agentName + " has lost connection with the Facilio cloud @ " + DateTime.now());
-        event.setSeverityString(FacilioConstants.Alarm.CRITICAL_SEVERITY);
-        event.setCreatedTime(System.currentTimeMillis());
-        event.setAgentId(agentId);
+            AgentEventContext event = new AgentEventContext();
+            event.setEventMessage("Agent: " + agentName + " has lost connection with the Facilio cloud @ " + DateTime.now());
+            event.setSeverityString(FacilioConstants.Alarm.CRITICAL_SEVERITY);
+            event.setCreatedTime(System.currentTimeMillis());
+            event.setAgentId(agentId);
 
-        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
-        eventList.add(event);
-        FacilioContext context = new FacilioContext();
-        context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);
-        FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
-        chain.execute(context);
-        LOGGER.info("Added Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
+            List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
+            eventList.add(event);
+            FacilioContext context = new FacilioContext();
+            context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);
+            FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
+            chain.execute(context);
+            LOGGER.info("Added Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
 
-    }
+        }
 
 
     public long addAgent(FacilioAgent agent) {

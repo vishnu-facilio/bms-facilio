@@ -82,6 +82,9 @@ public class NewEventAPI {
 			case VIOLATION_ALARM:
 				return "violationevent";
 
+			case AGENT_ALARM:
+				return "agentAlarmEvent";
+
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
 		}

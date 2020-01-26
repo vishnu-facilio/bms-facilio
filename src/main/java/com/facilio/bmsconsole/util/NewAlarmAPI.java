@@ -322,7 +322,7 @@ public class NewAlarmAPI {
 	public static AlarmOccurrenceContext createAlarm(BaseEventContext baseEvent, Context context) throws Exception {
 		AlarmOccurrenceContext alarmOccurrence = baseEvent.updateAlarmOccurrenceContext(null, context, true);
 
-		BaseAlarmContext baseAlarm = baseEvent.updateAlarmContext(null, true);
+		BaseAlarmContext baseAlarm = baseEvent.updateAlarmContext(new BaseAlarmContext(), true);
 		updateAlarmSystemFields(baseAlarm, alarmOccurrence, context);
 
 		baseAlarm.setSeverity(alarmOccurrence.getSeverity());
