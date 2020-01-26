@@ -243,7 +243,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				FacilioConstants.ContextNames.ASSET_CATEGORY);
 		addReadingChain.getContext().put(FacilioConstants.ContextNames.READING_NAME, module);
 		addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, field);
-		addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Readings_3");
+		addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Readings_2");
 		addReadingChain.getContext().put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE,
 				ModuleFactory.getAssetCategoryReadingRelModule());
 		addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,
