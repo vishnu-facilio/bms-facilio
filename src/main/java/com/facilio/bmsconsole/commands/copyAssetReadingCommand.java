@@ -153,6 +153,9 @@ public class copyAssetReadingCommand extends FacilioCommand {
 						}
 						List<String> checksourceFields = getFieldsName(fields);
 						List<String> checkTargetFields = getFieldsName(targetFields);
+						if(AccountUtil.getCurrentOrg().getId() == 114  || AccountUtil.getCurrentOrg().getId() == 238 || AccountUtil.getCurrentOrg().getId() == 255) {
+							LOGGER.info("TargetFields are : "+checkTargetFields + " checksourceFields : "+checksourceFields );
+						}
 						boolean isExistingField = checkTargetFields.containsAll(checksourceFields);
 						if(isExistingField) {
 							break;
