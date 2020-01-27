@@ -167,7 +167,9 @@ public class copyAssetReadingCommand extends FacilioCommand {
 					
 				}
 			}
-
+			if(module.getName().equals("ahureading") || module.getName().equals("chillerreading")) {
+				targetModuleName = module.getName();
+			}
 			LOGGER.info("copy Asset Insert Started target AssetId is :" + targetAssetId + " and module is  : "
 					+ targetModuleName);
 			List<ReadingContext> readings = new ArrayList<ReadingContext>();
