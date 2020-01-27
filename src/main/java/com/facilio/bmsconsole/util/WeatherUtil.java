@@ -17,6 +17,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import com.facilio.modules.fields.EnumField;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -469,7 +470,7 @@ public static void addReading(String moduleName,List<ReadingContext> readings) t
 	}
 	
 	
-public static List<ReadingContext> getDailyForecastReadings(long siteId,String moduleName,Map<String, Object> weatherData, boolean forecast) {
+public static List<ReadingContext> getDailyForecastReadings(long siteId,String moduleName,Map<String, Object> weatherData, boolean forecast) throws Exception {
 		
 		List<ReadingContext> dailyForecastReadings= new ArrayList<ReadingContext>();
 		
@@ -529,7 +530,7 @@ public static List<ReadingContext> getReadingList(Map<Long,List<ReadingContext>>
 	return readingsList;
 }
 
-	public static List<ReadingContext> getHourlyForecastReadings(long siteId,String moduleName,Map<String, Object> weatherData,boolean forecast) {
+	public static List<ReadingContext> getHourlyForecastReadings(long siteId,String moduleName,Map<String, Object> weatherData,boolean forecast) throws Exception {
 		List<ReadingContext> hourlyForecastReadings= new ArrayList<ReadingContext>();
 
 		Map<String,Object> hourlyWeather= (JSONObject)weatherData.get("hourly");
@@ -557,8 +558,13 @@ public static List<ReadingContext> getReadingList(Map<Long,List<ReadingContext>>
         }
 		return hourlyForecastReadings;
 	}
+
+	private static EnumField getIconField (String moduleName) throws Exception {
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		return (EnumField) moduleBean.getField("icon", moduleName);
+	}
 	
-	public static ReadingContext getHourlyReadingOld(long siteId,String moduleName, Map<String,Object> hourlyWeather) {
+	public static ReadingContext getHourlyReadingOld(long siteId,String moduleName, Map<String,Object> hourlyWeather) throws Exception {
 
 
 		if(hourlyWeather==null) {
@@ -568,7 +574,11 @@ public static List<ReadingContext> getReadingList(Map<Long,List<ReadingContext>>
 		ReadingContext reading= new ReadingContext();
 		reading.setParentId(siteId);
 		reading.addReading("temperature", hourlyWeather.get("temperature"));
-		reading.addReading("icon", hourlyWeather.get("icon"));
+
+		Object icon = hourlyWeather.get("icon");
+		if (icon != null) {
+			reading.addReading("icon", getIconField(moduleName).getIndex(icon.toString()));
+		}
 		reading.addReading("summary", hourlyWeather.get("summary"));
 		reading.addReading("humidity",hourlyWeather.get("humidity"));
 		reading.addReading("dewPoint", hourlyWeather.get("dewPoint"));
@@ -594,7 +604,7 @@ public static List<ReadingContext> getReadingList(Map<Long,List<ReadingContext>>
 	}
 
 
-public static ReadingContext getDailyReadingOld(long siteId,String moduleName, Map<String,Object> dailyWeather, boolean forecast) {
+public static ReadingContext getDailyReadingOld(long siteId,String moduleName, Map<String,Object> dailyWeather, boolean forecast) throws Exception {
 		
 	
 	if(dailyWeather==null) {
@@ -603,8 +613,11 @@ public static ReadingContext getDailyReadingOld(long siteId,String moduleName, M
 	
 	ReadingContext reading= new ReadingContext();
 	reading.setParentId(siteId);
-	
-	reading.addReading("icon", dailyWeather.get("icon"));
+
+	Object icon = dailyWeather.get("icon");
+	if (icon != null) {
+		reading.addReading("icon", getIconField(moduleName).getIndex(icon.toString()));
+	}
 	reading.addReading("summary", dailyWeather.get("summary"));
 	reading.addReading("humidity",dailyWeather.get("humidity"));
 	reading.addReading("dewPoint", dailyWeather.get("dewPoint"));
@@ -648,7 +661,7 @@ public static ReadingContext getDailyReadingOld(long siteId,String moduleName, M
 }
 
 
-public static ReadingContext getHourlyReading(String moduleName, Map<String,Object> hourlyWeather) {
+public static ReadingContext getHourlyReading(String moduleName, Map<String,Object> hourlyWeather) throws Exception {
 
 
 	if(hourlyWeather==null) {
@@ -658,7 +671,10 @@ public static ReadingContext getHourlyReading(String moduleName, Map<String,Obje
 	ReadingContext reading= new ReadingContext();
 	//reading.setParentId(siteId);
 	reading.addReading("temperature", hourlyWeather.get("temperature"));
-	reading.addReading("icon", hourlyWeather.get("icon"));
+	Object icon = hourlyWeather.get("icon");
+	if (icon != null) {
+		reading.addReading("icon", getIconField(moduleName).getIndex(icon.toString()));
+	}
 	reading.addReading("summary", hourlyWeather.get("summary"));
 	reading.addReading("humidity",hourlyWeather.get("humidity"));
 	reading.addReading("dewPoint", hourlyWeather.get("dewPoint"));
@@ -684,7 +700,7 @@ public static ReadingContext getHourlyReading(String moduleName, Map<String,Obje
 }
 
 
-public static ReadingContext getDailyReading(String moduleName, Map<String,Object> dailyWeather, boolean forecast) {
+public static ReadingContext getDailyReading(String moduleName, Map<String,Object> dailyWeather, boolean forecast) throws Exception {
 	
 
 if(dailyWeather==null) {
@@ -694,7 +710,10 @@ if(dailyWeather==null) {
 ReadingContext reading= new ReadingContext();
 //reading.setParentId(siteId);
 
-reading.addReading("icon", dailyWeather.get("icon"));
+	Object icon = dailyWeather.get("icon");
+	if (icon != null) {
+		reading.addReading("icon", getIconField(moduleName).getIndex(icon.toString()));
+	}
 reading.addReading("summary", dailyWeather.get("summary"));
 reading.addReading("humidity",dailyWeather.get("humidity"));
 reading.addReading("dewPoint", dailyWeather.get("dewPoint"));
