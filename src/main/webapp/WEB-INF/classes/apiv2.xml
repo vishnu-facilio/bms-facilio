@@ -4671,6 +4671,8 @@
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitor" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitors" />
+		<action name="searchByFace"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="searchByPhoto" />
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorsList">
 			<param name="viewName">{1}</param>

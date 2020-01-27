@@ -1,20 +1,33 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.aws.util.FaceRekognitionUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.VisitorContext;
+import com.facilio.bmsconsole.util.VisitorFaceAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 
 
 public class VisitorAction extends FacilioAction 
@@ -349,6 +362,24 @@ public class VisitorAction extends FacilioAction
 		
 		return SUCCESS;
 	}
-	
 
+	private File searchPhoto;
+	
+	public File getSearchPhoto() {
+		return searchPhoto;
+	}
+	public void setSearchPhoto(File searchPhoto) {
+		this.searchPhoto = searchPhoto;
+	}
+	
+	public String searchByPhoto() throws Exception {
+		
+		FacilioChain searchChain = ReadOnlyChainFactory.getSearchVisitorByPhotoChain();
+		searchChain.getContext().put(FacilioConstants.ContextNames.VISITOR_PHOTO, searchPhoto);
+		
+		searchChain.execute();
+		
+		setResult(FacilioConstants.ContextNames.VISITOR, searchChain.getContext().get(FacilioConstants.ContextNames.VISITOR));
+		return SUCCESS;
+	}
 }

@@ -7591,4 +7591,28 @@ public class FieldFactory {
 	public static FacilioField getControllerTypeField(FacilioModule module) {
 		return getField(AgentConstants.CONTROLLER_TYPE, "Controller_Type", FieldType.NUMBER);
 	}
+	
+	public static List<FacilioField> getFaceCollectionsFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFaceCollectionsModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("collectionId", "COLLECTION_ID", module, FieldType.STRING));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getVisitorFacesFields(FacilioModule module) {
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
+		fields.add(getField("photoId", "PHOTO_ID", module, FieldType.NUMBER));
+		fields.add(getField("collectionId", "COLLECTION_ID", module, FieldType.NUMBER));
+		fields.add(getField("faceId", "FACE_ID", module, FieldType.STRING));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+
+		return fields;
+	}
 }

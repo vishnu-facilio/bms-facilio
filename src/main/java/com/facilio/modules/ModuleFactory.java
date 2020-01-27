@@ -3159,4 +3159,20 @@ public class ModuleFactory {
 		module.setDisplayName("Tab IdApp Id Mapping");
 		return module;
 	}
+	
+	public static FacilioModule getFaceCollectionsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.FACE_COLLECTIONS);
+		module.setTableName("FaceCollections");
+		module.setDisplayName("Face Collections");
+		return module;
+	}
+	
+	public static FacilioModule getVisitorFacesModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.VISITOR_FACES);
+		module.setTableName("Visitor_Faces");
+		module.setDisplayName("Visitor Faces");
+		return module;
+	}
 }

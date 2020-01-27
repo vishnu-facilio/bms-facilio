@@ -3813,7 +3813,8 @@ public class TransactionChainFactory {
 			c.addCommand(new CheckForVisitorDuplicationCommand());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION))
+					.addCommand(new VisitorFaceRecognitionCommand()));
 		
 			return c;
 		}
@@ -3899,7 +3900,8 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadVisitorLoggingLookUpCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
-										.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
+										.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION))
+										.addCommand(new VisitorFaceRecognitionCommand()));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			
 			return c;

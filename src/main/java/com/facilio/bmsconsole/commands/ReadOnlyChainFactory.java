@@ -1568,6 +1568,13 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
+	
+	public static FacilioChain getSearchVisitorByPhotoChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVisitor());
+		c.addCommand(new SearchVisitorByPhotoCommand());
+		return c;
+	}
 
 	public static FacilioChain getVisitorInvitesListChain() {
 		FacilioChain chain = getDefaultChain();
