@@ -130,6 +130,9 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				createModule = createModule.split("_")[0];
 				targetModule = createNewModule(assetIdTarget,createModule,fields);
 				targetModuleName = targetModule.getName();
+			}else if(module.getName().equals("ahureading") || module.getName().equals("chillerreading") || module.getName().equals("energydata") || module.getName().equals("chillerprimarypumpreading") ||
+					module.getName().equals("chillersecondarypumpreading") || module.getName().equals("fcureading")) {
+				targetModuleName = module.getName();
 			}else {
 				if(CollectionUtils.isNotEmpty(fields)) {
 					targetModuleName  = targetModule.getName();
@@ -164,10 +167,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 					
 				}
 			}
-			if(module.getName().equals("ahureading") || module.getName().equals("chillerreading") || module.getName().equals("energydata") || module.getName().equals("chillerprimarypumpreading") ||
-					module.getName().equals("chillersecondarypumpreading")) {
-				targetModuleName = module.getName();
-			}
+			
 			LOGGER.info("copy Asset Insert Started target AssetId is :" + targetAssetId + " and module is  : "
 					+ targetModuleName);
 			List<ReadingContext> readings = new ArrayList<ReadingContext>();
@@ -246,7 +246,7 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				FacilioConstants.ContextNames.ASSET_CATEGORY);
 		addReadingChain.getContext().put(FacilioConstants.ContextNames.READING_NAME, module);
 		addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, field);
-		addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Readings_2");
+		addReadingChain.getContext().put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Readings_4");
 		addReadingChain.getContext().put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE,
 				ModuleFactory.getAssetCategoryReadingRelModule());
 		addReadingChain.getContext().put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,
