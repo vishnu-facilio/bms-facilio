@@ -20,12 +20,14 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewField;
@@ -78,7 +80,12 @@ public class ExportUtil {
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
 		HSSFRow rowhead = sheet.createRow((short) 0);
-
+		
+		List<BaseSpaceContext> siteList = CommonCommandUtil.getMySites();
+		Map<Long, BaseSpaceContext> siteIdVsSiteMap = new HashMap<>();  
+		for (BaseSpaceContext site : siteList) {
+			siteIdVsSiteMap.put(site.getId(), site);
+		}
 		int i = 0;
 		for(ViewField vf : fields)
 		{
@@ -100,7 +107,13 @@ public class ExportUtil {
 			{
 				FacilioField field = vf.getField();
 				Map<String, Object> recordProp = FieldUtil.getAsProperties(record);
-				Object value = getValue(recordProp, vf);
+				Object value = null;
+				if (field.getName().equals("siteId") && siteIdVsSiteMap.get(record.getSiteId()) != null) {
+					value = siteIdVsSiteMap.get(record.getSiteId()).getName();
+				}
+				else {
+					value =	getValue(recordProp, vf);
+				}
 				if(value != null)
 				{
 					Object val = getFormattedValue(modVsData, field, value);
@@ -264,6 +277,12 @@ public class ExportUtil {
         	
         	Map<String, List<Long>> modVsIds= getModuleVsLookupIds(fields, records);
     		Map<String, Map<Long,Object>> modVsData= getModuleData(modVsIds);
+    		
+    		List<BaseSpaceContext> siteList = CommonCommandUtil.getMySites();
+    		Map<Long, BaseSpaceContext> siteIdVsSiteMap = new HashMap<>();  
+    		for (BaseSpaceContext site : siteList) {
+    			siteIdVsSiteMap.put(site.getId(), site);
+    		}
         
         	for(ModuleBaseWithCustomFields record : records)
         	{
@@ -272,7 +291,13 @@ public class ExportUtil {
 			{
 	    			FacilioField field = vf.getField();
 				Map<String, Object> recordProp = FieldUtil.getAsProperties(record);
-				Object value = getValue(recordProp, vf);
+				Object value = null;
+				if (field.getName().equals("siteId") && siteIdVsSiteMap.get(record.getSiteId()) != null) {
+					value = siteIdVsSiteMap.get(record.getSiteId()).getName();
+				}
+				else {
+					value =	getValue(recordProp, vf);
+				}
 	    			if(value != null)
 	    			{
 	    				Object val = getFormattedValue(modVsData, field, value);
