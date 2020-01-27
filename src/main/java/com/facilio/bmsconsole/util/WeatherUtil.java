@@ -17,7 +17,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-import com.facilio.modules.fields.EnumField;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -47,6 +46,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.weather.context.WeatherStationContext;
@@ -563,6 +563,10 @@ public static List<ReadingContext> getReadingList(Map<Long,List<ReadingContext>>
 		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		return (EnumField) moduleBean.getField("icon", moduleName);
 	}
+	private static EnumField getPrecipitationTypeField (String moduleName) throws Exception {
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		return (EnumField) moduleBean.getField("precipitationType", moduleName);
+	}
 	
 	public static ReadingContext getHourlyReadingOld(long siteId,String moduleName, Map<String,Object> hourlyWeather) throws Exception {
 
@@ -587,7 +591,10 @@ public static List<ReadingContext> getReadingList(Map<Long,List<ReadingContext>>
 		reading.addReading("precipitationIntensity", hourlyWeather.get("precipIntensity"));
 		reading.addReading("precipitationIntensityError", hourlyWeather.get("precipIntensityError"));
 		reading.addReading("precipitationProbability", hourlyWeather.get("precipProbability"));
-		reading.addReading("precipitationType", hourlyWeather.get("precipType"));		
+		Object precipitationType = hourlyWeather.get("precipType");
+		if (precipitationType != null) {
+			reading.addReading("precipitationType", getPrecipitationTypeField(moduleName).getIndex(precipitationType.toString()));
+		}		
 		reading.addReading("windSpeed", hourlyWeather.get("windSpeed"));
 		reading.addReading("windGust", hourlyWeather.get("windGust"));
 		reading.addReading("windBearing", hourlyWeather.get("windBearing"));
@@ -625,7 +632,10 @@ public static ReadingContext getDailyReadingOld(long siteId,String moduleName, M
 	reading.addReading("precipitationIntensity", dailyWeather.get("precipIntensity"));
 	reading.addReading("precipitationIntensityError", dailyWeather.get("precipIntensityError"));
 	reading.addReading("precipitationProbability", dailyWeather.get("precipProbability"));
-	reading.addReading("precipitationType", dailyWeather.get("precipType"));
+	Object precipitationType = dailyWeather.get("precipType");
+	if (precipitationType != null) {
+		reading.addReading("precipitationType", getPrecipitationTypeField(moduleName).getIndex(precipitationType.toString()));
+	}
 	reading.addReading("windSpeed", dailyWeather.get("windSpeed"));
 	reading.addReading("windGust", dailyWeather.get("windGust"));
 	reading.addReading("windBearing", dailyWeather.get("windBearing"));
@@ -683,7 +693,10 @@ public static ReadingContext getHourlyReading(String moduleName, Map<String,Obje
 	reading.addReading("precipitationIntensity", hourlyWeather.get("precipIntensity"));
 	reading.addReading("precipitationIntensityError", hourlyWeather.get("precipIntensityError"));
 	reading.addReading("precipitationProbability", hourlyWeather.get("precipProbability"));
-	reading.addReading("precipitationType", hourlyWeather.get("precipType"));		
+	Object precipitationType = hourlyWeather.get("precipType");
+	if (precipitationType != null) {
+		reading.addReading("precipitationType", getPrecipitationTypeField(moduleName).getIndex(precipitationType.toString()));
+	}
 	reading.addReading("windSpeed", hourlyWeather.get("windSpeed"));
 	reading.addReading("windGust", hourlyWeather.get("windGust"));
 	reading.addReading("windBearing", hourlyWeather.get("windBearing"));
@@ -722,6 +735,10 @@ reading.addReading("precipitationIntensity", dailyWeather.get("precipIntensity")
 reading.addReading("precipitationIntensityError", dailyWeather.get("precipIntensityError"));
 reading.addReading("precipitationProbability", dailyWeather.get("precipProbability"));
 reading.addReading("precipitationType", dailyWeather.get("precipType"));
+Object precipitationType = dailyWeather.get("precipType");
+if (precipitationType != null) {
+	reading.addReading("precipitationType", getPrecipitationTypeField(moduleName).getIndex(precipitationType.toString()));
+}
 reading.addReading("windSpeed", dailyWeather.get("windSpeed"));
 reading.addReading("windGust", dailyWeather.get("windGust"));
 reading.addReading("windBearing", dailyWeather.get("windBearing"));
