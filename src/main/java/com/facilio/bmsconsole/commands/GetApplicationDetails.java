@@ -31,8 +31,8 @@ public class GetApplicationDetails extends FacilioCommand {
 					List<WebTabContext> webTabs = ApplicationApi.getWebTabsForWebGroup(webTabGroup.getId());
 					if (webTabs != null && !webTabs.isEmpty()) {
 						for (WebTabContext webtab : webTabs) {
-							List<NewPermission> permissions = ApplicationApi.getPermissionsForWebTab(webtab.getId());
-							webtab.setPermissions(permissions);
+							webtab.setPermissions(ApplicationApi.getPermissionsForWebTab(webtab.getId()));
+							webtab.setModuleIds(ApplicationApi.getModuleIdsForTab(webtab.getId()));
 						}
 					}
 					webTabGroup.setWebTabs(webTabs);
