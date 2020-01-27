@@ -108,8 +108,8 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 				for (PointedList<AlarmOccurrenceContext> uniqueAlarmOccurrenceList : alarmOccurrenceMap.values()) {
 					alarmCount = uniqueAlarmOccurrenceList.size();
 				}
-				context.put(FacilioConstants.ContextNames.ALARM_COUNT, alarmCount);	
-			}	
+				context.put(FacilioConstants.ContextNames.ALARM_COUNT, alarmCount);
+			}
 				
 			for (AlarmOccurrenceContext.Type type : occurrenceMap.keySet()) {
 				List<FacilioField> allFields = modBean.getAllFields(NewAlarmAPI.getOccurrenceModuleName(type));

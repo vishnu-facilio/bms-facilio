@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.facilio.activity.AlarmActivityType;
+import com.facilio.agent.alarms.AgentAlarmContext;
+import com.facilio.agent.alarms.AgentAlarmOccurrenceContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.operators.*;
@@ -131,6 +133,8 @@ public class NewAlarmAPI {
 				return ReadingAlarmOccurrenceContext.class;
 			case VIOLATION:
 				return ViolationAlarmOccurrenceContext.class;
+			case AGENT:
+				return AgentAlarmOccurrenceContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -149,6 +153,9 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE;
 			case VIOLATION:
 				return FacilioConstants.ContextNames.VIOLATION_ALARM_OCCURRENCE;
+			case AGENT:
+				return FacilioConstants.ContextNames.AGENT_ALARM_OCCURRENCE;
+
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -172,6 +179,8 @@ public class NewAlarmAPI {
 				return BMSAlarmContext.class;
 			case VIOLATION_ALARM:
 				return ViolationAlarmContext.class;
+			case AGENT_ALARM:
+				return AgentAlarmContext.class;
 
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
@@ -219,6 +228,8 @@ public class NewAlarmAPI {
 				return "bmsalarm";
 			case VIOLATION_ALARM:
 				return "violationalarm";
+			case AGENT_ALARM:
+				return "agentAlarm";
 
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");

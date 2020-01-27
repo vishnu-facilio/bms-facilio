@@ -3143,7 +3143,7 @@ public class ModuleFactory {
 		module.setDisplayName("agent v2 log");
 		return module;
 	}
-	
+
 	public static FacilioModule getNewPermissionModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(FacilioConstants.ContextNames.NEW_PERMISSIONS);
@@ -3151,7 +3151,7 @@ public class ModuleFactory {
 		module.setDisplayName("New Permissions");
 		return module;
 	}
-	
+
 	public static FacilioModule getTabIdAppIdMappingModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("tabIdAppIdMapping");
@@ -3159,7 +3159,7 @@ public class ModuleFactory {
 		module.setDisplayName("Tab IdApp Id Mapping");
 		return module;
 	}
-	
+
 	public static FacilioModule getFaceCollectionsModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(FacilioConstants.ContextNames.FACE_COLLECTIONS);
@@ -3167,7 +3167,7 @@ public class ModuleFactory {
 		module.setDisplayName("Face Collections");
 		return module;
 	}
-	
+
 	public static FacilioModule getVisitorFacesModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(FacilioConstants.ContextNames.VISITOR_FACES);
@@ -3175,4 +3175,12 @@ public class ModuleFactory {
 		module.setDisplayName("Visitor Faces");
 		return module;
 	}
+	public static FacilioModule getAgentAlarmsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("agentAlarm");
+		module.setTableName("Agent_Alarm");
+		module.setDisplayName("Agent Alarm");
+		return module;
+	}
+}
 }

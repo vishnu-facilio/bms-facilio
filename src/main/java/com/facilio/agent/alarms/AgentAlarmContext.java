@@ -3,7 +3,7 @@ package com.facilio.agent.alarms;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 
 public class AgentAlarmContext extends BaseAlarmContext {
-    long agentId;
+    private long agentId;
 
     public long getAgentId() {
         return agentId;

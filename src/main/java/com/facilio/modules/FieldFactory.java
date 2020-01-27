@@ -130,8 +130,10 @@ public class FieldFactory {
 		return fields;
 	}
 
-    public static class Fields {
+
+	public static class Fields {
 		public static List<String> alarmsFieldsInclude = new ArrayList<String>();
+
 		static {
 			alarmsFieldsInclude.add("isAcknowledged");
 			alarmsFieldsInclude.add("sourceType");
@@ -7572,10 +7574,20 @@ public class FieldFactory {
 		fields.add(getField("intentParamId", "INTENT_PARAM_ID", module, FieldType.NUMBER));
 		fields.add(getField("requestedTime", "REQUESTED_TIME", module, FieldType.NUMBER));
 		fields.add(getField("respondedTime", "RESPONDED_TIME", module, FieldType.NUMBER));
-		
+
 		return fields;
 	}
-	
+
+	public static List<FacilioField> getAgentAlarmFields() {
+		List<FacilioField> fields = new ArrayList<>();
+
+		FacilioModule module = ModuleFactory.getAgentAlarmsModule();
+		fields.add(getAgentIdField(module));
+		fields.add(getModuleIdField());
+
+		return fields;
+	}
+
 	public static List<FacilioField> getCBSessionParamsFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getCBSessionParamsModule();
