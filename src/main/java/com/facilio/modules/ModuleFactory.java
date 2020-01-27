@@ -3182,5 +3182,5 @@ public class ModuleFactory {
 		module.setDisplayName("Agent Alarm");
 		return module;
 	}
-}
+
 }
