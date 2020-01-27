@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -29,6 +28,7 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -126,6 +126,9 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 				.fields(fields)
 				.withChangeSet(oldWos)
 				; //No where condition because Old records are specified
+		
+		// temp
+		CommonCommandUtil.handlePicklistFormData(fields, workOrder.getData());
 		
 		rowsUpdated = updateBuilder.update(workOrder);
 		if (updateBuilder.getChangeSet() != null) {

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -21,11 +19,13 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
@@ -97,6 +97,9 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155) && workOrder != null) {
 				LOGGER.info("Workorder subject : "+ workOrder.getSubject()+"\n Description : "+workOrder.getDescription());
 			}
+			
+			// temp
+			 CommonCommandUtil.handlePicklistFormData(fields, workOrder.getData());
 			
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
