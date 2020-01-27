@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.io.FileUtils;
 
 import com.facilio.bmsconsole.context.VisitorContext;
+import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.VisitorFaceAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.constants.FacilioConstants;
@@ -28,6 +29,11 @@ public class SearchVisitorByPhotoCommand extends FacilioCommand {
 			if (visitorId != null) {
 				VisitorContext visitorContext = VisitorManagementAPI.getVisitor(visitorId, null);
 				context.put(FacilioConstants.ContextNames.VISITOR, visitorContext);
+				
+				VisitorLoggingContext visitorLogContext = VisitorManagementAPI.getValidChildLogForToday(0, System.currentTimeMillis(), true, visitorId);
+				if (visitorLogContext != null) {
+					context.put(FacilioConstants.ContextNames.VISITOR_LOGGING, visitorLogContext);
+				}
 				LOGGER.log(Level.INFO, "Visitor found for the given photo. visitorId: "+visitorId);
 			}
 			else {

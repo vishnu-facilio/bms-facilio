@@ -380,6 +380,7 @@ public class VisitorAction extends FacilioAction
 		searchChain.execute();
 		
 		setResult(FacilioConstants.ContextNames.VISITOR, searchChain.getContext().get(FacilioConstants.ContextNames.VISITOR));
+		setResult(FacilioConstants.ContextNames.VISITOR_LOGGING, searchChain.getContext().get(FacilioConstants.ContextNames.VISITOR_LOGGING));
 		return SUCCESS;
 	}
 }
