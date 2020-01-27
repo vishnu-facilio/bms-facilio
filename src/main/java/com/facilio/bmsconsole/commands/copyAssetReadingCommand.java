@@ -8,19 +8,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.ReadingAction;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -167,7 +164,8 @@ public class copyAssetReadingCommand extends FacilioCommand {
 					
 				}
 			}
-			if(module.getName().equals("ahureading") || module.getName().equals("chillerreading")) {
+			if(module.getName().equals("ahureading") || module.getName().equals("chillerreading") || module.getName().equals("energydata") || module.getName().equals("chillerprimarypumpreading") ||
+					module.getName().equals("chillersecondarypumpreading")) {
 				targetModuleName = module.getName();
 			}
 			LOGGER.info("copy Asset Insert Started target AssetId is :" + targetAssetId + " and module is  : "
