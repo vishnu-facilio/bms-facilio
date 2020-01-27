@@ -101,6 +101,16 @@ public class ProcessImportCommand extends FacilioCommand {
 						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__building"));
 						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__floor"));
 						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__spaceName"));
+
+						if (!ImportAPI.isInsertImport(importProcessContext)) {
+							if (fieldMapping.containsKey(importProcessContext.getModule().getName() + "__id") && colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__id")) != null) {
+								Double idValue = (Double) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__id"));
+								if (idValue != null && idValue > 0) {
+									long idVal = idValue.longValue();
+									props.put("id", idVal);
+								}
+							}
+						}
 					}
 
 					else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.SPACE)) {

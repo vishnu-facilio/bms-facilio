@@ -1,15 +1,5 @@
 package com.facilio.bmsconsole.commands.data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.FacilioCommand;
@@ -25,19 +15,18 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
+import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
 import com.google.common.collect.ArrayListMultimap;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 ;
 
@@ -51,16 +40,13 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 		ImportProcessContext importProcessContext = (ImportProcessContext) c.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		c.get(ImportAPI.ImportProcessConstants.FIELDS_MAPPING);
 		StringBuilder emailMessage = new StringBuilder();
-		ArrayListMultimap<String,String> groupedFields = (ArrayListMultimap<String,String>) c.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);
 		// ArrayListMultimap<String, ReadingContext> groupedReadingContext = (ArrayListMultimap<String, ReadingContext>) c.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
 		HashMap<String, List<ReadingContext>> groupedReadingContext = (HashMap<String, List<ReadingContext>>) c.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
 		
 		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) c.get(FacilioConstants.ContextNames.RECORD_LIST);
-		
-		
-		
-		FileStore fs = FacilioFactory.getFileStore();
-		JSONObject meta = new JSONObject();	
+
+
+		JSONObject meta = new JSONObject();
 		Integer Setting = importProcessContext.getImportSetting();
 		List<Long> listOfIds = new ArrayList<>();
 		
@@ -283,27 +269,33 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 				for(String updateField : updateFields) {
 					String modulePlusFields[] = updateField.split("__");
 					FacilioField facilioField = bean.getField(modulePlusFields[modulePlusFields.length - 1], moduleName);
-					String columnName = facilioField.getColumnName();
-					
-					if(facilioField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
-						Map<String, Object> lookupField = (Map<String,Object>) readingsList.get(j).getData().get(facilioField.getName());
-						Long lookupId = (Long)lookupField.get("id");
-						updateBuilder.andCustomWhere(columnName + "=?", lookupId);
-					}
-					else if(facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
-						String enumString = (String) readingsList.get(j).getData().get(facilioField.getName());
-						EnumField enumField = (EnumField) facilioField;
-						updateBuilder.andCustomWhere(columnName + "=?", enumField.getIndex(enumString));
-					}
-					else {
-						updateBuilder.andCustomWhere(columnName+"= ?", readingsList.get(j).getData().get(facilioField.getName()));
-					}
-			}
-			updateBuilder.update(readingsList.get(j));
+					updateBuilder = appendUpdateBuilderConditions(readingsList, j, updateBuilder, facilioField, module);
+				}
+				updateBuilder.update(readingsList.get(j));
 				}
 		}
 }
-	
+
+	private static UpdateRecordBuilder<ReadingContext> appendUpdateBuilderConditions(List<ReadingContext> readingsList, int j, UpdateRecordBuilder<ReadingContext> updateBuilder, FacilioField facilioField, FacilioModule module) {
+
+		if(facilioField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
+			Map<String, Object> lookupField = (Map<String,Object>) readingsList.get(j).getData().get(facilioField.getName());
+			Long lookupId = (Long)lookupField.get("id");
+			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField,String.valueOf(lookupId), NumberOperators.EQUALS));
+		}
+		else if(facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
+			String enumString = (String) readingsList.get(j).getData().get(facilioField.getName());
+			EnumField enumField = (EnumField) facilioField;
+			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField,String.valueOf(enumField.getIndex(enumString)), NumberOperators.EQUALS));
+		} else if (facilioField.getName() == "id") {
+				updateBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(readingsList.get(j).getId()), NumberOperators.EQUALS));
+		}
+		else {
+			updateBuilder.andCondition(CriteriaAPI.getCondition(facilioField, String.valueOf(readingsList.get(j).getData().get(facilioField.getName())), StringOperators.IS));
+		}
+		return updateBuilder;
+	}
+
 	public static void updateNotNull(ImportProcessContext importProcessContext, List<ReadingContext> readingsEntireList ) throws Exception {
 		int insertLimit = 10000;
 		int splitSize = (readingsEntireList.size()/insertLimit) +1;
@@ -356,22 +348,8 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 				for(String field: updateFields) {
 					String modulePlusFields[] = field.split("__");
 					FacilioField facilioField = bean.getField(modulePlusFields[modulePlusFields.length - 1], importProcessContext.getModule().getName());
-					String columnName = facilioField.getColumnName();
-					
-					if(facilioField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
-						Map<String, Object> lookupField = (Map<String,Object>) readingsList.get(j).getData().get(facilioField.getName());
-						Long lookupId = (Long)lookupField.get("id");
-						updateBuilder.andCustomWhere(columnName + "=?", lookupId);
-					}
-					else if(facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
-						String enumString = (String) readingsList.get(j).getData().get(facilioField.getName());
-						EnumField enumField = (EnumField) facilioField;
-						updateBuilder.andCustomWhere(columnName + "=?", enumField.getIndex(enumString));
-					}
-					else {
-						updateBuilder.andCustomWhere(columnName+"= ?", readingsList.get(j).getData().get(facilioField.getName()));
-					}
-					}
+					updateBuilder = appendUpdateBuilderConditions(readingsList, j, updateBuilder, facilioField, module);
+				}
 				
 				updateBuilder.table(module.getTableName())
 					.module(module)

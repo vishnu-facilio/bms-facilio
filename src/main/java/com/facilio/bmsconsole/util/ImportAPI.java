@@ -361,8 +361,7 @@ public class ImportAPI {
 	
 	public static Long getSpaceID(ImportProcessContext importProcessContext, HashMap<String, Object> colVal, HashMap<String,String> fieldMapping) throws Exception {
 
-		String siteName =null ,buildingName = null,floorName = null ,spaceName = null;
-		new ArrayList<>();
+		String siteName,buildingName,floorName,spaceName;
 		
 		ArrayList<String> additionalSpaces = new ArrayList<>();
 		String moduleName = importProcessContext.getModule().getName();
@@ -585,7 +584,7 @@ public class ImportAPI {
 		return null;
 	}
 	
-	public static JSONArray getFields(String module, Integer importMode)
+	public static JSONArray getFields(String module, Integer importMode, Integer importSetting)
 	{
 		JSONArray fields = new JSONArray();
 		
@@ -629,6 +628,10 @@ public class ImportAPI {
 					fields.add("space1");
 					fields.add("space2");
 					fields.add("space3");
+
+					if (importSetting != null && importSetting == 3) {
+						fields.add("id");
+					}
 				}
 				}
 				else if(facilioModule.getName().equals(FacilioConstants.ContextNames.SITE)
@@ -753,6 +756,13 @@ public class ImportAPI {
 			}
 		}
 		return true;
+	}
+
+	public static  boolean isInsertImport(ImportProcessContext importProcessContext) {
+		if (importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.INSERT.getValue() || importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
+			return true;
+		}
+		return false;
 	}
 
 	public static boolean isAssetBaseModule(ImportProcessContext importProcessContext) throws Exception {

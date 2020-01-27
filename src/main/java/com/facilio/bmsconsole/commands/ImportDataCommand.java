@@ -3,9 +3,9 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportLookupModuleValueNotFoundException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
@@ -78,8 +78,8 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 			} else if (exception instanceof ImportFieldValueMissingException) {
 				ImportFieldValueMissingException importFieldValueMissingException = (ImportFieldValueMissingException) exception;
 				exceptionMessage = importFieldValueMissingException.getClientMessage();
-			} else if (exception instanceof ImportAssetMandatoryFieldsException) { 
-				ImportAssetMandatoryFieldsException importAssetMandExp = (ImportAssetMandatoryFieldsException) exception;
+			} else if (exception instanceof ImportMandatoryFieldsException) {
+				ImportMandatoryFieldsException importAssetMandExp = (ImportMandatoryFieldsException) exception;
 				exceptionMessage = importAssetMandExp.getClientMessage();
 			} else if (exception instanceof ImportLookupModuleValueNotFoundException) {
 				ImportLookupModuleValueNotFoundException importModMissing = (ImportLookupModuleValueNotFoundException) exception;

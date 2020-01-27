@@ -25,7 +25,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import com.facilio.bmsconsole.actions.PointsProcessContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
-import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportPointsAPI;
@@ -81,7 +81,7 @@ public class PointsParseDataForImportCommand implements Command {
 				else if(!fieldMapping.containsKey("fieldId")) {
 					columns.add("Reading Field");
 				}
-				throw new ImportAssetMandatoryFieldsException(null, columns, new Exception());
+				throw new ImportMandatoryFieldsException(null, columns, new Exception());
 			}
 		}
 		
@@ -203,7 +203,7 @@ public class PointsParseDataForImportCommand implements Command {
 							columns.add("ReadingField");
 						}
 						
-						throw new ImportAssetMandatoryFieldsException(row_no,columns, new Exception());
+						throw new ImportMandatoryFieldsException(row_no,columns, new Exception());
 					}
 					else {
 						uniqueString.append(colVal.get("name") );

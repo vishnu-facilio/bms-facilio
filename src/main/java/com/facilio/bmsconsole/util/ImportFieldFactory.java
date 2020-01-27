@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
@@ -18,6 +9,14 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class ImportFieldFactory {
 
@@ -108,9 +107,8 @@ public class ImportFieldFactory {
 		
 		for(FacilioField field : fields) {
 			if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && !ImportAPI.isRemovableFieldOnImport(field.getName())) {
-				LOGGER.info("LookupField!!!" + field.getName());
 				LookupField lookupField = (LookupField) field;
-				LOGGER.info(lookupField.getLookupModule().getName());
+				LOGGER.info("LookupField!!!" + field.getName() + " Module Name: " + lookupField.getLookupModule().getName());
 				List<FacilioField> lookupModuleFields = bean.getAllFields(lookupField.getLookupModule().getName());
 				for(FacilioField lkField : lookupModuleFields) {
 					additionalFields.add(lkField);

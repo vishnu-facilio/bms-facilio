@@ -13,7 +13,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.PointsProcessContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ImportPointsAPI;
@@ -66,8 +66,8 @@ public class ReadingImportPointsDataJob extends InstantJob{
 			
 		} catch(Exception e) {
 			String message;
-			if(e instanceof ImportAssetMandatoryFieldsException) {
-				ImportAssetMandatoryFieldsException importFieldException = (ImportAssetMandatoryFieldsException) e;
+			if(e instanceof ImportMandatoryFieldsException) {
+				ImportMandatoryFieldsException importFieldException = (ImportMandatoryFieldsException) e;
 				message = importFieldException.getClientMessage();
 			}
 			else if(e instanceof ImportFieldValueMissingException) {

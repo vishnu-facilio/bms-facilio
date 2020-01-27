@@ -1,31 +1,26 @@
 package com.facilio.bmsconsole.actions;
 
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.util.ImportFieldFactory;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsole.util.ImportFieldFactory;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
+import java.io.Serializable;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class ImportProcessContext implements Serializable
 {
@@ -304,7 +299,7 @@ public class ImportProcessContext implements Serializable
 	public JSONArray getFields() throws Exception
 	{
 		if(getModule() != null) {
-			return ImportAPI.getFields(getModule().getName(), getImportMode());
+			return ImportAPI.getFields(getModule().getName(), getImportMode(), getImportSetting());
 		}
 		return null;
 	}

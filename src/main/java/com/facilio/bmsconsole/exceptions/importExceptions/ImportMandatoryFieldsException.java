@@ -2,13 +2,13 @@ package com.facilio.bmsconsole.exceptions.importExceptions;
 
 import java.util.ArrayList;
 
-public class ImportAssetMandatoryFieldsException extends Exception{
+public class ImportMandatoryFieldsException extends Exception{
 	private static final long serialVersionUID = 1L;
 		
 	Integer row_no = null;
 	ArrayList<String> columns = new ArrayList<String>();
 	
-	public ImportAssetMandatoryFieldsException(Integer row_no, ArrayList<String> columns, Exception e) {	
+	public ImportMandatoryFieldsException(Integer row_no, ArrayList<String> columns, Exception e) {
 		super(e);
 		this.row_no = row_no;
 		this.columns = columns;
