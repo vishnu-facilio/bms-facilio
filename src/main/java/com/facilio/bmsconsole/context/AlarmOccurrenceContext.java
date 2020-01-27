@@ -298,8 +298,8 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		NORMAL,
 		ANOMALY,
 		READING,
-		VIOLATION
-		;
+		VIOLATION,
+		AGENT;
 
 		public int getIndex() {
 			return ordinal() + 1;

@@ -12,4 +12,9 @@ public class AgentAlarmOccurrenceContext extends AlarmOccurrenceContext {
     public void setAgentId(long agentId) {
         this.agentId = agentId;
     }
+
+    @Override
+    public Type getTypeEnum() {
+        return Type.AGENT;
+    }
 }

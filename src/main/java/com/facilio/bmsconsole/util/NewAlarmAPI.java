@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.agent.alarms.AgentAlarmContext;
+import com.facilio.agent.alarms.AgentAlarmOccurrenceContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.criteria.operators.*;
@@ -132,6 +133,8 @@ public class NewAlarmAPI {
 				return ReadingAlarmOccurrenceContext.class;
 			case VIOLATION:
 				return ViolationAlarmOccurrenceContext.class;
+			case AGENT:
+				return AgentAlarmOccurrenceContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -150,6 +153,9 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE;
 			case VIOLATION:
 				return FacilioConstants.ContextNames.VIOLATION_ALARM_OCCURRENCE;
+			case AGENT:
+				return FacilioConstants.ContextNames.AGENT_ALARM_OCCURRENCE;
+
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -322,7 +328,7 @@ public class NewAlarmAPI {
 	public static AlarmOccurrenceContext createAlarm(BaseEventContext baseEvent, Context context) throws Exception {
 		AlarmOccurrenceContext alarmOccurrence = baseEvent.updateAlarmOccurrenceContext(null, context, true);
 
-		BaseAlarmContext baseAlarm = baseEvent.updateAlarmContext(new BaseAlarmContext(), true);
+		BaseAlarmContext baseAlarm = baseEvent.updateAlarmContext(null, true);
 		updateAlarmSystemFields(baseAlarm, alarmOccurrence, context);
 
 		baseAlarm.setSeverity(alarmOccurrence.getSeverity());
