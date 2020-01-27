@@ -13,13 +13,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.accounts.dto.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.AccountsInterface;
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -131,12 +129,13 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
-    public long getCurrentOrgId() {
-        Organization org = AccountUtil.getCurrentOrg();
-        if (org != null) {
-            return org.getOrgId();
-        }
-        return -1;
+    public Organization getCurrentOrg() {
+        return AccountUtil.getCurrentOrg();
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return AccountUtil.getCurrentUser();
     }
 
     @Override

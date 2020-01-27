@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,9 +26,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -69,8 +67,7 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	@Override
 	public long getOrgId() {
-		return AccountUtil.getCurrentOrg().getOrgId();
-//		 return 75L;
+		return DBConf.getInstance().getCurrentOrgId();
 	}
 	
 	private FacilioModule getModuleFromRS(ResultSet rs) throws SQLException {
@@ -92,7 +89,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			currentModule.setHideFromParents(rs.getBoolean("HIDE_FROM_PARENTS"));
 			long createdById = rs.getLong("CREATED_BY");
 			if (createdById > 0) {
-				User user = new User();
+				IAMUser user = new IAMUser();
 				user.setId(createdById);
 				currentModule.setCreatedBy(user);
 			}
@@ -161,8 +158,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		List<Map<String, Object>> props = builder.get();
 		for (Map<String, Object> prop: props) {
 			if (prop.containsKey("createdBy")) {
-				User user = new User();
-				user.setId((Long) prop.get("createdBy"));
+				IAMUser user = new IAMUser();
+				user.setId((long) prop.get("createdBy"));
 				prop.put("createdBy", user);
 			}
 		}
@@ -194,8 +191,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		List<Map<String, Object>> props = builder.get();
 		for (Map<String, Object> prop : props) {
 			if (prop.containsKey("createdBy")) {
-				User user = new User();
-				user.setId((Long) prop.get("createdBy"));
+				IAMUser user = new IAMUser();
+				user.setId((long) prop.get("createdBy"));
 				prop.put("createdBy", user);
 			}
 		}
@@ -1228,8 +1225,8 @@ public class ModuleBeanImpl implements ModuleBean {
 				pstmt.setNull(9, Types.VARCHAR);
 			}
 			
-			if (module.isCustom() && AccountUtil.getCurrentUser() != null) {
-				pstmt.setLong(10, AccountUtil.getCurrentUser().getId());
+			if (module.isCustom() && DBConf.getInstance().getCurrentUser() != null) {
+				pstmt.setLong(10, DBConf.getInstance().getCurrentUserId());
 			}
 			else {
 				pstmt.setNull(10, Types.BIGINT);
@@ -1294,11 +1291,6 @@ public class ModuleBeanImpl implements ModuleBean {
 			insertBuilder.addRecord(prop);
 			insertBuilder.save();
 		}
-	}
-	
-	public ServicePortalInfo getServicePortalInfo() throws Exception
-	{
-		return ServicePortalInfo.getServicePortalInfo();
 	}
 
 	@Override
