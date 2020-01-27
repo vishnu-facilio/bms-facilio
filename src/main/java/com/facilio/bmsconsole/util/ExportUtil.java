@@ -454,7 +454,7 @@ public class ExportUtil {
 			for(ViewField vf : fields)
 			{
 				FacilioField field = vf.getField();
-				if (field.getDataTypeEnum()==FieldType.LOOKUP) {
+				if (field != null && field.getDataTypeEnum()==FieldType.LOOKUP) {
 
 					vf.getParentField();
 					Map<String, Object> recordProp = FieldUtil.getAsProperties(record);
@@ -692,9 +692,13 @@ public class ExportUtil {
 
 		}
 		for (int j = 0; j < viewFields.size(); j++) {
-			if (viewFields.get(j).getField().getDataTypeEnum() == FieldType.FILE) {
+			if (viewFields.get(j).getField() != null && viewFields.get(j).getField().getDataTypeEnum() != null && viewFields.get(j).getField().getDataTypeEnum() == FieldType.FILE) {
 				viewFields.remove(viewFields.get(j));
 			}
+			else if (viewFields.get(j).getFieldName() != null && viewFields.get(j).getFieldName().equals("siteId")) {
+				viewFields.get(j).setField(FieldFactory.getSiteIdField(modBean.getModule(moduleName)));
+			}
+			
 		}
 		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records, isS3Value);
 	}
