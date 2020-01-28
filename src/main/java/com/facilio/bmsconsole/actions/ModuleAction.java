@@ -19,6 +19,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -365,6 +367,8 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	
+	
 	@SuppressWarnings("unchecked")
 	public String fields() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -431,6 +435,80 @@ public class ModuleAction extends FacilioAction {
 		{
 			setFields(fields);
 		}
+		
+		return SUCCESS;
+	}
+	public String v2getFieldsList() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		List<Integer> formTypes = Collections.singletonList(FormType.WEB.getIntVal());
+		context.put(FacilioConstants.ContextNames.FORM_TYPE, formTypes);
+		
+		FacilioChain getFieldsChain = FacilioChainFactory.getGetFieldsWithTemplateChain();
+		getFieldsChain.execute(context);
+	
+		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		List<FacilioField> workorderFields = new ArrayList<>();
+//		List<FacilioField> alarmFields = new ArrayList<>();
+		if(FacilioConstants.ContextNames.WORK_ORDER.equals(getModuleName()))
+		{
+			for(FacilioField field : fields)
+			{
+				if(field.getName().equals("actualWorkStart")
+				|| field.getName().equals("actualWorkEnd")
+				|| field.getName().equals("estimatedEnd")
+				|| field.getName().equals("noOfAttachments")
+				|| field.getName().equals("noOfClosedTasks")
+				|| field.getName().equals("noOfNotes")
+				|| field.getName().equals("noOfTasks")
+				|| field.getName().equals("scheduledStart")
+				|| field.getName().equals("serialNumber")
+				|| field.getName().equals("sourceType")
+				|| field.getName().equals("assignmentGroup")
+				|| field.getName().equals("createdTime"))
+				{
+					continue;
+				}
+				if(field.getName().equals("tenant")) {
+					if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
+					workorderFields.add(field);
+					}
+					continue;
+				}
+				workorderFields.add(field);
+			}
+			setFields(workorderFields);
+		}
+//		else if(FacilioConstants.ContextNames.ALARM.equals(getModuleName()))
+//		{
+//			for(FacilioField field : fields)
+//			{
+//				if(field.getName().equals("acknowledgedBy")
+//				|| field.getName().equals("acknowledgedTime")
+//				|| field.getName().equals("createdTime")
+//				|| field.getName().equals("acknowledgedBy")
+//				|| field.getName().equals("isAcknowledged")
+//				|| field.getName().equals("alarmType")
+//				|| field.getName().equals("modifiedTime")
+//				|| field.getName().equals("clearedTime")
+//				|| field.getName().equals("serialNumber")
+//				|| field.getName().equals("sourceType")
+//				|| field.getName().equals("assignmentGroup")
+//				|| field.getName().equals("createdTime"))
+//				{
+//					continue;
+//				}
+//				alarmFields.add(field);
+//			}
+//		}
+		else
+		{
+			setFields(fields);
+		}
+		Map<Long, List<FacilioForm>> fieldVsForms = (Map<Long, List<FacilioForm>>) context.get(FacilioConstants.ContextNames.FORM_FIELD_MAP);
+		setResult("fields", getFields());
+		setResult("fieldVsForms", fieldVsForms);
 		
 		return SUCCESS;
 	}

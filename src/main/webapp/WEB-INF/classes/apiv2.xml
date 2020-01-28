@@ -3775,6 +3775,9 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction" 
 			method="v2addCustomFields">
 		</action>
+		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction" 
+			method="v2getFieldsList">
+		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2updateField">
