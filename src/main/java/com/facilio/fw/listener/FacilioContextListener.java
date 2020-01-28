@@ -12,11 +12,7 @@ import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Timer;
+import java.util.*;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -27,9 +23,18 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.alarms.AgentEventContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
+import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -148,13 +153,16 @@ public class FacilioContextListener implements ServletContextListener {
 			}*/
 
 			try {
-				if(!FacilioProperties.isProduction()) {
+				if (!FacilioProperties.isProduction()) {
 					downloadEnvironmentFiles();
 				}
 				if (FacilioProperties.isMessageProcessor()) {
 					FacilioFactory.getMessageQueue().start();
 				}
 				AgentIntegrationQueueFactory.startIntegrationQueues();
+				//AccountUtil.setCurrentAccount(1);
+				//raiseAgentAlarm("test-agent",1);
+				//dropAgentAlarm("test-agent",1);
 			} catch (Exception e){
 				LOGGER.info("Exception occurred ", e);
 			}
@@ -171,15 +179,49 @@ public class FacilioContextListener implements ServletContextListener {
 			}
 
 			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
-			LOGGER.info("Loading the domain name as ######"+PortalAuthInterceptor.getPortalDomain());
+			LOGGER.info("Loading the domain name as ######" + PortalAuthInterceptor.getPortalDomain());
 			initLocalHostName();
 			HealthCheckFilter.setStatus(200);
-			
+
 		} catch (Exception e) {
 			sendFailureEmail(e);
 			LOGGER.info("Exception occurred ", e);
 		}
-		
+
+	}
+
+	private void raiseAgentAlarm(String agentName, long agentId) throws Exception {
+
+		AgentEventContext event = new AgentEventContext();
+		event.setEventMessage("Agent: " + agentName + " has lost connection with the Facilio cloud @ " + DateTime.now());
+		event.setSeverityString(FacilioConstants.Alarm.CRITICAL_SEVERITY);
+		event.setCreatedTime(System.currentTimeMillis());
+		event.setAgentId(agentId);
+		List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
+		eventList.add(event);
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);
+		FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
+		chain.execute(context);
+		LOGGER.info("Added Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
+
+	}
+
+	private void dropAgentAlarm(String agentName, long agentId) throws Exception {
+		AgentEventContext event = new AgentEventContext();
+		event.setEventMessage("Agent: " + agentName + " has regained connection with the Facilio cloud @ " + DateTime.now());
+		event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+		event.setCreatedTime(System.currentTimeMillis());
+		event.setAgentId(agentId);
+
+		List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
+		eventList.add(event);
+		FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);
+		FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
+		chain.execute(context);
+		LOGGER.info("Cleared Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
+
 	}
 
 	private void downloadEnvironmentFiles() throws Exception {

@@ -198,12 +198,14 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String getAgentLogs() {
         try {
-            setResult(AgentConstants.DATA, LogsApi.getMetrics(agentId, -1, -1));
+            List<Map<String, Object>> data = LogsApi.getMetrics(agentId, -1, -1);
+            setResult(AgentConstants.DATA, data);
             setResult(AgentConstants.RESULT, SUCCESS);
+            LOGGER.info("DATA : " + data);
             return SUCCESS;
         }catch (Exception e){
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            LOGGER.info("Exception whiel getting agent logs for ->"+agentId+"  ",e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            LOGGER.info("Exception while getting agent logs for ->" + agentId + "  ", e);
         }
         return SUCCESS;
     }

@@ -54,7 +54,6 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
 
-;
 
 public class ModuleBeanImpl implements ModuleBean {
 
