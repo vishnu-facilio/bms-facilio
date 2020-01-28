@@ -300,6 +300,14 @@ public class ReportDataPointContext {
 	public void setxDataPoint(boolean xDataPoint) {
 		this.xDataPoint = xDataPoint;
 	}
+	
+	public boolean duplicateDataPoint;
+	public boolean isduplicateDataPoint() {
+		return duplicateDataPoint;
+	}
+	public void setduplicateDataPoint(boolean duplicateDataPoint) {
+		this.duplicateDataPoint = duplicateDataPoint;
+	}
 
 	private Map<String, Object> metaData;
 	public Map<String, Object> getMetaData() {

@@ -137,6 +137,14 @@ public class ReadingAnalysisContext {
 		this.xDataPoint = xDataPoint;
 	}
 	
+	public boolean duplicateDataPoint;
+	public boolean isduplicateDataPoint() {
+		return duplicateDataPoint;
+	}
+	public void setduplicateDataPoint(boolean duplicateDataPoint) {
+		this.duplicateDataPoint = duplicateDataPoint;
+	}
+	
 	private Map<String, Object> metaData;
 	public Map<String, Object> getMetaData() {
 		return metaData;

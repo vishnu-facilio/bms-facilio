@@ -181,6 +181,9 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		if(metric.isxDataPoint()) {
 			dataPoint.setxDataPoint(metric.isxDataPoint());
 		}
+		if(metric.isduplicateDataPoint()) {
+			dataPoint.setduplicateDataPoint(metric.isduplicateDataPoint());
+		}
 		String moduleName = metric.getModuleName();
 		if (moduleName == null) {
 			moduleName = FacilioConstants.ContextNames.RESOURCE;
@@ -205,6 +208,9 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		dataPoint.setyAxis(metric.getyAxis());
 		if(metric.isxDataPoint()) {
 			dataPoint.setxDataPoint(metric.isxDataPoint());
+		}
+		if(metric.isduplicateDataPoint()) {
+			dataPoint.setduplicateDataPoint(metric.isduplicateDataPoint());
 		}
 		String moduleName = metric.getModuleName();
 		if (moduleName == null) {
