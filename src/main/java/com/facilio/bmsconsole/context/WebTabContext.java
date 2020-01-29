@@ -97,6 +97,8 @@ public class WebTabContext implements Serializable {
 
         switch (type) {
             case MODULE:
+            case WORKORDER_MODULE:
+            case INENTORY_MODULE:
                 break;
 
             default:
