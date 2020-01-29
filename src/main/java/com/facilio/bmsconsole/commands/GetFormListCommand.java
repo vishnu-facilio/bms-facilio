@@ -6,14 +6,18 @@ import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+
 import org.apache.commons.collections.CollectionUtils;
 
 public class GetFormListCommand extends FacilioCommand {
@@ -23,8 +27,17 @@ public class GetFormListCommand extends FacilioCommand {
 		List<Integer> formTypes = (List<Integer>) context.get(FacilioConstants.ContextNames.FORM_TYPE);
 		Map<String, FacilioForm> forms = new LinkedHashMap<>(FormFactory.getForms((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), formTypes));
 		Map<String, FacilioForm> dbForms=FormsAPI.getFormsAsMap((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), formTypes);
-		
-		if (dbForms != null) {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule((String)context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		if (module.getExtendModule() != null) {
+			Map<String, FacilioForm> extendedModuleForms = new LinkedHashMap<>(FormFactory.getForms(module.getExtendModule().getName(), formTypes));
+			if (extendedModuleForms != null) {
+				for(Map.Entry<String, FacilioForm> entry :extendedModuleForms.entrySet()) {
+					forms.put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+		if (dbForms != null) { 
 			for(Map.Entry<String, FacilioForm> entry :dbForms.entrySet()) {
 				forms.put(entry.getKey(), entry.getValue());
 			}
