@@ -52,5 +52,6 @@ Map cardLayout(Map params) {
     }
     result["title"] = params.title;
     result["period"] = period;
+    result["baselinePeriod"] = params.baseline;
     return result;
 }
