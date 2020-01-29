@@ -96,6 +96,12 @@
   <filter-name>CorsFilter</filter-name>
   <url-pattern>/app/*</url-pattern>
 </filter-mapping>
+
+<filter-mapping>
+  <filter-name>CorsFilter</filter-name>
+  <url-pattern>/newapp/*</url-pattern>
+</filter-mapping>
+
     <filter-mapping>
         <filter-name>CorsFilter</filter-name>
         <url-pattern>/internal/*</url-pattern>
@@ -104,7 +110,7 @@
         <filter-name>CorsFilter</filter-name>
         <url-pattern>/service/*</url-pattern>
     </filter-mapping>
-	<filter-mapping>
+    <filter-mapping>
         <filter-name>CorsFilter</filter-name>
         <url-pattern>/tenant/*</url-pattern>
     </filter-mapping>
@@ -150,6 +156,10 @@
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>
         <url-pattern>/app/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>clientapp</servlet-name>
+        <url-pattern>/newapp/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>clientapp</servlet-name>
