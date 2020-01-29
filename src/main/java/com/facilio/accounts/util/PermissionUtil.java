@@ -12,6 +12,7 @@ import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants.ModulePermission;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
@@ -297,6 +298,22 @@ public class PermissionUtil {
 		}
 		return false;
 	}
+	
+	public static boolean currentUserHasPermission(long tabId, String action) {
+		Role role = AccountUtil.getCurrentUser().getRole();
+		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
+			return true;
+		}
+		try {
+			long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
+			return hasPermission(rolePermissionVal, action);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
 
 	private static boolean hasPermission(Permissions perm, long permission) {
 		if (perm.getPermission() == 0) {
@@ -308,8 +325,48 @@ public class PermissionUtil {
 	private static boolean hasPermission(Permissions perm, AccountConstants.ModulePermission permission) {
 		return hasPermission(perm, permission.getModulePermission());
 	}
-
+	
 	private static boolean hasPermission(Permissions perm, String actions) throws Exception {
+
+		boolean hasAccess = false;
+		String[] actionArray = actions.split(",");
+
+		for (String action : actionArray) {
+
+			action = action.trim();
+
+			AccountConstants.ModulePermission permType = null;
+			try {
+				permType = AccountConstants.ModulePermission.valueOf(action);
+			} catch (Exception e) {
+				e.getMessage();
+			}
+			if (permType != null) {
+				hasAccess = hasPermission(perm, permType);
+			}
+			else {
+				throw new Exception("Invalid permission type: "+action);
+			}
+
+			if (hasAccess) {
+				break;
+			}
+		}
+		return hasAccess;
+	}
+	
+	private static boolean hasPermission(long perm, long permission) {
+		if (perm == 0) {
+			return true;
+		}
+		return (perm & permission) == permission;
+	}
+	
+	private static boolean hasPermission(long perm, AccountConstants.ModulePermission permission) {
+		return hasPermission(perm, permission.getModulePermission());
+	}
+	
+	private static boolean hasPermission(long perm, String actions) throws Exception {
 
 		boolean hasAccess = false;
 		String[] actionArray = actions.split(",");

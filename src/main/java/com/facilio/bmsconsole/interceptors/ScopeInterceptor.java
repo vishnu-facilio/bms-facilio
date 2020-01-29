@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.audit.AuditData;
 import com.facilio.audit.DBAudit;
@@ -322,7 +323,14 @@ public class ScopeInterceptor extends AbstractInterceptor {
         if(AccountUtil.getCurrentUser() == null) { 
             return false; 
         } 
- 
+        if(AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB)) {
+        HttpServletRequest request = ServletActionContext.getRequest();
+        String currentTab = request.getHeader("X-Tab-Id");
+        if(currentTab!=null && !currentTab.isEmpty()) {
+        	long tabId = Long.valueOf(currentTab);
+        	return PermissionUtil.currentUserHasPermission(tabId, action);
+        }
+        }
         return PermissionUtil.currentUserHasPermission(moduleName, action); 
     } 
 	

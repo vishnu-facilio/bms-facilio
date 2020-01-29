@@ -106,9 +106,16 @@ public class WebTabContext implements Serializable {
 
     public enum Type implements FacilioEnum {
         MODULE ("Module"),
-        DASHBOARD ("Dashboard"),
+        APPROVAL ("Approval"),
+        CALENDAR ("Calendar"),
         REPORT ("Report"),
-        CALENDAR ("Calendar")
+        ANALYTICS ("Analytics"),
+        KPI ("Kpi"),
+        DASHBOARD ("Dashboard"),
+        CUSTOM ("Custom"),
+        APPS ("Apps"),
+        WORKORDER_MODULE ("Workorder Module"),
+        INENTORY_MODULE ("Inventory Module")
         ;
 
         private String name;

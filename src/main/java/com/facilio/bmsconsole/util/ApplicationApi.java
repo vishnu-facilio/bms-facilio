@@ -109,4 +109,17 @@ public class ApplicationApi {
 		}
 		return ids;
 	}
+	
+	public static long getRolesPermissionValForTab(long tabId, long roleId) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getNewPermissionModule().getTableName())
+				.select(FieldFactory.getNewPermissionFields())
+				.andCondition(CriteriaAPI.getCondition("NewPermission.TAB_ID", "tabId", String.valueOf(tabId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("NewPermission.ROLE_ID", "roleId", String.valueOf(roleId), NumberOperators.EQUALS));
+		List<NewPermission> permissions = FieldUtil.getAsBeanListFromMapList(builder.get(), NewPermission.class);
+		if(permissions!=null && !permissions.isEmpty()) {
+			return permissions.get(0).getPermission();
+		}
+		return -1;
+	}
 }
