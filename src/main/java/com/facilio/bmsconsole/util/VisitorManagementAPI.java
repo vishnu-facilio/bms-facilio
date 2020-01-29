@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.io.File;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,11 +74,8 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.service.FacilioService;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
-import com.facilio.tasker.job.JobContext;
-import com.facilio.tasker.job.JobStore;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowContext;
 
@@ -341,8 +336,8 @@ public class VisitorManagementAPI {
 		
 		LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitorId"));
 		LookupField visitorLocation = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.VISITOR);
-		inviteField.addChildLookupFIeld(inviteHost);
-		visitorField.addChildLookupFIeld(visitorLocation);
+		inviteField.addChildLookupField(inviteHost);
+		visitorField.addChildLookupField(visitorLocation);
 		
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		additionaLookups.add(inviteField);
@@ -370,8 +365,8 @@ public class VisitorManagementAPI {
 		
 		LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitorId"));
 		LookupField visitorLocation = (LookupField) modBean.getField("location", FacilioConstants.ContextNames.VISITOR);
-		inviteField.addChildLookupFIeld(inviteHost);
-		visitorField.addChildLookupFIeld(visitorLocation);
+		inviteField.addChildLookupField(inviteHost);
+		visitorField.addChildLookupField(visitorLocation);
 		
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		additionaLookups.add(inviteField);

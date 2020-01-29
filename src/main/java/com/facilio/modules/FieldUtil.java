@@ -29,7 +29,6 @@ import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
@@ -203,23 +202,28 @@ public class FieldUtil {
 			else {
 				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModule(field.getLookupModule(), false);
 				if(moduleClass != null) {
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					List<FacilioField> lookupBeanFields = modBean.getAllFields(field.getLookupModule().getName());
-					FacilioModule module = modBean.getModule(field.getLookupModule().getName());
+					FacilioModule module = field.getLookupModule();
 					SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level)
 																						.module(module)
-																						.select(lookupBeanFields)
 																						.beanClass(moduleClass)
 																						.andCondition(CriteriaAPI.getIdCondition(ids, module))
 																						.fetchDeleted()
 																						;
-
-					if (field instanceof LookupFieldMeta && CollectionUtils.isNotEmpty(((LookupFieldMeta) field).getChildLookupFields())) {
-						lookupBeanBuilder.fetchLookups(((LookupFieldMeta) field).getChildLookupFields());
-//						for (LookupField lookupField : ((LookupFieldMeta) field).getChildLookupFields()) {
-////							lookupBeanBuilder.fetchLookup(lookupField instanceof LookupFieldMeta ? (LookupFieldMeta) lookupField : new LookupFieldMeta(lookupField));
-//						}
+					List<FacilioField> lookupBeanFields = null;
+					if (field instanceof LookupFieldMeta) {
+						LookupFieldMeta lfm = (LookupFieldMeta) field;
+						if (CollectionUtils.isNotEmpty(lfm.getChildLookupFields())) {
+							lookupBeanBuilder.fetchLookups(lfm.getChildLookupFields());
+						}
+						if (CollectionUtils.isNotEmpty(lfm.getSelectFields())) {
+							lookupBeanFields = lfm.getSelectFields();
+						}
 					}
+					if (lookupBeanFields == null) {
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						lookupBeanFields = modBean.getAllFields(field.getLookupModule().getName());
+					}
+					lookupBeanBuilder.select(lookupBeanFields);
 
 					if (isMap || !field.isDefault()) {
 						return lookupBeanBuilder.getAsMapProps();

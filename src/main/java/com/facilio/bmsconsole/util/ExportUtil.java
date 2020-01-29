@@ -20,7 +20,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -580,7 +579,7 @@ public class ExportUtil {
 					}
 					if (vf.getField() instanceof LookupField) {
 						LookupField field = (LookupField) vf.getField();
-						spaceLookupField.addChildLookupFIeld(field);
+						spaceLookupField.addChildLookupField(field);
 					}
 
 				}
