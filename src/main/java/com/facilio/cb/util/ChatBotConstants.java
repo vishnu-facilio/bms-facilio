@@ -28,6 +28,7 @@ public class ChatBotConstants {
 	
 	public static final String CHAT_BOT_SESSION = "chatBotSession";
 	public static final String CHAT_BOT_MESSAGE_STRING = "chatBotMessageString";
+	public static final String CHAT_BOT_OPTION_STRING = "chatBotOptionString";
 	public static final String CHAT_BOT_SESSION_CONVERSATION = "chatBotSessionConversation";
 	public static final String CHAT_BOT_IS_ACTION_EXECUTED = "chatBotIsActionExecuted";
 	public static final String CHAT_BOT_SESSION_PARAM = "chatBotSessionParam";

@@ -4,14 +4,12 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotIntentParam;
 import com.facilio.cb.context.ChatBotMLResponse;
 import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSessionConversation;
-import com.facilio.cb.context.ChatBotSessionParam;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.cb.util.ChatBotUtil;
 
@@ -36,30 +34,29 @@ public class ExecuteActionAndSetResponseForConversationCommand extends FacilioCo
 			
 			ChatBotUtil.updateChatBotSession(chatBotSessionConversation.getChatBotSession());
 			
+			ChatBotIntent intent = chatBotSessionConversation.getChatBotSession().getIntent();
+			
+			if(intent.getContextWorkflow() != null) {
+				
+				ChatBotUtil.executeContextWorkflow(intent, chatBotSessionConversation.getChatBotSession(), context);
+				
+				return false;
+			}
+			
 			if(chatBotSessionConversation.getChatBotSession().getRequiredParamCount() == chatBotSessionConversation.getChatBotSession().getRecievedParamCount()) {
 				
-				ChatBotIntent intent = chatBotSessionConversation.getChatBotSession().getIntent();
-				
-				List<Object> props = ChatBotUtil.fetchAllSessionParams(chatBotSessionConversation.getSessionId());
-				
-				context.put(ChatBotConstants.CHAT_BOT_INTENT, intent);
-				
-				String response = intent.executeActions(context, props);
-				
 				ChatBotSession session = chatBotSessionConversation.getChatBotSession();
-				session.setResponse(response);
-				session.setState(ChatBotSession.State.RESPONDED.getIntVal());
+				
+				ChatBotUtil.executeIntentAction(session, intent, context);
 				
 				ChatBotUtil.updateChatBotSession(session);
 				
-				context.put(ChatBotConstants.CHAT_BOT_SESSION, chatBotSessionConversation.getChatBotSession());
-				context.put(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED, true);
 			}
 			else {
 				
 				List<ChatBotIntentParam> remainingIntentParamList = ChatBotUtil.fetchRemainingChatBotIntentParams(chatBotSessionConversation.getChatBotSession().getIntent().getId(),chatBotSessionConversation.getChatBotSession().getId());
 				
-				ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructCBSessionConversationParams(remainingIntentParamList.get(0), chatBotSessionConversation.getChatBotSession(),null,null);
+				ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(remainingIntentParamList.get(0), chatBotSessionConversation.getChatBotSession(),null,null);
 				
 				context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
 			}
@@ -71,7 +68,7 @@ public class ExecuteActionAndSetResponseForConversationCommand extends FacilioCo
 			
 			ChatBotIntentParam intentParam = ChatBotUtil.getIntentParams(chatBotSessionConversation.getIntentParamId());
 			
-			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructCBSessionConversationParams(intentParam, chatBotSessionConversation.getChatBotSession(),chatBotSessionConversation,null);
+			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, chatBotSessionConversation.getChatBotSession(),chatBotSessionConversation,null);
 			
 			context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
 		}

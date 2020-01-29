@@ -75,6 +75,7 @@ import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.functions.FacilioAnalyticsFunctions;
 import com.facilio.workflows.functions.FacilioAssetFunctions;
+import com.facilio.workflows.functions.FacilioChatBotFunctions;
 import com.facilio.workflows.functions.FacilioConnectionFunctions;
 import com.facilio.workflows.functions.FacilioConsumptionFunctions;
 import com.facilio.workflows.functions.FacilioCostFunctions;
@@ -1211,7 +1212,7 @@ public class WorkflowUtil {
 		List<ParameterContext> paramterContexts = new ArrayList<>();
 		
 		paramterContexts.add(new ParameterContext("previousValue", null));
-		paramterContexts.add(new ParameterContext("previousValueRecievedTime", null));
+		paramterContexts.add(new ParameterContext("previousValueReceivedTime", null));
 		
 		return paramterContexts;
 	}
@@ -2041,6 +2042,9 @@ public class WorkflowUtil {
 				case NUMBER:
 					facilioWorkflowFunction = FacilioNumberFunctions.getFacilioNumberFunction(functionName);
 					break;
+				case CHAT_BOT:
+					facilioWorkflowFunction = FacilioChatBotFunctions.getFacilioChatBotFunctions(functionName);
+					break;
 					
 			}
 		}
@@ -2127,6 +2131,9 @@ public class WorkflowUtil {
 					break;
 				case NUMBER:
 					facilioWorkflowFunction = new ArrayList<>( FacilioNumberFunctions.getAllFunctions().values());
+					break;
+				case CHAT_BOT:
+					facilioWorkflowFunction = new ArrayList<>( FacilioChatBotFunctions.getAllFunctions().values());
 					break;
 			}
 		}

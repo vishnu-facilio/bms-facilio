@@ -56,43 +56,15 @@ public class ChatBotAction extends FacilioAction {
 			chain.execute();
 			
 			String chatBotReplyMessage = (String)context.get(ChatBotConstants.CHAT_BOT_MESSAGE_STRING);
-			
+			if(context.get(ChatBotConstants.CHAT_BOT_OPTION_STRING) != null) {
+				chatBotReplyMessage += context.get(ChatBotConstants.CHAT_BOT_OPTION_STRING).toString();
+			}
 			
 			setResult(ChatBotConstants.CHAT_BOT_MESSAGE_STRING, chatBotReplyMessage);
+			
+			setResult(ChatBotConstants.CHAT_BOT_OPTION_STRING, context.get(ChatBotConstants.CHAT_BOT_OPTION_STRING));
 		}
 		
-		
-//		if(chatBotSession != null) {
-//			FacilioChain chain = TransactionChainFactory.HandleChatBotSessionChain();
-//			
-//			FacilioContext context = chain.getContext();
-//			context.put(ChatBotConstants.CHAT_BOT_SESSION, chatBotSession);
-//			
-//			chain.execute();
-//			
-//			if(context.containsKey(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION)) {
-//				setResult(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION));
-//			}
-//			else {
-//				setResult(ChatBotConstants.CHAT_BOT_SESSION, context.get(ChatBotConstants.CHAT_BOT_SESSION));
-//			}
-//		}
-//		else if(chatBotSessionConversation != null) {
-//			
-//			FacilioChain chain = TransactionChainFactory.HandleChatBotSessionConversationChain();
-//			
-//			FacilioContext context = chain.getContext();
-//			context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, chatBotSessionConversation);
-//			
-//			chain.execute();
-//			
-//			if(context.containsKey(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED) && (Boolean)context.get(ChatBotConstants.CHAT_BOT_IS_ACTION_EXECUTED)) {
-//				setResult(ChatBotConstants.CHAT_BOT_SESSION, context.get(ChatBotConstants.CHAT_BOT_SESSION));
-//			}
-//			else {
-//				setResult(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION));
-//			}
-//		}
 		return SUCCESS;
 	}
 	

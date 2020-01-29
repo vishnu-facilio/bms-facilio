@@ -2,7 +2,10 @@ package com.facilio.cb.context;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.json.simple.JSONObject;
 
 public class ChatBotSessionConversation {
 
@@ -15,7 +18,18 @@ public class ChatBotSessionConversation {
 	State state;
 	ChatBotSession chatBotSession;
 	long intentParamId = -1;
+	List<JSONObject> options;
 	
+
+	public List<JSONObject> getOptions() {
+		return options;
+	}
+
+	public void setOptions(List<JSONObject> options) {
+		this.options = options;
+	}
+
+
 	long requestedTime;
 	long respondedTime;
 	

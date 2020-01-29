@@ -31,6 +31,7 @@ public enum FacilioSystemFunctionNameSpace {
 	CRITERIA(23,"criteria"),
 	ANALYTICS(24,"analytics"),
 	NUMBER(25,"number"),
+	CHAT_BOT(26,"chatBot"),
 	;
 	
 	

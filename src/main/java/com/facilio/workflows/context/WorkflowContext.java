@@ -445,6 +445,7 @@ public class WorkflowContext implements Serializable {
 			        visitor.setWorkflowContext(this);
 			        visitor.visitFunctionHeader(tree);
 			        visitor.setParams(params);
+			        visitor.setGlobalParams(globalParameters);
 			        visitor.visit(tree);
 		        }
 		        else {

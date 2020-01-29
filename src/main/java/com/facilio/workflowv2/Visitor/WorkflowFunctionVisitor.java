@@ -70,6 +70,15 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     	}
     }
     
+    public void setGlobalParams(List<ParameterContext> parmasObjects) throws Exception {
+    	if(parmasObjects != null && !parmasObjects.isEmpty()) {
+        	
+        	for(ParameterContext param : parmasObjects) {
+        		varMemoryMap.put(param.getName(), new Value(param.getValue()));
+        	}
+    	}
+    }
+    
     public void visitFunctionHeader(ParseTree tree) {
     	isFunctionHeaderVisitor = true;
     	this.visit(tree);

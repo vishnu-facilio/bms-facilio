@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext.SourceType;
 import com.facilio.bmsconsole.context.JobPlanContext;
+import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -94,6 +95,27 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 			addWorkOrder.execute();
 		}
 		
+	}
+	
+	public void addNote(List<Object> objects) throws Exception {
+		
+		
+		Long woId = (Long) objects.get(1);
+		String noteString = (String) objects.get(2);
+		
+		NoteContext note = new NoteContext();
+		
+		note.setBody(noteString);
+		note.setParentId(woId);
+		
+		FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
+		
+		FacilioContext context = addNote.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
+		context.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
+		context.put(FacilioConstants.ContextNames.NOTE, note);
+
+		addNote.execute();
 	}
 	
 	@Override

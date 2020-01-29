@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.cb.util.ChatBotConstants;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class ChatBotIntent {
 
@@ -22,6 +23,7 @@ public class ChatBotIntent {
 	Intent_Type type;
 	List<ChatBotIntentAction> actions;
 	List<ChatBotIntentInvokeSample> invokeSamples;
+	WorkflowContext contextWorkflow;
 	
 	List<ChatBotIntentParam> params;
 	
@@ -149,6 +151,14 @@ public class ChatBotIntent {
 			return type.getIntVal();
 		}
 		return -1;
+	}
+	
+	public WorkflowContext getContextWorkflow() {
+		return contextWorkflow;
+	}
+
+	public void setContextWorkflow(WorkflowContext contextWorkflow) {
+		this.contextWorkflow = contextWorkflow;
 	}
 
 	public void setType(int type) {

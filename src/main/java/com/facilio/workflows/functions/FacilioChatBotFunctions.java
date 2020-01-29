@@ -1,0 +1,136 @@
+package com.facilio.workflows.functions;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+
+import com.facilio.cb.context.ChatBotConfirmContext;
+import com.facilio.cb.context.ChatBotExecuteContext;
+import com.facilio.cb.context.ChatBotParamContext;
+import com.facilio.workflows.exceptions.FunctionParamException;
+
+public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface {
+
+	PARAM(1,"param") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			ChatBotParamContext params = new ChatBotParamContext();
+			
+			params.setParamName(objects[0].toString());
+			params.setMessage(objects[1].toString());
+			if(objects.length > 2) {
+				params.setOptions((List<JSONObject>) objects[2]);
+			}
+			return params;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	CONFIRM(2,"confirm") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			ChatBotConfirmContext params = new ChatBotConfirmContext();
+			
+			params.setMessage(objects[0].toString());
+			return params;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	EXECUTE(3,"execute") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+//			checkParam(objects);
+			
+			ChatBotExecuteContext params = new ChatBotExecuteContext();
+			
+			return params;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	}
+	;
+	
+	private Integer value;
+	private String functionName;
+	private String namespace = "chatBot";
+	private List<FacilioFunctionsParamType> params;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.CHAT_BOT;
+	
+	public Integer getValue() {
+		return value;
+	}
+	public void setValue(Integer value) {
+		this.value = value;
+	}
+	public String getFunctionName() {
+		return functionName;
+	}
+	public void setFunctionName(String functionName) {
+		this.functionName = functionName;
+	}
+	public String getNamespace() {
+		return namespace;
+	}
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
+	public List<FacilioFunctionsParamType> getParams() {
+		return params;
+	}
+	public void setParams(List<FacilioFunctionsParamType> params) {
+		this.params = params;
+	}
+	public void addParams(FacilioFunctionsParamType param) {
+		this.params = (this.params == null) ? new ArrayList<>() :this.params;
+		this.params.add(param);
+	}
+	FacilioChatBotFunctions(Integer value,String functionName,FacilioFunctionsParamType... params) {
+		this.value = value;
+		this.functionName = functionName;
+		
+		if(params != null ) {
+			for(int i=0;i<params.length;i++) {
+				addParams(params[i]);
+			}
+		}
+	}
+	
+	public static Map<String, FacilioChatBotFunctions> getAllFunctions() {
+		return MODULE_FUNCTIONS;
+	}
+	public static FacilioChatBotFunctions getFacilioChatBotFunctions(String functionName) {
+		return MODULE_FUNCTIONS.get(functionName);
+	}
+	static final Map<String, FacilioChatBotFunctions> MODULE_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
+	static Map<String, FacilioChatBotFunctions> initTypeMap() {
+		Map<String, FacilioChatBotFunctions> typeMap = new HashMap<>();
+		for(FacilioChatBotFunctions type : FacilioChatBotFunctions.values()) {
+			typeMap.put(type.getFunctionName(), type);
+		}
+		return typeMap;
+	}
+}

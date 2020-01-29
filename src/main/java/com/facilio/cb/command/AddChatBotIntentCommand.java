@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.cb.util.ChatBotUtil;
+import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotIntentAction;
 import com.facilio.cb.context.ChatBotIntentInvokeSample;
@@ -29,6 +30,11 @@ public class AddChatBotIntentCommand extends FacilioCommand {
 		
 		chatBotIntent.setModelVersionId(modelVersion.getId());
 		chatBotIntent.setOrgId(AccountUtil.getCurrentOrg().getId());
+		
+		if(chatBotIntent.getContextWorkflow() != null) {
+			Long wfid = WorkflowUtil.addWorkflow(chatBotIntent.getContextWorkflow());
+			chatBotIntent.setContextWorkflowId(wfid);
+		}
 		
 		ChatBotUtil.addChatbotIntent(chatBotIntent);
 		

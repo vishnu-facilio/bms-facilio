@@ -38,22 +38,15 @@ public class WhatsappUtil extends TwilioUtil {
 		return wmessage.getSid();
 	}
 	
-//	public static void main(String[] args) {
-//		JSONObject jsonObject = new JSONObject();
-//		
-//		jsonObject.put("to", "+919677096980");
-//		jsonObject.put("message", "hello message");
-//		jsonObject.put("isHtmlContent", "true");
-//		jsonObject.put("htmlContent", "true");
-//		jsonObject.put("htmlContentPublicUrl", "https://demo.twilio.com/owl.png");
-//		
-//		sendMessage(jsonObject);
-//	}
 	public static void main(String[] args) {
-		List<Long> timestamps = new ArrayList<>();
-		timestamps.add(1577523512521L);
-		timestamps.add(1577523501531L);
-		long test = ((Double)StatUtils.max(timestamps.stream().mapToDouble(Long::doubleValue).toArray())).longValue();
-		System.out.println("test ---"+test);
+		JSONObject jsonObject = new JSONObject();
+		
+		jsonObject.put("to", "+919677096980");
+//		jsonObject.put("to", "+918124008127");
+		jsonObject.put("message", "A new work order has been assigned to you. Please follow the link below to view the work order http://bit.ly/2RsSAHI.");
+		jsonObject.put("isHtmlContent", "true");
+		jsonObject.put("htmlContent", "true");
+		
+		sendMessage(jsonObject);
 	}
 }

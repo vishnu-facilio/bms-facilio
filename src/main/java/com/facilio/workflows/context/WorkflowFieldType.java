@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.facilio.cb.context.*;
+
 import java.math.BigDecimal;
 
 public enum WorkflowFieldType {
@@ -15,8 +18,8 @@ public enum WorkflowFieldType {
 	BOOLEAN(3, "Boolean",Boolean.class),
 	MAP(4,"Map",HashMap.class,Map.class),
 	LIST(5,"List",ArrayList.class,List.class),
+	CHAT_BOT_ACTION(6,"ChatBotAction",ChatBotConfirmContext.class,ChatBotExecuteContext.class,ChatBotParamContext.class),
 	;
-	
 	public Class[] getObjectClass() {
 		return objectClass;
 	}
