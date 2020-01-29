@@ -908,4 +908,13 @@
 		</action>
 		
 	</package>
+	<package name="moduleApi" namespace="/api/service/module" extends="homeApi">
+		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="metadata">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">meta.*</param>
+			</result>
+		</action>
+	</package>
 </struts>
