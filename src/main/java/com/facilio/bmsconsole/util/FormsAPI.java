@@ -588,11 +588,22 @@ public class FormsAPI {
 		 
 
 
-		if (moduleName != null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			long moduleId=modBean.getModule(moduleName).getModuleId();
-			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
-		}
+		 if (moduleName != null) {
+				List<Long> moduleIds = new ArrayList<>();
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleName);
+				long moduleId=module.getModuleId();
+				moduleIds.add(moduleId);
+				if (module.getExtendModule() != null) {
+					moduleIds.add(module.getExtendModule().getModuleId());
+					StringJoiner ids = new StringJoiner(",");
+					moduleIds.stream().forEach(f -> ids.add(String.valueOf(f)));
+					formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), ids.toString(), NumberOperators.EQUALS));
+				}
+				else {
+					formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
+				}
+			}
 		if (spaces != null && spaces.size() > 0) {
 			formListBuilder.andCustomWhere("(" + FieldFactory.getIdField().getColumnName() + " in (" + forms1.constructSelectStatement() + ")");
 			formListBuilder.orCustomWhere(FieldFactory.getIdField().getColumnName() + " not in (" + forms2.constructSelectStatement() + "))");
@@ -616,6 +627,7 @@ public class FormsAPI {
 		else {
 			formListBuilder.orderBy("ID asc");
 		}
+		System.out.println("********"+ formListBuilder.constructSelectStatement());
 		List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
 		
 		forms = getAsFormSiteRelationListMap(forms, spaces);
