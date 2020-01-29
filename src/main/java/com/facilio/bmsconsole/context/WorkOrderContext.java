@@ -307,14 +307,13 @@ public class WorkOrderContext extends TicketContext {
 		}
 		return -1;
 	}
-	
-	public void setUrgency(WOUrgency urgency) {
-		this.urgency = urgency;
-	}
 	public void setUrgency(int urgencyval) {
 		this.urgency = WOUrgency.valueOf(urgencyval);
 	}
-	
+	public void setUrgency(WOUrgency urgency) {
+		this.urgency = urgency;
+	}
+
 	public static enum WOUrgency {
 		NOTURGENT,
 		URGENT,
