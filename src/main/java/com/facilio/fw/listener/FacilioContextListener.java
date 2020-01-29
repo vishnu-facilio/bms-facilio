@@ -160,9 +160,7 @@ public class FacilioContextListener implements ServletContextListener {
 					FacilioFactory.getMessageQueue().start();
 				}
 				AgentIntegrationQueueFactory.startIntegrationQueues();
-				//AccountUtil.setCurrentAccount(1);
-				//raiseAgentAlarm("test-agent",1);
-				//dropAgentAlarm("test-agent",1);
+
 			} catch (Exception e){
 				LOGGER.info("Exception occurred ", e);
 			}
@@ -189,41 +187,6 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 
 	}
-
-	private void raiseAgentAlarm(String agentName, long agentId) throws Exception {
-
-		AgentEventContext event = new AgentEventContext();
-		event.setEventMessage("Agent: " + agentName + " has lost connection with the Facilio cloud @ " + DateTime.now());
-		event.setSeverityString(FacilioConstants.Alarm.CRITICAL_SEVERITY);
-		event.setCreatedTime(System.currentTimeMillis());
-		event.setAgentId(agentId);
-		List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
-		eventList.add(event);
-		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);
-		FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
-		chain.execute(context);
-		LOGGER.info("Added Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
-
-	}
-
-	private void dropAgentAlarm(String agentName, long agentId) throws Exception {
-		AgentEventContext event = new AgentEventContext();
-		event.setEventMessage("Agent: " + agentName + " has regained connection with the Facilio cloud @ " + DateTime.now());
-		event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
-		event.setCreatedTime(System.currentTimeMillis());
-		event.setAgentId(agentId);
-
-		List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
-		eventList.add(event);
-		FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);
-		FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
-		chain.execute(context);
-		LOGGER.info("Cleared Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
-
-	}
-
 	private void downloadEnvironmentFiles() throws Exception {
 		downloadGoogleAppCredentials();
 	}

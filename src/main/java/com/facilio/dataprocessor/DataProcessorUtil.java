@@ -186,6 +186,7 @@ public class DataProcessorUtil {
                 agent.setId(agentId);
             }
 
+            LOGGER.info("Agent ID : " + agent.getId());
             agentUtil.addAgentMetrics(Math.toIntExact(record.getSize()), agent.getId(), publishType.getKey()); //TODO make size long
 
 
