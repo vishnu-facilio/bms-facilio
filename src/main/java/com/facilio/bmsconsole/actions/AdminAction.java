@@ -223,7 +223,7 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 	}
 
-	public static String reloadBrowser() throws IOException {
+	public  String reloadBrowser() throws IOException {
 		Message message = new Message(MessageType.BROADCAST);
 
 		message.setNamespace("system");
