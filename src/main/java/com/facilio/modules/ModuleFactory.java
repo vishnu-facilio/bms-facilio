@@ -3175,6 +3175,7 @@ public class ModuleFactory {
 		module.setDisplayName("Visitor Faces");
 		return module;
 	}
+
 	public static FacilioModule getAgentAlarmsModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("agentAlarm");
@@ -3183,4 +3184,11 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getAgentAlarmOccurrenceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("agentAlarmOccurrence");
+		module.setTableName("Agent_Alarm_Occurrence");
+		module.setDisplayName("Agent Alarm Occurrence");
+		return module;
+	}
 }

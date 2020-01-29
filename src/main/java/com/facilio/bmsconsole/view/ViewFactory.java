@@ -490,16 +490,17 @@ public class ViewFactory {
 				.setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, views);
 
-		views.put("bmsAlarm", getBmsAlarm("bmsAlarm" , "All Alarms", true).setOrder(order++));
+		views.put("bmsAlarm", getBmsAlarm("bmsAlarm", "All Alarms", true).setOrder(order++));
 		views.put("bmsActive", getBmsAlarmSeverity("bmsActive", "Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("unacknowledgedbmsalarm", getBmsAlarmUnacknowledged().setOrder(order++));
 		views.put("bmsCritical", getBmsAlarmSeverity("bmsCritical", "Critical Alarms", "Critical", true).setOrder(order++));
 		views.put("bmsMajor", getBmsAlarmSeverity("bmsMajor", "Major Alarms", "Major", true).setOrder(order++));
 		views.put("bmsMinor", getBmsAlarmSeverity("bmsMinor", "Minor Alarms", "Minor", true).setOrder(order++));
 		views.put("bmsCleared", getBmsAlarmSeverity("bmsCleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		views.put("agentAll", getAgentAlarmOccurrenceViews().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.BMS_ALARM, views);
-		
-		
+
+
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getOccurrenceViews().setOrder(order++));
@@ -510,7 +511,7 @@ public class ViewFactory {
 		views.put("minor", getAlarmOcccurrenceSeverity("minor", "Minor Alarms", "Minor", true).setOrder(order++));
 		views.put("cleared", getAlarmOcccurrenceSeverity("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true)
 				.setOrder(order++));
-		views.put("bmsAlarm", getBmsAlarmOccurrence("bmsAlarm" , "All Bms Alarm", true).setOrder(order++));
+		views.put("bmsAlarm", getBmsAlarmOccurrence("bmsAlarm", "All Bms Alarm", true).setOrder(order++));
 		views.put("bmsActive", getBmsOccurrenceAlarmSeverity("bmsActive", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("unacknowledgedbmsalarm", getBmsAlarmOccurrenceUnacknowledged().setOrder(order++));
 		views.put("bmsCritical", getBmsOccurrenceAlarmSeverity("bmsCritical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
@@ -519,13 +520,19 @@ public class ViewFactory {
 		views.put("bmsCleared", getBmsOccurrenceAlarmSeverity("bmsCleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("agentAll", getAgentAlarmOccurrenceViews().setOrder(order++));
+
+		viewsMap.put(FacilioConstants.ContextNames.AGENT_ALARM_OCCURRENCE, views);
+
 
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllTermsAndConditionView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, views);
 
-	
+
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllServiceView().setOrder(order++));
@@ -763,13 +770,13 @@ public class ViewFactory {
 		fddAlarms.add("major");
 		fddAlarms.add("minor");
 		fddAlarms.add("cleared");
-		
+
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "fddAlarmsViews");
 		groupDetails.put("displayName", "FDD Alarms");
 		groupDetails.put("views", fddAlarms);
 		groupVsViews.add(groupDetails);
-		
+
 		ArrayList<String> bmsAlarms = new ArrayList<String>();
 		bmsAlarms.add("bmsAlarm");
 		bmsAlarms.add("bmsActive");
@@ -778,23 +785,23 @@ public class ViewFactory {
 		bmsAlarms.add("bmsMinor");
 		bmsAlarms.add("bmsCritical");
 		bmsAlarms.add("bmsCleared");
-		
-		
+
+
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "bmsAlarmsViews");
 		groupDetails.put("displayName", "BMS Alarms");
 		groupDetails.put("views", bmsAlarms);
 		groupVsViews.add(groupDetails);
-		
+
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "customalarms");
 		groupDetails.put("displayName", "Custom Views");
 		groupDetails.put("type", "custom");
 		groupDetails.put("views", null);
 		groupVsViews.add(groupDetails);
-		
+
 		moduleVsGroup.put(FacilioConstants.ContextNames.NEW_READING_ALARM, groupVsViews);
-		
+
 		groupVsViews = new ArrayList<>();
 		ArrayList<String> asset = new ArrayList<String>();
 		asset.add("all");
@@ -4409,6 +4416,22 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
 	}
+
+	private static FacilioView getAgentAlarmOccurrenceViews() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getAgentAlarmOccurrenceModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("agentAll");
+		allView.setDisplayName("All Alarms");
+		allView.setModuleName("agentAlarm");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allView;
+	}
+
 	private static FacilioView getReadingAlarmSeverity(String name, String displayName, String severity, boolean equals) {
 
 		Condition alarmCondition = getReadingAlarmSeverityCondition(severity, equals);
@@ -4417,7 +4440,7 @@ public class ViewFactory {
 		criteria.addAndCondition(alarmCondition);
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("lastOccurredTime");	
+		createdTime.setName("lastOccurredTime");
 		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("LAST_OCCURRED_TIME");
 		createdTime.setModule(ModuleFactory.getBaseAlarmModule());

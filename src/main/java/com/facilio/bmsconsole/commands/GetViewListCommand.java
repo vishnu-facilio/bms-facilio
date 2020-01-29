@@ -66,7 +66,7 @@ public class GetViewListCommand extends FacilioCommand {
 
 				List<Map<String, Object>> groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
 				if (!groupViews.isEmpty()) {
-					
+
 					if (moduleName.equals("asset")) {
 						ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						List<FacilioModule> modules = bean.getChildModules(bean.getModule(moduleName));
@@ -80,14 +80,14 @@ public class GetViewListCommand extends FacilioCommand {
 							FacilioView childView = ViewFactory.getModuleView(childModule, moduleName);
 							childViewMap = new HashMap<>();
 							childViewMap.put(childView.getName(), childView);
-							
+
 							List<FacilioView> childDbViews = ViewAPI.getAllViews(childModule.getModuleId());
 							if (childDbViews != null) {
 								for(FacilioView view: childDbViews) {
 									childViewMap.put(view.getName(), view);
 								}
 							}
-							
+
 							groupDetails = new HashMap<>();
 							groupDetails.put("name", childModule.getName());
 							groupDetails.put("displayName", childModule.getDisplayName());
@@ -100,8 +100,7 @@ public class GetViewListCommand extends FacilioCommand {
 								List<String> viewList = new ArrayList<>((List)group.get("views"));
 								viewList.addAll(customViews.stream().map(view -> view.getName()).collect(Collectors.toList()));
 								group.put("views", viewList);
-							}
-							else {
+							} else {
 								group.put("displayName", "System Views");
 								groupDetails = new HashMap<>();
 								groupDetails.put("name", "customviews");
@@ -112,11 +111,21 @@ public class GetViewListCommand extends FacilioCommand {
 						}
 						if (!childViews.isEmpty()) {
 							groupViews.addAll(childViews);
-						}
-						else if (customViews.isEmpty()){
+						} else if (customViews.isEmpty()) {
 							group.put("displayName", "System Views");
 						}
 						groupViews.set(0, group);
+
+					} else if (moduleName.equals(FacilioConstants.ContextNames.NEW_READING_ALARM)) {
+
+						ArrayList<String> agentAlarms = new ArrayList<String>();
+						agentAlarms.add("agentAll");
+						HashMap<String, Object> groupDetails = new HashMap<>();
+						groupDetails.put("name", "agentAlarmViews");
+						groupDetails.put("displayName", "Agent Alarms");
+						groupDetails.put("views", agentAlarms);
+						groupViews.add(2, groupDetails);
+
 					}
 						
 					int groupSize = groupViews.size();
