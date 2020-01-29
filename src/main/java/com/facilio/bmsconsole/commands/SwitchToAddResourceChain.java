@@ -102,8 +102,10 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 			
 			FacilioChain c = TransactionChainFactory.getBulkWorkOrderImportChain();
 			c.execute(context);
-			
-			
+
+		} else {
+			FacilioChain c = TransactionChainFactory.getGenericImportChain();
+			c.execute(context);
 		}
 		
 		return false;

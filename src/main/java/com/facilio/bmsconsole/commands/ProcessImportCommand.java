@@ -12,12 +12,10 @@ import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportLookupModuleValueNotFoundException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsole.util.LocationAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -29,6 +27,8 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.time.Instant;
@@ -221,6 +221,36 @@ public class ProcessImportCommand extends FacilioCommand {
 							}
 						}
 						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
+					} else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.TASK)) {
+						String sectionName = (String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__sectionId"));
+						String parentTicketId = (String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__parentTicketId"));
+						if (sectionName != null && StringUtils.isNotEmpty(sectionName) && parentTicketId != null && StringUtils.isNotEmpty(parentTicketId)) {
+							Criteria criteria = new Criteria();
+							criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_TICKET_ID", "parentTicketId" , parentTicketId, NumberOperators.EQUALS));
+							criteria.addAndCondition(CriteriaAPI.getCondition("NAME","name", sectionName.trim().replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS));
+							List<TaskSectionContext> taskSection = TicketAPI.getTaskSections(criteria);
+							if (taskSection != null && CollectionUtils.isNotEmpty(taskSection) && taskSection.size() > 0) {
+								props.put("sectionId", taskSection.get(0).getId());
+							} else {
+								GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+										.table(ModuleFactory.getTaskSectionModule().getTableName())
+										.fields(FieldFactory.getTaskSectionFields())
+										;
+								TaskSectionContext section = new TaskSectionContext();
+								section.setParentTicketId(Long.parseLong(parentTicketId));
+								section.setName(sectionName);
+								section.setPreRequest(Boolean.FALSE);
+								Map<Long, TaskSectionContext> taskSections = TicketAPI.getRelatedTaskSections(Long.parseLong(parentTicketId));
+								if (taskSections != null && taskSections.size() > 0) {
+									section.setSequenceNumber(taskSections.size() + 1);
+								} else {
+									section.setSequenceNumber(1);
+								}
+								long sectionId = insertBuilder.insert(FieldUtil.getAsProperties(section));
+								props.put("sectionId", sectionId);
+							}
+						}
+						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__sectionId"));
 					}
 					
 						List<FacilioField> fields;
@@ -324,7 +354,7 @@ public class ProcessImportCommand extends FacilioCommand {
 								try {
 									if ((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) && lookupField.getName().equals("department")) {
 										isSkipSpecialLookup = true;
-									} else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) && lookupField.getName().equals("resource")) {
+									} else if ((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) || importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.TASK)) && lookupField.getName().equals("resource")) {
 										isSkipSpecialLookup = true;
 									}
 								} catch (Exception e) {
@@ -510,6 +540,10 @@ public class ProcessImportCommand extends FacilioCommand {
 						if (lookupModuleName.equals("moduleState") || lookupField.getName().equals("status") ||  lookupField.getName().equals("resource")) {
 							throw new Exception("Value not found");
 						}
+					} else if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.TASK)) {
+						if (lookupField.getName().equals("resource")) {
+							throw new Exception("Value not found");
+						}
 					}
 					
 					GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
@@ -597,7 +631,7 @@ public class ProcessImportCommand extends FacilioCommand {
 			case "users": {
 				User user = AccountUtil.getUserBean().getUser(value.toString());
 				if(user == null) {
-					if (lookupField.getName().equals("assignedTo")) {
+					if (lookupField.getName().equals("assignedTo") || lookupField.getName().equals("createdBy")) {
 						throw new Exception("Value not found");
 					}
 					user = new User();
