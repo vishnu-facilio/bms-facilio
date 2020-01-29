@@ -12,6 +12,8 @@ import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants.ModulePermission;
+import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.context.WebTabContext.Type;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -306,7 +308,7 @@ public class PermissionUtil {
 		}
 		try {
 			long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
-			return hasPermission(rolePermissionVal, action);
+			return hasPermission(rolePermissionVal, action, tabId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -362,36 +364,72 @@ public class PermissionUtil {
 		return (perm & permission) == permission;
 	}
 	
-	private static boolean hasPermission(long perm, AccountConstants.ModulePermission permission) {
-		return hasPermission(perm, permission.getModulePermission());
-	}
-	
-	private static boolean hasPermission(long perm, String actions) throws Exception {
+	private static boolean hasPermission(long perm, String actions, long tabId) throws Exception {
 
 		boolean hasAccess = false;
 		String[] actionArray = actions.split(",");
-
-		for (String action : actionArray) {
-
-			action = action.trim();
-
-			AccountConstants.ModulePermission permType = null;
-			try {
-				permType = AccountConstants.ModulePermission.valueOf(action);
-			} catch (Exception e) {
-				e.getMessage();
-			}
-			if (permType != null) {
-				hasAccess = hasPermission(perm, permType);
+		Type tabType = null;
+		WebTabContext webTabContext = ApplicationApi.getWebTab(tabId);
+		if(webTabContext!=null) {
+			tabType = webTabContext.getTypeEnum();
+			if(tabType != null){
+				for (String action : actionArray) {
+					action = action.trim();
+					long permVal = -1;
+					try {
+						switch (tabType) {
+						case MODULE:
+							permVal = NewPermissionFactory.Module_Permission.valueOf(action).getPermission();
+							break;
+						case APPROVAL:
+							permVal = NewPermissionFactory.Approval_Permission.valueOf(action).getPermission();
+							break;
+						case CALENDAR:
+							permVal = NewPermissionFactory.Calendar_Permission.valueOf(action).getPermission();
+							break;
+						case REPORT:
+							permVal = NewPermissionFactory.Reports_Permission.valueOf(action).getPermission();
+							break;
+						case ANALYTICS:
+							permVal = NewPermissionFactory.Analytics_Permission.valueOf(action).getPermission();
+							break;
+						case KPI:
+							permVal = NewPermissionFactory.KPI_Permission.valueOf(action).getPermission();
+							break;
+						case DASHBOARD:
+							permVal = NewPermissionFactory.Dashboard_Permission.valueOf(action).getPermission();
+							break;
+						case CUSTOM:
+							permVal = NewPermissionFactory.Custom_Permission.valueOf(action).getPermission();
+							break;
+						case WORKORDER_MODULE:
+							permVal = NewPermissionFactory.Workorder_Permission.valueOf(action).getPermission();
+							break;
+						case INENTORY_MODULE:
+							permVal = NewPermissionFactory.Inventory_Permission.valueOf(action).getPermission();
+							break;
+						default:
+							break;
+						}
+					} catch (Exception e) {
+						e.getMessage();
+					}
+					if (permVal > 0) {
+						hasAccess = hasPermission(perm, permVal);
+					}
+					else {
+						throw new Exception("Invalid permission type: "+action);
+					}
+					if (hasAccess) {
+						break;
+					}
+				}
 			}
 			else {
-				throw new Exception("Invalid permission type: "+action);
-			}
-
-			if (hasAccess) {
-				break;
+				throw new Exception("Invalid Tab");
 			}
 		}
+		
 		return hasAccess;
 	}
 

@@ -122,4 +122,15 @@ public class ApplicationApi {
 		}
 		return -1;
 	}
+	
+	public static WebTabContext getWebTab(long tabId) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getWebTabModule().getTableName()).select(FieldFactory.getWebTabFields())
+				.andCondition(CriteriaAPI.getIdCondition(tabId, ModuleFactory.getWebTabModule()));
+		List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(builder.get(), WebTabContext.class);
+		if(webTabs!=null && !webTabs.isEmpty()) {
+			return webTabs.get(0);
+		}
+		return null;
+	}
 }

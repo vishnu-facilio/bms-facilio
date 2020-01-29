@@ -323,14 +323,14 @@ public class ScopeInterceptor extends AbstractInterceptor {
         if(AccountUtil.getCurrentUser() == null) { 
             return false; 
         } 
-        if(AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB)) {
-        HttpServletRequest request = ServletActionContext.getRequest();
-        String currentTab = request.getHeader("X-Tab-Id");
-        if(currentTab!=null && !currentTab.isEmpty()) {
-        	long tabId = Long.valueOf(currentTab);
-        	return PermissionUtil.currentUserHasPermission(tabId, action);
-        }
-        }
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB)) {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String currentTab = request.getHeader("X-Tab-Id");
+			if (currentTab != null && !currentTab.isEmpty()) {
+				long tabId = Long.valueOf(currentTab);
+				return PermissionUtil.currentUserHasPermission(tabId, action);
+			}
+		}
         return PermissionUtil.currentUserHasPermission(moduleName, action); 
     } 
 	
