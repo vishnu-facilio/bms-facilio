@@ -31,6 +31,7 @@ public class LoadWorkPermitLookUpsCommand extends FacilioCommand{
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		LookupField vendorField = (LookupField) fieldsAsMap.get("vendor");
+		LookupField vendorContactField = (LookupField) fieldsAsMap.get("vendorContact");
 		LookupField ticketField = (LookupField) fieldsAsMap.get("ticket");
 		LookupField moduleStateField = (LookupField)fieldsAsMap.get("moduleState");
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
@@ -40,6 +41,7 @@ public class LoadWorkPermitLookUpsCommand extends FacilioCommand{
 		LookupField requestedByField = (LookupField)fieldsAsMap.get("requestedBy");
 		additionaLookups.add(vendorField);
 		additionaLookups.add(ticketField);
+		additionaLookups.add(vendorContactField);
 		additionaLookups.add(moduleStateField);
 		additionaLookups.add(requestedByField);
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);

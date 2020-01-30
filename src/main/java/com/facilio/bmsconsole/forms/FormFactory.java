@@ -607,8 +607,9 @@ public class FormFactory {
 		fields.add(new FormField("parentWO", FieldDisplayType.LOOKUP_SIMPLE, "Parent WorkOrder", Required.OPTIONAL, 9, 1));
 		fields.add(new FormField("sendForApproval", FieldDisplayType.DECISION_BOX, "Send For Approval", Required.OPTIONAL, 10, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 11, 1));
+	//	fields.add(new FormField("workPermitNeeded", FieldDisplayType.DECISION_BOX, "Work Permit Needed", Required.OPTIONAL, 12, 1));
 		
-		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 12, 1));
+		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 13, 1));
 		return Collections.unmodifiableList(fields);
 	}
 	
@@ -640,6 +641,8 @@ public class FormFactory {
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 8, 1));
 		fields.add(new FormField("sendForApproval", FieldDisplayType.DECISION_BOX, "Send For Approval", Required.OPTIONAL, 9, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 10, 1));
+		//fields.add(new FormField("workPermitNeeded", FieldDisplayType.DECISION_BOX, "Work Permit Needed", Required.OPTIONAL, 11, 1));
+		
 		return Collections.unmodifiableList(fields);
 	}
 	
@@ -1543,7 +1546,11 @@ public class FormFactory {
 		vendorField.setHideField(true);
 		fields.add(vendorField);
 		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1));
+		fields.add(new FormField("permitType", FieldDisplayType.SELECTBOX, "Permit Type", Required.OPTIONAL,6, 1));
+		fields.add(new FormField("vendorContact", FieldDisplayType.LOOKUP_SIMPLE, "Vendor Contact", Required.OPTIONAL, "contact",7, 1));
+		
+		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",8, 1));
+		
 		return fields;
 	}
 	
@@ -1556,9 +1563,11 @@ public class FormFactory {
 		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
 		ticketField.setHideField(true);
 		fields.add(ticketField);
-		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 3, 2);
+		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 4, 2);
 		fields.add(vendorField);
-		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("vendorContact", FieldDisplayType.LOOKUP_SIMPLE, "Vendor Contact", Required.OPTIONAL, "requester",5, 1));
+
+		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 6, 1));
 //		FormField requestedByField = new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1);
 //		fields.add(requestedByField);
 		return fields;

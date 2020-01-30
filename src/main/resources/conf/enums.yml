@@ -54,3 +54,6 @@ enums:
 
   - name: OccupantType  
     enumClassName: com.facilio.bmsconsole.context.OccupantsContext$OccupantType
+
+  - name: PermitType
+    enumClassName: com.facilio.bmsconsole.context.WorkPermitContext$PermitType

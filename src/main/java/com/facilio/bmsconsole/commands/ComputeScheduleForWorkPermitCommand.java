@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.WorkPermitContext;
@@ -21,11 +22,14 @@ public class ComputeScheduleForWorkPermitCommand extends FacilioCommand{
 		
 		if(CollectionUtils.isNotEmpty(workPermitList)) {
 			for(WorkPermitContext permit : workPermitList) {
-				if(permit != null && permit.getRequestedBy() != null) {
+				if(permit.getRequestedBy() != null) {
 					ContactsContext contact = ContactsAPI.getContactsIdForUser(permit.getRequestedBy().getId());
 					if(contact != null && contact.getTenant() != null) {
 						permit.setTenant(contact.getTenant());
 					}
+				}
+				else {
+					permit.setRequestedBy(AccountUtil.getCurrentUser());
 				}
 				BusinessHoursContext visitTime = permit.getRecurringInfo();
 				if(permit.isRecurring() && visitTime != null) {

@@ -17,7 +17,15 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	private String description;
 	private User requestedBy;
 	
+	private User issuedToUser;
 	
+	public User getIssuedToUser() {
+		return issuedToUser;
+	}
+	public void setIssuedToUser(User issuedToUser) {
+		this.issuedToUser = issuedToUser;
+	}
+
 	private WorkType workType;
 	public int getWorkType() {
 		if (workType != null) {
@@ -158,5 +166,49 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	public void setVendorContact(ContactsContext vendorContact) {
 		this.vendorContact = vendorContact;
 	}
-	
+
+	private PermitType permitType;
+	public int getPermitType() {
+		if (permitType != null) {
+			return permitType.getIndex();
+		}
+		return -1;
+	}
+	public void setPermitType(int permitType) {
+		this.permitType = PermitType.valueOf(permitType);
+	}
+	public PermitType getPermitTypeEnum() {
+		return permitType;
+	}
+	public void setPermitType(PermitType permitType) {
+		this.permitType = permitType;
+	}
+
+	public static enum PermitType implements FacilioEnum {
+		VENDOR("Vendor"), USER("User");
+
+		@Override
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+		
+		private String name;
+		
+		PermitType(String name) {
+			
+			this.name = name;
+		}
+
+		@Override
+		public String getValue() {
+			return name;
+		}
+
+		public static PermitType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
 }
