@@ -55,6 +55,23 @@ public class StateflowTransitionContext extends ApproverWorkflowRuleContext impl
 	public void setFormId(long formId) {
 		this.formId = formId;
 	}
+
+	private DialogType dialogType;
+	public int getDialogType() {
+		if (dialogType != null) {
+			return dialogType.getValue();
+		}
+		return -1;
+	}
+	public void setDialogType(int dialogType) {
+		this.dialogType = DialogType.valueOf(dialogType);
+	}
+	public DialogType getDialogTypeEnum() {
+		return dialogType;
+	}
+	public void setDialogType(DialogType dialogType) {
+		this.dialogType = dialogType;
+	}
 	
 	private int buttonType = -1;
 	public int getButtonType() {
@@ -176,7 +193,7 @@ public class StateflowTransitionContext extends ApproverWorkflowRuleContext impl
 		
 		if (shouldExecuteTrueActions) {
 			boolean isValid = super.validationCheck(moduleRecord);
-			
+
 			if (isValid) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(getModuleId());
@@ -184,6 +201,22 @@ public class StateflowTransitionContext extends ApproverWorkflowRuleContext impl
 				
 				super.executeTrueActions(record, context, placeHolders);
 			}
+		}
+	}
+
+	public enum DialogType {
+		MODULE,
+		SUB_MODULE
+		;
+		public int getValue() {
+			return ordinal() + 1;
+		}
+
+		public static DialogType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
 		}
 	}
 	
