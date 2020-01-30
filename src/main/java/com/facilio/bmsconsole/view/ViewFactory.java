@@ -5206,6 +5206,7 @@ public class ViewFactory {
 	
 	private static FacilioView getActiveWorkPermitView() {
 		Criteria activeCriteria = new Criteria();
+		activeCriteria.addAndCondition(getMyWorkPermitsCondition());
 		activeCriteria.andCriteria(getActiveWorkPermitCriteria());
 		FacilioView allView = new FacilioView();
 		allView.setName("myActive");
