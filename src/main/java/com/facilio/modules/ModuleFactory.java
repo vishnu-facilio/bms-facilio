@@ -3187,7 +3187,7 @@ public class ModuleFactory {
 	public static FacilioModule getAgentAlarmOccurrenceModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("agentAlarmOccurrence");
-		module.setTableName("Agent_Alarm_Occurrence");
+		module.setTableName("Agent_AlarmOccurrence");
 		module.setDisplayName("Agent Alarm Occurrence");
 		return module;
 	}
