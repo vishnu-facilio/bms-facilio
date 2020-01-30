@@ -526,7 +526,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 //				}
 				handleJoin(groupByField, selectBuilder, addedModules);
 				if(gField.getModule() != null && (gField.getModule().isCustom() && !baseModule.equals(gField.getModule()))) {
-					gField.setTableAlias(getAndSetModuleAlias(groupByField.getModuleName()));
+					gField.setTableAlias(getAndSetModuleAlias(gField.getModule().getName()));
 				}
 				groupBy.add(gField.getCompleteColumnName());
 			}
