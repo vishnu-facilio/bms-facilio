@@ -41,7 +41,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.LookupFieldMeta;
+import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;

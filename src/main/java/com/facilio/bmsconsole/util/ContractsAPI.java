@@ -47,7 +47,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.LookupFieldMeta;
+import com.facilio.modules.fields.LookupFieldMeta;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;

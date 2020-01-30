@@ -1,4 +1,4 @@
-package com.facilio.modules;
+package com.facilio.modules.fields;
 
 import java.util.ArrayList;
 import java.util.Collection;
