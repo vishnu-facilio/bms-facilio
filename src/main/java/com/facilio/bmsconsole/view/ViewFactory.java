@@ -603,6 +603,8 @@ public class ViewFactory {
 		views.put("myWorkpermits", getMyWorkPermits().setOrder(order++));
 		views.put("myActive", getActiveWorkPermitView().setOrder(order++));
 		views.put("myExpired", getMyExpiredWorkPermitView().setOrder(order++));
+		views.put("requested", getRequestedWorkPermitView().setOrder(order++));
+		
 		viewsMap.put(FacilioConstants.ContextNames.WORKPERMIT, views);
 
 		order = 1;
@@ -1437,6 +1439,39 @@ public class ViewFactory {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(condition);
 
+		return criteria;
+	}
+	
+	private static Criteria getWorkPermitStatusCriteria(String status) {
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("status");
+		statusTypeField.setColumnName("STATUS");
+		statusTypeField.setDataType(FieldType.STRING);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition statusClose = new Condition();
+		statusClose.setField(statusTypeField);
+		statusClose.setOperator(StringOperators.IS);
+		statusClose.setValue(status);
+
+		Criteria statusCriteria = new Criteria();
+		statusCriteria.addAndCondition(statusClose);
+
+		LookupField statusField = new LookupField();
+		statusField.setName("status");
+		statusField.setColumnName("STATUS_ID");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(ModuleFactory.getWorkPermitModule());
+//		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition ticketClose = new Condition();
+		ticketClose.setField(statusField);
+		ticketClose.setOperator(LookupOperator.LOOKUP);
+		ticketClose.setCriteriaValue(statusCriteria);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(ticketClose);
 		return criteria;
 	}
 
@@ -5193,6 +5228,16 @@ public class ViewFactory {
 		allView.setHidden(true);
 		allView.setCriteria(expiredCriteria);
 		return allView;
+	}
+	
+	private static FacilioView getRequestedWorkPermitView() {
+		Criteria requestedWorkPermitCriteria = getWorkPermitStatusCriteria("Requested");
+		FacilioView requestedView = new FacilioView();
+		requestedView.setName("requested");
+		requestedView.setDisplayName("Requested Work Permit");
+		requestedView.setHidden(true);
+		requestedView.setCriteria(requestedWorkPermitCriteria);
+		return requestedView;
 	}
 	
 	private static FacilioView getExpiredWorkPermitView() {
