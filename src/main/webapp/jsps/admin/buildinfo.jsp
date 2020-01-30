@@ -11,8 +11,8 @@
     if (version != null) {
     	aws = AwsUtil.updateClientVersion(version, isNewClientBuild);
     	
-    	AdminAction.reloadBrowser();
-  	}
+    	/* AdminAction.reloadBrowser();*/
+  	} 
     
   %>
     
@@ -72,16 +72,13 @@ function init() {
 <div >
 <form action = "" method ="POST">
 <div style="margin-top:30px; margin-bottom:30px;" >
-<h3> Update Client Version: </h3> 
 <div style="margin-top:30px">
-Client Version: <input style="margin-left: 10px"  type = "text" name = "version"  placeholder="version" />
+<a class="btn btn-default bttn" href="reloadbrowser" role="button">Reload Browser</a>
 </div>
 <!-- <div style="margin-top: 30px">
 Is updated Client Setup: <input style="margin-left: 10px" type="checkbox" name="isNewClientBuild" />
 </div> TODO : revert all this--> 
-<div style="margin-top:30px;" >
-<button  id="show" type="submit"  >Update</button>
-</div>
+<br>
 <div>
 <% 
 	user = AccountUtil.getCurrentUser().getEmail();
