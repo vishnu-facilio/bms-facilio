@@ -34,6 +34,15 @@ public class UpdateNewPreventiveMaintenanceJobCommand extends FacilioCommand {
 		boolean isNew = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_NEW_EVENT, false);
 		if (isNew) {
 			WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
+			SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
+			selectRecordsBuilder
+					.beanClass(WorkOrderContext.class)
+					.module(module)
+					.select(fields)
+					.andCustomWhere("WorkOrders.ID = ?", workorder.getId());
+			List<Map<String, Object>> pmProps = selectRecordsBuilder.getAsProps();
 			
 			WorkOrderContext newWo = new WorkOrderContext();
 			if (workorder.getDueDate() > 0) {
@@ -41,7 +50,11 @@ public class UpdateNewPreventiveMaintenanceJobCommand extends FacilioCommand {
 				newWo.setEstimatedEnd(workorder.getDueDate());
 			}
 			else if (workorder.getScheduledStart() > 0) {
-				long woCreationOffset = workorder.getWoCreationOffset();
+				long woCreationOffset = -1L;
+				if (pmProps.get(0).get("woCreationOffset") != null) {
+					woCreationOffset = (Integer) pmProps.get(0).get("woCreationOffset");
+				}
+				newWo.setScheduledStart(workorder.getScheduledStart());
 				newWo.setCreatedTime(workorder.getScheduledStart());
 				if (woCreationOffset > 0) {
 					newWo.setCreatedTime(workorder.getScheduledStart() - (woCreationOffset * 1000L));
