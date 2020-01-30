@@ -258,6 +258,10 @@ public class FormFactory {
 				sections.add(shippingSection);
 				sections.add(lineItemSection);
 			}
+			else if (form.getSections() == null && form.getFields() != null) {
+				FormSection section = new FormSection("Default", 1, form.getFields(), false);
+				form.setSections(Collections.singletonList(section));
+			}
 		}
 		return form;
 	}
