@@ -188,20 +188,6 @@ public class WorkOrderContext extends TicketContext {
 		return false;
 	}
 	
-	private Boolean canCurrentUserApprove;
-	public Boolean getCanCurrentUserApprove() {
-		return canCurrentUserApprove;
-	}
-	public void setCanCurrentUserApprove(Boolean canCurrentUserApprove) {
-		this.canCurrentUserApprove = canCurrentUserApprove;
-	}
-	public boolean isCurrentUserAuthorizedToApprove() {
-		if(canCurrentUserApprove != null) {
-			return canCurrentUserApprove.booleanValue();
-		}
-		return false;
-	}
-	
 	private AlarmContext alarm;
 	public AlarmContext getAlarm() {
 		return alarm;
