@@ -817,4 +817,22 @@ public class ReportUtil {
 		}
 		return getFilteredReport(reportFolders);
 	}
+	public static String getAlias(String previous){
+		String alias = "A";
+		if(StringUtils.isAlpha(previous)){
+			int preIndex = previous.length()-1;
+			char preChar = previous.charAt(preIndex);
+			if(preChar == 'Z'){
+				previous = previous.substring(0, preIndex);
+				if(StringUtils.isNotEmpty(previous)){
+					alias = getAlias(previous)+alias;
+				}else{
+            	    alias+=alias;				    
+				}
+			}else{
+				alias = previous.substring(0, preIndex)+Character.toString(++preChar);
+			}
+		}
+		return alias;
+	}
 }

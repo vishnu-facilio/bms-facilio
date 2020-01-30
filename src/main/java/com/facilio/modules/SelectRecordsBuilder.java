@@ -27,6 +27,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.JoinBuilderIfc;
 import com.facilio.db.builder.SelectBuilderIfc;
 import com.facilio.db.builder.WhereBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder.GenericJoinBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -656,6 +657,16 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			// TODO Auto-generated constructor stub
 		}
 		
+		/**
+		 * set Alias for join table
+		 */
+		public JoinRecordBuilder<E> alias(String alias) {
+			this.parentBuilder.joinBuilder.append(" ")
+											.append(alias)
+											.append(" ")
+											;
+			return this;
+		}
 		@Override
 		public SelectRecordsBuilder<E> on(String condition) {
 			// TODO Auto-generated method stub
