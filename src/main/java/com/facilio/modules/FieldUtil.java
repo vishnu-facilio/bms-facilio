@@ -390,7 +390,8 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.ASSET_MOVEMENT,
 					FacilioConstants.ContextNames.VISITOR,
 					FacilioConstants.ContextNames.VISITOR_INVITE,
-					FacilioConstants.ContextNames.VISITOR_LOGGING					
+					FacilioConstants.ContextNames.VISITOR_LOGGING,
+					FacilioConstants.ContextNames.WORKPERMIT
 					
 					
 			))
