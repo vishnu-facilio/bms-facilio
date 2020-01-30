@@ -116,18 +116,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 							fields.addAll(workflowFields);
 						}
 					}
-				}
-//					if(alarmRule.getAlarmRCARules() != null) {
-//						for(ReadingRuleContext rcaRules :alarmRule.getAlarmRCARules()) {
-//							if(rcaRules.getWorkflow() != null) {
-//								List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(rcaRules.getWorkflow().getId());
-//								if(workflowFields != null) {
-//									fields.addAll(workflowFields);
-//								}
-//							}
-//						}
-//					}
-				
+				}				
 				
 				if (fields != null && !fields.isEmpty()) {
 					supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1);
@@ -150,31 +139,40 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 				
 				long processStartTime = System.currentTimeMillis();
 				List<ReadingContext> readings = null;
-				List<ReadingEventContext> events = new ArrayList<>();	
+				List<ReadingEventContext> events = new ArrayList<>();
+				ReadingEventContext previousEventMeta = new ReadingEventContext();
+				
 				readings = fetchReadings(readingRule, resourceId, startTime, endTime);
 
 				if(readings != null && !readings.isEmpty())
 				{
 					startTime = readings.get(0).getTtime();
 					endTime = readings.get(readings.size() - 1).getTtime();
-					int alarmCount = executeWorkflows(readingRule, readings, currentFields, fields, events);
+					executeWorkflows(readingRule, readings, currentFields, fields, events, previousEventMeta);
 					
-					ReadingEventContext finalEventOfCurrentJobInterval = events.get(events.size() - 1);
-					if(finalEventOfCurrentJobInterval.getCreatedTime() == endTime && !finalEventOfCurrentJobInterval.getSeverityString().equals("Clear"))
+					if(events != null && !events.isEmpty())
 					{
-						ReadingContext nextSingleReading = fetchNextSingleReading(readingRule, resourceId, endTime);
-						ReadingEventContext nextJobFirstEvent = new ReadingEventContext();
-						executeWorkflows(readingRule, Collections.singletonList(nextSingleReading), currentFields, fields, Collections.singletonList(nextJobFirstEvent));
-						if(nextJobFirstEvent.getSeverityString().equals("Clear"))
-						{
-						//	events.add(nextJobFirstEvent);
-						}
-					}
-					
-					insertEventsWithoutAlarmOccurrenceProcessed(events, ruleId);
+						ReadingEventContext finalEventOfCurrentJobInterval = events.get(events.size() - 1);
+						if(finalEventOfCurrentJobInterval.getCreatedTime() == endTime && !finalEventOfCurrentJobInterval.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
+						{		
+							previousEventMeta = finalEventOfCurrentJobInterval;
+							List<ReadingEventContext> nextJobFirstEvent = new ArrayList<ReadingEventContext>();
 							
-					LOGGER.info("Process Time taken for Historical Run for RuleLogger: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
-					LOGGER.info("Total Job Time taken for Historical Run for RuleLogger: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));			
+							ReadingContext nextSingleReading = fetchNextSingleReading(readingRule, resourceId, endTime);
+							Map<String, List<ReadingDataMeta>> extendedCurrentFields = prepareCurrentFieldsRDM(readingRule, endTime, nextSingleReading.getTtime(), resourceId, fields);
+								
+							executeWorkflows(readingRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta);
+							if(nextJobFirstEvent != null && nextJobFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
+							{
+								events.add(nextJobFirstEvent.get(0));
+							}
+						}
+						
+						insertEventsWithoutAlarmOccurrenceProcessed(events, ruleId);
+								
+						LOGGER.info("Process Time taken for Historical Run for RuleLogger: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
+						LOGGER.info("Total Job Time taken for Historical Run for RuleLogger: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime));	
+					}			
 				}
 				
 				WorkflowRuleHistoricalLoggerUtil.updateRuleLoggerContextToResolvedState(workflowRuleHistoricalLoggerContext);
@@ -183,6 +181,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 		catch (Exception historicalRuleException) {
 			exceptionMessage = historicalRuleException.getMessage();
 			stack = historicalRuleException.getStackTrace();
+			historicalRuleException.printStackTrace();
 			throw historicalRuleException;
 		}
 		
@@ -245,7 +244,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 		}
 	}
 	
-private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<ReadingEventContext> readingEvents) throws Exception {
+private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<ReadingEventContext> readingEvents,ReadingEventContext previousEventMeta) throws Exception {
 		
 		int alarmCount = 0;
 		if (readings != null && !readings.isEmpty()) {
@@ -287,6 +286,7 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 //						WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(readingRule, readingRule.getReadingField().getModule().getName(), reading, null, recordPlaceHolders, context);
 						
 						RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES, RuleType.IMPACT_RULE};
+						context.put(EventConstants.EventContextNames.PREVIOUS_EVENT_META, previousEventMeta);
 						
 						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, null, recordPlaceHolders, context, false, Collections.singletonList(readingRule.getActivityTypeEnum()), ruleTypes);
 						
@@ -301,6 +301,7 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 						List<ReadingEventContext> currentEvent = (List<ReadingEventContext>) context.remove(EventConstants.EventContextNames.EVENT_LIST);
 						if (CollectionUtils.isNotEmpty(currentEvent)) {
 							latestEvent = currentEvent.get(0);
+							previousEventMeta = currentEvent.get(0);
 //							LOGGER.info("Event from history : "+FieldUtil.getAsJSON(latestEvent).toJSONString());
 							readingEvents.addAll(currentEvent);
 						}
@@ -534,6 +535,31 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 		
 		return selectBuilder.fetchFirst();
 	}
+	
+	private Map<String, List<ReadingDataMeta>> prepareCurrentFieldsRDM(ReadingRuleContext rule, long startTime, long endTime, long resourceId, List<WorkflowFieldContext> fields) throws Exception
+	{
+		Map<String, List<ReadingDataMeta>> extendedSupportFieldsRDM = null;
+		if (fields != null && !fields.isEmpty()) {
+			extendedSupportFieldsRDM = getSupportingData(fields, startTime, endTime, -1);
+		}	
+		Map<String, List<ReadingDataMeta>> extendedCurrentRDMList = null;
+		if (fields != null) {
+			extendedCurrentRDMList = getSupportingData(fields, startTime, endTime, resourceId);
+		}
+		
+		Map<String, List<ReadingDataMeta>> extendedCurrentFields = extendedSupportFieldsRDM;
+		if (extendedCurrentRDMList != null && !extendedCurrentRDMList.isEmpty()) {
+			if (extendedSupportFieldsRDM == null) {
+				extendedCurrentFields = extendedCurrentRDMList;
+			}
+			else {
+				extendedCurrentFields = new HashMap<>(extendedSupportFieldsRDM);
+				extendedCurrentFields.putAll(extendedCurrentRDMList);
+			}
+		}
+		return extendedCurrentFields;
+	}
+	
 	private void insertEventsWithoutAlarmOccurrenceProcessed(List<ReadingEventContext> events, long ruleId) throws Exception 
 	{	
 		for(ReadingEventContext readingEvent:events)
