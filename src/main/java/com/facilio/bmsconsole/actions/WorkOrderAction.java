@@ -2725,7 +2725,7 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 	private List<String> getCalendarSelectFields() {
-		return Arrays.asList("createdTime", "subject", "assignedTo", "assignmentGroup", "trigger", "resource", "category", "priority", "type", "moduleState");
+		return Arrays.asList("createdTime", "subject", "assignedTo", "assignmentGroup", "trigger", "resource", "category", "priority", "type", "moduleState", "scheduledStart");
 	}
 
 

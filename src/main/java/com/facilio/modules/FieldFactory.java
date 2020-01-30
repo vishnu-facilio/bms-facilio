@@ -5235,6 +5235,8 @@ public class FieldFactory {
 
 		fields.add(getField("estimatedWorkDuration", "ESTIMATED_WORK_DURATION", module, FieldType.NUMBER));
 		fields.add(getField("woCreationOffset", "WO_CREATION_OFFSET", module, FieldType.NUMBER));
+		fields.add(getField("workPermitNeeded","WORK_PERMIT_NEEDED" , module, FieldType.BOOLEAN));
+		fields.add(getField("sendForApproval", "SEND_FOR_APPROVAL",module, FieldType.BOOLEAN));
 
 		fields.add(getSiteIdField(module));
 

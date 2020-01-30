@@ -40,14 +40,17 @@ public class UpdateNewPreventiveMaintenanceJobCommand extends FacilioCommand {
 				newWo.setDueDate(workorder.getDueDate());
 				newWo.setEstimatedEnd(workorder.getDueDate());
 			}
-			else if (workorder.getCreatedTime() > 0) {
-				newWo.setCreatedTime(workorder.getCreatedTime());
-				newWo.setScheduledStart(workorder.getCreatedTime());
+			else if (workorder.getScheduledStart() > 0) {
+				long woCreationOffset = workorder.getWoCreationOffset();
+				newWo.setCreatedTime(workorder.getScheduledStart());
+				if (woCreationOffset > 0) {
+					newWo.setCreatedTime(workorder.getScheduledStart() - (woCreationOffset * 1000L));
+				}
 				newWo.setModifiedTime(workorder.getCreatedTime());
 				WorkOrderContext currentWo = WorkOrderAPI.getWorkOrder(workorder.getId());
 				if (currentWo.getDueDate() > 0) {
-					long duration = currentWo.getDueDate() - currentWo.getCreatedTime();
-					newWo.setDueDate(newWo.getCreatedTime()+duration);
+					long duration = currentWo.getDueDate() - currentWo.getScheduledStart();
+					newWo.setDueDate(currentWo.getScheduledStart()+duration);
 					newWo.setEstimatedEnd(newWo.getDueDate());
 				}
 			}
@@ -86,9 +89,16 @@ public class UpdateNewPreventiveMaintenanceJobCommand extends FacilioCommand {
 					.andCustomWhere("WorkOrders.ID = ?", recordIds.get(0));
 			List<Map<String, Object>> pmProps = selectRecordsBuilder.getAsProps();
 
+			Integer woCreationOffset = ((Integer) pmProps.get(0).get("woCreationOffset"));
+			long scheduledStart = pmJob.getNextExecutionTime();
+			long createdTime = scheduledStart;
+			if (woCreationOffset != null && woCreationOffset > -1) {
+				createdTime = createdTime - (woCreationOffset * 1000);
+			}
+
 			pmProps.get(0).put("assignedTo", resourceId);
-			pmProps.get(0).put("createdTime", pmJob.getNextExecutionTime());
-			pmProps.get(0).put("scheduledStart", pmJob.getNextExecutionTime());
+			pmProps.get(0).put("createdTime", createdTime);
+			pmProps.get(0).put("scheduledStart", scheduledStart);
 			FacilioModule ticketModule = ModuleFactory.getTicketsModule();
 
 			if(resourceId != -1) {

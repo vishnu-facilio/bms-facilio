@@ -189,7 +189,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 						selectBuilder.limit(perPage);
 					}
 
-					if (perPage == -1 && (filters == null || !filters.containsKey("createdTime"))) {
+					if (perPage == -1 && (filters == null || (!filters.containsKey("createdTime") && !filters.containsKey("scheduledStart")))) {
 						throw new IllegalArgumentException("createdTime filter is mandatory");
 					}
 				}

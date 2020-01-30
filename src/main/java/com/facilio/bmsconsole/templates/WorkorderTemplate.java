@@ -180,6 +180,29 @@ public class WorkorderTemplate extends Template {
 
 	private long woCreationOffset = -1L;
 
+	private Boolean workPermitNeeded;
+
+	public Boolean getWorkPermitNeeded() {
+		return workPermitNeeded;
+	}
+
+	public void setWorkPermitNeeded(Boolean workPermitNeeded) {
+		this.workPermitNeeded = workPermitNeeded;
+	}
+
+	private Boolean sendForApproval;
+	public Boolean getSendForApproval() {
+		return sendForApproval;
+	}
+	public void setSendForApproval(Boolean sendForApproval) {
+		this.sendForApproval = sendForApproval;
+	}
+	public boolean sendForApproval() {
+		if(sendForApproval != null) {
+			return sendForApproval.booleanValue();
+		}
+		return false;
+	}
 
 	@JsonIgnore
 	public WorkOrderContext getWorkorder() throws Exception {
@@ -262,6 +285,8 @@ public class WorkorderTemplate extends Template {
 			duration = workorder.getDuration();
 			estimatedWorkDuration = workorder.getEstimatedWorkDuration();
 			woCreationOffset = workorder.getWoCreationOffset();
+			workPermitNeeded = workorder.getWorkPermitNeeded();
+			sendForApproval = workorder.sendForApproval();
 			if (workorder.getStatus() != null) {
 				statusId = workorder.getStatus().getId();
 			}
