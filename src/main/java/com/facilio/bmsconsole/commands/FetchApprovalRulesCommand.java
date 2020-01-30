@@ -131,16 +131,6 @@ public class FetchApprovalRulesCommand extends FacilioCommand {
 										if (currentUser.getOuid() == approverContext.getUserId()) {
 											wo.setCanCurrentUserApprove(true);
 										}
-										else if (approverContext.getUserId() == -1 && approverContext.getFieldId() > 0) {
-											FacilioField field = modBean.getField(approverContext.getFieldId());
-											Map<String,Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(wo).get(field.getName());
-											if (userObj != null) {
-												Long ouid = (Long) userObj.get("id");
-												if (ouid != null && ouid == currentUser.getOuid()) {
-													wo.setCanCurrentUserApprove(true);
-												}
-											}
-										}
 										break;
 									case ROLE:
 										if (currentUser.getRoleId() == approverContext.getRoleId()) {
@@ -159,6 +149,18 @@ public class FetchApprovalRulesCommand extends FacilioCommand {
 										}
 										if (groupIds.contains(approverContext.getGroupId())) {
 											wo.setCanCurrentUserApprove(true);
+										}
+										break;
+									case FIELD:
+										if (approverContext.getFieldId() > 0) {
+											FacilioField field = modBean.getField(approverContext.getFieldId());
+											Map<String,Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(wo).get(field.getName());
+											if (userObj != null) {
+												Long ouid = (Long) userObj.get("id");
+												if (ouid != null && ouid == currentUser.getOuid()) {
+													wo.setCanCurrentUserApprove(true);
+												}
+											}
 										}
 										break;
 								}

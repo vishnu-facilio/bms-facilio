@@ -104,7 +104,8 @@ public class SingleSharingContext implements Serializable {
 	public static enum SharingType {
 		USER,
 		ROLE,
-		GROUP
+		GROUP,
+		FIELD
 		;
 		
 		public int getValue() {
@@ -138,6 +139,9 @@ public class SingleSharingContext implements Serializable {
 					break;
 				case GROUP:
 					builder.append(groupId);
+					break;
+				case FIELD:
+					builder.append(fieldId);
 					break;
 			}
 		}
