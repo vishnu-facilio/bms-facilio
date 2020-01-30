@@ -43,7 +43,7 @@ public class PMPlannerAPI {
 	private static Map<String, String> metricFieldMap;
 	static {
 		metricFieldMap = new HashMap<>();
-		metricFieldMap.put(PLANNED, "createdTime");
+		metricFieldMap.put(PLANNED, "scheduledStart");
 		metricFieldMap.put(ACTUAL, "actualWorkStart");
 		metricFieldMap.put(DUE, "dueDate");
 		metricFieldMap.put(RESOLVED, "actualWorkEnd");
