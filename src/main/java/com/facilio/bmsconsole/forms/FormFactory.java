@@ -1546,7 +1546,7 @@ public class FormFactory {
 		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
 		ticketField.setHideField(true);
 		fields.add(ticketField);
-		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 3, 2));
 		
 		fields.add(new FormField("permitType", FieldDisplayType.SELECTBOX, "Permit Type", Required.OPTIONAL,7, 1));
 		
@@ -1570,11 +1570,11 @@ public class FormFactory {
 		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
 		ticketField.setHideField(true);
 		fields.add(ticketField);
-		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 4, 2);
+		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 5, 1);
 		fields.add(vendorField);
-		fields.add(new FormField("vendorContact", FieldDisplayType.LOOKUP_SIMPLE, "Vendor Contact", Required.OPTIONAL, "requester",5, 1));
+		fields.add(new FormField("vendorContact", FieldDisplayType.LOOKUP_SIMPLE, "Vendor Contact", Required.OPTIONAL, "requester",6, 1));
 
-		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("workType", FieldDisplayType.SELECTBOX, "Work Type", Required.OPTIONAL, 3, 2));
 //		FormField requestedByField = new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1);
 //		fields.add(requestedByField);
 		return fields;
