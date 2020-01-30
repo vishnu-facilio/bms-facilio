@@ -8,6 +8,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkPermitContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class RollUpWorkOrderFieldOnWorkPermitApprovalCommand extends FacilioCommand{
@@ -27,10 +28,11 @@ public class RollUpWorkOrderFieldOnWorkPermitApprovalCommand extends FacilioComm
 				}
 			}
 			
-			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, wos);
-			context.put(FacilioConstants.ContextNames.WORK_ORDER, newWo);
 			if(CollectionUtils.isNotEmpty(wos)) {
-				TransactionChainFactory.getUpdateWorkOrderChain().execute(context);
+				FacilioChain c = TransactionChainFactory.getUpdateWorkOrderChain();
+				c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, wos);
+				c.getContext().put(FacilioConstants.ContextNames.WORK_ORDER, newWo);
+				c.execute();
 			}
 		
 		}
