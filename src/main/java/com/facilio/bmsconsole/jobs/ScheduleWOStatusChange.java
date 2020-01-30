@@ -56,7 +56,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
                     .beanClass(WorkOrderContext.class)
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), String.valueOf(PMJobsContext.PMJobsStatus.ACTIVE.getValue()), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(maxTime), NumberOperators.LESS_THAN))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(maxTime), NumberOperators.LESS_THAN))
                     .andCustomWhere("WorkOrders.PM_ID IS NOT NULL");
             List<WorkOrderContext> wos = selectRecordsBuilder.get();
 
@@ -71,7 +71,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
 //            	if(wo.getTasks() == null || wo.getTasks().isEmpty()) {
 //            		continue;
 //            	}
-                FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getScheduledStart()/1000, "priority");
+                FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getCreatedTime()/1000, "priority");
             }
 
             updateJobStatus(wos);

@@ -289,6 +289,8 @@ public class PreventiveMaintenance extends ResourceContext {
 	public void setNextExecutionTime(long nextExecutionTime) {
 		this.nextExecutionTime = nextExecutionTime;
 	}
+
+	private long woCreationOffset = -1L;
 	
 	public String getScheduleMsg() {
 		StringBuilder msg = new StringBuilder();
@@ -365,6 +367,14 @@ public class PreventiveMaintenance extends ResourceContext {
 
 	public void setWoGeneratedUpto(long woGeneratedUpto) {
 		this.woGeneratedUpto = woGeneratedUpto;
+	}
+
+	public long getWoCreationOffset() {
+		return woCreationOffset;
+	}
+
+	public void setWoCreationOffset(long woCreationOffset) {
+		this.woCreationOffset = woCreationOffset;
 	}
 
 	public static enum TriggerType {

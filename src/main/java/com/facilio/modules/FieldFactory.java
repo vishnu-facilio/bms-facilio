@@ -2730,8 +2730,9 @@ public class FieldFactory {
 		fields.add(getField("pmCreationType", "PM_CREARTION_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("woGenerationStatus", "WO_GENERATION_STATUS", module, FieldType.BOOLEAN));
 		fields.add(getField("woGeneratedUpto","WO_GENERATED_UPTO", module, FieldType.NUMBER));
-		fields.add(getField("isUserTriggerPresent", "IS_USER_TRIGGER_PRESENT", FieldType.BOOLEAN));
-		fields.add(getField("defaultAllTriggers","IS_DEFAULT_ALL_TRIGGERS", FieldType.BOOLEAN));
+		fields.add(getField("isUserTriggerPresent", "IS_USER_TRIGGER_PRESENT", module, FieldType.BOOLEAN));
+		fields.add(getField("defaultAllTriggers","IS_DEFAULT_ALL_TRIGGERS", module, FieldType.BOOLEAN));
+		fields.add(getField("woCreationOffset", "WO_CREATION_OFFSET", module, FieldType.NUMBER));
 		return fields;
 	}
 
@@ -5231,6 +5232,7 @@ public class FieldFactory {
 		fields.add(getField("additionalInfoJsonStr", "ADDITIONAL_INFO", module, FieldType.STRING));
 
 		fields.add(getField("estimatedWorkDuration", "ESTIMATED_WORK_DURATION", module, FieldType.NUMBER));
+		fields.add(getField("woCreationOffset", "WO_CREATION_OFFSET", module, FieldType.NUMBER));
 
 		fields.add(getSiteIdField(module));
 

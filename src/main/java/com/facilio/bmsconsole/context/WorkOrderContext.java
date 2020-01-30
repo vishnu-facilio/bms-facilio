@@ -311,6 +311,14 @@ public class WorkOrderContext extends TicketContext {
 		this.urgency = WOUrgency.valueOf(urgencyval);
 	}
 
+	public long getWoCreationOffset() {
+		return woCreationOffset;
+	}
+
+	public void setWoCreationOffset(long woCreationOffset) {
+		this.woCreationOffset = woCreationOffset;
+	}
+
 	public static enum WOUrgency {
 		NOTURGENT,
 		URGENT,
@@ -518,7 +526,7 @@ public class WorkOrderContext extends TicketContext {
 	public void setPrerequisiteApprover(boolean prerequisiteApprover) {
 		this.prerequisiteApprover = prerequisiteApprover;
 	}
-	
+
 	private Boolean workPermitNeeded;
 	
 	public Boolean getWorkPermitNeeded() {
@@ -536,4 +544,6 @@ public class WorkOrderContext extends TicketContext {
 	public void setWorkPermitIssued(Boolean workPermitIssued) {
 		this.workPermitIssued = workPermitIssued;
 	}
+
+	private long woCreationOffset = -1L;
 }

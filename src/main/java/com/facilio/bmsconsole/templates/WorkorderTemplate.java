@@ -178,6 +178,9 @@ public class WorkorderTemplate extends Template {
 		this.vendorId = vendorId;
 	}
 
+	private long woCreationOffset = -1L;
+
+
 	@JsonIgnore
 	public WorkOrderContext getWorkorder() throws Exception {
 		JSONObject woProp = getAsJSON(false);
@@ -258,6 +261,7 @@ public class WorkorderTemplate extends Template {
 			description = workorder.getDescription();
 			duration = workorder.getDuration();
 			estimatedWorkDuration = workorder.getEstimatedWorkDuration();
+			woCreationOffset = workorder.getWoCreationOffset();
 			if (workorder.getStatus() != null) {
 				statusId = workorder.getStatus().getId();
 			}
@@ -395,4 +399,11 @@ public class WorkorderTemplate extends Template {
 		return getAsJSON(true);
 	}
 
+	public long getWoCreationOffset() {
+		return woCreationOffset;
+	}
+
+	public void setWoCreationOffset(long woCreationOffset) {
+		this.woCreationOffset = woCreationOffset;
+	}
 }

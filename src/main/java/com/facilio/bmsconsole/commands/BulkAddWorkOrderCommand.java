@@ -60,13 +60,18 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
             TicketAPI.validateSiteSpecificData(workOrder);
             workOrder.setCreatedBy(AccountUtil.getCurrentUser());
             if (workOrder.getScheduledStart() > 0) {
-                workOrder.setCreatedTime(workOrder.getScheduledStart());
+                if (workOrder.getWoCreationOffset() > -1) {
+                    workOrder.setCreatedTime(workOrder.getScheduledStart() - (workOrder.getWoCreationOffset() * 1000L));
+                } else {
+                    workOrder.setCreatedTime(workOrder.getScheduledStart());
+                    workOrder.setScheduledStart(workOrder.getCreatedTime());
+                }
             } else {
                 workOrder.setCreatedTime(workOrder.getCurrentTime());
+                workOrder.setScheduledStart(workOrder.getCreatedTime());
             }
             workOrder.setModifiedTime(workOrder.getCreatedTime());
-            workOrder.setScheduledStart(workOrder.getCreatedTime());
-            workOrder.setEstimatedStart(workOrder.getCreatedTime());
+            workOrder.setEstimatedStart(workOrder.getScheduledStart());
             workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED);
 
             if (workOrder.getPriority() == null || workOrder.getPriority().getId() == -1) {
@@ -74,7 +79,7 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
             }
 
             if(workOrder.getDuration() != -1 && workOrder.getDueDate() < 0) {
-                workOrder.setDueDate(workOrder.getCreatedTime()+(workOrder.getDuration()*1000));
+                workOrder.setDueDate(workOrder.getScheduledStart() + (workOrder.getDuration()*1000));
             }
 
             workOrder.setEstimatedEnd(workOrder.getDueDate());
