@@ -1,6 +1,7 @@
 package com.facilio.cb.command;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -97,9 +98,9 @@ public class ExecuteActionAndSetResponseForSessionCommand extends FacilioCommand
 			if(session.getState() < 0) {
 				session.setState(State.RESPONDED.getIntVal());
 			}
-			String response = intent.executeActions(context, null);
+			JSONArray response = intent.executeActions(context, null);
 			
-			session.setResponse(response);
+			session.setResponse(response.toJSONString());
 			
 			ChatBotUtil.addChatBotSession(session);
 		}

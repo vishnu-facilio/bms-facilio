@@ -1,6 +1,7 @@
 package com.facilio.cb.command;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.cb.util.ChatBotUtil;
@@ -32,12 +33,12 @@ public class HandleTerminateSessionCommand extends FacilioCommand {
 			
 			context.put(ChatBotConstants.CHAT_BOT_INTENT, intent);
 			
-			String returnString = intent.executeActions(context, null);
+			JSONArray returnString = intent.executeActions(context, null);
 			
 			ChatBotSession session = chatBotSessionConversation.getChatBotSession();
 			
 			session.setState(ChatBotSession.State.TERMINATED_GRACEFULLY.getIntVal());
-			session.setResponse(returnString);
+			session.setResponse(returnString.toJSONString());
 			
 			ChatBotUtil.updateChatBotSession(session);
 			

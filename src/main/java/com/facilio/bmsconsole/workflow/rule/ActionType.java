@@ -1379,7 +1379,7 @@ public enum ActionType {
 			
 			String response = ChatBotConstants.getDefaultIntentResponse(chatBotIntent.getName());
 			
-			context.put(ChatBotConstants.CHAT_BOT_RESPONSE_STRING, response);
+			context.put(WorkflowV2Util.WORKFLOW_RESPONSE, response);
 				
 		}
 
@@ -1412,7 +1412,7 @@ public enum ActionType {
 
 			chain.execute();
 			
-			context.put(ChatBotConstants.CHAT_BOT_RESPONSE_STRING, workflowContext.getLogString());
+			context.put(WorkflowV2Util.WORKFLOW_RESPONSE, workflowContext.getReturnValue());
 			}
 			catch (Exception e) {
 				LOGGER.error("Exception occurred on workflow Action", e);

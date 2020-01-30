@@ -142,7 +142,7 @@
                 type: 18
                 resultWorkflowContext :
                    isV2Script : true
-                   workflowV2String : 'void test(Map data){
+                   workflowV2String : 'String test(Map data){
     
                                          wo = {};
                                          wo.subject = data.subject;
@@ -161,7 +161,7 @@
                                          
                                          WorkOrder().add(wo);
                                          
-                                         log "Workorder created Successfully.";
+                                         return "Workorder created Successfully.";
                                        }'   
    invokeSamples:
     -
@@ -372,11 +372,11 @@
                 type: 18
                 resultWorkflowContext :
                    isV2Script : true
-                   workflowV2String : 'void test(Map data){
+                   workflowV2String : 'String test(Map data){
     
                                          WorkOrder().addNote(data.woId,data.note);
                                          
-                                         log "Note updated Successfully.";
+                                         return "Note updated Successfully.";
                                        }'  
    invokeSamples:
     -
@@ -391,3 +391,38 @@
     -
        sampleLocalId : 4
        sample: "add note to workorder"
+
+- 
+   name: "system_show_open_workorder_count_intent"
+   displayName: "System show open workorder count Intent"
+   type: 1
+   localId : 14
+   withParams : false
+   actions:
+    - 
+        responseType : 2
+        action: 
+            actionType: 30
+            status: 1
+            templateJson: 
+                type: 18
+                resultWorkflowContext :
+                   isV2Script : true
+                   workflowV2String : 'Number test(Map data){
+    
+                                         wos = WorkOrder().fetch([id != null]);
+                                         
+                                         count = 0;
+                                         if(wos != null) {
+                                            count = wos.size();
+                                         }
+                                         
+                                         return count;
+                                       }'  
+   invokeSamples:
+    -
+       sampleLocalId : 1
+       sample: "show open wo count"
+    -
+       sampleLocalId : 2
+       sample: "give me open wo count"

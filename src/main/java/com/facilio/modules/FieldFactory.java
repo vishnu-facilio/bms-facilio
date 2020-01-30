@@ -7512,7 +7512,7 @@ public class FieldFactory {
 		fields.add(getField("intentId", "INTENT_ID", module, FieldType.NUMBER));
 		fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
 		fields.add(getField("response", "RESPONSE", module, FieldType.STRING));
-
+		fields.add(getField("responseType", "RESPONSE_TYPE", module, FieldType.NUMBER));
 		return fields;
 	}
 	

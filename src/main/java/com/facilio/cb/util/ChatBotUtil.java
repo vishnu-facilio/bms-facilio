@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.tiles.request.collection.CollectionUtil;
+import org.json.simple.JSONArray;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -158,9 +159,9 @@ public class ChatBotUtil {
 		
 		context.put(ChatBotConstants.CHAT_BOT_INTENT, intent);
 		
-		String response = intent.executeActions(context, Collections.singletonList(props));
+		JSONArray response = intent.executeActions(context, Collections.singletonList(props));
 		
-		session.setResponse(response);
+		session.setResponse(response.toJSONString());
 		session.setState(ChatBotSession.State.RESPONDED.getIntVal());
 		
 		context.put(ChatBotConstants.CHAT_BOT_SESSION, session);

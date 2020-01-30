@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class ChatBotIntent {
 
@@ -51,24 +54,29 @@ public class ChatBotIntent {
 		this.actions = actions;
 	}
 	
-	public String executeActions(Context context, List<Object> params) throws Exception {
+	public JSONArray executeActions(Context context, List<Object> params) throws Exception {
 		
-		StringBuilder returnString = new StringBuilder();
+		JSONArray resArray = new JSONArray(); 
 		if(actions != null) {
 			for(ChatBotIntentAction cbaction : actions) {
 				if(cbaction.getAction() != null) {
 					cbaction.getAction().executeAction(null, context, null, params);
+					
 				}
+
+				JSONObject result = new JSONObject();
+				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, cbaction.getResponseType());
 				
-				if(context.containsKey(ChatBotConstants.CHAT_BOT_RESPONSE_STRING) && context.get(ChatBotConstants.CHAT_BOT_RESPONSE_STRING) != null && !((String)context.get(ChatBotConstants.CHAT_BOT_RESPONSE_STRING)).isEmpty()) {
-					returnString.append((String)context.get(ChatBotConstants.CHAT_BOT_RESPONSE_STRING));
+				if(context.get(WorkflowV2Util.WORKFLOW_RESPONSE) != null) {
+					result.put(ChatBotConstants.CHAT_BOT_RESPONSE, context.get(WorkflowV2Util.WORKFLOW_RESPONSE));
 				}
 				else if(cbaction.getResponse() != null) {
-					returnString.append(cbaction.getResponse());
+					result.put(ChatBotConstants.CHAT_BOT_RESPONSE, cbaction.getResponse());
 				}
+				resArray.add(result);
 			}
 		}
-		return returnString.toString();
+		return resArray;
 	}
 	
 	List<ChatBotIntentParam> chatBotIntentParamList;
