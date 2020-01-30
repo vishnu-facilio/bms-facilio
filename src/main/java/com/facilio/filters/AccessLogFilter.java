@@ -43,7 +43,7 @@ public class AccessLogFilter implements Filter {
     private static final String X_APP_VERSION = "X-App-Version";
     private static final String REFERER = "referer";
     private static final String RESPONSE_SIZE = "res_size";
-    private static final boolean ENABLE_FHR = false;
+    private static final boolean ENABLE_FHR = FacilioProperties.enableFacilioResponse();
 
     private static final AtomicInteger THREAD_ID = new AtomicInteger(1);
     private static final long TIME_THRESHOLD = 5000 ;
@@ -75,6 +75,7 @@ public class AccessLogFilter implements Filter {
         filterChain.doFilter(servletRequest, response);
 
         String message = DUMMY_MSG;
+        int responseSize = 0;
         if(AccountUtil.getCurrentAccount() != null) {
             Account account = AccountUtil.getCurrentAccount();
             message = "select: " + account.getSelectQueries() + " time: " + account.getSelectQueriesTime() +
@@ -84,6 +85,11 @@ public class AccessLogFilter implements Filter {
                     " rget: " + account.getRedisGetCount() + " time: " + account.getRedisGetTime() +
                     " rput: " + account.getRedisPutCount() + " time: " + account.getRedisPutTime() +
                     " rdel: " + account.getRedisDeleteCount() + " time: " + account.getRedisDeleteTime();
+        }
+
+        if(ENABLE_FHR) {
+            responseSize = ((FacilioHttpResponse)response).getLengthInBytes();
+            message = message + "  data: " + responseSize;
         }
         LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message, null);
 
@@ -169,7 +175,7 @@ public class AccessLogFilter implements Filter {
         event.setProperty("appVersion", appVersion);
 
         if ( ENABLE_FHR ) {
-            event.setProperty(RESPONSE_SIZE, String.valueOf(((FacilioOutputStream)response.getOutputStream()).getLengthInBytes()));
+            event.setProperty(RESPONSE_SIZE, String.valueOf(responseSize));
         }
 
         long timeTaken = System.currentTimeMillis()-startTime;

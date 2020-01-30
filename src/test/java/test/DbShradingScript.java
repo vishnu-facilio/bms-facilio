@@ -10,17 +10,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class DbShradingScript {
-	 private static final String SOURCE_URL =
-	 "facilioae-large-temp-fix.cojqex4akzz6.us-west-2.rds.amazonaws.com:3306/bms";
-//	private static final String SOURCE_URL = "localhost:3306/bmslocal";
-//	private static final String SOURCE_USERNAME = "root", SOURCE_PASSWORD = "";
-	private static final String SOURCE_USERNAME = "gUsCek2xyE", SOURCE_PASSWORD = "x@FsmgUzVAPq";
-
-	 private static final String TARGET_URL =
-	 "demo.cojqex4akzz6.us-west-2.rds.amazonaws.com:3306/bms_demo";
-//	private static final String TARGET_URL = "localhost:3306/bms_new_test";
-//	private static final String TARGET_USERNAME = "root", TARGET_PASSWORD = "";
-	private static final String TARGET_USERNAME = "demodbuser", TARGET_PASSWORD = "faciliodemo";
+	private static final String SOURCE_URL = "localhost:3306/bmslocal";
+	private static final String SOURCE_USERNAME = "root", SOURCE_PASSWORD = "";
+	private static final String TARGET_URL = "localhost:3306/bms_new_test";
+	private static final String TARGET_USERNAME = "root", TARGET_PASSWORD = "";
 
 	private static final long ORGID = 210;
 

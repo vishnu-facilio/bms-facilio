@@ -80,6 +80,7 @@ public class FacilioProperties {
     private static boolean isServicesEnabled;
 
     private static String localFileStorePath;
+    private static boolean facilioResponse;
 
     static {
         loadProperties();
@@ -140,6 +141,7 @@ public class FacilioProperties {
                 sentryschedulerdsn=PROPERTIES.getProperty("sentry.scheduler.dsn");
                 pythonAI = PROPERTIES.getProperty("pythonai.url");
                 pythonPath = PROPERTIES.getProperty("pythonPath");
+                facilioResponse = "true".equals(PROPERTIES.get("response.size"));
                 if(PROPERTIES.containsKey("iot.endpoint.port")) {
                     try {
                         iotEndPointPort = Integer.parseInt(PROPERTIES.getProperty("iot.endpoint.port"));
@@ -392,13 +394,12 @@ public class FacilioProperties {
         return iotExchange;
     }
 
-
     public static String getEmailClient(){return emailClient;}
 
-    
     public static String getBridgeUrl() {
         return bridgeUrl;
     }
+
     public static String getsentrydsn() {return sentrydsn; }
     public static String getSentryslownessdsn() {return sentryslownessdsn;}
     public static String getSentryschedulerdsn() {return sentryschedulerdsn;}
@@ -421,5 +422,9 @@ public class FacilioProperties {
 
     public static String getEnvironment() {
         return environment;
+    }
+
+    public static boolean enableFacilioResponse() {
+        return facilioResponse;
     }
 }

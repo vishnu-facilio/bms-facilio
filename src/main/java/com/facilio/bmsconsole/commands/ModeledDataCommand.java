@@ -214,13 +214,11 @@ public class ModeledDataCommand extends AgentV2Command {
 				String key = iMap.getKey();
 				String moduleName = key.substring(0, key.indexOf("|"));
 				ReadingContext reading = iMap.getValue();
-				List<ReadingContext> readings = moduleVsReading.get(moduleName);
-				if (readings == null) {
-					readings = new ArrayList<ReadingContext>();
-					moduleVsReading.put(moduleName, readings);
-				}
+				List<ReadingContext> readings = moduleVsReading.getOrDefault(moduleName, new ArrayList<>());
 				readings.add(reading);
+				moduleVsReading.put(moduleName, readings);
 			}
+
 			if (TimeSeriesAPI.isStage()) {
 				LOGGER.debug("Inside ModeledDataCommand####### moduleVsReading: " + moduleVsReading);
 			}

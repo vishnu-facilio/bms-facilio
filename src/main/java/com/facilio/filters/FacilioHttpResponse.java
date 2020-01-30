@@ -23,7 +23,7 @@ public class FacilioHttpResponse implements HttpServletResponse {
     FacilioHttpResponse(HttpServletResponse servletResponse) {
         response = servletResponse;
         try {
-            outputStream = new FacilioOutputStream(servletResponse.getOutputStream());
+            // outputStream = new FacilioOutputStream(servletResponse.getOutputStream());
             writer = new FacilioPrintWriter(this, servletResponse.getWriter());
         } catch (IOException e) {
             LOGGER.info("Exception while creating writer and outputstream ", e);

@@ -8,9 +8,10 @@ class FacilioPrintWriter extends PrintWriter {
     private static final int LINE_SEPARATOR_LENGTH = System.lineSeparator().length();
     private PrintWriter writer;
     private int lengthInBytes;
-
+    private FacilioHttpResponse response;
     FacilioPrintWriter(FacilioHttpResponse response, PrintWriter writer) {
         this(writer);
+        this.response = response;
         this.writer = writer;
     }
 
@@ -25,6 +26,7 @@ class FacilioPrintWriter extends PrintWriter {
 
     public FacilioPrintWriter(OutputStream out) {
         super(out);
+        this.writer = new PrintWriter(out);
     }
 
     public FacilioPrintWriter(OutputStream out, boolean autoFlush) {
@@ -49,6 +51,7 @@ class FacilioPrintWriter extends PrintWriter {
 
     private void addLength(int length) {
         lengthInBytes = lengthInBytes + length;
+        response.setLengthInBytes(lengthInBytes);
     }
 
     @Override
