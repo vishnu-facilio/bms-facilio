@@ -8,9 +8,15 @@ public class FacilioOutputStream extends ServletOutputStream {
 
     private ServletOutputStream responseOutputStream;
     private int lengthInBytes = 0;
-
-    FacilioOutputStream(ServletOutputStream outputStream){
+    private FacilioHttpResponse response;
+    FacilioOutputStream(FacilioHttpResponse response, ServletOutputStream outputStream){
+        this.response = response;
         responseOutputStream = outputStream;
+    }
+
+    private void addLength(int length) {
+        lengthInBytes = lengthInBytes + length;
+        response.setLengthInBytes(lengthInBytes);
     }
 
     @Override
@@ -25,29 +31,25 @@ public class FacilioOutputStream extends ServletOutputStream {
 
     @Override
     public void write(int b) throws IOException {
-        lengthInBytes = lengthInBytes + b;
+        addLength(b);
         responseOutputStream.write(b);
     }
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        lengthInBytes = lengthInBytes + len;
+        addLength(len);
         responseOutputStream.write(b, off, len);
     }
 
     @Override
     public void write(byte[] b) throws IOException {
-        lengthInBytes = lengthInBytes + b.length;
+        addLength(b.length);
         responseOutputStream.write(b);
     }
 
     @Override
     public void print(int i) throws IOException {
-        lengthInBytes = lengthInBytes + String.valueOf(i).length();
+        addLength(String.valueOf(i).length());
         responseOutputStream.print(i);
-    }
-
-    public int getLengthInBytes() {
-        return lengthInBytes;
     }
 }

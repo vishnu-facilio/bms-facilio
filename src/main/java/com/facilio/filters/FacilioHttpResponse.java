@@ -14,20 +14,12 @@ import java.util.Locale;
 public class FacilioHttpResponse implements HttpServletResponse {
 
     private HttpServletResponse response;
-    private ServletOutputStream outputStream;
-    private PrintWriter writer;
-
-    private static final Logger LOGGER = LogManager.getLogger(FacilioHttpResponse.class.getName());
+    private ServletOutputStream outputStream = null;
+    private PrintWriter writer = null;
     private int lengthInBytes = 0;
 
     FacilioHttpResponse(HttpServletResponse servletResponse) {
         response = servletResponse;
-        try {
-            // outputStream = new FacilioOutputStream(servletResponse.getOutputStream());
-            writer = new FacilioPrintWriter(this, servletResponse.getWriter());
-        } catch (IOException e) {
-            LOGGER.info("Exception while creating writer and outputstream ", e);
-        }
     }
 
     public int getLengthInBytes() {
@@ -155,11 +147,17 @@ public class FacilioHttpResponse implements HttpServletResponse {
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
+        if(outputStream == null ) {
+            outputStream = new FacilioOutputStream(this, response.getOutputStream());
+        }
         return outputStream;
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
+        if(writer == null) {
+            writer = new FacilioPrintWriter(this, response.getWriter());
+        }
         return writer;
     }
 
