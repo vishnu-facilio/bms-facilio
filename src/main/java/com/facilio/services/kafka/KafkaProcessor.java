@@ -1,5 +1,8 @@
 package com.facilio.services.kafka;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
 import com.facilio.agentv2.DataProcessorV2;
 import com.facilio.aws.util.FacilioProperties;
@@ -79,21 +82,23 @@ public class KafkaProcessor extends FacilioProcessor {
             }*/
 
             try {
-                if(orgId == 78) {
-                    Long offset = Long.parseLong(recordId);
-                    if (offset < 88286 || offset > 120799L) {
-                        if( ! dataProcessorUtil.processRecord(record) ){
-                            LOGGER.info("Exception while processing ->"+record.getData());
-                        }
-                    }
-                } else {
-                    if (!dataProcessorUtil.processRecord(record)) {
-                        LOGGER.info("Exception while processing ->" + record.getData());
-                    }
+                AccountUtil.getCurrentAccount().clearCounters();
+                if (!dataProcessorUtil.processRecord(record)) {
+                    LOGGER.info("Exception while processing ->" + record.getData());
                 }
                 getConsumer().commit(record);
             } catch (Exception e){
-                    LOGGER.info("Exception occurred while processing  ",e);
+                LOGGER.info("Exception occurred while processing  ",e);
+            } finally {
+                Account account = AccountUtil.getCurrentAccount();
+                String message = " select: " + account.getSelectQueries() + " time: " + account.getSelectQueriesTime() +
+                        " update: " + account.getUpdateQueries() + " time: " + account.getUpdateQueriesTime() +
+                        " insert: " + account.getInsertQueries() + " time: " + account.getInsertQueriesTime() +
+                        " delete: " + account.getDeleteQueries() + " time: " + account.getDeleteQueriesTime() +
+                        " rget: " + account.getRedisGetCount() + " time: " + account.getRedisGetTime() +
+                        " rput: " + account.getRedisPutCount() + " time: " + account.getRedisPutTime() +
+                        " rdel: " + account.getRedisDeleteCount() + " time: " + account.getRedisDeleteTime();
+                LOGGER.info("record : " + recordId + message);
             }
 
 
