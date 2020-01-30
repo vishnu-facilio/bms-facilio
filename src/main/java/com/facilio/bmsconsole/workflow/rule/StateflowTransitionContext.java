@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.chain.Context;
@@ -67,7 +68,7 @@ public class StateflowTransitionContext extends ApproverWorkflowRuleContext impl
 	private DialogType dialogType;
 	public int getDialogType() {
 		if (dialogType != null) {
-			return dialogType.getValue();
+			return dialogType.getIndex();
 		}
 		return -1;
 	}
@@ -212,12 +213,24 @@ public class StateflowTransitionContext extends ApproverWorkflowRuleContext impl
 		}
 	}
 
-	public enum DialogType {
-		MODULE,
-		SUB_MODULE
+	public enum DialogType implements FacilioEnum {
+		MODULE ("Module"),
+		SUB_MODULE ("Sub Module")
 		;
-		public int getValue() {
+
+		private String name;
+
+		DialogType(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public int getIndex() {
 			return ordinal() + 1;
+		}
+
+		public String getValue() {
+			return name;
 		}
 
 		public static DialogType valueOf(int value) {

@@ -126,7 +126,10 @@ public class WorkflowRuleAPI {
 				break;
 			case STATE_RULE:
 				ApprovalRulesAPI.addApproverRuleChildren((ApproverWorkflowRuleContext) rule);
-				StateFlowRulesAPI.addOrUpdateFormDetails((StateflowTransitionContext) rule);
+				StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) rule;
+				if (stateflowTransition.getDialogTypeEnum() != null && stateflowTransition.getDialogTypeEnum() == StateflowTransitionContext.DialogType.MODULE) {
+					StateFlowRulesAPI.addOrUpdateFormDetails(stateflowTransition);
+				}
 				addExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), ruleProps);
 				break;
 			case STATE_FLOW:

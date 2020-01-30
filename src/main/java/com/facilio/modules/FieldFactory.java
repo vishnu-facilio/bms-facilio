@@ -6940,7 +6940,10 @@ public class FieldFactory {
 		list.add(getField("stateFlowId", "STATE_FLOW_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("formId", "FORM_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("formModuleName", "FORM_MODULE_NAME", stageRuleModule, FieldType.STRING));
-		list.add(getField("dialogType", "DIALOG_TYPE", stageRuleModule, FieldType.ENUM));
+		SystemEnumField dialogTypeField = (SystemEnumField) getField("dialogType", "DIALOG_TYPE", stageRuleModule, FieldType.SYSTEM_ENUM);
+		dialogTypeField.setEnumName("DialogType");
+		dialogTypeField.setValues(FacilioEnum.getEnumValues("DialogType"));
+		list.add(dialogTypeField);
 		list.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", stageRuleModule, FieldType.BOOLEAN));
 		list.add(getField("buttonType", "BUTTON_TYPE", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("type", "TYPE", stageRuleModule, FieldType.NUMBER));

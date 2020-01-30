@@ -221,7 +221,9 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 
 		updateApproverRule(oldRule, rule);
 
-		StateFlowRulesAPI.addOrUpdateFormDetails(rule);
+		if (rule.getDialogTypeEnum() != null && rule.getDialogTypeEnum() == StateflowTransitionContext.DialogType.MODULE) {
+			StateFlowRulesAPI.addOrUpdateFormDetails(rule);
+		}
 		updateExtendedRule(rule, ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields());
 
 		return rule;
