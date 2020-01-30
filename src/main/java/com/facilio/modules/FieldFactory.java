@@ -6935,6 +6935,7 @@ public class FieldFactory {
 		list.add(getField("toStateId", "TO_STATE_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("stateFlowId", "STATE_FLOW_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("formId", "FORM_ID", stageRuleModule, FieldType.NUMBER));
+		list.add(getField("formModuleName", "FORM_MODULE_NAME", stageRuleModule, FieldType.STRING));
 		list.add(getField("dialogType", "DIALOG_TYPE", stageRuleModule, FieldType.ENUM));
 		list.add(getField("allApprovalRequired", "ALL_APPROVAL_REQUIRED", stageRuleModule, FieldType.BOOLEAN));
 		list.add(getField("buttonType", "BUTTON_TYPE", stageRuleModule, FieldType.NUMBER));

@@ -56,6 +56,14 @@ public class StateflowTransitionContext extends ApproverWorkflowRuleContext impl
 		this.formId = formId;
 	}
 
+	private String formModuleName;
+	public String getFormModuleName() {
+		return formModuleName;
+	}
+	public void setFormModuleName(String formModuleName) {
+		this.formModuleName = formModuleName;
+	}
+
 	private DialogType dialogType;
 	public int getDialogType() {
 		if (dialogType != null) {
