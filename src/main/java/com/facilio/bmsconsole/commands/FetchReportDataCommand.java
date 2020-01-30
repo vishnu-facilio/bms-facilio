@@ -310,15 +310,15 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 
 		if (!baseModule.isParentOrChildModule(module) && !isAlreadyAdded(addedModules, module)) {
-			applyJoin(axis.getJoinOn(), "", module, selectBuilder);
+			applyJoin(axis.getJoinOn(), module, selectBuilder);
 			addedModules.add(module);
 		}
 	}
 
-	private void applyJoin (String on, String alias, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
-		if(StringUtils.isNotEmpty(alias)) {
+	private void applyJoin (String on, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
+		if(joinModule!=null && (joinModule.isCustom() && !baseModule.equals(joinModule))) {
 			selectBuilder.innerJoin(joinModule.getTableName())
-			.alias(alias)
+			.alias(getAndSetModuleAlias(joinModule.getName()))
 			.on(on);
 		}else {
 			selectBuilder.innerJoin(joinModule.getTableName())
@@ -672,7 +672,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		return spaceField;
 	}
 
-	private String getJoinOn(LookupField lookupField, String alias) {
+	private String getJoinOn(LookupField lookupField) {
 		FacilioField idField = null;
 		if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
 			idField = LookupSpecialTypeUtil.getIdField(lookupField.getSpecialType());
@@ -680,7 +680,8 @@ public class FetchReportDataCommand extends FacilioCommand {
 		else {
 			idField = FieldFactory.getIdField(lookupField.getLookupModule());
 		}
-		if(StringUtils.isNotEmpty(alias)) {
+		if(idField.getModule()!=null && (idField.getModule().isCustom() && !baseModule.equals(idField.getModule()))) {
+			String alias = getAndSetModuleAlias(idField.getModule().getName());
 			idField = idField.clone();
 			idField.setTableAlias(alias);
 		}
@@ -709,10 +710,9 @@ public class FetchReportDataCommand extends FacilioCommand {
 		while (module != null) {
 			if (lookupFields.containsKey(module.getName())) {
 				LookupField lookupFieldClone = lookupFields.get(module.getName()).clone();
-				String alias = getAndSetModuleAlias(module.getName());
-				String joinOn = getJoinOn(lookupFieldClone, alias);
+				String joinOn = getJoinOn(lookupFieldClone);
 				
-				applyJoin(joinOn, alias, module, builder);
+				applyJoin(joinOn, module, builder);
 				prevModule = module;
 				break;
 			}
