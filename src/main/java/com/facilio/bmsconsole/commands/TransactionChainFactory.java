@@ -4452,6 +4452,20 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddBulkWOCommand());
 		return chain;
 	}
+	
+	public static FacilioChain addDocumentsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddDocumentCommand());
+
+		return c;
+	}
+	
+	public static FacilioChain updateDocumentsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new UpdateDocumentsCommand());
+		
+		return c;
+	}
 }
 
 

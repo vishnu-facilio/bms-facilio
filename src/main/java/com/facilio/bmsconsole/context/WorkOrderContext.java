@@ -518,4 +518,22 @@ public class WorkOrderContext extends TicketContext {
 	public void setPrerequisiteApprover(boolean prerequisiteApprover) {
 		this.prerequisiteApprover = prerequisiteApprover;
 	}
+	
+	private Boolean workPermitNeeded;
+	
+	public Boolean getWorkPermitNeeded() {
+		return workPermitNeeded;
+	}
+	public void setWorkPermitNeeded(Boolean workPermitNeeded) {
+		this.workPermitNeeded = workPermitNeeded;
+	}
+	
+	private Boolean workPermitIssued;
+	
+	public Boolean getWorkPermitIssued() {
+		return workPermitIssued;
+	}
+	public void setWorkPermitIssued(Boolean workPermitIssued) {
+		this.workPermitIssued = workPermitIssued;
+	}
 }

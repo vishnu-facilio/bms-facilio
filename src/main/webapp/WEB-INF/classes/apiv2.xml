@@ -4978,4 +4978,17 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="documents" namespace="/api/v2/documents"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.DocumentAction" method="addDocuments" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.DocumentAction" method="updateDocuments" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.DocumentAction" method="deleteDocuments" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.DocumentAction" method="getDocumentList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 </struts>

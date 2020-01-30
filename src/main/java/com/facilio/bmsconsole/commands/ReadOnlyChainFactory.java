@@ -1879,6 +1879,13 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 	
+	public static FacilioChain getDocumentListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetDocumentsListCommand());
+		return chain;
+	}
+	
+	
 	public static FacilioChain getOccupantDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForOccupants());

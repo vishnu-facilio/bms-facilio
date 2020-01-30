@@ -2124,6 +2124,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain deleteDocumentsChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteDocumentsCommand());
+		return c;
+	}
+	
 	public static FacilioChain deleteServiceRequestsChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForServiceRequests());

@@ -443,6 +443,7 @@ public class SetTableNamesCommand extends FacilioCommand {
 		return new SetTableNamesCommand("serviceRequest", "Service_Requests");
 	}
 	
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

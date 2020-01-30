@@ -151,6 +151,12 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 		this.tenant = tenant;
 	}
 	
-	
+	private ContactsContext vendorContact;
+	public ContactsContext getVendorContact() {
+		return vendorContact;
+	}
+	public void setVendorContact(ContactsContext vendorContact) {
+		this.vendorContact = vendorContact;
+	}
 	
 }
