@@ -127,8 +127,6 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 				.withChangeSet(oldWos)
 				; //No where condition because Old records are specified
 		
-		// temp
-		CommonCommandUtil.handlePicklistFormData(fields, workOrder.getData());
 		
 		rowsUpdated = updateBuilder.update(workOrder);
 		if (updateBuilder.getChangeSet() != null) {

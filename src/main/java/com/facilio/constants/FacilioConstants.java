@@ -1,5 +1,13 @@
 package com.facilio.constants;
 
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+
 import com.facilio.activity.ActivityContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
@@ -20,13 +28,6 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
-import org.json.simple.JSONObject;
-
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 //import com.facilio.custom.CustomController;
 
@@ -1447,6 +1448,7 @@ public class FacilioConstants {
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
 			classMap.put(ASSET_ACTIVITY, ActivityContext.class);
 			classMap.put(ASSET_MOVEMENT, AssetMovementContext.class);
+			classMap.put(ASSET_BREAKDOWN, AssetBreakdownContext.class);
 			classMap.put(WORKORDER_ACTIVITY, ActivityContext.class);
 			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(CHILLER, ChillerContext.class);

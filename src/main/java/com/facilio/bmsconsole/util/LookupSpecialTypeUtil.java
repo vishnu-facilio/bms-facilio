@@ -55,6 +55,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
 				|| FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)
 				|| FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)
+				|| FacilioConstants.ContextNames.KPI.equals(specialType)
 				|| FacilioConstants.ContextNames.READING_DATA_META.equals(specialType)
 				|| FacilioConstants.ContextNames.CONTROL_GROUP.equals(specialType)
 				|| FacilioConstants.ContextNames.TASK_SECTION_MODULE.equals(specialType)
@@ -63,7 +64,6 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ModuleNames.PRINTERS.equals(specialType)
 				|| "trigger".equals(specialType)
 				|| "connectedApps".equals(specialType)
-				|| ContextNames.FORMULA_FIELD.equals(specialType)
 				;
 	}
 	

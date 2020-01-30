@@ -91,7 +91,14 @@ public class FormTemplate extends Template {
 	private boolean handleWorkOrderValue(JSONObject jsonObj, FormField field) throws Exception {
 		if (field.getName().equals("assignment")) {
 			JSONObject assignmentObj = FacilioUtil.parseJson(field.getValue().toString());
-			jsonObj.putAll(assignmentObj);
+			JSONObject assignedTo = (JSONObject) assignmentObj.get("assignedTo");
+			if (assignedTo != null && assignedTo.get("id") != null && !assignedTo.get("id").toString().isEmpty()) {
+				jsonObj.put("assignedTo", assignedTo);
+			}
+			JSONObject assignmentGroup = (JSONObject) assignmentObj.get("assignmentGroup");
+			if (assignmentGroup != null && assignmentGroup.get("id") != null && !assignmentGroup.get("id").toString().isEmpty()) {
+				jsonObj.put("assignmentGroup", assignmentGroup);
+			}
 			return true;
 		}
 		else if (field.getName().equals(ContextNames.TASK_LIST)) {

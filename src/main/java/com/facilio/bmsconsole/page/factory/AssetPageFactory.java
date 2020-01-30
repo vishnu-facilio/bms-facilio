@@ -150,6 +150,7 @@ public class AssetPageFactory extends PageFactory {
 		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) 
 				|| (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))
 				|| (AccountUtil.getCurrentOrg().getOrgId() == 253)
+				|| (AccountUtil.getCurrentOrg().getOrgId() == 297l && (module.getName().equals("ahu") || module.getName().equals("vav")))
 			) {
 			
 			Tab tab6 = page.new Tab("graphics", "graphics");

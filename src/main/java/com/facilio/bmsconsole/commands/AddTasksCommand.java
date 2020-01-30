@@ -70,6 +70,9 @@ public class AddTasksCommand extends FacilioCommand implements PostTransactionCo
 						else if (task.getFailureValue().equals(task.getInputValue())) {
 							task.setFailed(true);
 						}
+						else {
+							task.setFailed(false);
+						}
 					}
 					task.setCreatedBy(AccountUtil.getCurrentUser());
 					builder.addRecord(task);
@@ -130,6 +133,9 @@ public class AddTasksCommand extends FacilioCommand implements PostTransactionCo
 					if (StringUtils.isNotEmpty(task.getFailureValue())
 							&& task.getFailureValue().equals(task.getInputValue())) {
 						task.setFailed(true);
+					}
+					else {
+						task.setFailed(false);
 					}
 					task.setCreatedBy(AccountUtil.getCurrentUser());
 					builder.addRecord(task);

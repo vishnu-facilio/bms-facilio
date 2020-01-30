@@ -84,6 +84,9 @@ public class UpdateTaskCommand extends FacilioCommand {
 	            	   		else if (oldTask.getFailureValue().equals(task.getInputValue())) {
 	            	   			task.setFailed(true);
 	            	   		}
+	            	   		else {
+	    						task.setFailed(false);
+	    					}
 					}
 					
 					JSONObject info = new JSONObject();

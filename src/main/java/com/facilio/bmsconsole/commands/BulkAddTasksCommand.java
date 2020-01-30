@@ -104,6 +104,9 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
 	            	   		else if (task.getFailureValue().equals(task.getInputValue())) {
 	            	   			task.setFailed(true);
 	            	   		}
+	            	   		else {
+	    						task.setFailed(false);
+	    					}
                    }
 
                    // LOGGER.log(Level.ERROR, "task uniqueness " + task.getParentTicketId() + " - " + task.getResource().getId() + " - " + task.getUniqueId());

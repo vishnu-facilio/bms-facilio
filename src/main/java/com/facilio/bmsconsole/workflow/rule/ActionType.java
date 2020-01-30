@@ -1607,6 +1607,7 @@ public enum ActionType {
 		woContext.put(FacilioConstants.ContextNames.TASK_MAP, wo.getTaskList());
 		woContext.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, attachments);
 		woContext.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+		woContext.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 
 		FacilioChain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 		addWorkOrder.execute(woContext);

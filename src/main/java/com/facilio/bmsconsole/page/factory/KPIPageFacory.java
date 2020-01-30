@@ -21,14 +21,15 @@ public class KPIPageFacory extends PageFactory {
 		addTimeWidget(tab1Sec1);
 		addKpiDetailsWidget(tab1Sec1);
 
-		if (formulaField.getMatchedResourcesIds().size() == 1) {
-			addTargetWidget(tab1Sec1);
-			addViolationsWidget(tab1Sec1, false);
-			addTrendsWidget(tab1Sec1);
-		} else {
+		if (formulaField.getMatchedResourcesIds() != null && formulaField.getMatchedResourcesIds().size() > 1) {
 			addMetersWidget(tab1Sec1);
 			addViolationsWidget(tab1Sec1, true);
 			addLatestValueWidget(tab1Sec1);
+			
+		} else {
+			addTargetWidget(tab1Sec1);
+			addViolationsWidget(tab1Sec1, false);
+			addTrendsWidget(tab1Sec1);
 		}
 
 		Tab tab2 = page.new Tab("kpiViewer", "kpiViewer");

@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -893,20 +892,5 @@ public class CommonCommandUtil {
 		}
 		return eventTypes;
 	}
-	
-	public static void handlePicklistFormData(List<FacilioField> fields, Map<String, Object> data) {
-		if (data == null) {
-			return;
-		}
-		for(FacilioField field: fields) {
-			if (field.getDataTypeEnum() != null && field.getDataTypeEnum() == FieldType.ENUM) {
-				if (data.get(field.getName()) != null) {
-					String val = data.get(field.getName()).toString();
-					if (NumberUtils.isCreatable(val)) {
-						data.put(field.getName(), Long.parseLong(val));
-					}
-				}
-			}
-		}
-	}
+
 }

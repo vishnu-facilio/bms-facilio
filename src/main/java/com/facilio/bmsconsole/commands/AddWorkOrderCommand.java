@@ -98,9 +98,6 @@ public class AddWorkOrderCommand extends FacilioCommand {
 				LOGGER.info("Workorder subject : "+ workOrder.getSubject()+"\n Description : "+workOrder.getDescription());
 			}
 			
-			// temp
-			 CommonCommandUtil.handlePicklistFormData(fields, workOrder.getData());
-			
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
 			
