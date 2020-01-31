@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
@@ -12,7 +13,10 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.HistoricalRunForReadingRuleCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -33,6 +37,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
@@ -46,30 +51,46 @@ import com.facilio.time.DateTimeUtil;
 public class HistoricalAlarmOccurrenceDeletionJob extends FacilioJob {
 	
 	private static final Logger LOGGER = LogManager.getLogger(HistoricalAlarmOccurrenceDeletionJob.class.getName());
-
+	
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		
-		long parentRuleResourceLoggerId = jc.getJobId();
-		WorkflowRuleHistoricalLoggerContext parentRuleResourceLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(parentRuleResourceLoggerId);
+		Long parentRuleResourceLoggerId = null;
+		WorkflowRuleHistoricalLoggerContext parentRuleResourceLoggerContext = null;
+		
+		try {
+			parentRuleResourceLoggerId = jc.getJobId();
+			parentRuleResourceLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(parentRuleResourceLoggerId);
 
-		Long actualStartTime = parentRuleResourceLoggerContext.getStartTime();
-		Long actualEndTime = parentRuleResourceLoggerContext.getEndTime();
-		Long ruleId = parentRuleResourceLoggerContext.getRuleId();
-		Long resourceId = parentRuleResourceLoggerContext.getResourceId();
-		if (ruleId == null || resourceId == null) {
-			return;
+			Long actualStartTime = parentRuleResourceLoggerContext.getStartTime();
+			Long actualEndTime = parentRuleResourceLoggerContext.getEndTime();
+			Long ruleId = parentRuleResourceLoggerContext.getRuleId();
+			Long resourceId = parentRuleResourceLoggerContext.getResourceId();
+			if (ruleId == null || resourceId == null) {
+				return;
+			}
+			
+			DateRange modifiedDateRange = deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime);	
+			long lesserStartTime = modifiedDateRange.getStartTime();
+			long greaterEndTime = modifiedDateRange.getEndTime();
+			
+			saveJobPropsForAlarmProcessing(parentRuleResourceLoggerId, ruleId, resourceId, lesserStartTime, greaterEndTime);	//To reprocess the alarms with the modified daterange in which it was deleted
+			 		
+			updateParentRuleResourceLoggerToEventGeneratingState(parentRuleResourceLoggerContext);
+			
+			triggerGroupedTimeSplitRuleResourceLoggers(parentRuleResourceLoggerId);		
 		}
 		
-		DateRange modifiedDateRange = deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime);	
-		long lesserStartTime = modifiedDateRange.getStartTime();
-		long greaterEndTime = modifiedDateRange.getEndTime();
-		
-		saveJobPropsForAlarmProcessing(parentRuleResourceLoggerId, ruleId, resourceId, lesserStartTime, greaterEndTime);	//To reprocess the alarms with the modified daterange in which it was deleted
-		 		
-		updateParentRuleResourceLoggerToEventGeneratingState(parentRuleResourceLoggerContext);
-		
-		triggerGroupedTimeSplitRuleResourceLoggers(parentRuleResourceLoggerId);	
+		catch (Exception historicalRuleDeletionException) {
+			LOGGER.error("HISTORICAL RULE DELETION JOB COMMAND FAILED, JOB ID -- : "+parentRuleResourceLoggerId+ " Exception -- " +historicalRuleDeletionException.getMessage());
+			if(parentRuleResourceLoggerContext != null)
+			{
+				historicalRuleDeletionException.printStackTrace();
+				parentRuleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.FAILED.getIntVal());
+				parentRuleResourceLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
+				WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(parentRuleResourceLoggerContext);
+			}
+		}
 	}
 
 	public static DateRange deleteEntireAlarmOccurrences(long ruleId, long resourceId, long startTime, long endTime) throws Exception 
@@ -84,15 +105,31 @@ public class HistoricalAlarmOccurrenceDeletionJob extends FacilioJob {
 			
 			if (alarmOccurrenceList.get(0).getCreatedTime() < startTime) 
 			{
-				AlarmOccurrenceContext initialEdgeAlarmOccurrence = alarmOccurrenceList.get(0);			
+				AlarmOccurrenceContext initialEdgeAlarmOccurrence = alarmOccurrenceList.get(0);
+//				AlarmSeverityContext clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
+//				
+//				BaseEventContext nextClosestEvent = getNextClosestEvent(initialEdgeAlarmOccurrence, startTime);
+//				if(nextClosestEvent != null && nextClosestEvent.getSeverity().equals(clearSeverity))
+//				{
+//					startTime = nextClosestEvent.getCreatedTime();
+//				}				
 				clearAlarmOccurrenceIdForEdgeEvents(initialEdgeAlarmOccurrence, initialEdgeAlarmOccurrence.getCreatedTime(), startTime); 
-				startTime = initialEdgeAlarmOccurrence.getCreatedTime();	
+				startTime = initialEdgeAlarmOccurrence.getCreatedTime();
 			}
 			if (lastAlarmOccurrence.getClearedTime() == -1 || lastAlarmOccurrence.getClearedTime() > endTime) 
-			{		
+			{
 				BaseEventContext finalEvent = getFinalEventForAlarmOccurrence(lastAlarmOccurrence);
 				if(finalEvent != null && finalEvent.getCreatedTime() > endTime) {
-					clearAlarmOccurrenceIdForEdgeEvents(lastAlarmOccurrence, endTime, finalEvent.getCreatedTime()); 
+//					AlarmSeverityContext clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
+//					if(finalEvent.getSeverity().equals(clearSeverity))
+//					{
+//						BaseEventContext nextClosestEvent = getNextClosestEvent(lastAlarmOccurrence, endTime);
+//						if(!(nextClosestEvent != null && nextClosestEvent.getId() == finalEvent.getId() && nextClosestEvent.getSeverity().equals(clearSeverity)))
+//						{
+//							clearAlarmOccurrenceIdForEdgeEvents(lastAlarmOccurrence, endTime, finalEvent.getCreatedTime()); //avoid event deletion
+//						}
+//					} 
+					clearAlarmOccurrenceIdForEdgeEvents(lastAlarmOccurrence, endTime, finalEvent.getCreatedTime()); //avoid event deletion
 					endTime = finalEvent.getCreatedTime();
 				}
 			}	
@@ -113,8 +150,8 @@ public class HistoricalAlarmOccurrenceDeletionJob extends FacilioJob {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allEventFields);
 		
 		List<FacilioField> eventFields = new ArrayList<FacilioField>();
-		eventFields.add(fieldMap.get("lastOccurrenceId"));
 		eventFields.add(fieldMap.get("baseAlarm"));	
+		eventFields.add(fieldMap.get("alarmOccurrence"));
 		
 		UpdateRecordBuilder<BaseEventContext> updateBuilder = new UpdateRecordBuilder<BaseEventContext>()
 				.module(eventModule)
@@ -122,10 +159,32 @@ public class HistoricalAlarmOccurrenceDeletionJob extends FacilioJob {
 				.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
 				.fields(eventFields);
 		
+		BaseAlarmContext baseAlarmNull = new BaseAlarmContext();
+		baseAlarmNull.setId(-99);
+		
+		AlarmOccurrenceContext alarmOccurrenceContextNull = new AlarmOccurrenceContext();
+		alarmOccurrenceContextNull.setId(-99);
+		
 		Map<String, Object> map = new HashMap<>();
-		map.put("lastOccurrenceId", -99);
-		map.put("baseAlarm", -99);
+		map.put("baseAlarm", FieldUtil.getAsProperties(baseAlarmNull));
+		map.put("alarmOccurrence", FieldUtil.getAsProperties(alarmOccurrenceContextNull));
 		updateBuilder.updateViaMap(map);
+	}
+	
+	public static BaseEventContext getNextClosestEvent(AlarmOccurrenceContext alarmOccurrence, long createdTime) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
+		
+		SelectRecordsBuilder<BaseEventContext> selectEventbuilder = new SelectRecordsBuilder<BaseEventContext>()
+				.select(modBean.getAllFields(eventModule.getName()))
+				.module(modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT))
+				.beanClass(BaseEventContext.class)
+				.andCondition(CriteriaAPI.getCondition("ALARM_OCCURRENCE_ID", "alarmOccurrence","" +alarmOccurrence.getId(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" +createdTime, NumberOperators.GREATER_THAN))
+				.orderBy("CREATED_TIME").limit(1);
+		
+		BaseEventContext nextClosestEvent = selectEventbuilder.fetchFirst();
+		return nextClosestEvent;
 	}
 	
 

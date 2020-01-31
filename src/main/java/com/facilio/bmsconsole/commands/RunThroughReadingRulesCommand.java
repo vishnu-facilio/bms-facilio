@@ -86,6 +86,8 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		
 		int minutesInterval = 24*60; 								//As of now, splitting up the rule_resource job each day
 		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), minutesInterval);
+		DateRange firstInterval = intervals.get(0);
+		DateRange lastInterval = intervals.get(intervals.size()-1);
 		
 		long loggerGroupId = -1l;
 		boolean isFirst = true;
@@ -105,9 +107,17 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 				
 				for(DateRange interval:intervals)
 				{		
-					workflowRuleHistoricalLoggerContext.setRuleResourceLoggerId(workflowRuleHistoricalLoggerContext.getId());
 					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = setWorkflowRuleHistoricalLoggerContext(rule.getId(), interval, finalResourceId, loggerGroupId, loggerGroupId);	
-					WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLogger);								
+					WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLogger);	
+					
+					if(interval.getStartTime() == firstInterval.getStartTime() && interval.getEndTime() == firstInterval.getEndTime())
+					{
+						saveFirstAndLastJobPropsForEventProcessing(workflowRuleHistoricalLogger.getId(),rule.getId(),finalResourceId, firstInterval.getStartTime(), firstInterval.getEndTime(), loggerGroupId,  true, false); 
+					}
+					if(interval.getStartTime() == lastInterval.getStartTime() && interval.getEndTime() == lastInterval.getEndTime())
+					{
+						saveFirstAndLastJobPropsForEventProcessing(workflowRuleHistoricalLogger.getId(),rule.getId(),finalResourceId, lastInterval.getStartTime(), lastInterval.getEndTime(), loggerGroupId, false, true); 
+					}
 				}
 				isFirst = false;
 			}
@@ -120,9 +130,17 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 				long ruleResourceLoggerId = workflowRuleHistoricalLoggerContext.getId();
 				for(DateRange interval:intervals)
 				{
-					workflowRuleHistoricalLoggerContext.setRuleResourceLoggerId(workflowRuleHistoricalLoggerContext.getId());
 					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = setWorkflowRuleHistoricalLoggerContext(rule.getId(), interval, finalResourceId, ruleResourceLoggerId, loggerGroupId);	
-					WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLogger);					
+					WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLogger);	
+					
+					if(interval.equals(firstInterval))
+					{
+						saveFirstAndLastJobPropsForEventProcessing(workflowRuleHistoricalLogger.getId(),rule.getId(),finalResourceId, firstInterval.getStartTime(), firstInterval.getEndTime(), ruleResourceLoggerId,  true, false); 
+					}
+					if(interval.equals(lastInterval))
+					{
+						saveFirstAndLastJobPropsForEventProcessing(workflowRuleHistoricalLogger.getId(),rule.getId(),finalResourceId, lastInterval.getStartTime(), lastInterval.getEndTime(), ruleResourceLoggerId, false, true); 
+					}
 				}
 			}
 		}	
@@ -164,5 +182,17 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		workflowRuleHistoricalLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
 		workflowRuleHistoricalLoggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
 		return workflowRuleHistoricalLoggerContext;	
+	}
+	
+	private static void saveFirstAndLastJobPropsForEventProcessing(long loggerId, long ruleId, long resourceId, long startTime, long endTime, long parentRuleResourceLoggerId, boolean isFirstIntervalJob, boolean isLastIntervalJob) throws Exception {
+		JSONObject props = new JSONObject();
+		props.put("ruleId", ruleId);
+		props.put("resourceId", resourceId);
+		props.put("startTime", startTime);
+		props.put("endTime", endTime);
+		props.put("parentRuleResourceLoggerId", parentRuleResourceLoggerId);
+		props.put("isFirstIntervalJob", isFirstIntervalJob);
+		props.put("isLastIntervalJob",isLastIntervalJob);
+		BmsJobUtil.addJobProps(loggerId, "HistoricalRunForReadingRule", props); 		
 	}
 }

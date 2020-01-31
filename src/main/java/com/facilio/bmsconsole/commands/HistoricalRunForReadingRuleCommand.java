@@ -44,6 +44,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.events.constants.EventConstants;
@@ -75,6 +76,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 		try {
 			long jobStartTime = System.currentTimeMillis();
 			jobId = (long) jobContext.get(FacilioConstants.ContextNames.HISTORICAL_RULE_JOB_ID);
+			String jobName = (String) jobContext.get(FacilioConstants.ContextNames.HISTORICAL_RULE_JOB);
 			workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(jobId);
 			
 			if(workflowRuleHistoricalLoggerContext != null && workflowRuleHistoricalLoggerContext.getStatusAsEnum() != null)
@@ -90,6 +92,24 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 				Long endTime = workflowRuleHistoricalLoggerContext.getEndTime();
 				Long resourceId = workflowRuleHistoricalLoggerContext.getResourceId();
 				Long ruleId = workflowRuleHistoricalLoggerContext.getRuleId();
+				
+				JSONObject props = BmsJobUtil.getJobProps(jobId, jobName);
+				Boolean isFirstIntervalJob = null;
+				Boolean isLastIntervalJob = null;
+				boolean defaultEventPropsMatchCondition = true;
+				
+				if(props != null)
+				{
+					Long propsRuleId = (Long) props.get("ruleId");
+					Long propsResourceId = (Long) props.get("resourceId");
+					Long propsParentRuleResourceLoggerId = (Long) props.get("parentRuleResourceLoggerId");
+					isFirstIntervalJob = (Boolean) props.get("isFirstIntervalJob");
+					isLastIntervalJob = (Boolean) props.get("isLastIntervalJob");
+					defaultEventPropsMatchCondition = (propsRuleId == ruleId) && (propsResourceId == resourceId) && (propsParentRuleResourceLoggerId == workflowRuleHistoricalLoggerContext.getRuleResourceLoggerId());
+				}
+				
+				isFirstIntervalJob = (isFirstIntervalJob != null) ? isFirstIntervalJob : Boolean.FALSE;
+				isLastIntervalJob = (isLastIntervalJob != null) ? isLastIntervalJob : Boolean.FALSE;
 
 				ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
 				if (readingRule == null || resourceId == null) {
@@ -142,6 +162,22 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 				List<ReadingEventContext> events = new ArrayList<>();
 				ReadingEventContext previousEventMeta = new ReadingEventContext();
 				
+				if(defaultEventPropsMatchCondition && isFirstIntervalJob)
+				{
+					List<ReadingEventContext> beforeFetchFirstEvent = new ArrayList<ReadingEventContext>();	
+					ReadingContext previousFetchStartReading = fetchSingleReading(readingRule, resourceId, startTime, NumberOperators.LESS_THAN, "TTIME DESC");
+					
+					if(previousFetchStartReading != null)
+					{
+						Map<String, List<ReadingDataMeta>> beforeCurrentFields = prepareCurrentFieldsRDM(readingRule, previousFetchStartReading.getTtime(), startTime, resourceId, fields);
+						executeWorkflows(readingRule, Collections.singletonList(previousFetchStartReading), beforeCurrentFields, fields, beforeFetchFirstEvent, new ReadingEventContext());
+						if(beforeFetchFirstEvent != null && !beforeFetchFirstEvent.isEmpty() && !beforeFetchFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
+						{
+							previousEventMeta = beforeFetchFirstEvent.get(0);
+						}
+					}		
+				}
+				
 				readings = fetchReadings(readingRule, resourceId, startTime, endTime);
 
 				if(readings != null && !readings.isEmpty())
@@ -153,19 +189,22 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 					if(events != null && !events.isEmpty())
 					{
 						ReadingEventContext finalEventOfCurrentJobInterval = events.get(events.size() - 1);
-						if(finalEventOfCurrentJobInterval.getCreatedTime() == endTime && !finalEventOfCurrentJobInterval.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
+						if(defaultEventPropsMatchCondition && !isLastIntervalJob && finalEventOfCurrentJobInterval.getCreatedTime() == endTime && !finalEventOfCurrentJobInterval.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 						{		
 							previousEventMeta = finalEventOfCurrentJobInterval;
 							List<ReadingEventContext> nextJobFirstEvent = new ArrayList<ReadingEventContext>();
 							
-							ReadingContext nextSingleReading = fetchNextSingleReading(readingRule, resourceId, endTime);
-							Map<String, List<ReadingDataMeta>> extendedCurrentFields = prepareCurrentFieldsRDM(readingRule, endTime, nextSingleReading.getTtime(), resourceId, fields);
-								
-							executeWorkflows(readingRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta);
-							if(nextJobFirstEvent != null && nextJobFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
+							ReadingContext nextSingleReading = fetchSingleReading(readingRule, resourceId, endTime, NumberOperators.GREATER_THAN, "TTIME");
+							if(nextSingleReading != null)
 							{
-								events.add(nextJobFirstEvent.get(0));
-							}
+								Map<String, List<ReadingDataMeta>> extendedCurrentFields = prepareCurrentFieldsRDM(readingRule, endTime, nextSingleReading.getTtime(), resourceId, fields);
+								
+								executeWorkflows(readingRule, Collections.singletonList(nextSingleReading), extendedCurrentFields, fields, nextJobFirstEvent, previousEventMeta);
+								if(nextJobFirstEvent != null && !nextJobFirstEvent.isEmpty() && nextJobFirstEvent.get(0).getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
+								{
+									events.add(nextJobFirstEvent.get(0));
+								}
+							}	
 						}
 						
 						insertEventsWithoutAlarmOccurrenceProcessed(events, ruleId);
@@ -181,7 +220,6 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 		catch (Exception historicalRuleException) {
 			exceptionMessage = historicalRuleException.getMessage();
 			stack = historicalRuleException.getStackTrace();
-			historicalRuleException.printStackTrace();
 			throw historicalRuleException;
 		}
 		
@@ -516,7 +554,7 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 		return selectBuilder.get();
 	}
 	
-	private ReadingContext fetchNextSingleReading(ReadingRuleContext readingRule, long resourceId, long endTime) throws Exception {
+	private ReadingContext fetchSingleReading(ReadingRuleContext readingRule, long resourceId, long ttime, Operator<String> NumberOperator, String orderBy) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(readingRule.getReadingField().getModule().getName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -528,9 +566,9 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 																.module(readingRule.getReadingField().getModule())
 																.beanClass(ReadingContext.class)
 																.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(resourceId), PickListOperators.IS))
-																.andCondition(CriteriaAPI.getCondition(ttimeField, ""+endTime, NumberOperators.GREATER_THAN))
+																.andCondition(CriteriaAPI.getCondition(ttimeField, ""+ttime, NumberOperator))
 																.andCondition(CriteriaAPI.getCondition(readingRule.getReadingField(), CommonOperators.IS_NOT_EMPTY))
-																.orderBy("TTIME").limit(1)
+																.orderBy(orderBy).limit(1)
 																;
 		
 		return selectBuilder.fetchFirst();

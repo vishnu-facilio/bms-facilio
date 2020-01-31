@@ -38,34 +38,50 @@ public class HistoricalRuleAlarmProcessingJob extends FacilioJob {
 	
 	private static final Logger LOGGER = LogManager.getLogger(HistoricalRuleAlarmProcessingJob.class.getName());
 
+	
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		
-		long parentRuleResourceLoggerId = jc.getJobId();
-		JSONObject props = BmsJobUtil.getJobProps(parentRuleResourceLoggerId, jc.getJobName());
-		Long ruleId = (Long) props.get("ruleId");
-		Long resourceId = (Long) props.get("resourceId");
-		Long lesserStartTime = (Long) props.get("startTime");
-		Long greaterEndTime = (Long) props.get("endTime");	
+		Long parentRuleResourceLoggerId = null;
+		WorkflowRuleHistoricalLoggerContext parentRuleResourceLoggerContext = null;
 		
-		WorkflowRuleHistoricalLoggerContext parentRuleResourceLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(parentRuleResourceLoggerId);
-		
-		List<ReadingEventContext> readingEvents = fetchAllEventsBasedOnAlarmDeletionRange(ruleId, resourceId, lesserStartTime, greaterEndTime);
-		
-		System.out.println("Fetched Events: "+ readingEvents);
-		if (!readingEvents.isEmpty())
-		{
-			FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
-			addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, readingEvents);
-			addEvent.execute();
+		try {
+			parentRuleResourceLoggerId = jc.getJobId();
+			JSONObject props = BmsJobUtil.getJobProps(parentRuleResourceLoggerId, jc.getJobName());
+			Long ruleId = (Long) props.get("ruleId");
+			Long resourceId = (Long) props.get("resourceId");
+			Long lesserStartTime = (Long) props.get("startTime");
+			Long greaterEndTime = (Long) props.get("endTime");	
 			
-			System.out.println("Added Events: "+ readingEvents);
-			Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
-			if(alarmOccurrenceCount != null)
+			 parentRuleResourceLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(parentRuleResourceLoggerId);
+			
+			List<ReadingEventContext> readingEvents = fetchAllEventsBasedOnAlarmDeletionRange(ruleId, resourceId, lesserStartTime, greaterEndTime);
+			
+			if (!readingEvents.isEmpty())
 			{
-				parentRuleResourceLoggerContext.setAlarmCount(alarmOccurrenceCount);
-			}				
-			WorkflowRuleHistoricalLoggerUtil.updateRuleLoggerContextToResolvedState(parentRuleResourceLoggerContext);				
+				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
+				addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, readingEvents);
+				addEvent.execute();
+				
+				System.out.println("Added Events: "+ readingEvents);
+				Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
+				if(alarmOccurrenceCount != null)
+				{
+					parentRuleResourceLoggerContext.setAlarmCount(alarmOccurrenceCount);
+				}				
+				WorkflowRuleHistoricalLoggerUtil.updateRuleLoggerContextToResolvedState(parentRuleResourceLoggerContext);				
+			}		
+		}
+		
+		catch (Exception historicalAlarmProcessingException) {
+			LOGGER.error("HISTORICAL RULE ALARM PROCESSING JOB COMMAND FAILED, JOB ID -- : "+parentRuleResourceLoggerId+ " Exception -- " +historicalAlarmProcessingException.getMessage());
+			if(parentRuleResourceLoggerContext != null)
+			{
+				historicalAlarmProcessingException.printStackTrace();
+				parentRuleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.FAILED.getIntVal());
+				parentRuleResourceLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
+				WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(parentRuleResourceLoggerContext);
+			}
 		}
 	}
 	
