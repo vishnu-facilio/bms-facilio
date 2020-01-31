@@ -308,6 +308,7 @@ public class FacilioConstants {
 		public static final String READING_ALARM_OCCURRENCE = "readingalarmoccurrence";
 		public static final String VIOLATION_ALARM_OCCURRENCE = "violationalarmoccurrence";
 		public static final String LATEST_ALARM_OCCURRENCE = "latestAlarmOccurrence";
+		public static final String AGENT_ALARM = "agentAlarm";
 		public static final String AGENT_ALARM_OCCURRENCE = "agentAlarmOccurrence";
 		public static final String BASE_ALARM = "basealarm";
 		public static final String BASE_EVENT = "baseevent";
