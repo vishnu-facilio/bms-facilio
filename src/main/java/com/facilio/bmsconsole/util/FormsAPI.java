@@ -19,16 +19,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormSiteRelationContext;
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.constants.FacilioConstants.Builder;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -39,18 +37,13 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
@@ -686,11 +679,16 @@ public class FormsAPI {
 	}
 	
 	private static void addUnusedWebSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
+		List<FormField> fields = new ArrayList<>();
 		switch (form.getModule().getName()) {
 			case ContextNames.WORK_ORDER:
-				defaultFields.addAll(FormFactory.getRequesterFormFields(false));
+				fields.addAll(FormFactory.getRequesterFormFields(false));
+				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
 				break;
+			// Add fields here if it has to be shown in unused list and not there in the default form
 		}
+		
+		addToDefaultFields(defaultFields, fields);
 
 		if (form.getModule().isCustom()) {
 			
@@ -714,11 +712,23 @@ public class FormsAPI {
 	}
 	
 	private static void addUnusedPortalSystemFields(FacilioForm form, List<FormField> defaultFields) {
+		List<FormField> fields = new ArrayList<>();
 		switch (form.getModule().getName()) {
 			case ContextNames.WORK_ORDER:
-				defaultFields.addAll(FormFactory.getWoClassifierFields());
-				defaultFields.add(FormFactory.getWoResourceField());
+				fields.addAll(FormFactory.getWoClassifierFields());
+				fields.add(FormFactory.getWoResourceField());
 				break;
+			// Add fields here if it has to be shown in unused list and not there in the default form
+		}
+		
+		
+		addToDefaultFields(defaultFields, fields);
+	}
+	
+	private static void addToDefaultFields(List<FormField> defaultFields, List<FormField> newFields) {
+		if (!newFields.isEmpty()) {
+			List<String> fieldNames = defaultFields.stream().map(FormField::getName).collect(Collectors.toList());
+			defaultFields.addAll(newFields.stream().filter(field -> fieldNames.contains(field.getName())).collect(Collectors.toList()));
 		}
 	}
 	
@@ -781,6 +791,9 @@ public class FormsAPI {
 			List<FormField> defaultFields = new ArrayList<>(defaultForm.getFields());
 			if (defaultFields == null) {
 				defaultFields = getFormFieldsFromSections(form.getSections());
+			}
+			if (moduleName.equals(ContextNames.WORK_ORDER)) {
+				defaultFields.add(new FormField("comment", FieldDisplayType.TICKETNOTES, "Comment", Required.OPTIONAL, "ticketnotes", defaultFields.size()+1, 1));
 			}
 			setFieldDetails(modBean, defaultFields, moduleName);
 			allFields.addAll(defaultFields);
