@@ -47,7 +47,7 @@ public interface OrgBean {
 	
 	public List getEnergyMeterList() throws Exception ;
 
-	public int getFeatureLicense() throws Exception;
+	public long getFeatureLicense() throws Exception;
 	
 	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception;
 

@@ -306,7 +306,7 @@ public class OrgBeanImpl implements OrgBean {
 		return ((List<EnergyMeterContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
 	}
 		
-	public int getFeatureLicense() throws Exception{
+	public long getFeatureLicense() throws Exception{
 
 //    	String orgidString = String.valueOf(orgId);
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

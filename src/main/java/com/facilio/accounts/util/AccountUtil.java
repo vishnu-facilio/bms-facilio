@@ -263,10 +263,10 @@ public class AccountUtil {
 	}
 
     
-    public static int getOrgFeatureLicense(long orgId) throws Exception
+    public static long getOrgFeatureLicense(long orgId) throws Exception
     {
     	OrgBean bean = (OrgBean) BeanFactory.lookup("OrgBean", orgId);
-    	int licence =bean.getFeatureLicense();
+    	long licence =bean.getFeatureLicense();
     	System.out.println("#########$$$$ Orgbean : orgid "+orgId+", license : "+licence);
     	return licence;
     	
