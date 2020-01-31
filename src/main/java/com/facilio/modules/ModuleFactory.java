@@ -52,6 +52,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.TASK, getTasksModule());
 		moduleMap.put(FacilioConstants.ContextNames.ALARM, getAlarmsModule());
 		moduleMap.put(FacilioConstants.ContextNames.ASSET, getAssetsModule());
+		moduleMap.put(FacilioConstants.ContextNames.ENERGY_METER, getEnergyMeterModule());
 		moduleMap.put("jsontemplate", getJSONTemplateModule());
 		moduleMap.put("preventivemaintenance", getPreventiveMaintenanceModule());
 		moduleMap.put("connectedApps", getConnectedAppsModule());
@@ -340,6 +341,16 @@ public class ModuleFactory {
 
 		return fieldModule;
 	}
+	
+	public static FacilioModule getEnergyMeterModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName(FacilioConstants.ContextNames.ENERGY_METER);
+		fieldModule.setDisplayName("Energy Meter");
+		fieldModule.setTableName("Energy_Meter");
+
+		return fieldModule;
+	}
+	
 	public static FacilioModule getRelationshipModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("relationship");

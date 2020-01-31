@@ -12,12 +12,15 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -191,12 +194,14 @@ public class FormFactory {
 				List<FormSection> sections = new ArrayList<>();
 				form.setSections(sections);
 				FormSection section = new FormSection("Asset", 1, form.getFields(), true);
+				section.setShowLabel(false);
 				sections.add(section);
 			}
 			else if (moduleName.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
 				List<FormSection> sections = new ArrayList<>();
 				form.setSections(sections);
 				FormSection section = new FormSection("EnergyMeter", 1, form.getFields(), true);
+				section.setShowLabel(false);
 				sections.add(section);
 			}
 			else if (moduleName.equals(FacilioConstants.ContextNames.PURCHASE_ORDER)) {

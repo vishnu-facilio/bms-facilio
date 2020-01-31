@@ -92,7 +92,7 @@ public class FormAction extends FacilioAction {
 		this.fetchExtendedModuleForms = fetchExtendedModuleForms;
 	}
 
-	private long formId;
+	private long formId = -1;
     private long formFieldId;
     
 	

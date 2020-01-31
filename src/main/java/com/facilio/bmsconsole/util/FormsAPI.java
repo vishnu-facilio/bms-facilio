@@ -692,7 +692,7 @@ public class FormsAPI {
 	
 	private static void addUnusedWebSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
 		List<FormField> fields = new ArrayList<>();
-		if (form.getModule() != null && form.getModule().getName() != null) {
+		if (form.getModule().getName() != null) {
 			switch (form.getModule().getName()) {
 			case ContextNames.WORK_ORDER:
 				fields.addAll(FormFactory.getRequesterFormFields(false));
@@ -704,7 +704,7 @@ public class FormsAPI {
 		
 		addToDefaultFields(defaultFields, fields);
 
-		if (form.getModule() != null && form.getModule().isCustom()) {
+		if (form.getModule().isCustom()) {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			boolean hasPhoto = false;
