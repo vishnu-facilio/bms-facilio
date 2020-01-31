@@ -23,8 +23,10 @@ import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -318,9 +320,14 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 				JSONObject info = new JSONObject();
 				info.put("field", field.getName());
 				info.put("displayName", field.getDisplayName());
+				
 				if (field.getName().contains("resource")) {
 					ResourceContext resource = ResourceAPI.getResource((long) newValue);
 					info.put("newValue", resource.getName());
+				}
+				else if(field.getName().contains("vendor") && workOrder.getVendor().getId() > 0) {
+					VendorContext vendor = InventoryApi.getVendor(workOrder.getVendor().getId());
+					info.put("newValue", vendor.getName());
 				}
 				else {
 					if (field.getName().contains("preRequisiteApproved")) {

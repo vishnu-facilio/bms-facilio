@@ -391,7 +391,8 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.VISITOR,
 					FacilioConstants.ContextNames.VISITOR_INVITE,
 					FacilioConstants.ContextNames.VISITOR_LOGGING,
-					FacilioConstants.ContextNames.WORKPERMIT
+					FacilioConstants.ContextNames.WORKPERMIT,
+					FacilioConstants.ContextNames.CONTACT
 					
 					
 			))
