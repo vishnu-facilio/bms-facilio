@@ -185,6 +185,20 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	TRIM(11,"trim") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			String string = objects[0].toString();
+			return string.trim();
+		}
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
