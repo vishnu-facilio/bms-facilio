@@ -161,6 +161,30 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	INDEX_OF(10,"indexOf") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			String string = objects[0].toString();
+			String subString = objects[1].toString();
+			int fromIndex = -1;
+			if(objects.length > 2) {
+				fromIndex = Double.valueOf(objects[2].toString()).intValue();
+			}
+			if(fromIndex >= 0) {
+				return string.indexOf(subString,fromIndex);
+			}
+			else {
+				return string.indexOf(subString);
+			}
+		}
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length < 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;

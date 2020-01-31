@@ -1100,6 +1100,21 @@ public class TransactionChainFactory {
 		//chain.addCommand(new ProcessTimeSeriesData());
 		return chain;
 	}
+	
+	public static FacilioChain getAddCustomDataChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ProcessCustomDataCommand());
+		chain.addCommand(new AddCustomDataCommand());
+
+		return chain;
+	}
+	
+	public static FacilioChain addModuleBulkDataChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GenericAddModuleDataListCommand());
+		chain.addCommand(new ExecuteAllWorkflowsCommand());
+		return chain;
+	}
 
 		public static FacilioChain getProcessHistoricalDataChain() {
 			FacilioChain c = getDefaultChain();

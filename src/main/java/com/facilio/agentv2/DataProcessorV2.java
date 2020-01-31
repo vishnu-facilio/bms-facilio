@@ -17,6 +17,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.util.AckUtil;
 import org.apache.log4j.LogManager;
@@ -110,6 +111,17 @@ public class DataProcessorV2
             LOGGER.info(" publish type for this record is " + publishType.name());
             // markMetrices(agent.getId(), publishType, payload);
             switch (publishType) {
+            	case CUSTOM:
+            		Controller customController = cU.getControllerFromAgentPayload(payload);
+            		
+	                 JSONObject customPayload = (JSONObject) payload.clone();
+	                 if (customController != null) {
+	                	 customPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, customController.getId());
+	                	 customPayload.put(FacilioConstants.ContextNames.CONTROLLER, FieldUtil.getAsJSON(customController));
+	                 }
+	
+	                 processCustom(customPayload,customController);
+            		break;
                 case AGENT:
                     processStatus = processAgent(payload, agent);
                     break;
@@ -255,6 +267,35 @@ public class DataProcessorV2
             return true;
             /*ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             bean.processNewTimeSeries(payload,controllerTs);*/
+        } catch (Exception e) {
+            LOGGER.info("Exception while processing timeseries data ", e);
+        }
+        return false;
+    }
+    
+    private boolean processCustom(JSONObject payload, Controller controller) {
+
+    	try {
+        	
+            FacilioChain chain = TransactionChainFactory.getAddCustomDataChain();
+            FacilioContext context = chain.getContext();
+            //TODO
+            context.put(AgentConstants.CONTROLLER, controller);
+            if (controller != null) {
+                context.put(AgentConstants.CONTROLLER_ID, controller.getId());
+                context.put(AgentConstants.AGENT_ID, controller.getAgentId());
+            } 
+            
+            context.put(AgentConstants.DATA, payload);
+            
+            if (payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)) {
+                context.put(AgentConstants.TIMESTAMP, payload.get(AgentConstants.TIMESTAMP));
+            } else {
+                context.put(AgentConstants.TIMESTAMP, System.currentTimeMillis());
+            }
+            chain.execute();
+            LOGGER.info(" done processes custom data command ");
+            return true;
         } catch (Exception e) {
             LOGGER.info("Exception while processing timeseries data ", e);
         }

@@ -706,6 +706,24 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
+	
+	GET_MILLISEC_FROM_FORMATED_DATE_STRING(33,"getMilliSecondFromFormatedDateString") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			String timeString = objects[0].toString();
+			String formatString = objects[1].toString();
+			SimpleDateFormat sdf = new SimpleDateFormat(formatString);
+			Date date = sdf.parse(timeString);
+			long millis = date.getTime();
+			
+			return millis;
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;

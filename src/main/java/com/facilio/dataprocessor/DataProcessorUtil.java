@@ -196,6 +196,9 @@ public class DataProcessorUtil {
 
             if (deviceLastMessageTime != lastMessageReceivedTime) {
                 switch (publishType) {
+                	case custom:
+                		
+                		break;
                     case timeseries:
                         processTimeSeries(record, payLoad, true); //NC
                         // updateDeviceTable(record.getPartitionKey());

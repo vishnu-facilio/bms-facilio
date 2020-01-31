@@ -411,6 +411,7 @@ public class FieldFactory {
 		fields.add(getField(AgentKeys.LAST_DATA_RECEIVED_TIME,"LAST_DATA_RECEIVED_TIME",module,FieldType.NUMBER));
 		fields.add(getField(AgentKeys.STATE,"STATE",module,FieldType.NUMBER));
 		fields.add(getField(AgentKeys.SITE_ID,"SITE_ID",module,FieldType.NUMBER));
+		fields.add(getField(AgentKeys.TRANSFORM_WORKFLOW_ID,"TRANSFORM_WORKFLOW_ID",module,FieldType.NUMBER));
 		fields.add(getWritableField(module));
 		fields.add(getDeletedTimeField(module));
 		return fields;
@@ -434,6 +435,7 @@ public class FieldFactory {
 		fields.add(getField(AgentConstants.SITE_ID, "SITE_ID", module, FieldType.NUMBER));
 		fields.add(getWritableField(module));
 		fields.add(getField(AgentConstants.DELETED_TIME, "DELETED_TIME", FieldType.NUMBER));
+		fields.add(getField(AgentKeys.TRANSFORM_WORKFLOW_ID,"TRANSFORM_WORKFLOW_ID",module,FieldType.NUMBER));
 		return fields;
 	}
 

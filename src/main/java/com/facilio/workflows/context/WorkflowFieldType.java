@@ -1,14 +1,17 @@
 package com.facilio.workflows.context;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.cb.context.*;
+import org.json.simple.JSONObject;
 
-import java.math.BigDecimal;
+import com.facilio.cb.context.ChatBotConfirmContext;
+import com.facilio.cb.context.ChatBotExecuteContext;
+import com.facilio.cb.context.ChatBotParamContext;
 
 public enum WorkflowFieldType {
 
@@ -16,7 +19,7 @@ public enum WorkflowFieldType {
 	STRING(1, "String",String.class),
 	NUMBER(2, "Number",Integer.class,Long.class,Double.class,BigDecimal.class),
 	BOOLEAN(3, "Boolean",Boolean.class),
-	MAP(4,"Map",HashMap.class,Map.class),
+	MAP(4,"Map",HashMap.class,Map.class,JSONObject.class),
 	LIST(5,"List",ArrayList.class,List.class),
 	CHAT_BOT_ACTION(6,"ChatBotAction",ChatBotConfirmContext.class,ChatBotExecuteContext.class,ChatBotParamContext.class),
 	;

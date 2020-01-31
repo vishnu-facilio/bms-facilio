@@ -29,8 +29,15 @@ public class FacilioAgent {
     private long lastDataReceivedTime = -1L ;
     private String displayName;
     private long createdTime = -1L;
+    private long transformWorkflowId = -1;
 
-    public long getCreatedTime() {
+    public long getTransformWorkflowId() {
+		return transformWorkflowId;
+	}
+	public void setTransformWorkflowId(long transformWorkflowId) {
+		this.transformWorkflowId = transformWorkflowId;
+	}
+	public long getCreatedTime() {
         return createdTime;
     }
     public void setCreatedTime(long createdTime) { this.createdTime = createdTime; }

@@ -8,6 +8,7 @@ import java.util.Map;
  * Use this enum to handle publish-types in database.
  */
 public enum PublishType {
+	custom("agent",0),
     agent("agent",1),
     timeseries("timeseries",2),
     cov("cov",3),
