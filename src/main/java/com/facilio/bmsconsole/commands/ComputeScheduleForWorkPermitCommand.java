@@ -22,7 +22,7 @@ public class ComputeScheduleForWorkPermitCommand extends FacilioCommand{
 		
 		if(CollectionUtils.isNotEmpty(workPermitList)) {
 			for(WorkPermitContext permit : workPermitList) {
-				if(permit.getRequestedBy() != null) {
+				if(permit.getRequestedBy() != null && permit.getRequestedBy().getId() > 0) {
 					ContactsContext contact = ContactsAPI.getContactsIdForUser(permit.getRequestedBy().getId());
 					if(contact != null && contact.getTenant() != null) {
 						permit.setTenant(contact.getTenant());
