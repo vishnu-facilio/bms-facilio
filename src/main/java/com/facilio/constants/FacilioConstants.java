@@ -416,6 +416,7 @@ public class FacilioConstants {
 		public static final String CATEGORY_ID = "categoryId";
 		public static final String META = "meta";
 		public static final String SET_LOCAL_MODULE_ID = "setLocalModuleId";
+		public static final String FETCH_EXTENDED_MODULE_FORMS = "fetchExtendedModuleForms";
 		
 		public static final String READINGS_MAP = "readingsMap";
 		public static final String READINGS = "readings";

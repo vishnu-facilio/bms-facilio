@@ -135,7 +135,7 @@ public class FormsAPI {
 	}
 
 	public static List<FacilioForm> getFormFromDB(Criteria criteria) throws Exception {
-		return getDBFormList(null, (List<Integer>) null, criteria, null, true);
+		return getDBFormList(null, (List<Integer>) null, criteria, null, true, false);
 	}
 	
 	private static void setFormFields (FacilioForm form) throws Exception {
@@ -455,7 +455,7 @@ public class FormsAPI {
 	public static FacilioForm getFormFromDB(long id, boolean fetchFields) throws Exception {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getFormModule()));
-		List<FacilioForm> dbFormList = getDBFormList(null, (List<Integer>) null, criteria, null, fetchFields);
+		List<FacilioForm> dbFormList = getDBFormList(null, (List<Integer>) null, criteria, null, fetchFields, false);
 		if (CollectionUtils.isNotEmpty(dbFormList)) {
 			return dbFormList.get(0);
 		}
@@ -525,8 +525,8 @@ public class FormsAPI {
 		return formField;
 	}
 	
-	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,List<Integer> formTypes) throws Exception {
-		List<FacilioForm> forms = getDBFormList(moduleName, formTypes);
+	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,List<Integer> formTypes,Boolean fetchExtendedModuleForms) throws Exception {
+		List<FacilioForm> forms = getDBFormList(moduleName, formTypes, fetchExtendedModuleForms);
 		Map<String, FacilioForm> formMap = new LinkedHashMap<>();
 		if (forms != null && !forms.isEmpty()) {
 			for(FacilioForm form: forms) {
@@ -537,8 +537,8 @@ public class FormsAPI {
 		return null;
 	}
 	
-	public static List<FacilioForm> getDBFormList(String moduleName,List<Integer> formTypes) throws Exception{
-		return getDBFormList(moduleName, formTypes, null, null, false);
+	public static List<FacilioForm> getDBFormList(String moduleName,List<Integer> formTypes, Boolean fetchExtendedModuleForms) throws Exception{
+		return getDBFormList(moduleName, formTypes, null, null, false, fetchExtendedModuleForms);
 	}
 	
 	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields) throws Exception{
@@ -546,10 +546,10 @@ public class FormsAPI {
 		if (formType != null) {
 			formTypes = Collections.singletonList(formType.getIntVal());
 		}
-		return getDBFormList(moduleName, formTypes, criteria, selectParams, fetchFields);
+		return getDBFormList(moduleName, formTypes, criteria, selectParams, fetchFields, false);
 	}
 	
-	public static List<FacilioForm> getDBFormList(String moduleName,List<Integer> formTypes, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields) throws Exception{
+	public static List<FacilioForm> getDBFormList(String moduleName,List<Integer> formTypes, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields, Boolean fetchExtendedModuleForms) throws Exception{
 		
 		FacilioModule formModule = ModuleFactory.getFormModule();
 		
@@ -594,7 +594,7 @@ public class FormsAPI {
 				FacilioModule module = modBean.getModule(moduleName);
 				long moduleId=module.getModuleId();
 				moduleIds.add(moduleId);
-				if (module.getExtendModule() != null) {
+				if (module.getExtendModule() != null && fetchExtendedModuleForms != null && fetchExtendedModuleForms) {
 					moduleIds.add(module.getExtendModule().getModuleId());
 					StringJoiner ids = new StringJoiner(",");
 					moduleIds.stream().forEach(f -> ids.add(String.valueOf(f)));
@@ -692,17 +692,19 @@ public class FormsAPI {
 	
 	private static void addUnusedWebSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
 		List<FormField> fields = new ArrayList<>();
-		switch (form.getModule().getName()) {
+		if (form.getModule() != null && form.getModule().getName() != null) {
+			switch (form.getModule().getName()) {
 			case ContextNames.WORK_ORDER:
 				fields.addAll(FormFactory.getRequesterFormFields(false));
 				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
 				break;
 			// Add fields here if it has to be shown in unused list and not there in the default form
 		}
+		}
 		
 		addToDefaultFields(defaultFields, fields);
 
-		if (form.getModule().isCustom()) {
+		if (form.getModule() != null && form.getModule().isCustom()) {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			boolean hasPhoto = false;

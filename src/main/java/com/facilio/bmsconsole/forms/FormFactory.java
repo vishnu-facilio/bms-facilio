@@ -42,6 +42,7 @@ public class FormFactory {
 		forms.put("web_pm", getPMForm());
 		forms.put("approvalForm", getApprovalForm());
 		forms.put("default_asset", getAssetForm());
+		forms.put("energymeter", getEnergyMeterForm());
 		forms.put("item_form", getItemForm());
 		forms.put("item_track_form", getItemWithIndTrackForm());
 		forms.put("store_room_form", getStoreRoomForm());
@@ -104,6 +105,7 @@ public class FormFactory {
 				.put(FormType.WEB, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm())
 						.put(FacilioConstants.ContextNames.ASSET, getAssetForm())
+						.put(FacilioConstants.ContextNames.ENERGY_METER, getEnergyMeterForm())
 						.put(FacilioConstants.ContextNames.TENANT, getTenantsForm())
 						.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseRequestForm())
 						.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderForm())
@@ -191,6 +193,12 @@ public class FormFactory {
 				FormSection section = new FormSection("Asset", 1, form.getFields(), true);
 				sections.add(section);
 			}
+			else if (moduleName.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
+				List<FormSection> sections = new ArrayList<>();
+				form.setSections(sections);
+				FormSection section = new FormSection("EnergyMeter", 1, form.getFields(), true);
+				sections.add(section);
+			}
 			else if (moduleName.equals(FacilioConstants.ContextNames.PURCHASE_ORDER)) {
 				List<FormSection> sections = new ArrayList<>();
 				
@@ -269,6 +277,7 @@ public class FormFactory {
 	private static Map<String, Map<String, FacilioForm>>  initFormsList() {
 		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm());
 		List<FacilioForm> assetForms = Arrays.asList(getAssetForm(), getMobileAssetForm());
+		List<FacilioForm> energyMeterForm = Arrays.asList(getEnergyMeterForm());
 		List<FacilioForm> poForm = Arrays.asList(getPurchaseOrderForm());
 		List<FacilioForm> prForm = Arrays.asList(getPurchaseRequestForm());
 		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm(), getPortalVisitorForm());
@@ -283,6 +292,7 @@ public class FormFactory {
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
+				.put(FacilioConstants.ContextNames.ENERGY_METER, getFormMap(energyMeterForm))
 				.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getFormMap(poForm))
 				.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getFormMap(prForm))
 				.put(FacilioConstants.ContextNames.VISITOR,getFormMap(visitorForms))
@@ -441,6 +451,17 @@ public class FormFactory {
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFormType(FormType.WEB);
 		form.setFields(getWebAssetFormFields());
+		return form;
+	}
+	
+	private static FacilioForm getEnergyMeterForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Energy Meter");
+		form.setName("default_energymeter_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ENERGY_METER));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFormType(FormType.WEB);
+		form.setFields(getWebEnergyMeterFormFields());
 		return form;
 	}
 	private static FacilioForm getPMForm() {
@@ -692,6 +713,41 @@ public class FormFactory {
 		fields.add(new FormField("geoLocationEnabled", FieldDisplayType.DECISION_BOX, "Is Movable",Required.OPTIONAL, 13,2));
 		fields.add(new FormField("moveApprovalNeeded", FieldDisplayType.DECISION_BOX, "Is Move Approval Needed",Required.OPTIONAL, 13,2));
 		fields.add(new FormField("boundaryRadius", FieldDisplayType.NUMBER, "Boundary Radius", Required.OPTIONAL, 14, 2));
+		
+		return Collections.unmodifiableList(fields);
+	}
+	
+	private static List<FormField> getWebEnergyMeterFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, "name", 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 2));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.REQUIRED, "assetcategory", 4, 2));
+		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.OPTIONAL,"assetdepartment", 4, 3));
+		fields.add(new FormField("space", FieldDisplayType.SPACECHOOSER, "Asset Location", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.OPTIONAL,"assettype", 5, 3));
+		fields.add(new FormField("manufacturer", FieldDisplayType.TEXTBOX, "Manufacturer", Required.OPTIONAL, 6, 2));
+		fields.add(new FormField("supplier", FieldDisplayType.TEXTBOX, "Supplier", Required.OPTIONAL, 6, 3));
+		fields.add(new FormField("model", FieldDisplayType.TEXTBOX, "Model", Required.OPTIONAL, 7, 2));
+		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 7, 3));
+		fields.add(new FormField("tagNumber", FieldDisplayType.TEXTBOX, "Tag", Required.OPTIONAL, 8, 2));
+		fields.add(new FormField("partNumber", FieldDisplayType.TEXTBOX, "Part No.", Required.OPTIONAL, 8, 3));
+		fields.add(new FormField("purchasedDate", FieldDisplayType.DATETIME, "Purchased Date", Required.OPTIONAL, 9, 2));
+		fields.add(new FormField("retireDate", FieldDisplayType.DATETIME, "Retire Date", Required.OPTIONAL, 9, 3));
+		fields.add(new FormField("unitPrice", FieldDisplayType.NUMBER, "Unit Price", Required.OPTIONAL, 10, 2));
+		fields.add(new FormField("warrantyExpiryDate", FieldDisplayType.DATETIME, "Warranty Expiry Date", Required.OPTIONAL, 10, 3));
+		fields.add(new FormField("qrVal", FieldDisplayType.TEXTBOX, "QR Value", Required.OPTIONAL, 11, 2));
+		// new fields
+		fields.add(new FormField("rotatingItem", FieldDisplayType.LOOKUP_SIMPLE, "Rotating Item",Required.OPTIONAL, "item", 12,2));
+		fields.add(new FormField("rotatingTool", FieldDisplayType.LOOKUP_SIMPLE, "Rotating Tool",Required.OPTIONAL, "tool", 12,3));
+		fields.add(new FormField("geoLocationEnabled", FieldDisplayType.DECISION_BOX, "Is Movable",Required.OPTIONAL, 13,2));
+		fields.add(new FormField("moveApprovalNeeded", FieldDisplayType.DECISION_BOX, "Is Move Approval Needed",Required.OPTIONAL, 13,2));
+		fields.add(new FormField("boundaryRadius", FieldDisplayType.NUMBER, "Boundary Radius", Required.OPTIONAL, 14, 2));
+		fields.add(new FormField("childMeterExpression", FieldDisplayType.TEXTBOX, "Expression", Required.OPTIONAL, 15, 2));
+		fields.add(new FormField("isVirtual", FieldDisplayType.DECISION_BOX, "Is Virtual", Required.OPTIONAL, 16, 2));
+		fields.add(new FormField("purpose", FieldDisplayType.LOOKUP_SIMPLE, "Purpose", Required.OPTIONAL, 17, 2));
+		fields.add(new FormField("purposeSpace", FieldDisplayType.SPACECHOOSER, "Opperational Space", Required.OPTIONAL, 18, 2));
+		fields.add(new FormField("root", FieldDisplayType.DECISION_BOX, "Is Root", Required.OPTIONAL, 19, 2));
 		
 		return Collections.unmodifiableList(fields);
 	}

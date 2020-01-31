@@ -82,7 +82,17 @@ public class FormAction extends FacilioAction {
 		return this.moduleName;
 	}
 	
-    private long formId;
+	private Boolean fetchExtendedModuleForms;
+
+	public Boolean getFetchExtendedModuleForms() {
+		return fetchExtendedModuleForms;
+	}
+
+	public void setFetchExtendedModuleForms(Boolean fetchExtendedModuleForms) {
+		this.fetchExtendedModuleForms = fetchExtendedModuleForms;
+	}
+
+	private long formId;
     private long formFieldId;
     
 	
@@ -205,6 +215,12 @@ public class FormAction extends FacilioAction {
 	public String formList() throws Exception {
 		Context context=new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		if (fetchExtendedModuleForms != null && fetchExtendedModuleForms) {
+			context.put(FacilioConstants.ContextNames.FETCH_EXTENDED_MODULE_FORMS, true);
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.FETCH_EXTENDED_MODULE_FORMS, false);
+		}
 		if (formType != null && CollectionUtils.isEmpty(formTypes)) {
 			formTypes = Collections.singletonList(formType.getIntVal());
 		}
