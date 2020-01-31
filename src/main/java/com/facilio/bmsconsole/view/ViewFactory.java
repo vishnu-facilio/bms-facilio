@@ -5234,8 +5234,7 @@ public class ViewFactory {
 		requestedWorkPermitCriteria.addAndCondition(getWorkPermitStatusCriteria("Requested"));
 		FacilioView requestedView = new FacilioView();
 		requestedView.setName("requested");
-		requestedView.setDisplayName("Requested Work Permit");
-		requestedView.setHidden(true);
+		requestedView.setDisplayName("Requested Work Permits");
 		requestedView.setCriteria(requestedWorkPermitCriteria);
 		return requestedView;
 	}

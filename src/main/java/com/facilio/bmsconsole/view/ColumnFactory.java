@@ -109,6 +109,7 @@ public class ColumnFactory {
 		columnMap.put("vendors-myNonInsuredVendors", getMyVendorsColumns());
 		columnMap.put("contact-default", getDefaultContactColumns());
 		columnMap.put("occupant-default", getDefaultOccupantColumns());
+		columnMap.put("workpermit-requested", getRequestedWorkPermitColumns());
 	
 		columnMap.put("serviceRequest-default", getDefaultServiceRequestColumns());
 		
@@ -849,6 +850,18 @@ public class ColumnFactory {
 		columns.add(new ViewField("expectedEndTime", "Expected End Time"));
 		columns.add(new ViewField("isRecurring", "Recurring"));
 		columns.add(new ViewField("requestedBy", "Requested By"));
+		
+		return columns;
+	}
+	
+	public static List<ViewField> getRequestedWorkPermitColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("requestedBy", "Requested By"));
+		columns.add(new ViewField("expectedStartTime", "Valid From"));
+		columns.add(new ViewField("expectedEndTime", "Valid Till"));
+		columns.add(new ViewField("workType", "Work Type"));
+		columns.add(new ViewField("issuedToUser", "Permit Holder"));
 		
 		return columns;
 	}
