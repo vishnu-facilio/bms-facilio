@@ -184,13 +184,15 @@ public class AccessLogFilter implements Filter {
         event.setProperty(TIME_TAKEN, String.valueOf(timeTaken/1000));
         event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(timeTaken));
 
+        String searchQuery = thread.getName()+"%20";
+        if (ServerInfo.getHostname() != null) {
+            String sourceIp = ServerInfo.getHostname();
+            searchQuery = searchQuery + "AND%20source%3A%20"+sourceIp;
+        }
+        String grayLogSearchUrl = GRAY_LOG_URL + searchQuery;
+        event.setProperty("follow", grayLogSearchUrl);
+
         if ( FacilioProperties.isSentryEnabled() && (response.getStatus() == HttpServletResponse.SC_INTERNAL_SERVER_ERROR || timeTaken > TIME_THRESHOLD) ) {
-            String sourceIp = null;
-            if (ServerInfo.getHostname() != null) {
-                 sourceIp = ServerInfo.getHostname();
-            }
-            String searchQuery = thread.getName()+"%20AND%20source%3A%20"+sourceIp;
-            String grayLogSearchUrl = GRAY_LOG_URL + searchQuery;
 
             Map<String, String> contextMap = new HashMap<>();
 
