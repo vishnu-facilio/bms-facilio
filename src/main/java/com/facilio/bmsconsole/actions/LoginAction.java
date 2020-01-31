@@ -324,7 +324,7 @@ public class LoginAction extends FacilioAction {
 		if (AccountUtil.getCurrentOrg().getOrgId() == 213l) {
 			data.put("buildingList", ReportsUtil.getBuildingMap());		
 		}
-		int license = AccountUtil.getFeatureLicense();
+		long license = AccountUtil.getFeatureLicense();
 		account.put("License", license);
 		account.put("data", data);
 		return SUCCESS;
@@ -429,7 +429,7 @@ public class LoginAction extends FacilioAction {
 		account.put("config", config);
 		account.put("appProps", appProps);
 		
-		int license = AccountUtil.getFeatureLicense();
+		long license = AccountUtil.getFeatureLicense();
 		account.put("License", license);
 		
 		return SUCCESS;
@@ -507,7 +507,7 @@ public class LoginAction extends FacilioAction {
 		account.put("config", config);
 		account.put("appProps", appProps);
 
-		int license = AccountUtil.getFeatureLicense();
+		long license = AccountUtil.getFeatureLicense();
 		account.put("License", license);
 
 		return SUCCESS;

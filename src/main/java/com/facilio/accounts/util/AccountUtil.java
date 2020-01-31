@@ -272,9 +272,9 @@ public class AccountUtil {
     	
     }
 
-    	public static int getFeatureLicense() throws Exception {
+    	public static long getFeatureLicense() throws Exception {
 		long orgId = getCurrentOrg().getOrgId();
-		int module = 0;
+		long module = 0;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -285,7 +285,7 @@ public class AccountUtil {
 			rs = pstmt.executeQuery();
 			if(rs.next())
 			{
-				module = rs.getInt("MODULE");
+				module = rs.getLong("MODULE");
 			}
 
 		}catch(Exception e)
