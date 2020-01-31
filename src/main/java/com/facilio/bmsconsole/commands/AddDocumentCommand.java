@@ -20,7 +20,7 @@ public class AddDocumentCommand extends FacilioCommand{
 		String moduleName = (String)context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		List<DocumentContext> documents = (List<DocumentContext>)context.get(FacilioConstants.ContextNames.DOCUMENTS);
+		List<DocumentContext> documents = (List<DocumentContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		
 		if(CollectionUtils.isNotEmpty(documents)) {
 			InsertRecordBuilder<DocumentContext> attachmentBuilder = new InsertRecordBuilder<DocumentContext>()

@@ -42,7 +42,7 @@ public class GetDocumentsListCommand extends FacilioCommand{
 		
 		SelectRecordsBuilder<DocumentContext> builder = new SelectRecordsBuilder<DocumentContext>()
 				.module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+				.beanClass(DocumentContext.class)
 				.select(fields)
 			    .andCondition(CriteriaAPI.getCondition(parentField.getColumnName(), parentField.getName(), String.valueOf(parentId),NumberOperators.EQUALS));
 				;

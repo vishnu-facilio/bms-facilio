@@ -21,7 +21,7 @@ public class UpdateDocumentsCommand extends FacilioCommand{
 		String moduleName = (String)context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		List<DocumentContext> documents = (List<DocumentContext>)context.get(FacilioConstants.ContextNames.DOCUMENTS);
+		List<DocumentContext> documents = (List<DocumentContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		
 		if(CollectionUtils.isNotEmpty(documents)) {
 			for(DocumentContext doc : documents) {
