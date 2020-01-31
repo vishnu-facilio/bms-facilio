@@ -1442,37 +1442,35 @@ public class ViewFactory {
 		return criteria;
 	}
 	
-	private static Criteria getWorkPermitStatusCriteria(String status) {
+	public static Condition getWorkPermitStatusCriteria(String status) {
+
 		FacilioField statusTypeField = new FacilioField();
 		statusTypeField.setName("status");
 		statusTypeField.setColumnName("STATUS");
 		statusTypeField.setDataType(FieldType.STRING);
 		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
 
-		Condition statusClose = new Condition();
-		statusClose.setField(statusTypeField);
-		statusClose.setOperator(StringOperators.IS);
-		statusClose.setValue(status);
+		Condition statusCondition = new Condition();
+		statusCondition.setField(statusTypeField);
+		statusCondition.setOperator(StringOperators.IS);
+		statusCondition.setValue(status);
 
-		Criteria statusCriteria = new Criteria();
-		statusCriteria.addAndCondition(statusClose);
+		Criteria statusCriteria = new Criteria() ;
+		statusCriteria.addAndCondition(statusCondition);
 
 		LookupField statusField = new LookupField();
-		statusField.setName("status");
-		statusField.setColumnName("STATUS_ID");
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
 		statusField.setDataType(FieldType.LOOKUP);
 		statusField.setModule(ModuleFactory.getWorkPermitModule());
-//		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
 		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
 
-		Condition ticketClose = new Condition();
-		ticketClose.setField(statusField);
-		ticketClose.setOperator(LookupOperator.LOOKUP);
-		ticketClose.setCriteriaValue(statusCriteria);
+		Condition condition = new Condition();
+		condition.setField(statusField);
+		condition.setOperator(LookupOperator.LOOKUP);
+		condition.setCriteriaValue(statusCriteria);
 
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(ticketClose);
-		return criteria;
+		return condition;
 	}
 
 	private static FacilioView getUpcomingWorkOrdersNextWeek() {
@@ -5232,7 +5230,8 @@ public class ViewFactory {
 	}
 	
 	private static FacilioView getRequestedWorkPermitView() {
-		Criteria requestedWorkPermitCriteria = getWorkPermitStatusCriteria("Requested");
+		Criteria requestedWorkPermitCriteria = new Criteria();
+		requestedWorkPermitCriteria.addAndCondition(getWorkPermitStatusCriteria("Requested"));
 		FacilioView requestedView = new FacilioView();
 		requestedView.setName("requested");
 		requestedView.setDisplayName("Requested Work Permit");
