@@ -280,5 +280,11 @@
 	<param name="sourceOrgId">{1}</param>
 	</action>
 	</package>	
-
+	
+	<package name="removeDemoDuplicateReadingsV2" namespace="/api/v2/setup/removedemoduplicatereadings" extends="setupApiV2">
+	
+	<action name="*" class="com.facilio.bmsconsole.actions.MigratingDemoAssetReadings" method="removeDuplicateReading">
+	<param name="categoryId">{1}</param>
+	</action>
+	</package>	
 </struts>
