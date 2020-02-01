@@ -906,8 +906,8 @@ public class ReportFactoryFields {
 			moduleResourceFieldName = "space";
 			break;
 		case "assetbreakdown":
-			moduleName = "asset";
-			moduleResourceFieldName = "space";
+//			moduleName = "asset";
+			moduleResourceFieldName = "asset";
 			break;
 		case "alarm":
 			moduleResourceFieldName = "resource";

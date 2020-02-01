@@ -23,6 +23,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -221,7 +222,12 @@ public class ConstructReportDataCommand extends FacilioCommand {
 				break;
 			case LOOKUP:
 				LookupField lookupField = (LookupField) field;
-				updateLookupMap(reportFieldContext, lookupField.getFieldId(), lookupField.getSpecialType(), lookupField.getLookupModule());
+				FacilioModule lookupModule = lookupField.getLookupModule();
+				if(aggr != null && aggr instanceof SpaceAggregateOperator && (reportFieldContext.getModuleName().equals(FacilioConstants.ModuleNames.ASSET_BREAKDOWN))) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					lookupModule = modBean.getModule(aggr.getStringValue());
+				}
+				updateLookupMap(reportFieldContext, lookupField.getFieldId(), lookupField.getSpecialType(), lookupModule);
 				if (val instanceof Map) {
 					val = ((Map) val).get("id");
 				}
