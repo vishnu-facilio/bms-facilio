@@ -100,7 +100,31 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 		
 		calculateBaseLineRange(report);
-		if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
+		
+		JSONObject dateField = (JSONObject) context.get("date-field");
+
+		if(report!=null && dateField!=null && (Boolean)dateField.get(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA) != null) {
+			JSONObject reportState;
+			if(report.getReportState() != null && !report.getReportState().isEmpty()) {
+				reportState = report.getReportState();
+			}
+			else {
+				reportState = new JSONObject();
+			}
+			reportState.put(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA, (Boolean)dateField.get(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA));
+			report.setReportState(reportState);
+		}
+		
+		
+		Boolean enableFutureData = false;
+		if(report!=null && report.getReportState() != null && !report.getReportState().isEmpty()) {
+			if(report.getReportState().containsKey(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA)
+				&& (Boolean) report.getReportState().get(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA) == true) {
+				enableFutureData = true;
+			}
+		}
+		
+		if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210 && !enableFutureData) {
 			DateRange dateRange = report.getDateRange();
 			if (dateRange != null) {
 				long currentTimeMillis = System.currentTimeMillis();

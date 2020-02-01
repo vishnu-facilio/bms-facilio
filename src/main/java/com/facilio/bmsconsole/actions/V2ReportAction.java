@@ -846,7 +846,17 @@ public class V2ReportAction extends FacilioAction {
 			ReportContext report = ReportUtil.getReport(reportId);
 			reportContext.setId(report.getId());
 		}
-		
+		if(dateField!=null && (Boolean)dateField.get(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA) != null) {
+			JSONObject reportState;
+			if(reportContext.getReportState() != null && !reportContext.getReportState().isEmpty()) {
+				reportState = reportContext.getReportState();
+			}
+			else {
+				reportState = new JSONObject();
+			}
+			reportState.put(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA, (Boolean)dateField.get(FacilioConstants.ContextNames.ALLOW_FUTURE_DATA));
+			reportContext.setReportState(reportState);
+		}
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		updateContext(context);
 		
