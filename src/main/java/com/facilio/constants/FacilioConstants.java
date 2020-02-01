@@ -1,13 +1,5 @@
 package com.facilio.constants;
 
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.activity.ActivityContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
@@ -30,6 +22,13 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
+import org.json.simple.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 //import com.facilio.custom.CustomController;
 
@@ -838,9 +837,12 @@ public class FacilioConstants {
 		public static final String GROUP_STATUS = "groupStatus";
 
 		public static final String SLA_RULE_MODULE = "slaRuleModule";
-		public static final String SLA_MODULE = "sla";
-		public static final String SLA_LIST = "sla_list";
-		public static final String SLA = "sla";
+		public static final String SLA_RULE_MODULE_LIST = "slaRuleModuleList";
+		public static final String SLA_ENTITY = "slaEntity";
+		public static final String SLA_ENTITY_LIST = "slaEntityList";
+//		public static final String SLA_MODULE = "sla";
+//		public static final String SLA_LIST = "sla_list";
+//		public static final String SLA = "sla";
 
 		public static final String TECH_COUNT_GROUP_DIGEST = "techCountGroupDigest";
 		public static final String SITE_ROLE_WISE_COUNT= "siteRoleWiseCount";
@@ -1614,7 +1616,6 @@ public class FacilioConstants {
 			classMap.put(SERVICE_REQUEST_PRIORITY, ServiceRequestPriorityContext.class);
 			classMap.put(DOCUMENT, DocumentContext.class);
 
-			classMap.put(SLA_MODULE, SLAContext.class);
 			classMap.put(SLA_RULE_MODULE, SLAWorkflowRuleContext.class);
 
 			classMap.put(VENDOR_DOCUMENTS, DocumentContext.class);

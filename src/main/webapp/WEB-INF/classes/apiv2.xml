@@ -349,6 +349,15 @@
 				method="getTransitionDetailsFromPermalink" />
 	</package>
 
+	<package name="slaEntity" namespace="/api/v2/slaEntity" extends="v2Api">
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="listSLAEntity" />
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="addOrUpdateSLAEntity" />
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="deleteSLAEntity" />
+	</package>
+
 	<package name="sla" namespace="/api/v2/sla" extends="v2Api">
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="getAllSLA" />

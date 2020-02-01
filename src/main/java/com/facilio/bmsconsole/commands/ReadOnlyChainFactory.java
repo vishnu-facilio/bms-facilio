@@ -1998,4 +1998,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetSLACommand());
 		return chain;
 	}
+
+	public static FacilioChain getAllSLAEntityChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetAllSLAEntityCommand());
+		return chain;
+	}
 }

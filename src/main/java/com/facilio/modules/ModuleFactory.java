@@ -465,6 +465,15 @@ public class ModuleFactory {
 		return constructModule("readingRuleAlarmMeta", "Reading Rule Alarm Meta", "Reading_Rule_Alarm_Meta");
 	}
 
+	public static FacilioModule getSLAEntityModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("slaEntity");
+		module.setDisplayName("SLA Entity");
+		module.setTableName("SLA_Entity");
+
+		return module;
+	}
+
 	public static FacilioModule getSLAWorkflowRuleModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("slaWorkflowRule");

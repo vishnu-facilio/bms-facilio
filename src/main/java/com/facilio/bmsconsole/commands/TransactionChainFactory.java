@@ -4518,6 +4518,18 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateSLACommand());
 		return chain;
 	}
+
+	public static FacilioChain getAddOrUpdateSLAEntityChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateSLAEntityCommand());
+		return chain;
+	}
+
+	public static FacilioChain deleteSLAEntityChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new DeleteSLAEntityCommand());
+		return chain;
+	}
 }
 
 

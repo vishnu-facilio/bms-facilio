@@ -1,13 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.SLAContext;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.SelectRecordsBuilder;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,14 +24,16 @@ public class GetAllSLACommand extends FacilioCommand {
                 throw new IllegalArgumentException("Invalid module");
             }
 
-            SelectRecordsBuilder<SLAContext> builder = new SelectRecordsBuilder<SLAContext>()
-                    .beanClass(SLAContext.class)
-                    .module(modBean.getModule(FacilioConstants.ContextNames.SLA_MODULE))
-                    .select(modBean.getAllFields(FacilioConstants.ContextNames.SLA_MODULE))
-                    .andCondition(CriteriaAPI.getCondition("SLA_MODULE_ID", "slaModuleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-            List<SLAContext> slaContexts = builder.get();
+            List<WorkflowRuleContext> slaRules = WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE, false, null, null, null);
 
-            context.put(FacilioConstants.ContextNames.SLA_LIST, slaContexts);
+//            SelectRecordsBuilder<SLAContext> builder = new SelectRecordsBuilder<SLAContext>()
+//                    .beanClass(SLAContext.class)
+//                    .module(modBean.getModule(FacilioConstants.ContextNames.SLA_MODULE))
+//                    .select(modBean.getAllFields(FacilioConstants.ContextNames.SLA_MODULE))
+//                    .andCondition(CriteriaAPI.getCondition("SLA_MODULE_ID", "slaModuleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+//            List<SLAContext> slaContexts = builder.get();
+
+            context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST, slaRules);
         }
         return false;
     }

@@ -2,7 +2,8 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.SLAContext;
+import com.facilio.bmsconsole.workflow.rule.SLAEntityContext;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -17,13 +18,7 @@ public class SLAAction extends FacilioAction {
         this.moduleName = moduleName;
     }
 
-    private SLAContext sla;
-    public SLAContext getSla() {
-        return sla;
-    }
-    public void setSla(SLAContext sla) {
-        this.sla = sla;
-    }
+    private SLAWorkflowRuleContext sla;
 
     private Long id;
     public Long getId() {
@@ -40,7 +35,7 @@ public class SLAAction extends FacilioAction {
 
         chain.execute();
 
-        setResult(FacilioConstants.ContextNames.SLA_LIST, context.get(FacilioConstants.ContextNames.SLA_LIST));
+        setResult(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST, context.get(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST));
         return SUCCESS;
     }
 
@@ -49,7 +44,7 @@ public class SLAAction extends FacilioAction {
         FacilioContext context = chain.getContext();
 
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.ContextNames.SLA, sla);
+        context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE, sla);
 
         chain.execute();
         return SUCCESS;
@@ -62,7 +57,45 @@ public class SLAAction extends FacilioAction {
 
         chain.execute();
 
-        setResult(FacilioConstants.ContextNames.SLA, context.get(FacilioConstants.ContextNames.SLA));
+        setResult(FacilioConstants.ContextNames.SLA_RULE_MODULE, context.get(FacilioConstants.ContextNames.SLA_RULE_MODULE));
+        return SUCCESS;
+    }
+
+    private SLAEntityContext slaEntity;
+    public SLAEntityContext getSlaEntity() {
+        return slaEntity;
+    }
+    public void setSlaEntity(SLAEntityContext slaEntity) {
+        this.slaEntity = slaEntity;
+    }
+
+    public String addOrUpdateSLAEntity() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getAddOrUpdateSLAEntityChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.SLA_ENTITY, slaEntity);
+        chain.execute();
+
+        return SUCCESS;
+    }
+
+    public String listSLAEntity() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getAllSLAEntityChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SLA_ENTITY_LIST, context.get(FacilioConstants.ContextNames.SLA_ENTITY_LIST));
+
+        return SUCCESS;
+    }
+
+    public String deleteSLAEntity() throws Exception {
+        FacilioChain chain = TransactionChainFactory.deleteSLAEntityChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, id);
+        chain.execute();
+
         return SUCCESS;
     }
 }

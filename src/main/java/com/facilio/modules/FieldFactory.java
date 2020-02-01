@@ -1659,6 +1659,21 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getSLAEntityFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getSLAEntityModule();
+
+		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+		fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
+		fields.add(getField("baseFieldId", "BASE_FIELDID", module, FieldType.NUMBER));
+		fields.add(getField("dueFieldId", "DUE_FIELDID", module, FieldType.NUMBER));
+		fields.add(getField("compareFieldId", "COMPARE_FIELDID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+
 	public static List<FacilioField> getSLAWorkflowRuleFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getSLAWorkflowRuleModule();

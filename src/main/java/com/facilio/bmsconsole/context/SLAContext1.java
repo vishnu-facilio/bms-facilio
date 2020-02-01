@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.workflow.rule.SLAWorkflowRuleContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
-public class SLAContext extends ModuleBaseWithCustomFields {
+public class SLAContext1 extends ModuleBaseWithCustomFields {
 
     private String name;
     public String getName() {
