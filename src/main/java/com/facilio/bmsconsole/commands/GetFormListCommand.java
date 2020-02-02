@@ -42,6 +42,8 @@ public class GetFormListCommand extends FacilioCommand {
 		}
 		if (dbForms != null) { 
 			for(Map.Entry<String, FacilioForm> entry :dbForms.entrySet()) {
+				FacilioModule formModule = modBean.getModule(entry.getValue().getModuleId());
+				entry.getValue().setModule(formModule);
 				forms.put(entry.getKey(), entry.getValue());
 			}
 		}
