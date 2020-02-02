@@ -317,7 +317,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(props)) {
 			Map<String, Object> modulemap=props.get(0);
-			return (int) modulemap.get("module");
+			return ((Integer) modulemap.get("module")).longValue();
 		}
 		return -1;
 	}
