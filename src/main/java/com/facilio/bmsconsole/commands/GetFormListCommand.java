@@ -31,6 +31,12 @@ public class GetFormListCommand extends FacilioCommand {
 		Map<String, FacilioForm> dbForms=FormsAPI.getFormsAsMap((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), formTypes, fetchExtendedModuleForms);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule((String)context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		if (forms != null) {
+			for(Map.Entry<String, FacilioForm> entry :forms.entrySet()) {
+				entry.getValue().setModule(module);
+				forms.put(entry.getKey(), entry.getValue());
+			}
+		}
 		if (module.getExtendModule() != null && fetchExtendedModuleForms != null && fetchExtendedModuleForms) {
 			Map<String, FacilioForm> extendedModuleForms = new LinkedHashMap<>(FormFactory.getForms(module.getExtendModule().getName(), formTypes));
 			if (extendedModuleForms != null) {
@@ -42,8 +48,10 @@ public class GetFormListCommand extends FacilioCommand {
 		}
 		if (dbForms != null) { 
 			for(Map.Entry<String, FacilioForm> entry :dbForms.entrySet()) {
-				FacilioModule formModule = modBean.getModule(entry.getValue().getModuleId());
-				entry.getValue().setModule(formModule);
+				if (entry.getValue().getModuleId() > 0) {
+					FacilioModule formModule = modBean.getModule(entry.getValue().getModuleId());
+					entry.getValue().setModule(formModule);
+				}
 				forms.put(entry.getKey(), entry.getValue());
 			}
 		}
