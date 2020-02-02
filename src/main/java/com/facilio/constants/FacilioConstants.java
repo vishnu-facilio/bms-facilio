@@ -626,7 +626,8 @@ public class FacilioConstants {
 		public static final String HISTORICAL_VM_JOB_ID = "historicalVMJobId";
 		public static final String HISTORICAL_VM_JOB = "historicalVMJob";
 		public static final String HISTORICAL_RULE_JOB_ID = "historicalRuleJobId";
-		public static final String HISTORICAL_RULE_JOB = "historicalRuleJob";
+		public static final String HISTORICAL_ALARM_OCCURRENCE_DELETION_JOB_ID="historicalAlarmOccurrenceDeletionJobId";
+		public static final String HISTORICAL_ALARM_PROCESSING_JOB_ID="historicalAlarmProcessingJobId";
 		public static final String HISTORICAL_FORMULA_FIELD_JOB_ID = "historicalFormulaFieldJobId";
 		
 		public static final String ASSET_BD_SOURCE_DETAILS = "assetbreakdownSourceDetails";
@@ -794,6 +795,9 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULES_COUNT = "workflowRulesCount";
 		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
+		public static final String WORKFLOW_RULE_LOGGER_ID = "workflowRuleLoggers";
+		public static final String WORKFLOW_RULE_LOGGERS = "workflowRuleLoggers";
+		public static final String WORKFLOW_RULE_CHILD_LOGGERS = "workflowRuleChildLoggers";
 		public static final String READING_RULE_MODULE = "readingrule";
 		public static final String READING_ALARM_RULES = "readingalarmrules";
 		public static final String READING_ALARM_RULE = "readingalarmrule";

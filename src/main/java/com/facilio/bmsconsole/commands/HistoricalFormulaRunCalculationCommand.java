@@ -17,7 +17,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.LoggerContext;
-import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.jobs.VirtualMeterEnergyDataCalculator;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
@@ -196,7 +195,7 @@ public class HistoricalFormulaRunCalculationCommand extends FacilioCommand {
 		loggerContext.setParentId(formulaId);;
 		loggerContext.setResourceId(resourceId);
 		loggerContext.setLoggerGroupId(loggerGroupId);;
-		loggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
+		loggerContext.setStatus(LoggerContext.Status.IN_PROGRESS.getIntVal());
 		loggerContext.setStartTime(range.getStartTime());
 		loggerContext.setEndTime(range.getEndTime());
 		loggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());

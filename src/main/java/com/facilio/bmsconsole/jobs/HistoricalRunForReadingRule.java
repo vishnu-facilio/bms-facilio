@@ -20,7 +20,6 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingEventContext;
-import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
@@ -60,13 +59,12 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		try {
 			FacilioChain chain = TransactionChainFactory.getExecuteHistoricalRuleCalculation();
 			chain.getContext().put(FacilioConstants.ContextNames.HISTORICAL_RULE_JOB_ID, jc.getJobId());
-			chain.getContext().put(FacilioConstants.ContextNames.HISTORICAL_RULE_JOB, jc.getJobName());
 			chain.execute();
 		}
-		catch(Exception HistoricalRuleException) {
+		catch(Exception historicalRuleException) {
 			try {
 				FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
-				LOGGER.error("Error occurred while doing Historical Rule Calculation Job" +HistoricalRuleException.toString());
+				LOGGER.error("Error occurred while doing Historical Rule Calculation Job" +historicalRuleException.toString());
 			}
 			catch(Exception transactionException) {
 				LOGGER.error(transactionException.toString());
@@ -77,7 +75,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 	@Override
 	public void handleTimeOut() {
 		// TODO Auto-generated method stub
-		LOGGER.info("Time out called during HistoricalRuleCalculation");
+		LOGGER.info("Time out called during HistoricalRuleCalculation Job");
 	 	super.handleTimeOut();
 	}	
 

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,10 +13,15 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
+import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
+import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
+import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
+import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLogsAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleResourceLoggerAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
@@ -77,79 +84,51 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		{
 			throw new Exception("Not a valid Inclusion/Exclusion of Resources");
 		}
-		
-		List<WorkflowRuleHistoricalLoggerContext> currentRuleLoggerList = WorkflowRuleHistoricalLoggerUtil.getActiveRuleHistoricalLogger(rule.getId(), finalResourceIds);
-		if(currentRuleLoggerList != null && !currentRuleLoggerList.isEmpty())
-		{
-			throw new Exception("Historical already In-Progress for the Current Rule Logger with ruleId "+ rule.getId());
-		}
-		
+	
 		int minutesInterval = 24*60; 								//As of now, splitting up the rule_resource job each day
 		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), minutesInterval);
 		DateRange firstInterval = intervals.get(0);
 		DateRange lastInterval = intervals.get(intervals.size()-1);
+				
+		WorkflowRuleLoggerContext workflowRuleLoggerContext = WorkflowRuleLoggerAPI.setWorkflowRuleLoggerContext(rule.getId(), finalResourceIds.size(), range);
+		WorkflowRuleLoggerAPI.addWorkflowRuleLogger(workflowRuleLoggerContext);
+		long parentRuleLoggerId = workflowRuleLoggerContext.getId();
+		List<Long> workflowRuleResourceParentLoggerIds = new ArrayList<Long>();
 		
-		long loggerGroupId = -1l;
-		boolean isFirst = true;
-		Map<Long,WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerMap = new HashMap<Long,WorkflowRuleHistoricalLoggerContext>();
+		List<WorkflowRuleResourceLoggerContext> currentRuleResourceLoggerList = WorkflowRuleResourceLoggerAPI.getActiveWorkflowRuleResourceLogsByParentRuleLoggerAndResourceId(parentRuleLoggerId, finalResourceIds);
+		if(currentRuleResourceLoggerList != null && !currentRuleResourceLoggerList.isEmpty())
+		{
+			throw new Exception("Historical already In-Progress for the picked rule and resource");
+		}
 		
 		for(Long finalResourceId:finalResourceIds)
-		{
-			if(isFirst) 
-			{
-				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = setWorkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, -99, -1);
-				WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);	
+		{	
+			WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.setworkflowRuleResourceLoggerContext(parentRuleLoggerId, finalResourceId, null);
+			WorkflowRuleResourceLoggerAPI.addWorkflowRuleResourceLogger(workflowRuleResourceLoggerContext);
+			long parentRuleResourceId = workflowRuleResourceLoggerContext.getId();
+			workflowRuleResourceParentLoggerIds.add(parentRuleResourceId);
+			
+			for(DateRange interval:intervals)
+			{			
+				WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = new WorkflowRuleHistoricalLogsContext();
 				
-				loggerGroupId = workflowRuleHistoricalLoggerContext.getId();
-				workflowRuleHistoricalLoggerContext.setLoggerGroupId(loggerGroupId);	
-				WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
-				workflowRuleHistoricalLoggerMap.put(workflowRuleHistoricalLoggerContext.getId(), workflowRuleHistoricalLoggerContext);
-				
-				for(DateRange interval:intervals)
-				{		
-					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = setWorkflowRuleHistoricalLoggerContext(rule.getId(), interval, finalResourceId, loggerGroupId, loggerGroupId);	
-					WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLogger);	
-					
-					if(interval.getStartTime() == firstInterval.getStartTime() && interval.getEndTime() == firstInterval.getEndTime())
-					{
-						saveFirstAndLastJobPropsForEventProcessing(workflowRuleHistoricalLogger.getId(),rule.getId(),finalResourceId, firstInterval.getStartTime(), firstInterval.getEndTime(), loggerGroupId,  true, false); 
-					}
-					if(interval.getStartTime() == lastInterval.getStartTime() && interval.getEndTime() == lastInterval.getEndTime())
-					{
-						saveFirstAndLastJobPropsForEventProcessing(workflowRuleHistoricalLogger.getId(),rule.getId(),finalResourceId, lastInterval.getStartTime(), lastInterval.getEndTime(), loggerGroupId, false, true); 
-					}
+				if(interval.getStartTime() == firstInterval.getStartTime() && interval.getEndTime() == firstInterval.getEndTime()) {
+					workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setworkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, WorkflowRuleHistoricalLogsContext.LogState.IS_FIRST_JOB.getIntVal());	
 				}
-				isFirst = false;
-			}
-			else 
-			{
-				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = setWorkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, -99, loggerGroupId);	
-				WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
-				workflowRuleHistoricalLoggerMap.put(workflowRuleHistoricalLoggerContext.getId(), workflowRuleHistoricalLoggerContext);
-				
-				long ruleResourceLoggerId = workflowRuleHistoricalLoggerContext.getId();
-				for(DateRange interval:intervals)
-				{
-					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = setWorkflowRuleHistoricalLoggerContext(rule.getId(), interval, finalResourceId, ruleResourceLoggerId, loggerGroupId);	
-					WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLogger);	
-					
-					if(interval.equals(firstInterval))
-					{
-						saveFirstAndLastJobPropsForEventProcessing(workflowRuleHistoricalLogger.getId(),rule.getId(),finalResourceId, firstInterval.getStartTime(), firstInterval.getEndTime(), ruleResourceLoggerId,  true, false); 
-					}
-					if(interval.equals(lastInterval))
-					{
-						saveFirstAndLastJobPropsForEventProcessing(workflowRuleHistoricalLogger.getId(),rule.getId(),finalResourceId, lastInterval.getStartTime(), lastInterval.getEndTime(), ruleResourceLoggerId, false, true); 
-					}
+				else if(interval.getStartTime() == lastInterval.getStartTime() && interval.getEndTime() == lastInterval.getEndTime()) {
+					workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setworkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIntVal());	
 				}
-			}
+				else {
+					workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setworkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, null);	
+				}	
+				WorkflowRuleHistoricalLogsAPI.addWorkflowRuleHistoricalLogsContext(workflowRuleHistoricalLogsContext);	
+			}		
 		}	
 		
-		if (MapUtils.isNotEmpty(workflowRuleHistoricalLoggerMap)) {
-			
-			for(Long parentRuleResourceLoggerId :workflowRuleHistoricalLoggerMap.keySet())
+		if(!workflowRuleResourceParentLoggerIds.isEmpty()) {
+			for(Long parentRuleResourceLoggerId :workflowRuleResourceParentLoggerIds)
 			{		
-				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerId, "HistoricalAlarmOccurrenceDeletion", 30, "history");		
+				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerId, "HistoricalAlarmOccurrenceDeletionJob", 30, "history");		
 			}
 		}
 		
@@ -164,35 +143,5 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			matchedResourceIds = new ArrayList<>(readingRuleContext.getMatchedResources().keySet());
 		}
 		return matchedResourceIds;
-	}
-	
-	
-	private static WorkflowRuleHistoricalLoggerContext setWorkflowRuleHistoricalLoggerContext(long ruleId, DateRange range,Long resourceId, long ruleResourceId, long loggerGroupId)
-	{
-		WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
-		workflowRuleHistoricalLoggerContext.setRuleId(ruleId);
-		workflowRuleHistoricalLoggerContext.setType(WorkflowRuleHistoricalLoggerContext.Type.READING_RULE.getIntVal());
-		workflowRuleHistoricalLoggerContext.setResourceId(resourceId);
-		workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
-		workflowRuleHistoricalLoggerContext.setRuleResourceLoggerId(ruleResourceId);
-		workflowRuleHistoricalLoggerContext.setLoggerGroupId(loggerGroupId);
-		workflowRuleHistoricalLoggerContext.setStartTime(range.getStartTime());
-		workflowRuleHistoricalLoggerContext.setEndTime(range.getEndTime());
-		workflowRuleHistoricalLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
-		workflowRuleHistoricalLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
-		workflowRuleHistoricalLoggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
-		return workflowRuleHistoricalLoggerContext;	
-	}
-	
-	private static void saveFirstAndLastJobPropsForEventProcessing(long loggerId, long ruleId, long resourceId, long startTime, long endTime, long parentRuleResourceLoggerId, boolean isFirstIntervalJob, boolean isLastIntervalJob) throws Exception {
-		JSONObject props = new JSONObject();
-		props.put("ruleId", ruleId);
-		props.put("resourceId", resourceId);
-		props.put("startTime", startTime);
-		props.put("endTime", endTime);
-		props.put("parentRuleResourceLoggerId", parentRuleResourceLoggerId);
-		props.put("isFirstIntervalJob", isFirstIntervalJob);
-		props.put("isLastIntervalJob",isLastIntervalJob);
-		BmsJobUtil.addJobProps(loggerId, "HistoricalRunForReadingRule", props); 		
 	}
 }

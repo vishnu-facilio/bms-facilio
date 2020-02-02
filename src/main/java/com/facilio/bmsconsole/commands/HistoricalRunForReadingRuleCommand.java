@@ -21,7 +21,9 @@ import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingEventContext;
-import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
+import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
+import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
+import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob;
 import com.facilio.bmsconsole.util.AlarmAPI;
@@ -33,6 +35,9 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
+import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLogsAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleResourceLoggerAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -65,7 +70,7 @@ public class HistoricalRunForReadingRuleCommand extends FacilioCommand implement
 
 private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRuleCommand.class.getName());
 	
-	private WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = null;
+	private WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = null;
 	private Long jobId;
 	private String exceptionMessage = null;
 	private StackTraceElement[] stack = null;
@@ -76,49 +81,46 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 		try {
 			long jobStartTime = System.currentTimeMillis();
 			jobId = (long) jobContext.get(FacilioConstants.ContextNames.HISTORICAL_RULE_JOB_ID);
-			String jobName = (String) jobContext.get(FacilioConstants.ContextNames.HISTORICAL_RULE_JOB);
-			workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(jobId);
+			workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.getWorkflowRuleHistoricalLogsContextById(jobId);
 			
-			if(workflowRuleHistoricalLoggerContext != null && workflowRuleHistoricalLoggerContext.getStatusAsEnum() != null)
+			if(workflowRuleHistoricalLogsContext != null && workflowRuleHistoricalLogsContext.getStatusAsEnum() != null)
 			{
-				switch(workflowRuleHistoricalLoggerContext.getStatusAsEnum()) {
+				switch(workflowRuleHistoricalLogsContext.getStatusAsEnum()) {
 				case FAILED:
 					return false;
 				default:
 					break;
 				}
 	
-				Long startTime = workflowRuleHistoricalLoggerContext.getStartTime();
-				Long endTime = workflowRuleHistoricalLoggerContext.getEndTime();
-				Long resourceId = workflowRuleHistoricalLoggerContext.getResourceId();
-				Long ruleId = workflowRuleHistoricalLoggerContext.getRuleId();
+				workflowRuleHistoricalLogsContext.setCalculationStartTime(jobStartTime);
+				Long startTime = workflowRuleHistoricalLogsContext.getSplitStartTime();
+				Long endTime = workflowRuleHistoricalLogsContext.getSplitEndTime();
+				Integer logState = workflowRuleHistoricalLogsContext.getLogState();
+				Long parentRuleResourceId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
 				
-				JSONObject props = BmsJobUtil.getJobProps(jobId, jobName);
-				Boolean isFirstIntervalJob = null;
-				Boolean isLastIntervalJob = null;
-				boolean defaultEventPropsMatchCondition = true;
+				WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceId);
+				Long resourceId = workflowRuleResourceLoggerContext.getResourceId();
 				
-				if(props != null)
-				{
-					Long propsRuleId = (Long) props.get("ruleId");
-					Long propsResourceId = (Long) props.get("resourceId");
-					Long propsParentRuleResourceLoggerId = (Long) props.get("parentRuleResourceLoggerId");
-					isFirstIntervalJob = (Boolean) props.get("isFirstIntervalJob");
-					isLastIntervalJob = (Boolean) props.get("isLastIntervalJob");
-					defaultEventPropsMatchCondition = (propsRuleId == ruleId) && (propsResourceId == resourceId) && (propsParentRuleResourceLoggerId == workflowRuleHistoricalLoggerContext.getRuleResourceLoggerId());
-				}
-				
-				isFirstIntervalJob = (isFirstIntervalJob != null) ? isFirstIntervalJob : Boolean.FALSE;
-				isLastIntervalJob = (isLastIntervalJob != null) ? isLastIntervalJob : Boolean.FALSE;
+				WorkflowRuleLoggerContext workflowRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(workflowRuleResourceLoggerContext.getParentRuleLoggerId());
+				Long ruleId = workflowRuleLoggerContext.getRuleId();
 
 				ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
 				if (readingRule == null || resourceId == null) {
 					return false;
 				}
 
-				workflowRuleHistoricalLoggerContext.setCalculationStartTime(jobStartTime);
+				workflowRuleHistoricalLogsContext.setCalculationStartTime(jobStartTime);
 				LOGGER.info("Historical Rule Job Started for JobId: "+ jobId +" Reading Rule : "+ruleId+" for resource : "+resourceId+ " at the JobStartTime: "+ jobStartTime);	
 				
+				boolean isFirstIntervalJob = false;
+				boolean isLastIntervalJob = false;
+				
+				if(logState != null)
+				{
+					isFirstIntervalJob = (logState == WorkflowRuleHistoricalLogsContext.LogState.IS_FIRST_JOB.getIntVal()) ? Boolean.TRUE : Boolean.FALSE;
+					isLastIntervalJob = (logState == WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIntVal()) ? Boolean.TRUE : Boolean.FALSE;
+				}
+
 				Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
 				List<WorkflowFieldContext> fields = null;
 				AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingRule.getId()),null);
@@ -160,9 +162,9 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 				long processStartTime = System.currentTimeMillis();
 				List<ReadingContext> readings = null;
 				List<ReadingEventContext> events = new ArrayList<>();
-				ReadingEventContext previousEventMeta = new ReadingEventContext();
-				
-				if(defaultEventPropsMatchCondition && isFirstIntervalJob)
+				ReadingEventContext previousEventMeta = new ReadingEventContext();	
+
+				if(isFirstIntervalJob)
 				{
 					List<ReadingEventContext> beforeFetchFirstEvent = new ArrayList<ReadingEventContext>();	
 					ReadingContext previousFetchStartReading = fetchSingleReading(readingRule, resourceId, startTime, NumberOperators.LESS_THAN, "TTIME DESC");
@@ -189,7 +191,8 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 					if(events != null && !events.isEmpty())
 					{
 						ReadingEventContext finalEventOfCurrentJobInterval = events.get(events.size() - 1);
-						if(defaultEventPropsMatchCondition && !isLastIntervalJob && finalEventOfCurrentJobInterval.getCreatedTime() == endTime && !finalEventOfCurrentJobInterval.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
+
+						if(!isLastIntervalJob && finalEventOfCurrentJobInterval.getCreatedTime() == endTime && !finalEventOfCurrentJobInterval.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY));
 						{		
 							previousEventMeta = finalEventOfCurrentJobInterval;
 							List<ReadingEventContext> nextJobFirstEvent = new ArrayList<ReadingEventContext>();
@@ -214,7 +217,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 					}			
 				}
 				
-				WorkflowRuleHistoricalLoggerUtil.updateRuleLoggerContextToResolvedState(workflowRuleHistoricalLoggerContext);
+				WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextToResolvedState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.RESOLVED.getIntVal());
 			}		
 		}
 		catch (Exception historicalRuleException) {
@@ -228,16 +231,17 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 	@Override
 	public boolean postExecute() throws Exception {
 		
-		List<Long> activeRuleResourceGroupedLoggerIds = WorkflowRuleHistoricalLoggerUtil.getActiveGroupedRuleResourceWorkflowRuleHistoricalLoggerIds(workflowRuleHistoricalLoggerContext.getRuleResourceLoggerId()); //checking all childs completion
+		long parentRuleResourceLoggerId = workflowRuleHistoricalLogsContext.getParentRuleResourceId();
+		List<Long> activeRuleResourceGroupedLoggerIds = WorkflowRuleHistoricalLogsAPI.getActiveWorkflowRuleHistoricalLogsByParentRuleResourceId(parentRuleResourceLoggerId); //checking all childs completion
 		if(activeRuleResourceGroupedLoggerIds.size() == 0)
 		{
-			WorkflowRuleHistoricalLoggerContext parentRuleResourceLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(workflowRuleHistoricalLoggerContext.getRuleResourceLoggerId()); //fetching the parent
+			WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
 			parentRuleResourceLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
-			parentRuleResourceLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());		
-			int rowsUpdated = WorkflowRuleHistoricalLoggerUtil.updateEventGeneratingParentWorkflowRuleHistoricalLogger(parentRuleResourceLoggerContext);
+			parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());		
+			int rowsUpdated = WorkflowRuleResourceLoggerAPI.updateEventGeneratingParentWorkflowRuleResourceLoggerContext(parentRuleResourceLoggerContext);
 			if(rowsUpdated == 1)
 			{
-				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerContext.getId(), "HistoricalRuleAlarmProcessing", 30, "history");
+				FacilioTimer.scheduleOneTimeJobWithDelay(parentRuleResourceLoggerContext.getId(), "HistoricalAlarmProcessingJob", 30, "history");
 			}
 		}
 		
@@ -256,20 +260,16 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 			{
 				mailExp.setStackTrace(stack);
 			}
-			CommonCommandUtil.emailException(HistoricalRunForReadingRuleCommand.class.getName(), "Historical Run failed for reading_rule_logger : "+jobId, mailExp);
+			CommonCommandUtil.emailException(HistoricalRunForReadingRuleCommand.class.getName(), "Historical Run failed for reading_rule_resource_event_logger : "+jobId, mailExp);
 
-			LOGGER.severe("HISTORICAL RULE JOB COMMAND FAILED, JOB ID -- : "+jobId);
+			LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+jobId);
 			LOGGER.log(Level.SEVERE, exceptionMessage);
 
-			if(workflowRuleHistoricalLoggerContext != null )
-			{
-				workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.FAILED.getIntVal());
-				workflowRuleHistoricalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
-				WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
+			if(workflowRuleHistoricalLogsContext != null)	{
+				WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextToResolvedState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal());
 			}
-			else
-			{
-				LOGGER.severe(" HISTORICALRULE LOGGER IS NULL IN ONERROR FOR JOB -- " + jobId);
+			else {
+				LOGGER.severe("HISTORICAL RULERESOURCEEVENT LOGGER IS NULL IN ONERROR FOR JOB -- " + jobId);
 			}	
 			
 		}

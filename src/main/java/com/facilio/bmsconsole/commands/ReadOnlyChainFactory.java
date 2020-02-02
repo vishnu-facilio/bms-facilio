@@ -394,6 +394,27 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain getWorkflowRuleLoggersCommand() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetWorkflowRuleLoggersCommand());
+		return c;
+	}
+	
+	public static FacilioChain getWorkflowRuleChildLoggersCommand() {
+		FacilioChain c = getDefaultChain();
+	//	c.addCommand(new GetWorkflowRuleChildLoggersCommand());
+		c.addCommand(new GetRDMCommand());
+		return c;
+	}
+	
+//	public static FacilioChain get() {
+//		FacilioChain c = getDefaultChain();
+//		c.addCommand(new GenerateCriteriaFromFilterCommand());
+//		c.addCommand(new GenerateSearchConditionCommand());
+//		c.addCommand(new GetRDMCommand());
+//		return c;
+//	}
+	
 	public static FacilioChain getAddOrUpdateReadingValuesChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddOrUpdateReadingsCommand());

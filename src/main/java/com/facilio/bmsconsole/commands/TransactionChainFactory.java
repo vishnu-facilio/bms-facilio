@@ -3715,6 +3715,18 @@ public class TransactionChainFactory {
 			c.addCommand(new HistoricalRunForReadingRuleCommand());
 			return c;
 		}
+		
+		public static FacilioChain getExecuteHistoricalAlarmOccurrenceDeletion() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new HistoricalAlarmOccurrenceDeletionCommand());
+			return c;
+		}
+
+		public static FacilioChain getExecuteHistoricalRuleAlarmProcessing() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new HistoricalAlarmProcessingCommand());
+			return c;
+		}
 
 	public static FacilioChain getAddModuleWorkflowRuleChain() {
 		FacilioChain chain = getDefaultChain();

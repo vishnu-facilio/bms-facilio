@@ -3747,6 +3747,56 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getWorkflowRuleLoggerFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWorkflowRuleLoggerModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
+		fields.add(getField("noOfResources", "NO_OF_RESOURCES", module, FieldType.NUMBER));
+		fields.add(getField("resolvedResourcesCount", "RESOLVED_RESOURCES_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+		fields.add(getField("totalAlarmCount", "TOTAL_ALARM_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+		fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("calculationStartTime", "CALCULATION_START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("calculationEndTime", "CALCULATION_END_TIME", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getWorkflowRuleResourceLoggerFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWorkflowRuleResourceLoggerModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("parentRuleLoggerId", "PARENT_RULE_LOGGER_ID", module, FieldType.NUMBER));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+		fields.add(getField("alarmCount", "ALARM_COUNT", module, FieldType.NUMBER));
+		fields.add(getField("modifiedStartTime", "MODIFIED_START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("modifiedEndTime", "MODIFIED_END_TIME", module, FieldType.NUMBER));
+		fields.add(getField("calculationStartTime", "CALCULATION_START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("calculationEndTime", "CALCULATION_END_TIME", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getWorkflowRuleHistoricalLogsFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWorkflowRuleHistoricalLogsModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("parentRuleResourceId", "PARENT_RULE_RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("splitStartTime", "SPLIT_START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("splitEndTime", "SPLIT_END_TIME", module, FieldType.NUMBER));
+		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+		fields.add(getField("logState", "LOG_STATE", module, FieldType.NUMBER));
+		fields.add(getField("calculationStartTime", "CALCULATION_START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("calculationEndTime", "CALCULATION_END_TIME", module, FieldType.NUMBER));
+		return fields;
+	}
 
 	public static List<FacilioField> getDashboardFolderFields() {
 		FacilioModule module = ModuleFactory.getDashboardFolderModule();
