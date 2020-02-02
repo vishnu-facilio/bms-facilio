@@ -214,7 +214,7 @@ public class LookupSpecialTypeUtil {
 			return AccountUtil.getRoleBean().getRoles(criteria);
 		}
 		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
-			return null; //Returning null for now
+			return BusinessHoursAPI.getBusinessHours(criteria);
 		}
 		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPM(criteria);

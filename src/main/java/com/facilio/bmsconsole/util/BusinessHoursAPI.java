@@ -19,6 +19,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -81,6 +82,31 @@ public class BusinessHoursAPI {
 				.select(FieldFactory.getSingleDayBusinessHoursFields()).table(businessHoursTable)
 				.innerJoin(singleDayTable).on(businessHoursTable + ".ID = " + singleDayTable + ".PARENT_ID")
 				.andCustomWhere(businessHoursTable + ".ORGID = ? AND " + businessHoursTable + ".ID = ?", orgId, id)
+				.orderBy("dayOfWeek");
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			BusinessHoursList businessHours = new BusinessHoursList();
+			for (Map<String, Object> prop : props) {
+				businessHours.add(FieldUtil.getAsBeanFromMap(prop, BusinessHourContext.class));
+			}
+			return businessHours;
+		}
+		return null;
+	}
+	
+	public static BusinessHoursList getBusinessHours(Criteria criteria) throws Exception {
+		
+		if(criteria == null) {
+			throw new IllegalArgumentException("criteria cannot be null during fetch");
+		}
+		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
+		String singleDayTable = ModuleFactory.getSingleDayBusinessHourModule().getTableName();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getSingleDayBusinessHoursFields()).table(businessHoursTable)
+				.innerJoin(singleDayTable).on(businessHoursTable + ".ID = " + singleDayTable + ".PARENT_ID")
+				.andCriteria(criteria)
 				.orderBy("dayOfWeek");
 
 		List<Map<String, Object>> props = selectBuilder.get();
