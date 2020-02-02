@@ -35,6 +35,7 @@ public class GetFormListCommand extends FacilioCommand {
 			Map<String, FacilioForm> extendedModuleForms = new LinkedHashMap<>(FormFactory.getForms(module.getExtendModule().getName(), formTypes));
 			if (extendedModuleForms != null) {
 				for(Map.Entry<String, FacilioForm> entry :extendedModuleForms.entrySet()) {
+					entry.getValue().setModule(module.getExtendModule());
 					forms.put(entry.getKey(), entry.getValue());
 				}
 			}
