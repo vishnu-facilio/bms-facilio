@@ -47,6 +47,16 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 
     private Map<String, Value> varMemoryMap = new HashMap<String, Value>();
     
+    private List<ParameterContext> globalParameters;
+    
+    public List<ParameterContext> getGlobalParameters() {
+		return globalParameters;
+	}
+
+	public void setGlobalParameters(List<ParameterContext> globalParameters) {
+		this.globalParameters = globalParameters;
+	}
+    
     WorkflowContext workflowContext;
     
     public WorkflowContext getWorkflowContext() {
@@ -73,6 +83,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     public void setGlobalParams(List<ParameterContext> parmasObjects) throws Exception {
     	if(parmasObjects != null && !parmasObjects.isEmpty()) {
         	
+    		setGlobalParameters(parmasObjects);
         	for(ParameterContext param : parmasObjects) {
         		varMemoryMap.put(param.getName(), new Value(param.getValue()));
         	}
@@ -126,6 +137,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
             			
             			WorkflowContext wfContext = UserFunctionAPI.getWorkflowFunction(namespaceContext.getId(), functionCall.VAR().getText());
             			wfContext.setParams(paramValues);
+            			wfContext.setGlobalParameters(getGlobalParameters());
             			
             			Object res = wfContext.executeWorkflow();
             			
