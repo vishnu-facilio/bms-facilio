@@ -83,7 +83,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 							.select(workorderToolsFields).table(workorderToolsModule.getTableName())
 							.moduleName(workorderToolsModule.getName()).beanClass(WorkorderToolsContext.class)
 							.andCondition(CriteriaAPI.getIdCondition(workorderTool.getId(), workorderToolsModule))
-							.fetchLookups(lookUpfields);
+							.fetchSupplements(lookUpfields);
 					;
 					List<WorkorderToolsContext> woIt = selectBuilder.get();
 					if (woIt != null) {
@@ -287,7 +287,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
 				.andCustomWhere(module.getTableName() + ".ID = ?", id)
-				.fetchLookups(lookUpfields);
+				.fetchSupplements(lookUpfields);
 
 		List<ToolContext> stockedTools = selectBuilder.get();
 

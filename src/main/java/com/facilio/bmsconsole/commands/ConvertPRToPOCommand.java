@@ -47,7 +47,7 @@ public class ConvertPRToPOCommand extends FacilioCommand {
 					.select(modBean.getAllFields(purchaseRequestModule.getName()))
 					.andCondition(CriteriaAPI.getIdCondition(recordIds, purchaseRequestModule))
 					;
-					builder.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("vendor"),
+					builder.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("vendor"),
 					(LookupField) fieldsAsMap.get("storeRoom"),(LookupField) fieldsAsMap.get("shipToAddress"),(LookupField) fieldsAsMap.get("billToAddress")))
 					;
 			List<PurchaseRequestContext> list = builder.get();

@@ -36,7 +36,7 @@ public class FetchPurchaseRequestDetailsCommand extends FacilioCommand {
 					.select(fields)
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 					.andCondition(CriteriaAPI.getCondition("PR_ID", "prid", String.valueOf(purchaseRequestContext.getId()), NumberOperators.EQUALS))
-					.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+					.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
 					(LookupField) fieldsAsMap.get("toolType")));
 		
 			List<PurchaseRequestLineItemContext> list = builder.get();

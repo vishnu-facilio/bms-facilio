@@ -1,16 +1,12 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
-import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.PoAssociatedTermsContext;
 import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
@@ -62,7 +58,7 @@ public class PurchaseOrderAPI {
 				.select(fields)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 				.andCondition(CriteriaAPI.getCondition("PO_ID", "poid", String.valueOf(po.getId()), NumberOperators.EQUALS))
-		        .fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+		        .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
 				(LookupField) fieldsAsMap.get("toolType")))
 		        ;
 		List<PurchaseOrderLineItemContext> list = builder.get();
@@ -132,7 +128,7 @@ public class PurchaseOrderAPI {
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 					.andCondition(CriteriaAPI.getCondition("INVENTORY_TYPE", "inventoryType", String.valueOf(inventoryType), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(availableQuantityField, String.valueOf(0), NumberOperators.GREATER_THAN))
-			        .fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+			        .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
 					(LookupField) fieldsAsMap.get("toolType")))
 			        ;
 			List<PurchaseOrderLineItemContext> list = builder.get();
@@ -196,7 +192,7 @@ public class PurchaseOrderAPI {
 				.beanClass(PoAssociatedTermsContext.class)
 				.select(fields)
 			    .andCondition(CriteriaAPI.getCondition("PURCHASE_ORDER_ID", "poId", String.valueOf(poId),NumberOperators.EQUALS))
-				.fetchLookup((LookupField) fieldsAsMap.get("terms"))
+				.fetchSupplement((LookupField) fieldsAsMap.get("terms"))
 		;
 		List<PoAssociatedTermsContext> list = builder.get();
 		return list;

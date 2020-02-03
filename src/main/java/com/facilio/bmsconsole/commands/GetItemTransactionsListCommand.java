@@ -109,9 +109,9 @@ public class GetItemTransactionsListCommand extends FacilioCommand {
 			builder.andCriteria(scopeCriteria);
 		}
 
-		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
-		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("asset"));
-		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("itemType"));
+		builder.fetchSupplement((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
+		builder.fetchSupplement((LookupField) itemTransactionsFieldsMap.get("asset"));
+		builder.fetchSupplement((LookupField) itemTransactionsFieldsMap.get("itemType"));
 
 		Boolean getShowItemsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN);
 		Boolean getShowItemsForIssue = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_ISSUE);

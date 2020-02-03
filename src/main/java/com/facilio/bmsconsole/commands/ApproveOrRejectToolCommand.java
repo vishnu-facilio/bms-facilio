@@ -51,7 +51,7 @@ public class ApproveOrRejectToolCommand extends FacilioCommand {
 					.select(toolTransactionsFields).table(toolTransactionsModule.getTableName())
 					.moduleName(toolTransactionsModule.getName()).beanClass(ToolTransactionContext.class)
 					.andCondition(CriteriaAPI.getIdCondition(recordIds, toolTransactionsModule))
-					.fetchLookups(lookUpfields);
+					.fetchSupplements(lookUpfields);
 
 			List<ToolTransactionContext> toolTransactions = selectBuilder.get();
 			List<GatePassLineItemsContext> gatePassLineItems = new ArrayList<>();

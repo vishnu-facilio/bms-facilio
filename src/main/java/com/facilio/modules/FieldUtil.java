@@ -167,15 +167,15 @@ public class FieldUtil {
 		return array;
 	}
 
-	public static Map<String, Object> getLookupProp(LookupField lookupField, long id, int level) throws Exception {
-		Map<Long, Map<String, Object>> props = (Map<Long, Map<String, Object>>) getLookupProps(lookupField, Collections.singletonList(id), true, level);
+	public static Map<String, Object> getLookupProp(LookupField lookupField, long id) throws Exception {
+		Map<Long, Map<String, Object>> props = (Map<Long, Map<String, Object>>) getLookupProps(lookupField, Collections.singletonList(id), true);
 		if (props != null && !props.isEmpty()) {
 			return props.values().stream().findFirst().get();
 		}
 		return null;
 	}
 
-	public static Map<Long, ? extends Object> getLookupProps(LookupField field, Collection<Long> ids, boolean isMap, int level) throws Exception {
+	public static Map<Long, ? extends Object> getLookupProps(LookupField field, Collection<Long> ids, boolean isMap) throws Exception {
 		if(CollectionUtils.isNotEmpty(ids)) {
 			if(LookupSpecialTypeUtil.isSpecialType(field.getSpecialType())) {
 				if (isMap) {
@@ -198,7 +198,7 @@ public class FieldUtil {
 				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModule(field.getLookupModule(), false);
 				if(moduleClass != null) {
 					FacilioModule module = field.getLookupModule();
-					SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level)
+					SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>()
 																						.module(module)
 																						.beanClass(moduleClass)
 																						.andCondition(CriteriaAPI.getIdCondition(ids, module))
@@ -208,7 +208,7 @@ public class FieldUtil {
 					if (field instanceof LookupFieldMeta) {
 						LookupFieldMeta lfm = (LookupFieldMeta) field;
 						if (CollectionUtils.isNotEmpty(lfm.getChildLookupFields())) {
-							lookupBeanBuilder.fetchLookups(lfm.getChildLookupFields());
+							lookupBeanBuilder.fetchSupplements(lfm.getChildLookupFields());
 						}
 						if (CollectionUtils.isNotEmpty(lfm.getSelectFields())) {
 							lookupBeanFields = lfm.getSelectFields();
@@ -257,13 +257,13 @@ public class FieldUtil {
 		}
 	}
 	
-	public static Object getLookupVal(LookupField lookupField, long id, int level) throws Exception {
+	public static Object getLookupVal(LookupField lookupField, long id) throws Exception {
 		if(id > 0) {
 			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
 				return LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id);
 			}
 			else {
-				return getRecord(lookupField.getLookupModule(), id, level);
+				return getRecord(lookupField.getLookupModule(), id);
 			}	
 		}
 		else {
@@ -272,15 +272,11 @@ public class FieldUtil {
 	}
 	
 	public static Object getRecord (FacilioModule module, long id) throws Exception {
-		return getRecord(module, id, 0);
-	}
-	
-	public static Object getRecord (FacilioModule module, long id, int level) throws Exception {
 		Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModule(module);
 		if(moduleClass != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> lookupBeanFields = modBean.getAllFields(module.getName());
-			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>(level)
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
 																				.table(module.getTableName())
 																				.moduleName(module.getName())
 																				.beanClass(moduleClass)

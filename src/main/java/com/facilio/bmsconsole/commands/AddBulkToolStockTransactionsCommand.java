@@ -56,7 +56,7 @@ public class AddBulkToolStockTransactionsCommand extends FacilioCommand {
 			SelectRecordsBuilder<ToolContext> toolselectBuilder = new SelectRecordsBuilder<ToolContext>()
 					.select(Toolfields).table(Toolmodule.getTableName()).moduleName(Toolmodule.getName())
 					.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(toolIds, Toolmodule))
-					.fetchLookups(lookUpfields);
+					.fetchSupplements(lookUpfields);
 
 			List<ToolContext> tools = (List<ToolContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			Map<Long, List<PurchasedToolContext>> toolVsPurchaseTool = (Map<Long, List<PurchasedToolContext>>) context

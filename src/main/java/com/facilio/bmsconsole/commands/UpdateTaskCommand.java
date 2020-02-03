@@ -241,7 +241,7 @@ public class UpdateTaskCommand extends FacilioCommand {
 				.module(woModule)
 				.beanClass(WorkOrderContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule))
-				.fetchLookups(lookupList);
+				.fetchSupplements(lookupList);
 				;
 		
 		List<WorkOrderContext> tickets = builder.get();

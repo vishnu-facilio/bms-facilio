@@ -196,17 +196,17 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 				boolean fetchTriggers = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_TRIGGERS, false);
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 				if(fieldMap.get("vendor") != null) {
-					selectBuilder.fetchLookup((LookupField) fieldMap.get("vendor"));
+					selectBuilder.fetchSupplement((LookupField) fieldMap.get("vendor"));
 				}
 				if (fetchTriggers) {
-					selectBuilder.fetchLookup((LookupField) fieldMap.get("trigger"));
+					selectBuilder.fetchSupplement((LookupField) fieldMap.get("trigger"));
 				}
 
 				// Used for calendar api
 				boolean fetchAsMap = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_AS_MAP, false);
 				if (fetchAsMap) {
-					selectBuilder.fetchLookup((LookupField) fieldMap.get("assignedTo"));
-					selectBuilder.fetchLookup((LookupField) fieldMap.get("assignmentGroup"));
+					selectBuilder.fetchSupplement((LookupField) fieldMap.get("assignedTo"));
+					selectBuilder.fetchSupplement((LookupField) fieldMap.get("assignmentGroup"));
 					List<Map<String, Object>> props = selectBuilder.getAsProps();
 					setWorkorderLookupPropMap(props);
 					context.put("props", props);

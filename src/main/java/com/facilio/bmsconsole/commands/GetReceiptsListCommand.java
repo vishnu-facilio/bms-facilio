@@ -47,7 +47,7 @@ public class GetReceiptsListCommand extends FacilioCommand {
 					.select(fields)
 					.beanClass(ReceiptContext.class)
 					.andCondition(CriteriaAPI.getCondition("RECEIVABLE_ID", "receivableId", String.valueOf(receivableId), NumberOperators.EQUALS))
-			        .fetchLookup((LookupField) fieldsAsMap.get("lineItem"))
+			        .fetchSupplement((LookupField) fieldsAsMap.get("lineItem"))
 			        ;
 
 			List<ReceiptContext> list = builder.get();

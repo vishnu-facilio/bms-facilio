@@ -83,7 +83,7 @@ public class GetVendorsListCommand extends FacilioCommand {
 		
 		List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
 		if (CollectionUtils.isNotEmpty(fetchLookup) && !getCount) {
-			builder.fetchLookups(fetchLookup);
+			builder.fetchSupplements(fetchLookup);
 		}
 
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);

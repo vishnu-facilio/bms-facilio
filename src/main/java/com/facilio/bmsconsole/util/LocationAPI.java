@@ -355,7 +355,7 @@ public class LocationAPI {
 					.module(module)
 					.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
 					.select(fields)
-					.fetchLookup((LookupField) fieldsAsMap.get(locationFieldName))
+					.fetchSupplement((LookupField) fieldsAsMap.get(locationFieldName))
 					.andCondition(CriteriaAPI.getIdCondition(id, module));
 					;
         List<StoreRoomContext> list = builder.get();

@@ -161,7 +161,7 @@ public class CommonCommandUtil {
 								LookupField lookupField = (LookupField) field;
 								//Commenting out because max level is set as 0 by default and anyway we need this. And also because of the change in library of mapper
 //								if(props.size() <= 3) {
-								Object lookupVal = FieldUtil.getLookupVal(lookupField, (long) props.get("id"), 0);
+								Object lookupVal = FieldUtil.getLookupVal(lookupField, (long) props.get("id"));
 								placeHolders.put(prefix+"."+field.getName(), lookupVal);
 								props = FieldUtil.getAsProperties(lookupVal);
 //								}

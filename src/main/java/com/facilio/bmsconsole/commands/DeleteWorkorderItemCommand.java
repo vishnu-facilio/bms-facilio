@@ -45,7 +45,7 @@ public class DeleteWorkorderItemCommand extends FacilioCommand {
 						.select(itemFields).table(itemModule.getTableName()).moduleName(itemModule.getName())
 						.beanClass(ItemContext.class).andCustomWhere(itemModule.getTableName() + ".ID = ?",
 								workorderItem.getItem().getId())
-						.fetchLookups(lookUpfields);
+						.fetchSupplements(lookUpfields);
 
 				List<ItemContext> items = itemSelectBuilder.get();
 				if (items != null && !items.isEmpty()) {
