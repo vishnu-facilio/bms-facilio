@@ -198,19 +198,19 @@ public class KPIUtil {
 				if (kpi.getDateFieldId() != -1) {
 					kpi.setDateField(modBean.getField(kpi.getDateFieldId()));
 				}
+				
+				kpi.setCriteria(criteriaMap.get(kpi.getCriteriaId()));
+				FacilioField metricField = (FacilioField) kpiMetrics.stream().filter(metric -> {
+					if (kpi.getMetricId() != -1) {
+						return kpi.getMetricId() == metric.getFieldId();
+					}
+					else{
+						return kpi.getMetricName().equals(metric.getName());
+					}
+				}).findFirst().get();
+				kpi.setMetric(metricField);
+				
 				if (fetchCurrentValue) {
-					kpi.setCriteria(criteriaMap.get(kpi.getCriteriaId()));
-					
-					FacilioField metricField = (FacilioField) kpiMetrics.stream().filter(metric -> {
-						if (kpi.getMetricId() != -1) {
-							return kpi.getMetricId() == metric.getFieldId();
-						}
-						else{
-							return kpi.getMetricName().equals(metric.getName());
-						}
-					}).findFirst().get();
-					kpi.setMetric(metricField);
-					
 					kpi.setCurrentValue(getKPIValue(kpi));
 				}
 			}
@@ -243,7 +243,7 @@ public class KPIUtil {
 	
 	public static List<FacilioField> getKPIMetrics(FacilioModule module) throws Exception {
 		FacilioField countField = FieldFactory.getCountField(module).get(0);
-		countField.setDisplayName("Number of "+module.getDisplayName()+"s");	
+		countField.setDisplayName("Number of "+module.getDisplayName());
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(countField);
 		fields.addAll((List<FacilioField>) ReportFactoryFields.getReportFields(module.getName()).get("metrics"));
