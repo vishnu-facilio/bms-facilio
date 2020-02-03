@@ -637,6 +637,12 @@ public class ViewFactory {
 		views.put("all", getAllOccupantsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.OCCUPANT, views);
 
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllTaskView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.TASK, views);
+
 		return viewsMap;
 	}
 
@@ -5602,6 +5608,15 @@ public class ViewFactory {
 		allView.setDisplayName("All Occupants");
 		return allView;
 	}
+
+	private static FacilioView getAllTaskView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Tasks");
+		return allView;
+	}
+
 	private static FacilioView getAllServiceRequests() {
 
 		FacilioModule serviceRequestsModule = ModuleFactory.getServiceRequestModule();

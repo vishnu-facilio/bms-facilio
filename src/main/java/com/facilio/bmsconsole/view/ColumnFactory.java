@@ -112,6 +112,7 @@ public class ColumnFactory {
 		columnMap.put("workpermit-requested", getRequestedWorkPermitColumns());
 	
 		columnMap.put("serviceRequest-default", getDefaultServiceRequestColumns());
+		columnMap.put("task-all", getAllTasksColumns());
 		
 
 		// Default report columns
@@ -911,6 +912,24 @@ public class ColumnFactory {
 		columns.add(new ViewField("urgency", "Urgency"));
 		columns.add(new ViewField("moduleState", "Status"));
 		columns.add(new ViewField("classification", "Classification"));
+		return columns;
+	}
+
+	public static List<ViewField> getAllTasksColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("subject", "Subject"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("inputValue", "Input Value"));
+		columns.add(new ViewField("inputTime", "Input Time"));
+		columns.add(new ViewField("inputType", "Input Type"));
+		columns.add(new ViewField("statusNew", "Status"));
+		columns.add(new ViewField("createdTime", "Created Time"));
+		columns.add(new ViewField("sectionId", "Section"));
+		columns.add(new ViewField("sequence", "Sequence"));
+		columns.add(new ViewField("sequence", "Sequence"));
+		columns.add(new ViewField("uniqueId", "Unique Id"));
+
 		return columns;
 	}
 

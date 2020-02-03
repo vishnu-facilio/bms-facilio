@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -26,10 +27,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -715,6 +713,21 @@ public class ExportUtil {
 			}
 
 		}
+
+		if (moduleName.equals("task")) {
+			for (int i = 0; i < records.size(); i++) {
+				Map<String, Object> props = new HashMap<>();
+				TaskContext task = (TaskContext) records.get(i);
+				if (task != null && task.getSectionId() > 0) {
+					TaskSectionContext taskSection = TicketAPI.getTaskSection( task.getSectionId());
+					if (taskSection != null && taskSection.getName() != null) {
+						props.put("sectionId", taskSection.getName());
+						records.get(i).addData(props);
+					}
+				}
+			}
+		}
+
 		for (int j = 0; j < viewFields.size(); j++) {
 			if (viewFields.get(j).getField() != null && viewFields.get(j).getField().getDataTypeEnum() != null && viewFields.get(j).getField().getDataTypeEnum() == FieldType.FILE) {
 				viewFields.remove(viewFields.get(j));
