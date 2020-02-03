@@ -16,7 +16,6 @@ public class WorkflowRuleHistoricalLoggerContext {
 	private ResourceContext resourceContext;
 	private Status status;
 	private long alarmCount;
-	private long ruleResourceLoggerId;
 	private long loggerGroupId;
 	private long resourceLogCount;
 	private long resolvedLogCount;
@@ -113,14 +112,6 @@ public class WorkflowRuleHistoricalLoggerContext {
 
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
-	}
-	
-	public long getRuleResourceLoggerId() {
-		return ruleResourceLoggerId;
-	}
-
-	public void setRuleResourceLoggerId(long ruleResourceLoggerId) {
-		this.ruleResourceLoggerId = ruleResourceLoggerId;
 	}
 
 	public long getLoggerGroupId() {

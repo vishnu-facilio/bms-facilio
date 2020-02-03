@@ -111,7 +111,7 @@ public class GetWorkflowRuleLoggersCommand extends FacilioCommand {
 			workflowRuleLoggerContextList  = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleLoggerContext.class);		
 		}	
 
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGGERS, workflowRuleLoggerContextList);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_PARENT_LOGGERS, workflowRuleLoggerContextList);
 			
 		return false;
 		

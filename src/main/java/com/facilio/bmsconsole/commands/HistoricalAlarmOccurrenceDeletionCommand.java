@@ -201,7 +201,7 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 		List<WorkflowRuleHistoricalLogsContext> ruleResourceGroupedLoggerIds = WorkflowRuleHistoricalLogsAPI.getWorkflowRuleHistoricalLogsByParentRuleResourceId(parentRuleResourceLoggerId);
 		for(WorkflowRuleHistoricalLogsContext ruleResourceLoggerContext:ruleResourceGroupedLoggerIds)
 		{
-			FacilioTimer.scheduleOneTimeJobWithDelay(ruleResourceLoggerContext.getId(), "HistoricalRunForReadingRule", 30, "history"); //For events, splitted start and end time would be fetched from the loggers
+			FacilioTimer.scheduleOneTimeJobWithDelay(ruleResourceLoggerContext.getId(), "HistoricalEventRunForReadingRuleJob", 30, "history"); //For events, splitted start and end time would be fetched from the loggers
 		}				
 	}
 	

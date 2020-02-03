@@ -1610,10 +1610,6 @@
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<param name="id">{1}</param>
 		</action>
-		<action name="getWorkflowRuleHistoricalLogs"
-			class="com.facilio.bmsconsole.actions.ReadingAction"
-			method="getWorkflowRuleHistoricalLoggers">
-		</action>
 	</package>
 	<package name="historicalScheduledRuleApiV2"
 		namespace="/api/v2/scheduled/rule/historicalrun" extends="v2Api">
@@ -1694,6 +1690,14 @@
 		<action name="workflowRuleChildLoggers"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getWorkflowRuleChildLoggers">
+		</action>
+		<action name="workflowRuleLoggers"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getWorkflowRuleLoggers">
+		</action>
+		<action name="workflowRuleResourceLoggers"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getWorkflowRuleResourceLoggers">
 		</action>
 		<action name="formulaFieldParentLoggers"
 			class="com.facilio.bmsconsole.actions.ReadingAction"

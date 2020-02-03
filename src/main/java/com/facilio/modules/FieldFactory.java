@@ -3716,7 +3716,6 @@ public class FieldFactory {
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
 		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
 		fields.add(getField("loggerGroupId", "LOGGER_GROUP_ID", module, FieldType.NUMBER));
-		fields.add(getField("ruleResourceLoggerId", "RULE_RESOURCE_LOGGER_ID", module, FieldType.NUMBER));
 		fields.add(getField("alarmCount", "ALARM_COUNT", module, FieldType.NUMBER));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
 		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));

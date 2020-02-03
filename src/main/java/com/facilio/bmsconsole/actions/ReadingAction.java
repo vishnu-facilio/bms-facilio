@@ -1140,29 +1140,57 @@ public class ReadingAction extends FacilioAction {
 	public void setIsInclude(Boolean isInclude) {
 		this.isInclude = isInclude;
 	}
+	
+	private boolean isScaledFlow = false;
 
+	public boolean getIsScaledFlow() {
+		return isScaledFlow;
+	}
+
+	public void setIsScaledFlow(boolean isScaledFlow) {
+		this.isScaledFlow = isScaledFlow;
+	}
+	
 	public String runThroughRule() throws Exception {
 		
-		
-		if(startTime >= endTime)
-		{
-			throw new Exception("Start time should be less than the Endtime");
+		try {
+			if(startTime >= endTime)
+			{
+				throw new Exception("Start time should be less than the Endtime");
+			}
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
+			context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+			context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
+			context.put(FacilioConstants.ContextNames.IS_INCLUDE,isInclude);
+			context.put(FacilioConstants.ContextNames.IS_SCALED_FLOW,isScaledFlow);
+			
+			FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
+			runThroughRuleChain.execute(context);
+			
+			setResult("success", "Rule evaluation for the readings in the given period has been started");	
 		}
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
-		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
-		context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
-		context.put(FacilioConstants.ContextNames.IS_INCLUDE,isInclude);
-		
-		FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
-		runThroughRuleChain.execute(context);
-		
-		setResult("success", "Rule evaluation for the readings in the given period has been started");
+		catch(Exception userException)
+		{
+			setResult("Failed", userException.getMessage());	
+		}
 		
 		return SUCCESS;
 	}
 	
 	public String getWorkflowRuleParentLoggers() throws Exception {
+		Collection<WorkflowRuleHistoricalLoggerContext> parentWorkflowRuleHistoricalLoggerList = WorkflowRuleHistoricalLoggerUtil.getAllParentWorkflowRuleHistoricalLogger(getRuleId());
+		setResult("workflowRuleParentHistoricalLoggers", parentWorkflowRuleHistoricalLoggerList);
+		return SUCCESS;
+	}
+	
+	public String getWorkflowRuleChildLoggers() throws Exception {
+		List<WorkflowRuleHistoricalLoggerContext> childWorkflowRuleHistoricalLoggerList = WorkflowRuleHistoricalLoggerUtil.getGroupedWorkflowRuleHistoricalLogger(getLoggerGroupId());
+		setResult("workflowRuleChildHistoricalLoggers", childWorkflowRuleHistoricalLoggerList);
+		return SUCCESS;	
+	}
+	
+	public String getWorkflowRuleLoggers() throws Exception {
 
 		if(getPerPage() < 0) {
 			setPerPage(50);
@@ -1178,34 +1206,28 @@ public class ReadingAction extends FacilioAction {
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getWorkflowRuleLoggerModule().getName());
 		workflowRuleLoggersChain.execute();
 
-		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGGERS, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGGERS));
+		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_PARENT_LOGGERS, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_PARENT_LOGGERS));
 		return SUCCESS;		
 	}
 	
-	public String getWorkflowRuleChildLoggers() throws Exception {
-
-		if(getPerPage() < 0) {
-			setPerPage(50);
-		}
-		if(getPage() < 0) {
-			setPage(1);
-		}  
-		
-		FacilioChain workflowRuleLoggersChain = ReadOnlyChainFactory.getWorkflowRuleChildLoggersCommand();
-		FacilioContext constructListContext = workflowRuleLoggersChain.getContext();
-		constructListContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGGER_ID, getParentRuleLoggerId());
-		constructListContext(constructListContext);
-		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getWorkflowRuleResourceLoggerModule().getName());
-		workflowRuleLoggersChain.execute();
-
-		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_CHILD_LOGGERS, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_CHILD_LOGGERS));
-		return SUCCESS;		
-	}
-	
-//	public String getWorkflowRuleChildLoggers() throws Exception {
-//		List<WorkflowRuleHistoricalLoggerContext> childWorkflowRuleHistoricalLoggerList = WorkflowRuleHistoricalLoggerUtil.getGroupedWorkflowRuleHistoricalLogger(getLoggerGroupId());
-//		setResult("workflowRuleChildHistoricalLoggers", childWorkflowRuleHistoricalLoggerList);
-//		return SUCCESS;	
+//	public String getWorkflowRuleResourceLoggers() throws Exception {
+//
+//		if(getPerPage() < 0) {
+//			setPerPage(50);
+//		}
+//		if(getPage() < 0) {
+//			setPage(1);
+//		}  
+//		
+//		FacilioChain workflowRuleLoggersChain = ReadOnlyChainFactory.getWorkflowRuleChildLoggersCommand();
+//		FacilioContext constructListContext = workflowRuleLoggersChain.getContext();
+//		constructListContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGGER_ID, getParentRuleLoggerId());
+//		constructListContext(constructListContext);
+//		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getWorkflowRuleResourceLoggerModule().getName());
+//		workflowRuleLoggersChain.execute();
+//
+//		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_CHILD_LOGGERS, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_CHILD_LOGGERS));
+//		return SUCCESS;		
 //	}
 	
 	public String historicalScheduledRule() throws Exception {

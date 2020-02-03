@@ -321,6 +321,7 @@ public class FacilioConstants {
 		public static final String VIOLATION_EVENT = "violationevent";
 		public static final String VIOLATION_ALARM = "violationalarm";
 		public static final String IS_INCLUDE = "isInclude";
+		public static final String IS_SCALED_FLOW = "isScaledFlow";
 		public static final String ALARM_COUNT = "alarmCount";
 		public static final String CARD_CONTEXT = "cardContext";
 		public static final String CARD_ID = "cardId";
@@ -626,6 +627,7 @@ public class FacilioConstants {
 		public static final String HISTORICAL_VM_JOB_ID = "historicalVMJobId";
 		public static final String HISTORICAL_VM_JOB = "historicalVMJob";
 		public static final String HISTORICAL_RULE_JOB_ID = "historicalRuleJobId";
+		public static final String HISTORICAL_EVENT_RULE_JOB_ID = "historicalRuleJobId";
 		public static final String HISTORICAL_ALARM_OCCURRENCE_DELETION_JOB_ID="historicalAlarmOccurrenceDeletionJobId";
 		public static final String HISTORICAL_ALARM_PROCESSING_JOB_ID="historicalAlarmProcessingJobId";
 		public static final String HISTORICAL_FORMULA_FIELD_JOB_ID = "historicalFormulaFieldJobId";
@@ -796,8 +798,8 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
 		public static final String WORKFLOW_RULE_LOGGER_ID = "workflowRuleLoggers";
-		public static final String WORKFLOW_RULE_LOGGERS = "workflowRuleLoggers";
-		public static final String WORKFLOW_RULE_CHILD_LOGGERS = "workflowRuleChildLoggers";
+		public static final String WORKFLOW_RULE_PARENT_LOGGERS = "workflowRuleParentHistoricalLoggers";
+		public static final String WORKFLOW_RULE_CHILD_LOGGERS = "workflowRuleChildHistoricalLoggers";
 		public static final String READING_RULE_MODULE = "readingrule";
 		public static final String READING_ALARM_RULES = "readingalarmrules";
 		public static final String READING_ALARM_RULE = "readingalarmrule";

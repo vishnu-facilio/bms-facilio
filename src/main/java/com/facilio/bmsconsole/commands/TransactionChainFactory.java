@@ -3721,6 +3721,12 @@ public class TransactionChainFactory {
 			c.addCommand(new HistoricalAlarmOccurrenceDeletionCommand());
 			return c;
 		}
+		
+		public static FacilioChain getExecuteHistoricalEventRuleCalculation() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new HistoricalEventRunForReadingRuleCommand());
+			return c;
+		}
 
 		public static FacilioChain getExecuteHistoricalRuleAlarmProcessing() {
 			FacilioChain c = getDefaultChain();

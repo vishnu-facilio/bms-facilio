@@ -57,20 +57,20 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			
 			List<ReadingEventContext> readingEvents = fetchAllEventsBasedOnAlarmDeletionRange(ruleId, resourceId, lesserStartTime, greaterEndTime);
 			
-			if (!readingEvents.isEmpty())
+			if (readingEvents != null && !readingEvents.isEmpty())
 			{
 				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
 				addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, readingEvents);
 				addEvent.execute();
 				
-				System.out.println("Added Events: "+ readingEvents);
+				LOGGER.debug("Added Events: "+ readingEvents +" for alarm processing job Id: "+parentRuleLoggerContext.getId());
 				Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
 				if(alarmOccurrenceCount != null)
 				{
 					parentRuleResourceLoggerContext.setAlarmCount(alarmOccurrenceCount);
 				}				
-				WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal());				
-			}		
+			}	
+			WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal());				
 		}
 		
 		catch (Exception historicalAlarmProcessingException) {	
@@ -102,19 +102,22 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 				.orderBy("CREATED_TIME");
 		
 		List<ReadingEventContext> completeEvents = selectEventbuilder.get();
-		List<Long> readingEventIds = new ArrayList<Long>();
-		for(ReadingEventContext readingEvent :completeEvents)
+		
+		if(completeEvents != null && !completeEvents.isEmpty())
 		{
-			readingEventIds.add(readingEvent.getSeverity().getId());
-		}
-		
-		Map<Long, AlarmSeverityContext> alarmSeverityMap = AlarmAPI.getAlarmSeverityMap(readingEventIds);
-		
-		for(ReadingEventContext readingEvent :completeEvents)
-		{
-			readingEvent.setSeverityString(alarmSeverityMap.get(readingEvent.getSeverity().getId()).getSeverity());
-		}		
-		
+			List<Long> readingEventIds = new ArrayList<Long>();
+			for(ReadingEventContext readingEvent :completeEvents)
+			{
+				readingEventIds.add(readingEvent.getSeverity().getId());
+			}
+			
+			Map<Long, AlarmSeverityContext> alarmSeverityMap = AlarmAPI.getAlarmSeverityMap(readingEventIds);
+			
+			for(ReadingEventContext readingEvent :completeEvents)
+			{
+				readingEvent.setSeverityString(alarmSeverityMap.get(readingEvent.getSeverity().getId()).getSeverity());
+			}	
+		}	
 		return completeEvents;
 	}
 
