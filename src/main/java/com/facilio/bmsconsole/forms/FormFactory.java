@@ -1612,17 +1612,25 @@ public class FormFactory {
 		fields.add(new FormField("permitType", FieldDisplayType.SELECTBOX, "Permit Type", Required.OPTIONAL,7, 1));
 		
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 8, 2);
-		vendorField.setHideField(true);
 		fields.add(vendorField);
 		
 		fields.add(new FormField("vendorContact", FieldDisplayType.LOOKUP_SIMPLE, "Vendor Contact", Required.OPTIONAL, "contact",9, 1));
 		
 		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",10, 1));
-		FormField issuedtoField = new FormField("issuedToUser", FieldDisplayType.USER, "User", Required.OPTIONAL, 11, 1);
+	
+		FormField issuedtoField = new FormField("issuedToUser", FieldDisplayType.USER, "Permit Holder", Required.OPTIONAL, "user", 11, 1);
 		issuedtoField.setHideField(true);
 		fields.add(issuedtoField);
-
 		
+
+		FormField siteField = new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.OPTIONAL,"site", 12, 2);
+		siteField.setHideField(true);
+		fields.add(siteField);
+	
+		FormField spaceField = new FormField("space", FieldDisplayType.LOOKUP_SIMPLE, "Space", Required.OPTIONAL,"basespace", 13, 2);
+		spaceField.setHideField(true);
+		fields.add(spaceField);
+	
 		return fields;
 	}
 	

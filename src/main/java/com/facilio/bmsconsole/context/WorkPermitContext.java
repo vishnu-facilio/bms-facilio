@@ -184,6 +184,15 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 		this.permitType = permitType;
 	}
 
+	private BaseSpaceContext space;
+	
+	public BaseSpaceContext getSpace() {
+		return space;
+	}
+	public void setSpace(BaseSpaceContext space) {
+		this.space = space;
+	}
+
 	public static enum PermitType implements FacilioEnum {
 		VENDOR("Vendor"), USER("User");
 
