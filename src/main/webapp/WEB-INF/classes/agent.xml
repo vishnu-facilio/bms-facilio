@@ -186,7 +186,7 @@
          </action>-->
 
         <action name="configure" class="com.facilio.agentv2.actions.controllerTypeIdsAction"
-                method="configurePintsAndMakeController">
+                method="configurePointsAndMakeController">
         </action>
 
         <action name="unconfigure" class="com.facilio.agentv2.actions.controllerTypeIdsAction"

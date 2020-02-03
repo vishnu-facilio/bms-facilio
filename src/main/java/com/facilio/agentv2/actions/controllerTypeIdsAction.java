@@ -31,7 +31,7 @@ public class controllerTypeIdsAction extends IdsAction {
     @Max(99)
     private Integer controllerType;
 
-    public String configurePintsAndMakeController() {
+    public String configurePointsAndMakeController() {
         try {
             List<Long> pointIds = getRecordIds();
             if (!pointIds.isEmpty()) {
