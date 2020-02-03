@@ -1,15 +1,19 @@
 package com.facilio.db.criteria.operators;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +21,6 @@ import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.db.criteria.FacilioModulePredicate;
 
@@ -28,13 +31,15 @@ public enum BuildingOperator implements Operator<String> {
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				try {
-					List<ResourceContext> resources = getAllResources(value);
-					if (resources != null && !resources.isEmpty()) {
-						List<Long> ids = resources.stream().map(resource -> resource.getId()).collect(Collectors.toList());
-						return new FacilioModulePredicate(fieldName, computeBuildingIsPredicate(StringUtils.join(ids, ",")));
+					List<BaseSpaceContext> spaces = SpaceAPI.getBaseSpaces(value);
+					if (CollectionUtils.isNotEmpty(spaces)) {
+						return new FacilioModulePredicate(fieldName, new BuildingIsPredicate(spaces));
+					}
+					else {
+						return new FacilioModulePredicate(fieldName, PredicateUtils.falsePredicate());
 					}
 				} catch (Exception e) {
-					log.info("Exception occurred ", e);
+					log.error("Exception occurred ", e);
 				}
 			}
 			return null;
@@ -48,24 +53,14 @@ public enum BuildingOperator implements Operator<String> {
 					StringBuilder builder = new StringBuilder();
 					builder.append(columnName)
 							.append(" IN (");
-					List<ResourceContext> resources = getAllResources(value);
-					
-					if(resources != null && !resources.isEmpty()) {
-						boolean isFirst = true;
-						for(ResourceContext space : resources) {
-							if(isFirst) {
-								isFirst = false;
-							}
-							else {
-								builder.append(", ");
-							}
-							builder.append(space.getId());
-						}
+
+					List<BaseSpaceContext> spaces = SpaceAPI.getBaseSpaces(value);
+					if (CollectionUtils.isNotEmpty(spaces)) {
+						builder.append(constructResourceBuilder(spaces).constructQueryString());
 					}
 					else {
 						builder.append("-1");
 					}
-					
 					builder.append(")");
 					return builder.toString();
 				}
@@ -82,47 +77,103 @@ public enum BuildingOperator implements Operator<String> {
 			return null;
 		}
 	};
-	
-	private static Predicate computeBuildingIsPredicate(String value) {
-		if(value.contains(",")) {
-			List<Predicate> buildingIsPredicates = new ArrayList<>();
-			String[] values = value.trim().split("\\s*,\\s*");
-			for(String val : values) {
-				buildingIsPredicates.add(getBuildingIsPredicate(val));
-			}
-			return PredicateUtils.anyPredicate(buildingIsPredicates);
+
+	private static class BuildingIsPredicate implements Predicate {
+
+		private List<BaseSpaceContext> spaces = null;
+
+		private BuildingIsPredicate (List<BaseSpaceContext> spaces) {
+			this.spaces = spaces;
 		}
-		else {
-			return getBuildingIsPredicate(value);
+
+		@Override
+		public boolean evaluate(Object object) {
+			if(object != null && CollectionUtils.isNotEmpty(spaces)) {
+				try {
+					long currentId;
+					if(object instanceof Long) {
+						currentId = (long) object;
+					}
+					else if(PropertyUtils.isReadable(object, "id")) {
+						currentId = (long) PropertyUtils.getProperty(object, "id");
+					}
+					else {
+						return false;
+					}
+
+					SelectRecordsBuilder<ResourceContext> resourceBuilder = constructResourceBuilder(spaces);
+
+					ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule resourceModule = moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+					resourceBuilder.andCondition(CriteriaAPI.getIdCondition(currentId, resourceModule));
+					List<ResourceContext> resources = resourceBuilder.get();
+
+					return CollectionUtils.isNotEmpty(resources);
+
+				} catch (Exception e) {
+					log.error("Exception occurred in BuildingIs Predicate ", e);
+				}
+			}
+			return false;
 		}
 	}
-	
-	private static Predicate getBuildingIsPredicate(String value) {
-		return new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				// TODO Auto-generated method stub
-				if(object != null) {
-					try {
-						long currentId;
-						if(object instanceof Long) {
-							currentId = (long) object;
-						}
-						else if(PropertyUtils.isReadable(object, "id")) {
-							currentId = (long) PropertyUtils.getProperty(object, "id");
-						}
-						else {
-							return false;
-						}
-						long longVal = Long.parseLong(value);
-						return currentId == longVal;
-					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-						log.info("Exception occurred ", e);
-					}
-				}
-				return false;
+
+	private static SelectRecordsBuilder<ResourceContext> constructResourceBuilder(List<BaseSpaceContext> spaces) throws Exception {
+		Map<BaseSpaceContext.SpaceType, List<Long>> typeWiseIds = new HashMap<>();
+		for (BaseSpaceContext space : spaces) {
+			List<Long> ids = typeWiseIds.get(space.getSpaceTypeEnum());
+			if (ids == null) {
+				ids = new ArrayList<>();
+				typeWiseIds.put(space.getSpaceTypeEnum(), ids);
 			}
-		};
+			ids.add(space.getId());
+		}
+
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule resourceModule = moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		FacilioModule baseSpaceModule = moduleBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		SelectRecordsBuilder<ResourceContext> resourceBuilder = new SelectRecordsBuilder<ResourceContext>()
+				.select(Collections.singletonList(moduleBean.getField("id", resourceModule.getName())))
+				.module(resourceModule)
+				.setAggregation()
+				.innerJoin(baseSpaceModule.getTableName()).on("Resources.SPACE_ID = BaseSpace.ID")
+				;
+
+		List<FacilioField> spaceFields = moduleBean.getAllFields(baseSpaceModule.getName());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(spaceFields);
+		for (Map.Entry<BaseSpaceContext.SpaceType, List<Long>> entry : typeWiseIds.entrySet()) {
+			switch (entry.getKey()) {
+				case SITE:
+					FacilioField siteField = fieldMap.get("site");
+					resourceBuilder.orCondition(CriteriaAPI.getCondition(siteField, entry.getValue(), PickListOperators.IS));
+					break;
+				case BUILDING:
+					FacilioField buildingField = fieldMap.get("building");
+					resourceBuilder.orCondition(CriteriaAPI.getCondition(buildingField, entry.getValue(), PickListOperators.IS));
+					break;
+				case FLOOR:
+					FacilioField floorField = fieldMap.get("floor");
+					resourceBuilder.orCondition(CriteriaAPI.getCondition(floorField, entry.getValue(), PickListOperators.IS));
+					break;
+				case SPACE:
+					for (int i = 1; i<=4; i++) {
+						FacilioField spaceField = fieldMap.get("space"+i);
+						resourceBuilder.orCondition(CriteriaAPI.getCondition(spaceField, entry.getValue(), PickListOperators.IS));
+					}
+					break;
+				case ZONE:
+					StringBuilder zoneBuilder = new StringBuilder()
+							.append(baseSpaceModule.getTableName())
+							.append(".ID IN (SELECT BASE_SPACE_ID FROM Zone_Space WHERE ORGID = ? AND ZONE_ID IN (")
+							.append(StringUtils.join(entry.getValue(), ","))
+							.append("))")
+							;
+					resourceBuilder.orCustomWhere(zoneBuilder.toString(), AccountUtil.getCurrentOrg().getId());
+					break;
+			}
+
+		}
+		return resourceBuilder;
 	}
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(BuildingOperator.class.getName());
@@ -176,30 +227,5 @@ public enum BuildingOperator implements Operator<String> {
 	}
 	public static Map<String, Operator> getAllOperators() {
 		return operatorMap;
-	}
-	
-	private static List<ResourceContext> getAllResources(String value) throws NumberFormatException, Exception {
-			List<BaseSpaceContext> spaces = null;
-			if(value.contains(",")) {
-				List<Long> ids = new ArrayList<>();
-				String[] values = value.trim().split("\\s*,\\s*");
-				for(String val : values) {
-					ids.add(Long.parseLong(val));
-				}
-				spaces = SpaceAPI.getBaseSpaceWithChildren(ids);
-			}
-			else {
-				spaces = SpaceAPI.getBaseSpaceWithChildren(Long.parseLong(value));
-			}
-			
-			if(spaces != null && !spaces.isEmpty()) {
-				List<Long> spaceIds = spaces.stream()
-											.map(BaseSpaceContext::getId)
-											.collect(Collectors.toList());
-				
-				return ResourceAPI.getAllResourcesFromSpaces(spaceIds);
-											
-			}
-			return null;
 	}
 }
