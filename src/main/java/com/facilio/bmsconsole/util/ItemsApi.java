@@ -72,7 +72,7 @@ public class ItemsApi {
 		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(id, module))
-				.fetchSupplements(lookUpfields);
+				.fetchLookups(lookUpfields);
 		List<ItemContext> items = selectBuilder.get();
 		if (items != null && !items.isEmpty()) {
 			return items.get(0);

@@ -45,7 +45,7 @@ public class InventoryRequestAPI {
 				.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition("INVENTORY_REQUEST_ID", "inventoryRequestId", requestIds, NumberOperators.EQUALS))
-				.fetchSupplements(lookUpFields)
+				.fetchLookups(lookUpFields)
 		;
 		
 		List<InventoryRequestLineItemContext> records = builder.get();

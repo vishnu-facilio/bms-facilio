@@ -103,7 +103,7 @@ public class NewAlarmAPI {
 					.andCondition(CriteriaAPI.getIdCondition(entry.getValue(), module));
 			List<LookupField> lookupFields = getLookupFields(type);
 			if (CollectionUtils.isNotEmpty(lookupFields)) {
-				selectBuilder.fetchSupplements(lookupFields);
+				selectBuilder.fetchLookups(lookupFields);
 			}
 			List<BaseAlarmContext> alarmList = selectBuilder.get();
 			baseAlarms.addAll(alarmList);
@@ -447,7 +447,7 @@ public class NewAlarmAPI {
 		SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.module(module)
 				.select(allFields)
-				.fetchSupplements(fetchLookupFields)
+				.fetchLookups(fetchLookupFields)
 				.beanClass(AlarmOccurrenceContext.class).andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 		List<AlarmOccurrenceContext> occurrenceContexts = builder.get();
 		occurrenceContexts = getExtendedOccurrence(occurrenceContexts);

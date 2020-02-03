@@ -45,7 +45,7 @@ public class GetAssetAssociatedActiveContractsCommand extends FacilioCommand {
                 .andCustomWhere(contractModule.getTableName() + ".FROM_DATE <= ?", startTime)
                 .andCustomWhere(contractModule.getTableName() + ".END_DATE >= ?", startTime)
                 .andCustomWhere(contractModule.getTableName() + ".STATUS = 2 ")
-				.fetchSupplements(Arrays.asList((LookupField) contractFieldMap.get("vendor")) )
+				.fetchLookups(Arrays.asList((LookupField) contractFieldMap.get("vendor")) )				
                 ;
 		List<ContractsContext> list = builder.get();
 		if(!CollectionUtils.isEmpty(list)) {

@@ -9,8 +9,11 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
+import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
@@ -22,6 +25,7 @@ import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
@@ -308,7 +312,7 @@ public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 
 		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
-				.andCustomWhere(module.getTableName() + ".ID = ?", id).fetchSupplements(lookUpfields);
+				.andCustomWhere(module.getTableName() + ".ID = ?", id).fetchLookups(lookUpfields);
 
 		List<ItemContext> inventories = selectBuilder.get();
 

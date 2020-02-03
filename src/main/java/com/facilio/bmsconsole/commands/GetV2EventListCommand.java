@@ -58,7 +58,7 @@ public class GetV2EventListCommand extends FacilioCommand {
         }
 
         if (fieldMap.containsKey("severity")) {
-            builder.fetchSupplement((LookupField) fieldMap.get("severity"));
+            builder.fetchLookup((LookupField) fieldMap.get("severity"));
         }
         List<BaseEventContext> list = builder.get();
 

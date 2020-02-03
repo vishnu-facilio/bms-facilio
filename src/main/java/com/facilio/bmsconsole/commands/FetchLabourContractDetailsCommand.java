@@ -36,7 +36,7 @@ public class FetchLabourContractDetailsCommand extends FacilioCommand{
 					.select(fields)
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 					.andCondition(CriteriaAPI.getCondition("LABOUR_CONTRACT", "labourContractId", String.valueOf(labourContractContext.getId()), NumberOperators.EQUALS))
-					.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("labour")));
+					.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("labour")));
 		
 			List<LabourContractLineItemContext> list = builder.get();
 			labourContractContext.setTermsAssociated(ContractsAPI.fetchAssociatedTerms(labourContractContext.getId()));

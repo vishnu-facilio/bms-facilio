@@ -51,7 +51,7 @@ public class AddOrUpdateWorkorderLabourCommand extends FacilioCommand {
 							.select(workorderLabourFields).table(workorderLabourModule.getTableName())
 							.moduleName(workorderLabourModule.getName()).beanClass(WorkOrderLabourContext.class)
 							.andCondition(CriteriaAPI.getIdCondition(woLabour.getId(), workorderLabourModule))
-							.fetchSupplements(lookUpfields);
+							.fetchLookups(lookUpfields);
 					        ;	
 					List<WorkOrderLabourContext> labourContext = selectBuilder.get();        
 					woLabour = setWorkorderItemObj(labourContext.get(0).getLabour(), parentId, workorder, woLabour);

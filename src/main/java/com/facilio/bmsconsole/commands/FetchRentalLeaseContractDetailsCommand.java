@@ -36,7 +36,7 @@ public class FetchRentalLeaseContractDetailsCommand extends FacilioCommand{
 					.select(fields)
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 					.andCondition(CriteriaAPI.getCondition("RENTAL_LEASE_CONTRACT", "rentalLeaseContractId", String.valueOf(rentalLeaseContractContext.getId()), NumberOperators.EQUALS))
-					.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+					.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
 					(LookupField) fieldsAsMap.get("toolType")));
 		
 			List<RentalLeaseContractLineItemsContext> list = builder.get();

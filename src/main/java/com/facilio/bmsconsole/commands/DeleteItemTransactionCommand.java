@@ -44,7 +44,7 @@ public class DeleteItemTransactionCommand extends FacilioCommand {
 						.select(itemFields).table(itemModule.getTableName()).moduleName(itemModule.getName())
 						.beanClass(ItemContext.class).andCustomWhere(itemModule.getTableName() + ".ID = ?",
 								itemTransaction.getItem().getId())
-						.fetchSupplements(lookUpfields);
+						.fetchLookups(lookUpfields);
 
 				List<ItemContext> items = itemSelectBuilder.get();
 				if (items != null && !items.isEmpty()) {

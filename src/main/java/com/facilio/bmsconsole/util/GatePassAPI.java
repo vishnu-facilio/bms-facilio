@@ -31,7 +31,7 @@ public class GatePassAPI {
 				.select(fields)
 				.beanClass(GatePassLineItemsContext.class)
 				.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("gatePass"), String.valueOf(gatepass.getId()), NumberOperators.EQUALS))
-		        .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+		        .fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
 				(LookupField) fieldsAsMap.get("toolType"),(LookupField) fieldsAsMap.get("asset")))
 		        ;
 		List<GatePassLineItemsContext> list = builder.get();

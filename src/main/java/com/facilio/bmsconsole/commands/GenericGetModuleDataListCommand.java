@@ -93,7 +93,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		
 		List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
 		if (CollectionUtils.isNotEmpty(fetchLookup) && !fetchCount) {
-			builder.fetchSupplements(fetchLookup);
+			builder.fetchLookups(fetchLookup);
 		}
 		
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
@@ -114,7 +114,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 					lookupFields.add((LookupField) f);
 				}
 			}
-			builder.fetchSupplements(lookupFields);
+			builder.fetchLookups(lookupFields);
 		}
 		
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

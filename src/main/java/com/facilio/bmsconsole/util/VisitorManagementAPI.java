@@ -92,7 +92,7 @@ public class VisitorManagementAPI {
 														.beanClass(InviteVisitorRelContext.class)
 														.select(fields)
 														.andCondition(CriteriaAPI.getCondition("INVITE_ID", "inviteId", String.valueOf(eventId), NumberOperators.EQUALS))
-														.fetchSupplement((LookupField) fieldsAsMap.get("visitorId"))
+														.fetchLookup((LookupField) fieldsAsMap.get("visitorId"))
 														;
 		
 		
@@ -224,7 +224,7 @@ public class VisitorManagementAPI {
 		additionaLookups.add(hostField);
 		additionaLookups.add(visitedSpacefield);
 		
-		builder.fetchSupplements(additionaLookups);
+		builder.fetchLookups(additionaLookups);
 		
 		VisitorLoggingContext records = builder.fetchFirst();
 		if(records != null && records.isRecurring() && fetchTriggers) {
@@ -291,7 +291,7 @@ public class VisitorManagementAPI {
 		LookupFieldMeta visitorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("visitor"));
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		additionaLookups.add(visitorField);
-		builder.fetchSupplements(additionaLookups);
+		builder.fetchLookups(additionaLookups);
 		
 		
 		VisitorLoggingContext records = builder.fetchFirst();
@@ -342,7 +342,7 @@ public class VisitorManagementAPI {
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		additionaLookups.add(inviteField);
 		additionaLookups.add(visitorField);
-		builder.fetchSupplements(additionaLookups);
+		builder.fetchLookups(additionaLookups);
 		InviteVisitorRelContext records = builder.fetchFirst();
 		return records;
 	
@@ -371,7 +371,7 @@ public class VisitorManagementAPI {
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		additionaLookups.add(inviteField);
 		additionaLookups.add(visitorField);
-		builder.fetchSupplements(additionaLookups);
+		builder.fetchLookups(additionaLookups);
 		InviteVisitorRelContext records = builder.fetchFirst();
 		return records;
 	
@@ -420,7 +420,7 @@ public class VisitorManagementAPI {
 		additionaLookups.add(inviteField);
 		additionaLookups.add(visitorField);
 		
-		builder.fetchSupplements(additionaLookups);
+		builder.fetchLookups(additionaLookups);
 		
 		
 		InviteVisitorRelContext record = builder.fetchFirst();

@@ -42,7 +42,7 @@ public class GetPendingPoLineItemsCommand extends FacilioCommand{
 		List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("toolType"),
 																			(LookupField) fieldsAsMap.get("itemType"));
 		
-		builder.fetchSupplements(fetchLookup);
+		builder.fetchLookups(fetchLookup);
 		List<PurchaseOrderLineItemContext> pendingItems = builder.get();	
 		context.put(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS, pendingItems);
 		return false;

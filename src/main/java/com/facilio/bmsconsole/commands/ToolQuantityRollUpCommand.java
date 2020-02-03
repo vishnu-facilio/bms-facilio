@@ -96,7 +96,7 @@ public class ToolQuantityRollUpCommand extends FacilioCommand {
 				SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
 						.select(toolFields).table(module.getTableName()).moduleName(module.getName())
 						.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(stId, module))
-						.fetchSupplements(lookUpfields)
+						.fetchLookups(lookUpfields)
 						;
 
 				List<ToolContext> tools = selectBuilder.get();

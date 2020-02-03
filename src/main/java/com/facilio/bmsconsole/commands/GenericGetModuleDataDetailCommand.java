@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -59,7 +60,7 @@ public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 
 			List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
 			if (CollectionUtils.isNotEmpty(fetchLookup)) {
-				builder.fetchSupplements(fetchLookup);
+				builder.fetchLookups(fetchLookup);
 			}
 			
 			List<ModuleBaseWithCustomFields> records = builder.get();

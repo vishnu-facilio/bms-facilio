@@ -41,7 +41,7 @@ public class CreateWOForAlarmOccurrenceCommand extends FacilioCommand {
 					.module(module)
 					.beanClass(AlarmOccurrenceContext.class)
 					.select(allFields)
-					.fetchSupplement((LookupField) fieldMap.get("alarm"))
+					.fetchLookup((LookupField) fieldMap.get("alarm"))
 					.andCondition(CriteriaAPI.getIdCondition(recordId, module));
 			AlarmOccurrenceContext alarmOccurrenceContext = builder.fetchFirst();
 			if (alarmOccurrenceContext != null) {

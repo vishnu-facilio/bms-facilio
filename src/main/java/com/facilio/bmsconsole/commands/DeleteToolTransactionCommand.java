@@ -42,7 +42,7 @@ public class DeleteToolTransactionCommand extends FacilioCommand {
 						.select(toolFields).table(toolModule.getTableName()).moduleName(toolModule.getName())
 						.beanClass(ToolContext.class).andCustomWhere(toolModule.getTableName() + ".ID = ?",
 								toolTransaction.getTool().getId())
-						.fetchSupplements(lookUpfields);
+						.fetchLookups(lookUpfields);
 
 				List<ToolContext> tools = itemSelectBuilder.get();
 				if (tools != null && !tools.isEmpty()) {

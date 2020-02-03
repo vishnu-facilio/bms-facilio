@@ -32,7 +32,7 @@ public class GetServiceVendorListCommand extends FacilioCommand{
 		SelectRecordsBuilder<ServiceVendorContext> selectBuilder = new SelectRecordsBuilder<ServiceVendorContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ServiceVendorContext.class)
 				.andCondition(CriteriaAPI.getCondition("SERVICE_ID", "serviceId", String.valueOf(service.getId()), NumberOperators.EQUALS))
-				.fetchSupplement((LookupField) fieldMap.get("vendor"))
+				.fetchLookup((LookupField) fieldMap.get("vendor"))
 				;
 		List<ServiceVendorContext> serviceVendors = selectBuilder.get();
 		service.setServiceVendors(serviceVendors);

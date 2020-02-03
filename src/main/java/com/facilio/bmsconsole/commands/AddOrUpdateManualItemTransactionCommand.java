@@ -325,7 +325,7 @@ public class AddOrUpdateManualItemTransactionCommand extends FacilioCommand {
 		lookUpfields.add((LookupField) fieldMap.get("storeRoom"));
 		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
-				.andCustomWhere(module.getTableName() + ".ID = ?", id).fetchSupplements(lookUpfields);
+				.andCustomWhere(module.getTableName() + ".ID = ?", id).fetchLookups(lookUpfields);
 
 		List<ItemContext> inventories = selectBuilder.get();
 

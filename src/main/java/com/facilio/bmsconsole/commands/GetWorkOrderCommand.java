@@ -56,11 +56,11 @@ public class GetWorkOrderCommand extends FacilioCommand {
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 			
 			if (fetchTriggers) {
-				builder.fetchSupplement((LookupField) fieldMap.get("trigger"));
+				builder.fetchLookup((LookupField) fieldMap.get("trigger"));
 			}
 
 			//fetch vendor details
-			builder.fetchSupplement((LookupField) fieldMap.get("vendor"));
+			builder.fetchLookup((LookupField) fieldMap.get("vendor"));
 			// temp fix
 			List<LookupField> customLookupFields = new ArrayList<>();
 			for (FacilioField field : fields) {
@@ -68,7 +68,7 @@ public class GetWorkOrderCommand extends FacilioCommand {
 					customLookupFields.add((LookupField) field);
 				}
 			}
-			builder.fetchSupplements(customLookupFields);
+			builder.fetchLookups(customLookupFields);
 			
 			List<WorkOrderContext> workOrders = builder.get();
 			if(workOrders.size() > 0) {
