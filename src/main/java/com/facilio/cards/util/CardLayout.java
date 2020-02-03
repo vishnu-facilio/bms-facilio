@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
@@ -73,7 +75,7 @@ public enum CardLayout {
 				pmReadingsChain.execute(context);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOGGER.log(Level.WARNING, "Exception in get pm readings data::: ", e);
 			}
 
 			Collection<WorkOrderContext> workOrderContexts = (Collection<WorkOrderContext>) context.get(ContextNames.RESULT);
@@ -124,7 +126,7 @@ public enum CardLayout {
 					cardValue = KPIUtil.getKPIValue(kpiContext);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.log(Level.WARNING, "Exception in getKPIValue::: ", e);
 				}
 			}
 			else if ("reading".equalsIgnoreCase(kpiType)) {
@@ -132,18 +134,24 @@ public enum CardLayout {
 					cardValue = FormulaFieldAPI.getFormulaCurrentValue(kpiId, parentId);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.log(Level.WARNING, "Exception in get KPI Reading Value::: ", e);
 				}
 			}
 			
+			JSONObject jobj = new JSONObject();
+			jobj.put("value", cardValue);
+			jobj.put("unit", null);
+			
 			JSONObject returnValue = new JSONObject();
 			returnValue.put("title", title);
-			returnValue.put("value", cardValue);
+			returnValue.put("value", jobj);
 			
 			return returnValue;
 		}
 	};
 	
+	private static final Logger LOGGER = Logger.getLogger(CardLayout.class.getName());
+			
 	private String name;
 	
 	private CardLayout (String name) {
@@ -206,7 +214,7 @@ public enum CardLayout {
 				}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				LOGGER.log(Level.WARNING, "Exception in loading card layout scripts::: ", e);
 			}
 		}
 		return cardLayoutScriptMap;
