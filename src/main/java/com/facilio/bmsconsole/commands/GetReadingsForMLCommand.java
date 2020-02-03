@@ -41,7 +41,14 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 		List<MLVariableContext> mlVariable = mlContext.getMLVariable();
 		long time;
 		if(mlContext.getModelPath().equals("ratioCheck") || mlContext.getModelPath().equals("checkGam1") || mlContext.getModelPath().equals("buildGamModel")){
-			time = mlContext.getPredictionTime()*1000;
+			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(mlContext.getPredictionTime());
+			Date date = calendar.getTime();
+			Date newDate = new Date(date.getYear(),date.getMonth(),date.getDate(),date.getHours(),0);
+			calendar.setTime(newDate);
+			time = calendar.getTimeInMillis()-1;
+			
 		}else{
 			time = System.currentTimeMillis();
 		}
