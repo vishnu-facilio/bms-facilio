@@ -214,6 +214,9 @@
         <action name="list" class="com.facilio.agentv2.actions.AgentIdAction" method="devices"> <!--DONEDONE-->
         </action>
 
+        <action name="add" class="com.facilio.agentv2.actions.AddFieldDeviceAction" method="addDevice">
+        </action>
+
         <action name="discoverPoints" class="com.facilio.agentv2.actions.IdsAction" method="discoverDevicePoints">
         </action>
 
