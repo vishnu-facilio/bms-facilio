@@ -11,10 +11,9 @@ import javax.validation.constraints.NotNull;
 
 public class OpcUaControllerAction extends AgentIdAction {
 
-    private static final Logger LOGGER = LogManager.getLogger(OpcDaControllerAction.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(OpcUaControllerAction.class.getName());
 
     @NotNull
-    @URL
     private String url;
 
     private String certPath;
