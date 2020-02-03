@@ -585,7 +585,7 @@ public class NewPermissionFactory {
 		UPDATE(64, "All", Workorder_Permission.UPDATE_GROUP, Permission_Child_Type.RADIO),
 		
 		UPDATE_CHANGE_OWNERSHIP(128,"Change Ownership",Workorder_Permission.UPDATE_GROUP,Permission_Child_Type.CHECKBOX),
-		UPDATE_CLOSE_WORKORDER(256,"All",Workorder_Permission.UPDATE_GROUP,Permission_Child_Type.CHECKBOX),
+		UPDATE_CLOSE_WORKORDER(256,"Close Workorder",Workorder_Permission.UPDATE_GROUP,Permission_Child_Type.CHECKBOX),
 		UPDATE_TASK(512,"Add/Update/Delete Task",Workorder_Permission.UPDATE_GROUP,Permission_Child_Type.CHECKBOX),
 
 		DELETE_GROUP(-1,"Delete"),
