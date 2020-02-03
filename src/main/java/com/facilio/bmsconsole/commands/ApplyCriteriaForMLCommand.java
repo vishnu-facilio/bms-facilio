@@ -97,7 +97,7 @@ public class ApplyCriteriaForMLCommand extends FacilioCommand {
 			mlContext.setMlVariablesDataMap(criteriaSatisfiedDataMap);
 		}
 		}catch(Exception e){
-			LOGGER.fatal("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : ApplyCriteriaForMLCommand "+" ERROR MESSAGE : "+e);
+			LOGGER.fatal("Error_JAVA "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : ApplyCriteriaForMLCommand "+" ERROR MESSAGE : "+e);
 			throw e;
 		}
 		return false;

@@ -171,7 +171,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			mlContext.setMlCriteriaVariablesDataMap(criteriavariableData);
 		}
 		}catch(Exception e){
-			LOGGER.fatal("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+ " FILE : GetReadingsForMLCommand " +" ERROR MESSAGE : "+e);
+			LOGGER.fatal("Error_JAVA "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+ " FILE : GetReadingsForMLCommand " +" ERROR MESSAGE : "+e);
 			throw e;
 		}
 		return false;

@@ -104,13 +104,13 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());
 		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(),300);
 		if(StringUtils.isEmpty(result) || result.contains("Internal Server Error")){
-			LOGGER.fatal("ML error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Response is not valid. RESULT : "+result);
+			LOGGER.fatal("Error_ML "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" ERROR MESSAGE : "+"Response is not valid. RESULT : "+result);
 		    context.put("ML_ERROR", true);
 		}
 		mlContext.setResult(result);
 	}catch(Exception e){
 		if(!e.getMessage().contains("ML error")){
-			LOGGER.fatal("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : GenerateMLModelCommand "+" ERROR MESSAGE : "+e);
+			LOGGER.fatal("Error_JAVA "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : GenerateMLModelCommand "+" ERROR MESSAGE : "+e);
 			throw e;
 		}
 	}

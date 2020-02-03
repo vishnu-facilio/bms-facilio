@@ -38,7 +38,7 @@ public class DefaultMLJob extends FacilioJob
 			}
 			LOGGER.info("Finished DefaultMLJob, JOB ID :"+jc.getJobId());
 		}catch(Exception e){
-			LOGGER.fatal("Error in DefaultMLJob"+e);
+			LOGGER.fatal("Error_in DefaultMLJob"+e);
 		}
 	}
 

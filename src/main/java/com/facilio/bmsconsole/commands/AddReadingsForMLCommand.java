@@ -145,7 +145,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 		}
 		catch(Exception e)
 		{
-			LOGGER.fatal("JAVA error "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : AddReadingsForMLCommand "+" ERROR MESSAGE : "+e);
+			LOGGER.fatal("Error_JAVA "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId()+" FILE : AddReadingsForMLCommand "+" ERROR MESSAGE : "+e);
 			throw e;
 		}
 		
