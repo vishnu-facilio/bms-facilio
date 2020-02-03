@@ -1,26 +1,12 @@
 package com.facilio.bmsconsole.view;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.MapUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
-import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -28,28 +14,19 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.EnumOperators;
-import com.facilio.db.criteria.operators.LookupOperator;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.*;
 import com.facilio.modules.FacilioStatus.StatusType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.time.DateTimeUtil;
+import org.apache.commons.collections4.MapUtils;
+
+import java.util.*;
 
 public class ViewFactory {
 
@@ -579,6 +556,8 @@ public class ViewFactory {
 		views.put("vendorVisitors", getVendorAllInvitesView().setOrder(order++));
 		views.put("vendorUpcomingVisitors", getVendorUpcomingVisitorLogsView().setOrder(order++));
 		views.put("myUpcoming", getMyUpcomingVisitorInvites().setOrder(order++));
+		views.put("myActive", getMyActiveVisitorInvites().setOrder(order++));
+		views.put("myExpired", getMyExpiredVisitorInvites().setOrder(order++));
 		views.put("myAll", getMyAllVisitorInvites().setOrder(order++));
 		views.put("myPendingVisits", getMyPendingVisitsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_LOGGING, views);
@@ -602,9 +581,8 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllWorkPermitView().setOrder(order++));
-		views.put("vendorWorkpermits", getVendorWorkPermitView().setOrder(order++));
-		views.put("vendorActiveWorkpermits", getVendorWorkPermitView().setOrder(order++));
-		views.put("vendorExpiredWorkpermits", getExpiredWorkPermitView().setOrder(order++));
+		views.put("vendorActiveWorkpermits", getVendorActiveWorkPermitView().setOrder(order++));
+		views.put("vendorExpiredWorkpermits", getVendorExpiredWorkPermitView().setOrder(order++));
 		views.put("myWorkpermits", getMyWorkPermits().setOrder(order++));
 		views.put("myActive", getActiveWorkPermitView().setOrder(order++));
 		views.put("myExpired", getMyExpiredWorkPermitView().setOrder(order++));
@@ -3176,7 +3154,6 @@ public class ViewFactory {
 			myVendorView.setCriteria(criteria);
 			myVendorView.setSortFields(sortFields);
 			myVendorView.setHidden(true);
-
 			return myVendorView;
 		}
 		
@@ -3245,7 +3222,56 @@ public class ViewFactory {
 
 			return myVisitorInvitesView;
 		}
-		
+
+	private static FacilioView getMyActiveVisitorInvites() {
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getMyVistorInvitesCondition());
+		criteria.addAndCondition(getVisitorLogStatusCriteria("CheckedIn"));
+		FacilioModule visitorInvitesModule = ModuleFactory.getVisitorLoggingModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("expectedCheckInTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("EXPECTED_CHECKIN_TIME");
+		createdTime.setModule(visitorInvitesModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
+
+		FacilioView myVisitorInvitesView = new FacilioView();
+		myVisitorInvitesView.setName("myActive");
+		myVisitorInvitesView.setDisplayName("My Active Invites");
+		myVisitorInvitesView.setCriteria(criteria);
+		myVisitorInvitesView.setSortFields(sortFields);
+		myVisitorInvitesView.setHidden(true);
+
+		return myVisitorInvitesView;
+	}
+
+	private static FacilioView getMyExpiredVisitorInvites() {
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getMyVistorInvitesCondition());
+		criteria.addAndCondition(getVisitorLogStatusCriteria("CheckedOut"));
+		FacilioModule visitorInvitesModule = ModuleFactory.getVisitorLoggingModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("expectedCheckInTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("EXPECTED_CHECKIN_TIME");
+		createdTime.setModule(visitorInvitesModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
+
+		FacilioView myVisitorInvitesView = new FacilioView();
+		myVisitorInvitesView.setName("myActive");
+		myVisitorInvitesView.setDisplayName("My Active Invites");
+		myVisitorInvitesView.setCriteria(criteria);
+		myVisitorInvitesView.setSortFields(sortFields);
+		myVisitorInvitesView.setHidden(true);
+
+		return myVisitorInvitesView;
+	}
 		private static FacilioView getMyAllVisitorInvites() {
 			
 			Criteria criteria = new Criteria();
@@ -5284,7 +5310,7 @@ public class ViewFactory {
 	private static FacilioView getActiveWorkPermitView() {
 		Criteria activeCriteria = new Criteria();
 		activeCriteria.addAndCondition(getMyWorkPermitsCondition());
-		activeCriteria.andCriteria(getActiveWorkPermitCriteria());
+		activeCriteria.addAndCondition(getWorkPermitStatusCriteria("Active"));
 		FacilioView allView = new FacilioView();
 		allView.setName("myActive");
 		allView.setDisplayName("Active Work Permit");
@@ -5296,10 +5322,7 @@ public class ViewFactory {
 	private static FacilioView getMyExpiredWorkPermitView() {
 		Criteria expiredCriteria = new Criteria();
 		expiredCriteria.addAndCondition(getMyWorkPermitsCondition());
-		expiredCriteria.addAndCondition(getExpiredWorkPermitCondition());
-		FacilioModule workpermitmodule = ModuleFactory.getWorkPermitModule();
-		FacilioField expectedEndtime = FieldFactory.getField("expectedEndTime", "EXPECTED_END_TIME", workpermitmodule,FieldType.DATE_TIME);
-		expiredCriteria.addAndCondition(CriteriaAPI.getCondition(expectedEndtime, CommonOperators.IS_NOT_EMPTY));
+		expiredCriteria.addAndCondition(getWorkPermitStatusCriteria("InActive"));
 		FacilioView allView = new FacilioView();
 		allView.setName("myExpired");
 		allView.setDisplayName("Expired Work Permit");
@@ -5318,12 +5341,9 @@ public class ViewFactory {
 		return requestedView;
 	}
 	
-	private static FacilioView getExpiredWorkPermitView() {
+	private static FacilioView getVendorExpiredWorkPermitView() {
 		Criteria expiredCriteria = new Criteria();
-		expiredCriteria.addAndCondition(getExpiredWorkPermitCondition());
-		FacilioModule workpermitmodule = ModuleFactory.getWorkPermitModule();
-		FacilioField expectedEndtime = FieldFactory.getField("expectedEndTime", "EXPECTED_END_TIME", workpermitmodule,FieldType.DATE_TIME);
-		expiredCriteria.addAndCondition(CriteriaAPI.getCondition(expectedEndtime, CommonOperators.IS_NOT_EMPTY));
+		expiredCriteria.addAndCondition(getWorkPermitStatusCriteria("InActive"));
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorExpiredWorkpermits");
 		allView.setDisplayName("Expired Work Permit");
@@ -5332,9 +5352,9 @@ public class ViewFactory {
 		return allView;
 	}
 	
-	private static FacilioView getVendorWorkPermitView() {
+	private static FacilioView getVendorActiveWorkPermitView() {
 		Criteria activeCriteria = new Criteria();
-		activeCriteria.andCriteria(getActiveWorkPermitCriteria());
+		activeCriteria.addAndCondition(getWorkPermitStatusCriteria("Active"));
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Work Permit");
