@@ -93,8 +93,8 @@ public class ColumnFactory {
 		columnMap.put("visitorlogging-vendorVisitors", getVendorVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorUpcomingVisitors", getVendorVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorVisits", getVendorVisitsInvitesColumns());
-		columnMap.put("visitorlogging-myPendingVisits", getDefaultVisitorLoggingColumns());
-		columnMap.put("visitorlogging-all", getAllVisitsColumns());
+		columnMap.put("visitorlogging-myPendingVisits", getmyVisitsColumns());
+		columnMap.put("visitorlogging-all", getmyVisitsColumns());
 		columnMap.put("insurance-default", getDefaultInsuranceColumns());
 		columnMap.put("insurance-vendor", getVendorInsuranceColumns());
 		columnMap.put("insurance-vendorActive", getVendorInsuranceColumns());
@@ -784,6 +784,22 @@ public class ColumnFactory {
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
 		columns.add(new ViewField("visitedSpace", "Visiting Space"));
 		columns.add(new ViewField("requestedBy", "Requested By"));
+	
+		return columns;
+	}
+	
+	public static List<ViewField> getmyVisitsColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("visitorName", "Name"));
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("visitorType", "Type"));
+		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
+		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
+		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
+		columns.add(new ViewField("visitedSpace", "Visiting Space"));
+		columns.add(new ViewField("requestedBy", "Requested By"));
+//		columns.add(new ViewField("moduleState", "Status"));
+	
 	
 		return columns;
 	}
