@@ -17,6 +17,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ public class AgentMessenger {
             object.put(AgentConstants.AGENT_ID,agentId);
             object.put(AgentConstants.COMMAND,command.asInt());
 
-            switch (command){
+            switch (command) {
                 case PING:
                     object.put(AgentConstants.PUBLISH_TYPE, PublishType.ACK.asInt());
                     break;
@@ -53,15 +55,25 @@ public class AgentMessenger {
                     break;
                 case CONTROLLER_STATUS:
                 case CONFIGURE:
-                case ADD_CONTROLLER:
                 case EDIT_CONTROLLER:
-                    if(context.containsKey(AgentConstants.DATA)){
+                    if (context.containsKey(AgentConstants.DATA)) {
                         object.put(AgentConstants.DATA, context.get(AgentConstants.DATA));
-                    }else {
-                        LOGGER.info("Exception occurred , no data in context for "+command.name());
-                        throw new Exception("No data in context for "+command.name());
+                    } else {
+                        LOGGER.info("Exception occurred , no data in context for " + command.name());
+                        throw new Exception("No data in context for " + command.name());
                     }
                     break;
+                case ADD_CONTROLLER:
+                    if (context.containsKey(AgentConstants.DATA)) {
+                        JSONArray controllersArray = new JSONArray();
+                        controllersArray.add(context.get(AgentConstants.DATA));
+                        object.put(AgentConstants.CONTROLLERS, controllersArray);
+                    } else {
+                        LOGGER.info("Exception occurred , no data in context for " + command.name());
+                        throw new Exception("No data in context for " + command.name());
+                    }
+                    break;
+
             }
             List<IotMessage> messages = new ArrayList<>();
             messages.add(MessengerUtil.getMessageObject(object, command));
