@@ -29,7 +29,7 @@ public class DefaultMLJob extends FacilioJob
 			{
 				LOGGER.info("Starting "+ mlContext.getModelPath() + " ML ID : "+mlContext.getId());
 				LOGGER.info("mlContext"+mlContext.getId());
-				mlContext.setPredictionTime(jc.getExecutionTime());
+				mlContext.setPredictionTime(jc.getExecutionTime()*1000);
 				FacilioChain chain = FacilioChainFactory.getMLModelBuildingChain();
 				FacilioContext context = chain.getContext();
 				context.put(FacilioConstants.ContextNames.ML, mlContext);
