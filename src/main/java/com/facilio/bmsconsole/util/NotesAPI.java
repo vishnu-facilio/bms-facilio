@@ -91,7 +91,10 @@ public class NotesAPI {
 		if (portalID > 0) {
 			Criteria cri = new Criteria();
 			cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("createdBy"), AccountUtil.getCurrentUser().getId() + "", NumberOperators.EQUALS));
-			cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("notifyRequester"), String.valueOf(true), BooleanOperators.IS));
+			if(!moduleName.equalsIgnoreCase("insurancenotes"))
+			{
+				cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("notifyRequester"), String.valueOf(true), BooleanOperators.IS));
+			}
 			
 			selectBuilder.andCriteria(cri);
 		}
