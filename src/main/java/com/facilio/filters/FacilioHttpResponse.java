@@ -39,22 +39,22 @@ public class FacilioHttpResponse implements HttpServletResponse {
 
     @Override
     public String encodeURL(String url) {
-        return encodeURL(url);
+        return response.encodeURL(url);
     }
 
     @Override
     public String encodeRedirectURL(String url) {
-        return encodeRedirectUrl(url);
+        return response.encodeRedirectUrl(url);
     }
 
     @Override
     public String encodeUrl(String url) {
-        return encodeUrl(url);
+        return response.encodeUrl(url);
     }
 
     @Override
     public String encodeRedirectUrl(String url) {
-        return encodeRedirectUrl(url);
+        return response.encodeRedirectUrl(url);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class FacilioHttpResponse implements HttpServletResponse {
 
     @Override
     public void setIntHeader(String name, int value) {
-        setIntHeader(name, value);
+        response.setIntHeader(name, value);
     }
 
     @Override
