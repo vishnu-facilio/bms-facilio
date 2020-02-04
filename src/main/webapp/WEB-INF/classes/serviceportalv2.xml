@@ -552,6 +552,12 @@
 			<param name="tenantPortal">true</param>
 			</action>
 	</package>
+	<package name="portalBaseSpaceApiV2" namespace="/api/service/v2/basespaces" extends="newServicePortalApiV2">
+		<action name="*" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+				method="basespaceDetailsWithHierarchy" >
+			<param name="spaceId">{1}</param>
+		</action>
+	</package>
 	<package name="vendorWorkorder" namespace="/api/service/workorder/summary" extends="newServicePortalApiV2">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"

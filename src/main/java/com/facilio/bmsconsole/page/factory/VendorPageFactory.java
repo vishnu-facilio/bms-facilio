@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.page.factory;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -73,18 +74,16 @@ public class VendorPageFactory extends PageFactory{
 		tab2.addSection(tab2Sec3);
 		addRelatedListWidget(tab2Sec3, "insurance", vendor.getModuleId());
 		
-		Section tab2Sec4 = page.new Section();
-		tab2.addSection(tab2Sec4);
-		addRelatedListWidget(tab2Sec4, "workorder", vendor.getModuleId());
-		
-		Section tab2Sec5 = page.new Section();
-		tab2.addSection(tab2Sec5);
-		addRelatedListWidget(tab2Sec5, "workpermit", vendor.getModuleId());
-		
-		
-		
 		if(AccountUtil.getCurrentUser().getUserType() == UserType.USER.getValue()) {
-		
+
+			Section tab2Sec4 = page.new Section();
+			tab2.addSection(tab2Sec4);
+			addRelatedListWidget(tab2Sec4, "workorder", vendor.getModuleId());
+			
+			Section tab2Sec5 = page.new Section();
+			tab2.addSection(tab2Sec5);
+			addRelatedListWidget(tab2Sec5, "workpermit", vendor.getModuleId());
+			
 			Section tab2Sec6 = page.new Section();
 			tab2.addSection(tab2Sec6);
 			addRelatedListWidget(tab2Sec6, "purchaseorder", vendor.getModuleId());
