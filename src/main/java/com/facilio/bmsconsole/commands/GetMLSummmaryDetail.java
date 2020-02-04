@@ -69,7 +69,7 @@ public class GetMLSummmaryDetail extends FacilioCommand {
 		resourceLookup = (LookupField) resourceFieldColumn;
 		SelectRecordsBuilder<MLAlarmOccurenceContext> builder = new SelectRecordsBuilder<MLAlarmOccurenceContext>().module(module)
 				.beanClass(MLAlarmOccurenceContext.class).select(selectFields)
-				.fetchLookup(resourceLookup)
+				.fetchSupplement(resourceLookup)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentAlarm"), String.valueOf(mlAnomalyId),  NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN))
 				.groupBy(fieldMap.get("resource").getCompleteColumnName());

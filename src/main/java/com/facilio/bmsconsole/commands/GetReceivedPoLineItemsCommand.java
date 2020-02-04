@@ -40,7 +40,7 @@ public class GetReceivedPoLineItemsCommand extends FacilioCommand{
 		List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("toolType"),
 																			(LookupField) fieldsAsMap.get("itemType"));
 		
-		builder.fetchLookups(fetchLookup);
+		builder.fetchSupplements(fetchLookup);
 		
 		List<PurchaseOrderLineItemContext> receivedItems = builder.get();	
 		context.put(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS, receivedItems);

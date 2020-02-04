@@ -53,7 +53,7 @@ public class ApproveOrRejectItemCommand extends FacilioCommand {
 					.select(itemTransactionsFields).table(itemTransactionsModule.getTableName())
 					.moduleName(itemTransactionsModule.getName()).beanClass(ItemTransactionsContext.class)
 					.andCondition(CriteriaAPI.getIdCondition(recordIds, itemTransactionsModule))
-					.fetchLookups(lookUpfields);
+					.fetchSupplements(lookUpfields);
 
 			List<ItemTransactionsContext> itemTransactions = selectBuilder.get();
 			List<Object> woitemactivity = new ArrayList<>();

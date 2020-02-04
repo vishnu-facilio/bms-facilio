@@ -36,7 +36,7 @@ public class FetchWarrantyContractDetailsCommand extends FacilioCommand{
 					.select(fields)
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 					.andCondition(CriteriaAPI.getCondition("WARRANTY_CONTRACT", "warrantyContractId", String.valueOf(serviceContractContext.getId()), NumberOperators.EQUALS))
-					.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("service")));
+					.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("service")));
 		
 			List<WarrantyContractLineItemContext> list = builder.get();
 			serviceContractContext.setAssociatedAssets(ContractsAPI.fetchAssociatedAssets(serviceContractContext.getId()));

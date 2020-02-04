@@ -177,7 +177,7 @@ public class SpaceAPI {
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		
 		LookupField location = (LookupField) fieldsAsMap.get("location");
-		selectBuilder.fetchLookup(location);
+		selectBuilder.fetchSupplement(location);
 		List<SiteContext> spaces = selectBuilder.get();
 		
 		if(spaces != null && !spaces.isEmpty()) {
@@ -941,7 +941,7 @@ public class SpaceAPI {
 																	.beanClass(SiteContext.class);
 		
 		if (CollectionUtils.isNotEmpty(lookupFields)) {
-			selectBuilder.fetchLookups(lookupFields);
+			selectBuilder.fetchSupplements(lookupFields);
 		}
 		
 		List<SiteContext> sites = selectBuilder.get();

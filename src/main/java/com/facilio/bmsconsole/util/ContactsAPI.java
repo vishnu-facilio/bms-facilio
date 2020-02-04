@@ -45,7 +45,7 @@ public class ContactsAPI {
 		
 		LookupField requesterField = (LookupField) fieldsAsMap.get("requester");
 		
-		builder.fetchLookup(requesterField);
+		builder.fetchSupplement(requesterField);
 		
 		List<Map<String,Object>> records = builder.getAsProps();
 		return records;
@@ -68,7 +68,7 @@ public class ContactsAPI {
 		
 		LookupField requesterField = (LookupField) fieldsAsMap.get("requester");
 		
-		builder.fetchLookup(requesterField);
+		builder.fetchSupplement(requesterField);
 		
 		List<ContactsContext> records = builder.get();
 		return records;

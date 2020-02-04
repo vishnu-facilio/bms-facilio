@@ -68,7 +68,7 @@ public class AddOrUpdateManualToolTransactionsCommand extends FacilioCommand {
 							.select(toolTransactionsFields).table(toolTransactionsModule.getTableName())
 							.moduleName(toolTransactionsModule.getName()).beanClass(ToolTransactionContext.class)
 							.andCondition(CriteriaAPI.getIdCondition(toolTransaction.getId(), toolTransactionsModule))
-							.fetchLookups(lookUpfields);
+							.fetchSupplements(lookUpfields);
 					;
 					List<ToolTransactionContext> woIt = selectBuilder.get();
 					if (woIt != null) {
@@ -246,7 +246,7 @@ public class AddOrUpdateManualToolTransactionsCommand extends FacilioCommand {
 		lookUpfields.add((LookupField) fieldMap.get("storeRoom"));
 		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
-				.andCustomWhere(module.getTableName() + ".ID = ?", id).fetchLookups(lookUpfields);
+				.andCustomWhere(module.getTableName() + ".ID = ?", id).fetchSupplements(lookUpfields);
 
 		List<ToolContext> stockedTools = selectBuilder.get();
 

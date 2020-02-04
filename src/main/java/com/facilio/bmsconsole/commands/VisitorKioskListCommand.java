@@ -58,7 +58,7 @@ public class VisitorKioskListCommand extends FacilioCommand {
 		SelectRecordsBuilder<VisitorKioskContext> builder = new SelectRecordsBuilder<VisitorKioskContext>().select(selectFields)
 				.beanClass(VisitorKioskContext.class).module(devicesModule).maxLevel(0).leftJoin(visitorKioskModule.getTableName())
 				.on("Devices.ID=Devices_Visitor_Kiosk.ID").andCondition(CriteriaAPI.getCondition("DEVICE_TYPE", "deviceType", DeviceType.VISITOR_KIOSK.getIndex()+"", EnumOperators.IS));
-		builder.fetchLookups(fillLookups);
+		builder.fetchSupplements(fillLookups);
 		
 	
 		

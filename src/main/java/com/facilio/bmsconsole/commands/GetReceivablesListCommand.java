@@ -63,7 +63,7 @@ public class GetReceivablesListCommand extends FacilioCommand {
 				builder.setAggregation();
 			}
 			else {
-				builder.fetchLookup((LookupField)fieldsAsMap.get("poId"));
+				builder.fetchSupplement((LookupField)fieldsAsMap.get("poId"));
 				
 			}
 			String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);

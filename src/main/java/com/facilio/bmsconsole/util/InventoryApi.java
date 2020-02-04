@@ -98,7 +98,7 @@ public class InventoryApi {
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		
 		LookupField registeredBy = (LookupField) fieldsAsMap.get("registeredBy");
-		selectBuilder.fetchLookup(registeredBy);
+		selectBuilder.fetchSupplement(registeredBy);
 		
 		VendorContext vendor = selectBuilder.fetchFirst();
 		

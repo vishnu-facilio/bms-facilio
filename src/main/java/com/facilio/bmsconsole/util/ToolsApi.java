@@ -55,7 +55,7 @@ public class ToolsApi {
 		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
 				.select(fields).table(module.getTableName()).moduleName(module.getName())
 				.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(id, module))
-				.fetchLookups(lookUpfields);
+				.fetchSupplements(lookUpfields);
 
 		List<ToolContext> tools = selectBuilder.get();
 

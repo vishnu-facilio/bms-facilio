@@ -48,7 +48,7 @@ public class GetWorkorderToolsListCommand extends FacilioCommand {
 					.moduleName(workorderToolsModule.getName()).beanClass(WorkorderToolsContext.class)
 					.andCondition(CriteriaAPI.getCondition(workorderToolsFieldMap.get("parentId"),
 							String.valueOf(parentId), PickListOperators.IS))
-					.fetchLookups(lookUpfields);
+					.fetchSupplements(lookUpfields);
 
 			List<WorkorderToolsContext> workorderTools = selectBuilder.get();
 			if (workorderTools != null && !workorderTools.isEmpty()) {

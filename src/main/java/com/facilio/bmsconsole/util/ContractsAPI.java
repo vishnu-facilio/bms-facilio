@@ -91,7 +91,7 @@ public class ContractsAPI {
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
 				.select(fields)
 			    .andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(contractId),NumberOperators.EQUALS))
-				.fetchLookup((LookupField) fieldsAsMap.get("asset"))
+				.fetchSupplement((LookupField) fieldsAsMap.get("asset"))
 		;
 		List<ContractAssociatedAssetsContext> list = builder.get();
 				
@@ -110,7 +110,7 @@ public class ContractsAPI {
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
 				.select(fields)
 			    .andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(contractId),NumberOperators.EQUALS))
-				.fetchLookup((LookupField) fieldsAsMap.get("terms"))
+				.fetchSupplement((LookupField) fieldsAsMap.get("terms"))
 		;
 		List<ContractAssociatedTermsContext> list = builder.get();
 				
@@ -160,7 +160,7 @@ public class ContractsAPI {
 			
 			List<LookupField> additionaLookups = new ArrayList<LookupField>();
 			additionaLookups.add(vendorField);
-			builder.fetchLookups(additionaLookups);			
+			builder.fetchSupplements(additionaLookups);
 			List<ContractsContext> contracts = builder.get();
 			if(CollectionUtils.isNotEmpty(contracts)) {
 				return contracts.get(0);	
@@ -179,7 +179,7 @@ public class ContractsAPI {
 				.select(fields)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 				.andCondition(CriteriaAPI.getCondition("PURCHASE_CONTRACT", "purchaseContractId", String.valueOf(contractId), NumberOperators.EQUALS))
-				.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+				.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
 				(LookupField) fieldsAsMap.get("toolType")));
 		return builder.get();
 	}
@@ -195,7 +195,7 @@ public class ContractsAPI {
 				.select(fields)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 				.andCondition(CriteriaAPI.getCondition("LABOUR_CONTRACT", "labourContractId", String.valueOf(contractId), NumberOperators.EQUALS))
-				.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("labour")));
+				.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("labour")));
 		return builder.get();
 	}
 	
@@ -210,7 +210,7 @@ public class ContractsAPI {
 				.select(fields)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 				.andCondition(CriteriaAPI.getCondition("WARRANTY_CONTRACT", "warrantyContractId", String.valueOf(contractId), NumberOperators.EQUALS))
-				.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("service")));
+				.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("service")));
 		return builder.get();
 	}
 	
@@ -224,7 +224,7 @@ public class ContractsAPI {
 				.moduleName(lineItemModuleName)
 				.select(fields)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
-				.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+				.fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
 						(LookupField) fieldsAsMap.get("toolType")));
 		return builder.get();
 	}

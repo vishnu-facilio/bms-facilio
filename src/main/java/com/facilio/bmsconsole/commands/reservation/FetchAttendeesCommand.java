@@ -50,7 +50,7 @@ public class FetchAttendeesCommand extends FacilioCommand {
                                                         .select(fields)
                                                         .module(module)
                                                         .andCondition(CriteriaAPI.getCondition(reservationField, String.valueOf(id), PickListOperators.IS))
-                                                        .fetchLookup((LookupField) userField)
+                                                        .fetchSupplement((LookupField) userField)
                                                         .beanClass(InternalAttendeeContext.class)
                                                         .get();
 

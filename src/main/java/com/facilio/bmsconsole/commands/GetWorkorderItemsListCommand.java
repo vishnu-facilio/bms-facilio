@@ -48,7 +48,7 @@ public class GetWorkorderItemsListCommand extends FacilioCommand {
 					.moduleName(workorderItemsModule.getName()).beanClass(WorkorderItemContext.class)
 					.andCondition(CriteriaAPI.getCondition(workorderItemsFieldMap.get("parentId"),
 							String.valueOf(parentId), PickListOperators.IS))
-					.fetchLookups(lookUpfields);
+					.fetchSupplements(lookUpfields);
 				
 
 			List<WorkorderItemContext> workorderItems = selectBuilder.get();

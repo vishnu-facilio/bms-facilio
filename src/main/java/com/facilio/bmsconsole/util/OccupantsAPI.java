@@ -138,7 +138,7 @@ public class OccupantsAPI {
 		
 		LookupField requesterField = (LookupField) fieldsAsMap.get("requester");
 		
-		builder.fetchLookup(requesterField);
+		builder.fetchSupplement(requesterField);
 		
 		List<Map<String,Object>> records = builder.getAsProps();
 		return records;
