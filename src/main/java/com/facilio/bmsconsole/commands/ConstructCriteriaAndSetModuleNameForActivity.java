@@ -65,20 +65,25 @@ public class ConstructCriteriaAndSetModuleNameForActivity extends FacilioCommand
 			if( index > -1) {
 				con.setField(fields.get(index));
 				con.setOperator(StringOperators.IS);
-				con.setValue(WorkOrderActivityType.UPDATE_STATUS.getValue() + "," + WorkOrderActivityType.UPDATE.getValue() + "," + WorkOrderActivityType.ADD_COMMENT.getValue() + "," + WorkOrderActivityType.ASSIGN.getValue() + "," + WorkOrderActivityType.APPROVED.getValue() + "," + WorkOrderActivityType.ADD.getValue());
+				con.setValue(WorkOrderActivityType.UPDATE_STATUS.getValue() + "," + WorkOrderActivityType.UPDATE.getValue() + "," + WorkOrderActivityType.ADD_COMMENT.getValue() + "," + WorkOrderActivityType.ASSIGN.getValue() + "," + WorkOrderActivityType.APPROVED.getValue() + "," + WorkOrderActivityType.ADD.getValue() + "," + WorkOrderActivityType.VENDOR_ASSIGNED.getValue());
 				filterCriteria.addAndCondition(con);
-			}
+				}
 
 			}
 			if (parentId != null && parentId != -1) {
-				filterCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("parentId", activityModule.getName()), String.valueOf(parentId), PickListOperators.IS));
+				filterCriteria.addAndCondition(
+						CriteriaAPI.getCondition(modBean.getField("parentId", activityModule.getName()),
+								String.valueOf(parentId), PickListOperators.IS));
 			}
 			if (occurrenceId != null && occurrenceId != -1) {
-				filterCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("occurrenceId", activityModule.getName()), String.valueOf(occurrenceId), PickListOperators.IS));
+				filterCriteria.addAndCondition(
+						CriteriaAPI.getCondition(modBean.getField("occurrenceId", activityModule.getName()),
+								String.valueOf(occurrenceId), PickListOperators.IS));
 			}
 
 			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, filterCriteria);
-			context.put(FacilioConstants.ContextNames.SORTING_QUERY, modBean.getField("ttime", activityModule.getName()).getCompleteColumnName()+" DESC");
+			context.put(FacilioConstants.ContextNames.SORTING_QUERY,
+					modBean.getField("ttime", activityModule.getName()).getCompleteColumnName() + " DESC");
 		}
 		return false;
 	}

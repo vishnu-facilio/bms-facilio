@@ -298,6 +298,10 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 			for (WorkOrderContext oldWo: oldWos) {
 				addAssignmentActivity(workOrder, oldWo.getId(), oldWo, context);
 			}
+		} else if (workOrder.getVendor() != null && workOrder.getVendor().getId() != -1) {
+			for (WorkOrderContext oldWo : oldWos) {
+				addVendorAssignmentActivity(workOrder, oldWo.getId(), oldWo, context);
+			}
 		}
 		else if (!changeSets.isEmpty() && workOrder.getApprovalStateEnum() == null && workOrder.getStatus() == null) {
 			context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
@@ -366,6 +370,17 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 		JSONObject newinfo = new JSONObject();
         newinfo.put("assigned", info);
 		CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.ASSIGN, newinfo, (FacilioContext) context);
+	}
+	
+	private void addVendorAssignmentActivity(WorkOrderContext workOrder, long parentId, WorkOrderContext oldWo, Context context) throws Exception{
+		JSONObject info = new JSONObject();
+		if (workOrder.getVendor() != null && workOrder.getVendor().getId() != -1) {
+			VendorContext vendor = InventoryApi.getVendor(workOrder.getVendor().getId());
+			info.put("vendor", vendor.getName());
+			JSONObject newinfo = new JSONObject();
+	        newinfo.put("vendor", info);
+			CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.VENDOR_ASSIGNED, newinfo, (FacilioContext) context);
+		}
 	}
 	
 }

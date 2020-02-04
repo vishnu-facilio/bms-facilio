@@ -151,6 +151,15 @@ public enum WorkOrderActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return " corrected reading";
 		}
+	},
+	VENDOR_ASSIGNED(59) {
+
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " assigned to vendor ";
+		}
+		
 	}
 	;
 	private int value;
