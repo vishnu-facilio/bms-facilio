@@ -1193,7 +1193,7 @@ public class PreventiveMaintenanceAPI {
 		}
 
 		if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", AccountUtil.getCurrentAccount().getCurrentSiteId()+"", NumberOperators.EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Preventive_Maintenance.SITE_ID", "siteId", AccountUtil.getCurrentAccount().getCurrentSiteId()+"", NumberOperators.EQUALS));
 		}
 		
 		boolean fetchDependency = false;
