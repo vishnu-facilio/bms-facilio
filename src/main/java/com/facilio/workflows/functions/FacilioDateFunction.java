@@ -676,11 +676,12 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
-	GET_RFC_3339_FORMATED_DATE_STRING(33,"getRFC3339FormatedDateString") {
+	GET_RFC_3339_FORMATED_DATE_STRING(33,"getRFC3339FormatedDateString") {		// need to change
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
 			long time = (long) Double.parseDouble(objects[0].toString());
+			
 			
 			return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(new Date(time));
 			
@@ -713,11 +714,8 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			
 			String timeString = objects[0].toString();
 			String formatString = objects[1].toString();
-			SimpleDateFormat sdf = new SimpleDateFormat(formatString);
-			Date date = sdf.parse(timeString);
-			long millis = date.getTime();
 			
-			return millis;
+			return DateTimeUtil.getTime(timeString, formatString);
 			
 		};
 		public void checkParam(Object... objects) throws Exception {
