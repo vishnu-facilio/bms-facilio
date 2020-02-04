@@ -106,7 +106,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 																	.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(variables.getParentID()), NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
-			
+			LOGGER.info("RATIOCHECK :: "+variableField.getName()+" TIME :: "+((long)(props.get(props.size()-1).get(ttimeField.getName()))));
 			for(Map<String,Object> prop : props)
 			{
 					long ttime = (long) prop.get(ttimeField.getName());
