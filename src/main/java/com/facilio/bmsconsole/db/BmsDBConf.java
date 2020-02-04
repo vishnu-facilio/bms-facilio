@@ -203,8 +203,10 @@ public class BmsDBConf extends DBConf {
 
         // TODO get filePrivateUrl in bulk
         Map<Long, String> fileUrls = new HashMap<>();
+        Map<Long, String> downloadUrls = new HashMap<>();
         for(Long fileId: fileIds) {
             fileUrls.put(fileId, fs.getPrivateUrl(fileId));
+            downloadUrls.put(fileId, fs.getDownloadUrl(fileId));
         }
         Map<Long, FileInfo> files = fs.getFileInfoAsMap(fileIds, conn);
 
@@ -213,6 +215,7 @@ public class BmsDBConf extends DBConf {
                 if(field != null && field.getDataTypeEnum() == FieldType.FILE && record.containsKey(field.getName()+"Id")) {
                 		Long id = (Long) record.get(field.getName()+"Id");
                 		record.put(field.getName()+"Url", fileUrls.get(id));
+                        record.put(field.getName()+"DownloadUrl", downloadUrls.get(id));
                 		record.put(field.getName()+"FileName", files.get(id).getFileName());
                 		record.put(field.getName()+"ContentType", files.get(id).getContentType());
                 }
