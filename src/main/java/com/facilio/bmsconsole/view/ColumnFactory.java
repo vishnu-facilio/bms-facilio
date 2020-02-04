@@ -825,19 +825,16 @@ public class ColumnFactory {
 	public static List<ViewField> getVendorVisitorInvitesColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("visitorName", "Name"));
-		columns.add(new ViewField("visitorPhone", "Phone"));
-		columns.add(new ViewField("visitorEmail", "Email"));
-		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("host", "Host"));
-		columns.add(new ViewField("visitedSpace", "Visiting Space"));
-		columns.add(new ViewField("requestedBy", "Requested By"));
 		columns.add(new ViewField("tenant", "Tenant"));
-		columns.add(new ViewField("moduleState", "Status"));
+		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
 		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
-		
-		
+		columns.add(new ViewField("visitedSpace", "Visiting Space"));
+		columns.add(new ViewField("checkInTime", "Check-in Time"));
+		columns.add(new ViewField("checkOutTime", "Check-out Time"));
+		columns.add(new ViewField("moduleState", "Status"));
 	
 		return columns;
 	}
@@ -871,6 +868,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("companyName", "Company Name"));
 		columns.add(new ViewField("validFrom", "Valid From"));
 		columns.add(new ViewField("validTill", "Valid Till"));
+		columns.add(new ViewField("insurance", "Insurance"));
 		return columns;
 	}
 	

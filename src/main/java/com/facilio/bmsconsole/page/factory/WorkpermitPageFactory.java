@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -27,8 +28,11 @@ public class WorkpermitPageFactory extends PageFactory {
 
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
-		// addPrimaryDetailsWidget(tab1Sec1);
-		addSecondaryDetailsWidget(tab1Sec1);
+		if (AccountUtil.getCurrentUser().isPortalUser()) {
+			addPortalDetailsWidget(tab1Sec1);
+		} else {
+			addSecondaryDetailsWidget(tab1Sec1);
+		}
 		if (workpermit.isRecurring()) {
 			Section tab1Sec2 = page.new Section("Recurring Info");
 			tab1.addSection(tab1Sec2);
@@ -63,6 +67,12 @@ public class WorkpermitPageFactory extends PageFactory {
 		PageWidget recurringInfoWidget = new PageWidget(WidgetType.RECURRING_INFO, "recurringInfo");
 		recurringInfoWidget.addToLayoutParams(section, 24, 5);
 		section.addWidget(recurringInfoWidget);
+	}
+
+	private static void addPortalDetailsWidget(Section section) {
+		PageWidget detailsWidget = new PageWidget(WidgetType.PORTAL_SECONDARY_DETAILS, "portalSecondryDetails");
+		detailsWidget.addToLayoutParams(section, 24, 7);
+		section.addWidget(detailsWidget);
 	}
 
 	private static void addInsuranceWidget(Section section) {

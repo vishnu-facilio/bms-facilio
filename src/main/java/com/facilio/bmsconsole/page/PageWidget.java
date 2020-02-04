@@ -234,6 +234,7 @@ public class PageWidget {
 		PORTAL_ACTIVITY("portalActivity"),
 		PORTAL_WORK_REQUEST_FORM_DETAILS("portalWorkrequestFormDetails"),
 		TENANT_PORTAL_VISITS_DETAILS("tenantPortalVisitsDetails"),
+		PORTAL_SECONDARY_DETAILS("portalSecondaryDetails"),
 		SPACE_WIDGET("spaceWidget"),
 		PORTAL_INSURANCE("portalInsurance")
  		;

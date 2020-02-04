@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
@@ -32,7 +31,7 @@ public class VisitorLoggingPageFactory extends PageFactory{
 
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
-		addVisistDetailsWidget(tab1Sec1);
+		addVisitDetailsWidget(tab1Sec1);
 
 		Section tab1Sec3 = page.new Section();
 		tab1.addSection(tab1Sec3);
@@ -41,7 +40,7 @@ public class VisitorLoggingPageFactory extends PageFactory{
 		return page;
 	}
 	
-	private static void addVisistDetailsWidget(Section section) {
+	private static void addVisitDetailsWidget(Section section) {
 		PageWidget detailsWidget = new PageWidget(WidgetType.TENANT_PORTAL_VISITS_DETAILS, "tenantPortalVisitsDetails");
 		detailsWidget.addToLayoutParams(section, 24, 7);
 		section.addWidget(detailsWidget);
