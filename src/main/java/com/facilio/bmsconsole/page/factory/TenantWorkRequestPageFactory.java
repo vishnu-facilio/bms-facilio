@@ -14,7 +14,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
 public class TenantWorkRequestPageFactory extends PageFactory{
-	private static final Logger LOGGER = LogManager.getLogger(VendorPageFactory.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(TenantWorkRequestPageFactory.class.getName());
 	public static Page getWorkorderPage(WorkOrderContext workorder) throws Exception {
 		Page page = new Page();
 

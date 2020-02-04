@@ -232,8 +232,10 @@ public class PageWidget {
 		RULE_ACTION_WIDGET("ruleActionWidget"),
 		WORK_REQUEST_DETAILS_WIDGET("workRequestDetails"),
 		PORTAL_ACTIVITY("portalActivity"),
-		PORTAL_WORK_REQUEST_FORM_DETAILS("portalWorkrequestFormDetails")
-		;
+		PORTAL_WORK_REQUEST_FORM_DETAILS("portalWorkrequestFormDetails"),
+		TENANT_PORTAL_VISITS_DETAILS("tenantPortalVisitsDetails"),
+		SPACE_WIDGET("spaceWidget")
+ 		;
 		
 		private String name;
 		

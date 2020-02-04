@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.page.Page;
@@ -51,6 +52,9 @@ public class PageFactory {
 				return VendorPageFactory.getVendorPage((VendorContext) record);
 			case ContextNames.WORK_ORDER:
 				return TenantWorkRequestPageFactory.getWorkorderPage((WorkOrderContext) record);
+			case ContextNames.VISITOR_LOGGING:
+				return VisitorLoggingPageFactory.getVisitorLoggingPage((VisitorLoggingContext) record);
+				
 		}
 		if (module.getExtendModule() == null) {	// temp
 			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
