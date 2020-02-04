@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -14,7 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
@@ -22,7 +22,6 @@ import com.facilio.bmsconsole.context.MLAnomalyEvent;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.RCAEvent;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioChain;
@@ -218,11 +217,10 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	
 	private MLAnomalyEvent generateAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long energyDataFieldid,long upperAnomalyFieldid,MLContext mlContext) throws Exception
 	{
-		AssetContext asset = AssetsAPI.getAssetInfo(assetID);
-        String assetName = asset.getName();
      
         LOGGER.info("Generating Anomaly Event "+assetID);
-		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
+        DecimalFormat df = new DecimalFormat("###.##");
+		String message = "Anomaly Detected. Actual Consumption :"+df.format(actualValue)+", Expected Max Consumption :"+df.format(adjustedUpperBound);
 		
 		MLAnomalyEvent event = new MLAnomalyEvent();
 		event.setEventMessage("Anomaly Detected");
@@ -245,7 +243,8 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	private void generateRCAAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,MLContext mlContext,MLAnomalyEvent parentEvent,long energyDataFieldid,long upperAnomalyFieldid,long mlid,Hashtable<String,Object> assetDetails) throws Exception
 	{   
 		LOGGER.info("Generating RCAAnomaly Event "+assetID);
-		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
+		DecimalFormat df = new DecimalFormat("###.##");
+		String message = "Anomaly Detected. Actual Consumption :"+df.format(actualValue)+", Expected Max Consumption :"+df.format(adjustedUpperBound);
 		
 		MLAnomalyEvent event = new MLAnomalyEvent();
 		event.setEventMessage("Anomaly Detected");
