@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -29,6 +30,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
 public class WorkflowRuleHistoricalLoggerUtil {
@@ -394,7 +396,21 @@ public class WorkflowRuleHistoricalLoggerUtil {
 
 	public static void deleteAlarmOccurrencesWithEdgeCases(long ruleId, Long startTime, Long endTime, long resourceId) throws Exception {
 		
-		NewAlarmAPI.deleteIntervalBasedAlarmOccurrences(ruleId, startTime, endTime, resourceId);
-		
-	}	
+		NewAlarmAPI.deleteIntervalBasedAlarmOccurrences(ruleId, startTime, endTime, resourceId);	
+	}
+	
+	public static WorkflowRuleHistoricalLoggerContext setWorkflowRuleHistoricalLoggerContext(long ruleId, DateRange range,Long resourceId, long loggerGroupId)
+	{
+		WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
+		workflowRuleHistoricalLoggerContext.setRuleId(ruleId);
+		workflowRuleHistoricalLoggerContext.setType(WorkflowRuleHistoricalLoggerContext.Type.READING_RULE.getIntVal());
+		workflowRuleHistoricalLoggerContext.setResourceId(resourceId);
+		workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
+		workflowRuleHistoricalLoggerContext.setLoggerGroupId(loggerGroupId);
+		workflowRuleHistoricalLoggerContext.setStartTime(range.getStartTime());
+		workflowRuleHistoricalLoggerContext.setEndTime(range.getEndTime());
+		workflowRuleHistoricalLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
+		workflowRuleHistoricalLoggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
+		return workflowRuleHistoricalLoggerContext;	
+	}
 }

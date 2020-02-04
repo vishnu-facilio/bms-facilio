@@ -238,7 +238,6 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 		if(activeRuleResourceGroupedLoggerIds.size() == 0)
 		{
 			WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
-			parentRuleResourceLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
 			parentRuleResourceLoggerContext.setStatus(WorkflowRuleResourceLoggerContext.Status.ALARM_PROCESSING_STATE.getIntVal());		
 			int rowsUpdated = WorkflowRuleResourceLoggerAPI.updateEventGeneratingParentWorkflowRuleResourceLoggerContext(parentRuleResourceLoggerContext);
 			if(rowsUpdated == 1)

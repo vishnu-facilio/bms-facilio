@@ -72,24 +72,6 @@ public class WorkflowRuleLoggerAPI {
 		return workflowRuleLoggerContextList;
 	}
 	
-	public static List<WorkflowRuleLoggerContext> getActiveWorkflowRuleLoggerContextByRuleId(long ruleId) throws Exception {
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleLoggerFields());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getWorkflowRuleLoggerFields())
-				.table(ModuleFactory.getWorkflowRuleLoggerModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), "" +ruleId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		List<WorkflowRuleLoggerContext> workflowRuleLoggerContextList = new ArrayList<WorkflowRuleLoggerContext>();
-		if (props != null && !props.isEmpty()) {		
-			workflowRuleLoggerContextList  = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleLoggerContext.class);		
-		}	
-		return workflowRuleLoggerContextList;
-	}
-	
 	public static void updateWorkflowRuleLogger(WorkflowRuleLoggerContext workflowRuleLoggerContext) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

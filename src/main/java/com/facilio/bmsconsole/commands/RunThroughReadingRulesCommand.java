@@ -94,11 +94,10 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			DateRange firstInterval = intervals.get(0);
 			DateRange lastInterval = intervals.get(intervals.size()-1);
 			
-			//List<WorkflowRuleResourceLoggerContext> currentRuleResourceLoggerList = WorkflowRuleResourceLoggerAPI.getActiveWorkflowRuleResourceLogsByParentRuleLoggerAndResourceId(parentRuleLoggerId, finalResourceIds);
-			List<WorkflowRuleLoggerContext> currentRuleResourceLoggerList = WorkflowRuleLoggerAPI.getActiveWorkflowRuleLoggerContextByRuleId(rule.getId());
+			List<WorkflowRuleResourceLoggerContext> currentRuleResourceLoggerList = WorkflowRuleResourceLoggerAPI.getActiveWorkflowRuleResourceLogsByRuleAndResourceId(rule.getId(), finalResourceIds);
 			if(currentRuleResourceLoggerList != null && !currentRuleResourceLoggerList.isEmpty())
 			{
-				throw new Exception("Historical already In-Progress for the selected rule");
+				throw new Exception("Historical already In-Progress for the selected rule and resource");
 			}
 					
 			WorkflowRuleLoggerContext workflowRuleLoggerContext = WorkflowRuleLoggerAPI.setWorkflowRuleLoggerContext(rule.getId(), finalResourceIds.size(), range);
@@ -152,7 +151,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			for(Long finalResourceId:finalResourceIds)
 			{
 				if(isFirst) {
-					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = setWorkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, -1);	
+					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.setWorkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, -1);	
 					WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
 					
 					loggerGroupId = workflowRuleHistoricalLoggerContext.getId();
@@ -162,7 +161,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 					isFirst = false;
 				}
 				else {
-					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = setWorkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, loggerGroupId);	
+					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = WorkflowRuleHistoricalLoggerUtil.setWorkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, loggerGroupId);	
 					WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLogger);
 					workflowRuleHistoricalLoggerMap.put(workflowRuleHistoricalLogger.getId(), workflowRuleHistoricalLogger);
 				}
@@ -188,20 +187,5 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			matchedResourceIds = new ArrayList<>(readingRuleContext.getMatchedResources().keySet());
 		}
 		return matchedResourceIds;
-	}
-	
-	private static WorkflowRuleHistoricalLoggerContext setWorkflowRuleHistoricalLoggerContext(long ruleId, DateRange range,Long resourceId, long loggerGroupId)
-	{
-		WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
-		workflowRuleHistoricalLoggerContext.setRuleId(ruleId);
-		workflowRuleHistoricalLoggerContext.setType(WorkflowRuleHistoricalLoggerContext.Type.READING_RULE.getIntVal());
-		workflowRuleHistoricalLoggerContext.setResourceId(resourceId);
-		workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
-		workflowRuleHistoricalLoggerContext.setLoggerGroupId(loggerGroupId);
-		workflowRuleHistoricalLoggerContext.setStartTime(range.getStartTime());
-		workflowRuleHistoricalLoggerContext.setEndTime(range.getEndTime());
-		workflowRuleHistoricalLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
-		workflowRuleHistoricalLoggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
-		return workflowRuleHistoricalLoggerContext;	
 	}
 }

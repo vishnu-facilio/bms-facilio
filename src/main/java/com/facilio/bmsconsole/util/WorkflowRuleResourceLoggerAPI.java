@@ -115,14 +115,16 @@ public class WorkflowRuleResourceLoggerAPI {
 		return workflowRuleResourceLoggerContext;
 	}
 	
-	public static List<WorkflowRuleResourceLoggerContext> getActiveWorkflowRuleResourceLogsByParentRuleLoggerAndResourceId(long parentRuleLoggerId, List<Long> resourceIds) throws Exception {
+	public static List<WorkflowRuleResourceLoggerContext> getActiveWorkflowRuleResourceLogsByRuleAndResourceId(long ruleId, List<Long> resourceIds) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleResourceLoggerFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowRuleResourceLoggerFields())
 				.table(ModuleFactory.getWorkflowRuleResourceLoggerModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRuleLoggerId"), "" +parentRuleLoggerId, NumberOperators.EQUALS))
+				.innerJoin("Workflow_Rule_Logger")
+				.on("Workflow_Rule_Resource_Logger.PARENT_RULE_LOGGER_ID = Workflow_Rule_Logger.ID")
+				.andCondition(CriteriaAPI.getCondition("Workflow_Rule_Logger.RULE_ID", "ruleId", "" +ruleId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), resourceIds, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal(), NumberOperators.NOT_EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), "" +WorkflowRuleResourceLoggerContext.Status.RESOLVED.getIntVal(), NumberOperators.NOT_EQUALS));
