@@ -158,6 +158,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 				}
 			}
 			
+			long readingsFetchStartTime = System.currentTimeMillis();
 			long processStartTime = System.currentTimeMillis();
 			List<ReadingContext> readings = null;
 			List<ReadingEventContext> events = new ArrayList<>();
@@ -181,15 +182,17 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			
 			readings = fetchReadings(readingRule, resourceId, startTime, endTime);
 			
+			long eventProcessingStartTime = System.currentTimeMillis();
+			long eventSpecialCaseStartTime = 0, eventInsertStartTime = 0, eventInsertEndTime = 0;
 			boolean isReadingsEmpty = (readings == null || readings.isEmpty())? true: false;	
-			LOGGER.info("Fetch readings time taken for Historical Run for Logger: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is -- " +(System.currentTimeMillis() - processStartTime) + " and isReadingsEmpty -- " +isReadingsEmpty+
-					" and Fetch prequisite readings time taken will be : --" + (processStartTime - jobStartTime));
 
 			if(readings != null && !readings.isEmpty())
 			{
 				startTime = readings.get(0).getTtime();
 				endTime = readings.get(readings.size() - 1).getTtime();
 				executeWorkflows(readingRule, readings, currentFields, fields, events, previousEventMeta);
+				
+				eventSpecialCaseStartTime = System.currentTimeMillis();
 				
 				if(events != null && !events.isEmpty())
 				{
@@ -213,11 +216,19 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 						}	
 					}
 					
+					eventInsertStartTime = System.currentTimeMillis();
 					insertEventsWithoutAlarmOccurrenceProcessed(events, ruleId);
+					eventInsertEndTime = System.currentTimeMillis();
 							
-					LOGGER.info("Process Time taken for Historical Run for jobId: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is  -- "+(System.currentTimeMillis() - processStartTime));				}			
+					LOGGER.info("Process Time taken for Historical Run for jobId: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is  -- "+(System.currentTimeMillis() - processStartTime));				
+				}			
 			}
 			
+
+			LOGGER.info("Time taken for Historical Run for jobId: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is -- " +(System.currentTimeMillis() - jobStartTime) + " and isReadingsEmpty -- " +isReadingsEmpty+
+					" Fetch prequisite readings time taken will be : --" + (readingsFetchStartTime - jobStartTime) + " Fetch readings time taken -- " + (eventProcessingStartTime - readingsFetchStartTime) +
+					" Event processing time will be -- " +(eventSpecialCaseStartTime - eventProcessingStartTime)+ " Event special handling time -- " +(eventInsertStartTime- eventSpecialCaseStartTime) +
+					" Event insertion time will be -- " +(eventInsertEndTime - eventInsertStartTime));
 			WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextToResolvedState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.RESOLVED.getIntVal());
 		}		
 	}
