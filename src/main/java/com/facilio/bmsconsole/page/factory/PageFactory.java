@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.InsuranceContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
@@ -54,6 +55,8 @@ public class PageFactory {
 				return TenantWorkRequestPageFactory.getWorkorderPage((WorkOrderContext) record);
 			case ContextNames.VISITOR_LOGGING:
 				return VisitorLoggingPageFactory.getVisitorLoggingPage((VisitorLoggingContext) record);
+			case ContextNames.INSURANCE:
+				return InsurancePageFactory.getInsurancePage((InsuranceContext) record);
 				
 		}
 		if (module.getExtendModule() == null) {	// temp
