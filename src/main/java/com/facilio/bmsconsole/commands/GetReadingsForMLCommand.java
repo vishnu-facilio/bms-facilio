@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLContext;
@@ -45,9 +46,21 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(mlContext.getPredictionTime());
 			Date date = calendar.getTime();
+			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
+				LOGGER.info("RATIOCHECK DATE 1 :: "+date);
+				LOGGER.info("RATIOCHECK TTIME 1 :: "+calendar.getTimeInMillis());
+			}
 			Date newDate = new Date(date.getYear(),date.getMonth(),date.getDate(),date.getHours(),0);
 			calendar.setTime(newDate);
+			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
+				LOGGER.info("RATIOCHECK DATE 2 :: "+newDate);
+				LOGGER.info("RATIOCHECK TTIME 2 :: "+calendar.getTimeInMillis());
+			}
 			time = calendar.getTimeInMillis()-1;
+
+			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
+				LOGGER.info("RATIOCHECK TTIME 3 :: "+time);
+			}
 			
 		}else{
 			time = System.currentTimeMillis();
@@ -70,6 +83,10 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			if(variables.getFutureSamplingPeriod()!=0L)
 			{
 				currentTime = currentTime + variables.getFutureSamplingPeriod();
+			}
+			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
+				LOGGER.info("RATIOCHECK Start Time"+currentTime);
+				LOGGER.info("RATIOCHECK End Time"+currentTime);
 			}
 			SortedMap<Long,Object> data = new TreeMap<Long,Object>();
             FacilioField variableField = modBean.getField(variables.getFieldID());
