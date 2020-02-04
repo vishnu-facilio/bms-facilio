@@ -250,7 +250,7 @@ public class TenantsAPI {
 		TenantsAPI.loadTenantLookups(records);
 		if (records != null && !records.isEmpty()) {
 			records.get(0).setTenantContacts(TenantsAPI.getTenantContacts(records.get(0).getId()));
-			records.get(0).setOccupantList(TenantsAPI.getTenantOccupants(records.get(0).getId()));
+		//	records.get(0).setOccupantList(TenantsAPI.getTenantOccupants(records.get(0).getId()));
 		    return records.get(0);
 		}
 		return null;
