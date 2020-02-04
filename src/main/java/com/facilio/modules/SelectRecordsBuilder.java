@@ -498,20 +498,28 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		List<Map<String, Object>> props = builder.get();
 		if (CollectionUtils.isNotEmpty(props)) {
 //		handleLookup(selectFields, props, isMap);
-			handleLookup(selectFields, props);
-			handleExtras(selectFields, props, isMap);
+			handleLookup(selectFields, props, isMap);
+			handleExtras(props, isMap);
 		}
 		return props;
 	}
 
-	private void handleLookup (Collection<FacilioField> selectFields, List<Map<String, Object>> props) {
+	private void handleLookup (Collection<FacilioField> selectFields, List<Map<String, Object>> props, boolean isMap) {
 		lookupFields = selectFields.stream().filter(f -> f.getDataTypeEnum() == FieldType.LOOKUP).map(f -> (LookupField)f).collect(Collectors.toList());
 		if (CollectionUtils.isNotEmpty(lookupFields)) {
 			for (Map<String, Object> record : props) {
 				for (LookupField field : lookupFields) {
 					Long recordId = (Long) record.get(field.getName());
 					if (recordId != null) {
-						record.put(field.getName(), Collections.singletonMap("id", recordId));
+						Map<String, Object> lookupRecord = null;
+						if (isMap) {
+							lookupRecord = new HashMap<>();
+							lookupRecord.put("id", recordId);
+						}
+						else {
+							lookupRecord = Collections.singletonMap("id", recordId);
+						}
+						record.put(field.getName(), lookupRecord);
 					}
 				}
 			}
@@ -577,7 +585,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 	}
 
-	private void handleExtras (Collection<FacilioField> selectFields, List<Map<String, Object>> propList, boolean isMap) throws Exception {
+	private void handleExtras (List<Map<String, Object>> propList, boolean isMap) throws Exception {
 //			if (level < maxLevel && CollectionUtils.isNotEmpty(selectFields)) {
 //				fetchLookups(select.stream().filter(f -> f.getDataTypeEnum() == FieldType.LOOKUP).map(f -> (LookupField)f).collect(Collectors.toList()));
 //			}
