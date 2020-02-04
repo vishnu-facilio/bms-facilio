@@ -3,7 +3,8 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.SLAEntityContext;
-import com.facilio.bmsconsole.workflow.rule.SLAWorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SLAPolicyContext;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -18,7 +19,13 @@ public class SLAAction extends FacilioAction {
         this.moduleName = moduleName;
     }
 
-    private SLAWorkflowRuleContext sla;
+    private SLAWorkflowCommitmentRuleContext slaRule;
+    public SLAWorkflowCommitmentRuleContext getSlaRule() {
+        return slaRule;
+    }
+    public void setSlaRule(SLAWorkflowCommitmentRuleContext slaRule) {
+        this.slaRule = slaRule;
+    }
 
     private Long id;
     public Long getId() {
@@ -26,6 +33,14 @@ public class SLAAction extends FacilioAction {
     }
     public void setId(Long id) {
         this.id = id;
+    }
+
+    private Long slaPolicyId;
+    public Long getSlaPolicyId() {
+        return slaPolicyId;
+    }
+    public void setSlaPolicyId(Long slaPolicyId) {
+        this.slaPolicyId = slaPolicyId;
     }
 
     public String getAllSLA() throws Exception {
@@ -44,7 +59,8 @@ public class SLAAction extends FacilioAction {
         FacilioContext context = chain.getContext();
 
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-        context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE, sla);
+        context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE, slaRule);
+        context.put(FacilioConstants.ContextNames.SLA_POLICY_ID, slaPolicyId);
 
         chain.execute();
         return SUCCESS;
@@ -58,6 +74,24 @@ public class SLAAction extends FacilioAction {
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.SLA_RULE_MODULE, context.get(FacilioConstants.ContextNames.SLA_RULE_MODULE));
+        return SUCCESS;
+    }
+
+    private SLAPolicyContext slaPolicy;
+    public SLAPolicyContext getSlaPolicy() {
+        return slaPolicy;
+    }
+    public void setSlaPolicy(SLAPolicyContext slaPolicy) {
+        this.slaPolicy = slaPolicy;
+    }
+
+    public String addOrUpdateSLAPolicy() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getAddOrUpdateSLAPolicyChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.SLA_POLICY, slaPolicy);
+        chain.execute();
+
         return SUCCESS;
     }
 

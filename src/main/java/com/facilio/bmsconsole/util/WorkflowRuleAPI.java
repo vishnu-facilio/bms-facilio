@@ -117,9 +117,12 @@ public class WorkflowRuleAPI {
 			case SLA_RULE:
 				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
 				break;
+			case SLA_POLICY_RULE:
+				addExtendedProps(ModuleFactory.getSLAPolicyRuleModule(), FieldFactory.getSLAPolicyRuleFields(), ruleProps);
+				break;
 			case SLA_WORKFLOW_RULE:
 				addExtendedProps(ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields(), ruleProps);
-				SLAWorkflowAPI.addEscalations((SLAWorkflowRuleContext) rule, ((SLAWorkflowRuleContext) rule).getEscalations());
+				SLAWorkflowAPI.addEscalations((SLAWorkflowCommitmentRuleContext) rule, ((SLAWorkflowCommitmentRuleContext) rule).getEscalations());
 				break;
 			case APPROVAL_RULE:
 			case CHILD_APPROVAL_RULE:
@@ -563,6 +566,9 @@ public class WorkflowRuleAPI {
 				case SLA_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), entry.getValue()));
 					break;
+				case SLA_POLICY_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLAPolicyRuleModule(), FieldFactory.getSLAPolicyRuleFields(), entry.getValue()));
+					break;
 				case SLA_WORKFLOW_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields(), entry.getValue()));
 					break;
@@ -690,9 +696,13 @@ public class WorkflowRuleAPI {
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = SLARuleAPI.constructSLARuleFromProps(prop, modBean);
 							break;
+						case SLA_POLICY_RULE:
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+							rule = FieldUtil.getAsBeanFromMap(prop, SLAPolicyContext.class);
+							break;
 						case SLA_WORKFLOW_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
-							rule = FieldUtil.getAsBeanFromMap(prop, SLAWorkflowRuleContext.class);
+							rule = FieldUtil.getAsBeanFromMap(prop, SLAWorkflowCommitmentRuleContext.class);
 							break;
 						case APPROVAL_RULE:
 						case CHILD_APPROVAL_RULE:

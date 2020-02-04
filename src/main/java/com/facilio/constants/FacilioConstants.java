@@ -15,7 +15,7 @@ import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
-import com.facilio.bmsconsole.workflow.rule.SLAWorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -840,6 +840,10 @@ public class FacilioConstants {
 		public static final String SLA_RULE_MODULE_LIST = "slaRuleModuleList";
 		public static final String SLA_ENTITY = "slaEntity";
 		public static final String SLA_ENTITY_LIST = "slaEntityList";
+		public static final String SLA_POLICY = "slaPolicy";
+		public static final String SLA_POLICY_LIST = "slaPolicyList";
+		public static final String SLA_POLICY_ID = "slaPolicyId";
+
 //		public static final String SLA_MODULE = "sla";
 //		public static final String SLA_LIST = "sla_list";
 //		public static final String SLA = "sla";
@@ -1616,7 +1620,7 @@ public class FacilioConstants {
 			classMap.put(SERVICE_REQUEST_PRIORITY, ServiceRequestPriorityContext.class);
 			classMap.put(DOCUMENT, DocumentContext.class);
 
-			classMap.put(SLA_RULE_MODULE, SLAWorkflowRuleContext.class);
+			classMap.put(SLA_RULE_MODULE, SLAWorkflowCommitmentRuleContext.class);
 
 			classMap.put(VENDOR_DOCUMENTS, DocumentContext.class);
 

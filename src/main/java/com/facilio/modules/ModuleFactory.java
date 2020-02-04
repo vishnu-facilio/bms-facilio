@@ -474,6 +474,15 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getSLAPolicyRuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("slaPolicyRule");
+		module.setDisplayName("SLA Policy Rule");
+		module.setTableName("SLA_Policy");
+
+		return module;
+	}
+
 	public static FacilioModule getSLAWorkflowRuleModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("slaWorkflowRule");

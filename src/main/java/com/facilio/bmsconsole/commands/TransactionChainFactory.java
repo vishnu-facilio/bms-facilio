@@ -4530,6 +4530,12 @@ public class TransactionChainFactory {
 		chain.addCommand(new DeleteSLAEntityCommand());
 		return chain;
 	}
+
+	public static FacilioChain getAddOrUpdateSLAPolicyChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateSLAPolicyCommand());
+		return chain;
+	}
 }
 
 

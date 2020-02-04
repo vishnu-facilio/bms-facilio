@@ -527,7 +527,7 @@ public class WorkflowRuleContext implements Serializable {
 		
 		ASSET_ACTION_RULE,
 		SLA_WORKFLOW_RULE,
-		SCHEDULED_RULE, //12 //Do not use
+		SLA_POLICY_RULE(false, false, false, true), //12
 		
 		APPROVAL_RULE(true, true),
 		REQUEST_APPROVAL_RULE(true),

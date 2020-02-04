@@ -2,27 +2,23 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
-import com.facilio.bmsconsole.workflow.rule.SLAWorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SLAWorkflowAPI extends WorkflowRuleAPI {
 
-    public static void addEscalations(SLAWorkflowRuleContext rule, List<SLAWorkflowEscalationContext> escalations) throws Exception {
+    public static void addEscalations(SLAWorkflowCommitmentRuleContext rule, List<SLAWorkflowEscalationContext> escalations) throws Exception {
         if (CollectionUtils.isNotEmpty(escalations)) {
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getSLAWorkflowEscalationModule().getTableName())
@@ -85,6 +81,22 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
                 .select(FieldFactory.getSlaWorkflowEscalationActionFields())
                 .andCondition(CriteriaAPI.getCondition("ESCALATION_ID", "escalationId", StringUtils.join(map.keySet(), ","), NumberOperators.EQUALS));
         List<Map<String, Object>> maps = builder.get();
-        
+        if (CollectionUtils.isNotEmpty(maps)) {
+            List<Long> actionIds = new ArrayList<>();
+            for (Map<String, Object> escalationActionMap : maps) {
+                long actionId = (long) escalationActionMap.get("actionId");
+                actionIds.add(actionId);
+            }
+
+            Map<Long, ActionContext> actionsAsMap = ActionAPI.getActionsAsMap(actionIds);
+            if (MapUtils.isNotEmpty(actionsAsMap)) {
+                for (Map<String, Object> escalationActionMap : maps) {
+                    long actionId = (long) escalationActionMap.get("actionId");
+                    long escalationId = (long) escalationActionMap.get("escalationId");
+                    SLAWorkflowEscalationContext escalationContext = map.get(escalationId);
+                    escalationContext.addAction(actionsAsMap.get(actionId));
+                }
+            }
+        }
     }
 }

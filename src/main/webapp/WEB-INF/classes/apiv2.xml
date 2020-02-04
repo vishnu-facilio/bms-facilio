@@ -358,6 +358,11 @@
 				class="com.facilio.bmsconsole.actions.SLAAction" method="deleteSLAEntity" />
 	</package>
 
+	<package name="slaPolicy" namespace="/api/v2/slaPolicy" extends="v2Api">
+		<action name="addOrUpdate"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="addOrUpdateSLAPolicy" />
+	</package>
+
 	<package name="sla" namespace="/api/v2/sla" extends="v2Api">
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="getAllSLA" />

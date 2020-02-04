@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.workflow.rule.SLAWorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -22,11 +22,11 @@ public class SLAContext1 extends ModuleBaseWithCustomFields {
         this.slaModuleId = slaModuleId;
     }
 
-    private SLAWorkflowRuleContext slaRule;
-    public SLAWorkflowRuleContext getSlaRule() {
+    private SLAWorkflowCommitmentRuleContext slaRule;
+    public SLAWorkflowCommitmentRuleContext getSlaRule() {
         return slaRule;
     }
-    public void setSlaRule(SLAWorkflowRuleContext slaRule) {
+    public void setSlaRule(SLAWorkflowCommitmentRuleContext slaRule) {
         this.slaRule = slaRule;
     }
 

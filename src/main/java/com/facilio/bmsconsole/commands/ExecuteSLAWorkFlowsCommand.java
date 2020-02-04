@@ -14,8 +14,10 @@ public class ExecuteSLAWorkFlowsCommand extends ExecuteAllWorkflowsCommand {
 
     @Override
     protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
+        activities.add(EventType.SLA);
+
         Criteria parentCriteria = getCriteria(records);
-        List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, Collections.singletonList(EventType.SLA), parentCriteria, WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE);
+        List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, Collections.singletonList(EventType.SLA), parentCriteria, WorkflowRuleContext.RuleType.SLA_POLICY_RULE);
         return workflowRules;
     }
 }

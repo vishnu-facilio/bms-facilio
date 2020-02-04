@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.workflow.rule.SLAWorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
@@ -409,9 +409,9 @@ public class LookupSpecialTypeUtil {
 			return readingRuleContext;
 		}
 		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
-			SLAWorkflowRuleContext slaWorkflowRuleContext = new SLAWorkflowRuleContext();
-			slaWorkflowRuleContext.setId(id);
-			return slaWorkflowRuleContext;
+			SLAWorkflowCommitmentRuleContext slaWorkflowCommitmentRuleContext = new SLAWorkflowCommitmentRuleContext();
+			slaWorkflowCommitmentRuleContext.setId(id);
+			return slaWorkflowCommitmentRuleContext;
 		}
 		return null;
 	}

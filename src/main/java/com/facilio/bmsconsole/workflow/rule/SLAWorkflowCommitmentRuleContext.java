@@ -24,9 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class SLAWorkflowRuleContext extends WorkflowRuleContext {
+public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
 
-    public SLAWorkflowRuleContext() {
+    public SLAWorkflowCommitmentRuleContext() {
         setRuleType(RuleType.SLA_WORKFLOW_RULE);
     }
 
@@ -35,6 +35,14 @@ public class SLAWorkflowRuleContext extends WorkflowRuleContext {
     public int getRuleType() {
         return super.getRuleType();
     }
+
+//    private long slaPoliceRuleId = -1;
+//    public long getSlaPoliceRuleId() {
+//        return slaPoliceRuleId;
+//    }
+//    public void setSlaPoliceRuleId(long slaPoliceRuleId) {
+//        this.slaPoliceRuleId = slaPoliceRuleId;
+//    }
 
     private long baseFieldId = -1;
     public long getBaseFieldId() {
@@ -141,25 +149,10 @@ public class SLAWorkflowRuleContext extends WorkflowRuleContext {
                 workflowRuleContext.setInterval(escalation.getInterval());
                 workflowRuleContext.setScheduleType(escalation.getTypeEnum());
 
-//            ActionContext action = new ActionContext();
-//            action.setActionType(ActionType.FIELD_CHANGE);
-//            JSONObject json = new JSONObject();
-//            JSONArray jsonArray = new JSONArray();
-//            JSONObject fieldJSON = new JSONObject();
-//            fieldJSON.put("field", "priority");
-//            Map<String, Object> map = new HashMap<>();
-//            map.put("id", 1);
-//            fieldJSON.put("value", map);
-//            jsonArray.add(fieldJSON);
-//            json.put("fieldMatcher", jsonArray);
-//
-//            action.setTemplateJson(json);
-//            workflowRuleContext.addAction(action);
-
                 FacilioChain recordRuleChain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
                 FacilioContext recordRuleContext = recordRuleChain.getContext();
                 recordRuleContext.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
-//            recordRuleContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(action));
+                recordRuleContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, escalation.getActions());
                 recordRuleChain.execute();
             }
         }

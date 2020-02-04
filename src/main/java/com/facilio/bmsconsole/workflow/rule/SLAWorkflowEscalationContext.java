@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SLAWorkflowEscalationContext implements Serializable {
@@ -52,5 +53,12 @@ public class SLAWorkflowEscalationContext implements Serializable {
     }
     public void setActions(List<ActionContext> actions) {
         this.actions = actions;
+    }
+
+    public void addAction(ActionContext actionContext) {
+        if (actions == null) {
+            actions = new ArrayList<>();
+        }
+        actions.add(actionContext);
     }
 }
