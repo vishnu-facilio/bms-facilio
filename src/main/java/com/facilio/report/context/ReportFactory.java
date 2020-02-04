@@ -9,6 +9,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.db.criteria.Condition;
@@ -36,6 +38,7 @@ public class ReportFactory {
 		String PLANNED_VS_UNPLANNED_COL = "plannedvsunplanned";
 		String FIRST_RESPONSE_TIME_COL = "firstresponsetime";
 		String ESTIMATED_DURATION_COL = "estimatedduration";
+		String TOTAL_SCORE_PERCENTAGE_COL = "totalscorepercentage";
 		
 		
 		int OPENVSCLOSE = 1;
@@ -44,6 +47,7 @@ public class ReportFactory {
 		int PLANNED_VS_UNPLANNED = 4;
 		int FIRST_RESPONSE_TIME = 5;
 		int ESTIMATED_DURATION = 6;
+		int TOTAL_SCORE_PERCENTAGE = 13;
 		
 	}
 	
@@ -102,6 +106,11 @@ public class ReportFactory {
 			
 			reportFields.add(getField(WorkOrder.FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getWorkOrdersModule(), "Tickets.ACTUAL_WORK_START - WorkOrders.CREATED_TIME", FieldType.NUMBER, WorkOrder.FIRST_RESPONSE_TIME));
 			
+			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
+				ReportFacilioField totalScorePercentageField = (ReportFacilioField) getField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL, "Total Score In Percentage", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.NUMBER_CF9 IS NOT NULL AND WorkOrders.NUMBER_CF13 IS NOT NULL THEN WorkOrders.NUMBER_CF9 / WorkOrders.NUMBER_CF13 * 100 ELSE 0 END",FieldType.NUMBER, WorkOrder.TOTAL_SCORE_PERCENTAGE);
+				reportFields.add(totalScorePercentageField);	
+			}
+			
 			// alarm fields
 			reportFields.add(getField(Alarm.FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getAlarmsModule(), " (Alarms.ACKNOWLEDGED_TIME - Alarms.CREATED_TIME) ", FieldType.NUMBER, Alarm.FIRST_RESPONSE_TIME));
 			reportFields.add(getField(Alarm.ALARM_DURATION_COL, "Alarm Duration", ModuleFactory.getAlarmsModule(), "(CASE WHEN Alarms.CLEARED_TIME IS NOT NULL THEN Alarms.CLEARED_TIME - Alarms.CREATED_TIME ELSE ? - Alarms.CREATED_TIME END) ", FieldType.NUMBER, Alarm.ALARM_DURATION));
@@ -118,6 +127,7 @@ public class ReportFactory {
 
 			// Asset Breakdown fields
 			reportFields.add(getField(AssetBreakDown.TIME_TO_REPAIR_COL, "Time to Repair", ModuleFactory.getAssetBreakdownModule(), "((TO_TIME - FROM_TIME) / 1000)", FieldType.NUMBER, AssetBreakDown.TIME_TO_REPAIR));
+			
 			
 			fieldMap = FieldFactory.getAsMap(reportFields);
 		} catch (Exception e) {

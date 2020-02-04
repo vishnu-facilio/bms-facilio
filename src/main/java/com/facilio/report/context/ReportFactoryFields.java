@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -950,6 +951,9 @@ public class ReportFactoryFields {
 		if (module.equals("workorder")) {
 			metricFields.add(ReportFactory.getReportField(WorkOrder.FIRST_RESPONSE_TIME_COL));
 			metricFields.add(ReportFactory.getReportField(WorkOrder.ESTIMATED_DURATION_COL));
+			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
+				metricFields.add(ReportFactory.getReportField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL));
+			}
 			List<FacilioField> workorderFields = dimensionFieldMap.get(module);
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OPENVSCLOSE_COL));
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_OPEN_COL));
