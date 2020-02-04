@@ -585,10 +585,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 		if (CollectionUtils.isNotEmpty(fetchSupplements)) {
 			List<Pair<SupplementRecord, FetchSupplementHandler>> handlers = new ArrayList<>();
-			for(Map<String, Object> props : propList) {
-				for (SupplementRecord fetchExtra : fetchSupplements) {
-					FetchSupplementHandler handler = fetchExtra.newFetchHandler();
-					handlers.add(Pair.of(fetchExtra, handler));
+			for (SupplementRecord fetchExtra : fetchSupplements) {
+				FetchSupplementHandler handler = fetchExtra.newFetchHandler();
+				handlers.add(Pair.of(fetchExtra, handler));
+				for(Map<String, Object> props : propList) {
 					handler.processRecord(props);
 				}
 			}
@@ -597,8 +597,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				handler.getRight().fetchSupplements(isMap);
 			}
 
-			for(Map<String, Object> props : propList) {
-				for (Pair<SupplementRecord, FetchSupplementHandler> handler : handlers) {
+			for (Pair<SupplementRecord, FetchSupplementHandler> handler : handlers) {
+				for(Map<String, Object> props : propList) {
 					handler.getRight().updateRecord(props);
 				}
 			}
