@@ -85,7 +85,7 @@ public class DataProcessorUtil {
 
     private void sendToErrorStream(FacilioRecord record) {
         try {
-            ErrorDataProducer.send(new ProducerRecord<>(errorStream, record.getId(), record.getData().toString()));
+            ErrorDataProducer.send(new ProducerRecord<>(errorStream, record.getPartitionKey(), record.getData().toString()));
         } catch (Exception e) {
             LOGGER.info(errorStream + " : " + record.getData().toString());
             LOGGER.info("Exception while producing to kafka ", e);
@@ -235,7 +235,6 @@ public class DataProcessorUtil {
                 LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType + " data : " + record.getData());
             }
             if (i == 0) {
-
                 FacilioChain updateAgentTable = TransactionChainFactory.updateAgentTable();
                 FacilioContext context = updateAgentTable.getContext();
                 context.put(AgentConstants.ID,agent.getId());

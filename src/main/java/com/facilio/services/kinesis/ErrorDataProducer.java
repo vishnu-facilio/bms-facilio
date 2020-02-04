@@ -36,6 +36,7 @@ public class ErrorDataProducer {
         props.put("bootstrap.servers", FacilioProperties.getKafkaProducer());
         props.put("retries", 0);
         props.put("batch.size", 16384);
+        props.put("acks", "all");
         props.put("linger.ms", 1);
         props.put("buffer.memory", 33554432);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -50,7 +51,7 @@ public class ErrorDataProducer {
         try {
             recordMetadata = future.get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            LOGGER.info(e);
         }
         return recordMetadata;
 

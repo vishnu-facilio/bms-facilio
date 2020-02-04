@@ -884,6 +884,8 @@ public class AwsUtil
     	CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
     	attachPolicy(iotClient, certificateResult, policyName);
     	createKinesisStream(getKinesisClient(), name);
+    	// Creating topic in kafka
+		MessageQueueFactory.getMessageQueue().createQueue(name);
     	policy.setStreamName(name);
     	createIotTopicRule(policy,iotClient,type);
     	return certificateResult;
