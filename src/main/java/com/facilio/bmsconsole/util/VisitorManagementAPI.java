@@ -22,6 +22,7 @@ import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
@@ -219,11 +220,20 @@ public class VisitorManagementAPI {
 		LookupField contactField = (LookupField) fieldsAsMap.get("visitor");
 		LookupField hostField = (LookupField) fieldsAsMap.get("host");
 		LookupField visitedSpacefield = (LookupField) fieldsAsMap.get("visitedSpace");
+		LookupField moduleStateField = (LookupField)fieldsAsMap.get("moduleState");
+		LookupField visitorTypefield = (LookupField)fieldsAsMap.get("visitorType");
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+			LookupField tenant = (LookupField)fieldsAsMap.get("tenant");
+			additionaLookups.add(tenant);
+		}
+		LookupField requestedBy = (LookupField)fieldsAsMap.get("requestedBy");
 		
 		additionaLookups.add(contactField);
 		additionaLookups.add(hostField);
 		additionaLookups.add(visitedSpacefield);
-		
+		additionaLookups.add(moduleStateField);
+		additionaLookups.add(visitorTypefield);
+		additionaLookups.add(requestedBy);
 		builder.fetchSupplements(additionaLookups);
 		
 		VisitorLoggingContext records = builder.fetchFirst();
