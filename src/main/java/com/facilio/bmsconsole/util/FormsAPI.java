@@ -561,7 +561,7 @@ public class FormsAPI {
 			spaces.add(AccountUtil.getCurrentSiteId());
 
 		}
-		else {
+		else if (AccountUtil.getCurrentUser() != null && AccountUtil.getCurrentUser().getAccessibleSpace() != null) {
 			spaces = AccountUtil.getCurrentUser().getAccessibleSpace();
 		}
 
