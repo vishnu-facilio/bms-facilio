@@ -16,10 +16,21 @@ public class OpcUaControllerAction extends AgentIdAction {
     @NotNull
     private String url;
 
+    @NotNull
+    private String name;
+
     private String certPath;
 
     private int securityMode;
     private int securityPolicy;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getUrl() {
         return url;
@@ -61,6 +72,7 @@ public class OpcUaControllerAction extends AgentIdAction {
             controllerContext.setSecurityMode(getSecurityMode());
             controllerContext.setSecurityPolicy(getSecurityPolicy());
             controllerContext.setAgentId(getAgentId());
+            controllerContext.setName(getName());
             AgentMessenger.sendConfigureOpcUaControllerCommand(controllerContext);
             setResult(AgentConstants.RESULT, SUCCESS);
         } catch (Exception e) {

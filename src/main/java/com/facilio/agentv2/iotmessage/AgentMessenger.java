@@ -219,6 +219,7 @@ public class AgentMessenger {
                     context.put(AgentConstants.DATA, controllerData);
                     IotData data;
                     if (controllerContext.getControllerType()== ControllerType.OPC_DA.getKey() || controllerContext.getControllerType() == ControllerType.OPC_UA.getKey()){
+                        controllerData.put(AgentConstants.NAME, controllerContext.getName());
                         data = constructNewIotAgentMessage(controllerContext.getAgentId(), FacilioCommand.ADD_CONTROLLER, context, FacilioControllerType.valueOf(controllerContext.getControllerType()));
 
                     }else{
