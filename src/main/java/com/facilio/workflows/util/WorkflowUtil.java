@@ -907,20 +907,25 @@ public class WorkflowUtil {
 			paramString = paramString.substring(0, paramString.length()-1);
 		}
 		
-		boolean isFromRule = WorkflowUtil.isWorkflowFromRule(workflow.getId());
-		
 		String returnType = "void";
-		if(isFromRule) {
-			returnType = "Boolean";
+		if(workflow.getReturnType() < 0) {
+			
+			boolean isFromRule = WorkflowUtil.isWorkflowFromRule(workflow.getId());
+			if(isFromRule) {
+				returnType = "Boolean";
+			}
+			else {
+				String returnType1 = isWorkflowFromFormulaField(workflow.getId());
+				if(returnType1 != null) {
+					returnType = returnType1;
+				}
+				else if(workflow.getResultEvaluator() != null) {
+					returnType = "Number"; 
+				}
+			}
 		}
 		else {
-			String returnType1 = isWorkflowFromFormulaField(workflow.getId());
-			if(returnType1 != null) {
-				returnType = returnType1;
-			}
-			else if(workflow.getResultEvaluator() != null) {
-				returnType = "Number"; 
-			}
+			returnType = workflow.getReturnTypeString();
 		}
 		
 		String code = returnType+" test("+paramString+") {\n";
@@ -932,7 +937,7 @@ public class WorkflowUtil {
 				code = getExpressionOldToNew(exp, code);
 				
 			 }
-			 else if(expression instanceof IteratorContext) {
+			 else if(expression instanceof IteratorContext) {						// remove this after all migration
 				 
 				 IteratorContext iteratorContext = (IteratorContext)  expression;
 				 
@@ -947,7 +952,7 @@ public class WorkflowUtil {
 				 code = code +"}\n";
 			 }
 			 
-			 else if(expression instanceof ConditionContext) {
+			 else if(expression instanceof ConditionContext) {						// remove this after all migration
 				 
 				 ConditionContext conditionContext = (ConditionContext) expression;
 				 

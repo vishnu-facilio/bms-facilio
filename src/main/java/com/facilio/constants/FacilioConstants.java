@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import com.facilio.activity.ActivityContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.niagara.NiagaraController;
@@ -1478,7 +1479,7 @@ public class FacilioConstants {
 			classMap.put(OPC_XML_DA_CONTROLLER_MODULE_NAME, OpcXmlDaControllerContext.class);
 			classMap.put(NIAGARA_CONTROLLER_MODULE_NAME, NiagaraController.class);
 			classMap.put(CONTROLLER_MODULE_NAME, Controller.class);
-			//classMap.put(MISC_CONTROLLER_MODULE_NAME, MiscController.class);
+			classMap.put(MISC_CONTROLLER_MODULE_NAME, MiscController.class);
 			//classMap.put(REST_CONTROLLER_MODULE_NAME,MiscController.class);
 			//classMap.put(CUSTOM_CONTROLLER_MODULE_NAME, CustomController.class);
 
