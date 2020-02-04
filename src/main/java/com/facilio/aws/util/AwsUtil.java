@@ -41,6 +41,7 @@ import javax.transaction.SystemException;
 import com.amazonaws.ClientConfiguration;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.messageQueue.MessageQueueFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
