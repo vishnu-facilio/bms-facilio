@@ -1191,6 +1191,10 @@ public class PreventiveMaintenanceAPI {
 		if (searchQuery!= null) {
 			 selectBuilder.andCondition(CriteriaAPI.getCondition(pmSubjectField, searchQuery, StringOperators.CONTAINS));
 		}
+
+		if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("SITE_ID", "siteId", AccountUtil.getCurrentAccount().getCurrentSiteId()+"", NumberOperators.EQUALS));
+		}
 		
 		boolean fetchDependency = false;
 		boolean setTriggers = false;
