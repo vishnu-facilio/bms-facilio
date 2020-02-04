@@ -96,11 +96,20 @@
 										  	  
 										  	  date = NameSpace(\"date\");
 											  month = date.getDateRange(\"Current Month\");
-											  db = {
-												criteria : [parentId == (variableParentId) && ttime == month],
-												field : variableObj.select,
-												aggregation : \"lastValue\"
-											  };
+											  if (variableParentId == 1145442) {
+											  	db = {
+													criteria : [parentId == (variableParentId)],
+													field : variableObj.select,
+													aggregation : \"lastValue\"
+												 };
+											  }
+											  else {
+												  db = {
+													criteria : [parentId == (variableParentId) && ttime == month],
+													field : variableObj.select,
+													aggregation : \"lastValue\"
+												  };
+											  }
 											
 											  fetchModule = Module(variableObj.module);
 											  lastVal = fetchModule.fetch(db);
