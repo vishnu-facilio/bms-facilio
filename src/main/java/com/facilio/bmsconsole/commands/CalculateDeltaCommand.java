@@ -99,7 +99,7 @@ public class CalculateDeltaCommand extends FacilioCommand {
 								}
 								if (reading.getId() != -1) {
 									ReadingContext readingBeforeUpdate= ReadingsAPI.getReading(module, fields, reading.getId());
-									if(readingBeforeUpdate != null && readingBeforeUpdate.getTtime()!=reading.getTtime()){
+									if(readingBeforeUpdate.getTtime()!=reading.getTtime()){
 										ReadingsAPI.updateDeltaForCurrentAndNextRecords(module,fields,readingBeforeUpdate,false,reading.getTtime(),false,rdmMap);
 									}
 									ReadingsAPI.updateDeltaForCurrentAndNextRecords(module, fields, reading, true,reading.getTtime(),false,rdmMap);
