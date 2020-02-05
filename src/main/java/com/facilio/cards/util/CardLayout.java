@@ -52,6 +52,8 @@ public enum CardLayout {
 	GRAPHICALCARD_LAYOUT_1 ("graphicalcard_layout_1"),
 	MAPCARD_LAYOUT_1 ("mapcard_layout_1"),
 	CONTROL_LAYOUT_1 ("controlcard_layout_1"),
+	WEB_LAYOUT_1 ("web_layout_1"),
+
 	
 	PMREADINGS_LAYOUT_1 ("pmreadings_layout_1") {
 		@Override
