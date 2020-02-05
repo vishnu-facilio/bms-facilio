@@ -1,5 +1,15 @@
 package com.facilio.bmsconsole.context;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -11,14 +21,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
 	/**
@@ -531,6 +533,23 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.remarkOptionValuesString = remarkOptionValuesString;
 	}
 
-
+	private List<String> attachmentOptionValues;
+	public List<String> getAttachmentOptionValues() throws Exception {
+		return attachmentOptionValues;
+	}
+	public void setAttachmentOptionValues(List<String> attachmentOptionValues) {
+		this.attachmentOptionValues = attachmentOptionValues;
+	}
+	public String getAttachmentOptionValuesString() {
+		if (CollectionUtils.isNotEmpty(attachmentOptionValues)) {
+			return StringUtils.join(attachmentOptionValues, ",");
+		}
+		return null;
+	}
+	public void setAttachmentOptionValuesString(String attachmentOptionValuesString) {
+		if (StringUtils.isNotEmpty(attachmentOptionValuesString)) {
+			this.attachmentOptionValues = new ArrayList<String>(Arrays.asList(attachmentOptionValuesString.split(",")));
+		}
+	}
 
 }

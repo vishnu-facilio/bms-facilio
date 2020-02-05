@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
@@ -18,10 +24,6 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
-import java.util.Map;
 
 
 
@@ -45,12 +47,8 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 								if (completeRecord.getInputTypeEnum() != InputType.NONE && ((completeRecord.getInputValue() == null || completeRecord.getInputValue().isEmpty())) && (task.getInputValue() == null || task.getInputValue().isEmpty())) {
 									throw new IllegalArgumentException("Input task cannot be closed without entering input value");
 								}
-								
-								if(completeRecord.isAttachmentRequired()) {
-									List<AttachmentContext> attachments = AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TASK_ATTACHMENTS, recordIds.get(i));
-									if (attachments == null || attachments.isEmpty() ) {
-										throw new IllegalArgumentException("Atleast one file has to be attached since attachment is required to close the task");
-									}
+								if (checkIfAttachmentsRequired(completeRecord, task)) {
+									throw new IllegalArgumentException("Atleast one file has to be attached since attachment is required to close the task");
 								}
 								if (checkIfRemarksRequired(completeRecord, task)) {
 									throw new IllegalArgumentException("Remarks has to be entered for the selected input to close the task");
@@ -178,6 +176,22 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 				return true;
 			} else if (task.getStatusNewEnum() == TaskStatus.CLOSED && dbRecord.getRemarkOptionValues().contains(dbRecord.getInputValue())) {
 				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean checkIfAttachmentsRequired (TaskContext dbRecord, TaskContext task) throws Exception {
+		if(dbRecord.isAttachmentRequired()) {
+			List<AttachmentContext> attachments = AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TASK_ATTACHMENTS, dbRecord.getId());
+			if (attachments == null || attachments.isEmpty() ) {
+				if (CollectionUtils.isEmpty(dbRecord.getAttachmentOptionValues())) {
+					return true;
+				} else if (dbRecord.getAttachmentOptionValues().contains(task.getInputValue())) {
+					return true;
+				} else if (task.getStatusNewEnum() == TaskStatus.CLOSED && dbRecord.getAttachmentOptionValues().contains(dbRecord.getInputValue())) {
+					return true;
+				}
 			}
 		}
 		return false;
