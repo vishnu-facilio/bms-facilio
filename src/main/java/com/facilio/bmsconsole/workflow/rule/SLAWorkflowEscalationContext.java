@@ -14,12 +14,12 @@ public class SLAWorkflowEscalationContext implements Serializable {
         this.id = id;
     }
 
-    private long slaRuleId;
-    public long getSlaRuleId() {
-        return slaRuleId;
+    private long slaPolicyId;
+    public long getSlaPolicyId() {
+        return slaPolicyId;
     }
-    public void setSlaRuleId(long slaRuleId) {
-        this.slaRuleId = slaRuleId;
+    public void setSlaPolicyId(long slaPolicyId) {
+        this.slaPolicyId = slaPolicyId;
     }
 
     private WorkflowRuleContext.ScheduledRuleType type;

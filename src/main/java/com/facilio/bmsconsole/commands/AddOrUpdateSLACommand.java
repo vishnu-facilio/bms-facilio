@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -34,9 +35,11 @@ public class AddOrUpdateSLACommand extends FacilioCommand {
                 throw new IllegalArgumentException("Illegal SLA Policy");
             }
 
+            slaRule.setModule(module);
             slaRule.setOnSuccess(true);
-            slaRule.setParentId(parentSLAPolicyId);
+            slaRule.setParentRuleId(parentSLAPolicyId);
             slaRule.setActivityType(EventType.SLA);
+            slaRule.setRuleType(WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE);
             if (slaRule.getId() > 0) {
                 FacilioChain chain = TransactionChainFactory.updateWorkflowRuleChain();
                 FacilioContext updateWorkflowContext = chain.getContext();

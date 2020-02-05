@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.workflow.rule;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.SLAWorkflowAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -25,24 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
-
-    public SLAWorkflowCommitmentRuleContext() {
-        setRuleType(RuleType.SLA_WORKFLOW_RULE);
-    }
-
-    @Override
-    @JsonInclude
-    public int getRuleType() {
-        return super.getRuleType();
-    }
-
-//    private long slaPoliceRuleId = -1;
-//    public long getSlaPoliceRuleId() {
-//        return slaPoliceRuleId;
-//    }
-//    public void setSlaPoliceRuleId(long slaPoliceRuleId) {
-//        this.slaPoliceRuleId = slaPoliceRuleId;
-//    }
 
     private long baseFieldId = -1;
     public long getBaseFieldId() {
@@ -74,14 +57,6 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
     }
     public void setAddDuration(long addDuration) {
         this.addDuration = addDuration;
-    }
-
-    private List<SLAWorkflowEscalationContext> escalations;
-    public List<SLAWorkflowEscalationContext> getEscalations() {
-        return escalations;
-    }
-    public void setEscalations(List<SLAWorkflowEscalationContext> escalations) {
-        this.escalations = escalations;
     }
 
     @Override
@@ -118,20 +93,21 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
         update.update(moduleRecord);
 
-        if (CollectionUtils.isEmpty(getEscalations())) {
-            setEscalations(SLAWorkflowAPI.getEscalations(getId()));
+        SLAPolicyContext slaPolicy = (SLAPolicyContext) WorkflowRuleAPI.getWorkflowRule(getParentRuleId());
+        if (CollectionUtils.isEmpty(slaPolicy.getEscalations())) {
+            slaPolicy.setEscalations(SLAWorkflowAPI.getEscalations(slaPolicy.getId()));
         }
 
-        addEscalationJobs(module, dueField, compareField, moduleRecord);
+        addEscalationJobs(slaPolicy.getEscalations(), module, dueField, compareField, moduleRecord);
 
         super.executeTrueActions(record, context, placeHolders);
     }
 
-    private void addEscalationJobs(FacilioModule module, FacilioField dueField, FacilioField compareField, ModuleBaseWithCustomFields moduleRecord) throws Exception {
-        if (CollectionUtils.isNotEmpty(getEscalations())) {
-            SLAWorkflowAPI.getActions(getEscalations());
+    private void addEscalationJobs(List<SLAWorkflowEscalationContext> escalations, FacilioModule module, FacilioField dueField, FacilioField compareField, ModuleBaseWithCustomFields moduleRecord) throws Exception {
+        if (CollectionUtils.isNotEmpty(escalations)) {
+            SLAWorkflowAPI.getActions(escalations);
             int count = 0;
-            for (SLAWorkflowEscalationContext escalation : getEscalations()) {
+            for (SLAWorkflowEscalationContext escalation : escalations) {
                 count++;
 
                 WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();

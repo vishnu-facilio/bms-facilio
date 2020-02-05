@@ -64,9 +64,6 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 							if (rule.getTimeObj() != null) {
 								throw new IllegalArgumentException("Time is not required for DATE_TIME field");
 							}
-							if (rule.getInterval() % (DATE_TIME_RULE_INTERVAL * 60) != 0) {
-								throw new IllegalArgumentException("Interval should be in multiples of "+DATE_TIME_RULE_INTERVAL+" min for DATE_TIME field");
-							}
 							break;
 						default:
 							throw new IllegalArgumentException("Only DATE/ DATE_TIME field can be used for Record specific Scheduled Rules");

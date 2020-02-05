@@ -1702,7 +1702,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getSLAWorkflowEscalationModule();
 
 		fields.add(getIdField(module));
-		fields.add(getField("slaRuleId", "SLA_RULE_ID", module, FieldType.NUMBER));
+		fields.add(getField("slaPolicyId", "SLA_POLICY_ID", module, FieldType.NUMBER));
 		fields.add(getField("type", "TYPE", module, FieldType.SYSTEM_ENUM));
 		fields.add(getField("interval", "TIME_INTERVAL", module, FieldType.NUMBER));
 

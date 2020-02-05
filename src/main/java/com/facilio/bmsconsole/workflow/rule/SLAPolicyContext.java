@@ -10,18 +10,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class SLAPolicyContext extends WorkflowRuleContext {
 
-    public SLAPolicyContext() {
-        setRuleType(RuleType.SLA_POLICY_RULE);
+    private List<SLAWorkflowEscalationContext> escalations;
+    public List<SLAWorkflowEscalationContext> getEscalations() {
+        return escalations;
     }
-
-    @JsonInclude
-    @Override
-    public int getRuleType() {
-        return super.getRuleType();
+    public void setEscalations(List<SLAWorkflowEscalationContext> escalations) {
+        this.escalations = escalations;
     }
 
     @Override
@@ -37,17 +36,6 @@ public class SLAPolicyContext extends WorkflowRuleContext {
                     .fields(Collections.singletonList(slaPolicyField))
                     .andCondition(CriteriaAPI.getIdCondition(r.getId(), getModule()));
             builder.update(r);
-
-//            Criteria criteria = new Criteria();
-//            criteria.addAndCondition(CriteriaAPI.getCondition("SLA_POLICY_RULE_ID", "slaPoliceRuleId", String.valueOf(getId()), NumberOperators.EQUALS));
-//
-//            List<WorkflowRuleContext> slaCommitments = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(getModule(), Arrays.asList(SLA), criteria, RuleType.SLA_WORKFLOW_RULE);
-//            if (CollectionUtils.isNotEmpty(slaCommitments)) {
-//                List<Object> records = Arrays.asList(r);
-//                Iterator<Object> it = records.iterator();
-//                Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(getModule().getName(), r, placeHolders);
-//                WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(slaCommitments, getModule(), r, null, it, recordPlaceHolders, (FacilioContext) context, true, Arrays.asList(SLA), null);
-//            }
         }
     }
 }

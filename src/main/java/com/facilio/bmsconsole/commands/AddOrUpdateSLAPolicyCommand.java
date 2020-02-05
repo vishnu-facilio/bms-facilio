@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.SLAPolicyContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -25,6 +26,7 @@ public class AddOrUpdateSLAPolicyCommand extends FacilioCommand {
 
             slaPolicy.setActivityType(EventType.SLA);
             slaPolicy.setModule(module);
+            slaPolicy.setRuleType(WorkflowRuleContext.RuleType.SLA_POLICY_RULE);
 
             if (slaPolicy.getId() > 0) {
                 FacilioChain chain = TransactionChainFactory.updateWorkflowRuleChain();

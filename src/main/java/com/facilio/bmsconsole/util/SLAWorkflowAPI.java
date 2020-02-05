@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.SLAPolicyContext;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
-import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -18,7 +18,7 @@ import java.util.*;
 
 public class SLAWorkflowAPI extends WorkflowRuleAPI {
 
-    public static void addEscalations(SLAWorkflowCommitmentRuleContext rule, List<SLAWorkflowEscalationContext> escalations) throws Exception {
+    public static void addEscalations(SLAPolicyContext rule, List<SLAWorkflowEscalationContext> escalations) throws Exception {
         if (CollectionUtils.isNotEmpty(escalations)) {
             GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                     .table(ModuleFactory.getSLAWorkflowEscalationModule().getTableName())
@@ -26,7 +26,7 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
 
             Map<SLAWorkflowEscalationContext, List<ActionContext>> escalationActionMap = new HashMap<>();
             for (SLAWorkflowEscalationContext escalation : escalations) {
-                escalation.setSlaRuleId(rule.getId());
+                escalation.setSlaPolicyId(rule.getId());
                 builder.addRecord(FieldUtil.getAsProperties(escalation));
 
                 List<ActionContext> actions = escalation.getActions();
@@ -65,7 +65,7 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getSLAWorkflowEscalationModule().getTableName())
                 .select(FieldFactory.getSlaWorkflowEscalationFields())
-                .andCondition(CriteriaAPI.getCondition("SLA_RULE_ID", "slaRuleId", String.valueOf(slaRuleId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(slaRuleId), NumberOperators.EQUALS));
         List<Map<String, Object>> maps = builder.get();
         return FieldUtil.getAsBeanListFromMapList(maps, SLAWorkflowEscalationContext.class);
     }
