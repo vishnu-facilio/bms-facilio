@@ -106,11 +106,6 @@ public class ReportFactory {
 			
 			reportFields.add(getField(WorkOrder.FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getWorkOrdersModule(), "Tickets.ACTUAL_WORK_START - WorkOrders.CREATED_TIME", FieldType.NUMBER, WorkOrder.FIRST_RESPONSE_TIME));
 			
-			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
-				ReportFacilioField totalScorePercentageField = (ReportFacilioField) getField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL, "Total Score In Percentage", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.NUMBER_CF9 IS NOT NULL AND WorkOrders.NUMBER_CF13 IS NOT NULL THEN WorkOrders.NUMBER_CF9 / WorkOrders.NUMBER_CF13 * 100 ELSE 0 END",FieldType.NUMBER, WorkOrder.TOTAL_SCORE_PERCENTAGE);
-				reportFields.add(totalScorePercentageField);	
-			}
-			
 			// alarm fields
 			reportFields.add(getField(Alarm.FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getAlarmsModule(), " (Alarms.ACKNOWLEDGED_TIME - Alarms.CREATED_TIME) ", FieldType.NUMBER, Alarm.FIRST_RESPONSE_TIME));
 			reportFields.add(getField(Alarm.ALARM_DURATION_COL, "Alarm Duration", ModuleFactory.getAlarmsModule(), "(CASE WHEN Alarms.CLEARED_TIME IS NOT NULL THEN Alarms.CLEARED_TIME - Alarms.CREATED_TIME ELSE ? - Alarms.CREATED_TIME END) ", FieldType.NUMBER, Alarm.ALARM_DURATION));
@@ -135,11 +130,11 @@ public class ReportFactory {
 		}
 	}
 	
-	private static FacilioField getField(String name, String displayName, FacilioModule module, String columnName, FieldType fieldType) {
+	public static FacilioField getField(String name, String displayName, FacilioModule module, String columnName, FieldType fieldType) {
 		return getField(name, displayName, module, columnName, fieldType, -1);
 	}
 	
-	private static FacilioField getField(String name, String displayName, FacilioModule module, String columnName, FieldType fieldType, int type) {
+	public static FacilioField getField(String name, String displayName, FacilioModule module, String columnName, FieldType fieldType, int type) {
 		ReportFacilioField f = new ReportFacilioField(type);
 		f.setName(name);
 		f.setDisplayName(displayName);

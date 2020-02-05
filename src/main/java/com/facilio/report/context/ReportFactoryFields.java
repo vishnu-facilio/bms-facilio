@@ -22,6 +22,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.report.context.ReportFactory.Alarm;
 import com.facilio.report.context.ReportFactory.ModuleType;
+import com.facilio.report.context.ReportFactory.ReportFacilioField;
 import com.facilio.report.context.ReportFactory.WorkOrder;
 
 public class ReportFactoryFields {
@@ -952,7 +953,12 @@ public class ReportFactoryFields {
 			metricFields.add(ReportFactory.getReportField(WorkOrder.FIRST_RESPONSE_TIME_COL));
 			metricFields.add(ReportFactory.getReportField(WorkOrder.ESTIMATED_DURATION_COL));
 			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
-				metricFields.add(ReportFactory.getReportField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL));
+//				if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
+					ReportFacilioField totalScorePercentageField = (ReportFacilioField) ReportFactory.getField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL, "Total Score In Percentage", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.NUMBER_CF9 IS NOT NULL AND WorkOrders.NUMBER_CF13 IS NOT NULL THEN WorkOrders.NUMBER_CF9 / WorkOrders.NUMBER_CF13 * 100 ELSE 0 END",FieldType.NUMBER, WorkOrder.TOTAL_SCORE_PERCENTAGE);
+					metricFields.add(totalScorePercentageField);	
+//				}
+				
+//				metricFields.add(ReportFactory.getReportField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL));
 			}
 			List<FacilioField> workorderFields = dimensionFieldMap.get(module);
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OPENVSCLOSE_COL));
