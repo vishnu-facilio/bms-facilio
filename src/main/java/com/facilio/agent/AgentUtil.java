@@ -321,7 +321,7 @@ public  class AgentUtil
 
             AgentEventContext event = new AgentEventContext();
             event.setEventMessage("Agent: " + agentName + " has lost connection with the Facilio cloud @ "
-                    + new Date(DateTimeUtil.utcTimeToOrgTime(System.currentTimeMillis())));
+                    + DateTimeUtil.getFormattedTime(System.currentTimeMillis()));
             event.setSeverityString(FacilioConstants.Alarm.CRITICAL_SEVERITY);
             event.setCreatedTime(System.currentTimeMillis());
             event.setAgentId(agentId);
