@@ -81,6 +81,7 @@ public class FormFactory {
 		forms.put("printerForm",getPrinterForm());
 
 		forms.put("vendorDocumentForm",getVendorDocumentForm());
+		forms.put("portalvendorDocumentForm",getPortalVendorDocumentForm());
 
 		return forms;
 	}
@@ -1352,8 +1353,8 @@ public class FormFactory {
 	
 	public static FacilioForm getVendorDocumentForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Vendor Documents");
-		form.setName("web_default");
+		form.setDisplayName("Vendor Document");
+		form.setName("default_vendorDocuments_web");
 		form.setModule(ModuleFactory.getVendorDocumentsModule());
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVendorDocumentsFormFields());
@@ -1361,10 +1362,23 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getPortalVendorDocumentForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Vendor Document");
+		form.setName("default_vendorDocuments_portal");
+		form.setModule(ModuleFactory.getVendorDocumentsModule());
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getVendorDocumentsFormFields());
+		form.setFormType(FormType.PORTAL);
+		return form;
+	}
+	
 	private static List<FormField> getVendorDocumentsFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("documentName", FieldDisplayType.TEXTBOX, "Document Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("documentType", FieldDisplayType.SELECTBOX, "Document Type", Required.OPTIONAL, 2, 1));
+		FormField type = new FormField("documentType", FieldDisplayType.SELECTBOX, "Document Type", Required.OPTIONAL, 2, 1);
+		type.setAllowCreateOptions(true);
+		fields.add(type);
 		fields.add(new FormField("document", FieldDisplayType.FILE, "Document", Required.REQUIRED,3, 1));
 		return fields;
 	}
@@ -1692,7 +1706,7 @@ public class FormFactory {
 		fields.add(new FormField("companyName", FieldDisplayType.TEXTBOX, "Company Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("validFrom", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("validTill", FieldDisplayType.DATE, "Valid Till", Required.OPTIONAL, 3, 1));
-		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 3, 2);
+		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED,"vendors", 3, 2);
 	//	vendorField.setHideField(true);
 		fields.add(vendorField);
 		fields.add(new FormField("insurance", FieldDisplayType.FILE, "Insurance", Required.OPTIONAL, 1, 1));
