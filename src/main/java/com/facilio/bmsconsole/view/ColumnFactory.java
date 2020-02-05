@@ -101,6 +101,7 @@ public class ColumnFactory {
 		columnMap.put("insurance-vendorExpired", getVendorInsuranceColumns());
 		columnMap.put("watchlist-default", getDefaultWatchListColumns());
 		columnMap.put("workpermit-default", getDefaultWorkPermitColumns());
+		columnMap.put("workpermit-hidden-all", getHiddenAllWorkPermitColumns());
 		columnMap.put("workpermit-myWorkpermits", getMyWorkPermitColumns());
 		columnMap.put("workpermit-myActive", getMyActiveWorkPermitColumns());
 		columnMap.put("workpermit-myExpired", getMyActiveWorkPermitColumns());
@@ -881,6 +882,16 @@ public class ColumnFactory {
 		columns.add(new ViewField("workType", "Work Type"));
 		columns.add(new ViewField("requestedBy", "Requested By"));
 		columns.add(new ViewField("isRecurring", "Is Recurring"));
+		columns.add(new ViewField("moduleState", "Status"));
+		return columns;
+	}
+	public static List<ViewField> getHiddenAllWorkPermitColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("expectedStartTime", "Valid From"));
+		columns.add(new ViewField("expectedEndTime", "Valid Till"));
+		columns.add(new ViewField("workType", "Work Type"));
+		columns.add(new ViewField("requestedBy", "Requested By"));
 		columns.add(new ViewField("moduleState", "Status"));
 		return columns;
 	}
