@@ -12,12 +12,11 @@ public class AuditData {
     private long queryCount;
     private long sessionId;
     private long thread;
-    private long serverId;
     private String server;
     private String module;
     private String action;
     private String method;
-    
+
     public int getStatus() {
         return status;
     }
@@ -129,12 +128,4 @@ public class AuditData {
     public void setMethod(String method) {
         this.method = method;
     }
-
-	public long getServerId() {
-		return serverId;
-	}
-
-	public void setServerId(long serverId) {
-		this.serverId = serverId;
-	}
 }
