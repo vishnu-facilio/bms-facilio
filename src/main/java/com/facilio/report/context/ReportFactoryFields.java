@@ -954,7 +954,7 @@ public class ReportFactoryFields {
 			metricFields.add(ReportFactory.getReportField(WorkOrder.ESTIMATED_DURATION_COL));
 			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
 //				if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
-					ReportFacilioField totalScorePercentageField = (ReportFacilioField) ReportFactory.getField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL, "Total Score In Percentage", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.NUMBER_CF9 IS NOT NULL AND WorkOrders.NUMBER_CF13 IS NOT NULL THEN WorkOrders.NUMBER_CF9 / WorkOrders.NUMBER_CF13 * 100 ELSE 0 END",FieldType.NUMBER, WorkOrder.TOTAL_SCORE_PERCENTAGE);
+					ReportFacilioField totalScorePercentageField = (ReportFacilioField) ReportFactory.getReportField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL);
 					metricFields.add(totalScorePercentageField);	
 //				}
 				

@@ -27,6 +27,8 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.report.context.ReportFactory.ReportFacilioField;
+import com.facilio.report.context.ReportFactory.WorkOrder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportFactory {
@@ -145,7 +147,18 @@ public class ReportFactory {
 	}
 
 	public static FacilioField getReportField(String fieldName) {
-		return fieldMap.get(fieldName);
+		FacilioField facilioField = fieldMap.get(fieldName);
+		if (facilioField != null) {
+			return facilioField;
+		}
+		switch (fieldName) {
+		case "totalscorepercentage":
+			if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
+				return (ReportFacilioField) ReportFactory.getField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL, "Total Score In Percentage", ModuleFactory.getWorkOrdersModule(), " CASE WHEN WorkOrders.NUMBER_CF9 IS NOT NULL AND WorkOrders.NUMBER_CF13 IS NOT NULL THEN WorkOrders.NUMBER_CF9 / WorkOrders.NUMBER_CF13 * 100 ELSE 0 END",FieldType.NUMBER, WorkOrder.TOTAL_SCORE_PERCENTAGE);
+			}
+			break;
+		}
+		return null;
 	}
 	
 	public static class ModuleType {
