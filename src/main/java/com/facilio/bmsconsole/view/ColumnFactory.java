@@ -380,7 +380,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Name"));
-		columns.add(new ViewField("primaryContactName", "Primart Contact"));
+		columns.add(new ViewField("primaryContactName", "Primary Contact"));
 		columns.add(new ViewField("primaryContactEmail", "Contact E-Mail"));
 		columns.add(new ViewField("primaryContactPhone", "Contact Phone"));
 		columns.add(new ViewField("website", "Website"));

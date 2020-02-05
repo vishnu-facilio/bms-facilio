@@ -51,12 +51,6 @@ public class WorkpermitPageFactory extends PageFactory {
 		return page;
 	}
 
-	private static void addPrimaryDetailsWidget(Section section) {
-		PageWidget pageWidget = new PageWidget(WidgetType.PRIMARY_DETAILS_WIDGET);
-		pageWidget.addToLayoutParams(section, 24, 6);
-		section.addWidget(pageWidget);
-	}
-
 	private static void addSecondaryDetailsWidget(Section section) {
 		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
 		detailsWidget.addToLayoutParams(section, 24, 5);
@@ -70,14 +64,8 @@ public class WorkpermitPageFactory extends PageFactory {
 	}
 
 	private static void addPortalDetailsWidget(Section section) {
-		PageWidget detailsWidget = new PageWidget(WidgetType.PORTAL_SECONDARY_DETAILS, "portalSecondryDetails");
+		PageWidget detailsWidget = new PageWidget(WidgetType.PORTAL_WORKPERMIT, "portalWorkPermit");
 		detailsWidget.addToLayoutParams(section, 24, 7);
 		section.addWidget(detailsWidget);
-	}
-
-	private static void addInsuranceWidget(Section section) {
-		PageWidget plannedWidget = new PageWidget(WidgetType.INSURANCE, "insurance");
-		plannedWidget.addToLayoutParams(section, 24, 10);
-		section.addWidget(plannedWidget);
 	}
 }
