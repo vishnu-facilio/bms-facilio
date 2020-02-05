@@ -8,7 +8,9 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.point.Point;
+import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.chain.FacilioContext;
+import com.facilio.sqlUtils.contexts.opc.ua.OpcUaController;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -20,7 +22,7 @@ import java.util.List;
 
 public class ControllerMessenger {
     private static final Logger LOGGER = LogManager.getLogger(ControllerMessenger.class.getName());
-
+    private static final long DEFAULT_TIMEOUT = 900000;
     private static final int MAX_BUFFER = 45000; //45000 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
 
     /**
@@ -115,6 +117,10 @@ public class ControllerMessenger {
                 case ADD_CONTROLLER:
                     break;
                 case DISCOVER_POINTS:
+                    if (controller.getControllerType() == ControllerType.OPC_UA.getKey() ||
+                            controller.getControllerType() == ControllerType.OPC_DA.getKey()) {
+                        object.put(AgentConstants.TIMEOUT, DEFAULT_TIMEOUT);
+                    }
                     break;
                 case EDIT_CONTROLLER:
                     break;

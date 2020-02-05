@@ -149,4 +149,5 @@ public class AgentConstants
     public static final String FILE_ID = "fileId";
     public static final String AGENT_V2_LOG_MODULE = "agentV2Log";
     public static final String ACTUAL_TIME = "actualTime";
+    public static final String TIMEOUT = "timeout";
 }
