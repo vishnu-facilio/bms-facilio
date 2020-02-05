@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
@@ -9,8 +10,10 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class GetCampusCommand extends FacilioCommand {
 
@@ -28,7 +31,7 @@ public class GetCampusCommand extends FacilioCommand {
 			FacilioModule module = modBean.getModule(moduleName);
 			
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-			
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 			
 			SelectRecordsBuilder<SiteContext> builder = new SelectRecordsBuilder<SiteContext>()
 					.table(module.getTableName())
@@ -36,6 +39,7 @@ public class GetCampusCommand extends FacilioCommand {
 					.beanClass(SiteContext.class)
 					.select(fields)
 					.andCustomWhere(module.getTableName()+".ID = ?", campusId)
+					.fetchSupplement((LookupField) fieldMap.get("location"))
 					.orderBy("ID");
 
 			List<SiteContext> campuses = builder.get();	

@@ -18,6 +18,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class GetAllCampusCommand extends FacilioCommand {
 
@@ -31,7 +32,9 @@ public class GetAllCampusCommand extends FacilioCommand {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
 		SelectRecordsBuilder<SiteContext> builder = new SelectRecordsBuilder<SiteContext>().table(dataTableName)
-				.moduleName(moduleName).beanClass(SiteContext.class).select(fields).maxLevel(2)
+				.moduleName(moduleName).beanClass(SiteContext.class).select(fields)
+				.fetchSupplement((LookupField) fieldMap.get("location"))
+				.maxLevel(2)
 				.orderBy(fieldMap.get("name").getColumnName() + " ASC");
 		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if (scopeCriteria != null) {
