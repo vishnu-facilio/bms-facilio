@@ -84,17 +84,26 @@ public class ColumnFactory {
 		columnMap.put("reservation-default", getDefaultReservationColumns());
 		columnMap.put("inventoryrequest-pendingapproval", getDefaultInventoryRequestColumns());
 		columnMap.put("visitor-default", getDefaultVisitorColumns());
-		columnMap.put("visitorlogging-default", getDefaultVisitorLoggingColumns());
 		columnMap.put("visitorinvite-default", getDefaultVisitorInvitesColumns());
+		// visitor logging
+		columnMap.put("visitorlogging-default", getDefaultVisitorLoggingColumns());
+		// vl tenant portal
+		columnMap.put("visitorlogging-myUpcoming", getMyVisitorInvitesColumns());
+		columnMap.put("visitorlogging-myCurrent", getMyVisitorInvitesColumns());
+		columnMap.put("visitorlogging-myExpired", getMyVisitorInvitesColumns());
+		// vl vendor portal
+		columnMap.put("visitorlogging-vendorUpcomingVisitors", getVendorUpcomingVisitorInvitesColumns());
+		columnMap.put("visitorlogging-vendorVisits", getVendorAllVisitorInvitesColumns());
+		columnMap.put("visitorlogging-vendorCurrentVisits", getVendorVisitorInvitesColumns());
+		columnMap.put("visitorlogging-vendorExpired", getVendorVisitorInvitesColumns());
+
 		columnMap.put("visitorlogging-invite_all", getDefaultVisitorInvitesColumns());
 		columnMap.put("visitorlogging-myInvites", getMyVisitorInvitesColumns());
-		columnMap.put("visitorlogging-myUpcoming", getMyVisitorInvitesColumns());
 		columnMap.put("visitorlogging-myAll", getMyVisitorInvitesColumns());
-		columnMap.put("visitorlogging-vendorVisitors", getVendorVisitorInvitesColumns());
-		columnMap.put("visitorlogging-vendorUpcomingVisitors", getVendorVisitorInvitesColumns());
-		columnMap.put("visitorlogging-vendorVisits", getVendorVisitsInvitesColumns());
 		columnMap.put("visitorlogging-myPendingVisits", getmyVisitsColumns());
 		columnMap.put("visitorlogging-all", getmyVisitsColumns());
+
+
 		columnMap.put("insurance-default", getDefaultInsuranceColumns());
 		columnMap.put("insurance-vendor", getVendorInsuranceColumns());
 		columnMap.put("insurance-vendorActive", getVendorInsuranceColumns());
@@ -829,14 +838,9 @@ public class ColumnFactory {
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("tenant", "Tenant"));
 		columns.add(new ViewField("visitorType", "Type"));
-		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
-		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
 		columns.add(new ViewField("visitedSpace", "Visiting Space"));
-		columns.add(new ViewField("checkInTime", "Check-in Time"));
-		columns.add(new ViewField("checkOutTime", "Check-out Time"));
-		columns.add(new ViewField("moduleState", "Status"));
-	
+
 		return columns;
 	}
 	
@@ -854,7 +858,37 @@ public class ColumnFactory {
 		
 		return columns;
 	}
-	
+
+	public static List<ViewField> getVendorUpcomingVisitorInvitesColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("visitorName", "Name"));
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("tenant", "Tenant"));
+		columns.add(new ViewField("visitorType", "Type"));
+		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
+		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
+		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
+		columns.add(new ViewField("visitedSpace", "Visiting Space"));
+
+		return columns;
+	}
+	public static List<ViewField> getVendorAllVisitorInvitesColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("visitorName", "Name"));
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("tenant", "Tenant"));
+		columns.add(new ViewField("visitorType", "Type"));
+		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
+		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
+		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
+		columns.add(new ViewField("visitedSpace", "Visiting Space"));
+		columns.add(new ViewField("checkInTime", "Check-in Time"));
+		columns.add(new ViewField("checkOutTime", "Check-out Time"));
+		columns.add(new ViewField("moduleState", "Status"));
+
+		return columns;
+	}
+
 	public static List<ViewField> getDefaultInsuranceColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("companyName", "Company Name"));
