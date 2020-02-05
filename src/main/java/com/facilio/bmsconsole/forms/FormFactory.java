@@ -1695,7 +1695,7 @@ public class FormFactory {
 		FormField vendorField = new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"vendors", 3, 2);
 	//	vendorField.setHideField(true);
 		fields.add(vendorField);
-		fields.add(new FormField("insurance", FieldDisplayType.FILE, "File", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("insurance", FieldDisplayType.FILE, "Insurance", Required.OPTIONAL, 1, 1));
 		return fields;
 	}
 	
@@ -1704,7 +1704,7 @@ public class FormFactory {
 		fields.add(new FormField("companyName", FieldDisplayType.TEXTBOX, "Company Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("validFrom", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("validTill", FieldDisplayType.DATE, "Valid Till", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("insurance", FieldDisplayType.FILE, "File", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("insurance", FieldDisplayType.FILE, "Insurance", Required.OPTIONAL, 1, 1));
 		return fields;
 	}
 
