@@ -222,6 +222,7 @@ public class VisitorManagementAPI {
 		LookupField visitedSpacefield = (LookupField) fieldsAsMap.get("visitedSpace");
 		LookupField moduleStateField = (LookupField)fieldsAsMap.get("moduleState");
 		LookupField visitorTypefield = (LookupField)fieldsAsMap.get("visitorType");
+		LookupField vendorfield = (LookupField)fieldsAsMap.get("vendor");
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
 			LookupField tenant = (LookupField)fieldsAsMap.get("tenant");
 			additionaLookups.add(tenant);
@@ -234,6 +235,7 @@ public class VisitorManagementAPI {
 		additionaLookups.add(moduleStateField);
 		additionaLookups.add(visitorTypefield);
 		additionaLookups.add(requestedBy);
+		additionaLookups.add(vendorfield);
 		builder.fetchSupplements(additionaLookups);
 		
 		VisitorLoggingContext records = builder.fetchFirst();
