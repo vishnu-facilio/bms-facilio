@@ -90,7 +90,7 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 				for (ReadingContext reading : readings) {
 					if (reading.getId() != -1) {
 						ReadingContext readingBeforeUpdate= ReadingsAPI.getReading(module, allFields, reading.getId());
-						if (readingBeforeUpdate.getTtime() != reading.getTtime()){//If reading date changed
+						if (readingBeforeUpdate != null && readingBeforeUpdate.getTtime() != reading.getTtime()){//If reading date changed
 							ReadingsAPI.updateDeltaForCurrentAndNextRecords(module,allFields,readingBeforeUpdate,false,reading.getTtime(),true,metaMap);
 						}
 						ReadingsAPI.updateDeltaForCurrentAndNextRecords(module, allFields, reading, true,reading.getTtime(),true,metaMap);
