@@ -82,15 +82,11 @@ public class VendorPageFactory extends PageFactory{
 			
 			Section tab2Sec5 = page.new Section();
 			tab2.addSection(tab2Sec5);
-			addRelatedListWidget(tab2Sec5, "workpermit", vendor.getModuleId());
+			addRelatedListWidget(tab2Sec5, "purchaseorder", vendor.getModuleId());
 			
 			Section tab2Sec6 = page.new Section();
 			tab2.addSection(tab2Sec6);
-			addRelatedListWidget(tab2Sec6, "purchaseorder", vendor.getModuleId());
-			
-			Section tab2Sec7 = page.new Section();
-			tab2.addSection(tab2Sec7);
-			addRelatedListWidget(tab2Sec7, "contracts", vendor.getModuleId());
+			addRelatedListWidget(tab2Sec6, "contracts", vendor.getModuleId());
 			
 		}
 		return page;
