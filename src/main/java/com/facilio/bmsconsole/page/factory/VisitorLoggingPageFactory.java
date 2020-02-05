@@ -23,15 +23,15 @@ public class VisitorLoggingPageFactory extends PageFactory{
 		Tab tab1 = page.new Tab("summary");
 		page.addTab(tab1);
 
+		Section tab1Sec1 = page.new Section();
+		tab1.addSection(tab1Sec1);
+		addVisitDetailsWidget(tab1Sec1);
+		
 		if (visitorLogging.getVisitedSpace() != null) {
 			Section tab1Sec2 = page.new Section();
 			tab1.addSection(tab1Sec2);
 			addSpaceDetailWidget(tab1Sec2);
 		}
-
-		Section tab1Sec1 = page.new Section();
-		tab1.addSection(tab1Sec1);
-		addVisitDetailsWidget(tab1Sec1);
 
 		Section tab1Sec3 = page.new Section();
 		tab1.addSection(tab1Sec3);

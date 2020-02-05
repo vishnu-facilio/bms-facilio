@@ -380,7 +380,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Name"));
-		columns.add(new ViewField("primaryContactName", "Contact Name"));
+		columns.add(new ViewField("primaryContactName", "Primart Contact"));
 		columns.add(new ViewField("primaryContactEmail", "Contact E-Mail"));
 		columns.add(new ViewField("primaryContactPhone", "Contact Phone"));
 		columns.add(new ViewField("website", "Website"));
@@ -793,8 +793,8 @@ public class ColumnFactory {
 		columns.add(new ViewField("visitorName", "Name"));
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("visitorType", "Type"));
-		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in Time"));
-		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
+		columns.add(new ViewField("checkInTime", "Check-in Time"));
+		columns.add(new ViewField("checkOutTime", "Check-out Time"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
 		columns.add(new ViewField("visitedSpace", "Visiting Space"));
 		columns.add(new ViewField("requestedBy", "Requested By"));
