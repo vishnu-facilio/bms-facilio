@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
+import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
@@ -35,7 +36,7 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 		
 		Section tab1Sec3 = page.new Section();
 		tab1.addSection(tab1Sec3);
-		addCommonSubModuleGroup(tab1Sec3);
+		addCommentsAttachmentSubModuleGroup(tab1Sec3);
 		
 		Tab tab2 = page.new Tab("activity");
 		page.addTab(tab2);
@@ -64,6 +65,26 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 		PageWidget historyWidget = new PageWidget(WidgetType.PORTAL_ACTIVITY);
 		historyWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(historyWidget);
+	}
+	
+	private static PageWidget addCommentsAttachmentSubModuleGroup(Section section) {
+
+		PageWidget subModuleGroup = new PageWidget(WidgetType.GROUP);
+		subModuleGroup.addToLayoutParams(section, 24, 8);
+		subModuleGroup.addToWidgetParams("type", WidgetGroupType.TAB);
+		section.addWidget(subModuleGroup);
+		
+		PageWidget notesWidget = new PageWidget();
+		notesWidget.setWidgetType(WidgetType.COMMENT);
+		notesWidget.setTitle("Comment");
+		subModuleGroup.addToWidget(notesWidget);
+		
+		PageWidget attachmentWidget = new PageWidget();
+		attachmentWidget.setWidgetType(WidgetType.ATTACHMENT);
+		attachmentWidget.setTitle("Attachment");
+		subModuleGroup.addToWidget(attachmentWidget);
+
+		return subModuleGroup;
 	}
 
 	
