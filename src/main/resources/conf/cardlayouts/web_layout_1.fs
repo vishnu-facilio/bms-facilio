@@ -1,6 +1,6 @@
 Map cardLayout(Map params) {
 result = {};
   result["title"] = params.title;
-  result["title"] = params.url;
+  result["value"] = params.url;
   return result;
 }
