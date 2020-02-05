@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.InviteVisitorRelContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.VisitorLoggingContext;
 import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -93,6 +95,21 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 			
 			VendorContext vendor = InventoryApi.getVendor(Long.valueOf(objects[0].toString()));
 			return vendor;
+		
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_BASESPACE(5,"getBaseSpace") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			BaseSpaceContext baseSpaceContext = SpaceAPI.getBaseSpace(Long.valueOf(objects[0].toString()));
+			return baseSpaceContext;
 		
 		};
 		

@@ -6,9 +6,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.FieldOperator;
@@ -65,6 +67,9 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
     		else if (operatorValue.asObject() instanceof FacilioField) {
     			operator = FieldOperator.EQUAL;
     		}
+    		else if (operatorValue.asObject() instanceof BaseSpaceContext) {
+    			operator = BuildingOperator.BUILDING_IS;
+    		}
     		else {
     			operator = NumberOperators.EQUALS;
     		}
@@ -105,6 +110,10 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
     	if (operatorValue.asObject() instanceof FacilioField) {
     		FacilioField field = operatorValue.asField();
     		value = field.getModule().getName()+"."+field.getName();
+		}
+    	if (operatorValue.asObject() instanceof BaseSpaceContext) {
+    		BaseSpaceContext baseSpace = (BaseSpaceContext) operatorValue.asObject() ;
+    		value = ""+baseSpace.getId();
 		}
     	
     	condition.setValue(value);
