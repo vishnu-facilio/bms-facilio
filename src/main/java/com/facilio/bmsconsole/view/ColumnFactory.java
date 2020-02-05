@@ -128,7 +128,10 @@ public class ColumnFactory {
 		
 		columnMap.put("serviceRequest-default", getDefaultServiceRequestColumns());
 		columnMap.put("task-all", getAllTasksColumns());
-		
+		// portal vendors
+		columnMap.put("vendors-myRegisteredVendors", getPortalVendorsColumns());
+		columnMap.put("vendors-myApprovedVendors", getPortalVendorsColumns());
+		columnMap.put("vendors-myInactiveVendors", getPortalVendorsColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -383,6 +386,18 @@ public class ColumnFactory {
 		columns.add(new ViewField("primaryContactPhone", "Primary Contact Phone"));
 		columns.add(new ViewField("registeredBy", "Registered By"));
 		
+		return columns;
+	}
+
+	private static List<ViewField> getPortalVendorsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("primaryContactName", "Contact Name"));
+		columns.add(new ViewField("primaryContactEmail", "Contact E-Mail"));
+		columns.add(new ViewField("primaryContactPhone", "Contact Phone"));
+		columns.add(new ViewField("website", "Website"));
+		columns.add(new ViewField("moduleState", "Status"));
 		return columns;
 	}
 	

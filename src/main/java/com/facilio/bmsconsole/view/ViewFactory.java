@@ -282,9 +282,10 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVendors().setOrder(order++));
-		//portal vendor views
+
 		views.put("myVendors", getMyVendors().setOrder(order++));
 		views.put("myNonInsuredVendors", getMyNonInsuredVendors().setOrder(order++));
+		//portal vendor views
 		views.put("myRegisteredVendors", getMyInsuredVendors().setOrder(order++));
 		views.put("myApprovedVendors", getMyApprovedVendors().setOrder(order++));
 		views.put("myInactiveVendors", getMyInactiveVendors().setOrder(order++));
@@ -3220,7 +3221,7 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getMyVendorsCondition());
-		FacilioField insuranceField = FieldFactory.getField("HAS_INSURANCE", "hasInsurance", FieldType.BOOLEAN);
+		FacilioField insuranceField = FieldFactory.getField("hasInsurance", "HAS_INSURANCE",FieldType.BOOLEAN);
 		criteria.addAndCondition(CriteriaAPI.getCondition(insuranceField, String.valueOf(true), BooleanOperators.IS));
 
 
@@ -3248,7 +3249,7 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getMyVendorsCondition());
-		FacilioField insuranceField = FieldFactory.getField("HAS_INSURANCE", "hasInsurance", FieldType.BOOLEAN);
+		FacilioField insuranceField = FieldFactory.getField("hasInsurance", "HAS_INSURANCE",FieldType.BOOLEAN);
 		criteria.addAndCondition(CriteriaAPI.getCondition(insuranceField, CommonOperators.IS_EMPTY));
 		criteria.addAndCondition(getModuleTicketStatusCriteria("Approved", vendorModule));
 
