@@ -282,8 +282,13 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllVendors().setOrder(order++));
+		//portal vendor views
 		views.put("myVendors", getMyVendors().setOrder(order++));
 		views.put("myNonInsuredVendors", getMyNonInsuredVendors().setOrder(order++));
+		views.put("myRegisteredVendors", getMyInsuredVendors().setOrder(order++));
+		views.put("myApprovedVendors", getMyApprovedVendors().setOrder(order++));
+		views.put("myInactiveVendors", getMyInactiveVendors().setOrder(order++));
+
 		viewsMap.put(FacilioConstants.ContextNames.VENDORS, views);
 		
 		order = 1;
@@ -3208,7 +3213,92 @@ public class ViewFactory {
 
 			return myVendorView;
 		}
-		private static FacilioView getMyUpcomingVisitorInvites() {
+
+	private static FacilioView getMyInsuredVendors() {
+
+		FacilioModule vendorModule = ModuleFactory.getVendorsModule();
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getMyVendorsCondition());
+		FacilioField insuranceField = FieldFactory.getField("HAS_INSURANCE", "hasInsurance", FieldType.BOOLEAN);
+		criteria.addAndCondition(CriteriaAPI.getCondition(insuranceField, String.valueOf(true), BooleanOperators.IS));
+
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(vendorModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView myVendorView = new FacilioView();
+		myVendorView.setName("myRegisteredVendors");
+		myVendorView.setDisplayName("My Registered Vendors");
+		myVendorView.setCriteria(criteria);
+		myVendorView.setSortFields(sortFields);
+		myVendorView.setHidden(true);
+
+		return myVendorView;
+	}
+
+	private static FacilioView getMyApprovedVendors() {
+
+		FacilioModule vendorModule = ModuleFactory.getVendorsModule();
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getMyVendorsCondition());
+		FacilioField insuranceField = FieldFactory.getField("HAS_INSURANCE", "hasInsurance", FieldType.BOOLEAN);
+		criteria.addAndCondition(CriteriaAPI.getCondition(insuranceField, CommonOperators.IS_EMPTY));
+		criteria.addAndCondition(getModuleTicketStatusCriteria("Approved", vendorModule));
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(vendorModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView myVendorView = new FacilioView();
+		myVendorView.setName("myApproved");
+		myVendorView.setDisplayName("My Approved Vendors");
+		myVendorView.setCriteria(criteria);
+		myVendorView.setSortFields(sortFields);
+		myVendorView.setHidden(true);
+
+		return myVendorView;
+	}
+
+	private static FacilioView getMyInactiveVendors() {
+
+		FacilioModule vendorModule = ModuleFactory.getVendorsModule();
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getMyVendorsCondition());
+		criteria.addAndCondition(getModuleTicketStatusCriteria("InActive", vendorModule));
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(vendorModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView myVendorView = new FacilioView();
+		myVendorView.setName("myInactive");
+		myVendorView.setDisplayName("My InActive Vendors");
+		myVendorView.setCriteria(criteria);
+		myVendorView.setSortFields(sortFields);
+		myVendorView.setHidden(true);
+
+		return myVendorView;
+	}
+
+
+
+	private static FacilioView getMyUpcomingVisitorInvites() {
 			
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(getMyVistorInvitesCondition());
@@ -5864,5 +5954,36 @@ public class ViewFactory {
 		allView.setSortFields(sortFields);
 
 		return allView;
+	}
+
+	public static Condition getModuleTicketStatusCriteria(String status, FacilioModule module) {
+
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("status");
+		statusTypeField.setColumnName("STATUS");
+		statusTypeField.setDataType(FieldType.STRING);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition statusCondition = new Condition();
+		statusCondition.setField(statusTypeField);
+		statusCondition.setOperator(StringOperators.IS);
+		statusCondition.setValue(status);
+
+		Criteria statusCriteria = new Criteria() ;
+		statusCriteria.addAndCondition(statusCondition);
+
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(module);
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition condition = new Condition();
+		condition.setField(statusField);
+		condition.setOperator(LookupOperator.LOOKUP);
+		condition.setCriteriaValue(statusCriteria);
+
+		return condition;
 	}
 }
