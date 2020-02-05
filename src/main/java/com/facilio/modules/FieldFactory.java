@@ -1084,6 +1084,11 @@ public class FieldFactory {
 	}
 
 	public static FacilioField getSiteIdField(FacilioModule module) {
+
+		if (module != null && FacilioConstants.ContextNames.SITE.equals(module.getName())) {
+			return getIdField(module);
+		}
+
 		FacilioField field = new FacilioField();
 		field.setName("siteId");
 		field.setDisplayName("Site");

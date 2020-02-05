@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -165,7 +166,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				/*currentFields.add(FieldFactory.getOrgIdField(currentModule));*/
 				currentFields.add(FieldFactory.getModuleIdField(currentModule));
 				
-				if (FieldUtil.isSiteIdFieldPresent(currentModule)) {
+				if (FieldUtil.isSiteIdFieldPresent(currentModule, true)) {
 					currentFields.add(FieldFactory.getSiteIdField(currentModule));
 				}
 				

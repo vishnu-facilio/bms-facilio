@@ -337,6 +337,7 @@ public class FieldUtil {
 	private static final Set<String> SITE_ID_ALLOWED_MODULES = Collections.unmodifiableSet(
 			new HashSet<>(Arrays.asList("resource",
 										"asset",
+										"site",
 										"building",
 										"floor",
 										"space",
@@ -360,7 +361,15 @@ public class FieldUtil {
 										
 										)));
 
+
+
 	public static boolean isSiteIdFieldPresent(FacilioModule module) {
+		return isSiteIdFieldPresent(module, false);
+	}
+	public static boolean isSiteIdFieldPresent(FacilioModule module, boolean isInsert) {
+		if (isInsert && FacilioConstants.ContextNames.SITE.equals(module.getName())) { //Temp fix. Have to check how to handle this
+			return false;
+		}
 		return SITE_ID_ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && module.getExtendModule().getName().equals("asset"));
 	}
 
