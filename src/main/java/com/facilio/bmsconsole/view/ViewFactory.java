@@ -383,10 +383,15 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllContractView(ModuleFactory.getContractsModule()).setOrder(order++));
 		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule(), -1).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.CONTRACTS, views);
 
-		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllDocumentsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.VENDOR_DOCUMENTS, views);
+
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPurchaseContractView().setOrder(order++));
@@ -624,6 +629,10 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllContactView().setOrder(order++));
+		views.put("tenant", getTenantContactView().setOrder(order++));
+		views.put("vendor", getVendorContactView().setOrder(order++));
+		views.put("employee", getEmployeeContactView().setOrder(order++));
+		
 		viewsMap.put(FacilioConstants.ContextNames.CONTACT, views);
 		
 		order = 1;
@@ -1086,6 +1095,20 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Tenants");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllVendorDocumentsView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getTenantsModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Vendor Documents");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
@@ -3983,6 +4006,37 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioView getAllContractView(FacilioModule module) {
+		
+		FacilioField parentIdField = new FacilioField();
+		parentIdField.setName("parentId");
+		parentIdField.setColumnName("PARENT_ID");
+		parentIdField.setDataType(FieldType.NUMBER);
+		parentIdField.setModule(module);
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setCriteria(getAllContractListCriteria());
+		allView.setSortFields(Arrays.asList(new SortField(parentIdField, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllDocumentsView() {
+		
+		FacilioField sysCreatedtimeField = new FacilioField();
+		sysCreatedtimeField.setName("sysCreatedTime");
+		sysCreatedtimeField.setColumnName("SYS_CREATED_TIME");
+		sysCreatedtimeField.setDataType(FieldType.DATE_TIME);
+		sysCreatedtimeField.setModule(ModuleFactory.getVendorDocumentsModule());
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setSortFields(Arrays.asList(new SortField(sysCreatedtimeField, false)));
+		return allView;
+	}
+
 	private static FacilioView getAllPurchaseContractView() {
 		FacilioField localId = new FacilioField();
 		localId.setName("localId");
@@ -4855,6 +4909,25 @@ public class ViewFactory {
 		return criteria;
 	}
 
+	private static Criteria getAllContractListCriteria() {
+
+		FacilioField revisionNumberField = new FacilioField();
+		revisionNumberField.setName("revisionNumber");
+		revisionNumberField.setColumnName("REVISION_NUMBER");
+		revisionNumberField.setDataType(FieldType.NUMBER);
+		revisionNumberField.setModule(ModuleFactory.getContractsModule());
+
+		Condition revisionNumberCond = new Condition();
+		revisionNumberCond.setField(revisionNumberField);
+		revisionNumberCond.setOperator(NumberOperators.EQUALS);
+		revisionNumberCond.setValue("0");
+		
+		Criteria criteria = new Criteria ();
+		criteria.addAndCondition(revisionNumberCond);
+		
+		return criteria;
+	}
+
 	private static FacilioView getCustomModuleAllView(FacilioModule moduleObj) throws Exception {
 		FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", moduleObj);
 		
@@ -5342,6 +5415,47 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Contact");
+		return allView;
+	}
+	
+	private static FacilioView getTenantContactView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("tenant");
+		allView.setDisplayName("Tenant Contact");
+		
+		Criteria criteria = new Criteria();
+		FacilioField contactType = FieldFactory.getField("contactType", "CONTACT_TYPE", ModuleFactory.getContactModule(),FieldType.SYSTEM_ENUM);
+		criteria.addAndCondition(CriteriaAPI.getCondition(contactType, "1", PickListOperators.IS));
+		allView.setCriteria(criteria);
+		
+		return allView;
+	}
+	
+	private static FacilioView getVendorContactView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("vendor");
+		allView.setDisplayName("Vendor Contact");
+		Criteria criteria = new Criteria();
+		FacilioField contactType = FieldFactory.getField("contactType", "CONTACT_TYPE", ModuleFactory.getContactModule(),FieldType.SYSTEM_ENUM);
+		criteria.addAndCondition(CriteriaAPI.getCondition(contactType, "2", PickListOperators.IS));
+		allView.setCriteria(criteria);
+		
+		return allView;
+	}
+
+	private static FacilioView getEmployeeContactView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("employee");
+		allView.setDisplayName("Employee Contact");
+		
+		Criteria criteria = new Criteria();
+		FacilioField contactType = FieldFactory.getField("contactType", "CONTACT_TYPE", ModuleFactory.getContactModule(),FieldType.SYSTEM_ENUM);
+		criteria.addAndCondition(CriteriaAPI.getCondition(contactType, "3", PickListOperators.IS));
+		allView.setCriteria(criteria);
+		
 		return allView;
 	}
 

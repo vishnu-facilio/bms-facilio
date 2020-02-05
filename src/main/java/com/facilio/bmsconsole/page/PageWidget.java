@@ -233,7 +233,7 @@ public class PageWidget {
 		WORK_REQUEST_DETAILS_WIDGET("workRequestDetails"),
 		PORTAL_ACTIVITY("portalActivity"),
 		PORTAL_WORK_REQUEST_FORM_DETAILS("portalWorkrequestFormDetails")
- 		;
+		;
 		
 		private String name;
 		

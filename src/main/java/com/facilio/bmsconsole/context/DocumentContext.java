@@ -30,11 +30,20 @@ public class DocumentContext extends ModuleBaseWithCustomFields{
 	private String documentName;
 	private File document;
 	private String documentUrl;
+	private String documentDownloadUrl;
 	private long documentId;
 	private String documentFileName;
 	private  String documentContentType;
 		
 	
+	public String getDocumentDownloadUrl() {
+		return documentDownloadUrl;
+	}
+
+	public void setDocumentDownloadUrl(String documentDownloadUrl) {
+		this.documentDownloadUrl = documentDownloadUrl;
+	}
+
 	public String getDocumentName() {
 		return documentName;
 	}
@@ -83,12 +92,12 @@ public class DocumentContext extends ModuleBaseWithCustomFields{
 		this.documentContentType = documentContentType;
 	}
 
-	private long parentId;
+	private ModuleBaseWithCustomFields parentId;
 	
-	public long getParentId() {
+	public ModuleBaseWithCustomFields getParentId() {
 		return parentId;
 	}
-	public void setParentId(long parentId) {
+	public void setParentId(ModuleBaseWithCustomFields parentId) {
 		this.parentId = parentId;
 	}
 	

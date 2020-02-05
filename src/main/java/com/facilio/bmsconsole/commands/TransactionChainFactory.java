@@ -4155,6 +4155,10 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForInsurance());
 		c.addCommand(new AssociateVendorToInsuranceFromRequesterCommand());
 		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		
 		return c;
 	}
 	
@@ -4162,6 +4166,10 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForInsurance());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 		
 		return c;
 	}

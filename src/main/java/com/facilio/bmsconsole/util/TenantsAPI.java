@@ -585,20 +585,22 @@ public class TenantsAPI {
 
 	
 	public static void addUtilityMapping(TenantContext tenant,List<Long> spaceIds) throws Exception {
-		if (tenant.getUtilityAssets() == null || tenant.getUtilityAssets().isEmpty()) {
-			throw new IllegalArgumentException("Atleast one utility mapping should be present to add a Tenant");
+//		if (tenant.getUtilityAssets() == null || tenant.getUtilityAssets().isEmpty()) {
+//			throw new IllegalArgumentException("Atleast one utility mapping should be present to add a Tenant");
+//		}
+		if(CollectionUtils.isNotEmpty(tenant.getUtilityAssets())) {
+			validateUtilityMapping(tenant,spaceIds);
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+															.table(ModuleFactory.getTenantsUtilityMappingModule().getTableName())
+															.fields(FieldFactory.getTenantsUtilityMappingFields())
+															;
+			for (UtilityAsset util : tenant.getUtilityAssets()) {
+				util.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+				util.setTenantId(tenant.getId());
+				insertBuilder.addRecord(FieldUtil.getAsProperties(util));
+			}
+			insertBuilder.save();
 		}
-		validateUtilityMapping(tenant,spaceIds);
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-														.table(ModuleFactory.getTenantsUtilityMappingModule().getTableName())
-														.fields(FieldFactory.getTenantsUtilityMappingFields())
-														;
-		for (UtilityAsset util : tenant.getUtilityAssets()) {
-			util.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-			util.setTenantId(tenant.getId());
-			insertBuilder.addRecord(FieldUtil.getAsProperties(util));
-		}
-		insertBuilder.save();
 	}
 	
 	private static void validateUtilityMapping(TenantContext tenant,List<Long> spaceIds) throws Exception {
@@ -726,11 +728,11 @@ public class TenantsAPI {
 			deleteUtilityMapping(tenant);
 			addUtilityMapping(tenant, spaceIds);
 		}
-		else
-		{
-			throw new IllegalArgumentException("Atleast one utility mapping should be present");
-			
-		}
+//		else
+//		{
+//			throw new IllegalArgumentException("Atleast one utility mapping should be present");
+//			
+//		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);

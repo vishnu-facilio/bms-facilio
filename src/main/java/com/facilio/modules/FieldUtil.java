@@ -355,7 +355,9 @@ public class FieldUtil {
 										FacilioConstants.ContextNames.Reservation.RESERVATIONS_EXTERNAL_ATTENDEE,
 										FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE,
 										FacilioConstants.ContextNames.BASE_ALARM,
-										FacilioConstants.ContextNames.ALARM_OCCURRENCE
+										FacilioConstants.ContextNames.ALARM_OCCURRENCE,
+										FacilioConstants.ContextNames.WORKPERMIT
+										
 										)));
 
 	public static boolean isSiteIdFieldPresent(FacilioModule module) {
@@ -388,7 +390,8 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.VISITOR_INVITE,
 					FacilioConstants.ContextNames.VISITOR_LOGGING,
 					FacilioConstants.ContextNames.WORKPERMIT,
-					FacilioConstants.ContextNames.CONTACT
+					FacilioConstants.ContextNames.CONTACT,
+					FacilioConstants.ContextNames.VENDOR_DOCUMENTS
 					
 					
 			))

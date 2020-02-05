@@ -90,6 +90,8 @@ public class FormFactory {
 		forms.put("occupantForm", getOccupantForm());
 		forms.put("printerForm",getPrinterForm());
 
+		forms.put("vendorDocumentForm",getVendorDocumentForm());
+
 		return forms;
 	}
     
@@ -119,6 +121,9 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.INSURANCE, getInsuranceForm())
 						.put(FacilioConstants.ContextNames.OCCUPANT, getOccupantForm())
 						.put(FacilioConstants.ContextNames.SERVICE_REQUEST, getServiceRequestForm())
+						.put(FacilioConstants.ContextNames.VENDOR_DOCUMENTS, getVendorDocumentForm())
+						.put(FacilioConstants.ContextNames.CONTACT, getContactForm())
+							
 						.build())
         			
 				.build();
@@ -293,6 +298,9 @@ public class FormFactory {
 		List<FacilioForm> watchListForm = Arrays.asList(getWatchListForm());
 		List<FacilioForm> occupantFormsList = Arrays.asList(getOccupantForm());
 		List<FacilioForm> serviceRequestFormsList = Arrays.asList(getServiceRequestForm());
+		List<FacilioForm> vendorDocumentFormsList = Arrays.asList(getVendorDocumentForm());
+	
+		List<FacilioForm> contactFormsList = Arrays.asList(getContactForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -307,6 +315,9 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.WATCHLIST, getFormMap(watchListForm))
 				.put(FacilioConstants.ContextNames.OCCUPANT, getFormMap(occupantFormsList))
 				.put(FacilioConstants.ContextNames.SERVICE_REQUEST,getFormMap(serviceRequestFormsList))
+				.put(FacilioConstants.ContextNames.VENDOR_DOCUMENTS,getFormMap(vendorDocumentFormsList))
+				.put(FacilioConstants.ContextNames.CONTACT,getFormMap(contactFormsList))
+					
 				.build();
 	}
 	
@@ -921,7 +932,7 @@ public class FormFactory {
 		fields.add(new FormField("outTime", FieldDisplayType.DATE, "Lease End Time", Required.OPTIONAL, 11, 1));
 		//fields.add(new FormField("logo", FieldDisplayType.LOGO, "Logo", Required.OPTIONAL, 1, 1));
 		//fields.add(new FormField("tenantContacts", FieldDisplayType.VENDOR_CONTACTS , "Contacts", Required.OPTIONAL, 10, 1));
-		fields.add(new FormField("utilityMeters", FieldDisplayType.ASSETMULTICHOOSER, "UTILITY METERS", Required.OPTIONAL, 12, 1));
+		//fields.add(new FormField("utilityMeters", FieldDisplayType.ASSETMULTICHOOSER, "UTILITY METERS", Required.OPTIONAL, 12, 1));
 
 		return fields;
 	}
@@ -1350,6 +1361,26 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
+	
+	public static FacilioForm getVendorDocumentForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Vendor Documents");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getVendorDocumentsModule());
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getVendorDocumentsFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getVendorDocumentsFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("documentName", FieldDisplayType.TEXTBOX, "Document Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("documentType", FieldDisplayType.SELECTBOX, "Document Type", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("document", FieldDisplayType.FILE, "Document", Required.REQUIRED,3, 1));
+		return fields;
+	}
+	
 	private static List<FormField> getPrinterFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -1604,6 +1635,10 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("isRecurring", FieldDisplayType.DECISION_BOX, "Is Recurring", Required.OPTIONAL, 3, 2));
 		fields.add(new FormField("recurringInfo", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
+		FormField issuedtoField = new FormField("issuedToUser", FieldDisplayType.LOOKUP_SIMPLE, "Permit Holder", Required.OPTIONAL, "user", 3, 2);
+		issuedtoField.setHideField(true);
+		fields.add(issuedtoField);
+	
 		FormField ticketField = new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Ticket", Required.OPTIONAL,"ticket", 3, 2);
 		ticketField.setHideField(true);
 		fields.add(ticketField);
@@ -1618,12 +1653,8 @@ public class FormFactory {
 		
 		fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",10, 1));
 	
-		FormField issuedtoField = new FormField("issuedToUser", FieldDisplayType.USER, "Permit Holder", Required.OPTIONAL, "user", 11, 1);
-		issuedtoField.setHideField(true);
-		fields.add(issuedtoField);
 		
-
-		FormField siteField = new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.OPTIONAL,"site", 12, 2);
+		FormField siteField = new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.OPTIONAL,"site", 12, 2);
 		siteField.setHideField(true);
 		fields.add(siteField);
 	

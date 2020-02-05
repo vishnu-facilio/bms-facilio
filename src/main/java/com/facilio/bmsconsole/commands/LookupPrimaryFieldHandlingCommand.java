@@ -67,7 +67,12 @@ public class LookupPrimaryFieldHandlingCommand extends FacilioCommand {
 					if (lookupRecord == null) {
 						continue;
 					}
-					Object property = PropertyUtils.getProperty(lookupRecord, primaryFieldMap.get(field.getName()).getName());
+					Object property;
+					try {
+						property = PropertyUtils.getProperty(lookupRecord, primaryFieldMap.get(field.getName()).getName());
+					} catch (Exception e) {
+						property = lookupRecord.getId();
+					}
 					PropertyUtils.setProperty(lookupRecord, "primaryValue", property);
 				}
 			}

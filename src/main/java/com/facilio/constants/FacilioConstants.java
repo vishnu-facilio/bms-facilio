@@ -1410,6 +1410,8 @@ public class FacilioConstants {
 		public static final String DOCUMENT = "document";
 		public static final String DOCUMENTS = "documents";
 		
+		public static final String VENDOR_DOCUMENTS = "vendorDocuments";
+		
 		public static final String COPY_SOURCE_ORG_ID = "sourceOrgId";
 		public static final String COPY_TARGET_ORG_ID = "targetOrgId";
 		public static final String COPY_START_TIME = "startTime";
@@ -1604,7 +1606,7 @@ public class FacilioConstants {
 
 			classMap.put(SERVICE_REQUEST, ServiceRequestContext.class);
 			classMap.put(SERVICE_REQUEST_PRIORITY, ServiceRequestPriorityContext.class);
-			classMap.put(DOCUMENT, DocumentContext.class);
+			classMap.put(VENDOR_DOCUMENTS, DocumentContext.class);
 			
 			return classMap;
 		}

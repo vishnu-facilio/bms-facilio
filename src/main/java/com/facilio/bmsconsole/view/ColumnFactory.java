@@ -75,6 +75,8 @@ public class ColumnFactory {
 		columnMap.put("mlAnomalyAlarm-default", getDefaultMlAnomalyAlarmColumns());
 		columnMap.put("service-default", getDefaultServiceColumns());
 		columnMap.put("contracts-default", getDefaultContractColumns());
+		columnMap.put("contracts-all", getAllContractColumns());
+		columnMap.put("vendorDocuments-all", getAllVendorDocumentsColumns());
 
 		columnMap.put("rentalleasecontracts-default", getDefaultRentalLeaseContractColumns());
 		columnMap.put("warrantycontracts-default", getDefaultWarrantyContractColumns());
@@ -110,7 +112,10 @@ public class ColumnFactory {
 		columnMap.put("contact-default", getDefaultContactColumns());
 		columnMap.put("occupant-default", getDefaultOccupantColumns());
 		columnMap.put("workpermit-requested", getRequestedWorkPermitColumns());
-	
+		columnMap.put("contact-tenant", getTenantContactColumns());
+		columnMap.put("contact-vendor", getVendorContactColumns());
+		columnMap.put("contact-employee", getEmployeeContactColumns());
+		
 		columnMap.put("serviceRequest-default", getDefaultServiceRequestColumns());
 		columnMap.put("task-all", getAllTasksColumns());
 		
@@ -518,6 +523,28 @@ public class ColumnFactory {
 
 		return columns;
 	}
+	
+	private static List<ViewField> getAllContractColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("contractType", "Type"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("fromDate", "Valid From"));
+		columns.add(new ViewField("endDate", "Valid Till"));
+		columns.add(new ViewField("renewalDate", "Renewal Date"));
+		columns.add(new ViewField("totalCost", "Total Cost"));
+
+		return columns;
+	}
+	
+	private static List<ViewField> getAllVendorDocumentsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("documentName", "Document Name"));
+		columns.add(new ViewField("documentType", "Type"));
+		columns.add(new ViewField("document", "Document"));
+		
+		return columns;
+	}
 
 	private static List<ViewField> getDefaultRentalLeaseContractColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
@@ -898,12 +925,43 @@ public class ColumnFactory {
 		columns.add(new ViewField("phone", "PHONE"));
 		columns.add(new ViewField("EMAIL", "Email"));
 		columns.add(new ViewField("contactType", "Contact Type"));
+		columns.add(new ViewField("isPortalAccessNeeded", "Portal Access"));
+		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
+		return columns;
+	}
+	
+	public static List<ViewField> getTenantContactColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("phone", "PHONE"));
+		columns.add(new ViewField("EMAIL", "Email"));
 		columns.add(new ViewField("tenant", "Tenant"));
+		columns.add(new ViewField("isPortalAccessNeeded", "Portal Access"));
+		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
+		return columns;
+	}
+	
+	public static List<ViewField> getVendorContactColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("phone", "PHONE"));
+		columns.add(new ViewField("EMAIL", "Email"));
 		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("isPortalAccessNeeded", "Portal Access"));
 		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
 		return columns;
 	}
+	
+	public static List<ViewField> getEmployeeContactColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("phone", "PHONE"));
+		columns.add(new ViewField("EMAIL", "Email"));
+		columns.add(new ViewField("isPortalAccessNeeded", "Portal Access"));
+		columns.add(new ViewField("isPrimaryContact", "Primary Contact"));
+		return columns;
+	}
+	
 	
 	public static List<ViewField> getDefaultServiceRequestColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();

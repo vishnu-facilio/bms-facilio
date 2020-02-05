@@ -112,6 +112,8 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.WORKPERMIT, getWorkPermitModule());
 		moduleMap.put(ContextNames.OCCUPANT, getOccupantModule());
 		moduleMap.put(ContextNames.SERVICE_REQUEST, getServiceRequestModule());
+		moduleMap.put(ContextNames.VENDOR_DOCUMENTS, getVendorDocumentsModule());
+
 		return moduleMap;
 	}
 	
@@ -3155,12 +3157,21 @@ public class ModuleFactory {
 		return module;
 	}
 
+	
 	public static FacilioModule getServiceRequestModule() {
 		FacilioModule ticketStatusModule = new FacilioModule();
 		ticketStatusModule.setName(FacilioConstants.ContextNames.SERVICE_REQUEST);
 		ticketStatusModule.setDisplayName("Service Requests");
 		ticketStatusModule.setTableName("Service_Requests");
 		return ticketStatusModule;
+	}
+	
+	public static FacilioModule getVendorDocumentsModule() {
+		FacilioModule vendorDocumentsModule = new FacilioModule();
+		vendorDocumentsModule.setName(FacilioConstants.ContextNames.VENDOR_DOCUMENTS);
+		vendorDocumentsModule.setDisplayName("Vendor Documents");
+		vendorDocumentsModule.setTableName("Vendor_Documents");
+		return vendorDocumentsModule;
 	}
 /*
 	public static FacilioModule getAgentMetricsV2Module() {

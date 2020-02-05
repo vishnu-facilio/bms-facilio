@@ -24,7 +24,9 @@ public class AssociateVendorToInsuranceFromRequesterCommand extends FacilioComma
 					ContactsContext contact = ContactsAPI.getContactsIdForUser(ins.getAddedBy().getId());
 					ins.setVendor(contact.getVendor());
 				}
-				InsuranceAPI.updateVendorRollUp(ins.getVendor().getId());
+				if(ins.getVendor() != null) {
+					InsuranceAPI.updateVendorRollUp(ins.getVendor().getId());
+				}
 			}
 		}
 		return false;

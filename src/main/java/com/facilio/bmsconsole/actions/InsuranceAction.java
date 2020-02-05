@@ -114,6 +114,7 @@ private static final long serialVersionUID = 1L;
 		
 		if(!CollectionUtils.isEmpty(insurances)) {
 			FacilioChain c = TransactionChainFactory.updateInsurancesChain();
+			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, insurances);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.INSURANCES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));

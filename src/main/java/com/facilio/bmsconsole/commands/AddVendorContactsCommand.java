@@ -25,46 +25,44 @@ public class AddVendorContactsCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		VendorContext vendor = (VendorContext) context.get(FacilioConstants.ContextNames.RECORD);
-		List<ContactsContext> contacts = (List<ContactsContext>)context.get(FacilioConstants.ContextNames.CONTACTS);
-		EventType eventType = (EventType)context.getOrDefault(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		ContactsContext primarycontact = addDefaultVendorPrimaryContact(vendor);
+		RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
 		
-		if(eventType == EventType.CREATE) {
-			ContactsContext primarycontact = addDefaultVendorPrimaryContact(vendor);
-			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
-		}
-		else {
-			ContactsContext existingcontactForEmail = ContactsAPI.getContactforEmail(vendor.getPrimaryContactEmail(), vendor.getId(), true);
-			if(existingcontactForEmail == null) {
-				existingcontactForEmail = addDefaultVendorPrimaryContact(vendor);
-				RecordAPI.addRecord(true, Collections.singletonList(existingcontactForEmail), module, fields);
-			}
-			else {
-				existingcontactForEmail.setName(vendor.getPrimaryContactName());
-				existingcontactForEmail.setPhone(vendor.getPrimaryContactPhone());
-				RecordAPI.updateRecord(existingcontactForEmail, module, fields);
-			}
-		}
-		if(vendor != null && CollectionUtils.isNotEmpty(contacts)) {
-			for(ContactsContext contact : contacts) {
-				
-				if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
-					contact.setEmail(contact.getPhone());
-				}
-				contact.setVendor(vendor);
-				contact.setContactType(ContactType.VENDOR);
-				ContactsAPI.updatePortalUserAccess(contact, false);
-				if(contact.getId() > 0) {
-					RecordAPI.updateRecord(contact, module, fields);
-				}
-				else {
-					RecordAPI.addRecord(true, Collections.singletonList(contact), module, fields);
-				}
-			}
-		}
+//		else {
+//			if(StringUtils.isNotEmpty(vendor.getName())) {
+//				ContactsContext existingcontactForEmail = ContactsAPI.getContactforEmail(vendor.getPrimaryContactEmail(), vendor.getId(), true);
+//				if(existingcontactForEmail == null) {
+//					existingcontactForEmail = addDefaultVendorPrimaryContact(vendor);
+//					RecordAPI.addRecord(true, Collections.singletonList(existingcontactForEmail), module, fields);
+//				}
+//				else {
+//					existingcontactForEmail.setName(vendor.getPrimaryContactName());
+//					existingcontactForEmail.setPhone(vendor.getPrimaryContactPhone());
+//					RecordAPI.updateRecord(existingcontactForEmail, module, fields);
+//				}
+//			}
+//		}
+//		if(vendor != null && CollectionUtils.isNotEmpty(contacts)) {
+//			for(ContactsContext contact : contacts) {
+//				
+//				if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
+//					contact.setEmail(contact.getPhone());
+//				}
+//				contact.setVendor(vendor);
+//				contact.setContactType(ContactType.VENDOR);
+//				ContactsAPI.updatePortalUserAccess(contact, false);
+//				if(contact.getId() > 0) {
+//					RecordAPI.updateRecord(contact, module, fields);
+//				}
+//				else {
+//					RecordAPI.addRecord(true, Collections.singletonList(contact), module, fields);
+//				}
+//			}
+//		}
 		
 		return false;
 	}
