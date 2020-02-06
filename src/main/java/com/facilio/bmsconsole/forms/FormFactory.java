@@ -1750,7 +1750,7 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.REQUIRED, 2, 2));
 		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 2, 3));
-		fields.add(new FormField("contactType", FieldDisplayType.SELECTBOX, "Contact Type", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("contactType", FieldDisplayType.SELECTBOX, "Contact Type", Required.REQUIRED, 3, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, "vendors",4, 2));
 		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant",4, 3));
 		fields.add(new FormField("isPortalAccessNeeded", FieldDisplayType.DECISION_BOX, "Is Portal Access Needed", Required.OPTIONAL, 5, 2));
