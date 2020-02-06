@@ -496,7 +496,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(numberField.getModule().getName()));
 		
 		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
-				.select(Collections.singletonList(numberField))
+				.select(modBean.getAllFields(numberField.getModule().getName()))
 				.module(numberField.getModule())
 				.beanClass(ReadingContext.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get(numberField.getName()),CommonOperators.IS_NOT_EMPTY))
