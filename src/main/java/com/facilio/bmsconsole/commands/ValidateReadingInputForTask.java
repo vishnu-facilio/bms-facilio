@@ -68,8 +68,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			Boolean skipValidation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_VALIDATION);
 			
 			TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
-			List<Long> recordIdsTemp = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-			
+			List<Long> recordIdsTemp = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);			
 			
 			if(recordIdsTemp!= null && !recordIdsTemp.isEmpty() && currentTask != null)
 			{
@@ -80,31 +79,25 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			skipValidation = skipValidation == null ? Boolean.FALSE : skipValidation;  
 			
 			if(skipValidation)
-			{
-				
+			{			
 				List<TaskErrorContext> errors = new ArrayList<TaskErrorContext>();
 				boolean hasErrors = false;
 				if(currentTask != null && currentTask.getInputValue() != null) {
-					LOGGER.debug(" Entered currentTask ");
 					List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 					if(recordIds != null && !recordIds.isEmpty()) {
 						Map<Long, TaskContext> oldTasks = TicketAPI.getTaskMap(recordIds);
 						for(int i = 0; i < recordIds.size(); i++) {
-							LOGGER.debug(" Entered recordId "+recordIds.get(i));
 							TaskContext taskContext = oldTasks.get(recordIds.get(i));
 							if(taskContext.getInputTypeEnum() != null)
 							{
-								LOGGER.debug(" Entered task Context "+taskContext);
 								switch(taskContext.getInputTypeEnum()) {
 								case READING:
 									if (taskContext.getReadingField() != null && taskContext.getResource() != null) {
-										
-										LOGGER.debug(" Entered readingfieldcheck ");
+
 										switch(taskContext.getReadingField().getDataTypeEnum()) {   
 										case NUMBER:
 										case DECIMAL:
-											
-											LOGGER.debug(" Entered number fieldcheck ");
+
 											taskContextId = taskContext.getId();
 											ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
 											NumberField numberField = (NumberField) taskContext.getReadingField();
@@ -118,7 +111,6 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 												return false;
 											}
 									
-											LOGGER.debug(" Entered number unit check ");
 											currentInputValue = currentTask.getInputValue();
 											currentInputTime = currentTask.getInputTime();
 											Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
@@ -126,14 +118,13 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 											Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
 											if(currentInputUnit != null) 
 											{		
-												LOGGER.debug(" Entered number unit check 2");
 												Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
 												if((numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata")))) 
 												{		
-													LOGGER.debug(" Entered counterfield check ");
+													LOGGER.debug("Entered counterfield check");
 													List<TaskErrorContext> taskErrors = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
 													if(taskErrors!= null && !taskErrors.isEmpty()) {
-														LOGGER.debug(" Entered errors check ");
+														LOGGER.debug("Entered errors check");
 														hasErrors = true;
 														errors.addAll(taskErrors);
 														TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
@@ -189,30 +180,38 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		if(currentTask.getInputTime() > rdm.getTtime() && taskContext.getReadingDataId() != rdm.getReadingDataId()) 
 		{
 			previousValue = FacilioUtil.parseDouble(rdm.getValue());
+			LOGGER.debug(" Rdm check -- " +previousValue +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " Taks Context readingdataID -- " +taskContext.getReadingDataId()+ " Rdm data Id -- "+rdm.getReadingDataId());
 		}
 		else if(taskContext.getReadingDataId() != -1 && rdm.getReadingDataId()!= -1 && 
 				taskContext.getReadingDataId() == rdm.getReadingDataId())
 		{				
-			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", rdm.getTtime(), NumberOperators.LESS_THAN);	
+			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", rdm.getTtime(), NumberOperators.LESS_THAN);
+			LOGGER.debug(" Rdm Update case -- " +previousValue +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " Taks Context readingdataID -- " +taskContext.getReadingDataId()+ " Rdm data Id -- "+rdm.getReadingDataId());
+
 		}
 		else 
 		{
 			isNextReading = true;
-			
 			ReadingContext previousValueReadingContext = getLatestInputReadingContext(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
+			LOGGER.debug(" previousValueReadingContext -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " Rdm time -- "+rdm.getTtime() + " Taks Context readingdataID -- " +taskContext.getReadingDataId()+ " Rdm data Id -- "+rdm.getReadingDataId());
+			
 			if(previousValueReadingContext != null && taskContext.getReadingDataId() != -1 && (previousValueReadingContext.getId() == taskContext.getReadingDataId()))
 			{
 				previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", previousValueReadingContext.getTtime(), NumberOperators.LESS_THAN);
+				LOGGER.debug(" Update of previousValueReadingContext -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " prev time time -- "+previousValueReadingContext.getTtime() + " Taks Context readingdataID -- " +taskContext.getReadingDataId()+ " previousValueReadingContext data Id -- "+previousValueReadingContext.getId() +" previous val "+previousValue);
 			}
 			else if(previousValueReadingContext != null)
 			{
 				previousValue = (double) previousValueReadingContext.getReading(numberField.getName());
+				LOGGER.debug(" previousValueReadingContext Enter -- " +previousValueReadingContext +" Input time -- "+currentTask.getInputTime()+ " prev time -- "+previousValueReadingContext.getTtime() + " Taks Context readingdataID -- " +taskContext.getReadingDataId()+ " previousValueReadingContext data Id -- "+previousValueReadingContext.getId() +" previous val "+previousValue);
 			}
 			
 			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", (currentTask.getInputTime()+1000), NumberOperators.GREATER_THAN);
+			LOGGER.debug(" next val "+nextValue);
 		}
 		
 		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
+		LOGGER.debug(" currentInputUnit "+currentInputUnit+ " currentValueInSiUnit "+currentValueInSiUnit);
 		
 		if(previousValue < 0 && nextValue < 0 && currentInputUnit == null) 
 		{

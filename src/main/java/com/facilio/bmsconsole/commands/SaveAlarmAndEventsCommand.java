@@ -172,10 +172,13 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 			}
 		}
 		
-		Map<Type, List<BaseEventContext>> eventsMapAsaBatch = new HashMap<>();
 		if (MapUtils.isNotEmpty(eventsMap)) {
 			for (Type type : eventsMap.keySet()) {
 				String moduleName = NewEventAPI.getEventModuleName(type);
+				InsertRecordBuilder<BaseEventContext> insertBuilder = new InsertRecordBuilder<BaseEventContext>()
+						.moduleName(moduleName)
+						.fields(modBean.getAllFields(moduleName));
+				List<BaseEventContext> eventRecords = new ArrayList<>();
 				List<BaseEventContext> moduleEventList = eventsMap.get(type);
 				for(BaseEventContext event:moduleEventList) {
 					if (event.getId() > 0) {
@@ -185,27 +188,12 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 								.fields(modBean.getAllFields(moduleName));
 						builder.update(event);
 					}
-					else
-					{
-						List<BaseEventContext> batchEventslist = eventsMapAsaBatch.get(event.getEventTypeEnum());
-						if (batchEventslist == null) {
-							batchEventslist = new ArrayList<>();
-							eventsMapAsaBatch.put(event.getEventTypeEnum(), batchEventslist);
-						}
-						batchEventslist.add(event);			
+					else {
+						eventRecords.add(event);		
 					}		
-				}				
-			}
-		}
-		
-		if (MapUtils.isNotEmpty(eventsMapAsaBatch)) {
-			for (Type type : eventsMapAsaBatch.keySet()) {
-				String moduleName = NewEventAPI.getEventModuleName(type);
-				InsertRecordBuilder<BaseEventContext> builder = new InsertRecordBuilder<BaseEventContext>()
-						.moduleName(moduleName)
-						.fields(modBean.getAllFields(moduleName));
-				builder.addRecords(eventsMapAsaBatch.get(type));
-				builder.save();
+				}	
+				insertBuilder.addRecords(eventRecords);
+				insertBuilder.save();
 			}
 		}
 
