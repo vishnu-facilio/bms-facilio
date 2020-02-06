@@ -16,7 +16,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -90,9 +89,9 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
 
                 if (MapUtils.isNotEmpty(escalationMap)) {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());
-                    if (CollectionUtils.isNotEmpty(slaPolicyEntityEscalationContext.getEscalations())) {
-                        slaPolicyEntityEscalationContext.setEscalations(SLAWorkflowAPI.getEscalations(slaPolicy.getId(), slaPolicyEntityEscalationContext.getSlaEntityId()));
-                        addEscalationJobs(slaPolicyEntityEscalationContext.getEscalations(), module, dueField, compareField, moduleRecord);
+                    if (CollectionUtils.isNotEmpty(slaPolicyEntityEscalationContext.getLevels())) {
+                        slaPolicyEntityEscalationContext.setLevels(SLAWorkflowAPI.getEscalations(slaPolicy.getId(), slaPolicyEntityEscalationContext.getSlaEntityId()));
+                        addEscalationJobs(slaPolicyEntityEscalationContext.getLevels(), module, dueField, compareField, moduleRecord);
                     }
                 }
             }

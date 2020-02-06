@@ -13,6 +13,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.modules.*;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -36,12 +38,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
@@ -1037,6 +1033,24 @@ public class WorkflowRuleAPI {
 		recordPlaceHolders.put("executionTime", executionTime);
 		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, executionTime);
 		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, context,true, Collections.singletonList(rule.getActivityTypeEnum()));
+	}
+
+	public static void updateExecutionOrder(WorkflowRuleContext rule) throws Exception {
+		FacilioField field = FieldFactory.getField("executionOrder", "max(EXECUTION_ORDER)", FieldType.NUMBER);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getWorkflowRuleModule().getTableName())
+				.select(Collections.singletonList(field))
+				.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(rule.getRuleType()), NumberOperators.EQUALS));
+		Map<String, Object> map = builder.fetchFirst();
+		int executionOrder = 1;
+		if (MapUtils.isNotEmpty(map)) {
+			Integer order = (Integer) map.get("executionOrder");
+			if (order == null) {
+				executionOrder = 0;
+			}
+			executionOrder ++;
+		}
+		rule.setExecutionOrder(executionOrder);
 	}
 
 }

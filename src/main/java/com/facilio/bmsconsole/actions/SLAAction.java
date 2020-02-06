@@ -10,6 +10,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
+import java.util.List;
+
 public class SLAAction extends FacilioAction {
 
     private String moduleName;
@@ -28,11 +30,11 @@ public class SLAAction extends FacilioAction {
         this.slaRule = slaRule;
     }
 
-    private SLAWorkflowCommitmentRuleContext slaRuleList;
-    public SLAWorkflowCommitmentRuleContext getSlaRuleList() {
+    private List<SLAWorkflowCommitmentRuleContext> slaRuleList;
+    public List<SLAWorkflowCommitmentRuleContext> getSlaRuleList() {
         return slaRuleList;
     }
-    public void setSlaRuleList(SLAWorkflowCommitmentRuleContext slaRuleList) {
+    public void setSlaRuleList(List<SLAWorkflowCommitmentRuleContext> slaRuleList) {
         this.slaRuleList = slaRuleList;
     }
 

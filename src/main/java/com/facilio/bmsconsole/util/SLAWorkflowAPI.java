@@ -34,7 +34,7 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
         List<SLAPolicyContext.SLAPolicyEntityEscalationContext> escalationContexts = rule.getEscalations();
         if (CollectionUtils.isNotEmpty(escalationContexts)) {
             for (SLAPolicyContext.SLAPolicyEntityEscalationContext escalationContext : escalationContexts) {
-                List<SLAWorkflowEscalationContext> escalations = escalationContext.getEscalations();
+                List<SLAWorkflowEscalationContext> escalations = escalationContext.getLevels();
                 if (CollectionUtils.isNotEmpty(escalations)) {
                     GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
                             .table(ModuleFactory.getSLAWorkflowEscalationModule().getTableName())
@@ -101,7 +101,7 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
                     slaWorkflowEscalationContexts.add(e);
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaEntityEscalationContext = new SLAPolicyContext.SLAPolicyEntityEscalationContext();
                     slaEntityEscalationContext.setSlaEntityId(slaEntityId);
-                    slaEntityEscalationContext.setEscalations(slaWorkflowEscalationContexts);
+                    slaEntityEscalationContext.setLevels(slaWorkflowEscalationContexts);
                     list.add(slaEntityEscalationContext);
                 }
             }

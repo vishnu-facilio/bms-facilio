@@ -6,7 +6,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.chain.Context;
 
 import java.util.Collections;
@@ -48,12 +47,12 @@ public class SLAPolicyContext extends WorkflowRuleContext {
             this.slaEntityId = slaEntityId;
         }
 
-        private List<SLAWorkflowEscalationContext> escalations;
-        public List<SLAWorkflowEscalationContext> getEscalations() {
-            return escalations;
+        private List<SLAWorkflowEscalationContext> levels;
+        public List<SLAWorkflowEscalationContext> getLevels() {
+            return levels;
         }
-        public void setEscalations(List<SLAWorkflowEscalationContext> escalations) {
-            this.escalations = escalations;
+        public void setLevels(List<SLAWorkflowEscalationContext> levels) {
+            this.levels = levels;
         }
     }
 }
