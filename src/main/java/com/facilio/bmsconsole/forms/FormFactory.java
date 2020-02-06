@@ -289,7 +289,7 @@ public class FormFactory {
 		List<FacilioForm> watchListForm = Arrays.asList(getWatchListForm());
 		List<FacilioForm> occupantFormsList = Arrays.asList(getOccupantForm());
 		List<FacilioForm> serviceRequestFormsList = Arrays.asList(getServiceRequestForm());
-		List<FacilioForm> vendorDocumentFormsList = Arrays.asList(getVendorDocumentForm());
+		List<FacilioForm> vendorDocumentFormsList = Arrays.asList(getVendorDocumentForm(), getPortalVendorDocumentForm());
 	
 		List<FacilioForm> contactFormsList = Arrays.asList(getContactForm());
 		
@@ -640,7 +640,7 @@ public class FormFactory {
 		fields.add(new FormField("sendForApproval", FieldDisplayType.DECISION_BOX, "Send For Approval", Required.OPTIONAL, 10, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 11, 1));
 	//	fields.add(new FormField("workPermitNeeded", FieldDisplayType.DECISION_BOX, "Work Permit Needed", Required.OPTIONAL, 12, 1));
-		
+
 		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 13, 1));
 		return Collections.unmodifiableList(fields);
 	}
