@@ -1,17 +1,9 @@
 
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.bmsconsole.context.*;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.InsuranceContext;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.context.VisitorLoggingContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -57,6 +49,12 @@ public class PageFactory {
 				return VisitorLoggingPageFactory.getVisitorLoggingPage((VisitorLoggingContext) record);
 			case ContextNames.INSURANCE:
 				return InsurancePageFactory.getInsurancePage((InsuranceContext) record);
+			case ContextNames.SAFETY_PLAN:
+				return SafetyPlanPageFactory.getSafetyPlanPage((SafetyPlanContext) record);
+			case ContextNames.HAZARD:
+				return SafetyPlanPageFactory.getHazardPage((HazardContext) record);
+			case ContextNames.PRECAUTION:
+				return SafetyPlanPageFactory.getPrecautionPage((PrecautionContext) record);
 				
 		}
 		if (module.getExtendModule() == null) {	// temp

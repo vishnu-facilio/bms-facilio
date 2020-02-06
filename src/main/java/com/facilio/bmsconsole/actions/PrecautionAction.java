@@ -174,7 +174,7 @@ public class PrecautionAction extends FacilioAction{
 		chain.execute();
 		
 		PrecautionContext precautionContext = (PrecautionContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
-		setResult(FacilioConstants.ContextNames.HAZARD, precautionContext);
+		setResult(FacilioConstants.ContextNames.PRECAUTION, precautionContext);
 		
 		return SUCCESS;
 	}

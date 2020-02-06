@@ -113,6 +113,9 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.OCCUPANT, getOccupantModule());
 		moduleMap.put(ContextNames.SERVICE_REQUEST, getServiceRequestModule());
 		moduleMap.put(ContextNames.VENDOR_DOCUMENTS, getVendorDocumentsModule());
+		moduleMap.put(ContextNames.SAFETY_PLAN, getSafetyPlanModule());
+		moduleMap.put(ContextNames.HAZARD, getHazardModule());
+		moduleMap.put(ContextNames.PRECAUTION, getPrecautionModule());
 
 		return moduleMap;
 	}
@@ -3292,11 +3295,26 @@ public class ModuleFactory {
 		return module;
 	}
 	
-	public static FacilioModule getSafetyPlanModule() {
-		FacilioModule inventoryModule = new FacilioModule();
-		inventoryModule.setName(FacilioConstants.ContextNames.SAFETY_PLAN);
-		inventoryModule.setDisplayName("Safety Plan");
-		inventoryModule.setTableName("Safety_Plan");
-		return inventoryModule;
+	public static FacilioModule getHazardModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.HAZARD);
+		module.setDisplayName("Hazard");
+		module.setTableName("Hazard");
+		return module;
 	}
+	public static FacilioModule getPrecautionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.PRECAUTION);
+		module.setDisplayName("Precaution");
+		module.setTableName("Precaution");
+		return module;
+	}
+	public static FacilioModule getSafetyPlanModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.SAFETY_PLAN);
+		module.setDisplayName("Safety Plan");
+		module.setTableName("Safety_Plan");
+		return module;
+	}
+
 }

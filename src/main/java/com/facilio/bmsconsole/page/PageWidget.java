@@ -236,7 +236,8 @@ public class PageWidget {
 		TENANT_PORTAL_VISITS_DETAILS("tenantPortalVisitsDetails"),
 		SPACE_WIDGET("spaceWidget"),
 		PORTAL_INSURANCE("portalInsurance"),
-		PORTAL_WORKPERMIT("portalWorkPermit")
+		PORTAL_WORKPERMIT("portalWorkPermit"),
+		SAFETY_PLAN_HAZARDS("safetyPlanHazards")
  		;
 		
 		private String name;

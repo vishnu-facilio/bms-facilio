@@ -650,6 +650,22 @@ public class ViewFactory {
 		views.put("all", getAllTaskView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TASK, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllSafetyPlansView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SAFETY_PLAN, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllHazardModuleView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.HAZARD, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllPrecautionView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.PRECAUTION, views);
+
+
 		return viewsMap;
 	}
 
@@ -6134,4 +6150,31 @@ public class ViewFactory {
 		return open;
 	}
 
+
+	private static FacilioView getAllSafetyPlansView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Safety Plan");
+
+		return allView;
+	}
+
+	private static FacilioView getAllHazardModuleView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Hazard");
+
+		return allView;
+	}
+
+	private static FacilioView getAllPrecautionView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Precaution");
+
+		return allView;
+	}
 }

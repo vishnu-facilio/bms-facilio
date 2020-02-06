@@ -115,6 +115,9 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.SERVICE_REQUEST, getServiceRequestForm())
 						.put(FacilioConstants.ContextNames.VENDOR_DOCUMENTS, getVendorDocumentForm())
 						.put(FacilioConstants.ContextNames.CONTACT, getContactForm())
+						.put(FacilioConstants.ContextNames.SAFETY_PLAN, getSafetyPlanForm())
+						.put(FacilioConstants.ContextNames.PRECAUTION, getPrecautionForm())
+						.put(FacilioConstants.ContextNames.HAZARD, getHazardForm())
 							
 						.build())
         			
@@ -292,8 +295,10 @@ public class FormFactory {
 		List<FacilioForm> occupantFormsList = Arrays.asList(getOccupantForm());
 		List<FacilioForm> serviceRequestFormsList = Arrays.asList(getServiceRequestForm());
 		List<FacilioForm> vendorDocumentFormsList = Arrays.asList(getVendorDocumentForm(), getPortalVendorDocumentForm());
-	
 		List<FacilioForm> contactFormsList = Arrays.asList(getContactForm(), getPortalContactForm());
+		List<FacilioForm> safetyPlanFormsList = Arrays.asList(getSafetyPlanForm());
+		List<FacilioForm> hazardFormsList = Arrays.asList(getHazardForm());
+		List<FacilioForm> precautionFormsList = Arrays.asList(getPrecautionForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -310,6 +315,9 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.SERVICE_REQUEST,getFormMap(serviceRequestFormsList))
 				.put(FacilioConstants.ContextNames.VENDOR_DOCUMENTS,getFormMap(vendorDocumentFormsList))
 				.put(FacilioConstants.ContextNames.CONTACT,getFormMap(contactFormsList))
+				.put(FacilioConstants.ContextNames.SAFETY_PLAN,getFormMap(safetyPlanFormsList))
+				.put(FacilioConstants.ContextNames.HAZARD,getFormMap(hazardFormsList))
+				.put(FacilioConstants.ContextNames.PRECAUTION,getFormMap(precautionFormsList))
 					
 				.build();
 	}
@@ -1815,6 +1823,56 @@ public class FormFactory {
 		fields.add(new FormField("requestType", FieldDisplayType.SELECTBOX, "Request Type", Required.OPTIONAL, "requestType" , 8, 1));
 		fields.add(new FormField("ratingVal", FieldDisplayType.NUMBER, "Rating", Required.OPTIONAL, 9, 1));
 		return fields;
+	}
+
+	private static List<FormField> getSafetyPlanFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTBOX, "Description", Required.OPTIONAL, 2, 1));
+		return fields;
+	}
+
+	private static List<FormField> getHazardFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTBOX, "Description", Required.OPTIONAL, 2, 1));
+		return fields;
+	}
+	private static List<FormField> getPrecautionFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTBOX, "Description", Required.OPTIONAL, 2, 1));
+		return fields;
+	}
+	public static FacilioForm getSafetyPlanForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("SAFETY PLAN");
+		form.setName("default_safetyPlan_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.SAFETY_PLAN));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getSafetyPlanFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	public static FacilioForm getHazardForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("HAZARD");
+		form.setName("default_hazard_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.HAZARD));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getHazardFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	public static FacilioForm getPrecautionForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("PREACUTION");
+		form.setName("default_precaution_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PRECAUTION));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getPrecautionFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
 	}
 
 }
