@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,23 +46,39 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 		long time;
 		if(mlContext.getModelPath().equals("ratioCheck") || mlContext.getModelPath().equals("checkGam1") || mlContext.getModelPath().equals("buildGamModel")){
 			
-			Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(AccountUtil.getCurrentOrg().getTimezone()));
-			calendar.setTimeInMillis(mlContext.getPredictionTime());
-			Date date = calendar.getTime();
+			Date date = new Date();
+			date.setTime(mlContext.getPredictionTime());
 			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
 				LOGGER.info("CHECKGAM DATE 1 :: "+date);
-				LOGGER.info("CHECKGAM TTIME 1 :: "+calendar.getTimeInMillis());
+				LOGGER.info("CHECKGAM TTIME 1 :: "+date.getTime());
 			}
 			Date newDate = new Date(date.getYear(),date.getMonth(),date.getDate(),date.getHours(),0);
-			calendar.setTime(newDate);
 			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
 				LOGGER.info("CHECKGAM DATE 2 :: "+newDate);
-				LOGGER.info("CHECKGAM TTIME 2 :: "+calendar.getTimeInMillis());
+				LOGGER.info("CHECKGAM TTIME 2 :: "+newDate.getTime());
 			}
-			time = calendar.getTimeInMillis()-1;
+			time = newDate.getTime()-1;
 
 			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
 				LOGGER.info("CHECKGAM TTIME 3 :: "+time);
+			}
+			
+			
+			DateFormat formatterLocal = new SimpleDateFormat("yyyy-MM-dd HH");
+			formatterLocal.setTimeZone(TimeZone.getTimeZone(AccountUtil.getCurrentOrg().getTimezone()));
+			String dateStr = formatterLocal.format(date);
+			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
+				LOGGER.info("CHECKGAM LOCAL TIME STRING :: "+dateStr);
+			}
+			
+			Date date1 = formatterLocal.parse(dateStr);
+			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
+				LOGGER.info("CHECKGAM LOCAL TIME DATE :: "+date1);
+			}
+			
+			long time1 = date1.getTime()-1;
+			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
+				LOGGER.info("CHECKGAM LOCAL TIME DATE :: "+time1);
 			}
 			
 		}else{
