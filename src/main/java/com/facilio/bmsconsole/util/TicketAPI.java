@@ -1568,12 +1568,22 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	public static void associateTenant (TicketContext ticket) throws Exception {
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) && ticket.getResource() != null && ticket.getResource().getId() != -1) {
 			ResourceContext resource = ResourceAPI.getResource(ticket.getResource().getId());
-			if(resource.getResourceTypeEnum() ==  ResourceType.ASSET) {
-				ticket.setTenant(TenantsAPI.getTenantForAsset(ticket.getResource().getId()));
-			}
-			else if(resource.getResourceTypeEnum() ==  ResourceType.SPACE) {
-				ticket.setTenant(TenantsAPI.getTenantForSpace(ticket.getResource().getId()));
-			}
+				if (resource.getResourceTypeEnum() ==  ResourceType.ASSET) {
+					if (ticket.getTenant() != null && ticket.getTenant().getId() > 0 && TenantsAPI.getTenantForAsset(ticket.getResource().getId()) != null && (ticket.getTenant().getId() != TenantsAPI.getTenantForAsset(ticket.getResource().getId()).getId())) {
+						throw new IllegalArgumentException("The tenant associated doesn’t belong to the workorder space.");
+					}
+					else {
+						ticket.setTenant(TenantsAPI.getTenantForAsset(ticket.getResource().getId()));
+					}
+				}
+				else if (resource.getResourceTypeEnum() ==  ResourceType.SPACE) {
+					if (ticket.getTenant() != null && ticket.getTenant().getId() > 0 && TenantsAPI.getTenantForSpace(ticket.getResource().getId()) != null && (ticket.getTenant().getId() != TenantsAPI.getTenantForSpace(ticket.getResource().getId()).getId())) {
+						throw new IllegalArgumentException("The tenant associated doesn’t belong to the workorder space.");
+					}
+					else {
+						ticket.setTenant(TenantsAPI.getTenantForSpace(ticket.getResource().getId()));
+					}
+				}
 		}
 	}
 

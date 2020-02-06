@@ -699,7 +699,7 @@ public class FormsAPI {
 				fields.addAll(FormFactory.getRequesterFormFields(false, false));
 				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
 				if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
-//					fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, 1, 1));
+					fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 1, 1));
 				}
 				break;
 			case ContextNames.WORKPERMIT:
@@ -775,14 +775,19 @@ public class FormsAPI {
 				for (FormField f: defaultForm.getFields()) {	// TODO get fields from all sections
 					if (!formFieldMap.containsKey(f.getName()) && (f.getField() == null || f.getField().isDefault())) {
 						FormField formField = FieldUtil.cloneBean(f, FormField.class);
-						FacilioField field = modBean.getField(formField.getName(), moduleName);
-						if (field != null) {
-							formField.setFieldId(field.getFieldId());
-						}
 						systemFields.add(formField);
 					}
 				}
 				addUnusedSystemFields(form, systemFields);
+				for (FormField f: systemFields) {
+					if (f.getField() == null) {
+						FacilioField field = modBean.getField(f.getName(), moduleName);
+						if (field != null) {
+							f.setFieldId(field.getFieldId());
+							f.setField(field);
+						}
+					}
+				}
 			}
 		}
 		
