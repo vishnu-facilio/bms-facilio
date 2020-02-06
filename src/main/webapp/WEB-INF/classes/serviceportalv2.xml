@@ -503,6 +503,19 @@
 			<param name="vendorPortal">true</param>
 		</action>
 	</package>
+	<package name="portalDocuments" namespace="/api/service/v2/documents"
+		extends="newServicePortalApiV2">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.DocumentAction" method="addDocuments" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.DocumentAction" method="updateDocuments" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.DocumentAction" method="deleteDocuments" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.DocumentAction" method="getDocumentList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	<package name="vendorVisitorLoggingInvites" namespace="/api/service/v2/visitorLogging/invites/view"
 		extends="newServicePortalApiV2">
 		<action name="*"
@@ -728,6 +741,13 @@
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2metadata">
 			<param name="moduleName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="PortalV2ModuleFieldsApiV2" namespace="/api/service/v2/modules/fields" extends="newServicePortalApiV2">
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="v2updateField">
 		</action>
 	</package>
 	 <package name="VendorModuleDataApiv2" namespace="/api/service/v2/module/data"
