@@ -346,6 +346,8 @@ public class FacilioConstants {
 		public static final String TASK = "task";
 		public static final String TASK_ERRORS = "taskErrors";
 		public static final String REQUIRES_REMARKS = "requiresRemarks";
+		public static final String REQUIRES_ATTACHMENT = "requiresAttachment";
+
 		public static final String HAS_TASK_ERRORS = "hasTaskErrors";
 		public static final String TASK_LIST = "tasks";
 		public static final String TASK_MAP = "taskMap";
