@@ -113,6 +113,7 @@ public class ColumnFactory {
 		columnMap.put("workpermit-hidden-all", getHiddenAllWorkPermitColumns());
 		columnMap.put("workpermit-myWorkpermits", getMyWorkPermitColumns());
 		columnMap.put("workpermit-myActive", getMyActiveWorkPermitColumns());
+		columnMap.put("workpermit-myRequested", getMyActiveWorkPermitColumns());
 		columnMap.put("workpermit-myExpired", getMyActiveWorkPermitColumns());
 		columnMap.put("workpermit-vendorWorkpermits", getVendorWorkPermitColumns());
 		columnMap.put("workpermit-vendorActiveWorkpermits", getVendorWorkPermitColumns());

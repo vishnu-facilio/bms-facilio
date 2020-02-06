@@ -603,6 +603,7 @@ public class ViewFactory {
 		views.put("myWorkpermits", getMyWorkPermits().setOrder(order++));
 		views.put("myActive", getActiveWorkPermitView().setOrder(order++));
 		views.put("myExpired", getMyExpiredWorkPermitView().setOrder(order++));
+		views.put("myRequested", getMyRequestedWorkPermitView().setOrder(order++));
 		views.put("requested", getRequestedWorkPermitView().setOrder(order++));
 		
 		viewsMap.put(FacilioConstants.ContextNames.WORKPERMIT, views);
@@ -5516,6 +5517,19 @@ public class ViewFactory {
 		allView.setCriteria(expiredCriteria);
 		return allView;
 	}
+	
+	private static FacilioView getMyRequestedWorkPermitView() {
+		Criteria requestedWorkPermitCriteria = new Criteria();
+		requestedWorkPermitCriteria.addAndCondition(getMyWorkPermitsCondition());
+		requestedWorkPermitCriteria.addAndCondition(getWorkPermitStatusCriteria("Requested"));
+		FacilioView requestedView = new FacilioView();
+		requestedView.setName("myRequested");
+		requestedView.setDisplayName("Requested Work Permits");
+		requestedView.setCriteria(requestedWorkPermitCriteria);
+		requestedView.setHidden(true);
+		return requestedView;
+	}
+	
 	
 	private static FacilioView getRequestedWorkPermitView() {
 		Criteria requestedWorkPermitCriteria = new Criteria();
