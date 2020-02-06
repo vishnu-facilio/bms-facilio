@@ -2004,4 +2004,10 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAllSLAEntityCommand());
 		return chain;
 	}
+
+	public static FacilioChain getSLAPolicyEscalationsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetSLAPolicyEscalationsCommand());
+		return chain;
+	}
 }

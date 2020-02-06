@@ -367,6 +367,10 @@
 				class="com.facilio.bmsconsole.actions.SLAAction" method="deleteSLA" />
 		<action name="view"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="viewSLAPolicy" />
+		<action name="getEscalations"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="getSLAPolicyEscalations" />
+		<action name="reorder"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="reorderSLAPolicy" />
 	</package>
 
 	<package name="sla" namespace="/api/v2/sla" extends="v2Api">

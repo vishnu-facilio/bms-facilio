@@ -70,7 +70,7 @@ public class SLAAction extends FacilioAction {
         FacilioChain chain = TransactionChainFactory.getBulkAddOrUpdateSLAChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST, slaRuleList);
-        context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE, slaRule);
+        context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE, moduleName);
         context.put(FacilioConstants.ContextNames.SLA_POLICY_ID, slaPolicyId);
         chain.execute();
 
@@ -149,9 +149,39 @@ public class SLAAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, WorkflowRuleContext.RuleType.SLA_POLICY_RULE);
         context.put(FacilioConstants.ContextNames.WORKFLOW_FETCH_CHILDREN, true);
+        context.put(FacilioConstants.ContextNames.SORTING_QUERY, "EXECUTION_ORDER ASC");
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.SLA_POLICY_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
+
+        return SUCCESS;
+    }
+
+    public String getSLAPolicyEscalations() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getSLAPolicyEscalationsChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.SLA_POLICY_ID, slaPolicyId);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST, context.get(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST));
+        return SUCCESS;
+    }
+
+    private List<Long> ids;
+    public List<Long> getIds() {
+        return ids;
+    }
+    public void setIds(List<Long> ids) {
+        this.ids = ids;
+    }
+
+    public String reorderSLAPolicy() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getReorderSLAPolicyChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+        context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, WorkflowRuleContext.RuleType.SLA_POLICY_RULE);
+        chain.execute();
 
         return SUCCESS;
     }

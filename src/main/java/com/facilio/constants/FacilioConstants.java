@@ -845,6 +845,7 @@ public class FacilioConstants {
 		public static final String SLA_POLICY = "slaPolicy";
 		public static final String SLA_POLICY_LIST = "slaPolicyList";
 		public static final String SLA_POLICY_ID = "slaPolicyId";
+		public static final String SLA_POLICY_ESCALATION_LIST = "slaPolicyEscalationList";
 
 //		public static final String SLA_MODULE = "sla";
 //		public static final String SLA_LIST = "sla_list";

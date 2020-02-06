@@ -4549,6 +4549,13 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateBulkSLACommand());
 		return chain;
 	}
+
+	public static FacilioChain getReorderSLAPolicyChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(ReadOnlyChainFactory.fetchWorkflowRules());
+		chain.addCommand(new ReOrderWorkflowCommand());
+		return chain;
+	}
 }
 
 
