@@ -5,8 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import org.apache.commons.chain.Context;
 
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskErrorContext;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
@@ -50,7 +52,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	long taskContextId, currentInputTime;
 	String currentInputValue;
 	
-	private static final Logger LOGGER = Logger.getLogger(ValidateReadingInputForTask.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ValidateReadingInputForTask.class.getName());
+
 	
 	private boolean isNextReading = false;
 	@Override
@@ -68,11 +71,11 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			List<Long> recordIdsTemp = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 			
 			
-//			if(recordIdsTemp!= null && !recordIdsTemp.isEmpty() && currentTask != null)
-//			{
-//				LOGGER.log(Level.INFO, "skipValidation: "+skipValidation+" Task record ID: "+ recordIdsTemp.get(0) + " Current Input Value: " +  currentTask.getInputValue() + 
-//						" Current Input Time: " + currentTask.getInputTime() +""+ " Reading Field Unit: " + currentTask.getReadingFieldUnitEnum());
-//			}
+			if(recordIdsTemp!= null && !recordIdsTemp.isEmpty() && currentTask != null)
+			{
+				LOGGER.debug("skipValidation: "+skipValidation+" Task record ID: "+ recordIdsTemp.get(0) + " Current Input Value: " +  currentTask.getInputValue() + 
+						" Current Input Time: " + currentTask.getInputTime() +""+ " Reading Field Unit: " + currentTask.getReadingFieldUnitEnum());
+			}
 			
 			skipValidation = skipValidation == null ? Boolean.FALSE : skipValidation;  
 			
@@ -82,21 +85,26 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				List<TaskErrorContext> errors = new ArrayList<TaskErrorContext>();
 				boolean hasErrors = false;
 				if(currentTask != null && currentTask.getInputValue() != null) {
+					LOGGER.debug(" Entered currentTask ");
 					List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 					if(recordIds != null && !recordIds.isEmpty()) {
 						Map<Long, TaskContext> oldTasks = TicketAPI.getTaskMap(recordIds);
 						for(int i = 0; i < recordIds.size(); i++) {
+							LOGGER.debug(" Entered recordId "+recordIds.get(i));
 							TaskContext taskContext = oldTasks.get(recordIds.get(i));
 							if(taskContext.getInputTypeEnum() != null)
 							{
+								LOGGER.debug(" Entered task Context "+taskContext);
 								switch(taskContext.getInputTypeEnum()) {
 								case READING:
 									if (taskContext.getReadingField() != null && taskContext.getResource() != null) {
 										
+										LOGGER.debug(" Entered readingfieldcheck ");
 										switch(taskContext.getReadingField().getDataTypeEnum()) {   
 										case NUMBER:
 										case DECIMAL:
 											
+											LOGGER.debug(" Entered number fieldcheck ");
 											taskContextId = taskContext.getId();
 											ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
 											NumberField numberField = (NumberField) taskContext.getReadingField();
@@ -110,18 +118,22 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 												return false;
 											}
 									
+											LOGGER.debug(" Entered number unit check ");
 											currentInputValue = currentTask.getInputValue();
 											currentInputTime = currentTask.getInputTime();
 											Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 											
 											Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
 											if(currentInputUnit != null) 
-											{																						
+											{		
+												LOGGER.debug(" Entered number unit check 2");
 												Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
 												if((numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata")))) 
-												{													
+												{		
+													LOGGER.debug(" Entered counterfield check ");
 													List<TaskErrorContext> taskErrors = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
 													if(taskErrors!= null && !taskErrors.isEmpty()) {
+														LOGGER.debug(" Entered errors check ");
 														hasErrors = true;
 														errors.addAll(taskErrors);
 														TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
