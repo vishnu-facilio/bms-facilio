@@ -28,6 +28,14 @@ public class SLAAction extends FacilioAction {
         this.slaRule = slaRule;
     }
 
+    private SLAWorkflowCommitmentRuleContext slaRuleList;
+    public SLAWorkflowCommitmentRuleContext getSlaRuleList() {
+        return slaRuleList;
+    }
+    public void setSlaRuleList(SLAWorkflowCommitmentRuleContext slaRuleList) {
+        this.slaRuleList = slaRuleList;
+    }
+
     private Long id;
     public Long getId() {
         return id;
@@ -56,8 +64,20 @@ public class SLAAction extends FacilioAction {
         return SUCCESS;
     }
 
+    public String bulkAddOrUpdateSLA() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getBulkAddOrUpdateSLAChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST, slaRuleList);
+        context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE, slaRule);
+        context.put(FacilioConstants.ContextNames.SLA_POLICY_ID, slaPolicyId);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST, context.get(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST));
+        return SUCCESS;
+    }
+
     public String addOrUpdateSLA() throws Exception {
-        FacilioChain chain = TransactionChainFactory.getAddSLAChain();
+        FacilioChain chain = TransactionChainFactory.getAddOrUpdateSLAChain();
         FacilioContext context = chain.getContext();
 
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);

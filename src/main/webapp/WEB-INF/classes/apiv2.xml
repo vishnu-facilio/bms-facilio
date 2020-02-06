@@ -372,6 +372,8 @@
 	<package name="sla" namespace="/api/v2/sla" extends="v2Api">
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="getAllSLA" />
+		<action name="bulkAddOrUpdate"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="bulkAddOrUpdateSLA" />
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="addOrUpdateSLA" />
 		<action name="view"

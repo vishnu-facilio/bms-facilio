@@ -4520,7 +4520,7 @@ public class TransactionChainFactory {
 		return c;
 	}
 
-	public static FacilioChain getAddSLAChain() {
+	public static FacilioChain getAddOrUpdateSLAChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateSLACommand());
 		return chain;
@@ -4541,6 +4541,12 @@ public class TransactionChainFactory {
 	public static FacilioChain getAddOrUpdateSLAPolicyChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateSLAPolicyCommand());
+		return chain;
+	}
+
+	public static FacilioChain getBulkAddOrUpdateSLAChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateBulkSLACommand());
 		return chain;
 	}
 }

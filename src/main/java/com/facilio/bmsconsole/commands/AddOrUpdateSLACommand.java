@@ -60,13 +60,5 @@ public class AddOrUpdateSLACommand extends FacilioCommand {
         if (StringUtils.isEmpty(slaContext.getName())) {
             throw new IllegalArgumentException("Name is mandatory");
         }
-
-//        if (slaContext.getSlaRule() == null) {
-//            throw new IllegalArgumentException("SLA rule cannot be empty");
-//        }
-
-//        if (slaContext.getTypeEnum() == null) {
-//            slaContext.setType(SLAContext.Type.OPEN);
-//        }
     }
 }
