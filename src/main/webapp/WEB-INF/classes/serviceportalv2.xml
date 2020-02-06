@@ -486,6 +486,13 @@
 			<param name="vendorPortal">true</param>
 		</action>
 	</package>
+	<package name="vendorattachmentApi" namespace="/api/service/attachment"
+		extends="newServicePortalApiV2">
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.AttachmentAction"
+			method="deleteAttachment">
+		</action>
+	</package>
 	
 	<package name="vendorInsurance" namespace="/api/service/v2/insurance"
 		extends="newServicePortalApiV2">
