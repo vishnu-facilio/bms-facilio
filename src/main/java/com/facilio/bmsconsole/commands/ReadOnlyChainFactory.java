@@ -2046,7 +2046,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForSafetyPlan());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		
+		c.addCommand(new GetSafetyPlanHazardsCommand());
 		return c;
 	}
 	

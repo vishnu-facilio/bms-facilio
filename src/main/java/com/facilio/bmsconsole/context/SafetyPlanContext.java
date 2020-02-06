@@ -25,12 +25,13 @@ public class SafetyPlanContext extends ModuleBaseWithCustomFields{
 		this.description = description;
 	}
 	
-	private List<HazardContext> hazards;
-	public List<HazardContext> getHazards() {
-		return hazards;
+	private List<Long> hazardIds;
+	public List<Long> getHazardIds() {
+		return hazardIds;
 	}
-	public void setHazards(List<HazardContext> hazards) {
-		this.hazards = hazards;
+	public void setHazardIds(List<Long> hazardIds) {
+		this.hazardIds = hazardIds;
 	}
+	
 	
 }
