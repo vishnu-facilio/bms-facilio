@@ -28,22 +28,26 @@ public class AddTenantUserCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		ContactsContext primarycontact = addDefaultTenantPrimaryContact(tenant);
-		RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
-
+		EventType eventType = (EventType)context.getOrDefault(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		
-//		else {
-//			ContactsContext existingcontactForEmail = ContactsAPI.getContactforEmail(tenant.getPrimaryContactEmail(), tenant.getId(), false);
-//			if(existingcontactForEmail == null) {
-//				existingcontactForEmail = addDefaultTenantPrimaryContact(tenant);
-//				RecordAPI.addRecord(true, Collections.singletonList(existingcontactForEmail), module, fields);
-//			}
-//			else {
-//				existingcontactForEmail.setName(tenant.getPrimaryContactName());
-//				existingcontactForEmail.setPhone(tenant.getPrimaryContactPhone());
-//				RecordAPI.updateRecord(existingcontactForEmail, module, fields);
-//			}
-//		}
+		if(eventType == EventType.CREATE) {
+			ContactsContext primarycontact = addDefaultTenantPrimaryContact(tenant);
+			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
+		}
+		else {
+			ContactsContext existingcontactForPhone = ContactsAPI.getContactforPhone(tenant.getPrimaryContactPhone(), tenant.getId(), false);
+			if(existingcontactForPhone == null) {
+				existingcontactForPhone = addDefaultTenantPrimaryContact(tenant);
+				RecordAPI.addRecord(true, Collections.singletonList(existingcontactForPhone), module, fields);
+			}
+			else {
+				existingcontactForPhone.setName(tenant.getPrimaryContactName());
+				existingcontactForPhone.setEmail(tenant.getPrimaryContactEmail());
+				RecordAPI.updateRecord(existingcontactForPhone, module, fields);
+			}
+		}
+		
+
 //		if(tenant != null && CollectionUtils.isNotEmpty(contacts)) {
 //			for(ContactsContext contact : contacts)	{
 //				contact.setTenant(tenant);

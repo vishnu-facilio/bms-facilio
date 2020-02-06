@@ -26,26 +26,31 @@ public class AddVendorContactsCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		VendorContext vendor = (VendorContext) context.get(FacilioConstants.ContextNames.RECORD);
 		
+		
+		List<ContactsContext> contacts = (List<ContactsContext>)context.get(FacilioConstants.ContextNames.CONTACTS);
+		EventType eventType = (EventType)context.getOrDefault(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+		 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		ContactsContext primarycontact = addDefaultVendorPrimaryContact(vendor);
-		RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
-		
-//		else {
-//			if(StringUtils.isNotEmpty(vendor.getName())) {
-//				ContactsContext existingcontactForEmail = ContactsAPI.getContactforEmail(vendor.getPrimaryContactEmail(), vendor.getId(), true);
-//				if(existingcontactForEmail == null) {
-//					existingcontactForEmail = addDefaultVendorPrimaryContact(vendor);
-//					RecordAPI.addRecord(true, Collections.singletonList(existingcontactForEmail), module, fields);
-//				}
-//				else {
-//					existingcontactForEmail.setName(vendor.getPrimaryContactName());
-//					existingcontactForEmail.setPhone(vendor.getPrimaryContactPhone());
-//					RecordAPI.updateRecord(existingcontactForEmail, module, fields);
-//				}
-//			}
-//		}
+		 		
+		if(eventType == EventType.CREATE) {
+			ContactsContext primarycontact = addDefaultVendorPrimaryContact(vendor);
+			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
+		}
+		else {
+			ContactsContext existingcontactForPhone = ContactsAPI.getContactforPhone(vendor.getPrimaryContactPhone(), vendor.getId(), true);
+			if(existingcontactForPhone == null) {
+				existingcontactForPhone = addDefaultVendorPrimaryContact(vendor);
+				RecordAPI.addRecord(true, Collections.singletonList(existingcontactForPhone), module, fields);
+			}
+			else {
+				existingcontactForPhone.setName(vendor.getPrimaryContactName());
+				existingcontactForPhone.setEmail(vendor.getPrimaryContactEmail());
+				RecordAPI.updateRecord(existingcontactForPhone, module, fields);
+			}
+		}
+
 //		if(vendor != null && CollectionUtils.isNotEmpty(contacts)) {
 //			for(ContactsContext contact : contacts) {
 //				

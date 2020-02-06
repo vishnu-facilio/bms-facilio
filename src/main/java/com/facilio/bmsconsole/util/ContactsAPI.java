@@ -75,7 +75,7 @@ public class ContactsAPI {
 		
 	}
 	
-	public static ContactsContext getContactforEmail(String email, long id, boolean isVendor) throws Exception {
+	public static ContactsContext getContactforPhone(String phone, long id, boolean isVendor) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
 		List<FacilioField> fields  = modBean.getAllFields(FacilioConstants.ContextNames.CONTACT);
@@ -84,7 +84,7 @@ public class ContactsAPI {
 														.module(module)
 														.beanClass(ContactsContext.class)
 														.select(fields)
-														.andCondition(CriteriaAPI.getCondition("EMAIL", "email", email, StringOperators.IS))
+														.andCondition(CriteriaAPI.getCondition("PHONE", "phone", phone, StringOperators.IS))
 														
 														;
 		if(isVendor) {
