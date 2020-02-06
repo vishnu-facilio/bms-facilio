@@ -20,6 +20,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormSiteRelationContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -695,14 +696,21 @@ public class FormsAPI {
 		if (form.getModule().getName() != null) {
 			switch (form.getModule().getName()) {
 			case ContextNames.WORK_ORDER:
-				fields.addAll(FormFactory.getRequesterFormFields(false));
+				fields.addAll(FormFactory.getRequesterFormFields(false, false));
 				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
+				if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
+//					fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, 1, 1));
+				}
+				break;
+			case ContextNames.WORKPERMIT:
+				fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Valid From", Required.OPTIONAL, 1, 1));
+				fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Valid Till", Required.OPTIONAL, 1, 1));
 				break;
 			// Add fields here if it has to be shown in unused list and not there in the default form
 		}
 		}
 		
-		addToDefaultFields(defaultFields, fields);
+		addToDefaultFields(form.getFields(), defaultFields, fields);
 
 		if (form.getModule().isCustom()) {
 			
@@ -736,13 +744,13 @@ public class FormsAPI {
 		}
 		
 		
-		addToDefaultFields(defaultFields, fields);
+		addToDefaultFields(form.getFields(), defaultFields, fields);
 	}
 	
-	private static void addToDefaultFields(List<FormField> defaultFields, List<FormField> newFields) {
+	private static void addToDefaultFields(List<FormField> existingFields, List<FormField> defaultFields, List<FormField> newFields) {
 		if (!newFields.isEmpty()) {
-			List<String> fieldNames = defaultFields.stream().map(FormField::getName).collect(Collectors.toList());
-			defaultFields.addAll(newFields.stream().filter(field -> fieldNames.contains(field.getName())).collect(Collectors.toList()));
+			List<String> fieldNames = existingFields.stream().map(FormField::getName).collect(Collectors.toList());
+			defaultFields.addAll(newFields.stream().filter(field -> !fieldNames.contains(field.getName())).collect(Collectors.toList()));
 		}
 	}
 	
@@ -774,7 +782,7 @@ public class FormsAPI {
 						systemFields.add(formField);
 					}
 				}
-				addUnusedSystemFields(defaultForm, systemFields);
+				addUnusedSystemFields(form, systemFields);
 			}
 		}
 		

@@ -787,14 +787,15 @@ public class FormFactory {
 		return Collections.unmodifiableList(fields);
 	}
 	
-	public static List<FormField> getRequesterFormFields(boolean fetchBoth) throws Exception {
+	public static List<FormField> getRequesterFormFields(boolean fetchBoth, boolean isMandatory) throws Exception {
 		List<FormField> fields = new ArrayList<>();
+		Required required = isMandatory ? Required.REQUIRED : Required.OPTIONAL;
 		if (AccountUtil.getCurrentAccount().isFromMobile() || fetchBoth) {
-			fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Requester Name", Required.REQUIRED, 1, 1));
-			fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Requester Email", Required.REQUIRED, 2, 1));
+			fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Requester Name", required, 1, 1));
+			fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Requester Email", required, 2, 1));
 		}
 		else {
-			fields.add(new FormField("requester", FieldDisplayType.REQUESTER, "Requester", Required.REQUIRED, 1, 1));
+			fields.add(new FormField("requester", FieldDisplayType.REQUESTER, "Requester", required, 1, 1));
 		}
 		return fields;
 	}

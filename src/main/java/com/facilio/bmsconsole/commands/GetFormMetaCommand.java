@@ -128,9 +128,9 @@ public class GetFormMetaCommand extends FacilioCommand {
 				}
 			}
 			if (AccountUtil.getCurrentUser() == null && AccountUtil.getCurrentOrg().getOrgId() != 104) {
-				form.getFields().addAll(0, FormFactory.getRequesterFormFields(false));
+				form.getFields().addAll(0, FormFactory.getRequesterFormFields(false, true));
 				if (CollectionUtils.isNotEmpty(form.getSections())) {
-					form.getSections().get(0).getFields().addAll(0, FormFactory.getRequesterFormFields(true));
+					form.getSections().get(0).getFields().addAll(0, FormFactory.getRequesterFormFields(true, true));
 				}
 			}
 		}
