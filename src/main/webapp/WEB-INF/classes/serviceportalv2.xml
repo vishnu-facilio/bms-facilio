@@ -1140,6 +1140,10 @@
 		extends="newServicePortalApiV2">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.ContactsAction" method="addContacts" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="updateContacts" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ContactsAction" method="deleteContacts" />
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ContactsAction" method="getContactsList" />
 	</package>

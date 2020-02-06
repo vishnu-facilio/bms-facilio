@@ -79,7 +79,7 @@ public class FormFactory {
 		forms.put("contactForm", getContactForm());
 		forms.put("occupantForm", getOccupantForm());
 		forms.put("printerForm",getPrinterForm());
-
+		forms.put("portalContactForm", getPortalContactForm());
 		forms.put("vendorDocumentForm",getVendorDocumentForm());
 		forms.put("portalvendorDocumentForm",getPortalVendorDocumentForm());
 
@@ -291,7 +291,7 @@ public class FormFactory {
 		List<FacilioForm> serviceRequestFormsList = Arrays.asList(getServiceRequestForm());
 		List<FacilioForm> vendorDocumentFormsList = Arrays.asList(getVendorDocumentForm(), getPortalVendorDocumentForm());
 	
-		List<FacilioForm> contactFormsList = Arrays.asList(getContactForm());
+		List<FacilioForm> contactFormsList = Arrays.asList(getContactForm(), getPortalContactForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
@@ -1720,6 +1720,17 @@ public class FormFactory {
 		fields.add(new FormField("validTill", FieldDisplayType.DATE, "Valid Till", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("insurance", FieldDisplayType.FILE, "Insurance", Required.OPTIONAL, 1, 1));
 		return fields;
+	}
+
+	public static FacilioForm getPortalContactForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("CONTACT");
+		form.setName("default_contact_portal");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.CONTACT));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getContactFormFields());
+		form.setFormType(FormType.PORTAL);
+		return form;
 	}
 
 	public static FacilioForm getContactForm() {
