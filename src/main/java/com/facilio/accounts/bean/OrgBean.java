@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
@@ -23,7 +24,7 @@ public interface OrgBean {
 	
 	public Organization getOrg(String orgDomain) throws Exception;
 	
-	public Organization getPortalOrg(long portalId) throws Exception;
+	public Organization getPortalOrg(long portalId, AppType appType) throws Exception;
 	
 	public PortalInfoContext getPortalInfo(long id, boolean isPortalID) throws Exception;
 	

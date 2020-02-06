@@ -10,6 +10,10 @@
 	"4": {
 		"name": "RESET_PASSWORD",
 		"message_ftl": "resetPwd"
+	},
+	"6" : {
+		"name": "PORTAL_SIGNUP",
+		"message_ftl": "inviteRequester"
 	}
 	
 }

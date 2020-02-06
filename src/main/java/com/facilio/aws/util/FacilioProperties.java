@@ -38,6 +38,7 @@ public class FacilioProperties {
     private static boolean messageProcessor = false;
     private static String appDomain;
     private static String clientAppUrl;
+    private static String allowedPortalDomains;
     private static String pushNotificationKey;
     private static String portalPushNotificationKey;
     public static String environment;
@@ -108,6 +109,7 @@ public class FacilioProperties {
                 pushNotificationKey = PROPERTIES.getProperty("push.notification.key");
                 portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
                 clientAppUrl = "https://"+ appDomain;
+                allowedPortalDomains = PROPERTIES.getProperty("allowedportal.domains");
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
                 isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
@@ -218,6 +220,10 @@ public class FacilioProperties {
 
     public static String getClientAppUrl() {
         return clientAppUrl;
+    }
+    
+    public static String getAllowedPortalDomainsUrl() {
+        return allowedPortalDomains;
     }
 
     public static String getPushNotificationKey() {
@@ -427,4 +433,6 @@ public class FacilioProperties {
     public static boolean enableFacilioResponse() {
         return facilioResponse;
     }
+    
+    
 }

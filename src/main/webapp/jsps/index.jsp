@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.Arrays"%>
+<%@page import="java.util.List"%>
 <%@ page import="org.json.simple.JSONObject" %>
 <%
 	String clientVersion = (String)com.facilio.aws.util.AwsUtil.getClientInfo().get("version");
@@ -11,8 +14,19 @@
 	}
 	
 	String staticUrl = com.facilio.aws.util.FacilioProperties.getConfig("static.url") + clientVersion;
+	String allowedPortalDomain = com.facilio.aws.util.FacilioProperties.getConfig("allowedportal.domains");
+	String[] portaldomains = allowedPortalDomain.split(",");
 	String servicePortalDomain = com.facilio.aws.util.FacilioProperties.getConfig("portal.domain");
-	
+	List<String> allowedPortalsList = Arrays.asList(portaldomains);
+	String currentServer = request.getServerName();
+	String currentPortalDomain = null;
+	String[] currentDomainArray = currentServer.split("\\."); 
+    if (currentDomainArray.length > 2) { 
+        currentPortalDomain = currentDomainArray[1]+ "." + currentDomainArray[2];
+        if(allowedPortalsList.contains(currentPortalDomain)){
+        	servicePortalDomain = currentPortalDomain;
+        }
+    }
 	String brandName = com.facilio.aws.util.FacilioProperties.getConfig("rebrand.brand");
 	String domain =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.domain"); 
 	String copyrightName =com.facilio.aws.util.FacilioProperties.getConfig("rebrand.copyright.name"); 

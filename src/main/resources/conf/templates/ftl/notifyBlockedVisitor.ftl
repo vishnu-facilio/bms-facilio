@@ -62,7 +62,7 @@
                   
             </div>
             <div style="text-align: center;margin-top: 20px;">
-                        <img src="https://facilio.com/assets/images/logo.png" alt="" title="" style="width: 70px;height: 16x;padding-bottom: 15px;max-width: 100%;">
+                        <img src="https://facilio.com/images/facilio-blue-logo.svg" alt="" title="" style="width: 70px;height: 16x;padding-bottom: 15px;max-width: 100%;">
             </div>
       </div>
 </body>

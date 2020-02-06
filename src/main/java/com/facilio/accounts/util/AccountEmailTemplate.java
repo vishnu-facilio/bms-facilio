@@ -180,8 +180,18 @@ public enum AccountEmailTemplate {
 			json.put("sender", SUPPORTEMAIL);
 			json.put("to", "${toUser.email}");
 			json.put("subject","[${org.name}] Welcome and confirm your email" );
-			json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}" );
-			break;				
+			try {
+				template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
+				template.setFtl(true);
+				json.put("message",template.getOriginalTemplate().get("message"));
+				json.put("mailType", "html");
+				
+			}
+			catch(Exception e) {
+				json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}" );
+				json.put("mailType", "text");
+			}
+			break;
 	}
 	return json;
 	}

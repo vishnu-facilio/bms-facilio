@@ -22,6 +22,7 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
+import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
@@ -218,7 +219,16 @@ public class UserBeanImpl implements UserBean {
 			if (registration) {
 				inviteLink = getUserLink(user, "/emailregistration/");
 			}
+			String portalType = "Service Portal";
+			if(user.getAppTypeEnum() == AppType.TENANT_PORTAL) {
+				portalType = "Tenant Portal" ;
+			}
+			else if(user.getAppTypeEnum() == AppType.VENDOR_PORTAL) {
+				portalType = "Vendor Portal" ;
+			}
 			placeholders.put("invitelink", inviteLink);
+			placeholders.put("portalType", portalType);
+			
 			AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders, true);
 
 		} else {
@@ -1036,7 +1046,7 @@ public class UserBeanImpl implements UserBean {
 		String hostname = "";
 		if (user.isPortalUser()) {
 			try {
-				Organization org = AccountUtil.getOrgBean().getPortalOrg(user.getPortalId());
+				Organization org = AccountUtil.getOrgBean().getPortalOrg(user.getPortalId(), user.getAppTypeEnum());
 				hostname = "https://" + org.getDomain() + "/service";
 				inviteToken = inviteToken + "&portalid=" + user.getPortalId();
 			} catch (Exception e) {

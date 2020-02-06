@@ -18,9 +18,14 @@
                   <table cellpadding="0" cellspacing="0" style="width:100%;max-width:100%;padding: 30px 55px 40px;">
                         <tr>
                               <td colspan="100%" style="border-bottom: 1px solid #eee;">
-                                    <img src="https://facilio.com/assets/images/logo.png" alt="" title="" style="width: 70px;height: 16x;padding-bottom: 10px;max-width: 100%;">
+                                    <img src="https://facilio.com/images/facilio-blue-logo.svg" alt="" title="" style="width: 70px;height: 16x;padding-bottom: 10px;max-width: 100%;">
                               </td>
                         </tr>
+                        <tr>
+                              <td colspan="100%" align="center">
+                                  <img src="https://facilio.com/images/email-images/visitor-thankyou.png" alt="" title=""  width="250" height="250"/>
+                              </td>
+                      </tr>
                         <tr>
                         
                               <td style="padding-top: 30px;">

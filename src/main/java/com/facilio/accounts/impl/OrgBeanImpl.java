@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
@@ -70,7 +71,7 @@ public class OrgBeanImpl implements OrgBean {
 	}
 	
 	@Override
-	public Organization getPortalOrg(long portalId) throws Exception {
+	public Organization getPortalOrg(long portalId, AppType appType) throws Exception {
 		
 		PortalInfoContext portalInfo = getPortalInfo(portalId, true);
 		if (portalInfo == null) {
@@ -86,12 +87,19 @@ public class OrgBeanImpl implements OrgBean {
 			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
 			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
 
-
-        if(portalInfo.getCustomDomain() != null) {
-            org.setDomain(portalInfo.getCustomDomain()); 
-        } else { 
-            org.setDomain(org.getDomain() + "." + FacilioProperties.getConfig("portal.domain"));
-        } 
+		if(appType == AppType.SERVICE_PORTAL) {
+	        if(portalInfo.getCustomDomain() != null) {
+	            org.setDomain(portalInfo.getCustomDomain()); 
+	        } else { 
+	            org.setDomain(org.getDomain() + "." + FacilioProperties.getConfig("portal.domain"));
+	        } 
+		}
+		else if(appType == AppType.TENANT_PORTAL) {
+			org.setDomain(org.getDomain() + ".faciliotenants.com");
+		}
+		else if(appType == AppType.VENDOR_PORTAL) {
+			org.setDomain(org.getDomain() + ".faciliovendors.com");
+		}
 	             
 	   return org;
 	}
