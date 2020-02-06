@@ -175,7 +175,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			
 		}
 		catch(Exception e) {
-			LOGGER.log(Level.SEVERE, "Currenttask ID: "+ taskContextId + " Current Input Value: " + currentInputValue + 
+			LOGGER.log(Level.ERROR, "Currenttask ID: "+ taskContextId + " Current Input Value: " + currentInputValue + 
 					" Current Input Time: " + currentInputTime + " " + e.getMessage() , e);
 		}
 		return false;
