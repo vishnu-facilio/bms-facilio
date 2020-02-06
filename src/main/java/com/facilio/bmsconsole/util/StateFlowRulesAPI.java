@@ -651,8 +651,9 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
 		if (form == null || CollectionUtils.isEmpty(form.getSections())) {
 			if (rule.getFormId() > 0) {
-				FormsAPI.deleteForms(Collections.singletonList(rule.getFormId()));
-				rule.setFormId(-1);
+				rule.setFormId(-99);
+//				FormsAPI.deleteForms(Collections.singletonList(rule.getFormId()));
+//				rule.setFormId(-1);
 			}
 		}
 		else {

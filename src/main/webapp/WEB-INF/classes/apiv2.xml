@@ -359,6 +359,8 @@
 	</package>
 
 	<package name="slaPolicy" namespace="/api/v2/slaPolicy" extends="v2Api">
+		<action name="list"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="listSLAPolicy" />
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="addOrUpdateSLAPolicy" />
 		<action name="delete"

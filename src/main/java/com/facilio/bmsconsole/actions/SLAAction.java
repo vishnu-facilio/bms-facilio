@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.SLAEntityContext;
 import com.facilio.bmsconsole.workflow.rule.SLAPolicyContext;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -47,6 +48,7 @@ public class SLAAction extends FacilioAction {
         FacilioChain chain = ReadOnlyChainFactory.getAllSLAChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.SLA_POLICY_ID, slaPolicyId);
 
         chain.execute();
 
@@ -63,6 +65,8 @@ public class SLAAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.SLA_POLICY_ID, slaPolicyId);
 
         chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SLA_RULE_MODULE, context.get(FacilioConstants.ContextNames.SLA_RULE_MODULE));
         return SUCCESS;
     }
 
@@ -101,6 +105,8 @@ public class SLAAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.SLA_POLICY, slaPolicy);
         chain.execute();
 
+        setResult(FacilioConstants.ContextNames.SLA_POLICY, context.get(FacilioConstants.ContextNames.SLA_POLICY));
+
         return SUCCESS;
     }
 
@@ -110,7 +116,20 @@ public class SLAAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.ID, id);
         chain.execute();
 
-        setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE));
+        setResult(FacilioConstants.ContextNames.SLA_POLICY, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE));
+
+        return SUCCESS;
+    }
+
+    public String listSLAPolicy() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.fetchWorkflowRules();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, WorkflowRuleContext.RuleType.SLA_POLICY_RULE);
+        context.put(FacilioConstants.ContextNames.WORKFLOW_FETCH_CHILDREN, true);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SLA_POLICY_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
 
         return SUCCESS;
     }
@@ -129,6 +148,8 @@ public class SLAAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.SLA_ENTITY, slaEntity);
         chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SLA_ENTITY, context.get(FacilioConstants.ContextNames.SLA_ENTITY));
 
         return SUCCESS;
     }

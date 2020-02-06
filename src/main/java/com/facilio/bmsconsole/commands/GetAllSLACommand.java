@@ -4,6 +4,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
@@ -16,7 +19,8 @@ public class GetAllSLACommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-        if (StringUtils.isNotEmpty(moduleName)) {
+        Long slaPolicyId = (Long) context.get(FacilioConstants.ContextNames.SLA_POLICY_ID);
+        if (StringUtils.isNotEmpty(moduleName) && (slaPolicyId != null && slaPolicyId > 0)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(moduleName);
 
@@ -24,15 +28,9 @@ public class GetAllSLACommand extends FacilioCommand {
                 throw new IllegalArgumentException("Invalid module");
             }
 
-            List<WorkflowRuleContext> slaRules = WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE, false, null, null, null);
-
-//            SelectRecordsBuilder<SLAContext> builder = new SelectRecordsBuilder<SLAContext>()
-//                    .beanClass(SLAContext.class)
-//                    .module(modBean.getModule(FacilioConstants.ContextNames.SLA_MODULE))
-//                    .select(modBean.getAllFields(FacilioConstants.ContextNames.SLA_MODULE))
-//                    .andCondition(CriteriaAPI.getCondition("SLA_MODULE_ID", "slaModuleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-//            List<SLAContext> slaContexts = builder.get();
-
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_RULE_ID", "parentRuleId", String.valueOf(slaPolicyId), NumberOperators.EQUALS));
+            List<WorkflowRuleContext> slaRules = WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE, false, criteria, null, null);
             context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST, slaRules);
         }
         return false;
