@@ -77,6 +77,15 @@ public class SLAAction extends FacilioAction {
         return SUCCESS;
     }
 
+    public String deleteSLA() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getDelWorkflowRuleChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.RULE_ID, id);
+        chain.execute();
+
+        return SUCCESS;
+    }
+
     private SLAPolicyContext slaPolicy;
     public SLAPolicyContext getSlaPolicy() {
         return slaPolicy;
@@ -91,6 +100,17 @@ public class SLAAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.SLA_POLICY, slaPolicy);
         chain.execute();
+
+        return SUCCESS;
+    }
+
+    public String viewSLAPolicy() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.fetchWorkflowRuleWithActionsChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, id);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE));
 
         return SUCCESS;
     }

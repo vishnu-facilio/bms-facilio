@@ -20,85 +20,83 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
 
-    private long baseFieldId = -1;
-    public long getBaseFieldId() {
-        return baseFieldId;
+    private List<SLAEntityDuration> slaEntities;
+    public List<SLAEntityDuration> getSlaEntities() {
+        return slaEntities;
     }
-    public void setBaseFieldId(long baseFieldId) {
-        this.baseFieldId = baseFieldId;
-    }
-
-    private long dueFieldId = -1;
-    public long getDueFieldId() {
-        return dueFieldId;
-    }
-    public void setDueFieldId(long dueFieldId) {
-        this.dueFieldId = dueFieldId;
-    }
-
-    private long compareFieldId = -1;
-    public long getCompareFieldId() {
-        return compareFieldId;
-    }
-    public void setCompareFieldId(long compareFieldId) {
-        this.compareFieldId = compareFieldId;
-    }
-
-    private long addDuration = -1;
-    public long getAddDuration() {
-        return addDuration;
-    }
-    public void setAddDuration(long addDuration) {
-        this.addDuration = addDuration;
+    public void setSlaEntities(List<SLAEntityDuration> slaEntities) {
+        this.slaEntities = slaEntities;
     }
 
     @Override
     public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioField baseField = modBean.getField(baseFieldId);
-        FacilioField dueField = modBean.getField(dueFieldId);
-        FacilioField compareField = modBean.getField(compareFieldId);
 
-        Long timeValue;
-        if (baseField.isDefault()) {
-            timeValue = (Long) PropertyUtils.getProperty(moduleRecord, baseField.getName());
-        }
-        else {
-            timeValue = (Long) moduleRecord.getDatum(baseField.getName());
-        }
-        if (timeValue == null) {
-            timeValue = DateTimeUtil.getCurrenTime();
-        }
-        timeValue += getAddDuration() * 1000;
-
-        if (dueField.isDefault()) {
-            PropertyUtils.setProperty(moduleRecord, dueField.getName(), timeValue);
-        }
-        else {
-            moduleRecord.setDatum(dueField.getName(), timeValue);
+        if (CollectionUtils.isEmpty(slaEntities)) {
+            slaEntities = SLAWorkflowAPI.getSLAEntitiesForCommitment(getId());
         }
 
-        FacilioModule module = modBean.getModule(getModuleId());
-        UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>()
-                .module(module)
-                .fields(Collections.singletonList(dueField))
-                .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
-        update.update(moduleRecord);
+        if (CollectionUtils.isNotEmpty(slaEntities)) {
+            SLAPolicyContext slaPolicy = (SLAPolicyContext) WorkflowRuleAPI.getWorkflowRule(getParentRuleId());
+            List<SLAPolicyContext.SLAPolicyEntityEscalationContext> escalations = slaPolicy.getEscalations();
+            Map<Long, SLAPolicyContext.SLAPolicyEntityEscalationContext> escalationMap = null;
+            if (CollectionUtils.isNotEmpty(escalations)) {
+                escalationMap = new HashMap<>();
+                for (SLAPolicyContext.SLAPolicyEntityEscalationContext escalation : escalations) {
+                    escalationMap.put(escalation.getSlaEntityId(), escalation);
+                }
+            }
 
-        SLAPolicyContext slaPolicy = (SLAPolicyContext) WorkflowRuleAPI.getWorkflowRule(getParentRuleId());
-        if (CollectionUtils.isEmpty(slaPolicy.getEscalations())) {
-            slaPolicy.setEscalations(SLAWorkflowAPI.getEscalations(slaPolicy.getId()));
+            for (SLAEntityDuration slaEntityDuration : slaEntities) {
+                SLAEntityContext slaEntity = SLAWorkflowAPI.getSLAEntity(slaEntityDuration.getSlaEntityId());
+
+                FacilioField baseField = modBean.getField(slaEntity.getBaseFieldId());
+                FacilioField dueField = modBean.getField(slaEntity.getDueFieldId());
+                FacilioField compareField = modBean.getField(slaEntity.getCompareFieldId());
+
+                Long timeValue;
+                if (baseField.isDefault()) {
+                    timeValue = (Long) PropertyUtils.getProperty(moduleRecord, baseField.getName());
+                } else {
+                    timeValue = (Long) moduleRecord.getDatum(baseField.getName());
+                }
+                if (timeValue == null) {
+                    timeValue = DateTimeUtil.getCurrenTime();
+                }
+                timeValue += slaEntityDuration.getAddDuration() * 1000;
+
+                if (dueField.isDefault()) {
+                    PropertyUtils.setProperty(moduleRecord, dueField.getName(), timeValue);
+                } else {
+                    moduleRecord.setDatum(dueField.getName(), timeValue);
+                }
+
+                FacilioModule module = modBean.getModule(getModuleId());
+                UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>()
+                        .module(module)
+                        .fields(Collections.singletonList(dueField))
+                        .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
+                update.update(moduleRecord);
+
+                if (MapUtils.isNotEmpty(escalationMap)) {
+                    SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());
+                    if (CollectionUtils.isNotEmpty(slaPolicyEntityEscalationContext.getEscalations())) {
+                        slaPolicyEntityEscalationContext.setEscalations(SLAWorkflowAPI.getEscalations(slaPolicy.getId(), slaPolicyEntityEscalationContext.getSlaEntityId()));
+                        addEscalationJobs(slaPolicyEntityEscalationContext.getEscalations(), module, dueField, compareField, moduleRecord);
+                    }
+                }
+            }
         }
-
-        addEscalationJobs(slaPolicy.getEscalations(), module, dueField, compareField, moduleRecord);
 
         super.executeTrueActions(record, context, placeHolders);
     }
@@ -131,6 +129,32 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 recordRuleContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, escalation.getActions());
                 recordRuleChain.execute();
             }
+        }
+    }
+
+    public static class SLAEntityDuration {
+        private long slaEntityId = -1;
+        public long getSlaEntityId() {
+            return slaEntityId;
+        }
+        public void setSlaEntityId(long slaEntityId) {
+            this.slaEntityId = slaEntityId;
+        }
+
+        private long slaCommitmentId = -1;
+        public long getSlaCommitmentId() {
+            return slaCommitmentId;
+        }
+        public void setSlaCommitmentId(long slaCommitmentId) {
+            this.slaCommitmentId = slaCommitmentId;
+        }
+
+        private long addDuration = -1;
+        public long getAddDuration() {
+            return addDuration;
+        }
+        public void setAddDuration(long addDuration) {
+            this.addDuration = addDuration;
         }
     }
 }

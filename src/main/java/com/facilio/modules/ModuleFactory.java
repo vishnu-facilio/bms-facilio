@@ -474,20 +474,29 @@ public class ModuleFactory {
 		return module;
 	}
 
-	public static FacilioModule getSLAPolicyRuleModule() {
-		FacilioModule module = new FacilioModule();
-		module.setName("slaPolicyRule");
-		module.setDisplayName("SLA Policy Rule");
-		module.setTableName("SLA_Policy");
+//	public static FacilioModule getSLAPolicyRuleModule() {
+//		FacilioModule module = new FacilioModule();
+//		module.setName("slaPolicyRule");
+//		module.setDisplayName("SLA Policy Rule");
+//		module.setTableName("SLA_Policy");
+//
+//		return module;
+//	}
 
-		return module;
-	}
+//	public static FacilioModule getSLAWorkflowRuleModule() {
+//		FacilioModule module = new FacilioModule();
+//		module.setName("slaWorkflowRule");
+//		module.setDisplayName("SLA Workflow Rule");
+//		module.setTableName("SLA_Workflow_Rule");
+//
+//		return module;
+//	}
 
-	public static FacilioModule getSLAWorkflowRuleModule() {
+	public static FacilioModule getSLACommitmentDurationModule() {
 		FacilioModule module = new FacilioModule();
-		module.setName("slaWorkflowRule");
-		module.setDisplayName("SLA Workflow Rule");
-		module.setTableName("SLA_Workflow_Rule");
+		module.setName("slaCommitmentDuration");
+		module.setDisplayName("SLA Commitment Duration");
+		module.setTableName("SLA_Workflow_Commitment_Duration");
 
 		return module;
 	}

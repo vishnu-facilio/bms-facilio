@@ -1,8 +1,7 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.SLAPolicyContext;
-import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
+import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -18,54 +17,106 @@ import java.util.*;
 
 public class SLAWorkflowAPI extends WorkflowRuleAPI {
 
-    public static void addEscalations(SLAPolicyContext rule, List<SLAWorkflowEscalationContext> escalations) throws Exception {
-        if (CollectionUtils.isNotEmpty(escalations)) {
-            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-                    .table(ModuleFactory.getSLAWorkflowEscalationModule().getTableName())
-                    .fields(FieldFactory.getSlaWorkflowEscalationFields());
+    public static void updateSLAPolicyRule(SLAPolicyContext rule) throws Exception {
+        WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
+        deleteSLAPolicyEscalation(rule);
+        addEscalations(rule);
+    }
 
-            Map<SLAWorkflowEscalationContext, List<ActionContext>> escalationActionMap = new HashMap<>();
-            for (SLAWorkflowEscalationContext escalation : escalations) {
-                escalation.setSlaPolicyId(rule.getId());
-                builder.addRecord(FieldUtil.getAsProperties(escalation));
+    private static void deleteSLAPolicyEscalation(SLAPolicyContext rule) throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getSLAWorkflowEscalationModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(rule.getId()), NumberOperators.EQUALS));
+        builder.delete();
+    }
 
-                List<ActionContext> actions = escalation.getActions();
-                if (CollectionUtils.isNotEmpty(actions)) {
-                    List<ActionContext> actionContexts = ActionAPI.addActions(actions, rule);
-                    escalationActionMap.put(escalation, actionContexts);
-                }
-            }
-            builder.save();
-            List<Map<String, Object>> records = builder.getRecords();
-            for (int i = 0; i < records.size(); i++) {
-                escalations.get(i).setId((Long) records.get(i).get("id"));
-            }
+    public static void addEscalations(SLAPolicyContext rule) throws Exception {
+        List<SLAPolicyContext.SLAPolicyEntityEscalationContext> escalationContexts = rule.getEscalations();
+        if (CollectionUtils.isNotEmpty(escalationContexts)) {
+            for (SLAPolicyContext.SLAPolicyEntityEscalationContext escalationContext : escalationContexts) {
+                List<SLAWorkflowEscalationContext> escalations = escalationContext.getEscalations();
+                if (CollectionUtils.isNotEmpty(escalations)) {
+                    GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                            .table(ModuleFactory.getSLAWorkflowEscalationModule().getTableName())
+                            .fields(FieldFactory.getSlaWorkflowEscalationFields());
 
-            if (MapUtils.isNotEmpty(escalationActionMap)) {
-                GenericInsertRecordBuilder relInsertBuilder = new GenericInsertRecordBuilder()
-                        .table(ModuleFactory.getSLAWorkflowEscalationActionModule().getTableName())
-                        .fields(FieldFactory.getSlaWorkflowEscalationActionFields());
-                for (SLAWorkflowEscalationContext escalation : escalationActionMap.keySet()) {
-                    List<ActionContext> actions = escalationActionMap.get(escalation);
-                    if (CollectionUtils.isNotEmpty(actions)) {
-                        for (ActionContext action : actions) {
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("escalationId", escalation.getId());
-                            map.put("actionId", action.getId());
-                            relInsertBuilder.addRecord(map);
+                    Map<SLAWorkflowEscalationContext, List<ActionContext>> escalationActionMap = new HashMap<>();
+                    for (SLAWorkflowEscalationContext escalation : escalations) {
+                        escalation.setSlaPolicyId(rule.getId());
+                        escalation.setSlaEntityId(escalationContext.getSlaEntityId());
+                        builder.addRecord(FieldUtil.getAsProperties(escalation));
+
+                        List<ActionContext> actions = escalation.getActions();
+                        if (CollectionUtils.isNotEmpty(actions)) {
+                            List<ActionContext> actionContexts = ActionAPI.addActions(actions, rule);
+                            escalationActionMap.put(escalation, actionContexts);
                         }
                     }
+                    builder.save();
+                    List<Map<String, Object>> records = builder.getRecords();
+                    for (int i = 0; i < records.size(); i++) {
+                        escalations.get(i).setId((Long) records.get(i).get("id"));
+                    }
+
+                    if (MapUtils.isNotEmpty(escalationActionMap)) {
+                        GenericInsertRecordBuilder relInsertBuilder = new GenericInsertRecordBuilder()
+                                .table(ModuleFactory.getSLAWorkflowEscalationActionModule().getTableName())
+                                .fields(FieldFactory.getSlaWorkflowEscalationActionFields());
+                        for (SLAWorkflowEscalationContext escalation : escalationActionMap.keySet()) {
+                            List<ActionContext> actions = escalationActionMap.get(escalation);
+                            if (CollectionUtils.isNotEmpty(actions)) {
+                                for (ActionContext action : actions) {
+                                    Map<String, Object> map = new HashMap<>();
+                                    map.put("escalationId", escalation.getId());
+                                    map.put("actionId", action.getId());
+                                    relInsertBuilder.addRecord(map);
+                                }
+                            }
+                        }
+                        relInsertBuilder.save();
+                    }
                 }
-                relInsertBuilder.save();
             }
         }
     }
 
-    public static List<SLAWorkflowEscalationContext> getEscalations(long slaRuleId) throws Exception {
+    public static List<SLAPolicyContext.SLAPolicyEntityEscalationContext> getSLAPolicyEntityEscalations(long slaRuleId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getSLAWorkflowEscalationModule().getTableName())
                 .select(FieldFactory.getSlaWorkflowEscalationFields())
                 .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(slaRuleId), NumberOperators.EQUALS));
+        List<SLAWorkflowEscalationContext> slaEscalations = FieldUtil.getAsBeanListFromMapList(builder.get(), SLAWorkflowEscalationContext.class);
+        if (CollectionUtils.isNotEmpty(slaEscalations)) {
+            Map<Long, List<SLAWorkflowEscalationContext>> map = new HashMap<>();
+            List<SLAPolicyContext.SLAPolicyEntityEscalationContext> list = new ArrayList<>();
+            for (SLAWorkflowEscalationContext e : slaEscalations) {
+                long slaEntityId = e.getSlaEntityId();
+                if (map.containsKey(slaEntityId)) {
+                    List<SLAWorkflowEscalationContext> slaWorkflowEscalationContexts = map.get(slaEntityId);
+                    slaWorkflowEscalationContexts.add(e);
+                }
+                else {
+                    List<SLAWorkflowEscalationContext> slaWorkflowEscalationContexts = new ArrayList<>();
+                    map.put(slaEntityId, slaWorkflowEscalationContexts);
+                    slaWorkflowEscalationContexts.add(e);
+                    SLAPolicyContext.SLAPolicyEntityEscalationContext slaEntityEscalationContext = new SLAPolicyContext.SLAPolicyEntityEscalationContext();
+                    slaEntityEscalationContext.setSlaEntityId(slaEntityId);
+                    slaEntityEscalationContext.setEscalations(slaWorkflowEscalationContexts);
+                    list.add(slaEntityEscalationContext);
+                }
+            }
+            return list;
+        }
+
+        return null;
+    }
+
+    public static List<SLAWorkflowEscalationContext> getEscalations(long slaRuleId, long slaEntityId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getSLAWorkflowEscalationModule().getTableName())
+                .select(FieldFactory.getSlaWorkflowEscalationFields())
+                .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(slaRuleId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("SLA_ENTITY_ID", "slaEntityId", String.valueOf(slaEntityId), NumberOperators.EQUALS));
         List<Map<String, Object>> maps = builder.get();
         return FieldUtil.getAsBeanListFromMapList(maps, SLAWorkflowEscalationContext.class);
     }
@@ -98,5 +149,50 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
                 }
             }
         }
+    }
+
+    public static SLAEntityContext getSLAEntity(long slaEntityId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getSLAEntityModule().getTableName())
+                .select(FieldFactory.getSLAEntityFields())
+                .andCondition(CriteriaAPI.getIdCondition(slaEntityId, ModuleFactory.getSLAEntityModule()));
+        SLAEntityContext slaEntityContext = FieldUtil.getAsBeanFromMap(builder.fetchFirst(), SLAEntityContext.class);
+        return slaEntityContext;
+    }
+
+    public static List<SLAWorkflowCommitmentRuleContext.SLAEntityDuration> getSLAEntitiesForCommitment(long commitmentId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getSLACommitmentDurationModule().getTableName())
+                .select(FieldFactory.getSLACommitmentDurationFields())
+                .andCondition(CriteriaAPI.getCondition("SLA_COMMITMENT_ID", "slaCommitmentID", String.valueOf(commitmentId), NumberOperators.EQUALS));
+        return FieldUtil.getAsBeanListFromMapList(builder.get(), SLAWorkflowCommitmentRuleContext.SLAEntityDuration.class);
+    }
+
+    public static void updateSLACommitmentRule(SLAWorkflowCommitmentRuleContext rule) throws Exception {
+        deleteSLACommitmentDuration(rule);
+        addSLACommitmentDuration(rule);
+    }
+
+    public static void deleteSLACommitmentDuration(SLAWorkflowCommitmentRuleContext rule) throws Exception {
+        GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getSLACommitmentDurationModule().getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(rule.getId(), ModuleFactory.getSLACommitmentDurationModule()));
+        deleteRecordBuilder.delete();
+    }
+
+    public static void addSLACommitmentDuration(SLAWorkflowCommitmentRuleContext rule) throws Exception {
+        if (CollectionUtils.isEmpty(rule.getSlaEntities())) {
+            throw new IllegalArgumentException("SLA Entities cannot be empty");
+        }
+
+        for (SLAWorkflowCommitmentRuleContext.SLAEntityDuration slaEntityDuration : rule.getSlaEntities()) {
+            slaEntityDuration.setSlaCommitmentId(rule.getId());
+        }
+
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getSLACommitmentDurationModule().getTableName())
+                .fields(FieldFactory.getSLACommitmentDurationFields());
+        builder.addRecords(FieldUtil.getAsMapList(rule.getSlaEntities(), SLAWorkflowCommitmentRuleContext.SLAEntityDuration.class));
+        builder.save();
     }
 }

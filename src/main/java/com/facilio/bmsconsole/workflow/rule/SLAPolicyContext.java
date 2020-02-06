@@ -15,11 +15,11 @@ import java.util.Map;
 
 public class SLAPolicyContext extends WorkflowRuleContext {
 
-    private List<SLAWorkflowEscalationContext> escalations;
-    public List<SLAWorkflowEscalationContext> getEscalations() {
+    private List<SLAPolicyEntityEscalationContext> escalations;
+    public List<SLAPolicyEntityEscalationContext> getEscalations() {
         return escalations;
     }
-    public void setEscalations(List<SLAWorkflowEscalationContext> escalations) {
+    public void setEscalations(List<SLAPolicyEntityEscalationContext> escalations) {
         this.escalations = escalations;
     }
 
@@ -36,6 +36,24 @@ public class SLAPolicyContext extends WorkflowRuleContext {
                     .fields(Collections.singletonList(slaPolicyField))
                     .andCondition(CriteriaAPI.getIdCondition(r.getId(), getModule()));
             builder.update(r);
+        }
+    }
+
+    public static class SLAPolicyEntityEscalationContext {
+        private long slaEntityId = -1;
+        public long getSlaEntityId() {
+            return slaEntityId;
+        }
+        public void setSlaEntityId(long slaEntityId) {
+            this.slaEntityId = slaEntityId;
+        }
+
+        private List<SLAWorkflowEscalationContext> escalations;
+        public List<SLAWorkflowEscalationContext> getEscalations() {
+            return escalations;
+        }
+        public void setEscalations(List<SLAWorkflowEscalationContext> escalations) {
+            this.escalations = escalations;
         }
     }
 }

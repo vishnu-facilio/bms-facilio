@@ -361,6 +361,10 @@
 	<package name="slaPolicy" namespace="/api/v2/slaPolicy" extends="v2Api">
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="addOrUpdateSLAPolicy" />
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="deleteSLA" />
+		<action name="view"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="viewSLAPolicy" />
 	</package>
 
 	<package name="sla" namespace="/api/v2/sla" extends="v2Api">
@@ -370,6 +374,8 @@
 				class="com.facilio.bmsconsole.actions.SLAAction" method="addOrUpdateSLA" />
 		<action name="view"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="getSLA" />
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="deleteSLA" />
 	</package>
 	
 	<package name="automation" namespace="/api/v2/automation" extends="v2Api">

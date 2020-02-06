@@ -1674,24 +1674,33 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getSLAPolicyRuleFields() {
+//	public static List<FacilioField> getSLAPolicyRuleFields() {
+//		List<FacilioField> fields = new ArrayList<>();
+//		FacilioModule module = ModuleFactory.getSLAPolicyRuleModule();
+//
+//		fields.add(getField("id", "ID", module, FieldType.NUMBER));
+//
+//		return fields;
+//	}
+
+//	public static List<FacilioField> getSLAWorkflowRuleFields() {
+//		List<FacilioField> fields = new ArrayList<>();
+//		FacilioModule module = ModuleFactory.getSLAWorkflowRuleModule();
+//
+//		fields.add(getField("id", "ID", module, FieldType.NUMBER));
+////		fields.add(getField("slaEntityId", "SLA_ENTITY_ID", module, FieldType.NUMBER));
+////		fields.add(getField("addDuration", "ADD_DURATION", module, FieldType.NUMBER));
+//
+//		return fields;
+//	}
+
+	public static List<FacilioField> getSLACommitmentDurationFields() {
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getSLAPolicyRuleModule();
+		FacilioModule module = ModuleFactory.getSLACommitmentDurationModule();
 
 		fields.add(getField("id", "ID", module, FieldType.NUMBER));
-
-		return fields;
-	}
-
-	public static List<FacilioField> getSLAWorkflowRuleFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getSLAWorkflowRuleModule();
-
-		fields.add(getField("id", "ID", module, FieldType.NUMBER));
-//		fields.add(getField("slaPoliceRuleId", "SLA_POLICY_RULE_ID", module, FieldType.NUMBER));
-		fields.add(getField("baseFieldId", "BASE_FIELDID", module, FieldType.NUMBER));
-		fields.add(getField("dueFieldId", "DUE_FIELDID", module, FieldType.NUMBER));
-		fields.add(getField("compareFieldId", "COMPARE_FIELDID", module, FieldType.NUMBER));
+		fields.add(getField("slaEntityId", "SLA_ENTITY_ID", module, FieldType.NUMBER));
+		fields.add(getField("slaCommitmentId", "SLA_COMMITMENT_ID", module, FieldType.NUMBER));
 		fields.add(getField("addDuration", "ADD_DURATION", module, FieldType.NUMBER));
 
 		return fields;
@@ -1703,6 +1712,7 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		fields.add(getField("slaPolicyId", "SLA_POLICY_ID", module, FieldType.NUMBER));
+		fields.add(getField("slaEntityId", "SLA_ENTITY_ID", module, FieldType.NUMBER));
 		fields.add(getField("type", "TYPE", module, FieldType.SYSTEM_ENUM));
 		fields.add(getField("interval", "TIME_INTERVAL", module, FieldType.NUMBER));
 

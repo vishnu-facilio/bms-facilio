@@ -547,6 +547,13 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateJobEntryForScheduledReadingRuleCommand());
 			return c;
 		}
+
+	public static FacilioChain getDelWorkflowRuleChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetWorkflowRuleCommand());
+		chain.addCommand(new WorkflowRuleDeleteCommand());
+		return chain;
+	}
 		
 		public static FacilioChain addApprovalRuleChain() {
 			FacilioChain c = getDefaultChain();

@@ -1,14 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.util.ApprovalRulesAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.SLARuleAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class UpdateWorkflowRuleCommand extends FacilioCommand {
@@ -70,7 +67,10 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 			rule = ReadingRuleAPI.updateAlarmWorkflowRule((AlarmWorkflowRuleContext) rule);
 		}
 		else if (rule instanceof SLAWorkflowCommitmentRuleContext) {
-			WorkflowRuleAPI.updateExtendedRule(rule, ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields());
+			SLAWorkflowAPI.updateSLACommitmentRule((SLAWorkflowCommitmentRuleContext) rule);
+		}
+		else if (rule instanceof SLAPolicyContext) {
+			SLAWorkflowAPI.updateSLAPolicyRule((SLAPolicyContext) rule);
 		}
 		else {
 			rule = WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);

@@ -610,9 +610,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 			return ModuleFactory.getReadingRuleModule();
 		}
-		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
-			return ModuleFactory.getSLAWorkflowRuleModule();
-		}
+//		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+//			return ModuleFactory.getSLAWorkflowRuleModule();
+//		}
 		else if(FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)) {
 			return ModuleFactory.getWorkflowRuleModule();
 		}
@@ -683,11 +683,11 @@ public class LookupSpecialTypeUtil {
 			fields.addAll(FieldFactory.getWorkflowRuleFields());
 			return fields;
 		}
-		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
-			List<FacilioField> fields = FieldFactory.getSLAWorkflowRuleFields();
-			fields.addAll(FieldFactory.getWorkflowRuleFields());
-			return fields;
-		}
+//		else if (ContextNames.SLA_RULE_MODULE.equals(specialType)) {
+//			List<FacilioField> fields = FieldFactory.getSLAWorkflowRuleFields();
+//			fields.addAll(FieldFactory.getWorkflowRuleFields());
+//			return fields;
+//		}
 		else if(FacilioConstants.ContextNames.TASK_SECTION_MODULE.equals(specialType)) {
 			return FieldFactory.getTaskSectionFields();
 		}

@@ -118,11 +118,12 @@ public class WorkflowRuleAPI {
 				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
 				break;
 			case SLA_POLICY_RULE:
-				addExtendedProps(ModuleFactory.getSLAPolicyRuleModule(), FieldFactory.getSLAPolicyRuleFields(), ruleProps);
-				SLAWorkflowAPI.addEscalations((SLAPolicyContext) rule, ((SLAPolicyContext) rule).getEscalations());
+//				addExtendedProps(ModuleFactory.getSLAPolicyRuleModule(), FieldFactory.getSLAPolicyRuleFields(), ruleProps);
+				SLAWorkflowAPI.addEscalations((SLAPolicyContext) rule);
 				break;
 			case SLA_WORKFLOW_RULE:
-				addExtendedProps(ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields(), ruleProps);
+//				addExtendedProps(ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields(), ruleProps);
+				SLAWorkflowAPI.addSLACommitmentDuration((SLAWorkflowCommitmentRuleContext) rule);
 				break;
 			case APPROVAL_RULE:
 			case CHILD_APPROVAL_RULE:
@@ -567,10 +568,10 @@ public class WorkflowRuleAPI {
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), entry.getValue()));
 					break;
 				case SLA_POLICY_RULE:
-					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLAPolicyRuleModule(), FieldFactory.getSLAPolicyRuleFields(), entry.getValue()));
+//					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLAPolicyRuleModule(), FieldFactory.getSLAPolicyRuleFields(), entry.getValue()));
 					break;
 				case SLA_WORKFLOW_RULE:
-					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields(), entry.getValue()));
+//					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields(), entry.getValue()));
 					break;
 				case READING_ALARM_RULE:
 				case CONTROL_ACTION_READING_ALARM_RULE:
@@ -697,12 +698,12 @@ public class WorkflowRuleAPI {
 							rule = SLARuleAPI.constructSLARuleFromProps(prop, modBean);
 							break;
 						case SLA_POLICY_RULE:
-							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, SLAPolicyContext.class);
+							((SLAPolicyContext) rule).setEscalations(SLAWorkflowAPI.getSLAPolicyEntityEscalations(rule.getId()));
 							break;
 						case SLA_WORKFLOW_RULE:
-							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, SLAWorkflowCommitmentRuleContext.class);
+							((SLAWorkflowCommitmentRuleContext) rule).setSlaEntities(SLAWorkflowAPI.getSLAEntitiesForCommitment(rule.getId()));
 							break;
 						case APPROVAL_RULE:
 						case CHILD_APPROVAL_RULE:
