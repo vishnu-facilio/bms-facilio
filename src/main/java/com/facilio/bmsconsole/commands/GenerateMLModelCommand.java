@@ -95,9 +95,7 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		}
 		postObj.put("outputmetrics",op);
 		postObj.put("data", constructJSONArray(mlContext.getMlVariablesDataMap()));
-		if(mlContext.getOrgId()==210 && mlContext.getId()==4){
-			LOGGER.info("DATA==>"+constructJSONArray(mlContext.getMlVariablesDataMap()));
-		}
+		
 		String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");

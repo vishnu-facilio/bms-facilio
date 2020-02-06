@@ -161,7 +161,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		info.setFrequencyType(FrequencyType.DAILY);
 		
 		List<LocalTime> hourlyList = new ArrayList<LocalTime>();
-		hourlyList.add(LocalTime.MIDNIGHT);
+		hourlyList.add(LocalTime.MIDNIGHT.plusMinutes(15));
 		for(int i=1;i<24;i++)
 		{
 			hourlyList.add(LocalTime.MIDNIGHT.plusHours(i));

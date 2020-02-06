@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
+import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -43,23 +44,23 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 		long time;
 		if(mlContext.getModelPath().equals("ratioCheck") || mlContext.getModelPath().equals("checkGam1") || mlContext.getModelPath().equals("buildGamModel")){
 			
-			Calendar calendar = Calendar.getInstance();
+			Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(AccountUtil.getCurrentOrg().getTimezone()));
 			calendar.setTimeInMillis(mlContext.getPredictionTime());
 			Date date = calendar.getTime();
 			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
-				LOGGER.info("RATIOCHECK DATE 1 :: "+date);
-				LOGGER.info("RATIOCHECK TTIME 1 :: "+calendar.getTimeInMillis());
+				LOGGER.info("CHECKGAM DATE 1 :: "+date);
+				LOGGER.info("CHECKGAM TTIME 1 :: "+calendar.getTimeInMillis());
 			}
 			Date newDate = new Date(date.getYear(),date.getMonth(),date.getDate(),date.getHours(),0);
 			calendar.setTime(newDate);
 			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
-				LOGGER.info("RATIOCHECK DATE 2 :: "+newDate);
-				LOGGER.info("RATIOCHECK TTIME 2 :: "+calendar.getTimeInMillis());
+				LOGGER.info("CHECKGAM DATE 2 :: "+newDate);
+				LOGGER.info("CHECKGAM TTIME 2 :: "+calendar.getTimeInMillis());
 			}
 			time = calendar.getTimeInMillis()-1;
 
 			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
-				LOGGER.info("RATIOCHECK TTIME 3 :: "+time);
+				LOGGER.info("CHECKGAM TTIME 3 :: "+time);
 			}
 			
 		}else{
@@ -85,8 +86,8 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 				currentTime = currentTime + variables.getFutureSamplingPeriod();
 			}
 			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
-				LOGGER.info("RATIOCHECK Start Time"+currentTime);
-				LOGGER.info("RATIOCHECK End Time"+currentTime);
+				LOGGER.info("CHECKGAM Start Time"+startTime);
+				LOGGER.info("CHECKGAM End Time"+currentTime);
 			}
 			SortedMap<Long,Object> data = new TreeMap<Long,Object>();
             FacilioField variableField = modBean.getField(variables.getFieldID());
