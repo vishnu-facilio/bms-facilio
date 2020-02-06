@@ -1570,7 +1570,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			ResourceContext resource = ResourceAPI.getResource(ticket.getResource().getId());
 				if (resource.getResourceTypeEnum() ==  ResourceType.ASSET) {
 					if (ticket.getTenant() != null && ticket.getTenant().getId() > 0 && TenantsAPI.getTenantForAsset(ticket.getResource().getId()) != null && (ticket.getTenant().getId() != TenantsAPI.getTenantForAsset(ticket.getResource().getId()).getId())) {
-						throw new IllegalArgumentException("The tenant associated doesn’t belong to the workorder space.");
+						throw new IllegalArgumentException("The tenant associated doesn’t belong to the workorder asset.");
 					}
 					else {
 						ticket.setTenant(TenantsAPI.getTenantForAsset(ticket.getResource().getId()));
