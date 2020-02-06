@@ -50,6 +50,13 @@ public class GetSubFormModulesCommand extends FacilioCommand {
           
         case FacilioConstants.ContextNames.WORK_ORDER:
             return Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.WORKPERMIT));
+            
+        case FacilioConstants.ContextNames.SAFETY_PLAN:
+            return Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.SAFETYPLAN_HAZARD));
+            
+        case FacilioConstants.ContextNames.HAZARD:
+            return Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.HAZARD_PRECAUTION));
+          
         }
         return null;
     }

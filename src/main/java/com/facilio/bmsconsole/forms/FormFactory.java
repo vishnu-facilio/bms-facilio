@@ -215,6 +215,7 @@ public class FormFactory {
 				FormSection shippingSection = new FormSection("Shipping Address", 3, shippingAddressFields, true);
 				FormSection lineItemSection = new FormSection("Line Items", 4, lineItemFields, true);
 				
+				
 				 form.getFields().forEach(field -> {
 					 if (field.getDisplayTypeEnum() == FieldDisplayType.LINEITEMS) {
 						 lineItemFields.add(field);
@@ -641,6 +642,8 @@ public class FormFactory {
 		fields.add(new FormField("sendForApproval", FieldDisplayType.DECISION_BOX, "Send For Approval", Required.OPTIONAL, 10, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 11, 1));
 	//	fields.add(new FormField("workPermitNeeded", FieldDisplayType.DECISION_BOX, "Work Permit Needed", Required.OPTIONAL, 12, 1));
+		fields.add(new FormField("safetyPlan", FieldDisplayType.LOOKUP_SIMPLE, "Safety Plan", Required.OPTIONAL,"safetyPlan", 12, 1));
+
 
 		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 13, 1));
 		return Collections.unmodifiableList(fields);
@@ -675,6 +678,8 @@ public class FormFactory {
 		fields.add(new FormField("sendForApproval", FieldDisplayType.DECISION_BOX, "Send For Approval", Required.OPTIONAL, 9, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, 10, 1));
 		//fields.add(new FormField("workPermitNeeded", FieldDisplayType.DECISION_BOX, "Work Permit Needed", Required.OPTIONAL, 11, 1));
+		fields.add(new FormField("safetyPlan", FieldDisplayType.LOOKUP_SIMPLE, "Safety Plan", Required.OPTIONAL,"safetyPlan", 11, 1));
+
 		
 		return Collections.unmodifiableList(fields);
 	}

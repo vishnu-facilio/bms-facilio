@@ -2702,6 +2702,10 @@ public class FieldFactory {
 		vendorField.setLookupModule(ModuleFactory.getVendorsModule());
 		woTemplateFields.add(vendorField);
 
+		LookupField safetyPlanField = (LookupField) getField("safetyPlanId", "SAFETY_PLAN_ID",ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
+		safetyPlanField.setLookupModule(ModuleFactory.getSafetyPlanModule());
+		woTemplateFields.add(safetyPlanField);
+
 		try {
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 				LookupField tenantField = (LookupField) getField("tenantId", "TENANT_ID", ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);

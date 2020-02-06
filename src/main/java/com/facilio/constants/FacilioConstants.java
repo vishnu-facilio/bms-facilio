@@ -1439,6 +1439,26 @@ public class FacilioConstants {
 		public static final String SERVICE_REQUEST = "serviceRequest";
 		public static final String SERVICE_REQUEST_ATTACHMENT = "servicerequestsattachments";
 
+				
+		public static final String SAFETY_PLAN = "safetyPlan";
+		public static final String HAZARD = "hazard";
+		
+		public static final String SAFETY_PLANS = "safetyPlans";
+		public static final String HAZARDS = "hazards";
+		
+		public static final String PRECAUTION = "precaution";
+		public static final String PRECAUTIONS = "precautions";
+		
+		public static final String SAFETYPLAN_HAZARD = "safetyPlanHazard";
+		public static final String HAZARD_PRECAUTION = "hazardPrecaution";
+		
+		public static final String SAFETYPLAN_HAZARD_LIST = "safetyPlanHazardList";
+		public static final String HAZARD_PRECAUTION_LIST = "hazardPrecautionList";
+		
+		public static final String WORKORDER_HAZARD = "workorderHazard";
+		public static final String WORKORDER_HAZARDS = "workorderHazards";
+	
+		
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1627,6 +1647,13 @@ public class FacilioConstants {
 
 			classMap.put(VENDOR_DOCUMENTS, DocumentContext.class);
 
+			classMap.put(SAFETY_PLAN, SafetyPlanContext.class);
+			classMap.put(HAZARD, HazardContext.class);
+			classMap.put(PRECAUTION, PrecautionContext.class);
+			classMap.put(SAFETYPLAN_HAZARD, SafetyPlanHazardContext.class);
+			classMap.put(HAZARD_PRECAUTION, HazardPrecautionContext.class);
+			classMap.put(WORKORDER_HAZARD, WorkorderHazardContext.class);
+			
 			return classMap;
 		}
 		

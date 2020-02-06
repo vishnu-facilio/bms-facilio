@@ -61,7 +61,8 @@ public class PermissionUtil {
 
 			criteria.addOrCondition(multiResourceCondition);
 		}
-		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned") || moduleName.equals("alarm"))
+		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned") || moduleName.equals("alarm") 
+				)
 		{
 			Condition condition = new Condition();
 			if (moduleName.equals("planned")) {
@@ -109,6 +110,16 @@ public class PermissionUtil {
 			if (user.getUserType() == 0) {
 				criteria.addAndCondition(CriteriaAPI.getCondition("hideToCustomer", "HIDE_TO_CUSTOMER", String.valueOf(false), BooleanOperators.IS));
 			}
+		}
+		if(moduleName.equals("newreadingalarm") || moduleName.equals("bmsAlarm") || moduleName.equals("agentAlarm")) {
+			Condition condition = new Condition();
+			condition.setColumnName("RESOURCE_ID");
+			condition.setFieldName("resourceId");
+			condition.setOperator(BuildingOperator.BUILDING_IS);
+			condition.setValue(StringUtils.join(accessibleSpace, ","));
+
+			criteria = new Criteria();
+			criteria.addAndCondition(condition);
 		}
 		if(moduleName.equals("site")) {
 			Condition condition = new Condition();

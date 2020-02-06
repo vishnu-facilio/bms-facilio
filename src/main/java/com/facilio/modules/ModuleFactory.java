@@ -3291,4 +3291,12 @@ public class ModuleFactory {
 		module.setDisplayName("Agent Alarm Occurrence");
 		return module;
 	}
+	
+	public static FacilioModule getSafetyPlanModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.SAFETY_PLAN);
+		inventoryModule.setDisplayName("Safety Plan");
+		inventoryModule.setTableName("Safety_Plan");
+		return inventoryModule;
+	}
 }

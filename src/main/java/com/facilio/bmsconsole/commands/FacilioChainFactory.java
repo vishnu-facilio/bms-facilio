@@ -2136,4 +2136,46 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		return c;
 	}
+	
+	public static FacilioChain deleteSafetyPlanChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForSafetyPlan());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteHazardsChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForHazard());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deletePrecautionChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForPrecaution());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteSafetyPlanHazardChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForSafetyPlanHazards());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteHazardPrecautionListChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForHazardPrecaution());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteWorkorderHazardListChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForWorkorderHazard());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
 }

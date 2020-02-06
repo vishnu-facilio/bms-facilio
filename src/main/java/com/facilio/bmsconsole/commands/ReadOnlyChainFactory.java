@@ -2008,6 +2008,97 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getSLAPolicyEscalationsChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetSLAPolicyEscalationsCommand());
+	
+	public static FacilioChain getSafetyPlanListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForSafetyPlan());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getHazardListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForHazard());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getPrecautionListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForPrecaution());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getSafetyPlanDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForSafetyPlan());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain getHazardDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForHazard());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain getPrecautionDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPrecaution());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		
+		return c;
+	}
+
+	public static FacilioChain getSafetyPlanHazardListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForSafetyPlanHazards());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new LoadSafetyPlanHazardLookUpsCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getHazardPrecautionListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForHazardPrecaution());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new LoadHazardPrecautionLookUpsCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getWorkorderHazardListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForWorkorderHazard());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new LoadWorkorderHazardLookUpCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
 }

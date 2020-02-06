@@ -68,6 +68,9 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.INSURANCE);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.SHIPMENT);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.WATCHLIST);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.SAFETY_PLAN);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.HAZARD);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.PRECAUTION);
 		
 		return modulesWithLocalId;
 	}

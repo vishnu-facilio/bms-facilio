@@ -402,7 +402,10 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.VISITOR_LOGGING,
 					FacilioConstants.ContextNames.WORKPERMIT,
 					FacilioConstants.ContextNames.CONTACT,
-					FacilioConstants.ContextNames.VENDOR_DOCUMENTS
+					FacilioConstants.ContextNames.VENDOR_DOCUMENTS,
+					FacilioConstants.ContextNames.SAFETY_PLAN,
+					FacilioConstants.ContextNames.HAZARD,
+					FacilioConstants.ContextNames.PRECAUTION
 					
 					
 			))

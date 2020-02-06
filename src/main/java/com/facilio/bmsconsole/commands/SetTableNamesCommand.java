@@ -443,6 +443,29 @@ public class SetTableNamesCommand extends FacilioCommand {
 		return new SetTableNamesCommand("serviceRequest", "Service_Requests");
 	}
 	
+	public static SetTableNamesCommand getForSafetyPlan() {
+		return new SetTableNamesCommand("safetyPlan", "Safety_Plan");
+	}
+	
+	public static SetTableNamesCommand getForHazard() {
+		return new SetTableNamesCommand("hazard", "Hazard");
+	}
+	
+	public static SetTableNamesCommand getForPrecaution() {
+		return new SetTableNamesCommand("precaution", "Precaution");
+	}
+	
+	public static SetTableNamesCommand getForSafetyPlanHazards() {
+		return new SetTableNamesCommand("safetyPlanHazard", "SafetyPlan_Hazard");
+	}
+	
+	public static SetTableNamesCommand getForHazardPrecaution() {
+		return new SetTableNamesCommand("hazardPrecaution", "Hazard_Precautions");
+	}
+	
+	public static SetTableNamesCommand getForWorkorderHazard() {
+		return new SetTableNamesCommand("workorderHazard", "Workorder_Hazards");
+	}
 	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map

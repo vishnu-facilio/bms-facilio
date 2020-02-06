@@ -5034,4 +5034,118 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="safetyplanViews" namespace="/api/v2/safetyplan/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.SafetyPlanAction" method="getSafetyPlanList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="safetyplan" namespace="/api/v2/safetyplan"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.SafetyPlanAction" method="addSafetyPlan" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.SafetyPlanAction" method="updateSafetyPlan" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.SafetyPlanAction" method="deleteSafetyPlan" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.SafetyPlanAction" method="getSafetyPlanDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.SafetyPlanAction" method="getSafetyPlanList">
+		</action>
+	</package>
+	<package name="hazardViews" namespace="/api/v2/hazard/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.HazardAction" method="getHazardList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="hazard" namespace="/api/v2/hazard"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.HazardAction" method="addHazard" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.HazardAction" method="updateHazard" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.HazardAction" method="deleteHazard" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.HazardAction" method="getHazardDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.HazardAction" method="getHazardList">
+		</action>
+	</package>
+	<package name="precautionViews" namespace="/api/v2/precaution/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PrecautionAction" method="getPrecautionList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="precaution" namespace="/api/v2/precaution"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.PrecautionAction" method="addPrecautions" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.PrecautionAction" method="updatePrecautions" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.PrecautionAction" method="deletePrecaution" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.PrecautionAction" method="getPrecautionDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PrecautionAction" method="getPrecautionList">
+		</action>
+	</package>
+	<package name="safetyPlanHazardViews" namespace="/api/v2/safetyPlanHazard/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PrecautionAction" method="safetyPlanHazardList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="safetyPlanHazard" namespace="/api/v2/safetyPlanHazard"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.SafetyPlanHazardAction" method="addSafetyPlanHazardList" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.SafetyPlanHazardAction" method="deleteSafetyPlanHazardList" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.SafetyPlanHazardAction" method="safetyPlanHazardList">
+		</action>
+	</package>
+	<package name="hazardPrecautionViews" namespace="/api/v2/hazardPrecaution/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PrecautionAction" method="hazardPrecautionList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="hazardPrecaution" namespace="/api/v2/hazardPrecaution"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.HazardPrecautionAction" method="addHazardPrecautionList" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.HazardPrecautionAction" method="deleteHazardPrecautionList" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.HazardPrecautionAction" method="hazardPrecautionList">
+		</action>
+	</package>
+	<package name="workorderHazardViews" namespace="/api/v2/workorderHazard/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PrecautionAction" method="hazardPrecautionList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="workorderHazard" namespace="/api/v2/workorderHazard"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.WorkorderHazardAction" method="addWorkorderHazardList" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.WorkorderHazardAction" method="deleteWorkOrderHazardList" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkorderHazardAction" method="workorderHazardList">
+		</action>
+	</package>
 </struts>

@@ -532,4 +532,14 @@ public class WorkOrderContext extends TicketContext {
 	}
 
 	private long woCreationOffset = -1L;
+	
+	private SafetyPlanContext safetyPlan;
+	public SafetyPlanContext getSafetyPlan() {
+		return safetyPlan;
+	}
+	public void setSafetyPlan(SafetyPlanContext safetyPlan) {
+		this.safetyPlan = safetyPlan;
+	}
+	
+	
 }

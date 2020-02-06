@@ -240,6 +240,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new AddWorkOrderCommand());
 			c.addCommand(new AddAttachmentCommand());
+			c.addCommand(new AddWorkorderHazardsFromSafetyPlanCommand());
 			c.addCommand(new AttachmentContextCommand());
 			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new AddTicketActivityCommand());
@@ -4562,6 +4563,92 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddSLAPolicyEscalationsCommand());
 		return chain;
 	}
+	
+	public static FacilioChain addSafetyPlansChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForSafetyPlan());
+		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new GenericAddSubModuleDataCommand());
+		
+		return c;
+	}
+
+	public static FacilioChain updateSafetyPlansChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForSafetyPlan());
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		c.addCommand(new GenericAddSubModuleDataCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain addHazardChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForHazard());
+		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new GenericAddSubModuleDataCommand());
+		
+		return c;
+	}
+
+	public static FacilioChain updateHazardChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForHazard());
+		c.addCommand(new GenericUpdateModuleDataCommand());
+		c.addCommand(new GenericAddSubModuleDataCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain addPrecautionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPrecaution());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		
+		return c;
+	}
+
+	public static FacilioChain updatePrecautionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPrecaution());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain getAddOrUdpateSafetyPlanHazardChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkorderLabour());
+		c.addCommand(new AddOrUpdateWorkorderLabourCommand());
+		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new AddOrUpdateWorkorderCostCommand());
+		c.addCommand(new UpdateWorkorderTotalCostCommand());
+		return c;
+	}
+
+	public static FacilioChain addSafetyPlanHazardChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForSafetyPlanHazards());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain addHazardPrecautionListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForHazardPrecaution());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain addWorkorderHazardListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkorderHazard());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		
+		return c;
+	}
+
 }
 
 

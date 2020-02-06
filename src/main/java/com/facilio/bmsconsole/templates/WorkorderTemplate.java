@@ -431,4 +431,12 @@ public class WorkorderTemplate extends Template {
 	public void setWoCreationOffset(long woCreationOffset) {
 		this.woCreationOffset = woCreationOffset;
 	}
+	private long safetyPlanId;
+	public long getSafetyPlanId() {
+		return safetyPlanId;
+	}
+	public void setSafetyPlanId(long safetyPlanId) {
+		this.safetyPlanId = safetyPlanId;
+	}
+	
 }
