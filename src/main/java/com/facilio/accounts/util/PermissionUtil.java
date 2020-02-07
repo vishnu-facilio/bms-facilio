@@ -111,16 +111,6 @@ public class PermissionUtil {
 				criteria.addAndCondition(CriteriaAPI.getCondition("hideToCustomer", "HIDE_TO_CUSTOMER", String.valueOf(false), BooleanOperators.IS));
 			}
 		}
-		if(moduleName.equals("newreadingalarm") || moduleName.equals("bmsAlarm") || moduleName.equals("agentAlarm")) {
-			Condition condition = new Condition();
-			condition.setColumnName("RESOURCE_ID");
-			condition.setFieldName("resourceId");
-			condition.setOperator(BuildingOperator.BUILDING_IS);
-			condition.setValue(StringUtils.join(accessibleSpace, ","));
-
-			criteria = new Criteria();
-			criteria.addAndCondition(condition);
-		}
 		if(moduleName.equals("site")) {
 			Condition condition = new Condition();
 			condition.setColumnName("Resources.ID");
