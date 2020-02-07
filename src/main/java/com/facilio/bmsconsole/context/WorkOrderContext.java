@@ -283,6 +283,14 @@ public class WorkOrderContext extends TicketContext {
 		this.parentWO = parentWO;
 	}
 
+	private long responseDueDate = -1;
+	public long getResponseDueDate() {
+		return responseDueDate;
+	}
+	public void setResponseDueDate(long responseDueDate) {
+		this.responseDueDate = responseDueDate;
+	}
+
 	private WOUrgency urgency;
 	public WOUrgency getUrgencyEnum() {
 		return urgency;
