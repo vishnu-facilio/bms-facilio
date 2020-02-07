@@ -277,6 +277,9 @@ public class TaskAction extends FacilioAction {
 			if(context.get(FacilioConstants.ContextNames.REQUIRES_REMARKS) != null && (boolean) context.get(FacilioConstants.ContextNames.REQUIRES_REMARKS)) {
 				setResult(FacilioConstants.ContextNames.REQUIRES_REMARKS, true);
 			}
+			if (context.get(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT) != null && (boolean) context.get(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT)) {
+				setResult(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT, true);
+			}
 			
 		} catch (ReadingValidationException ex) {
 			Map<String, String> msgMap = new HashMap<>();
