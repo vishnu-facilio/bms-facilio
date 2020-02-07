@@ -2008,6 +2008,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getSLAPolicyEscalationsChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetSLAPolicyEscalationsCommand());
+	}
 	
 	public static FacilioChain getSafetyPlanListChain() {
 		FacilioChain chain = getDefaultChain();
