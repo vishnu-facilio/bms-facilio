@@ -88,6 +88,8 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				parentIds.add(note.getParentId());
 				JSONObject info = new JSONObject();
 				info.put("Comment", note.getBody());
+				info.put("notifyRequester", note.getNotifyRequester());
+				info.put("addedBy", note.getCreatedBy().getOuid());
 	     		if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 				CommonCommandUtil.addActivityToContext(note.getParentId(), -1, WorkOrderActivityType.ADD_COMMENT, info, (FacilioContext) context);
 	     		}

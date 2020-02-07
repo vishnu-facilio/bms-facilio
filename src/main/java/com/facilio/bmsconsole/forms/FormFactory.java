@@ -66,6 +66,7 @@ public class FormFactory {
 		forms.put("visitorForm", getVisitorForm());
 		forms.put("portalVisitorForm", getPortalVisitorForm());
 		forms.put("visitorPreRegisterForm", getVisitorPreRegisterForm());
+		forms.put("default_visitorlogging_portal", getPortalVisitorPreRegisterForm());
 		forms.put("portalVisitorPreRegisterForm", getPortalVisitorPreRegisterForm());
 		forms.put("vendor_contact_form", getVendorContactForm());
 		forms.put("portal_vendor_contact_form", getPortalVendorForm());
@@ -1476,7 +1477,7 @@ public class FormFactory {
 	public static FacilioForm getPortalVisitorPreRegisterForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("PRE REGISTER VISITOR");
-		form.setName("portal_default");
+		form.setName("default_visitorlogging_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_INVITE));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getPotalVisitorPreRegisterFormFields());
