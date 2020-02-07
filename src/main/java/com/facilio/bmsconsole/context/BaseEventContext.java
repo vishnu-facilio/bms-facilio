@@ -269,6 +269,9 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 		if (add) {
 			baseAlarm.setResource(getResource());
 			baseAlarm.setKey(getMessageKey());
+			if(getSiteId() != -1) {
+				baseAlarm.setSiteId(getSiteId());
+			}
 		}
 		return baseAlarm;
 	}
@@ -301,6 +304,9 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 			CommonCommandUtil.addEventType(EventType.CREATE, (FacilioContext) context);
 			alarmOccurrence.setCreatedTime(getCreatedTime());
 			alarmOccurrence.setResource(getResource());
+			if(getSiteId() != -1) {
+				alarmOccurrence.setSiteId(getSiteId());
+			}	
 		} 
 		else {
 			if (!previousSeverity.equals(getSeverity())) {

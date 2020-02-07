@@ -358,7 +358,11 @@ public class FieldUtil {
 										FacilioConstants.ContextNames.Reservation.RESERVATIONS_EXTERNAL_ATTENDEE,
 										FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE,
 										FacilioConstants.ContextNames.BASE_ALARM,
+										FacilioConstants.ContextNames.NEW_READING_ALARM,
 										FacilioConstants.ContextNames.ALARM_OCCURRENCE,
+										FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE,
+										FacilioConstants.ContextNames.BASE_EVENT,
+										FacilioConstants.ContextNames.READING_EVENT,
 										FacilioConstants.ContextNames.WORKPERMIT
 										
 										)));
