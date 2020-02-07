@@ -288,6 +288,11 @@ public class LoadViewCommand extends FacilioCommand {
 						continue;
 					}
 				}
+				else if(field.getName().equals("safetyPlan")) {
+					if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
+						continue;
+					}
+				}
 				String displayName;
 				if (fieldMap != null && fieldMap.get(field.getName()) != null && fieldMap.get(field.getName()).getColumnDisplayName() != null) {
 					displayName = fieldMap.get(field.getName()).getColumnDisplayName();

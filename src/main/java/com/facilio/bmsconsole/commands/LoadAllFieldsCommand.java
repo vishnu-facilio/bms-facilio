@@ -30,6 +30,12 @@ public class LoadAllFieldsCommand extends FacilioCommand{
 					}
 						
 				} 
+				if(fields.get(i).getName().equals("safetyPlan")) {
+					if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
+					  continue;
+					}
+						
+				} 
 				restrictedFields.add(fields.get(i));
 			}
 			

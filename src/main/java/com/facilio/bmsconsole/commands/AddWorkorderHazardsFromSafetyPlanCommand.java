@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SafetyPlanHazardContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -23,7 +25,7 @@ public class AddWorkorderHazardsFromSafetyPlanCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-		if(workOrder != null && workOrder.getSafetyPlan() != null && workOrder.getSafetyPlan().getId() > 0) {
+		if(workOrder != null && workOrder.getSafetyPlan() != null && workOrder.getSafetyPlan().getId() > 0 && AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
 			List<SafetyPlanHazardContext> hazards = HazardsAPI.fetchAssociatedHazards(workOrder.getSafetyPlan().getId());
 			if(CollectionUtils.isNotEmpty(hazards)) {
 				List<WorkorderHazardContext> woHazards = new ArrayList<WorkorderHazardContext>();

@@ -196,6 +196,11 @@ public class FacilioView {
 						continue;
 					}
 				}
+				if(vf.getName().equals("safetyPlan")){
+					if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SAFETY_PLAN)) {
+						continue;
+					}
+				}
 				defaultModulefields.put(vf.getName(),vf);
 			}
 		}

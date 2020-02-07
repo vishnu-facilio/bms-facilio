@@ -2,6 +2,7 @@ package com.facilio.modules;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
@@ -2702,15 +2703,16 @@ public class FieldFactory {
 		vendorField.setLookupModule(ModuleFactory.getVendorsModule());
 		woTemplateFields.add(vendorField);
 
-		LookupField safetyPlanField = (LookupField) getField("safetyPlanId", "SAFETY_PLAN_ID",ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
-		safetyPlanField.setLookupModule(ModuleFactory.getSafetyPlanModule());
-		woTemplateFields.add(safetyPlanField);
-
 		try {
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 				LookupField tenantField = (LookupField) getField("tenantId", "TENANT_ID", ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
 				tenantField.setLookupModule(ModuleFactory.getTenantsModule());
 				woTemplateFields.add(tenantField);
+			}
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
+				LookupField safetyPlanField = (LookupField) getField("safetyPlanId", "SAFETY_PLAN_ID",ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
+				safetyPlanField.setLookupModule(ModuleFactory.getSafetyPlanModule());
+				woTemplateFields.add(safetyPlanField);
 			}
 		}
 		catch (Exception e) {
