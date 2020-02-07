@@ -313,6 +313,13 @@ public class LoadViewCommand extends FacilioCommand {
 				
 			}
 		}
+		else if(module.getName().equals("safetyPlan") || module.getName().equals("hazard") || module.getName().equals("precaution")) {
+			List<FacilioField> systemFields = FieldFactory.getSystemFields(module);
+			for(FacilioField systemField : systemFields) {
+				fieldNames.put(systemField.getName(), systemField.getDisplayName());
+
+			}
+		}
 		
 //		Temporary handling for Deyari
 		if (moduleName.equals("workorder")) {

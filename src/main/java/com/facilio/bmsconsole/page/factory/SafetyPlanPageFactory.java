@@ -31,7 +31,7 @@ public class SafetyPlanPageFactory extends PageFactory{
         addSecondaryDetailsWidget(tab1Sec1);
         Section tab1Sec2 = page.new Section();
         tab1.addSection(tab1Sec2);
-        addRelatedListWidget(tab1Sec2, "safetyPlanHazard", safetyPlan.getModuleId());
+        addRelatedListWidget(tab1Sec2, "safetyPlanHazard", safetyPlan.getModuleId(), "Hazards");
         addSafetyPlanHazardsWidget(tab1Sec2);
 
         addCommonSubModuleGroup(tab1Sec1);
@@ -51,7 +51,7 @@ public class SafetyPlanPageFactory extends PageFactory{
 
         Section tab1Sec2 = page.new Section();
         tab1.addSection(tab1Sec2);
-        addRelatedListWidget(tab1Sec2, "hazardPrecaution", hazard.getModuleId());
+        addRelatedListWidget(tab1Sec2, "hazardPrecaution", hazard.getModuleId(), "Associated Precautions");
 
         addCommonSubModuleGroup(tab1Sec1);
         return page;
@@ -68,7 +68,7 @@ public class SafetyPlanPageFactory extends PageFactory{
 
         Section tab2Sec1 = page.new Section();
         tab1.addSection(tab2Sec1);
-        addRelatedListWidget(tab2Sec1, "hazardPrecaution", precaution.getModuleId());
+        addRelatedListWidget(tab2Sec1, "hazardPrecaution", precaution.getModuleId(), "Associated Hazards");
         addCommonSubModuleGroup(tab1Sec1);
 
         return page;
@@ -80,7 +80,7 @@ public class SafetyPlanPageFactory extends PageFactory{
         section.addWidget(detailsWidget);
     }
 
-    private static void addRelatedListWidget(Section section, String moduleName, long parenModuleId) throws Exception {
+    private static void addRelatedListWidget(Section section, String moduleName, long parenModuleId, String moduleDisplayName) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -91,6 +91,7 @@ public class SafetyPlanPageFactory extends PageFactory{
             for (FacilioField field : fields) {
                 PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
                 JSONObject relatedList = new JSONObject();
+                module.setDisplayName(moduleDisplayName);
                 relatedList.put("module", module);
                 relatedList.put("field", field);
                 relatedListWidget.setRelatedList(relatedList);
