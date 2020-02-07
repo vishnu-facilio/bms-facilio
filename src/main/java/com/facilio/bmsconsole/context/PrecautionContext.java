@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class PrecautionContext extends ModuleBaseWithCustomFields{
@@ -15,7 +17,7 @@ public class PrecautionContext extends ModuleBaseWithCustomFields{
 		return name;
 	}
 	public void setName(String name) {
-		this.name = name;
+		this.name = StringUtils.upperCase(name);
 	}
 	public String getDescription() {
 		return description;
