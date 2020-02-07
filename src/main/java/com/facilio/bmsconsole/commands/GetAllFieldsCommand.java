@@ -162,6 +162,9 @@ public class GetAllFieldsCommand extends FacilioCommand {
 			fields.removeAll(fieldsToRemove);
 			fields.addAll(FieldFactory.getSystemFields(mod));
 		}
+		else if(mod.getName().equals("safetyPlan") || mod.getName().equals("hazard") || mod.getName().equals("precaution")) {
+			fields.addAll(FieldFactory.getSystemFields(mod));
+		}
 		
 		if (moduleName.equals("workorder")) {
 			fields.add(FieldFactory.getSiteIdField());
