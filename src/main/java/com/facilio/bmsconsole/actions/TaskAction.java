@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.lang.reflect.Array;
+import java.util.*;
 
+import com.facilio.bmsconsole.context.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -16,14 +17,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.RecordSummaryLayout;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
-import com.facilio.bmsconsole.context.TaskErrorContext;
-import com.facilio.bmsconsole.context.TaskSectionContext;
-import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
@@ -44,6 +38,31 @@ public class TaskAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(TaskAction.class.getName());
+
+	private File beforeAttachment;
+	public File getBeforeAttachment() {
+		return beforeAttachment;
+	}
+	public void setBeforeAttachment(File attachment) {
+		this.beforeAttachment = attachment;
+	}
+
+	private File afterAttachment;
+	public File getAfterAttachment() {
+		return afterAttachment;
+	}
+	public void setAfterAttachment(File attachment) {
+		this.afterAttachment = attachment;
+	}
+
+	private String beforeAttachmentContentType;
+	private String afterAttachmentContentType;
+
+	private String afterAttachmentFileName;
+
+	private String beforeAttachmentFileName;
+
+
 	//New Task Props
 	public String newTask() throws Exception {
 		
@@ -401,11 +420,75 @@ public class TaskAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public String updateAllTask() throws Exception {
-		FacilioContext context = new FacilioContext();
+
+
+
+	public void handleTaskAttachment(FacilioContext context) throws Exception {
+
+		if (StringUtils.isEmpty(this.module) && this.recordId < 0) {
+			return;
+		}
+
+		if (beforeAttachment == null && afterAttachment == null) {
+			return;
+		}
+
+		if (beforeAttachment != null) {
+			FacilioContext context1 = new FacilioContext();
+			context1.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+			context1.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
+			context1.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, AttachmentContext.AttachmentType.BEFORE);
+			context1.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, Arrays.asList(this.beforeAttachment));
+			context1.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, Arrays.asList(this.beforeAttachmentFileName));
+			context1.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, Arrays.asList(this.beforeAttachmentContentType));
+
+			if (module.equals(FacilioConstants.ContextNames.ITEM_TYPES_ATTACHMENTS)) {
+				context1.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
+			}
+			else if (module.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS) || module.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS)) {
+				context1.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+			}
+			else if (module.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
+				context1.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+			}
+
+			FacilioChain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
+			addAttachmentChain.execute(context1);
+
+			context.put(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT, false);
+			setResult(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT, false);
+		}
+
+		if (afterAttachment != null) {
+			FacilioContext context1 = new FacilioContext();
+			context1.put(FacilioConstants.ContextNames.MODULE_NAME, this.module);
+			context1.put(FacilioConstants.ContextNames.RECORD_ID, this.recordId);
+			context1.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, AttachmentContext.AttachmentType.AFTER);
+			context1.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, Arrays.asList(this.afterAttachment));
+			context1.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, Arrays.asList(this.afterAttachmentFileName));
+			context1.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, Arrays.asList(this.afterAttachmentContentType));
+
+			if (module.equals(FacilioConstants.ContextNames.ITEM_TYPES_ATTACHMENTS)) {
+				context1.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
+			}
+			else if (module.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS) || module.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS)) {
+				context1.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+			}
+			else if (module.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
+				context1.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+			}
+
+			FacilioChain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
+			addAttachmentChain.execute(context1);
+
+			context.put(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT, false);
+			setResult(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT, false);
+		}
+	}
+
+
+	public String updateAllTask(FacilioContext context) throws Exception {
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();
-		
-		
 		try {
 		for (TaskContext singleTask :taskContextList)
 		{
@@ -728,7 +811,9 @@ public class TaskAction extends FacilioAction {
 	}
 	
 	public String v2updateAllTask() throws Exception {
-		updateAllTask();
+		FacilioContext context = new FacilioContext();
+		handleTaskAttachment(context);
+		updateAllTask(context);
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.TASK_LIST, taskContextList);
 		setResult("error", getError());
@@ -858,6 +943,37 @@ public class TaskAction extends FacilioAction {
 	public void setModifiedTime(long modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
-	
- }
+
+	public String getBeforeAttachmentFileName() {
+		return beforeAttachmentFileName;
+	}
+
+	public void setBeforeAttachmentFileName(String beforeAttachmentFileName) {
+		this.beforeAttachmentFileName = beforeAttachmentFileName;
+	}
+
+	public String getAfterAttachmentFileName() {
+		return afterAttachmentFileName;
+	}
+
+	public void setAfterAttachmentFileName(String afterAttachmentFileName) {
+		this.afterAttachmentFileName = afterAttachmentFileName;
+	}
+
+	public String getAfterAttachmentContentType() {
+		return afterAttachmentContentType;
+	}
+
+	public void setAfterAttachmentContentType(String afterAttachmentContentType) {
+		this.afterAttachmentContentType = afterAttachmentContentType;
+	}
+
+	public String getBeforeAttachmentContentType() {
+		return beforeAttachmentContentType;
+	}
+
+	public void setBeforeAttachmentContentType(String beforeAttachmentContentType) {
+		this.beforeAttachmentContentType = beforeAttachmentContentType;
+	}
+}
 

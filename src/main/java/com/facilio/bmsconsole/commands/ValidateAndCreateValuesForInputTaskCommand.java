@@ -60,7 +60,9 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 							context.put(FacilioConstants.ContextNames.REQUIRES_REMARKS, true);
 						}
 
-						if (checkIfAttachmentsRequired(completeRecord, task)) {
+						boolean needToCheckForAttach = context.get(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT) == null;
+
+						if (needToCheckForAttach && checkIfAttachmentsRequired(completeRecord, task)) {
 							context.put(FacilioConstants.ContextNames.REQUIRES_ATTACHMENT, true);
 						}
 

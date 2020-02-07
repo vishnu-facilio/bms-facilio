@@ -1327,9 +1327,10 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 							Metric metric = readingNumberField.getMetricEnum();
 							readingFieldUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), metric.getMetricId());
 						}
-						
-						task.setReadingFieldUnit(readingFieldUnit);
-												
+
+						if (readingFieldUnit != null) {
+							task.setReadingFieldUnit(readingFieldUnit.getUnitId());
+						}
 					}
 				}
 					

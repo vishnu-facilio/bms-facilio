@@ -200,9 +200,6 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		this.readingFieldUnit = Unit.valueOf(readingFieldUnit);
 	}
 	
-	public void setReadingFieldUnit(Unit readingFieldUnit) {
-		this.readingFieldUnit = readingFieldUnit;
-	}
 
 	private long readingDataId = -1;
 	public long getReadingDataId() {
