@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.db.criteria.Criteria;
+
 import java.io.Serializable;
 
 public class SLAEntityContext implements Serializable {
@@ -52,11 +54,19 @@ public class SLAEntityContext implements Serializable {
         this.dueFieldId = dueFieldId;
     }
 
-    private long compareFieldId = -1;
-    public long getCompareFieldId() {
-        return compareFieldId;
+    private Criteria criteria;
+    public Criteria getCriteria() {
+        return criteria;
     }
-    public void setCompareFieldId(long compareFieldId) {
-        this.compareFieldId = compareFieldId;
+    public void setCriteria(Criteria criteria) {
+        this.criteria = criteria;
+    }
+
+    private long criteriaId = -1;
+    public long getCriteriaId() {
+        return criteriaId;
+    }
+    public void setCriteriaId(long criteriaId) {
+        this.criteriaId = criteriaId;
     }
 }

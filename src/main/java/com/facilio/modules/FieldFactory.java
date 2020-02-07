@@ -1669,7 +1669,8 @@ public class FieldFactory {
 		fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
 		fields.add(getField("baseFieldId", "BASE_FIELDID", module, FieldType.NUMBER));
 		fields.add(getField("dueFieldId", "DUE_FIELDID", module, FieldType.NUMBER));
-		fields.add(getField("compareFieldId", "COMPARE_FIELDID", module, FieldType.NUMBER));
+//		fields.add(getField("compareFieldId", "COMPARE_FIELDID", module, FieldType.NUMBER));
+		fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
 
 		return fields;
 	}

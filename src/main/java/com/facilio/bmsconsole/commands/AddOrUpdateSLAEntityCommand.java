@@ -39,9 +39,12 @@ public class AddOrUpdateSLAEntityCommand extends FacilioCommand {
             if (dueField == null) {
                 throw new IllegalArgumentException("Due field cannot be empty");
             }
-            FacilioField compareField = modBean.getField(slaEntity.getCompareFieldId(), module.getName());
-            if (compareField == null) {
-                throw new IllegalArgumentException("Compare field cannot be empty");
+            if (slaEntity.getCriteria() != null) {
+                long criteriaId = CriteriaAPI.addCriteria(slaEntity.getCriteria());
+                slaEntity.setCriteriaId(criteriaId);
+            }
+            else {
+                slaEntity.setCriteriaId(-99);
             }
 
             if (slaEntity.getId() > 0) {

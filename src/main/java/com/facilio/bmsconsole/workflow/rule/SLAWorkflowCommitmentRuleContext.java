@@ -61,7 +61,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
 
                 FacilioField baseField = modBean.getField(slaEntity.getBaseFieldId());
                 FacilioField dueField = modBean.getField(slaEntity.getDueFieldId());
-                FacilioField compareField = modBean.getField(slaEntity.getCompareFieldId());
+//                FacilioField compareField = modBean.getField(slaEntity.getCompareFieldId());
 
                 Long timeValue;
                 if (baseField.isDefault()) {
@@ -91,7 +91,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());
                     if (CollectionUtils.isNotEmpty(slaPolicyEntityEscalationContext.getLevels())) {
                         slaPolicyEntityEscalationContext.setLevels(SLAWorkflowAPI.getEscalations(slaPolicy.getId(), slaPolicyEntityEscalationContext.getSlaEntityId()));
-                        addEscalationJobs(slaPolicyEntityEscalationContext.getLevels(), module, dueField, compareField, moduleRecord);
+                        addEscalationJobs(slaPolicyEntityEscalationContext.getLevels(), module, dueField, slaEntity.getCriteria(), moduleRecord);
                     }
                 }
             }
@@ -100,7 +100,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
         super.executeTrueActions(record, context, placeHolders);
     }
 
-    private void addEscalationJobs(List<SLAWorkflowEscalationContext> escalations, FacilioModule module, FacilioField dueField, FacilioField compareField, ModuleBaseWithCustomFields moduleRecord) throws Exception {
+    private void addEscalationJobs(List<SLAWorkflowEscalationContext> escalations, FacilioModule module, FacilioField dueField, Criteria criteria, ModuleBaseWithCustomFields moduleRecord) throws Exception {
         if (CollectionUtils.isNotEmpty(escalations)) {
             SLAWorkflowAPI.getActions(escalations);
             int count = 0;
@@ -114,8 +114,8 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 workflowRuleContext.setModule(module);
                 workflowRuleContext.setParentId(moduleRecord.getId());
 
-                Criteria criteria = new Criteria();
-                criteria.addAndCondition(CriteriaAPI.getCondition(compareField, CommonOperators.IS_EMPTY));
+//                Criteria criteria = new Criteria();
+//                criteria.addAndCondition(CriteriaAPI.getCondition(compareField, CommonOperators.IS_EMPTY));
                 workflowRuleContext.setCriteria(criteria);
                 workflowRuleContext.setDateFieldId(dueField.getFieldId());
 
