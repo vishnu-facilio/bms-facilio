@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SafetyPlanContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -251,6 +252,10 @@ public class WorkorderTemplate extends Template {
 				woProp.put("vendor", FieldUtil.getEmptyLookedUpProp(vendorId));
 			}
 			
+			if (safetyPlanId != -1) {
+				woProp.put("safetyPlan", FieldUtil.getEmptyLookedUpProp(safetyPlanId));
+			}
+			
 			if (fetchPlaceholders && (tasks != null && !tasks.isEmpty())) {
 				woProp.put("taskList", FieldUtil.getAsJSON(tasks));
 			}
@@ -320,6 +325,10 @@ public class WorkorderTemplate extends Template {
 				vendorId = workorder.getVendor().getId();
 			}
 			
+			if (workorder.getSafetyPlan() != null) {
+				safetyPlanId = workorder.getSafetyPlan().getId();
+			}
+			
 			Map<String, Object> prop = FieldUtil.getAsProperties(workorder);
 			prop.remove("id");
 			prop.remove("subject");
@@ -335,6 +344,7 @@ public class WorkorderTemplate extends Template {
 			prop.remove("siteId");
 			prop.remove("tenant");
 			prop.remove("vendor");
+			prop.remove("safetyPlan");
 			
 			additionInfo = new JSONObject();
 			additionInfo.putAll(prop);
@@ -431,12 +441,13 @@ public class WorkorderTemplate extends Template {
 	public void setWoCreationOffset(long woCreationOffset) {
 		this.woCreationOffset = woCreationOffset;
 	}
-	private long safetyPlanId;
-	public long getSafetyPlanId() {
+	private Long safetyPlanId;
+	public Long getSafetyPlanId() {
 		return safetyPlanId;
 	}
-	public void setSafetyPlanId(long safetyPlanId) {
+	public void setSafetyPlanId(Long safetyPlanId) {
 		this.safetyPlanId = safetyPlanId;
 	}
+	
 	
 }
