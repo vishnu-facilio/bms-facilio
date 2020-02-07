@@ -6155,7 +6155,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Safety Plan");
+		allView.setDisplayName("Safety Plans");
 
 		return allView;
 	}
@@ -6164,7 +6164,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Hazard");
+		allView.setDisplayName("Hazards");
 
 		return allView;
 	}
@@ -6173,7 +6173,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Precaution");
+		allView.setDisplayName("Precautions");
 
 		return allView;
 	}

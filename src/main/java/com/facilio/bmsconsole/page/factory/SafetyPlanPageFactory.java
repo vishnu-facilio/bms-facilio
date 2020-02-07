@@ -29,15 +29,12 @@ public class SafetyPlanPageFactory extends PageFactory{
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
+        Section tab1Sec2 = page.new Section();
+        tab1.addSection(tab1Sec2);
+        addRelatedListWidget(tab1Sec2, "safetyPlanHazard", safetyPlan.getModuleId());
+        addSafetyPlanHazardsWidget(tab1Sec2);
+
         addCommonSubModuleGroup(tab1Sec1);
-
-        Tab tab2 = page.new Tab("related list");
-        page.addTab(tab2);
-
-        Section tab2Sec1 = page.new Section();
-        tab2.addSection(tab2Sec1);
-        addRelatedListWidget(tab2Sec1, "safetyPlanHazard", safetyPlan.getModuleId());
-        addSafetyPlanHazardsWidget(tab2Sec1);
 
         return page;
     }
@@ -51,16 +48,12 @@ public class SafetyPlanPageFactory extends PageFactory{
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
+
+        Section tab1Sec2 = page.new Section();
+        tab1.addSection(tab1Sec2);
+        addRelatedListWidget(tab1Sec2, "hazardPrecaution", hazard.getModuleId());
+
         addCommonSubModuleGroup(tab1Sec1);
-
-        Tab tab2 = page.new Tab("related list");
-        page.addTab(tab2);
-
-        Section tab2Sec1 = page.new Section();
-        tab2.addSection(tab2Sec1);
-        addRelatedListWidget(tab2Sec1, "safetyPlanHazard", hazard.getModuleId());
-        addRelatedListWidget(tab2Sec1, "hazardPrecaution", hazard.getModuleId());
-
         return page;
     }
     public static Page getPrecautionPage(PrecautionContext precaution) throws Exception {
@@ -72,14 +65,11 @@ public class SafetyPlanPageFactory extends PageFactory{
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
-        addCommonSubModuleGroup(tab1Sec1);
-
-        Tab tab2 = page.new Tab("related list");
-        page.addTab(tab2);
 
         Section tab2Sec1 = page.new Section();
-        tab2.addSection(tab2Sec1);
+        tab1.addSection(tab2Sec1);
         addRelatedListWidget(tab2Sec1, "hazardPrecaution", precaution.getModuleId());
+        addCommonSubModuleGroup(tab1Sec1);
 
         return page;
     }
@@ -110,8 +100,8 @@ public class SafetyPlanPageFactory extends PageFactory{
         }
     }
     private static void addSafetyPlanHazardsWidget(Section section) {
-        PageWidget widget = new PageWidget(WidgetType.SAFETY_PLAN_HAZARDS, "safetyPlanHazards");
-        widget.addToLayoutParams(section, 24, 5);
+        PageWidget widget = new PageWidget(WidgetType.SAFETY_PLAN_PRECAUTIONS, "safetyPlanPrecautions");
+        widget.addToLayoutParams(section, 24, 10);
         section.addWidget(widget);
     }
 

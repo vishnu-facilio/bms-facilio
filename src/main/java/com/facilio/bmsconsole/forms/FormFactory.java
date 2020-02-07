@@ -1836,12 +1836,14 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTBOX, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("type", FieldDisplayType.SELECTBOX, "Type", Required.OPTIONAL, 3, 1));
 		return fields;
 	}
 	private static List<FormField> getPrecautionFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTBOX, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.OPTIONAL,"site", 3, 1));
 		return fields;
 	}
 	public static FacilioForm getSafetyPlanForm() {
