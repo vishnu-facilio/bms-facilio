@@ -70,7 +70,7 @@ public class SLAAction extends FacilioAction {
         FacilioChain chain = TransactionChainFactory.getBulkAddOrUpdateSLAChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST, slaRuleList);
-        context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE, moduleName);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.SLA_POLICY_ID, slaPolicyId);
         chain.execute();
 
