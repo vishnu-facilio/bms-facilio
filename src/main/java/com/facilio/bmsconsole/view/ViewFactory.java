@@ -562,14 +562,14 @@ public class ViewFactory {
 		views.put("all", getAllVisitorLogsView().setOrder(order++));
 
 		// views for vendor portal
-		views.put("vendorUpcomingVisitors", getVendorUpcomingVisitorLogsView().setOrder(order++)); // 1
+		views.put("vendorActiveVisitors", getVendorUpcomingVisitorLogsView().setOrder(order++)); // 1
 		views.put("vendorVisits", getAllVendorVisitsView().setOrder(order++)); // 2
 		views.put("vendorCurrentVisits", getVendorCurrentVisitsView().setOrder(order++)); // 3
 		views.put("vendorExpired", getVendorExpiredVisitorInvites().setOrder(order++)); // 4
 
 
 		// views for tenant portal
-		views.put("myUpcoming", getMyUpcomingVisitorInvites().setOrder(order++)); // 1
+		views.put("myActive", getActiveVisitorInvites().setOrder(order++)); // 1
 		views.put("myCurrent", getMyCurrentVisitorInvites().setOrder(order++)); // 2 to be handled
 		views.put("myExpired", getMyExpiredVisitorInvites().setOrder(order++)); // 3
 
@@ -586,14 +586,14 @@ public class ViewFactory {
 		views.put("invite_today", getTodayVisitorInvitesView().setOrder(order++));
 		views.put("invite_pending", getPendingVisitorInvitesView().setOrder(order++));
 		views.put("invite_all", getAllVisitorInvitesView().setOrder(order++));
-		views.put("myInvites", getMyUpcomingVisitorInvites().setOrder(order++));
+		views.put("myInvites", getActiveVisitorInvites().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.VISITOR_INVITE, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInsuranceView().setOrder(order++));
 		views.put("vendor", getVendorInsuranceView().setOrder(order++));
-		views.put("vendorActive", getVendorInsuranceView().setOrder(order++));
+		views.put("vendorActive", getVendorActiveInsuranceView().setOrder(order++));
 		views.put("vendorExpired", getVendorExpiredInsuranceView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INSURANCE, views);
 
@@ -3351,18 +3351,18 @@ public class ViewFactory {
 
 
 
-	private static FacilioView getMyUpcomingVisitorInvites() {
+	private static FacilioView getActiveVisitorInvites() {
 			
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(getMyVistorInvitesCondition());
-			criteria.addAndCondition(getVisitorLogStatusCriteria("Upcoming"));
+			criteria.addAndCondition(getActiveInvitesCondition());
 			FacilioField expectedCheckin = FieldFactory.getField("checkInTime","CHECKIN_TIME", FieldType.DATE_TIME);
 
-			List<SortField> sortFields = Arrays.asList(new SortField(expectedCheckin, true));
+			List<SortField> sortFields = Arrays.asList(new SortField(expectedCheckin, false));
 
 			FacilioView myVisitorInvitesView = new FacilioView();
-			myVisitorInvitesView.setName("myUpcoming");
-			myVisitorInvitesView.setDisplayName("My Upcoming Invites");
+			myVisitorInvitesView.setName("myActive");
+			myVisitorInvitesView.setDisplayName("My Active Invites");
 			myVisitorInvitesView.setCriteria(criteria);
 			myVisitorInvitesView.setSortFields(sortFields);
 			myVisitorInvitesView.setHidden(true);
@@ -3450,7 +3450,7 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getMyVistorInvitesCondition());
-		criteria.addAndCondition(getVisitorLogStatusCriteria("Expired"));
+		criteria.addAndCondition(getExpiredInvitesCondition());
 //		FacilioField checkin = FieldFactory.getField("checkInTime","CHECKIN_TIME", FieldType.DATE_TIME);
 //		criteria.addAndCondition(CriteriaAPI.getCondition(checkin, CommonOperators.IS_EMPTY));
 		FacilioField expectedCheckin = FieldFactory.getField("expectedCheckInTime","EXPECTED_CHECKIN_TIME", FieldType.DATE_TIME);
@@ -3470,7 +3470,7 @@ public class ViewFactory {
 	private static FacilioView getVendorExpiredVisitorInvites() {
 
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getVisitorLogStatusCriteria("Expired"));
+		criteria.addAndCondition(getExpiredInvitesCondition());
 //		FacilioField checkin = FieldFactory.getField("checkInTime","CHECKIN_TIME", FieldType.DATE_TIME);
 //		criteria.addAndCondition(CriteriaAPI.getCondition(checkin, CommonOperators.IS_EMPTY));
 		FacilioField expectedCheckin = FieldFactory.getField("expectedCheckInTime","EXPECTED_CHECKIN_TIME", FieldType.DATE_TIME);
@@ -5410,7 +5410,7 @@ public class ViewFactory {
 	private static FacilioView getVendorUpcomingVisitorLogsView() {
 		
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getVisitorLogStatusCriteria("Upcoming"));
+		criteria.addAndCondition(getActiveInvitesCondition());
 		FacilioModule visitorLoggingModule = ModuleFactory.getVisitorLoggingModule();
 //		FacilioField checkInTime = FieldFactory.getField("checkInTime", "CHECKIN_TIME", visitorLoggingModule,FieldType.DATE_TIME);
 //		criteria.addAndCondition(CriteriaAPI.getCondition(checkInTime, CommonOperators.IS_EMPTY));
@@ -5424,7 +5424,7 @@ public class ViewFactory {
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 		
 		FacilioView allView = new FacilioView();
-		allView.setName("vendorVisitors");
+		allView.setName("vendorActiveVisitors");
 		allView.setDisplayName("All Visits");
 		allView.setHidden(true);
 		allView.setCriteria(criteria);
@@ -5441,7 +5441,7 @@ public class ViewFactory {
 		FacilioModule visitorLogModule = ModuleFactory.getVisitorLoggingModule();
 		FacilioField expCheckInTime = FieldFactory.getField("expectedCheckInTime", "EXPECTED_CHECKIN_TIME", visitorLogModule,FieldType.DATE_TIME);
 		
-		allView.setSortFields(Arrays.asList(new SortField(expCheckInTime, false)));
+		allView.setSortFields(Arrays.asList(new SortField(expCheckInTime, true)));
 		
 		return allView;
 	}
@@ -5473,23 +5473,35 @@ public class ViewFactory {
 
 		Condition expiredCondition = new Condition();
 		expiredCondition.setField(validTillField);
-//		long CurrentTime = DateTimeUtil.getCurrenTime();
 		expiredCondition.setOperator(DateOperators.TILL_NOW);
-//		expiredCondition.setValue(CurrentTime + "");
 		return expiredCondition;
 	}
 	
+	private static FacilioView getVendorActiveInsuranceView() {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getActiveInsurancesCondition());
+		FacilioModule insuranceModule = ModuleFactory.getInsuranceModule();
+		FacilioField idField = FieldFactory.getIdField();
+		idField.setModule(insuranceModule);
+		FacilioView allView = new FacilioView();
+		allView.setName("vendorActive");
+		allView.setDisplayName("Active");
+		allView.setHidden(true);
+		allView.setCriteria(criteria);
+		return allView;
+	}
 	private static FacilioView getVendorExpiredInsuranceView() {
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getExpiredInsuranceCondition());
+		criteria.addAndCondition(getExpiredInsurancesCondition());
 		FacilioModule insuranceModule = ModuleFactory.getInsuranceModule();
 		FacilioField validTill = FieldFactory.getField("validTill", "VALID_TILL", insuranceModule,FieldType.DATE_TIME);
-		criteria.addAndCondition(CriteriaAPI.getCondition(validTill, CommonOperators.IS_NOT_EMPTY));
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorExpired");
 		allView.setDisplayName("Expired");
 		allView.setHidden(true);
 		allView.setCriteria(criteria);
+		allView.setSortFields(Arrays.asList(new SortField(validTill, false)));
+
 		return allView;
 	}
 	
@@ -6053,4 +6065,73 @@ public class ViewFactory {
 
 		return condition;
 	}
+	
+	public static Condition getActiveInvitesCondition() {
+		FacilioModule module = ModuleFactory.getVisitorLoggingModule();
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(module);
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition open = new Condition();
+		open.setField(statusField);
+		open.setOperator(LookupOperator.LOOKUP);
+		open.setCriteriaValue(getOpenStatusCriteria());
+
+		return open;
+	}
+	
+	public static Condition getExpiredInvitesCondition() {
+		FacilioModule module = ModuleFactory.getVisitorLoggingModule();
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(module);
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition open = new Condition();
+		open.setField(statusField);
+		open.setOperator(LookupOperator.LOOKUP);
+		open.setCriteriaValue(getCloseStatusCriteria());
+
+		return open;
+	}
+	
+	public static Condition getActiveInsurancesCondition() {
+		FacilioModule module = ModuleFactory.getInsuranceModule();
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(module);
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition open = new Condition();
+		open.setField(statusField);
+		open.setOperator(LookupOperator.LOOKUP);
+		open.setCriteriaValue(getOpenStatusCriteria());
+
+		return open;
+	}
+	
+	public static Condition getExpiredInsurancesCondition() {
+		FacilioModule module = ModuleFactory.getInsuranceModule();
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(module);
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition open = new Condition();
+		open.setField(statusField);
+		open.setOperator(LookupOperator.LOOKUP);
+		open.setCriteriaValue(getCloseStatusCriteria());
+
+		return open;
+	}
+
 }

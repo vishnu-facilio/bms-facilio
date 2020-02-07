@@ -88,11 +88,11 @@ public class ColumnFactory {
 		// visitor logging
 		columnMap.put("visitorlogging-default", getDefaultVisitorLoggingColumns());
 		// vl tenant portal
-		columnMap.put("visitorlogging-myUpcoming", getMyVisitorInvitesColumns());
+		columnMap.put("visitorlogging-myActive", getMyVisitorInvitesColumns());
 		columnMap.put("visitorlogging-myCurrent", getMyVisitorInvitesColumns());
 		columnMap.put("visitorlogging-myExpired", getMyVisitorInvitesColumns());
 		// vl vendor portal
-		columnMap.put("visitorlogging-vendorUpcomingVisitors", getVendorUpcomingVisitorInvitesColumns());
+		columnMap.put("visitorlogging-vendorActiveVisitors", getVendorUpcomingVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorVisits", getVendorAllVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorCurrentVisits", getVendorVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorExpired", getVendorVisitorInvitesColumns());
