@@ -252,7 +252,7 @@ public class WorkorderTemplate extends Template {
 				woProp.put("vendor", FieldUtil.getEmptyLookedUpProp(vendorId));
 			}
 			
-			if (safetyPlanId != -1) {
+			if (safetyPlanId != null && safetyPlanId != -1) {
 				woProp.put("safetyPlan", FieldUtil.getEmptyLookedUpProp(safetyPlanId));
 			}
 			
