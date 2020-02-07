@@ -124,6 +124,7 @@ public class SafetyPlanAction extends FacilioAction{
 		safetyPlan.parseFormData();
 		
 		FacilioChain c = TransactionChainFactory.addSafetyPlansChain();
+		c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 		c.getContext().put(FacilioConstants.ContextNames.RECORD, safetyPlan);
 		c.execute();

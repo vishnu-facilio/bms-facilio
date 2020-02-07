@@ -125,6 +125,7 @@ public class HazardAction extends FacilioAction{
 		hazard.parseFormData();
 		
 		FacilioChain c = TransactionChainFactory.addHazardChain();
+		c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 		c.getContext().put(FacilioConstants.ContextNames.RECORD, hazard);
 		c.execute();

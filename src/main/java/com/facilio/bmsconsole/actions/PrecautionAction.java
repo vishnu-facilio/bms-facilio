@@ -91,6 +91,7 @@ public class PrecautionAction extends FacilioAction{
 	public String addPrecautions() throws Exception {
 		
 		FacilioChain c = TransactionChainFactory.addPrecautionChain();
+		c.getContext().put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 		c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, precautions);
 		c.execute();
