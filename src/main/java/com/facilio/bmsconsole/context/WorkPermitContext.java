@@ -39,9 +39,6 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	public WorkType getWorkTypeEnum() {
 		return workType;
 	}
-	public void setWorkType(WorkType workType) {
-		this.workType = workType;
-	}
 
 	public static enum WorkType implements FacilioEnum {
 		HOT_WORK_PERMIT("Hot Work Permit"), COLD_WORK_PERMIT("Cold Work Permit"), EXCAVATION_WORK_PERMIT("Excavation Work Permit"), CONFINED_SPACE_WORK_PERMIT("Confined Space Work Permit"), EARTHMOVING_EQUIPMENT_VEHICULAR_WORK_PERMIT("EarthMoving Equipment/Vehicular Work Permit");
