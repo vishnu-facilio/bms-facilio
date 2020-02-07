@@ -18,15 +18,15 @@ public class AddOrUpdateIntentToMLCommand extends FacilioCommand{
 
 		List<ChatBotIntent> chatBotIntents = (List<ChatBotIntent>)context.get(ChatBotConstants.CHAT_BOT_INTENT_LIST);
 		
-//		JSONArray intentJSON = ChatBotMLUtil.getChatBotIntentJSONFromIntents(chatBotIntents);
-//		
-//		JSONObject respjson = ChatBotMLUtil.pushIntentToML(intentJSON);
-//		
-//		String mlModelName = (String) respjson.get(ChatBotMLUtil.ML_MODEL_NAME_STRING);
-//		
-//		context.put(ChatBotConstants.CHAT_BOT_ML_MODEL_NAME, mlModelName);
+		JSONObject intentJSON = ChatBotMLUtil.getChatBotIntentJSONFromIntents(chatBotIntents);
 		
-		context.put(ChatBotConstants.CHAT_BOT_ML_MODEL_NAME, "sample String");
+		JSONObject respjson = ChatBotMLUtil.pushIntentToML(intentJSON);
+		
+		String mlModelName = (String) respjson.get(ChatBotMLUtil.ML_MODEL_NAME_STRING);
+		
+		context.put(ChatBotConstants.CHAT_BOT_ML_MODEL_NAME, mlModelName);
+		
+//		context.put(ChatBotConstants.CHAT_BOT_ML_MODEL_NAME, "sample String");
 		
 		return false;
 	}

@@ -16,7 +16,10 @@ import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSessionConversation;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.cb.util.ChatBotMLUtil;
+import com.facilio.cb.util.ChatBotUtil;
 import com.facilio.cb.util.ChatBotWitAIUtil;
+
+import software.amazon.ion.Decimal;
 
 public class SendToMlApiCommand extends FacilioCommand {
 
@@ -26,7 +29,7 @@ public class SendToMlApiCommand extends FacilioCommand {
 		
 		ChatBotModel model = (ChatBotModel) context.get(ChatBotConstants.CHAT_BOT_MODEL);
 		
-		boolean isMLWithFacilio = false;
+		boolean isMLWithFacilio = true;
 		
 		ChatBotSessionConversation chatBotSessionConversation = (ChatBotSessionConversation) context.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
 		
@@ -72,8 +75,11 @@ public class SendToMlApiCommand extends FacilioCommand {
 				
 				JSONObject responseJSON = ChatBotMLUtil.getIntentFromML(session.getQuery(), null, model);
 				
-				intentName = (String) responseJSON.get(ChatBotMLUtil.ML_INTENT_STRING);
-				accuracy = 0.6789;
+				JSONObject intentJson = (JSONObject) responseJSON.get(ChatBotMLUtil.ML_INTENT_STRING);
+				
+				intentName = (String) intentJson.get(ChatBotMLUtil.ML_INTENT_NAME_STRING);
+				
+				accuracy = (double) intentJson.get(ChatBotMLUtil.ML_INTENT_CONFIDENCE_STRING);
 			}
 			else {
 				JSONObject responseJSON = ChatBotWitAIUtil.getIntentFromML(session.getQuery());
