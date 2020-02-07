@@ -68,7 +68,8 @@ public class SafetyPlanPageFactory extends PageFactory{
 
         Section tab2Sec1 = page.new Section();
         tab1.addSection(tab2Sec1);
-        addRelatedListWidget(tab2Sec1, "hazardPrecaution", precaution.getModuleId(), "Associated Hazards");
+        addPrecautionHazardsWidget(tab2Sec1);
+//        addRelatedListWidget(tab2Sec1, "hazardPrecaution", precaution.getModuleId(), "Associated Hazards");
         addCommonSubModuleGroup(tab1Sec1);
 
         return page;
@@ -102,6 +103,12 @@ public class SafetyPlanPageFactory extends PageFactory{
     }
     private static void addSafetyPlanHazardsWidget(Section section) {
         PageWidget widget = new PageWidget(WidgetType.SAFETY_PLAN_PRECAUTIONS, "safetyPlanPrecautions");
+        widget.addToLayoutParams(section, 24, 10);
+        section.addWidget(widget);
+    }
+
+    private static void addPrecautionHazardsWidget(Section section) {
+        PageWidget widget = new PageWidget(WidgetType.PRECAUTION_HAZARDS, "precautionHazards");
         widget.addToLayoutParams(section, 24, 10);
         section.addWidget(widget);
     }
