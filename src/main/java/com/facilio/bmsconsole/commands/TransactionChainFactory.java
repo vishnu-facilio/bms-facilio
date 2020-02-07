@@ -239,8 +239,8 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new AddWorkOrderCommand());
-			c.addCommand(new AddAttachmentCommand());
 			c.addCommand(new AddWorkorderHazardsFromSafetyPlanCommand());
+			c.addCommand(new AddAttachmentCommand());
 			c.addCommand(new AttachmentContextCommand());
 			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new AddTicketActivityCommand());
