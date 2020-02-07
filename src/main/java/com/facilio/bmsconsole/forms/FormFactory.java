@@ -1637,8 +1637,8 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("isRecurring", FieldDisplayType.DECISION_BOX, "Is Recurring", Required.OPTIONAL, 3, 2));
-		fields.add(new FormField("recurringInfo", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
+//		fields.add(new FormField("isRecurring", FieldDisplayType.DECISION_BOX, "Is Recurring", Required.OPTIONAL, 3, 2));
+//		fields.add(new FormField("recurringInfo", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
 		FormField issuedtoField = new FormField("issuedToUser", FieldDisplayType.LOOKUP_SIMPLE, "Permit Holder", Required.OPTIONAL, "user", 3, 2);
 		issuedtoField.setHideField(true);
 		fields.add(issuedtoField);
@@ -1665,6 +1665,9 @@ public class FormFactory {
 		FormField spaceField = new FormField("space", FieldDisplayType.LOOKUP_SIMPLE, "Space", Required.OPTIONAL,"basespace", 13, 2);
 		spaceField.setHideField(true);
 		fields.add(spaceField);
+		
+		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 14, 1));
+		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATE, "Valid To", Required.OPTIONAL, 15, 1));
 	
 		return fields;
 	}
