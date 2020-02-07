@@ -130,9 +130,11 @@ public class ColumnFactory {
 		columnMap.put("serviceRequest-default", getDefaultServiceRequestColumns());
 		columnMap.put("task-all", getAllTasksColumns());
 		// portal vendors
+		columnMap.put("vendors-myRequestedVendors", getPortalVendorsColumns());
 		columnMap.put("vendors-myRegisteredVendors", getPortalVendorsColumns());
 		columnMap.put("vendors-myApprovedVendors", getPortalVendorsColumns());
 		columnMap.put("vendors-myInactiveVendors", getPortalVendorsColumns());
+		columnMap.put("vendors-myAll", getPortalVendorsColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());

@@ -286,9 +286,11 @@ public class ViewFactory {
 		views.put("myVendors", getMyVendors().setOrder(order++));
 		views.put("myNonInsuredVendors", getMyNonInsuredVendors().setOrder(order++));
 		//portal vendor views
+		views.put("myRequestedVendors", getMyRequestedVendors().setOrder(order++));
 		views.put("myRegisteredVendors", getMyInsuredVendors().setOrder(order++));
 		views.put("myApprovedVendors", getMyApprovedVendors().setOrder(order++));
 		views.put("myInactiveVendors", getMyInactiveVendors().setOrder(order++));
+		views.put("myAll", getMyAllVendors().setOrder(order++));
 
 		viewsMap.put(FacilioConstants.ContextNames.VENDORS, views);
 		
@@ -3216,16 +3218,39 @@ public class ViewFactory {
 			return myVendorView;
 		}
 
+		private static FacilioView getMyRequestedVendors() {
+
+			FacilioModule vendorModule = ModuleFactory.getVendorsModule();
+
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(getMyVendorsCondition());
+			criteria.addAndCondition(getModuleTicketStatusCriteria("Requested", vendorModule));
+
+			FacilioField createdTime = new FacilioField();
+			createdTime.setName("sysCreatedTime");
+			createdTime.setDataType(FieldType.NUMBER);
+			createdTime.setColumnName("CREATED_TIME");
+			createdTime.setModule(vendorModule);
+
+			List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+			FacilioView myVendorView = new FacilioView();
+			myVendorView.setName("myRequestedVendors");
+			myVendorView.setDisplayName("My Requested Vendors");
+			myVendorView.setCriteria(criteria);
+			myVendorView.setSortFields(sortFields);
+			myVendorView.setHidden(true);
+
+			return myVendorView;
+		}
 	private static FacilioView getMyInsuredVendors() {
 
 		FacilioModule vendorModule = ModuleFactory.getVendorsModule();
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getMyVendorsCondition());
-		FacilioField insuranceField = FieldFactory.getField("hasInsurance", "HAS_INSURANCE",FieldType.BOOLEAN);
-		criteria.addAndCondition(CriteriaAPI.getCondition(insuranceField, String.valueOf(true), BooleanOperators.IS));
-
-
+		criteria.addAndCondition(getModuleTicketStatusCriteria("Registered", vendorModule));
+		
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
@@ -3250,8 +3275,8 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getMyVendorsCondition());
-		FacilioField insuranceField = FieldFactory.getField("hasInsurance", "HAS_INSURANCE",FieldType.BOOLEAN);
-		criteria.addAndCondition(CriteriaAPI.getCondition(insuranceField, CommonOperators.IS_EMPTY));
+//		FacilioField insuranceField = FieldFactory.getField("hasInsurance", "HAS_INSURANCE",FieldType.BOOLEAN);
+//		criteria.addAndCondition(CriteriaAPI.getCondition(insuranceField, CommonOperators.IS_EMPTY));
 		criteria.addAndCondition(getModuleTicketStatusCriteria("Approved", vendorModule));
 
 		FacilioField createdTime = new FacilioField();
@@ -3297,6 +3322,32 @@ public class ViewFactory {
 
 		return myVendorView;
 	}
+	
+	private static FacilioView getMyAllVendors() {
+
+		FacilioModule vendorModule = ModuleFactory.getVendorsModule();
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getMyVendorsCondition());
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(vendorModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView myVendorView = new FacilioView();
+		myVendorView.setName("myAll");
+		myVendorView.setDisplayName("My All Vendors");
+		myVendorView.setCriteria(criteria);
+		myVendorView.setSortFields(sortFields);
+		myVendorView.setHidden(true);
+
+		return myVendorView;
+	}
+
 
 
 
@@ -3370,7 +3421,7 @@ public class ViewFactory {
 
 		return myVisitorInvitesView;
 	}
-
+	
 	private static FacilioView getMyActiveVisitorInvites() {
 
 		Criteria criteria = new Criteria();
@@ -5509,7 +5560,7 @@ public class ViewFactory {
 	private static FacilioView getMyExpiredWorkPermitView() {
 		Criteria expiredCriteria = new Criteria();
 		expiredCriteria.addAndCondition(getMyWorkPermitsCondition());
-		expiredCriteria.addAndCondition(getWorkPermitStatusCriteria("InActive"));
+		expiredCriteria.addAndCondition(getWorkPermitStatusCriteria("Expired"));
 		FacilioView allView = new FacilioView();
 		allView.setName("myExpired");
 		allView.setDisplayName("Expired Work Permit");
