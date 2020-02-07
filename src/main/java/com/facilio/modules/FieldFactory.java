@@ -648,6 +648,7 @@ public class FieldFactory {
 		span.setModule(module);
 
 		fields.add(getField("hideField", "HIDE_FIELD", module, FieldType.BOOLEAN));
+		fields.add(getField("isDisabled", "IS_DISABLED", module, FieldType.BOOLEAN));
 		fields.add(getField("value", "DEFAULT_VALUE", module, FieldType.STRING));
 		fields.add(getField("sectionId", "SECTIONID", module, FieldType.NUMBER));
 

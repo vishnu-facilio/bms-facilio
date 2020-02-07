@@ -214,6 +214,16 @@ public class FormField implements Serializable {
 	public void setHideField(Boolean hideField) {
 		this.hideField = hideField;
 	}
+	
+	private Boolean isDisabled;
+
+	public Boolean getIsDisabled() {
+		return isDisabled;
+	}
+
+	public void setIsDisabled(Boolean isDisabled) {
+		this.isDisabled = isDisabled;
+	}
 
 	private Boolean allowCreate = false;
 	
