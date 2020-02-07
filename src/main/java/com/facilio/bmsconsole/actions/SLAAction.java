@@ -10,6 +10,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SLAAction extends FacilioAction {
@@ -153,6 +154,26 @@ public class SLAAction extends FacilioAction {
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.SLA_POLICY_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
+
+        return SUCCESS;
+    }
+
+    private List<SLAPolicyContext.SLAPolicyEntityEscalationContext> escalationList;
+    public List<SLAPolicyContext.SLAPolicyEntityEscalationContext> getEscalationList() {
+        return escalationList;
+    }
+    public void setEscalationList(List<SLAPolicyContext.SLAPolicyEntityEscalationContext> escalationList) {
+        this.escalationList = escalationList;
+    }
+
+    public String addSLAPolicyEscalations() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getAddSLAPolicyEscalationsChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST, escalationList);
+        context.put(FacilioConstants.ContextNames.SLA_POLICY_ID, slaPolicyId);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST, context.get(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST));
 
         return SUCCESS;
     }

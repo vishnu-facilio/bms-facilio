@@ -19,11 +19,11 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
 
     public static void updateSLAPolicyRule(SLAPolicyContext rule) throws Exception {
         WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
-        deleteSLAPolicyEscalation(rule);
-        addEscalations(rule);
+//        deleteSLAPolicyEscalation(rule);
+//        addEscalations(rule);
     }
 
-    private static void deleteSLAPolicyEscalation(SLAPolicyContext rule) throws Exception {
+    public static void deleteSLAPolicyEscalation(SLAPolicyContext rule) throws Exception {
         GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getSLAWorkflowEscalationModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition("SLA_POLICY_ID", "slaPolicyId", String.valueOf(rule.getId()), NumberOperators.EQUALS));

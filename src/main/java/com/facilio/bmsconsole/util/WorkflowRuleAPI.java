@@ -115,7 +115,7 @@ public class WorkflowRuleAPI {
 				break;
 			case SLA_POLICY_RULE:
 //				addExtendedProps(ModuleFactory.getSLAPolicyRuleModule(), FieldFactory.getSLAPolicyRuleFields(), ruleProps);
-				SLAWorkflowAPI.addEscalations((SLAPolicyContext) rule);
+//				SLAWorkflowAPI.addEscalations((SLAPolicyContext) rule);
 				break;
 			case SLA_WORKFLOW_RULE:
 //				addExtendedProps(ModuleFactory.getSLAWorkflowRuleModule(), FieldFactory.getSLAWorkflowRuleFields(), ruleProps);

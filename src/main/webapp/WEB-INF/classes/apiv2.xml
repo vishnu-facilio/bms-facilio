@@ -369,6 +369,8 @@
 				class="com.facilio.bmsconsole.actions.SLAAction" method="viewSLAPolicy" />
 		<action name="getEscalations"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="getSLAPolicyEscalations" />
+		<action name="addEscalations"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="addSLAPolicyEscalations" />
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="reorderSLAPolicy" />
 	</package>

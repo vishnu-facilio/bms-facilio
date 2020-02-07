@@ -4556,6 +4556,12 @@ public class TransactionChainFactory {
 		chain.addCommand(new ReOrderWorkflowCommand());
 		return chain;
 	}
+
+	public static FacilioChain getAddSLAPolicyEscalationsChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddSLAPolicyEscalationsCommand());
+		return chain;
+	}
 }
 
 
