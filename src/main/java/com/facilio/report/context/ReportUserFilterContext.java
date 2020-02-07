@@ -9,8 +9,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -158,6 +160,10 @@ public class ReportUserFilterContext {
 	private Operator getOperator(boolean other) {
 		switch (field.getDataTypeEnum()) {
 		case LOOKUP:
+			if(field.getModule().getName().equalsIgnoreCase(FacilioConstants.ContextNames.RESOURCE) 
+				&& field.getName().equalsIgnoreCase(FacilioConstants.ContextNames.SPACE)) {
+				return other ? PickListOperators.ISN_T : BuildingOperator.BUILDING_IS;
+			}
 			return other ? PickListOperators.ISN_T : PickListOperators.IS;
 		case ENUM:
 			return other ? EnumOperators.ISN_T : EnumOperators.IS;
