@@ -1668,6 +1668,7 @@ public class FieldFactory {
 
 		fields.add(getField("id", "ID", module, FieldType.ID));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("verbName", "VERB_NAME", module, FieldType.STRING));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
 		fields.add(getField("baseFieldId", "BASE_FIELDID", module, FieldType.NUMBER));

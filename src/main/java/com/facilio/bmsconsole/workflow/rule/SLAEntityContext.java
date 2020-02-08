@@ -22,6 +22,14 @@ public class SLAEntityContext implements Serializable {
         this.name = name;
     }
 
+    private String verbName;
+    public String getVerbName() {
+        return verbName;
+    }
+    public void setVerbName(String verbName) {
+        this.verbName = verbName;
+    }
+
     private String description;
     public String getDescription() {
         return description;
