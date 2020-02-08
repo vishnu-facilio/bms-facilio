@@ -1655,6 +1655,7 @@ public class FacilioConstants {
 			classMap.put(SAFETYPLAN_HAZARD, SafetyPlanHazardContext.class);
 			classMap.put(HAZARD_PRECAUTION, HazardPrecautionContext.class);
 			classMap.put(WORKORDER_HAZARD, WorkorderHazardContext.class);
+			classMap.put(ASSET_HAZARD, AssetHazardContext.class);
 			
 			return classMap;
 		}

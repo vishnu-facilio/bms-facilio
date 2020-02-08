@@ -204,12 +204,13 @@ public class AssetPageFactory extends PageFactory {
 		}
 
 		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
+			FacilioModule assetModule = modBean.getModule(ContextNames.ASSET);
 			Tab tab10 = page.new Tab("safety");
 			page.addTab(tab10);
 			Section tab5Sec1 = page.new Section();
 			tab10.addSection(tab5Sec1);
-			addRelatedListWidget(tab5Sec1, "assetHazard", asset.getModuleId(), "Hazards");
-			addPrecautionHazardsWidget(tab5Sec1);
+			addRelatedListWidget(tab5Sec1, "assetHazard", assetModule.getModuleId(), "Hazards");
+			addSafetyPlanHazardsWidget(tab5Sec1);
 		}
 
 		Tab tab9 = page.new Tab("history", "history");
@@ -462,8 +463,8 @@ public class AssetPageFactory extends PageFactory {
 		
 		section.addWidget(cardWidget);
 	}
-	private static void addPrecautionHazardsWidget(Section section) {
-		PageWidget widget = new PageWidget(WidgetType.PRECAUTION_HAZARDS, "precautionHazards");
+	private static void addSafetyPlanHazardsWidget(Section section) {
+		PageWidget widget = new PageWidget(WidgetType.SAFETY_PLAN_PRECAUTIONS, "safetyPlanPrecautions");
 		widget.addToLayoutParams(section, 24, 10);
 		section.addWidget(widget);
 	}
