@@ -17,6 +17,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -64,7 +65,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 FacilioField baseField = modBean.getField(slaEntity.getBaseFieldId());
                 FacilioField dueField = modBean.getField(slaEntity.getDueFieldId());
 
-                if (FieldUtil.getValue(moduleRecord, dueField) == null) {
+                if (FacilioUtil.isEmptyOrNull(FieldUtil.getValue(moduleRecord, dueField))) {
                     Long timeValue = (Long) FieldUtil.getValue(moduleRecord, baseField);
                     if (timeValue == null) {
                         continue;
@@ -82,7 +83,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
 
                 if (MapUtils.isNotEmpty(escalationMap)) {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());
-                    if (CollectionUtils.isNotEmpty(slaPolicyEntityEscalationContext.getLevels())) {
+                    if (slaPolicyEntityEscalationContext != null && CollectionUtils.isNotEmpty(slaPolicyEntityEscalationContext.getLevels())) {
                         slaPolicyEntityEscalationContext.setLevels(SLAWorkflowAPI.getEscalations(slaPolicy.getId(), slaPolicyEntityEscalationContext.getSlaEntityId()));
                         addEscalationJobs(slaPolicyEntityEscalationContext.getLevels(), module, dueField, slaEntity.getCriteria(), moduleRecord);
                     }
