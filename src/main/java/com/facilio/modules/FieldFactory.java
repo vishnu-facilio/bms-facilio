@@ -198,7 +198,8 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("sendForApproval");
 			workOrderFieldsInclude.add("prerequisiteEnabled");
 			workOrderFieldsInclude.add("preRequestStatus");
-		
+			workOrderFieldsInclude.add("responseDueDate");
+
 			
 		}
 

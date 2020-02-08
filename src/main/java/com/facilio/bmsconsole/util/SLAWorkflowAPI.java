@@ -176,7 +176,7 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
     public static void deleteSLACommitmentDuration(SLAWorkflowCommitmentRuleContext rule) throws Exception {
         GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
                 .table(ModuleFactory.getSLACommitmentDurationModule().getTableName())
-                .andCondition(CriteriaAPI.getIdCondition(rule.getId(), ModuleFactory.getSLACommitmentDurationModule()));
+                .andCondition(CriteriaAPI.getCondition("SLA_COMMITMENT_ID", "slaCommitmentId", String.valueOf(rule.getId()), NumberOperators.EQUALS));
         deleteRecordBuilder.delete();
     }
 
@@ -185,8 +185,13 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
             throw new IllegalArgumentException("SLA Entities cannot be empty");
         }
 
+        Set<Long> slaEntityIds = new HashSet<>();
         for (SLAWorkflowCommitmentRuleContext.SLAEntityDuration slaEntityDuration : rule.getSlaEntities()) {
             slaEntityDuration.setSlaCommitmentId(rule.getId());
+            if (slaEntityIds.contains(slaEntityDuration.getSlaEntityId())) {
+                throw new IllegalArgumentException("Same entity is added twice");
+            }
+            slaEntityIds.add(slaEntityDuration.getSlaEntityId());
         }
 
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()

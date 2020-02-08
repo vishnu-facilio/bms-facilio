@@ -61,7 +61,6 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
 
                 FacilioField baseField = modBean.getField(slaEntity.getBaseFieldId());
                 FacilioField dueField = modBean.getField(slaEntity.getDueFieldId());
-//                FacilioField compareField = modBean.getField(slaEntity.getCompareFieldId());
 
                 Long timeValue;
                 if (baseField.isDefault()) {
@@ -114,8 +113,6 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 workflowRuleContext.setModule(module);
                 workflowRuleContext.setParentId(moduleRecord.getId());
 
-//                Criteria criteria = new Criteria();
-//                criteria.addAndCondition(CriteriaAPI.getCondition(compareField, CommonOperators.IS_EMPTY));
                 workflowRuleContext.setCriteria(criteria);
                 workflowRuleContext.setDateFieldId(dueField.getFieldId());
 

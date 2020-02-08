@@ -698,6 +698,7 @@ public class FormsAPI {
 			case ContextNames.WORK_ORDER:
 				fields.addAll(FormFactory.getRequesterFormFields(false, false));
 				fields.add(new FormField("dueDate", FieldDisplayType.DATETIME, "Due Date", Required.OPTIONAL, 1, 1));
+				fields.add(new FormField("responseDueDate", FieldDisplayType.DATETIME, "Response Due Date", Required.OPTIONAL, 1, 1));
 				if (AccountUtil.isFeatureEnabled(FeatureLicense.TENANTS)) {
 					fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL,"tenant", 1, 1));
 				}
