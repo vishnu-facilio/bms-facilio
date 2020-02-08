@@ -11,6 +11,7 @@ import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldFactory;
@@ -37,12 +38,12 @@ public class IAMUserUtil {
 
 	}
 
-	public static boolean changePassword(String password, String newPassword, long uId, long orgId) throws Exception {
+	public static boolean changePassword(String password, String newPassword, long uId, long orgId, String userType) throws Exception {
 		IAMUser user = AccountUtil.getUserBean().getUser(orgId, uId);
 		if(user == null) {
 			return false;
 		}
-		Boolean verifyOldPassword = verifyPasswordv2(user.getEmail(), user.getDomainName(), password, user.getAppTypeEnum());
+		Boolean verifyOldPassword = verifyPasswordv2(user.getEmail(), user.getDomainName(), password, userType, user.getAppTypeEnum());
 		if (verifyOldPassword != null && verifyOldPassword) {
 			user.setPassword(newPassword);
 			
@@ -132,17 +133,17 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getPermalinkAccount(token, urls));
 	}
 	
-	public static IAMAccount verifiyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain, String portalDomain, AppType appType)
+	public static IAMAccount verifiyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain, String portalDomain, String userType, AppType appType)
 			throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyFacilioToken(idToken, overrideSessionCheck, orgDomain, portalDomain, appType));
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyFacilioToken(idToken, overrideSessionCheck, orgDomain, portalDomain, userType, appType));
 	}
 	
 	public static String generateAuthToken(String emailaddress, String password, String domain, AppType appType) throws Exception {
 			return validateLoginv2(emailaddress, password, null, null, null, domain, true, AppType.SERVICE_PORTAL);
 	}
 
-	public static boolean verifyPasswordv2(String emailAddress, String domain, String password, AppType appType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyPasswordv2(emailAddress, domain, password, appType));
+	public static boolean verifyPasswordv2(String emailAddress, String domain, String password, String userType, AppType appType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().verifyPasswordv2(emailAddress, domain, password, userType, appType));
 	}
 
 	public static String validateLoginv2(String emailaddress, String password, String userAgent, String userType,

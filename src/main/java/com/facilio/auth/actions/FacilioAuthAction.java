@@ -707,7 +707,14 @@ public class FacilioAuthAction extends FacilioAction {
 			User user = AccountUtil.getCurrentUser();
 			HttpServletRequest request = ServletActionContext.getRequest();
 			
-			Boolean changePassword = IAMUserUtil.changePassword(getPassword(), getNewPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
+			String userType = "web";
+			String deviceType = request.getHeader("X-Device-Type");
+			if (!StringUtils.isNullOrEmpty(deviceType)
+					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+				userType = "mobile";
+			}
+			
+			Boolean changePassword = IAMUserUtil.changePassword(getPassword(), getNewPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId(), userType);
 			if (changePassword != null && changePassword) {
 				setJsonresponse("message", "Password changed successfully");
 				setJsonresponse("status", "success");

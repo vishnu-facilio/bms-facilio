@@ -54,7 +54,13 @@ public class AuthenticationUtil {
 					appType = AppType.TENANT_PORTAL;
 				}
             }
-			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(facilioToken, overrideSessionCheck, null, portalDomain, appType);
+            String userType = "web";
+			String deviceType = request.getHeader("X-Device-Type");
+			if (!StringUtils.isEmpty(deviceType)
+					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+				userType = "mobile";
+			}
+			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(facilioToken, overrideSessionCheck, null, portalDomain, userType,appType);
 			return iamAccount;
         }
         return null;

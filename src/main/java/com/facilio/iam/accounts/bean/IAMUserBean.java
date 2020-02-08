@@ -23,7 +23,7 @@ public interface IAMUserBean {
 
 	IAMUser resetPasswordv2(String token, String password) throws Exception;
 	
-	public boolean verifyPasswordv2(String email, String domain, String password, AppType appType) throws Exception;
+	public boolean verifyPasswordv2(String email, String domain, String password, String userType, AppType appType) throws Exception;
 
 	IAMUser validateUserInvitev2(String token) throws Exception;
 
@@ -65,10 +65,10 @@ public interface IAMUserBean {
     
     public void clearAllUserSessionsv2(long uid, String email) throws Exception;
     
-    public IAMAccount verifyUserSessionv2(String uId, String token, String orgDomain, AppType appType) throws Exception;
+    public IAMAccount verifyUserSessionv2(String uId, String token, String orgDomain, String userType, AppType appType) throws Exception;
     
     //for backward compatibility
-    public IAMAccount verifyUserSessionUsingEmail(String email, String token, String portalDomain) throws Exception;
+    public IAMAccount verifyUserSessionUsingEmail(String email, String token, String portalDomain, String userType, AppType appType) throws Exception;
     
     public boolean acceptUserv2(IAMUser user) throws Exception;
 	
@@ -97,7 +97,7 @@ public interface IAMUserBean {
 	public String validateAndGenerateToken(String emailaddress, String password, String userAgent, String userType,
 			String ipAddress, String domain, boolean startUserSession, AppType appType) throws Exception ;
 
-	public IAMAccount verifyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain, String portalDomain, AppType appType) throws Exception;
+	public IAMAccount verifyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain, String portalDomain, String userType, AppType appType) throws Exception;
 	
 	public boolean verifyUser(long userId) throws Exception;
 	

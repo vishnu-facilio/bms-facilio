@@ -665,7 +665,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	}
 	@Override
-	public IAMAccount verifyUserSessionv2(String uId, String token, String orgDomain, AppType appType) throws Exception {		
+	public IAMAccount verifyUserSessionv2(String uId, String token, String orgDomain, String userType, AppType appType) throws Exception {		
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uId);
 		if (sessions == null) {
 			sessions = new ArrayList<>();
@@ -691,7 +691,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
 		
-		if(appType != null) {
+		if(appType != null && userType != null && !userType.equals("mobile")) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.APP_TYPE", "appType", String.valueOf(appType.getIndex()) , NumberOperators.EQUALS));
 		}
 		
@@ -1069,7 +1069,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 
 	@Override
-	public IAMAccount verifyUserSessionUsingEmail(String email, String token, String portalDomain) throws Exception {
+	public IAMAccount verifyUserSessionUsingEmail(String email, String token, String portalDomain, String userType, AppType appType) throws Exception {
 		String cacheKey = email + "###" + portalDomain;
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(cacheKey);
 		if (sessions == null) {
@@ -1100,6 +1100,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
 		
+	
+		if(appType != null && userType != null && !userType.equals("mobile")) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.APP_TYPE", "appType", String.valueOf(appType.getIndex()) , NumberOperators.EQUALS));
+		}
 	
 		Map<String, Object> props = selectBuilder.fetchFirst();
 		if (MapUtils.isNotEmpty(props)) {
@@ -1162,7 +1166,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public boolean verifyPasswordv2(String emailAddress, String domain, String password, AppType appType) throws Exception {
+	public boolean verifyPasswordv2(String emailAddress, String domain, String password, String userType, AppType appType) throws Exception {
 		// TODO Auto-generated method stub
 		boolean passwordValid = false;
 		try {
@@ -1181,7 +1185,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "domainName", domain, StringOperators.IS));
 			selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
 			
-			if(!domain.equals("app")) {
+			if(!domain.equals("app") && userType != null && !userType.equals("mobile")) {
 				selectBuilder.andCondition(CriteriaAPI.getCondition("APP_TYPE", "appType", String.valueOf(appType.getIndex()), NumberOperators.EQUALS));
 			}
 			
@@ -1213,7 +1217,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public String validateAndGenerateToken(String emailaddress, String password, String userAgent, String userType,
 			String ipAddress, String domain, boolean startUserSession, AppType appType) throws Exception {
 		// TODO Auto-generated method stub
-		if (verifyPasswordv2(emailaddress, domain, password, appType)) {
+		if (verifyPasswordv2(emailaddress, domain, password, userType ,appType)) {
 
 			IAMUser user = getFacilioUser(emailaddress, -1, domain);
 			if (user != null) {
@@ -1269,7 +1273,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public IAMAccount verifyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain,
-			String portalDomain, AppType appType) throws Exception {
+			String portalDomain, String userType, AppType appType) throws Exception {
 		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
 			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
@@ -1288,11 +1292,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 						account = IAMUtil.getUserBean().getAccount(userId, orgDomain);
 					}
 					else {
-						account = IAMUtil.getUserBean().verifyUserSessionv2(uId, idToken, orgDomain, appType);
+						account = IAMUtil.getUserBean().verifyUserSessionv2(uId, idToken, orgDomain, userType, appType);
 					}
 				}
 				catch(NumberFormatException e) {
-					account = IAMUtil.getUserBean().verifyUserSessionUsingEmail(uId, idToken, portalDomain);
+					account = IAMUtil.getUserBean().verifyUserSessionUsingEmail(uId, idToken, portalDomain, userType, appType);
 				}
 				return account;
 			}
