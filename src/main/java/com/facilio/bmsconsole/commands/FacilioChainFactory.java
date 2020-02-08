@@ -911,6 +911,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
 		c.addCommand(new LoadAssetFields());
 		c.addCommand(new GetAssetDetailCommand());
+		c.addCommand(new GetAssetHazardsCommand());
 		c.addCommand(new GetAssetRelationCountCommand());
 		return c;
 	}
@@ -2177,6 +2178,13 @@ public class FacilioChainFactory {
 	public static FacilioChain deleteWorkorderHazardListChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForWorkorderHazard());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteAssetHazardListChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForAssetHazard());
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		return c;
 	}

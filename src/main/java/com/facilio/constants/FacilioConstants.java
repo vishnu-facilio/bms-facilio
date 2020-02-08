@@ -1458,7 +1458,9 @@ public class FacilioConstants {
 		public static final String WORKORDER_HAZARD = "workorderHazard";
 		public static final String WORKORDER_HAZARDS = "workorderHazards";
 	
-		
+		public static final String ASSET_HAZARD = "assetHazard";
+		public static final String ASSET_HAZARDS = "assetHazards";
+	
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

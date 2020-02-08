@@ -2104,4 +2104,16 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getAssetHazardListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForAssetHazard());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new LoadAssetHazardLookUpsCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
 }

@@ -5148,4 +5148,14 @@
 			class="com.facilio.bmsconsole.actions.WorkorderHazardAction" method="workorderHazardList">
 		</action>
 	</package>
+	<package name="assetHazard" namespace="/api/v2/assetHazard"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.AssetHazardAction" method="addAssetHazardList" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.AssetHazardAction" method="deleteAssetHazardList" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.AssetHazardAction" method="assetHazardList">
+		</action>
+	</package>
 </struts>

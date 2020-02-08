@@ -17,6 +17,7 @@ public class DeleteHazardsFromAssociatedModulesCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(recordIds)) {
 			HazardsAPI.deleteSafetyPlanHazard(recordIds);
 			HazardsAPI.deleteWorkOrderHazard(recordIds);
+			HazardsAPI.deleteAssetHazard(recordIds);
 		}
 		return false;
 	}

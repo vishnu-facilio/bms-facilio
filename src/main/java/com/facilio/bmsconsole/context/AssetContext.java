@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.dto.User;
@@ -436,6 +437,15 @@ public class AssetContext extends ResourceContext {
 		this.lastIssuedToWo = lastIssuedToWo;
 	}
 
+	private List<Long> hazardIds;
+
+	public List<Long> getHazardIds() {
+		return hazardIds;
+	}
+
+	public void setHazardIds(List<Long> hazardIds) {
+		this.hazardIds = hazardIds;
+	}
 	
 	
 	

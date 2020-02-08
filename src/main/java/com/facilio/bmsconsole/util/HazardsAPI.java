@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.util.List;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetHazardContext;
 import com.facilio.bmsconsole.context.SafetyPlanContext;
 import com.facilio.bmsconsole.context.SafetyPlanHazardContext;
 import com.facilio.bmsconsole.context.WorkorderHazardContext;
@@ -50,6 +51,22 @@ public class HazardsAPI {
 			                 
 	}
 	
+	public static List<AssetHazardContext> fetchAssetAssociatedHazards(Long assetId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_HAZARD);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		SelectRecordsBuilder<AssetHazardContext> builder = new SelectRecordsBuilder<AssetHazardContext>()
+				.module(module)
+				.beanClass(AssetHazardContext.class)
+				.select(fields)
+			    .andCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(assetId),NumberOperators.EQUALS));
+				;
+
+		List<AssetHazardContext> list = builder.get();
+		return list;
+			                 
+	}
+	
 	public static SafetyPlanContext fetchSafetyPlan(Long safetyPlanId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SAFETY_PLAN);
@@ -92,6 +109,17 @@ public class HazardsAPI {
 	public static void deleteWorkOrderHazard(List<Long> hazardIds) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_HAZARD);
+		
+		DeleteRecordBuilder<ModuleBaseWithCustomFields> builder = new DeleteRecordBuilder<ModuleBaseWithCustomFields>()
+				.module(module)
+				.andCondition(CriteriaAPI.getConditionFromList("HAZARD_ID", "hazard", hazardIds, NumberOperators.EQUALS));
+		builder.delete();
+
+	}
+	
+	public static void deleteAssetHazard(List<Long> hazardIds) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_HAZARD);
 		
 		DeleteRecordBuilder<ModuleBaseWithCustomFields> builder = new DeleteRecordBuilder<ModuleBaseWithCustomFields>()
 				.module(module)

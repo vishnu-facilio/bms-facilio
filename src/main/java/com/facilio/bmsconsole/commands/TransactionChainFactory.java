@@ -4648,6 +4648,13 @@ public class TransactionChainFactory {
 		
 		return c;
 	}
+	public static FacilioChain addAssetHazardListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForAssetHazard());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		
+		return c;
+	}
 
 }
 
