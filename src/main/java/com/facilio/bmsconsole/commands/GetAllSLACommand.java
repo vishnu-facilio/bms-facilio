@@ -30,7 +30,7 @@ public class GetAllSLACommand extends FacilioCommand {
 
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_RULE_ID", "parentRuleId", String.valueOf(slaPolicyId), NumberOperators.EQUALS));
-            List<WorkflowRuleContext> slaRules = WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE, false, criteria, null, null);
+            List<WorkflowRuleContext> slaRules = WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE, true, criteria, null, null);
             context.put(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST, slaRules);
         }
         return false;
