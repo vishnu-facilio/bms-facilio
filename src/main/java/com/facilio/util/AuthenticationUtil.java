@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 
@@ -43,7 +44,17 @@ public class AuthenticationUtil {
                 }
             }
             
-			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(facilioToken, overrideSessionCheck, null, portalDomain);
+            AppType appType = null;
+            if(!portalDomain.equals("app")) {
+            	appType = AppType.SERVICE_PORTAL;
+				if(request.getServerName() != null && request.getServerName().contains("faciliovendors.com")) {
+					appType = AppType.VENDOR_PORTAL;
+				}
+				else if(request.getServerName() != null && request.getServerName().contains("faciliotenants.com")) {
+					appType = AppType.TENANT_PORTAL;
+				}
+            }
+			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(facilioToken, overrideSessionCheck, null, portalDomain, appType);
 			return iamAccount;
         }
         return null;

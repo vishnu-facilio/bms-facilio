@@ -344,9 +344,17 @@ public class FacilioAuthAction extends FacilioAction {
 				}
 
 				LOGGER.info("validateLogin() : domainName : " + domainName);
+				
+				AppType appType = AppType.SERVICE_PORTAL;
+				if(request.getServerName() != null && request.getServerName().contains("faciliovendors.com")) {
+					appType = AppType.VENDOR_PORTAL;
+				}
+				else if(request.getServerName() != null && request.getServerName().contains("faciliotenants.com")) {
+					appType = AppType.TENANT_PORTAL;
+				}
 		
 				authtoken = IAMUserUtil.verifyLoginPassword(getUsername(), getPassword(), userAgent, userType,
-							ipAddress, domainName);
+							ipAddress, domainName, appType);
 				setJsonresponse("token", authtoken);
 				setJsonresponse("username", getUsername());
 
@@ -697,6 +705,8 @@ public class FacilioAuthAction extends FacilioAction {
 	public String changePassword(){
 		try {
 			User user = AccountUtil.getCurrentUser();
+			HttpServletRequest request = ServletActionContext.getRequest();
+			
 			Boolean changePassword = IAMUserUtil.changePassword(getPassword(), getNewPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
 			if (changePassword != null && changePassword) {
 				setJsonresponse("message", "Password changed successfully");
@@ -741,7 +751,7 @@ public class FacilioAuthAction extends FacilioAction {
 	public String generateAuthToken() {
 		LOGGER.info("generateAuthToken() : username :" + getUsername());
 		try {
-			String token = IAMUserUtil.generateAuthToken(getUsername(), getPassword(), "app");
+			String token = IAMUserUtil.generateAuthToken(getUsername(), getPassword(), "app", AppType.SERVICE_PORTAL);
 			if (token != null) {
 				LOGGER.info("Response token is " + token);
 				setJsonresponse("authtoken", token);
@@ -758,8 +768,17 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public String generatePortalAuthToken() {
 		LOGGER.info("generatePortalAuthToken() : username :" + getUsername());
+		HttpServletRequest request = ServletActionContext.getRequest(); 
+		AppType appType = AppType.SERVICE_PORTAL;
+		if(request.getServerName() != null && request.getServerName().contains("faciliovendors.com")) {
+			appType = AppType.VENDOR_PORTAL;
+		}
+		else if(request.getServerName() != null && request.getServerName().contains("faciliotenants.com")) {
+			appType = AppType.TENANT_PORTAL;
+		}
+
 		try {
-			String token = IAMUserUtil.generateAuthToken(getUsername(), getPassword(), getDomainname());
+			String token = IAMUserUtil.generateAuthToken(getUsername(), getPassword(), getDomainname(), appType);
 			if (token != null) {
 				LOGGER.info("Response token is " + token);
 				setJsonresponse("authtoken", token);

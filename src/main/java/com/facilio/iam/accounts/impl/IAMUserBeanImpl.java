@@ -30,6 +30,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
+import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
@@ -664,7 +665,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	}
 	@Override
-	public IAMAccount verifyUserSessionv2(String uId, String token, String orgDomain) throws Exception {		
+	public IAMAccount verifyUserSessionv2(String uId, String token, String orgDomain, AppType appType) throws Exception {		
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uId);
 		if (sessions == null) {
 			sessions = new ArrayList<>();
@@ -689,6 +690,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", uId, StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
+		
+		if(appType != null) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.APP_TYPE", "appType", String.valueOf(appType.getIndex()) , NumberOperators.EQUALS));
+		}
 		
 	
 		Map<String, Object> props = selectBuilder.fetchFirst();
@@ -1157,7 +1162,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public boolean verifyPasswordv2(String emailAddress, String domain, String password) throws Exception {
+	public boolean verifyPasswordv2(String emailAddress, String domain, String password, AppType appType) throws Exception {
 		// TODO Auto-generated method stub
 		boolean passwordValid = false;
 		try {
@@ -1175,6 +1180,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", emailAddress, StringOperators.IS));
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "domainName", domain, StringOperators.IS));
 			selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
+			
+			if(!domain.equals("app")) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition("APP_TYPE", "appType", String.valueOf(appType.getIndex()), NumberOperators.EQUALS));
+			}
 			
 			log.info("Domain  " + domain);
 			log.info("Email Address  " + emailAddress);
@@ -1202,9 +1211,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public String validateAndGenerateToken(String emailaddress, String password, String userAgent, String userType,
-			String ipAddress, String domain, boolean startUserSession) throws Exception {
+			String ipAddress, String domain, boolean startUserSession, AppType appType) throws Exception {
 		// TODO Auto-generated method stub
-		if (verifyPasswordv2(emailaddress, domain, password)) {
+		if (verifyPasswordv2(emailaddress, domain, password, appType)) {
 
 			IAMUser user = getFacilioUser(emailaddress, -1, domain);
 			if (user != null) {
@@ -1260,7 +1269,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public IAMAccount verifyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain,
-			String portalDomain) throws Exception {
+			String portalDomain, AppType appType) throws Exception {
 		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
 			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
@@ -1279,7 +1288,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 						account = IAMUtil.getUserBean().getAccount(userId, orgDomain);
 					}
 					else {
-						account = IAMUtil.getUserBean().verifyUserSessionv2(uId, idToken, orgDomain);
+						account = IAMUtil.getUserBean().verifyUserSessionv2(uId, idToken, orgDomain, appType);
 					}
 				}
 				catch(NumberFormatException e) {

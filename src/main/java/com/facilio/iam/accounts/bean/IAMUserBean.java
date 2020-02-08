@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
+import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
@@ -22,7 +23,7 @@ public interface IAMUserBean {
 
 	IAMUser resetPasswordv2(String token, String password) throws Exception;
 	
-	public boolean verifyPasswordv2(String email, String domain, String password) throws Exception;
+	public boolean verifyPasswordv2(String email, String domain, String password, AppType appType) throws Exception;
 
 	IAMUser validateUserInvitev2(String token) throws Exception;
 
@@ -64,7 +65,7 @@ public interface IAMUserBean {
     
     public void clearAllUserSessionsv2(long uid, String email) throws Exception;
     
-    public IAMAccount verifyUserSessionv2(String uId, String token, String orgDomain) throws Exception;
+    public IAMAccount verifyUserSessionv2(String uId, String token, String orgDomain, AppType appType) throws Exception;
     
     //for backward compatibility
     public IAMAccount verifyUserSessionUsingEmail(String email, String token, String portalDomain) throws Exception;
@@ -94,9 +95,9 @@ public interface IAMUserBean {
 	public Map<Long, Map<String, Object>> getUserDataForUids(List<Long> userIds, long orgId, boolean shouldFetchDeleted) throws Exception;
 	
 	public String validateAndGenerateToken(String emailaddress, String password, String userAgent, String userType,
-			String ipAddress, String domain, boolean startUserSession) throws Exception ;
+			String ipAddress, String domain, boolean startUserSession, AppType appType) throws Exception ;
 
-	public IAMAccount verifyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain, String portalDomain) throws Exception;
+	public IAMAccount verifyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain, String portalDomain, AppType appType) throws Exception;
 	
 	public boolean verifyUser(long userId) throws Exception;
 	

@@ -126,7 +126,7 @@ public class FacilioServerEndpoint
 			}
 			
 			if (idToken != null) {
-				IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(idToken, false, null, "app");
+				IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(idToken, false, null, "app", null);
 				if (iamAccount == null) {
 					throw new Exception("Invalid auth!");
 				}
