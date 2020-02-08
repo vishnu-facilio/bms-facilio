@@ -1,16 +1,6 @@
 
 package com.facilio.bmsconsole.page.factory;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
@@ -34,6 +24,17 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AssetPageFactory extends PageFactory {
 	
@@ -200,6 +201,15 @@ public class AssetPageFactory extends PageFactory {
 				tab9.addSection(tab5Sec1);
 				addInventoryTransactionsWidget(tab5Sec1, "toolTransactions");
 			}
+		}
+
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
+			Tab tab10 = page.new Tab("safety");
+			page.addTab(tab10);
+			Section tab5Sec1 = page.new Section();
+			tab10.addSection(tab5Sec1);
+			addRelatedListWidget(tab5Sec1, "assetHazard", asset.getModuleId(), "Hazards");
+			addPrecautionHazardsWidget(tab5Sec1);
 		}
 
 		Tab tab9 = page.new Tab("history", "history");
@@ -452,5 +462,29 @@ public class AssetPageFactory extends PageFactory {
 		
 		section.addWidget(cardWidget);
 	}
-	
+	private static void addPrecautionHazardsWidget(Section section) {
+		PageWidget widget = new PageWidget(WidgetType.PRECAUTION_HAZARDS, "precautionHazards");
+		widget.addToLayoutParams(section, 24, 10);
+		section.addWidget(widget);
+	}
+	private static void addRelatedListWidget(Section section, String moduleName, long parenModuleId, String moduleDisplayName) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> allFields = modBean.getAllFields(module.getName());
+		List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == parenModuleId)).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(fields)) {
+			for (FacilioField field : fields) {
+				PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
+				JSONObject relatedList = new JSONObject();
+				module.setDisplayName(moduleDisplayName);
+				relatedList.put("module", module);
+				relatedList.put("field", field);
+				relatedListWidget.setRelatedList(relatedList);
+				relatedListWidget.addToLayoutParams(section, 24, 10);
+				section.addWidget(relatedListWidget);
+			}
+		}
+	}
 }
