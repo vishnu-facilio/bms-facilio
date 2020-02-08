@@ -169,6 +169,7 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
     }
 
     public static void updateSLACommitmentRule(SLAWorkflowCommitmentRuleContext rule) throws Exception {
+        WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
         deleteSLACommitmentDuration(rule);
         addSLACommitmentDuration(rule);
     }
