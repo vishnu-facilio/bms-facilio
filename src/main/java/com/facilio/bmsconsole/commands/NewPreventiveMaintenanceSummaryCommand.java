@@ -18,6 +18,7 @@ import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
@@ -90,6 +91,7 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 			fillReadingFields(listOfPreRequests);
 		}
 		WorkOrderContext workorder = template.getWorkorder();
+		
 		if(workorder.getAttachments() != null && !workorder.getAttachments().isEmpty()) {
 			List<Long> fileIds = workorder.getAttachments().stream().map(file -> file.getFileId()).collect(Collectors.toList());
 			FileStore fs = FacilioFactory.getFileStore();
@@ -138,6 +140,11 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 
 		fillTriggerExtras(pm);
 		TicketAPI.loadTicketLookups(Arrays.asList(workorder));
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
+			if(workorder != null && workorder.getSafetyPlan() != null && workorder.getSafetyPlan().getId() > 0) {
+				workorder.setSafetyPlan(HazardsAPI.fetchSafetyPlan(workorder.getSafetyPlan().getId()));
+			}
+		}
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);

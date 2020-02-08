@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -61,6 +62,11 @@ public class GetWorkOrderCommand extends FacilioCommand {
 
 			//fetch vendor details
 			builder.fetchSupplement((LookupField) fieldMap.get("vendor"));
+			//fetch safetyPlan details
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.SAFETY_PLAN)) {
+				builder.fetchSupplement((LookupField) fieldMap.get("safetyPlan"));
+			}
+			
 			// temp fix
 			List<LookupField> customLookupFields = new ArrayList<>();
 			for (FacilioField field : fields) {

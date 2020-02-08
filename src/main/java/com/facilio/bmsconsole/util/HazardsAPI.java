@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.util.List;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.SafetyPlanContext;
 import com.facilio.bmsconsole.context.SafetyPlanHazardContext;
 import com.facilio.bmsconsole.context.WorkorderHazardContext;
 import com.facilio.constants.FacilioConstants;
@@ -46,6 +47,22 @@ public class HazardsAPI {
 
 		List<WorkorderHazardContext> list = builder.get();
 		return list;
+			                 
+	}
+	
+	public static SafetyPlanContext fetchSafetyPlan(Long safetyPlanId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SAFETY_PLAN);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		SelectRecordsBuilder<SafetyPlanContext> builder = new SelectRecordsBuilder<SafetyPlanContext>()
+				.module(module)
+				.beanClass(SafetyPlanContext.class)
+				.select(fields)
+			    .andCondition(CriteriaAPI.getIdCondition(safetyPlanId, module))
+				;
+
+		SafetyPlanContext sp = builder.fetchFirst();
+		return sp;
 			                 
 	}
 	
