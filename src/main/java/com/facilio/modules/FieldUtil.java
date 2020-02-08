@@ -15,6 +15,7 @@ import java.util.Set;
 
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
 import com.facilio.modules.fields.*;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -40,6 +41,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MutableConfigOverride;
+
+import static com.serotonin.bacnet4j.type.enumerated.ObjectType.timeValue;
 
 public class FieldUtil {
 	
@@ -482,4 +485,22 @@ public class FieldUtil {
         }
         return changeList;
     }
+
+    public static Object getValue(ModuleBaseWithCustomFields record, FacilioField field) throws Exception {
+		Object value;
+		if (field.isDefault()) {
+			value = PropertyUtils.getProperty(record, field.getName());
+		} else {
+			value = record.getDatum(field.getName());
+		}
+		return value;
+	}
+
+	public static void setValue(ModuleBaseWithCustomFields record, FacilioField field, Object value) throws Exception {
+		if (field.isDefault()) {
+			PropertyUtils.setProperty(record, field.getName(), timeValue);
+		} else {
+			record.setDatum(field.getName(), timeValue);
+		}
+	}
 }

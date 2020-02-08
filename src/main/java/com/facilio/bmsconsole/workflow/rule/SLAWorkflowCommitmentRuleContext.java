@@ -12,6 +12,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -56,35 +57,28 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 }
             }
 
+            FacilioModule module = modBean.getModule(getModuleId());
             for (SLAEntityDuration slaEntityDuration : slaEntities) {
                 SLAEntityContext slaEntity = SLAWorkflowAPI.getSLAEntity(slaEntityDuration.getSlaEntityId());
 
                 FacilioField baseField = modBean.getField(slaEntity.getBaseFieldId());
                 FacilioField dueField = modBean.getField(slaEntity.getDueFieldId());
 
-                Long timeValue;
-                if (baseField.isDefault()) {
-                    timeValue = (Long) PropertyUtils.getProperty(moduleRecord, baseField.getName());
-                } else {
-                    timeValue = (Long) moduleRecord.getDatum(baseField.getName());
-                }
-                if (timeValue == null) {
-                    timeValue = DateTimeUtil.getCurrenTime();
-                }
-                timeValue += slaEntityDuration.getAddDuration() * 1000;
+                if (FieldUtil.getValue(moduleRecord, dueField) == null) {
+                    Long timeValue = (Long) FieldUtil.getValue(moduleRecord, baseField);
+                    if (timeValue == null) {
+                        continue;
+                    }
+                    timeValue += slaEntityDuration.getAddDuration() * 1000;
 
-                if (dueField.isDefault()) {
-                    PropertyUtils.setProperty(moduleRecord, dueField.getName(), timeValue);
-                } else {
-                    moduleRecord.setDatum(dueField.getName(), timeValue);
-                }
+                    FieldUtil.setValue(moduleRecord, dueField, timeValue);
 
-                FacilioModule module = modBean.getModule(getModuleId());
-                UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>()
-                        .module(module)
-                        .fields(Collections.singletonList(dueField))
-                        .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
-                update.update(moduleRecord);
+                    UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>()
+                            .module(module)
+                            .fields(Collections.singletonList(dueField))
+                            .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
+                    update.update(moduleRecord);
+                }
 
                 if (MapUtils.isNotEmpty(escalationMap)) {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());
