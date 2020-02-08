@@ -499,9 +499,9 @@ public class FieldUtil {
 
 	public static void setValue(ModuleBaseWithCustomFields record, FacilioField field, Object value) throws Exception {
 		if (field.isDefault()) {
-			PropertyUtils.setProperty(record, field.getName(), timeValue);
+			PropertyUtils.setProperty(record, field.getName(), value);
 		} else {
-			record.setDatum(field.getName(), timeValue);
+			record.setDatum(field.getName(), value);
 		}
 	}
 }
