@@ -1491,7 +1491,7 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("PRE REGISTER VISITOR");
 		form.setName("default_visitorlogging_portal");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_INVITE));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getPotalVisitorPreRegisterFormFields());
 		form.setFormType(FormType.PORTAL);
@@ -1500,16 +1500,14 @@ public class FormFactory {
 
 	private static List<FormField> getPotalVisitorPreRegisterFormFields() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("inviteName", FieldDisplayType.TEXTBOX, "Invite Name", Required.REQUIRED, 1, 1));
-//		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATETIME, "Expected Start Time", Required.OPTIONAL, 2, 1));
-//		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATETIME, "Expected End Time", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("inviteHost", FieldDisplayType.USER, "Host", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("visitorType", FieldDisplayType.LOOKUP_SIMPLE, "Visitor Type", Required.OPTIONAL, "visitorType", 3, 1));
-		fields.add(new FormField("recurringVisitor", FieldDisplayType.RECURRING_VISITOR , "RECURRING VISITOR", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("invitees", FieldDisplayType.VISITOR_INVITEES , "VISITORS", Required.OPTIONAL, 5, 1));
-//		FormField requestedByField = new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",6, 1);
-//		requestedByField.setShowField(false);
-//		fields.add(requestedByField);
+		fields.add(new FormField("visitorPhone", FieldDisplayType.TEXTBOX, "Visitor Phone", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("visitorName", FieldDisplayType.TEXTBOX, "Visitor Name", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("visitorEmail", FieldDisplayType.TEXTBOX, "Visitor Email", Required.REQUIRED, 3, 1));
+		fields.add(new FormField("visitedSpace", FieldDisplayType.SPACECHOOSER, "Space", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("inviteHost", FieldDisplayType.LOOKUP_SIMPLE, "Host", Required.OPTIONAL, "contact", 5, 1));
+		fields.add(new FormField("expectedCheckInTime", FieldDisplayType.DATETIME, "Expected Check-in Time", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("expectedCheckOutTime", FieldDisplayType.DATETIME, "Expected Check-out Time", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("purposeOfVisit", FieldDisplayType.SELECTBOX, "Purpose of Visit", Required.OPTIONAL, 8, 1));
 
 		return fields;
 	}
