@@ -18,7 +18,12 @@ public class AddOrUpdateBulkSLACommand extends FacilioCommand {
         Long parentSLAPolicyId = (Long) context.get(FacilioConstants.ContextNames.SLA_POLICY_ID);
 
         if (CollectionUtils.isNotEmpty(slaRuleList)) {
+            int counter = 1;
             for (SLAWorkflowCommitmentRuleContext slaCommitment : slaRuleList) {
+
+                // temp fix for executionOrder
+                slaCommitment.setExecutionOrder(counter++);
+
                 FacilioChain addOrUpdateSLAChain = TransactionChainFactory.getAddOrUpdateSLAChain();
                 FacilioContext addOrUpdateSLAChainContext = addOrUpdateSLAChain.getContext();
                 addOrUpdateSLAChainContext.put(FacilioConstants.ContextNames.SLA_RULE_MODULE, slaCommitment);
