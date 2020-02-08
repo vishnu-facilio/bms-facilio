@@ -569,7 +569,7 @@ public class ViewFactory {
 
 
 		// views for tenant portal
-		views.put("myActive", getActiveVisitorInvites().setOrder(order++)); // 1
+		views.put("myActive", getMyActiveVisitorInvites().setOrder(order++)); // 1
 		views.put("myCurrent", getMyCurrentVisitorInvites().setOrder(order++)); // 2 to be handled
 		views.put("myExpired", getMyExpiredVisitorInvites().setOrder(order++)); // 3
 
@@ -3446,7 +3446,7 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getMyVistorInvitesCondition());
-		criteria.addAndCondition(getVisitorLogStatusCriteria("CheckedIn"));
+		criteria.addAndCondition(getActiveInvitesCondition());
 		FacilioModule visitorInvitesModule = ModuleFactory.getVisitorLoggingModule();
 
 		FacilioField createdTime = new FacilioField();
