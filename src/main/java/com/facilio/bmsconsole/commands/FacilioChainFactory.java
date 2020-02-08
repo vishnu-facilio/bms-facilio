@@ -2148,6 +2148,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForHazard());
 		c.addCommand(new GenericDeleteModuleDataCommand());
+		c.addCommand(new DeleteHazardsFromAssociatedModulesCommand());
 		return c;
 	}
 	
@@ -2155,6 +2156,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForPrecaution());
 		c.addCommand(new GenericDeleteModuleDataCommand());
+		c.addCommand(new DeleteHazardPrecautionCommand());
 		return c;
 	}
 	

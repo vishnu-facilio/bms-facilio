@@ -549,5 +549,13 @@ public class WorkOrderContext extends TicketContext {
 		this.safetyPlan = safetyPlan;
 	}
 	
+	private List<Long> hazardIds;
+	public List<Long> getHazardIds() {
+		return hazardIds;
+	}
+	public void setHazardIds(List<Long> hazardIds) {
+		this.hazardIds = hazardIds;
+	}
+	
 	
 }
