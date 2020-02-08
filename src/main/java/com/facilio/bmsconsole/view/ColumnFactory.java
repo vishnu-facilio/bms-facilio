@@ -90,7 +90,7 @@ public class ColumnFactory {
 		// vl tenant portal
 		columnMap.put("visitorlogging-myActive", getMyVisitorInvitesColumns());
 		columnMap.put("visitorlogging-myCurrent", getMyVisitorInvitesColumns());
-		columnMap.put("visitorlogging-myExpired", getMyVisitorInvitesColumns());
+		columnMap.put("visitorlogging-myExpired", getMyExpiredVisitorInvitesColumns());
 		// vl vendor portal
 		columnMap.put("visitorlogging-vendorActiveVisitors", getVendorUpcomingVisitorInvitesColumns());
 		columnMap.put("visitorlogging-vendorVisits", getVendorAllVisitorInvitesColumns());
@@ -107,12 +107,12 @@ public class ColumnFactory {
 		columnMap.put("insurance-default", getDefaultInsuranceColumns());
 		columnMap.put("insurance-vendor", getVendorInsuranceColumns());
 		columnMap.put("insurance-vendorActive", getVendorInsuranceColumns());
-		columnMap.put("insurance-vendorExpired", getVendorInsuranceColumns());
+		columnMap.put("insurance-vendorExpired", getVendorExpiredInsuranceColumns());
 		columnMap.put("watchlist-default", getDefaultWatchListColumns());
 		columnMap.put("workpermit-default", getDefaultWorkPermitColumns());
 		columnMap.put("workpermit-hidden-all", getHiddenAllWorkPermitColumns());
 		columnMap.put("workpermit-myWorkpermits", getMyWorkPermitColumns());
-		columnMap.put("workpermit-myActive", getMyActiveWorkPermitColumns());
+		columnMap.put("workpermit-myActive", getMyWorkPermitColumns());
 		columnMap.put("workpermit-myRequested", getMyActiveWorkPermitColumns());
 		columnMap.put("workpermit-myExpired", getMyActiveWorkPermitColumns());
 		columnMap.put("workpermit-vendorWorkpermits", getVendorWorkPermitColumns());
@@ -807,6 +807,22 @@ public class ColumnFactory {
 		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("host", "Host"));
 		columns.add(new ViewField("visitorType", "Type"));
+		columns.add(new ViewField("moduleState", "Status"));
+		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in"));
+		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out"));
+		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
+		columns.add(new ViewField("visitedSpace", "Visiting Space"));
+		columns.add(new ViewField("requestedBy", "Requested By"));
+	
+		return columns;
+	}
+	
+	public static List<ViewField> getMyExpiredVisitorInvitesColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("visitorName", "Name"));
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("host", "Host"));
+		columns.add(new ViewField("visitorType", "Type"));
 		columns.add(new ViewField("expectedCheckInTime", "Expected Check-in"));
 		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
@@ -887,6 +903,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("expectedCheckOutTime", "Expected Check-out Time"));
 		columns.add(new ViewField("purposeOfVisit", "Purpose Of Visit"));
 		columns.add(new ViewField("visitedSpace", "Visiting Space"));
+		columns.add(new ViewField("moduleState", "Status"));
 
 		return columns;
 	}
@@ -917,6 +934,15 @@ public class ColumnFactory {
 	}
 	
 	public static List<ViewField> getVendorInsuranceColumns () {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("companyName", "Company Name"));
+		columns.add(new ViewField("validFrom", "Valid From"));
+		columns.add(new ViewField("validTill", "Valid Till"));
+		columns.add(new ViewField("insurance", "Insurance"));
+		columns.add(new ViewField("moduleState", "Status"));
+		return columns;
+	}
+	public static List<ViewField> getVendorExpiredInsuranceColumns () {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("companyName", "Company Name"));
 		columns.add(new ViewField("validFrom", "Valid From"));
