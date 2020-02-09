@@ -4224,7 +4224,9 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
+		c.addCommand(new LoadWorkPermitLookUpsCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 		c.addCommand(new RollUpWorkOrderFieldOnWorkPermitApprovalCommand());
 
 		return c;
