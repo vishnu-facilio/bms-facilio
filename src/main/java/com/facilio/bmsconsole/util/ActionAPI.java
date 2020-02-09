@@ -414,6 +414,9 @@ public class ActionAPI {
 		if (action.getTemplateJson().containsKey("ftl")) {
 			emailTemplate.setFtl((Boolean) action.getTemplateJson().get("ftl"));
 		}
+		if (action.getTemplateJson().containsKey("html")) {
+			emailTemplate.setHtml((Boolean) action.getTemplateJson().get("html"));
+		}
 		action.setTemplate(emailTemplate);
 		
 		checkAndSetWorkflow(action.getTemplateJson(), emailTemplate);

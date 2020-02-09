@@ -1,8 +1,9 @@
 package com.facilio.bmsconsole.templates;
 
+import org.json.simple.JSONObject;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import org.json.simple.JSONObject;
 
 public class EMailTemplate extends Template {
 	/**
@@ -84,6 +85,10 @@ public class EMailTemplate extends Template {
 		obj.put("subject", subject);
 		obj.put("message", message);
 		obj.put("sendAsSeparateMail", sendAsSeparateMail);
+		obj.put("html", isHtml());
+		if (isHtml()) {
+			obj.put("mailType", "html");
+		}
 		
 		return obj;
 	}
@@ -109,5 +114,19 @@ public class EMailTemplate extends Template {
 
 	public void setBcc(String bcc) {
 		this.bcc = bcc;
+	}
+	
+	private Boolean html;
+	public Boolean getHtml() {
+		return html;
+	}
+	public void setHtml(Boolean html) {
+		this.html = html;
+	}
+	public boolean isHtml() {
+		if (html != null) {
+			return html.booleanValue();
+		}
+		return false;
 	}
 }
