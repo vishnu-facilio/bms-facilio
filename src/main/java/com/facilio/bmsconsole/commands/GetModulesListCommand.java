@@ -37,6 +37,9 @@ public class GetModulesListCommand extends FacilioCommand {
        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.HUDSON_YARDS)) {
     	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WORKPERMIT));
        }
+       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
+    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.TENANT));
+       }
        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVENTORY)) {
     	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
     	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));

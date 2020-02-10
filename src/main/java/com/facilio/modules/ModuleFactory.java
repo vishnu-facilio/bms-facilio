@@ -53,6 +53,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ALARM, getAlarmsModule());
 		moduleMap.put(FacilioConstants.ContextNames.ASSET, getAssetsModule());
 		moduleMap.put(FacilioConstants.ContextNames.ENERGY_METER, getEnergyMeterModule());
+		moduleMap.put(FacilioConstants.ContextNames.TENANT, getTenantModule());
 		moduleMap.put("jsontemplate", getJSONTemplateModule());
 		moduleMap.put("preventivemaintenance", getPreventiveMaintenanceModule());
 		moduleMap.put("connectedApps", getConnectedAppsModule());

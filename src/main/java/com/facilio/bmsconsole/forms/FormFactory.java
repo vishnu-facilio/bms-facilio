@@ -36,6 +36,7 @@ public class FormFactory {
 		forms.put("approvalForm", getApprovalForm());
 		forms.put("default_asset", getAssetForm());
 		forms.put("energymeter", getEnergyMeterForm());
+		forms.put("tenant", getTenantForm());
 		forms.put("item_form", getItemForm());
 		forms.put("item_track_form", getItemWithIndTrackForm());
 		forms.put("store_room_form", getStoreRoomForm());
@@ -103,7 +104,7 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm())
 						.put(FacilioConstants.ContextNames.ASSET, getAssetForm())
 						.put(FacilioConstants.ContextNames.ENERGY_METER, getEnergyMeterForm())
-						.put(FacilioConstants.ContextNames.TENANT, getTenantsForm())
+						.put(FacilioConstants.ContextNames.TENANT, getTenantForm())
 						.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseRequestForm())
 						.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderForm())
 						.put(FacilioConstants.ContextNames.LABOUR, getLabourForm())
@@ -193,14 +194,21 @@ public class FormFactory {
 			else if (moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
 				List<FormSection> sections = new ArrayList<>();
 				form.setSections(sections);
-				FormSection section = new FormSection("Asset", 1, form.getFields(), true);
+				FormSection section = new FormSection("", 1, form.getFields(), true);
 				section.setShowLabel(false);
 				sections.add(section);
 			}
 			else if (moduleName.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
 				List<FormSection> sections = new ArrayList<>();
 				form.setSections(sections);
-				FormSection section = new FormSection("EnergyMeter", 1, form.getFields(), true);
+				FormSection section = new FormSection("", 1, form.getFields(), true);
+				section.setShowLabel(false);
+				sections.add(section);
+			}
+			else if (moduleName.equals(FacilioConstants.ContextNames.TENANT)) {
+				List<FormSection> sections = new ArrayList<>();
+				form.setSections(sections);
+				FormSection section = new FormSection("", 1, form.getFields(), true);
 				section.setShowLabel(false);
 				sections.add(section);
 			}
@@ -284,6 +292,7 @@ public class FormFactory {
 		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm());
 		List<FacilioForm> assetForms = Arrays.asList(getAssetForm(), getMobileAssetForm());
 		List<FacilioForm> energyMeterForm = Arrays.asList(getEnergyMeterForm());
+		List<FacilioForm> tenantForm = Arrays.asList(getTenantForm());
 		List<FacilioForm> poForm = Arrays.asList(getPurchaseOrderForm());
 		List<FacilioForm> prForm = Arrays.asList(getPurchaseRequestForm());
 		List<FacilioForm> visitorForms = Arrays.asList(getVisitorForm(), getPortalVisitorForm());
@@ -304,6 +313,7 @@ public class FormFactory {
 				.put(FacilioConstants.ContextNames.WORK_ORDER, getFormMap(woForms))
 				.put(FacilioConstants.ContextNames.ASSET, getFormMap(assetForms))
 				.put(FacilioConstants.ContextNames.ENERGY_METER, getFormMap(energyMeterForm))
+				.put(FacilioConstants.ContextNames.TENANT, getFormMap(tenantForm))
 				.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getFormMap(poForm))
 				.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getFormMap(prForm))
 				.put(FacilioConstants.ContextNames.VISITOR,getFormMap(visitorForms))
@@ -481,6 +491,18 @@ public class FormFactory {
 		form.setFields(getWebEnergyMeterFormFields());
 		return form;
 	}
+	
+	private static FacilioForm getTenantForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Tenant");
+		form.setName("default_tenant_web");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TENANT));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFormType(FormType.WEB);
+		form.setFields(getTenantsFormField());
+		return form;
+	}
+	
 	private static FacilioForm getPMForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("PREVENTIVE MAINTENANCE");
