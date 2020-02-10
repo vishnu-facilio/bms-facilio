@@ -1,0 +1,202 @@
+demoRollUpTableList : 
+   
+       
+   - tableName: Energy_Data_2
+     columns: [ACTUAL_TTIME , TTIME , CREATED_TIME]
+     primaryColumn: TTIME
+      
+   - tableName: Current_Occupancy_Reading
+     columns: [ACTUAL_TTIME , TTIME]  
+     primaryColumn: TTIME 
+     
+   - tableName: Assigned_Occupancy_Reading
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Temperature_Reading 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+  
+   - tableName: Humidity_Reading 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+
+   - tableName: CO2_Reading 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: Set_Point_Reading 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: Weather_Reading 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Weather_Reading_Daily 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: Weather_Reading_Hourly_Forecast 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: Weather_Reading_Daily_Forecast 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: Psychrometric_Reading 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: CDD_Reading 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: HDD_Reading 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: WDD_Reading 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Chiller_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Chiller_Condenser_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Chiller_Primary_Pump_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Chiller_Secondary_Pump_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Chiller_Condenser_Pump_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME   
+
+   - tableName: AHU_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Cooling_Tower_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: FCU_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: Heat_Pump_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: Utility_Bill_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Water_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Readings_2 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Readings_3 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: Readings_4 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Predicted_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: Energy_Data_2 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: PM_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Reading_Alarms 
+     columns: [START_TIME , END_TIME]   
+     primaryColumn: START_TIME
+
+   - tableName: Alarms 
+     columns: [CREATED_TIME , MODIFIED_TIME , CLEARED_TIME , DATETIME_CF1 , DATETIME_CF2 , DATETIME_CF3 , DATETIME_CF4]   
+     primaryColumn: CREATED_TIME
+     
+   - tableName: ML_Alarm_Occurrences 
+     columns: [TTIME]   
+     primaryColumn: TTIME 
+     
+   - tableName: Marked_Reading 
+     columns: [TTIME]   
+     primaryColumn: TTIME  
+     
+   - tableName: ML_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME  
+     
+   - tableName: ML_Log_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: FAHU_Readings 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: Chiller_Readings2 
+     columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME 
+     
+   - tableName: AlarmOccurrence 
+     columns: [CREATED_TIME , CLEARED_TIME , ACKNOWLEDGED_TIME]   
+     primaryColumn: CREATED_TIME 
+     
+   - tableName: BaseEvent 
+     columns: [CREATED_TIME]   
+     primaryColumn: CREATED_TIME 
+     
+   - tableName: BaseAlarm 
+     columns: [ACKNOWLEDGED_TIME , LAST_OCCURRED_TIME , LAST_CLEARED_TIME , LAST_CREATED_TIME]   
+     primaryColumn: LAST_CREATED_TIME 
+     
+   - tableName: BaseAlarm_Notes 
+     columns: [CREATED_TIME]   
+     primaryColumn: CREATED_TIME 
+     
+   - tableName: ML_Anomaly_Alarm 
+     columns: [READING_TIME]   
+     primaryColumn: READING_TIME       
+ 
+   - tableName: Reading_Data_Meta    
+     columns: [TTIME]  
+     primaryColumn: TTIME
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     

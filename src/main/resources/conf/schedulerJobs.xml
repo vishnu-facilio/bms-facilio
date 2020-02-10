@@ -108,4 +108,7 @@
 
 	<!--DeleteEmailExceptionQueue Job -->
 	<job name = 'DeleteEmailExceptioJob' classname='com.facilio.bmsconsole.jobs.DeleteEmailExceptionQueue' transactionTimeout="300000"/>
+
+	<!-- DemoRollUpYearly Job -->
+	<job name = 'DemoRollUpYearlyJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpYearlyJob' transactionTimeout = '900000'></job>
 </scheduler>

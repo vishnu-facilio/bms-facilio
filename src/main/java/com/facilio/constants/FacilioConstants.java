@@ -1439,7 +1439,6 @@ public class FacilioConstants {
 		public static final String SERVICE_REQUEST = "serviceRequest";
 		public static final String SERVICE_REQUEST_ATTACHMENT = "servicerequestsattachments";
 
-				
 		public static final String SAFETY_PLAN = "safetyPlan";
 		public static final String HAZARD = "hazard";
 		
@@ -1460,7 +1459,8 @@ public class FacilioConstants {
 	
 		public static final String ASSET_HAZARD = "assetHazard";
 		public static final String ASSET_HAZARDS = "assetHazards";
-	
+
+		public static final String TIME_DIFF = "timeDiff";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
