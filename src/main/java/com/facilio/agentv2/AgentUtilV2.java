@@ -1,4 +1,6 @@
 package com.facilio.agentv2;
+import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.point.PointsAPI;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -12,6 +14,38 @@ public class AgentUtilV2
     private String orgDomainName;
 
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
+
+    public static JSONObject getOverview() {
+        JSONObject overiewData = new JSONObject();
+        overiewData.put(AgentConstants.AGENT,AgentApiV2.getAgentCountDetails());
+        try {
+            overiewData.put(AgentConstants.CONTROLLER,ControllerApiV2.getControllerCountData(null));
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting controllerCountdata",e);
+        }
+        try {
+            overiewData.put(AgentConstants.POINTS,PointsAPI.getPointsCountData(-1L));
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting pointsCountData",e);
+        }
+        return overiewData;
+    }
+
+    public static JSONObject getAgentOverView(long agentId){
+        JSONObject overiewData = new JSONObject();
+        try {
+            overiewData.put(AgentConstants.CONTROLLER,ControllerApiV2.getControllerCountData(agentId));
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting controllerCountdata",e);
+        }
+        try {
+            overiewData.put(AgentConstants.POINTS,PointsAPI.getPointsCountData(agentId));
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting pointsCountData",e);
+        }
+        return overiewData;
+    }
+
     public Map<String, FacilioAgent> getAgentMap() { return agentMap; }
 
     public int getAgentCount() {

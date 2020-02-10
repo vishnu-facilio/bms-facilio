@@ -12,6 +12,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -34,8 +35,13 @@ public class ModbusTcpControllerContext extends Controller {
         setControllerType(FacilioControllerType.MODBUS_IP.asInt());
     }
 
+    @JsonInclude
     private String ipAddress;
+
+    @JsonInclude
     private String identifier;
+
+    @JsonInclude
     private int slaveId = -1;
 
     public static ModbusTcpControllerContext getModbusTcpControllerFromMap(Map<String, Object> controllerMap) throws Exception {

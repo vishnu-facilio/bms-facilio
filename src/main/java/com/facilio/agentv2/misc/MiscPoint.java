@@ -4,8 +4,11 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointEnum;
+import com.facilio.modules.FieldUtil;
 import org.json.simple.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 public class MiscPoint extends Point {
@@ -50,5 +53,16 @@ public class MiscPoint extends Point {
         childPointJSON.put(AgentConstants.CONTROLLER_ID,getControllerId());
         childPointJSON.put(AgentConstants.PATH, getPath());
         return childPointJSON;
+    }
+
+    public static void main(String[] args) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        MiscPoint point = new MiscPoint();
+        point.setSubscribeStatus(PointEnum.SubscribeStatus.IN_PROGRESS.getIndex());
+        point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
+        JSONObject json = FieldUtil.getAsJSON(point);
+        json.remove("subscribestatusEnum");
+        System.out.println(" p 2 j "+json);
+        System.out.println(" j 2 p "+FieldUtil.getAsBeanFromMap(json,MiscPoint.class).getSubscribestatusEnum());
+        System.out.println(" j 2 p "+FieldUtil.getAsBeanFromMap(json,MiscPoint.class).getConfigureStatusEnum());
     }
 }

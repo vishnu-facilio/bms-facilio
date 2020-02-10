@@ -10,6 +10,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -25,7 +26,11 @@ public class ModbusRtuControllerContext extends Controller {
     public static final String ASSETCATEGORY = FacilioConstants.ContextNames.MODBUS_RTU_CONTROLLER_MODULE_NAME;
 
     private String identifier;
+
+    @JsonInclude
     private Long networkId = -1L;
+
+    @JsonInclude
     int slaveId = -1;
 
     public ModbusRtuControllerContext(long agentId, long orgId) throws Exception {

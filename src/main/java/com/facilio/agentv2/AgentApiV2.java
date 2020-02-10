@@ -9,6 +9,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
@@ -35,16 +36,16 @@ public class AgentApiV2 {
     }
 
     public static List<FacilioAgent> getAllAgents() throws Exception {
-        return getAgents(null, null, true);
+        return getAgents(null, null, true,null);
     }
 
     public static List<FacilioAgent> getAgents() throws Exception {
-        return getAgents(null, null, false);
+        return getAgents(null, null, false,null);
     }
 
 
     public static FacilioAgent getAgent(String agentName) throws Exception {
-        List<FacilioAgent> agentList = getAgents(agentName, null, true);
+        List<FacilioAgent> agentList = getAgents(agentName, null, true,null);
         if (!agentList.isEmpty()) {
             return agentList.get(0);
         }
@@ -55,13 +56,15 @@ public class AgentApiV2 {
     private static final FacilioModule MODULE = ModuleFactory.getNewAgentDataModule();
 
     public static List<FacilioAgent> getAgents(AgentType type) throws Exception {
-        return getAgents(null, type, true);
+        return getAgents(null, type, true,null);
     }
 
-    private static List<FacilioAgent> getAgents(String agentName, AgentType type, boolean getDeleted) throws Exception {
+    public static List<FacilioAgent> listFacilioAgents(FacilioContext context) throws Exception {
+        return getAgents(null,null,false,context);
+    }
 
+    private static List<FacilioAgent> getAgents(String agentName, AgentType type, boolean getDeleted,FacilioContext context) throws Exception {
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
-        FacilioContext context = new FacilioContext();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentDataFields());
         context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentConstants.AGENT_TABLE);
         context.put(FacilioConstants.ContextNames.FIELDS, fieldMap.values());
@@ -239,6 +242,36 @@ public class AgentApiV2 {
             return getAgentCount(orgId);
         }
         return 0;
+    }
+
+    public static Condition getDeletedTimeNullCondition(FacilioModule module){
+        return CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(module), "NULL", CommonOperators.IS_EMPTY);
+    }
+
+    static JSONObject getAgentCountDetails(){
+        try{
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .table(MODULE.getTableName())
+                    .select(Collections.singletonList(FIELDSMAP.get(AgentConstants.CONNECTION_STATUS)))
+                    .andCondition(getDeletedTimeNullCondition(MODULE));
+            List<Map<String, Object>> data = selectRecordBuilder.get();
+            int deletedCount = 0;
+            if( ! data.isEmpty() ){
+                for (Map<String, Object> datum : data) {
+                    if( ! (boolean)datum.get(AgentConstants.CONNECTION_STATUS)){
+                        deletedCount++;
+                    }
+                }
+            }
+            JSONObject countData = new JSONObject();
+            countData.put(AgentConstants.TOTAL_COUNT,data.size());
+            countData.put(AgentConstants.ACTIVE_COUNT,(data.size()-deletedCount));
+            LOGGER.info(" agent count -- "+countData);
+            return countData;
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting agent count data ",e);
+        }
+        return new JSONObject();
     }
 
     private static long getAgentCount(long orgId) {

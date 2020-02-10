@@ -11,6 +11,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -27,18 +28,43 @@ public abstract class Controller extends AssetContext {
 
     private long id;
     private long orgId;
+
+    @JsonInclude
     private long agentId;
+
+    @JsonInclude
     private String name;
+
+    @JsonInclude
     private long dataInterval;
+
+    @JsonInclude
     private Boolean writable;
+
+    @JsonInclude
     private Boolean active;
+
+    @JsonInclude
     private int controllerType = -1;
+
+    @JsonInclude
     private Object controllerProps;
+
+    @JsonInclude
     private int availablePoints = 0;
+
+    @JsonInclude
     private long createdTime = -1;
+
+    @JsonInclude
     private long lastModifiedTime = -1;
+
+    @JsonInclude
     private long lastDataRecievedTime = -1;
+
     private long deletedTime = -1;
+
+    @JsonIgnore
     private static Map<String, FacilioField> fieldsMap;
 
     private long deviceId;

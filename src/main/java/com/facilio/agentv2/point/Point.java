@@ -1,12 +1,12 @@
 package com.facilio.agentv2.point;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.controller.FacilioDataType;
 import com.facilio.agent.controller.FacilioPoint;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.json.annotations.JSON;
@@ -29,28 +29,42 @@ public abstract class Point extends FacilioPoint{
     public Point(long agentId, long controllerId) {
         this.agentId = agentId;
         setControllerId(controllerId);
-        this.orgId = AccountUtil.getCurrentOrg().getOrgId();
+//        this.orgId = AccountUtil.getCurrentOrg().getOrgId();
         setPointType(getControllerType().asInt());
         setInUse(false);
         setSubscribed(false);
     }
 
+
+
+
+
     private long agentId;
     private long orgId;
+    @JsonInclude
     private String displayName;
+    @JsonInclude
     private int pointType;
+    @JsonInclude
     private String deviceName;
+    @JsonInclude
     private Long assetCategoryId;
+    @JsonInclude
     private Long resourceId;
+    @JsonInclude
     private Long fieldId;
+    @JsonInclude
     private boolean pseudo;
+    @JsonInclude
     private long mappedTime;
+    @JsonInclude
     private long deviceId;
 
   /*  private Integer subscribestatus = PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex();
     private Integer configureStatus = PointEnum.ConfigureStatus.UNCONFIGURED.getIndex();*/
-
-    private PointEnum.SubscribeStatus subscribestatus = PointEnum.SubscribeStatus.UNSUBSCRIBED;
+    @JsonInclude
+    private PointEnum.SubscribeStatus subscribeStatus = PointEnum.SubscribeStatus.UNSUBSCRIBED;
+    @JsonInclude
     private PointEnum.ConfigureStatus configureStatus = PointEnum.ConfigureStatus.UNCONFIGURED;
     /**
      * This method is used to get point as map which can be used to insert point to point table,
@@ -89,7 +103,7 @@ public abstract class Point extends FacilioPoint{
             setConfigureStatus(PointEnum.ConfigureStatus.UNCONFIGURED.getIndex());
         }
         if(getSubscribestatusEnum() != null ){
-            pointJSON.put(AgentConstants.SUBSCRIBE_STATUS,getSubscribestatus());
+            pointJSON.put(AgentConstants.SUBSCRIBE_STATUS,getSubscribeStatus());
         }else {
             setConfigureStatus(PointEnum.SubscribeStatus.UNSUBSCRIBED.getIndex());
         }
@@ -132,12 +146,12 @@ public abstract class Point extends FacilioPoint{
     public void setConfigureStatus(PointEnum.ConfigureStatus configureStatus) { this.configureStatus = configureStatus; }*/
     public void setConfigureStatus(int configureStatus) { this.configureStatus = PointEnum.ConfigureStatus.valueOf(configureStatus); }
 
-    public int getSubscribestatus() { return subscribestatus.getIndex(); }
+    public int getSubscribeStatus() { return subscribeStatus.getIndex(); }
     @JSON(serialize = false)
-    public PointEnum.SubscribeStatus getSubscribestatusEnum() { return subscribestatus; }
+    public PointEnum.SubscribeStatus getSubscribestatusEnum() { return subscribeStatus; }
    /* @JsonIgnore
     public void setSubscribestatus(PointEnum.SubscribeStatus subscribestatus) { this.subscribestatus = subscribestatus; }*/
-    public void setSubscribestatus(int subscribestatus) { this.subscribestatus = PointEnum.SubscribeStatus.valueOf(subscribestatus); }
+    public void setSubscribeStatus(int subscribestatus) { this.subscribeStatus = PointEnum.SubscribeStatus.valueOf(subscribestatus); }
 
     public long getDeviceId() { return deviceId; }
     public void setDeviceId(long deviceId) { this.deviceId = deviceId; }
@@ -185,7 +199,7 @@ public abstract class Point extends FacilioPoint{
             setDeviceName(String.valueOf(row.get(AgentConstants.DEVICE_NAME)));
         }
         if(containsValueCheck(AgentConstants.SUBSCRIBE_STATUS,row)){
-            setSubscribestatus(JsonUtil.getInt(row.get(AgentConstants.SUBSCRIBE_STATUS)));
+            setSubscribeStatus(JsonUtil.getInt(row.get(AgentConstants.SUBSCRIBE_STATUS)));
         }
         if(containsValueCheck(AgentConstants.CONFIGURE_STATUS,row)){
             setConfigureStatus(JsonUtil.getInt(row.get(AgentConstants.CONFIGURE_STATUS)));

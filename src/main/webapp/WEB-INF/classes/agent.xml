@@ -125,6 +125,13 @@
 
         <action name="metrice" class="com.facilio.agentv2.actions.AgentIdAction" method="getMetrics">
         </action>
+
+        <action name="overview" class="com.facilio.agentv2.AgentAction" method="getOverview">
+        </action>
+
+        <action name="agentOverview" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentOverView">
+        </action>
+
     </package>
 
     <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent">
@@ -239,7 +246,7 @@
     </package>
 
     <package name="dbMigration" namespace="/api/v2/db" extends="agent">
-        <action name="getSqlite" class="com.facilio.agentv2.actions.AgentIdAction" method="getSqlite">
+        <action name="getSqlite" class="com.facilio.agentv2.actions.AgentIdAction" method="getSxqlite">
         </action>
         <action name="migrate" class="com.facilio.agentv2.actions.AgentIdAction" method="migrate">
         </action>

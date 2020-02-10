@@ -154,7 +154,7 @@ public class AgentMigratorCommand extends AgentV2Command {
             newPoint.setDescription((String) point.get(AgentConstants.DESCRIPTION));
         }
         if(containsCheck(AgentConstants.DATA_TYPE,point)){
-            newPoint.setDataType((FacilioDataType) point.get(AgentConstants.DATA_TYPE));
+            newPoint.setDataType(FacilioDataType.valueOf((Integer) point.get(AgentConstants.DATA_TYPE)));
         }
 
         if(containsCheck("device",point)){
@@ -170,13 +170,13 @@ public class AgentMigratorCommand extends AgentV2Command {
             newPoint.setFieldId((Long) point.get(AgentConstants.FIELD_ID));
         }
         if(containsCheck("isWritable",point)){
-            newPoint.setWritable(((int)point.get("isWritable")>0));
+            newPoint.setWritable(((boolean)point.get("isWritable")));
         }
         if(containsCheck(AgentConstants.CONFIGURE_STATUS,point)){
             newPoint.setConfigureStatus((Integer) point.get(AgentConstants.CONFIGURE_STATUS));
         }
         if(containsCheck(AgentConstants.SUBSCRIBE_STATUS,point)){
-            newPoint.setSubscribestatus((Integer) point.get(AgentConstants.SUBSCRIBE_STATUS));
+            newPoint.setSubscribeStatus((Integer) point.get(AgentConstants.SUBSCRIBE_STATUS));
         }
         if(containsCheck(AgentConstants.THRESHOLD_JSON,point)){
             newPoint.setThresholdJSON(String.valueOf(point.get(AgentConstants.THRESHOLD_JSON)));

@@ -150,4 +150,9 @@ public class AgentConstants
     public static final String AGENT_V2_LOG_MODULE = "agentV2Log";
     public static final String ACTUAL_TIME = "actualTime";
     public static final String TIMEOUT = "timeout";
+    public static final String TOTAL_COUNT = "totalCount";
+    public static final String ACTIVE_COUNT ="activeCount";
+    public static final String CONFIGURED_COUNT = "configuredCount";
+    public static final String COMMISSIONED_COUNT = "commissionedCount";
+    public static final String SUBSCRIBED_COUNT = "subscribedCount";
 }

@@ -9,6 +9,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -19,14 +20,20 @@ import java.util.Map;
 
 public class OpcXmlDaControllerContext extends Controller {
 
+    public static final String ASSETCATEGORY = FacilioConstants.ContextNames.OPC_XML_DA_CONTROLLER_MODULE_NAME;
+    private static final Logger LOGGER = LogManager.getLogger(OpcXmlDaControllerContext.class.getName());
+
+    @JsonInclude
     private String url;
+
+    @JsonInclude
     private String userName;
+
+    @JsonInclude
     private String password;
 
-    public static final String ASSETCATEGORY = FacilioConstants.ContextNames.OPC_XML_DA_CONTROLLER_MODULE_NAME;
     private String identifier;
 
-    private static final Logger LOGGER = LogManager.getLogger(OpcXmlDaControllerContext.class.getName());
 
 
     public OpcXmlDaControllerContext(long agentId, long orgId) throws Exception {

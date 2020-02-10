@@ -11,6 +11,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -39,10 +40,18 @@ public class BacnetIpControllerContext extends Controller {
         this.agentId = agentId;
     }
 
+    @JsonInclude
     private long agentId;
+
+    @JsonInclude
     private int instanceNumber = -1;
+
+    @JsonInclude
     private int networkNumber = -1;
+
+    @JsonInclude
     private String ipAddress;
+
     @JsonIgnore
     private String identifier;
 

@@ -7,6 +7,7 @@ import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
+import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
@@ -228,18 +229,36 @@ public class ControllerApiV2 {
      * @return
      */
     private static Map<String, Controller> getControllersFromDb(String controllerIdentifier, long agentId, FacilioControllerType controllerType,long controllerId) {
+        List<Controller> controllerList = getControllerListFromDb(controllerIdentifier, agentId, controllerType, controllerId, null);
         Map<String, Controller> controllerMap = new HashMap<>();
+        controllerList.forEach(controller -> {
+            try {
+                controllerMap.put(controller.makeIdentifier(),controller);
+            } catch (Exception e) {
+                LOGGER.info("Exception while making identifier");
+            }
+        });
+        return new HashMap<>();
+
+
+
+    }
+
+    private static List<Controller> getControllerListFromDb(String controllerIdentifier, long agentId, FacilioControllerType controllerType, long controllerId, FacilioContext pagenationContext){
         try {
             FacilioChain getControllerChain = getFetchControllerChain(controllerType);
             if (getControllerChain == null) {
                 LOGGER.info(" controller chaing cant be null ");
-                return controllerMap;
+                return new ArrayList<>();
             }
             FacilioContext context = getControllerChain.getContext();
+            if(pagenationContext != null){
+                context = pagenationContext;
+            }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.CONTROLLER_MODULE_NAME);
             if (fields == null || fields.isEmpty()) {
-                return controllerMap;
+                return new ArrayList<>();
             }
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
             Criteria criteria = new Criteria();
@@ -265,16 +284,12 @@ public class ControllerApiV2 {
             }
             getControllerChain.execute(context);
             List<Controller> controllers = (List<Controller>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-            for (Controller controller : controllers) {
-                controllerMap.put(controller.makeIdentifier(), controller);
-            }
-            return controllerMap;
+            return controllers;
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }
-        return new HashMap<>();
+        return new ArrayList<>();
     }
-
     public static Controller getController(long deviceId, FacilioControllerType controllerType) {
         try {
             Controller controller = fetchController(deviceId, controllerType);
@@ -617,14 +632,16 @@ public class ControllerApiV2 {
 
     }
 
-    public static Map<Long, FacilioControllerType> getControllerIds(long agentId) throws Exception {
+    public static Map<Long, FacilioControllerType> getControllerIds(Long agentId) throws Exception {
         List<FacilioField> idTypefields = new ArrayList<>();
         idTypefields.add(FieldFactory.getIdField(MODULE));
         idTypefields.add(FieldFactory.getControllerTypeField(MODULE));
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
-                .select(idTypefields)
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+                .select(idTypefields);
+        if(agentId != null){
+                builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+        }
         //.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getPointFields()).get(AgentConstants.POINT_TYPE), String.valueOf(type.asInt()),NumberOperators.EQUALS));
         List<Map<String, Object>> results = builder.get();
         if ((results != null) && (!results.isEmpty())) {
@@ -633,5 +650,12 @@ public class ControllerApiV2 {
             return ids;
         }
         return new HashMap<>();
+    }
+
+    public static JSONObject getControllerCountData(Long agentId) throws Exception {
+        JSONObject controlleCountData = new JSONObject();
+        controlleCountData.put(AgentConstants.TOTAL_COUNT,getControllerIds(agentId).size());
+        controlleCountData.put(AgentConstants.CONFIGURED_COUNT, FieldDeviceApi.getDeviceCount());
+        return controlleCountData;
     }
 }

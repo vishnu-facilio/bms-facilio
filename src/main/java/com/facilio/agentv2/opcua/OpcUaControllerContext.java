@@ -9,6 +9,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -22,11 +23,19 @@ public class OpcUaControllerContext extends Controller {
     public static final String ASSETCATEGORY = FacilioConstants.ContextNames.OPC_UA_CONTROLLER_MODULE_NAME;
     private static final Logger LOGGER = LogManager.getLogger(OpcUaControllerContext.class.getName());
 
-
+    @JsonInclude
     private String url;
+
+    @JsonInclude
     private String identifier;
+
+    @JsonInclude
     private String certPath;
+
+    @JsonInclude
     private int securityMode = -1;
+
+    @JsonInclude
     private int securityPolicy = -1;
 
 

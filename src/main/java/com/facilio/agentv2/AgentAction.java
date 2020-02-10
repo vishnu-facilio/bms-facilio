@@ -6,6 +6,7 @@ import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.chain.FacilioContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -22,7 +23,9 @@ public class AgentAction extends AgentActionV2 {
 
     public String listAgents() {
         try {
-            List<FacilioAgent> agents = AgentApiV2.getAgents();
+            FacilioContext context = new FacilioContext();
+            constructListContext(context);
+            List<FacilioAgent> agents = AgentApiV2.listFacilioAgents(context);
             JSONArray jsonArray = new JSONArray();
             for (FacilioAgent agent : agents) {
                 jsonArray.add(agent.toJSON());
@@ -121,17 +124,18 @@ public class AgentAction extends AgentActionV2 {
         JSONArray pointData = new JSONArray();
         try {
             List<Point> points = new ArrayList<>();
+            FacilioContext context = constructListContext(new FacilioContext());
             if((controllerId != null) && (controllerId > 0) && (controllerType != null) && (controllerType > 0) && (deviceId == null)){
                 LOGGER.info(" getting controller points");
-                points = PointsAPI.getControllerPoints(FacilioControllerType.valueOf(controllerType), getControllerId());
+                points = PointsAPI.getControllerPoints(FacilioControllerType.valueOf(controllerType), getControllerId(),context);
             }
             else if((deviceId != null) && (deviceId>0) && (controllerType != null) && (controllerType > 0)){
                 LOGGER.info(" getting device points");
-               points =  PointsAPI.getDevicePoints(getDeviceId(), getControllerType());
+               points =  PointsAPI.getDevicePoints(getDeviceId(), getControllerType(),context);
             }else {
                 if((controllerId == null)&&(deviceId == null)){
                     LOGGER.info(" getting all points");
-                    points = PointsAPI.getAllPoints(null,-1);
+                    points = PointsAPI.getAllPoints(null,-1,context);
                 }
             }
             LOGGER.info(" in device action " + points);
@@ -238,6 +242,17 @@ public class AgentAction extends AgentActionV2 {
             setResult(AgentConstants.EXCEPTION,e.getMessage());
         }
             return SUCCESS;
+    }
+
+    public String getOverview(){
+        try{
+            setResult(AgentConstants.DATA,AgentUtilV2.getOverview());
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while getting overview");
+            setResult(AgentConstants.RESULT,new JSONObject());
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+        }
+        return SUCCESS;
     }
 
     //__________________________________________________

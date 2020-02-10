@@ -23,10 +23,8 @@ public class AddPointCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         LOGGER.info(" in add points command and context is " + context.keySet());
         Point point = (Point) context.get(FacilioConstants.ContextNames.RECORD);
-        if(point.getControllerId() >= 0){
-            point.setControllerId(-1);
-        } // TODO temp fix--- make it -1 by default
         JSONObject toInsertMap = point.getPointJSON();
+        LOGGER.info("point is "+toInsertMap);
         addPoint(ModuleFactory.getPointModule(), FieldFactory.getPointFields(),toInsertMap);
         if(toInsertMap.containsKey(AgentConstants.ID)){
             Long pointId = (Long) toInsertMap.get(AgentConstants.ID);

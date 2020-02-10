@@ -10,6 +10,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -24,8 +25,13 @@ public class NiagaraController extends Controller {
 
     public static final String ASSETCATEGORY = FacilioConstants.ContextNames.NIAGARA_CONTROLLER_MODULE_NAME;
 
+    @JsonInclude
     private String ipAddress;
+
+    @JsonInclude
     private long portNumber = -1;
+
+    @JsonInclude
     private String identifier;
 
     public NiagaraController() {

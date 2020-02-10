@@ -200,7 +200,7 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("preRequestStatus");
 			workOrderFieldsInclude.add("responseDueDate");
 
-			
+
 		}
 
 		public static List<String> assetFieldsInclude = new ArrayList<String>();

@@ -878,17 +878,32 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					LOGGER.info("adding inner join ");
 					selectRecordBuilder.innerJoin(String.valueOf(context.get(ContextNames.INNER_JOIN))).on(String.valueOf(context.get(ContextNames.ON_CONDITION)));
 				}
-				if (context.containsKey(FacilioConstants.ContextNames.OFFSET)) {
-					selectRecordBuilder.offset(Integer.parseInt(context.get(FacilioConstants.ContextNames.OFFSET).toString()));
+				JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+				if (pagination != null) {
+					int page = (int) pagination.get("page");
+					int perPage = (int) pagination.get("perPage");
+
+					int offset = ((page-1) * perPage);
+					if (offset < 0) {
+						offset = 0;
+					}
+
+					selectRecordBuilder.offset(offset);
+					selectRecordBuilder.limit(perPage);
+				}else {
+					if (context.containsKey(FacilioConstants.ContextNames.OFFSET)) {
+						selectRecordBuilder.offset(Integer.parseInt(context.get(FacilioConstants.ContextNames.OFFSET).toString()));
+					}if (context.containsKey(FacilioConstants.ContextNames.LIMIT_VALUE)) {
+						selectRecordBuilder.limit(Integer.parseInt((context.get(FacilioConstants.ContextNames.LIMIT_VALUE).toString())));
+					} else {
+						selectRecordBuilder.limit(100);
+					}
 				}
+
 				if( ( context.containsKey(FacilioConstants.ContextNames.AGGREGATOR) && (((Boolean) context.get(ContextNames.AGGREGATOR))) ) && context.containsKey(ContextNames.MODULE)){
 					selectRecordBuilder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT,FieldFactory.getIdField((FacilioModule) context.get(ContextNames.MODULE)));
 				}
-				if (context.containsKey(FacilioConstants.ContextNames.LIMIT_VALUE)) {
-					selectRecordBuilder.limit(Integer.parseInt((context.get(FacilioConstants.ContextNames.LIMIT_VALUE).toString())));
-				} else {
-					selectRecordBuilder.limit(100);
-				}
+
 				rows.addAll(selectRecordBuilder.get());
 			} else {
 				LOGGER.info("Exception occurred table name or criteria are mandatory and can't be null ");

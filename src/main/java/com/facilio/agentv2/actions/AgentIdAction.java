@@ -2,6 +2,7 @@ package com.facilio.agentv2.actions;
 
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
@@ -235,6 +236,17 @@ public class AgentIdAction extends AgentActionV2 {
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResult(AgentConstants.RESULT, ERROR);
             LOGGER.info("Exception while getting agentMetrics for ->" + getAgentId());
+        }
+        return SUCCESS;
+    }
+
+    public String getAgentOverView(){
+        try{
+            setResult(AgentConstants.DATA, AgentUtilV2.getAgentOverView(getAgentId()));
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while getting agent overview ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResult(AgentConstants.RESULT,ERROR);
         }
         return SUCCESS;
     }
