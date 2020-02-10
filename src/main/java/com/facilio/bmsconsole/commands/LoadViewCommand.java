@@ -29,7 +29,6 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
@@ -95,7 +94,7 @@ public class LoadViewCommand extends FacilioCommand {
 					else {
 						String orderByColName = (String) sortObj.get("orderBy");
 						String orderType = (String) sortObj.get("orderType");
-						sortQuery = orderByColName + " " + orderType;
+						sortQuery = orderByColName + " IS NULL," + orderByColName + " " + orderType;
 					}
 					context.put(FacilioConstants.ContextNames.SORTING_QUERY, sortQuery);
 					
@@ -231,7 +230,7 @@ public class LoadViewCommand extends FacilioCommand {
 				return "FIELD("+columnName + "," + idString+")";
 			}
 		} 
-		return field.getSortField().getCompleteColumnName() + " " + (field.getIsAscending()? "asc" : "desc");
+		return field.getSortField().getCompleteColumnName() + " IS NULL," + field.getSortField().getCompleteColumnName() + " " + (field.getIsAscending()? "asc" : "desc");
 	}
 	
 	private SortField getQuerySortField(ModuleBean modBean, String moduleName, JSONObject sortObj) throws Exception {
