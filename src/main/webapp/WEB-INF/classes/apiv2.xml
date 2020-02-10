@@ -5252,4 +5252,14 @@
 			class="com.facilio.bmsconsole.actions.AssetHazardAction" method="assetHazardList">
 		</action>
 	</package>
+	<package name="client" namespace="/api/v2/client"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ClientAction" method="addClient" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ClientAction" method="updateClient" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.AssetHazardAction" method="assetHazardList">
+		</action>
+	</package>
 </struts>

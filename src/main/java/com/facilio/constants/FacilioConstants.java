@@ -1476,6 +1476,10 @@ public class FacilioConstants {
 		public static final String TIME_DIFF = "timeDiff";
 		public static final String NEED_CRITERIAREPORT = "needCriteriaReport";
 		
+		public static final String CLIENT = "client";
+		public static final String CLIENTS = "clients";
+	
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1670,6 +1674,7 @@ public class FacilioConstants {
 			classMap.put(HAZARD_PRECAUTION, HazardPrecautionContext.class);
 			classMap.put(WORKORDER_HAZARD, WorkorderHazardContext.class);
 			classMap.put(ASSET_HAZARD, AssetHazardContext.class);
+			classMap.put(CLIENT, ClientContext.class);
 			
 			return classMap;
 		}
