@@ -48,21 +48,6 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			
 			Date date = new Date();
 			date.setTime(mlContext.getPredictionTime());
-			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
-				LOGGER.info("CHECKGAM DATE 1 :: "+date);
-				LOGGER.info("CHECKGAM TTIME 1 :: "+date.getTime());
-			}
-			Date newDate = new Date(date.getYear(),date.getMonth(),date.getDate(),date.getHours(),0);
-			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
-				LOGGER.info("CHECKGAM DATE 2 :: "+newDate);
-				LOGGER.info("CHECKGAM TTIME 2 :: "+newDate.getTime());
-			}
-			time = newDate.getTime()-1;
-
-			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
-				LOGGER.info("CHECKGAM TTIME 3 :: "+time);
-			}
-			
 			
 			DateFormat formatterLocal = new SimpleDateFormat("yyyy-MM-dd HH");
 			formatterLocal.setTimeZone(TimeZone.getTimeZone(AccountUtil.getCurrentOrg().getTimezone()));
@@ -76,10 +61,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 				LOGGER.info("CHECKGAM LOCAL TIME DATE :: "+date1);
 			}
 			
-			long time1 = date1.getTime()-1;
-			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
-				LOGGER.info("CHECKGAM LOCAL TIME DATE :: "+time1);
-			}
+			time = date1.getTime()-1;
 			
 		}else{
 			time = System.currentTimeMillis();
