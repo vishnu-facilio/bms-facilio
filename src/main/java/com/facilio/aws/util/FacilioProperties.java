@@ -41,7 +41,7 @@ public class FacilioProperties {
     private static String allowedPortalDomains;
     private static String pushNotificationKey;
     private static String portalPushNotificationKey;
-    public static String environment;
+    private static String environment;
     private static String kafkaProducer;
     private static String kafkaConsumer;
     private static String pdfjs;
@@ -97,7 +97,7 @@ public class FacilioProperties {
                 deployment = PROPERTIES.getProperty("deployment", "facilio");
                 HashMap<String, String> awsSecret = getPassword(environment +"-app.properties");
                 awsSecret.forEach((k,v) -> PROPERTIES.put(k.trim(), v.trim()));
-                productionEnvironment = "production".equalsIgnoreCase(environment);
+                productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment));
                 developmentEnvironment = "development".equalsIgnoreCase(environment);
                 isOnpremise = "true".equals(PROPERTIES.getProperty("onpremise", "false").trim());
                 scheduleServer = "true".equals(getConfig("schedulerServer"));
@@ -373,6 +373,10 @@ public class FacilioProperties {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 secretMap.putAll(objectMapper.readValue(secretBinaryString, HashMap.class));
+                String connections = FacilioProperties.getConfig(secretKey+".connections");
+                if(connections != null) {
+                    secretMap.put("maxConnections", connections);
+                }
             } catch (IOException e) {
                 LOGGER.info("exception while reading value from secret manager ", e);
             }

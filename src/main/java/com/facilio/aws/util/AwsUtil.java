@@ -161,10 +161,10 @@ public class AwsUtil
 		boolean isNewClientBuild=false;
 				
 		try {
-			if(FacilioProperties.environment != null ) {
+			if(FacilioProperties.getEnvironment() != null ) {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
 				pstmt = conn.prepareStatement("SELECT * FROM ClientApp WHERE environment=?");
-				pstmt.setString(1, FacilioProperties.environment);
+				pstmt.setString(1, FacilioProperties.getEnvironment());
 				rs = pstmt.executeQuery();
 				if (rs.next()) {
 					clientVersion = rs.getString("version");
@@ -202,7 +202,7 @@ public class AwsUtil
 			PreparedStatement pstmt = null;
 			try {
 				if(checkIfVersionExistsInS3(newVersion)) {
-					if (FacilioProperties.environment != null && userId != -1) {
+					if (FacilioProperties.getEnvironment() != null && userId != -1) {
 						FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 						conn = FacilioConnectionPool.INSTANCE.getConnection();
 						pstmt = conn.prepareStatement("Update ClientApp set version=?, updatedTime=?, updatedBy=?, is_new_client_build=?  WHERE environment=?");
@@ -210,7 +210,7 @@ public class AwsUtil
 						pstmt.setLong(2, System.currentTimeMillis());
 						pstmt.setLong(3, userId);
 						pstmt.setBoolean(4, isNewClientBuild);
-						pstmt.setString(5, FacilioProperties.environment);
+						pstmt.setString(5, FacilioProperties.getEnvironment());
 
 						updatedRows = pstmt.executeUpdate();
 						if(updatedRows > 0) {
