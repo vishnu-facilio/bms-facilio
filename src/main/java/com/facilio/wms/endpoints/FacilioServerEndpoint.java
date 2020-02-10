@@ -151,8 +151,11 @@ public class FacilioServerEndpoint
     {
     	System.out.println("Session started message to ::" +session.getPathParameters()+ ":::sessionid" + session.getId()+"  msg: "+message.getContent()+"  cc: "+message);
     	
+    	LiveSession ls = SessionManager.getInstance().getLiveSession(session.getId());
+    	
     	long id = Long.parseLong(session.getPathParameters().get("id"));
     	message.setTo(id);
+    	message.setSessionType(ls.getLiveSessionType());
     	if ("subscribe".equalsIgnoreCase(message.getAction())) {
     		PubSubManager.getInstance().subscribe(message);
     	}

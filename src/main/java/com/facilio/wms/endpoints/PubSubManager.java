@@ -16,6 +16,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
 import com.facilio.wms.util.WmsApi;
@@ -50,8 +51,8 @@ public class PubSubManager {
 				
 				for (int i = 0; i < readings.size(); i++) {
 					Map<String, Object> reading = (Map<String, Object>) readings.get(i);
-					Long parentId = Long.parseLong(reading.get("parentId").toString());
-					Long fieldId = reading.containsKey("fieldId") ? Long.parseLong(reading.get("fieldId").toString()): null;
+					Long parentId = getAsLong(reading.get("parentId").toString());
+					Long fieldId = reading.containsKey("fieldId") ? getAsLong(reading.get("fieldId").toString()): null;
 					if (fieldId == null) {
 						String fieldName = (String) reading.get("fieldName");
 						String moduleName = (String) reading.get("moduleName");
@@ -72,6 +73,7 @@ public class PubSubManager {
 						
 						JSONObject watchProps = new JSONObject();
 						watchProps.put("uid", message.getTo());
+						watchProps.put("sessionType", message.getSessionType());
 						watchProps.put("uniqueKey", uniqueKey);
 						watchProps.put("timestamp", System.currentTimeMillis());
 						
@@ -132,6 +134,18 @@ public class PubSubManager {
 		}
 	}
 	
+	private Long getAsLong(String value) {
+		if (value != null) {
+			if (value.indexOf(".") >= 0) {
+				return Double.valueOf(value).longValue();
+			}
+			else {
+				return Long.parseLong(value);
+			}
+		}
+		return null;
+	}
+	
 	public void unsubscribe(Message message) {
 		
 		try {
@@ -145,8 +159,8 @@ public class PubSubManager {
 				
 				for (int i = 0; i < readings.size(); i++) {
 					Map<String, Object> reading = (Map<String, Object>) readings.get(i);
-					Long parentId = Long.parseLong(reading.get("parentId").toString());
-					Long fieldId = reading.containsKey("fieldId") ? Long.parseLong(reading.get("fieldId").toString()): null;
+					Long parentId = getAsLong(reading.get("parentId").toString());
+					Long fieldId = reading.containsKey("fieldId") ? getAsLong(reading.get("fieldId").toString()): null;
 					if (fieldId == null) {
 						String fieldName = (String) reading.get("fieldName");
 						String moduleName = (String) reading.get("moduleName");
@@ -339,11 +353,15 @@ public class PubSubManager {
 					
 					long uid = (Long) watcher.get("uid");
 					String uniqueKey = (String) watcher.get("uniqueKey");
+					LiveSessionType liveSessionType = (LiveSessionType) watcher.get("sessionType");
 					
 					Message msg = new Message();
 					msg.setMessageType(MessageType.PUBSUB);
 					msg.setAction("publish");
 					msg.setNamespace("pubsub");
+					if (liveSessionType != null) {
+						msg.setSessionType(liveSessionType);
+					}
 					msg.setTo(uid);
 					msg.addData("uniqueKey", uniqueKey);
 					
