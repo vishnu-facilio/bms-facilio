@@ -36,7 +36,7 @@ public class UpdateAlarmRuleCommand extends FacilioCommand {
 		
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 		
-		preRequsiteRule.setRuleType(null); //Type is not allowed to be changed
+		preRequsiteRule.setRuleType(WorkflowRuleContext.RuleType.READING_RULE); //Setting to default rule type
 		
 		preRequsiteRule = ReadingRuleAPI.updateReadingRuleWithChildren(preRequsiteRule);
 		

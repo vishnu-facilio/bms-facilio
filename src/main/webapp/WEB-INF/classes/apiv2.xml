@@ -219,6 +219,11 @@
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_OWN,READ_TEAM</param>
 			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="excludeNullProperties">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
 		</action>
 	</package>
 	<package name="readingAlarmList" namespace="/api/v2/readingalarms/view" extends="v2Api">
@@ -1108,6 +1113,11 @@
 			method="fetchWorkflowRuleNew">
 			<param name="moduleName">alarmrules</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="excludeNullProperties">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
 		</action>
 		<action name="fetchRuleActions"
 				class="com.facilio.bmsconsole.actions.WorkflowRuleAction"

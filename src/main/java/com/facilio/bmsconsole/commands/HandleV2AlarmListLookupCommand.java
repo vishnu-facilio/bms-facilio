@@ -33,8 +33,8 @@ public class HandleV2AlarmListLookupCommand extends FacilioCommand {
 //					readingAlarm.setRule(null);
 					readingAlarm.setSubRule(null);
 				}
-				AlarmOccurrenceContext occurrenceContext = occurencesMap.get(alarm.getLastOccurrenceId());
-				alarm.setLastOccurrence(occurrenceContext);
+				// AlarmOccurrenceContext occurrenceContext = occurencesMap.get(alarm.getLastOccurrenceId());
+				alarm.setLastOccurrence(null);
 			}
 		}
 		return false;

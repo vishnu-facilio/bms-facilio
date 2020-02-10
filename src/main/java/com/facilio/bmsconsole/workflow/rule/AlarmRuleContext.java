@@ -51,7 +51,7 @@ public class AlarmRuleContext {
 					alarmTriggerRule = rule;
 				}
 				else {
-					addAlarmTriggerRuleVersionHistory(rule);
+					// addAlarmTriggerRuleVersionHistory(rule);
 				}
 			}
 			else if(rule.getRuleTypeEnum().equals(WorkflowRuleContext.RuleType.ALARM_RCA_RULES)) {
