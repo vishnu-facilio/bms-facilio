@@ -116,7 +116,7 @@ public class WorkflowRuleHistoricalLogsAPI {
 			.andCondition(CriteriaAPI.getCondition("ID", "id", ""+id, NumberOperators.EQUALS));		
 	}
 	
-	public static WorkflowRuleHistoricalLogsContext setworkflowRuleHistoricalLogsContext(long parentRuleResourceId, DateRange splitRange, Integer logState)
+	public static WorkflowRuleHistoricalLogsContext setWorkflowRuleHistoricalLogsContext(long parentRuleResourceId, DateRange splitRange, Integer logState)
 	{
 		WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = new WorkflowRuleHistoricalLogsContext();
 		workflowRuleHistoricalLogsContext.setParentRuleResourceId(parentRuleResourceId);

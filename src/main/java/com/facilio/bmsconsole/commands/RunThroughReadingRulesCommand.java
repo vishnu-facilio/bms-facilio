@@ -107,7 +107,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			
 			for(Long finalResourceId:finalResourceIds)
 			{	
-				WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.setworkflowRuleResourceLoggerContext(parentRuleLoggerId, finalResourceId, null);
+				WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.setWorkflowRuleResourceLoggerContext(parentRuleLoggerId, finalResourceId, null);
 				WorkflowRuleResourceLoggerAPI.addWorkflowRuleResourceLogger(workflowRuleResourceLoggerContext);
 				long parentRuleResourceId = workflowRuleResourceLoggerContext.getId();
 				workflowRuleResourceParentLoggerIds.add(parentRuleResourceId);
@@ -117,13 +117,13 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 					WorkflowRuleHistoricalLogsContext workflowRuleHistoricalLogsContext = new WorkflowRuleHistoricalLogsContext();
 					
 					if(interval.getStartTime() == firstInterval.getStartTime() && interval.getEndTime() == firstInterval.getEndTime()) {
-						workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setworkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, WorkflowRuleHistoricalLogsContext.LogState.IS_FIRST_JOB.getIntVal());	
+						workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setWorkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, WorkflowRuleHistoricalLogsContext.LogState.IS_FIRST_JOB.getIntVal());	
 					}
 					else if(interval.getStartTime() == lastInterval.getStartTime() && interval.getEndTime() == lastInterval.getEndTime()) {
-						workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setworkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIntVal());	
+						workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setWorkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, WorkflowRuleHistoricalLogsContext.LogState.IS_LAST_JOB.getIntVal());	
 					}
 					else {
-						workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setworkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, null);	
+						workflowRuleHistoricalLogsContext = WorkflowRuleHistoricalLogsAPI.setWorkflowRuleHistoricalLogsContext(parentRuleResourceId, interval, null);	
 					}	
 					WorkflowRuleHistoricalLogsAPI.addWorkflowRuleHistoricalLogsContext(workflowRuleHistoricalLogsContext);	
 				}		

@@ -1122,6 +1122,15 @@ public class ReadingAction extends FacilioAction {
 		this.parentRuleLoggerId = parentRuleLoggerId;
 	}
 
+	private long parentRuleResourceId;
+	public long getParentRuleResourceId() {
+		return parentRuleResourceId;
+	}
+
+	public void setParentRuleResourceId(long parentRuleResourceId) {
+		this.parentRuleResourceId = parentRuleResourceId;
+	}
+
 	private long loggerGroupId;
 	public long getLoggerGroupId() {
 		return loggerGroupId;
@@ -1202,33 +1211,53 @@ public class ReadingAction extends FacilioAction {
 		FacilioChain workflowRuleLoggersChain = ReadOnlyChainFactory.getWorkflowRuleLoggersCommand();
 		FacilioContext constructListContext = workflowRuleLoggersChain.getContext();
 		constructListContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID, getRuleId());
-		constructListContext(constructListContext);
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getWorkflowRuleLoggerModule().getName());
+		constructListContext(constructListContext);
 		workflowRuleLoggersChain.execute();
 
-		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_PARENT_LOGGERS, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_PARENT_LOGGERS));
+		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGGERS, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGGERS));
 		return SUCCESS;		
 	}
 	
-//	public String getWorkflowRuleResourceLoggers() throws Exception {
-//
-//		if(getPerPage() < 0) {
-//			setPerPage(50);
-//		}
-//		if(getPage() < 0) {
-//			setPage(1);
-//		}  
-//		
-//		FacilioChain workflowRuleLoggersChain = ReadOnlyChainFactory.getWorkflowRuleChildLoggersCommand();
-//		FacilioContext constructListContext = workflowRuleLoggersChain.getContext();
-//		constructListContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGGER_ID, getParentRuleLoggerId());
-//		constructListContext(constructListContext);
-//		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getWorkflowRuleResourceLoggerModule().getName());
-//		workflowRuleLoggersChain.execute();
-//
-//		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_CHILD_LOGGERS, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_CHILD_LOGGERS));
-//		return SUCCESS;		
-//	}
+	public String getWorkflowRuleResourceLoggers() throws Exception {
+
+		if(getPerPage() < 0) {
+			setPerPage(50);
+		}
+		if(getPage() < 0) {
+			setPage(1);
+		}  
+		
+		FacilioChain workflowRuleResourceLoggersChain = ReadOnlyChainFactory.getWorkflowRuleResourceLoggersCommand();
+		FacilioContext constructListContext = workflowRuleResourceLoggersChain.getContext();
+		constructListContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE_PARENT_LOGGER_ID, getParentRuleLoggerId());
+		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getWorkflowRuleResourceLoggerModule().getName());
+		constructListContext(constructListContext);
+		workflowRuleResourceLoggersChain.execute();
+
+		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_RESOURCE_LOGGERS, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_RESOURCE_LOGGERS));
+		return SUCCESS;		
+	}
+	
+	public String getWorkflowRuleResourceHistoricalLogs() throws Exception {
+
+		if(getPerPage() < 0) {
+			setPerPage(50);
+		}
+		if(getPage() < 0) {
+			setPage(1);
+		}  
+		
+		FacilioChain workflowRuleHistoricalLogsChain = ReadOnlyChainFactory.getWorkflowRuleHistoricalLogsCommand();
+		FacilioContext constructListContext = workflowRuleHistoricalLogsChain.getContext();
+		constructListContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE_RESOURCE_ID, getParentRuleResourceId());
+		constructListContext(constructListContext);
+		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getWorkflowRuleResourceLoggerModule().getName());
+		workflowRuleHistoricalLogsChain.execute();
+
+		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_HISTORICAL_LOGS, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULE_HISTORICAL_LOGS));
+		return SUCCESS;		
+	}
 	
 	public String historicalScheduledRule() throws Exception {
 		FacilioContext context = new FacilioContext();

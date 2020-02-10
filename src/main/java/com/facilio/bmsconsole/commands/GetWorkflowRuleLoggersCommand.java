@@ -37,73 +37,70 @@ public class GetWorkflowRuleLoggersCommand extends FacilioCommand {
 		
 		long ruleId = (long) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		
-		//List<WorkflowRuleLoggerContext> parentWorkflowRuleHistoricalLoggerList = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerContextByRuleId(ruleId);
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleLoggerFields());
-		
+			
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleLoggerFields());	
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowRuleLoggerFields())
 				.table(ModuleFactory.getWorkflowRuleLoggerModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), "" +ruleId, NumberOperators.EQUALS))
-				.orderBy("STATUS");
+				.orderBy("STATUS,CREATED_TIME DESC");
 		
-		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
-		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
-		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
-		if (filterCriteria != null) {
-			builder.andCriteria(filterCriteria);
-		}
-		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-		
-		if (( filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
-			builder.andCriteria(view.getCriteria());
-		}
-
-		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
-		if (searchCriteria != null) {
-			builder.andCriteria(searchCriteria);
-		}
-		
-		String criteriaIds = (String) context.get(FacilioConstants.ContextNames.CRITERIA_IDS);
-		if (criteriaIds != null) {
-			String[] ids = criteriaIds.split(",");
-			for(int i = 0; i < ids.length; i++) {
-				Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), Long.parseLong(ids[i]));
-				builder.andCriteria(criteria);
-			}
-		}
-		
-		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
-		if(scopeCriteria != null)
-		{
-			builder.andCriteria(scopeCriteria);
-		}
-
-		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
-		if (orderBy != null && !orderBy.isEmpty()) {
-			builder.orderBy(orderBy);
-		}
-		
-		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-		if (pagination != null) {
-			int page = (int) pagination.get("page");
-			int perPage = (int) pagination.get("perPage");
-			
-			int offset = ((page-1) * perPage);
-			if (offset < 0) {
-				offset = 0;
-			}
-			
-			builder.offset(offset);
-			builder.limit(perPage);
-		}
-		
-		Long entityId = (Long) context.get(FacilioConstants.ContextNames.ALARM_ENTITY_ID);
-		if(entityId != null && entityId != -1)
-		{
-			builder.andCustomWhere("Alarms.ENTITY_ID = ?", entityId);
-		}
+//		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
+//		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+//		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
+//		if (filterCriteria != null) {
+//			builder.andCriteria(filterCriteria);
+//		}
+//		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+//		
+//		if ((filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
+//			builder.andCriteria(view.getCriteria());
+//		}
+//
+//		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
+//		if (searchCriteria != null) {
+//			builder.andCriteria(searchCriteria);
+//		}
+//		
+//		String criteriaIds = (String) context.get(FacilioConstants.ContextNames.CRITERIA_IDS);
+//		if (criteriaIds != null) {
+//			String[] ids = criteriaIds.split(",");
+//			for(int i = 0; i < ids.length; i++) {
+//				Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), Long.parseLong(ids[i]));
+//				builder.andCriteria(criteria);
+//			}
+//		}
+//		
+//		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
+//		if(scopeCriteria != null)
+//		{
+//			builder.andCriteria(scopeCriteria);
+//		}
+//
+//		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+//		if (orderBy != null && !orderBy.isEmpty()) {
+//			builder.orderBy(orderBy);
+//		}
+//		
+//		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+//		if (pagination != null) {
+//			int page = (int) pagination.get("page");
+//			int perPage = (int) pagination.get("perPage");
+//			
+//			int offset = ((page-1) * perPage);
+//			if (offset < 0) {
+//				offset = 0;
+//			}
+//			
+//			builder.offset(offset);
+//			builder.limit(perPage);
+//		}
+//		
+//		Long entityId = (Long) context.get(FacilioConstants.ContextNames.ALARM_ENTITY_ID);
+//		if(entityId != null && entityId != -1)
+//		{
+//			builder.andCustomWhere("Alarms.ENTITY_ID = ?", entityId);
+//		}
 		
 		List<Map<String, Object>> props = builder.get();
 		List<WorkflowRuleLoggerContext> workflowRuleLoggerContextList = new ArrayList<WorkflowRuleLoggerContext>();
@@ -111,7 +108,7 @@ public class GetWorkflowRuleLoggersCommand extends FacilioCommand {
 			workflowRuleLoggerContextList  = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleLoggerContext.class);		
 		}	
 
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_PARENT_LOGGERS, workflowRuleLoggerContextList);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGGERS, workflowRuleLoggerContextList);
 			
 		return false;
 		

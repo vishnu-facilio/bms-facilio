@@ -799,11 +799,13 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULE = "workflowRule";
 		public static final String WORKFLOW_RULES = "workflowRules";
 		public static final String WORKFLOW_RULES_COUNT = "workflowRulesCount";
-		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
-		public static final String WORKFLOW_RULE_LOGGER_ID = "workflowRuleLoggers";
-		public static final String WORKFLOW_RULE_PARENT_LOGGERS = "workflowRuleParentHistoricalLoggers";
-		public static final String WORKFLOW_RULE_CHILD_LOGGERS = "workflowRuleChildHistoricalLoggers";
+		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
+		public static final String WORKFLOW_RULE_PARENT_LOGGER_ID = "workflowRuleParentLoggerId";
+		public static final String WORKFLOW_RULE_RESOURCE_ID = "workflowRuleResourceId";
+		public static final String WORKFLOW_RULE_LOGGERS = "workflowRuleLoggers";
+		public static final String WORKFLOW_RULE_RESOURCE_LOGGERS = "workflowRuleResourceLoggers";
+		public static final String WORKFLOW_RULE_HISTORICAL_LOGS = "workflowRuleHistoricalLogs";
 		public static final String READING_RULE_MODULE = "readingrule";
 		public static final String READING_ALARM_RULES = "readingalarmrules";
 		public static final String READING_ALARM_RULE = "readingalarmrule";

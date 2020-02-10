@@ -1740,14 +1740,6 @@
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getWorkflowRuleChildLoggers">
 		</action>
-		<action name="workflowRuleLoggers"
-			class="com.facilio.bmsconsole.actions.ReadingAction"
-			method="getWorkflowRuleLoggers">
-		</action>
-		<action name="workflowRuleResourceLoggers"
-			class="com.facilio.bmsconsole.actions.ReadingAction"
-			method="getWorkflowRuleResourceLoggers">
-		</action>
 		<action name="formulaFieldParentLoggers"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getHistoricalFormulaFieldParentLoggers">
@@ -1755,6 +1747,18 @@
 		<action name="formulaFieldChildLoggers"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getHistoricalFormulaFieldChildLoggers">
+		</action>
+		<action name="getWorkflowRuleLoggers"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getWorkflowRuleLoggers">
+		</action>
+		<action name="getWorkflowRuleResourceLoggers"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getWorkflowRuleResourceLoggers">
+		</action>
+		<action name="getWorkflowRuleResourceHistoricalLogs"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getWorkflowRuleResourceHistoricalLogs">
 		</action>
 	</package>
 	<package name="virtualMeters"

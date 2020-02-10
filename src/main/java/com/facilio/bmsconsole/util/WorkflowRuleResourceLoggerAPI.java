@@ -97,24 +97,6 @@ public class WorkflowRuleResourceLoggerAPI {
 		return props;
 	}
 	
-	public static List<WorkflowRuleResourceLoggerContext> getWorkflowRuleResourceLogsByParentRuleLoggerAndResourceId(long parentRuleLoggerId, long resourceId) throws Exception {
-		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleResourceLoggerFields());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getWorkflowRuleResourceLoggerFields())
-				.table(ModuleFactory.getWorkflowRuleResourceLoggerModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRuleLoggerId"), "" +parentRuleLoggerId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), "" +resourceId, NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		List<WorkflowRuleResourceLoggerContext> workflowRuleResourceLoggerContext = new ArrayList<WorkflowRuleResourceLoggerContext>();
-		if (props != null && !props.isEmpty()) {		
-			workflowRuleResourceLoggerContext  = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleResourceLoggerContext.class);		
-		}	
-		return workflowRuleResourceLoggerContext;
-	}
-	
 	public static List<WorkflowRuleResourceLoggerContext> getActiveWorkflowRuleResourceLogsByRuleAndResourceId(long ruleId, List<Long> resourceIds) throws Exception {
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleResourceLoggerFields());
@@ -175,7 +157,7 @@ public class WorkflowRuleResourceLoggerAPI {
 			.andCondition(CriteriaAPI.getCondition("ID", "id", ""+id, NumberOperators.EQUALS));		
 	}
 	
-	public static WorkflowRuleResourceLoggerContext setworkflowRuleResourceLoggerContext(long parentRuleLoggerId, Long resourceId, DateRange modifiedRange)
+	public static WorkflowRuleResourceLoggerContext setWorkflowRuleResourceLoggerContext(long parentRuleLoggerId, Long resourceId, DateRange modifiedRange)
 	{
 		WorkflowRuleResourceLoggerContext workflowRuleResourceLoggerContext = new WorkflowRuleResourceLoggerContext();
 		workflowRuleResourceLoggerContext.setParentRuleLoggerId(parentRuleLoggerId);

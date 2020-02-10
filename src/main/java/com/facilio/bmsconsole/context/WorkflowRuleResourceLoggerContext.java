@@ -10,6 +10,7 @@ public class WorkflowRuleResourceLoggerContext {
 	private long orgId;
 	private long parentRuleLoggerId;
 	private long resourceId;
+	private ResourceContext resourceContext;
 	private Status status;
 	private long alarmCount;
 	private long modifiedStartTime;
@@ -40,6 +41,12 @@ public class WorkflowRuleResourceLoggerContext {
 	}
 	public void setResourceId(long resourceId) {
 		this.resourceId = resourceId;
+	}
+	public ResourceContext getResourceContext() {
+		return resourceContext;
+	}
+	public void setResourceContext(ResourceContext resourceContext) {
+		this.resourceContext = resourceContext;
 	}
 	public int getStatus() {
 		if (status != null) {
