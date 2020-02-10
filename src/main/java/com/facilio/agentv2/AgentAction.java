@@ -235,7 +235,7 @@ public class AgentAction extends AgentActionV2 {
     private String identifier;
     public String getControllerUsingIdentifier(){
         try {
-            setResult("DATA", ControllerApiV2.getControllerFromDb(getIdentifier(), getAgentId(), FacilioControllerType.BACNET_IP));
+            setResult("DATA", ControllerApiV2.getControllerFromDb(getIdentifier(), getAgentId(), FacilioControllerType.valueOf(getControllerType())));
         }catch (Exception e){
             LOGGER.info("Exception while getting controller",e);
             setResult(AgentConstants.RESULT,new JSONObject());

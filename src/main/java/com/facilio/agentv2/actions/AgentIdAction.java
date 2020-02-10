@@ -11,6 +11,7 @@ import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
+import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -108,7 +109,8 @@ public class AgentIdAction extends AgentActionV2 {
     public String getControllers() {
         JSONArray controllerArray = new JSONArray();
         try {
-                Map<String, Controller> controllerData = ControllerApiV2.getAllControllersFromDb(getAgentId());
+            LOGGER.info(" getting controller for agentId "+agentId);
+                Map<String, Controller> controllerData = ControllerApiV2.getControllersForAgent(getAgentId(),constructListContext(new FacilioContext()));
                 if ((controllerData != null) && (!controllerData.isEmpty())) {
                     JSONObject object = new JSONObject();
                     for (Controller controller : controllerData.values()) {

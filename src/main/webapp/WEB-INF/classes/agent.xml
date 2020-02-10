@@ -166,9 +166,12 @@
         <action name="reset" class="com.facilio.agentv2.actions.ControllerActions" method="resetController">
         </action>
 
-        <action name="getControllerIdentifier" class="com.facilio.agentv2.AgentAction"
+        <action name="getControllerUsingIdentifier" class="com.facilio.agentv2.AgentAction"
                 method="getControllerUsingIdentifier">
         </action> <!--testing purpose-->
+
+        <action name="typeList" class="com.facilio.agentv2.actions.TypeAgentAction" method="getControllerOfTypeForAgent"> <!--DONE-->
+        </action>
 
     </package>
 

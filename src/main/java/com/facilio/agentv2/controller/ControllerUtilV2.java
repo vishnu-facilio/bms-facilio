@@ -231,7 +231,7 @@ public class ControllerUtilV2 {
             //return ControllerApiV2.getAllControllersFromDb(agentId).get(controllerIdentifier);
         } else if ((controllerMapList.get(controllerType.asInt()).isEmpty())) { // map for the controllerType is empty
             LOGGER.info(" controller not found in map , getting from db");
-            Map<String, Controller> controllers = ControllerApiV2.getControllersFromDb(agentId, controllerType); // get all controller fpr that controllerType
+            Map<String, Controller> controllers = ControllerApiV2.getControllersFromDb(agentId, controllerType,null); // get all controller fpr that controllerType
             if (controllers.isEmpty()) {
                 return null;
             }
@@ -314,7 +314,7 @@ public class ControllerUtilV2 {
         JSONArray controllerArray = new JSONArray();
         Map<String, Controller> controllers = new HashMap<>();
         for (FacilioControllerType type : FacilioControllerType.values()) {
-            controllers.putAll(ControllerApiV2.getControllersFromDb(agentId, type));
+            controllers.putAll(ControllerApiV2.getControllersFromDb(agentId, type,null));
         }
         for (String controllerIdentifier : controllers.keySet()) {
             controllerArray.add(controllers.get(controllerIdentifier).toJSON());

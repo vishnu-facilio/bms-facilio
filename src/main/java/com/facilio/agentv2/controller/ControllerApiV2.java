@@ -115,10 +115,11 @@ public class ControllerApiV2 {
      * @param agentId
      * @return
      */
-    public static Map<String, Controller> getAllControllersFromDb(long agentId) {
+    public static Map<String, Controller> getControllersForAgent(long agentId, FacilioContext pagenitionContext) {
         Map<String, Controller> controllers = new HashMap<>();
         for (FacilioControllerType value : FacilioControllerType.values()) {
-            controllers.putAll(getControllersFromDb(null, agentId, value, -1));
+            LOGGER.info(" getting controllers for agentId ->"+agentId+" and type "+value.asString());
+            controllers.putAll(getControllersFromDb(null, agentId, value, -1,pagenitionContext));
         }
         return controllers;
     }
@@ -131,7 +132,7 @@ public class ControllerApiV2 {
      */
     public static Controller getControllerIdType(long controllerId,FacilioControllerType type){
         if( (controllerId > 0) && (type != null) ){
-            Map<String, Controller> controllers = getControllersFromDb(null, -1, type, controllerId);
+            Map<String, Controller> controllers = getControllersFromDb(null, -1, type, controllerId,null);
             for (Controller controller : controllers.values()) {
                 if(controller.getId() == controllerId){
                     return controller;
@@ -180,17 +181,18 @@ public class ControllerApiV2 {
     }
 
     public static Controller getControllerFromDb(String controllerIdentifier, long agentId, FacilioControllerType controllerType) {
+        LOGGER.info("controller identifier "+controllerIdentifier);
         if( controllerType != null){
-            return getControllersFromDb(controllerIdentifier,agentId,controllerType, -1).get(controllerIdentifier);
+            return getControllersFromDb(controllerIdentifier,agentId,controllerType, -1,null).get(controllerIdentifier);
         }
-        return getAllControllersFromDb(agentId).get(controllerIdentifier);
+        return getControllersForAgent(agentId,null).get(controllerIdentifier);
     }
 
-    public static Map<String, Controller> getControllersFromDb(long agentId, FacilioControllerType controllerType){
+    public static Map<String, Controller> getControllersFromDb(long agentId, FacilioControllerType controllerType,FacilioContext paginationContext){
         if(controllerType == null){
             return new HashMap<>();
         }
-        return getControllersFromDb(null,agentId,controllerType,-1);
+        return getControllersFromDb(null,agentId,controllerType,-1,paginationContext);
     }
 
 
@@ -228,8 +230,9 @@ public class ControllerApiV2 {
      * @param controllerId
      * @return
      */
-    private static Map<String, Controller> getControllersFromDb(String controllerIdentifier, long agentId, FacilioControllerType controllerType,long controllerId) {
-        List<Controller> controllerList = getControllerListFromDb(controllerIdentifier, agentId, controllerType, controllerId, null);
+    private static Map<String, Controller> getControllersFromDb(String controllerIdentifier, long agentId, FacilioControllerType controllerType,long controllerId,FacilioContext paginationContext) {
+        List<Controller> controllerList = getControllerListFromDb(controllerIdentifier, agentId, controllerType, controllerId, paginationContext);
+        LOGGER.info(" controllers obtained is "+controllerList.size());
         Map<String, Controller> controllerMap = new HashMap<>();
         controllerList.forEach(controller -> {
             try {
@@ -238,22 +241,19 @@ public class ControllerApiV2 {
                 LOGGER.info("Exception while making identifier");
             }
         });
-        return new HashMap<>();
-
-
-
+        return controllerMap;
     }
 
-    private static List<Controller> getControllerListFromDb(String controllerIdentifier, long agentId, FacilioControllerType controllerType, long controllerId, FacilioContext pagenationContext){
+    private static List<Controller> getControllerListFromDb(String controllerIdentifier, long agentId, FacilioControllerType controllerType, long controllerId, FacilioContext paginationContext){
         try {
-            FacilioChain getControllerChain = getFetchControllerChain(controllerType);
+            FacilioChain getControllerChain = getFetchControllerChain(controllerType,paginationContext);
             if (getControllerChain == null) {
-                LOGGER.info(" controller chaing cant be null ");
+                LOGGER.info(" controller chain cant be null ");
                 return new ArrayList<>();
             }
             FacilioContext context = getControllerChain.getContext();
-            if(pagenationContext != null){
-                context = pagenationContext;
+            if(paginationContext != null){
+
             }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.CONTROLLER_MODULE_NAME);
@@ -333,11 +333,16 @@ public class ControllerApiV2 {
     }
 
     private static FacilioChain getFetchControllerChain(FacilioControllerType controllerType) throws Exception {
+    return getFetchControllerChain(controllerType,new FacilioContext());
+    }
+
+        private static FacilioChain getFetchControllerChain(FacilioControllerType controllerType,FacilioContext paginationContext) throws Exception {
         if (controllerType == null) {
             throw new Exception(" controller type cant be null ");
         }
         FacilioChain getControllerChain = TransactionChainFactory.getControllerChain();
         FacilioContext context = getControllerChain.getContext();
+        context.putAll(paginationContext);
         String moduleName = getControllerModuleName(controllerType);
         if (moduleName == null || moduleName.isEmpty()) {
             LOGGER.info("Exception Occurred, Module name is null or empty " + moduleName + "   for ");
