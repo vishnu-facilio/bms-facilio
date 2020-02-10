@@ -26,6 +26,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.urjanet.entity.Account;
 import com.facilio.wms.constants.WmsEventType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -145,9 +146,9 @@ public  class AgentUtil
             agent.setAgentName(orgDomainName);
         }
 
-        if(payload.containsKey(AgentKeys.AGENT_TYPE)){
-            
-                agent.setAgentType(payload.get(AgentKeys.AGENT_TYPE).toString());
+        if(payload.containsKey(AgentKeys.AGENT_TYPE)) {
+
+            agent.setAgentType(payload.get(AgentKeys.AGENT_TYPE).toString());
         }
         if(payload.containsKey(AgentKeys.DELETED_TIME)){
             agent.setDeletedTime(Long.parseLong(payload.get(AgentKeys.DELETED_TIME).toString()));
@@ -180,161 +181,168 @@ public  class AgentUtil
             return addAgent(agent);
         } else {
             Condition agentNameCondition = new Condition();
-               agentNameCondition.setField(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()));
-               agentNameCondition.setOperator(StringOperators.IS);
-               agentNameCondition.setValue(agentName);
-               FacilioContext context = new FacilioContext();
-               context.put(FacilioConstants.ContextNames.CRITERIA,agentNameCondition);
+            agentNameCondition.setField(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()));
+            agentNameCondition.setOperator(StringOperators.IS);
+            agentNameCondition.setValue(agentName);
+            FacilioContext context = new FacilioContext();
+            context.put(FacilioConstants.ContextNames.CRITERIA, agentNameCondition);
 
-           FacilioChain updateAgentChain = TransactionChainFactory.updateAgent();
+            FacilioChain updateAgentChain = TransactionChainFactory.updateAgent();
 
-           try {
+            try {
 
-                   Map<String, Object> toUpdate = new HashMap<>();
-                   if (jsonObject.containsKey(AgentKeys.CONNECTION_STATUS)) {
-                       Boolean connectionStatus = Boolean.valueOf((jsonObject.get(AgentKeys.CONNECTION_STATUS).toString()));
-                       if (agent.getAgentConnStatus() != connectionStatus) {
-                           toUpdate.put(AgentKeys.CONNECTION_STATUS, connectionStatus);
-                           agent.setAgentConnStatus(connectionStatus);
-                       }
-                   } else {
-                       toUpdate.put(AgentKeys.CONNECTION_STATUS, true);
-                       agent.setAgentConnStatus(true);
-                   }
+                Map<String, Object> toUpdate = new HashMap<>();
+                if (jsonObject.containsKey(AgentKeys.CONNECTION_STATUS)) {
+                    Boolean connectionStatus = Boolean.valueOf((jsonObject.get(AgentKeys.CONNECTION_STATUS).toString()));
+                    if (agent.getAgentConnStatus() != connectionStatus) {
+                        toUpdate.put(AgentKeys.CONNECTION_STATUS, connectionStatus);
+                        agent.setAgentConnStatus(connectionStatus);
+                    }
+                } else {
+                    toUpdate.put(AgentKeys.CONNECTION_STATUS, true);
+                    agent.setAgentConnStatus(true);
+                }
 
-                   if (jsonObject.containsKey(AgentKeys.DISPLAY_NAME)) {
-                       if (!jsonObject.get(AgentKeys.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
-                           toUpdate.put(AgentKeys.DISPLAY_NAME, jsonObject.get(AgentKeys.DISPLAY_NAME));
-                           agent.setDisplayName(jsonObject.get(AgentKeys.DISPLAY_NAME).toString());
-                       }
-                   }
+                if (jsonObject.containsKey(AgentKeys.DISPLAY_NAME)) {
+                    if (!jsonObject.get(AgentKeys.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
+                        toUpdate.put(AgentKeys.DISPLAY_NAME, jsonObject.get(AgentKeys.DISPLAY_NAME));
+                        agent.setDisplayName(jsonObject.get(AgentKeys.DISPLAY_NAME).toString());
+                    }
+                }
 
-                   if (jsonObject.containsKey(AgentKeys.STATE)) {
-                       Integer currStatus = Integer.parseInt(jsonObject.get(AgentKeys.STATE).toString());
-                       if (!agent.getAgentState().equals(currStatus)) {
-                           toUpdate.put(AgentKeys.STATE, currStatus);
-                           agent.setAgentState(currStatus);
+                if (jsonObject.containsKey(AgentKeys.STATE)) {
+                    Integer currStatus = Integer.parseInt(jsonObject.get(AgentKeys.STATE).toString());
+                    if (!agent.getAgentState().equals(currStatus)) {
+                        toUpdate.put(AgentKeys.STATE, currStatus);
+                        agent.setAgentState(currStatus);
 
-                       }
-                   } else {
-                       toUpdate.put(AgentKeys.STATE, 0);
-                       agent.setAgentState(0);
-                   }
+                    }
+                } else {
+                    toUpdate.put(AgentKeys.STATE, 0);
+                    agent.setAgentState(0);
+                }
 
-                   if (jsonObject.containsKey(AgentKeys.DATA_INTERVAL)) {
-                       Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
-                       if ((agent.getInterval() != null) && agent.getInterval() != currDataInterval.longValue()) {
-                           toUpdate.put(AgentKeys.DATA_INTERVAL, currDataInterval);
-                           agent.setInterval(currDataInterval);
-                       }
-                   }
-               if (jsonObject.containsKey(AgentKeys.AGENT_TYPE)) {
-                   agent.setAgentType(jsonObject.get(AgentKeys.AGENT_TYPE).toString().trim());
-                   toUpdate.put(AgentKeys.AGENT_TYPE, agent.getAgentType());
-               }
-               if (jsonObject.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)) {
-                   Integer currNumberOfControllers = Integer.parseInt(jsonObject.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString());
-                   if ((agent.getAgentNumberOfControllers().intValue() != currNumberOfControllers.intValue())) {
-                       toUpdate.put(AgentKeys.NUMBER_OF_CONTROLLERS, currNumberOfControllers);
-                       agent.setAgentNumberOfControllers(currNumberOfControllers);
-                   }
-               } else {
-                   toUpdate.put(AgentKeys.NUMBER_OF_CONTROLLERS, 0);
-                   agent.setAgentNumberOfControllers(0);
-               }
-               if (jsonObject.containsKey(AgentKeys.STATUS)) {
-                   int status = Integer.parseInt(jsonObject.get(AgentKeys.STATUS).toString());
-                   if (status == 0) {
-                       raiseAgentAlarm(agentName, agentId);
-                   }
-                   if (status == 1) {
+                if (jsonObject.containsKey(AgentKeys.DATA_INTERVAL)) {
+                    Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
+                    if ((agent.getInterval() != null) && agent.getInterval() != currDataInterval.longValue()) {
+                        toUpdate.put(AgentKeys.DATA_INTERVAL, currDataInterval);
+                        agent.setInterval(currDataInterval);
+                    }
+                }
+                if (jsonObject.containsKey(AgentKeys.AGENT_TYPE)) {
+                    agent.setAgentType(jsonObject.get(AgentKeys.AGENT_TYPE).toString().trim());
+                    toUpdate.put(AgentKeys.AGENT_TYPE, agent.getAgentType());
+                }
+                if (jsonObject.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)) {
+                    Integer currNumberOfControllers = Integer.parseInt(jsonObject.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString());
+                    if ((agent.getAgentNumberOfControllers().intValue() != currNumberOfControllers.intValue())) {
+                        toUpdate.put(AgentKeys.NUMBER_OF_CONTROLLERS, currNumberOfControllers);
+                        agent.setAgentNumberOfControllers(currNumberOfControllers);
+                    }
+                } else {
+                    toUpdate.put(AgentKeys.NUMBER_OF_CONTROLLERS, 0);
+                    agent.setAgentNumberOfControllers(0);
+                }
+                if (jsonObject.containsKey(AgentKeys.STATUS)) {
+                    int status = Integer.parseInt(jsonObject.get(AgentKeys.STATUS).toString());
+                    if (status == 0) {
+                        raiseAgentAlarm(agentName, agentId);
+                    }
+                    if (status == 1) {
                         dropAgentAlarm(agentName, agentId);
+                    }
+                }
 
-                   }
-               }
-
-               if (jsonObject.containsKey(AgentKeys.VERSION)) {
-                   Object currDeviceDetails = jsonObject.get(AgentKeys.VERSION);
-                   String currDeviceDetailsString = currDeviceDetails.toString();
-                   String currVersion = getVersion(currDeviceDetails);
-                   if ((agent.getAgentDeviceDetails() == null) || (agent.getAgentDeviceDetails() != null && !(agent.getAgentDeviceDetails().equalsIgnoreCase(currDeviceDetailsString)))) {
-                       toUpdate.put(AgentKeys.DEVICE_DETAILS, currDeviceDetailsString);
-                       toUpdate.put(AgentKeys.VERSION, currVersion);
-                       agent.setAgentDeviceDetails(currDeviceDetailsString);
-                       agent.setAgentVersion(currVersion);
-                   }
-               }
-               if (jsonObject.containsKey(AgentKeys.WRITABLE)) {
-                   Boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentKeys.WRITABLE).toString());
-                   if (agent.getWritable() != currWriteble) {
-                       toUpdate.put(AgentKeys.WRITABLE, currWriteble);
-                       agent.setWritable(currWriteble);
-                   }
-               }
-               if (jsonObject.containsKey(AgentKeys.DELETED_TIME)) {
-                       Long currDeletedTime = Long.parseLong(jsonObject.get(AgentKeys.DELETED_TIME).toString());
-                       if (agent.getDeletedTime().longValue() != currDeletedTime.longValue()) {
-                           agent.setDeletedTime(currDeletedTime);
-                           toUpdate.put(AgentKeys.DELETED_TIME, currDeletedTime);
-                       }
-                   }
-                   if(agent.getAgentType() == null && (jsonObject.containsKey(AgentKeys.AGENT_TYPE)) ){
-                       toUpdate.put(AgentKeys.AGENT_TYPE, (AgentType.valueOf(jsonObject.get(AgentKeys.AGENT_TYPE).toString())).getKey());
-                   }
-               if (!toUpdate.isEmpty()) {
-                   toUpdate.put(AgentKeys.LAST_MODIFIED_TIME, System.currentTimeMillis());
-               }
-               if (!toUpdate.isEmpty()) {
-                   toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
-                   context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, toUpdate);
-                   if (updateAgentChain.execute(context)) {
-                       return 1;
-                   }
-               }
-               return 0;
-           } catch (Exception e) {
-               LOGGER.info("Exception occurred ", e);
-           }
+                if (jsonObject.containsKey(AgentKeys.VERSION)) {
+                    Object currDeviceDetails = jsonObject.get(AgentKeys.VERSION);
+                    String currDeviceDetailsString = currDeviceDetails.toString();
+                    String currVersion = getVersion(currDeviceDetails);
+                    if ((agent.getAgentDeviceDetails() == null) || (agent.getAgentDeviceDetails() != null && !(agent.getAgentDeviceDetails().equalsIgnoreCase(currDeviceDetailsString)))) {
+                        toUpdate.put(AgentKeys.DEVICE_DETAILS, currDeviceDetailsString);
+                        toUpdate.put(AgentKeys.VERSION, currVersion);
+                        agent.setAgentDeviceDetails(currDeviceDetailsString);
+                        agent.setAgentVersion(currVersion);
+                    }
+                }
+                if (jsonObject.containsKey(AgentKeys.WRITABLE)) {
+                    Boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentKeys.WRITABLE).toString());
+                    if (agent.getWritable() != currWriteble) {
+                        toUpdate.put(AgentKeys.WRITABLE, currWriteble);
+                        agent.setWritable(currWriteble);
+                    }
+                }
+                if (jsonObject.containsKey(AgentKeys.DELETED_TIME)) {
+                    Long currDeletedTime = Long.parseLong(jsonObject.get(AgentKeys.DELETED_TIME).toString());
+                    if (agent.getDeletedTime().longValue() != currDeletedTime.longValue()) {
+                        agent.setDeletedTime(currDeletedTime);
+                        toUpdate.put(AgentKeys.DELETED_TIME, currDeletedTime);
+                    }
+                }
+                if (agent.getAgentType() == null && (jsonObject.containsKey(AgentKeys.AGENT_TYPE))) {
+                    toUpdate.put(AgentKeys.AGENT_TYPE, (AgentType.valueOf(jsonObject.get(AgentKeys.AGENT_TYPE).toString())).getKey());
+                }
+                if (!toUpdate.isEmpty()) {
+                    toUpdate.put(AgentKeys.LAST_MODIFIED_TIME, System.currentTimeMillis());
+                }
+                if (!toUpdate.isEmpty()) {
+                    toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
+                    context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, toUpdate);
+                    if (updateAgentChain.execute(context)) {
+                        return 1;
+                    }
+                }
+                return 0;
+            } catch (Exception e) {
+                LOGGER.info("Exception occurred ", e);
+            }
         }
 
         return 0;
     }
 
-    private void dropAgentAlarm(String agentName, long agentId) throws Exception {
-        AgentEventContext event = new AgentEventContext();
-        event.setEventMessage("Agent: " + agentName + " has regained connection with the Facilio cloud @ " + DateTime.now());
-        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
-        event.setCreatedTime(System.currentTimeMillis());
-        event.setAgentId(agentId);
+    public static void dropAgentAlarm(String agentName, long agentId) throws Exception {
+        long currentTime = System.currentTimeMillis();
+        AgentEventContext event = getAgentEventContext(agentName, agentId, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY);
+        addEventToDB(event);
+        LOGGER.info("Cleared Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
 
+    }
+
+    private static void addEventToDB(AgentEventContext event) throws Exception {
         List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
         eventList.add(event);
         FacilioContext context = new FacilioContext();
         context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);
         FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
         chain.execute(context);
-        LOGGER.info("Cleared Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
+    }
+
+    public static void raiseAgentAlarm(String agentName, long agentId) throws Exception {
+        long currentTime = System.currentTimeMillis();
+        AgentEventContext event = getAgentEventContext(agentName, agentId, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY);
+
+        addEventToDB(event);
+        LOGGER.info("Added Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
 
     }
 
-        public void raiseAgentAlarm(String agentName, long agentId) throws Exception {
-
-            AgentEventContext event = new AgentEventContext();
-            event.setEventMessage("Agent: " + agentName + " has lost connection with the Facilio cloud @ "
-                    + DateTimeUtil.getFormattedTime(System.currentTimeMillis()));
-            event.setSeverityString(FacilioConstants.Alarm.CRITICAL_SEVERITY);
-            event.setCreatedTime(System.currentTimeMillis());
-            event.setAgentId(agentId);
-
-            List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
-            eventList.add(event);
-            FacilioContext context = new FacilioContext();
-            context.put(EventConstants.EventContextNames.EVENT_LIST, eventList);
-            FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
-            chain.execute(context);
-            LOGGER.info("Added Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
-
+    private static AgentEventContext getAgentEventContext(String agentName, long agentId, long currentTime, String severity) {
+        AgentEventContext event = new AgentEventContext();
+        String s = null;
+        if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
+            s = " has lost connection with the facilio cloud @";
+        } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+            s = " has regained connection with the facilio cloud @";
         }
+        event.setEventMessage("Agent " + agentName + s + DateTimeUtil.getFormattedTime(currentTime));
+        event.setMessage("Agent connection state change ( " + agentName + " )");
+        //event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
+        event.setSeverityString(severity);
+        event.setCreatedTime(currentTime);
+        event.setSiteId(AccountUtil.getCurrentSiteId());
+        event.setAgentId(agentId);
+        return event;
+    }
 
 
     public long addAgent(FacilioAgent agent) {
@@ -364,12 +372,12 @@ public  class AgentUtil
         FacilioModule agentDataModule = ModuleFactory.getAgentDataModule();
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.AGENT_TABLE).select(FieldFactory.getAgentDataFields())
 //                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
-              .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agent.getAgentName(),StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule), agent.getAgentName(), StringOperators.IS));
         long id = 0L;
         try {
             List<Map<String,Object>> row = selectRecordBuilder.get();
             if(row.size() == 1 && row.get(0).containsKey(AgentKeys.ID)){
-               id = Long.parseLong(row.get(0).get(AgentKeys.ID).toString());
+                id = Long.parseLong(row.get(0).get(AgentKeys.ID).toString());
             }else {
                 LOGGER.info("Exception multiple entries with same AgentId ");
             }
@@ -474,47 +482,46 @@ public  class AgentUtil
     public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent) {
         FacilioChain addLogChain = TransactionChainFactory.addLogChain();
         FacilioContext context = new FacilioContext();
-        context.put(AgentKeys.ORG_ID,orgId);
-            Map<String, Object> toUpdate = new HashMap<>();
-            if (sent) {
-                payLoad.put(AgentKeys.COMMAND_STATUS, CommandStatus.SENT.getKey());
-                toUpdate.put(AgentKeys.COMMAND_STATUS, CommandStatus.SENT.getKey());
-                LOGGER.info(" Sent message logged ");
+        context.put(AgentKeys.ORG_ID, orgId);
+        Map<String, Object> toUpdate = new HashMap<>();
+        if (sent) {
+            payLoad.put(AgentKeys.COMMAND_STATUS, CommandStatus.SENT.getKey());
+            toUpdate.put(AgentKeys.COMMAND_STATUS, CommandStatus.SENT.getKey());
+            LOGGER.info(" Sent message logged ");
 
-            } else {
-                if (payLoad.containsKey(AgentKeys.COMMAND_STATUS)) {
-                    toUpdate.put(AgentKeys.COMMAND_STATUS, Integer.parseInt(payLoad.get(AgentKeys.COMMAND_STATUS).toString()));
-                }
-            }
-            if (payLoad.containsKey(AgentKeys.COMMAND)) {
-                toUpdate.put(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString()).getValue());
-            }
-            toUpdate.put(AgentKeys.AGENT_ID, agentId);
-            if(payLoad.containsKey(AgentKeys.TIMESTAMP)){
-                toUpdate.put(AgentKeys.TIMESTAMP,payLoad.get(AgentKeys.TIMESTAMP));
-            }
-            else {
-                toUpdate.put(AgentKeys.TIMESTAMP, System.currentTimeMillis());
-            }
-            if (payLoad.containsKey(AgentKeys.DEVICE_ID)) {
-                toUpdate.put(AgentKeys.DEVICE_ID, payLoad.get(AgentKeys.DEVICE_ID).toString());
-            }
-            if (payLoad.containsKey(AgentKeys.MESSAGE_ID)) {
-                toUpdate.put(AgentKeys.MESSAGE_ID, payLoad.get(AgentKeys.MESSAGE_ID).toString());
-            }
-            if (payLoad.containsKey(AgentKeys.CONTENT)) {
-                toUpdate.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.CONTENT));
-            }
-            try {
-                toUpdate.put(AgentKeys.CREATED_TIME,System.currentTimeMillis());
-                context.put(FacilioConstants.ContextNames.TO_INSERT_MAP,toUpdate);
-                addLogChain.execute(context);
-               /* ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-                bean.addLog(toUpdate);*/
-            } catch (Exception e) {
-                LOGGER.info("Exception occured ", e);
+        } else {
+            if (payLoad.containsKey(AgentKeys.COMMAND_STATUS)) {
+                toUpdate.put(AgentKeys.COMMAND_STATUS, Integer.parseInt(payLoad.get(AgentKeys.COMMAND_STATUS).toString()));
             }
         }
+        if (payLoad.containsKey(AgentKeys.COMMAND)) {
+            toUpdate.put(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString()).getValue());
+        }
+        toUpdate.put(AgentKeys.AGENT_ID, agentId);
+        if (payLoad.containsKey(AgentKeys.TIMESTAMP)) {
+            toUpdate.put(AgentKeys.TIMESTAMP, payLoad.get(AgentKeys.TIMESTAMP));
+        } else {
+            toUpdate.put(AgentKeys.TIMESTAMP, System.currentTimeMillis());
+        }
+        if (payLoad.containsKey(AgentKeys.DEVICE_ID)) {
+            toUpdate.put(AgentKeys.DEVICE_ID, payLoad.get(AgentKeys.DEVICE_ID).toString());
+        }
+        if (payLoad.containsKey(AgentKeys.MESSAGE_ID)) {
+            toUpdate.put(AgentKeys.MESSAGE_ID, payLoad.get(AgentKeys.MESSAGE_ID).toString());
+        }
+        if (payLoad.containsKey(AgentKeys.CONTENT)) {
+            toUpdate.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.CONTENT));
+        }
+        try {
+            toUpdate.put(AgentKeys.CREATED_TIME, System.currentTimeMillis());
+            context.put(FacilioConstants.ContextNames.TO_INSERT_MAP, toUpdate);
+            addLogChain.execute(context);
+               /* ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+                bean.addLog(toUpdate);*/
+        } catch (Exception e) {
+            LOGGER.info("Exception occured ", e);
+        }
+    }
 
 
 
@@ -529,7 +536,7 @@ public  class AgentUtil
                 .select(FieldFactory.getAgentLogFields());
 //                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentLogModule()));
         if(agentId != null){
-             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getAgentLogModule()),agentId.toString(),NumberOperators.EQUALS));
+            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getAgentLogModule()), agentId.toString(), NumberOperators.EQUALS));
         }
         return genericSelectRecordBuilder.get();
     }
@@ -583,29 +590,29 @@ public  class AgentUtil
                 record = records.get(0);
                 //LOGGER.info(" record selected is -> "+record);
                 if ( (!record.isEmpty()) && createdTime == Long.parseLong(record.get(AgentKeys.CREATED_TIME).toString())) {
-                       // HashMap<String, Object> criteriax = new HashMap<>();
+                    // HashMap<String, Object> criteriax = new HashMap<>();
                     Criteria criteria = new Criteria();
                     Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentMetricsFields());
-                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.CREATED_TIME), String.valueOf(createdTime),NumberOperators.EQUALS));
-                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.ID), String.valueOf(record.get(AgentKeys.ID)),NumberOperators.EQUALS));
-                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(EventUtil.DATA_TYPE), String.valueOf(publishType),NumberOperators.EQUALS));
-                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.AGENT_ID), String.valueOf(agentId),NumberOperators.EQUALS));
+                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.CREATED_TIME), String.valueOf(createdTime), NumberOperators.EQUALS));
+                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.ID), String.valueOf(record.get(AgentKeys.ID)), NumberOperators.EQUALS));
+                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(EventUtil.DATA_TYPE), String.valueOf(publishType), NumberOperators.EQUALS));
+                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
 
                    /* criteriax.put(AgentKeys.AGENT_ID, agentId);
 
                         criteriax.put(EventUtil.DATA_TYPE, publishType);
                         criteriax.put(AgentKeys.CREATED_TIME, createdTime);
                         criteriax.put(AgentKeys.ID, record.get(AgentKeys.ID));*/
-                        //LOGGER.info(" updating id ->"+record.get(AgentKeys.ID));
-                        metrics.put(AgentKeys.SIZE, Integer.parseInt(record.get(AgentKeys.SIZE).toString()) + messageSize);
-                        metrics.put(AgentKeys.NO_OF_MESSAGES, Integer.parseInt(record.get(AgentKeys.NO_OF_MESSAGES).toString()) + 1);
-                        metrics.put(AgentKeys.LAST_UPDATED_TIME, lastUpdatedTime);
-                        context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,metrics);
-                        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
-                        //LOGGER.info(" updating Agent Metrics");
-                        updateAgentMetricsChain.execute(context);
-                        //bean.updateAgentMetrics(metrics, criteria);
-                    }
+                    //LOGGER.info(" updating id ->"+record.get(AgentKeys.ID));
+                    metrics.put(AgentKeys.SIZE, Integer.parseInt(record.get(AgentKeys.SIZE).toString()) + messageSize);
+                    metrics.put(AgentKeys.NO_OF_MESSAGES, Integer.parseInt(record.get(AgentKeys.NO_OF_MESSAGES).toString()) + 1);
+                    metrics.put(AgentKeys.LAST_UPDATED_TIME, lastUpdatedTime);
+                    context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, metrics);
+                    context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+                    //LOGGER.info(" updating Agent Metrics");
+                    updateAgentMetricsChain.execute(context);
+                    //bean.updateAgentMetrics(metrics, criteria);
+                }
             }
             else {
                 metrics.put(AgentKeys.AGENT_ID, agentId);
@@ -628,58 +635,58 @@ public  class AgentUtil
 
 
     public static FacilioAgent getAgentDetails(long agentId) throws Exception {
-    		List<FacilioAgent> agents = getAgents(Collections.singletonList(agentId));
-    		if (CollectionUtils.isNotEmpty(agents)) { 
-    			return agents.get(0);
-    		}
-	    	return null;
+        List<FacilioAgent> agents = getAgents(Collections.singletonList(agentId));
+        if (CollectionUtils.isNotEmpty(agents)) {
+            return agents.get(0);
+        }
+        return null;
     }
-    
+
     public static List<FacilioAgent> getAgents(Collection<Long> agentIds) throws Exception {
-	    	FacilioModule module = ModuleFactory.getAgentDataModule();
-	    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-	    							.table(module.getTableName())
-	    							.select(FieldFactory.getAgentDataFields())
-	    							.andCondition(CriteriaAPI.getIdCondition(agentIds, module));
-	    	List<Map<String, Object>> props = builder.get();
-	    	if (CollectionUtils.isNotEmpty(props)) {
-	    		return FieldUtil.getAsBeanListFromMapList(props, FacilioAgent.class);
-	    	}
-	    	return null;
+        FacilioModule module = ModuleFactory.getAgentDataModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(FieldFactory.getAgentDataFields())
+                .andCondition(CriteriaAPI.getIdCondition(agentIds, module));
+        List<Map<String, Object>> props = builder.get();
+        if (CollectionUtils.isNotEmpty(props)) {
+            return FieldUtil.getAsBeanListFromMapList(props, FacilioAgent.class);
+        }
+        return null;
     }
-    
+
     public static Map<Long, FacilioAgent> getAgentsMap(Collection<Long> agentIds) throws Exception {
-    	 	List<FacilioAgent> agents = getAgents(agentIds);
-    	 	if (CollectionUtils.isNotEmpty(agents)) {
-    	 		return agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
-    	 	}
-    	 	return null;
+        List<FacilioAgent> agents = getAgents(agentIds);
+        if (CollectionUtils.isNotEmpty(agents)) {
+            return agents.stream().collect(Collectors.toMap(FacilioAgent::getId, Function.identity()));
+        }
+        return null;
     }
     //untested
     public String addVersionLog(long newVersionId,long agentId) throws Exception {
-        try{
+        try {
             Map<String, Object> row = new HashMap<>();
-        row.put("orgId",this.orgId);
-        row.put("versionId",newVersionId);
-        row.put("agentId",agentId);
-        String token = null;
-        for (int i = 0; i < 5; i++) {
-            token  = generateNewToken();
-            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                    .table(ModuleFactory.getAgentVersionLogModule().getTableName())
-                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getAuthKeyField(ModuleFactory.getAgentVersionLogModule()),token,StringOperators.IS));
-            List<Map<String, Object>> maps = selectRecordBuilder.get();
-            if (maps.size()==0) {
-                row.put("authKey", token);
-                GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-                        .table(ModuleFactory.getAgentVersionLogModule().getTableName());
-                insertRecordBuilder.insert(row);
+            row.put("orgId", this.orgId);
+            row.put("versionId", newVersionId);
+            row.put("agentId", agentId);
+            String token = null;
+            for (int i = 0; i < 5; i++) {
+                token = generateNewToken();
+                GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                        .table(ModuleFactory.getAgentVersionLogModule().getTableName())
+                        .andCondition(CriteriaAPI.getCondition(FieldFactory.getAuthKeyField(ModuleFactory.getAgentVersionLogModule()), token, StringOperators.IS));
+                List<Map<String, Object>> maps = selectRecordBuilder.get();
+                if (maps.size() == 0) {
+                    row.put("authKey", token);
+                    GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+                            .table(ModuleFactory.getAgentVersionLogModule().getTableName());
+                    insertRecordBuilder.insert(row);
 
+                }
             }
-        }
 
 
-        return token;
+            return token;
         }catch (Exception ex){
             LOGGER.error("Exception while creating token");
             return null;
