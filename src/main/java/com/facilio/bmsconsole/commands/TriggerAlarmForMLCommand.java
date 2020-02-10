@@ -340,7 +340,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	
 	private long getReadingTime(MLContext mlContext)
 	{
-		return mlContext.isHistoric() ? mlContext.getExecutionEndTime() : mlContext.getPredictionTime()*1000;
+		return mlContext.isHistoric() ? mlContext.getExecutionEndTime() : mlContext.getPredictionTime();
 	}
 
 }

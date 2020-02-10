@@ -27,7 +27,7 @@ public class ApplyRuleForMLCommand extends FacilioCommand {
 		if (rule != null && rule.isActive()) 
 		{
 			FacilioContext ruleContext = new FacilioContext();
-			WorkflowRuleAPI.executeScheduledRule(rule, mlContext.getPredictionTime() * 1000 , ruleContext);
+			WorkflowRuleAPI.executeScheduledRule(rule, mlContext.getPredictionTime() , ruleContext);
 		}
 		*/
 		}catch(Exception e)
