@@ -14,7 +14,7 @@ import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
-import com.facilio.agentv2.niagara.NiagaraPoint;
+import com.facilio.agentv2.niagara.NiagaraPointContext;
 import com.facilio.agentv2.opcua.OpcUaPointContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaPointContext;
 import com.facilio.beans.ModuleCRUDBean;
@@ -125,7 +125,7 @@ public class PointsAPI extends AgentUtilities {
                     LOGGER.info(" making bacnet point");
                     return BacnetIpPointContext.getPointFromMap(payload);
                 case NIAGARA:
-                    return NiagaraPoint.getPointFromMap(payload);
+                    return NiagaraPointContext.getPointFromMap(payload);
                 case MISC:
                     return MiscPoint.getPointFromMap(payload);
                 default:
@@ -598,7 +598,7 @@ public class PointsAPI extends AgentUtilities {
     public static Class getPointType(FacilioControllerType type) throws Exception {
         switch (type) {
             case NIAGARA:
-                return NiagaraPoint.class;
+                return NiagaraPointContext.class;
             case REST:
             case CUSTOM:
             case OPC_UA:

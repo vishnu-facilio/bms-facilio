@@ -8,15 +8,15 @@ import org.json.simple.JSONObject;
 
 import java.util.Map;
 
-public class NiagaraPoint extends Point {
+public class NiagaraPointContext extends Point {
 
     private String path;
 
-    public NiagaraPoint(long agentId, long controllerId) {
+    public NiagaraPointContext(long agentId, long controllerId) {
         super(agentId, controllerId);
     }
     @Deprecated
-    private NiagaraPoint() { }
+    public NiagaraPointContext() { }
 
     public String getPath() { return path; }
     public void setPath(String path) { this.path = path; }
@@ -35,7 +35,7 @@ public class NiagaraPoint extends Point {
         return niagaraPointJSON;
     }
 
-    public static NiagaraPoint getPointFromMap(Map<String,Object> pointMap) throws Exception {
+    public static NiagaraPointContext getPointFromMap(Map<String,Object> pointMap) throws Exception {
         if (pointMap == null || pointMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + pointMap);
         }
@@ -45,7 +45,7 @@ public class NiagaraPoint extends Point {
             return (NiagaraPoint) point.getPointFromMap(pointMap);*/
            JSONObject jsonObject = new JSONObject();
            jsonObject.putAll(pointMap);
-           return FieldUtil.getAsBeanFromJson(jsonObject,NiagaraPoint.class);
+           return FieldUtil.getAsBeanFromJson(jsonObject, NiagaraPointContext.class);
         }
         throw new Exception("Mandatory fields like "+AgentConstants.PATH+" might be missing from the input parameter -> "+pointMap);
     }

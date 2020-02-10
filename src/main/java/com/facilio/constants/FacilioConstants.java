@@ -6,7 +6,7 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
-import com.facilio.agentv2.niagara.NiagaraController;
+import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.bmsconsole.context.*;
@@ -1517,7 +1517,7 @@ public class FacilioConstants {
 			classMap.put(BACNET_IP_CONTROLLER_MODULE_NAME, BacnetIpControllerContext.class);
 			classMap.put(OPC_UA_CONTROLLER_MODULE_NAME, OpcUaControllerContext.class);
 			classMap.put(OPC_XML_DA_CONTROLLER_MODULE_NAME, OpcXmlDaControllerContext.class);
-			classMap.put(NIAGARA_CONTROLLER_MODULE_NAME, NiagaraController.class);
+			classMap.put(NIAGARA_CONTROLLER_MODULE_NAME, NiagaraControllerContext.class);
 			classMap.put(CONTROLLER_MODULE_NAME, Controller.class);
 			classMap.put(MISC_CONTROLLER_MODULE_NAME, MiscController.class);
 			//classMap.put(REST_CONTROLLER_MODULE_NAME,MiscController.class);

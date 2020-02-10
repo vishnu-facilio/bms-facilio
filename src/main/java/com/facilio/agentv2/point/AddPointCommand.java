@@ -71,9 +71,6 @@ public class AddPointCommand extends FacilioCommand {
 
     private long addPoint( FacilioModule module, List<FacilioField> fields,Map<String,Object> toInsertMap)throws Exception {
         LOGGER.info("point json " + toInsertMap);
-        if (module.getTableName().equals(ModuleFactory.getBACnetIPPointModule().getTableName())) {
-            fields.forEach(field -> LOGGER.info(field.getColumnName() + "  " + field.getName()));
-        }
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(module.getTableName()).fields(fields);
         return builder.insert(toInsertMap);
     }

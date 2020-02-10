@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class NiagaraController extends Controller {
+public class NiagaraControllerContext extends Controller {
 
-    private static final Logger LOGGER = LogManager.getLogger(NiagaraController.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(NiagaraControllerContext.class.getName());
 
     public static final String ASSETCATEGORY = FacilioConstants.ContextNames.NIAGARA_CONTROLLER_MODULE_NAME;
 
@@ -34,11 +34,11 @@ public class NiagaraController extends Controller {
     @JsonInclude
     private String identifier;
 
-    public NiagaraController() {
+    public NiagaraControllerContext() {
         setControllerType(FacilioControllerType.NIAGARA.asInt());
     }
 
-    public NiagaraController(long agentId, long orgId) throws Exception {
+    public NiagaraControllerContext(long agentId, long orgId) throws Exception {
         super(agentId, orgId);
         setControllerType(FacilioControllerType.NIAGARA.asInt());
     }
@@ -95,21 +95,21 @@ public class NiagaraController extends Controller {
         return conditions;
     }
 
-    public static NiagaraController getNiagaraControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
+    public static NiagaraControllerContext getNiagaraControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
         if (controllerMap == null || controllerMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
         }
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         if (containsValueCheck(AgentConstants.IDENTIFIER, controllerMap)) {
-            NiagaraController controller = new NiagaraController(agentId, orgId);
+            NiagaraControllerContext controller = new NiagaraControllerContext(agentId, orgId);
             controller.processIdentifier((String) controllerMap.get(AgentConstants.IDENTIFIER));
-            return (NiagaraController) controller.getControllerFromJSON(controllerMap);
+            return (NiagaraControllerContext) controller.getControllerFromJSON(controllerMap);
         }
         if (containsValueCheck(AgentConstants.PORT_NUMBER, controllerMap) && containsValueCheck(AgentConstants.IP_ADDRESS, controllerMap)) {
-            NiagaraController controller = new NiagaraController(agentId, orgId);
+            NiagaraControllerContext controller = new NiagaraControllerContext(agentId, orgId);
             controller.setIpAddress((String) controllerMap.get(AgentConstants.IP_ADDRESS));
             controller.setPortNumber(Math.toIntExact((Long) controllerMap.get(AgentConstants.PORT_NUMBER)));
-            return (NiagaraController) controller.getControllerFromJSON(controllerMap);
+            return (NiagaraControllerContext) controller.getControllerFromJSON(controllerMap);
         }
         throw new Exception(" Mandatory fields like " + AgentConstants.IP_ADDRESS + "," + AgentConstants.PORT_NUMBER + "," + AgentConstants.IDENTIFIER + " might be missing from input parameter -> " + controllerMap);
     }

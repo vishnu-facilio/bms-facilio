@@ -155,4 +155,9 @@ public class AgentConstants
     public static final String CONFIGURED_COUNT = "configuredCount";
     public static final String COMMISSIONED_COUNT = "commissionedCount";
     public static final String SUBSCRIBED_COUNT = "subscribedCount";
+    public static final String SUBNET_NODE = "subnetNode";
+    public static final String NEURON_ID = "neuronId" ;
+    public static final String LINK_TYPE = "linkType";
+    public static final String TARGET_COMP = "targetComp";
+    public static final String TARGET_NAME = "targetName";
 }

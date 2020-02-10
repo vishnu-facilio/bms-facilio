@@ -12,7 +12,7 @@ import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
-import com.facilio.agentv2.niagara.NiagaraController;
+import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.agentv2.point.PointsAPI;
@@ -381,7 +381,7 @@ public class ControllerApiV2 {
                 conditions.addAll(new OpcUaControllerContext().getControllerConditions(controllerIdentifier));
                 break;
             case NIAGARA:
-                conditions.addAll(new NiagaraController().getControllerConditions(controllerIdentifier));
+                conditions.addAll(new NiagaraControllerContext().getControllerConditions(controllerIdentifier));
                 break;
             case MODBUS_IP:
                 conditions.addAll(new ModbusTcpControllerContext().getControllerConditions(controllerIdentifier));
@@ -410,7 +410,7 @@ public class ControllerApiV2 {
             case OPC_XML_DA:
                 return OpcXmlDaControllerContext.ASSETCATEGORY;
             case NIAGARA:
-                return NiagaraController.ASSETCATEGORY;
+                return NiagaraControllerContext.ASSETCATEGORY;
             case BACNET_IP:
                 return BacnetIpControllerContext.ASSETCATEGORY;
             case MISC:

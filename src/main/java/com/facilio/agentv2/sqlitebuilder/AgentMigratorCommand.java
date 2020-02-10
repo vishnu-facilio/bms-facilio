@@ -11,6 +11,10 @@ import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.commands.AgentV2Command;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.lonWorks.LonWorksControllerContext;
+import com.facilio.agentv2.lonWorks.LonWorksPointContext;
+import com.facilio.agentv2.niagara.NiagaraControllerContext;
+import com.facilio.agentv2.niagara.NiagaraPointContext;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -54,6 +58,12 @@ public class AgentMigratorCommand extends AgentV2Command {
                         case BACNET_IP:
                             newController = toBAcnetIpControllerV2(controller);
                             break;
+                        case NIAGARA:
+                            newController = toNiagaraControllerV2(controller);
+                            break;
+                        case LON_WORKS:
+                            newController = toLonWorkControllerV2(controller);
+                            break;
                     }
                     if (newController != null) {
                         newController.setControllerType(controllerType.getKey());
@@ -73,6 +83,8 @@ public class AgentMigratorCommand extends AgentV2Command {
     }
 
 
+
+
     private void migratePoints(ControllerContext controller, long newControllerId) {
         if(controller != null){
             if(newControllerId > 0){
@@ -87,7 +99,14 @@ public class AgentMigratorCommand extends AgentV2Command {
                                 newPoint = null;
                                 switch (controller.getControllerTypeEnum()){
                                     case BACNET_IP:
-                                        newPoint = toBacnetIpPoints(point);
+                                        newPoint = toBacnetIpPoint(point);
+                                        break;
+                                    case LON_WORKS:
+                                        newPoint = toLonWorksPoint(point);
+                                        break;
+                                    case NIAGARA:
+                                        newPoint = toNiagaraPoint(point);
+                                        break;
                                 }
                                 if(newPoint != null){
                                     newPoint.setControllerId(newControllerId);
@@ -119,12 +138,23 @@ public class AgentMigratorCommand extends AgentV2Command {
         }
     }
 
+    private Point toLonWorksPoint(Map<String, Object> point) throws Exception {
+        if (point != null) {
+            LonWorksPointContext pointContext = new LonWorksPointContext();
+            toPoint(pointContext,point);
+            return pointContext;
+        }else {
+            throw new Exception("point cant be null");
+        }
+    }
+
+
     /**
      * @param point
      * @return
      */
 
-    private Point toBacnetIpPoints(Map<String, Object> point) throws Exception {
+    private Point toBacnetIpPoint(Map<String, Object> point) throws Exception {
         if(point != null){
             BacnetIpPointContext newPoint = new BacnetIpPointContext(-1,-1);
             if (containsCheck("instanceType",point)){
@@ -140,7 +170,21 @@ public class AgentMigratorCommand extends AgentV2Command {
         }
     }
 
-    private void toPoint(BacnetIpPointContext newPoint, Map<String, Object> point) {
+
+    private Point toNiagaraPoint(Map<String, Object> point) throws Exception {
+        if (point != null) {
+            NiagaraPointContext newPoint = new NiagaraPointContext();
+            if(containsCheck(AgentConstants.PATH,point)){
+                newPoint.setPath((String) point.get(AgentConstants.PATH));
+            }
+            toPoint(newPoint,point);
+            return newPoint;
+        }else {
+            throw new Exception(" point cant be null");
+        }
+    }
+
+    private void toPoint(Point newPoint, Map<String, Object> point) {
         if (containsCheck(AgentConstants.NAME,point)) {
             newPoint.setName((String) point.get(AgentConstants.NAME));
         }
@@ -198,6 +242,20 @@ public class AgentMigratorCommand extends AgentV2Command {
         controllerContext.setIpAddress(controller.getIpAddress());
         controllerContext.setNetworkNumber((int) controller.getNetworkNumber());
         controllerContext.setControllerType(FacilioControllerType.BACNET_IP.asInt());
+        toControllerV2(controllerContext,controller);
+        return controllerContext;
+    }
+
+    private Controller toNiagaraControllerV2(ControllerContext controller) {
+        NiagaraControllerContext controllerContext = new NiagaraControllerContext();
+        controllerContext.setIpAddress(controller.getIpAddress());
+        controllerContext.setPortNumber(controller.getPortNumber());
+        toControllerV2(controllerContext,controller);
+        return controllerContext;
+    }
+
+    private Controller toLonWorkControllerV2(ControllerContext controller) {
+        LonWorksControllerContext controllerContext = new LonWorksControllerContext();
         toControllerV2(controllerContext,controller);
         return controllerContext;
     }

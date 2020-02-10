@@ -8,7 +8,7 @@ import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscController;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
-import com.facilio.agentv2.niagara.NiagaraController;
+import com.facilio.agentv2.niagara.NiagaraControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -98,7 +98,7 @@ public class ControllerUtilV2 {
                     FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact((Long) controllerJSON.get(AgentConstants.TYPE)));
                     switch (controllerType) {
                         case NIAGARA:
-                            controller = NiagaraController.getNiagaraControllerFromMap(agentId, controllerJSON);
+                            controller = NiagaraControllerContext.getNiagaraControllerFromMap(agentId, controllerJSON);
                             break;
                         case BACNET_IP:
                             controller = BacnetIpControllerContext.getBacnetControllerFromMap(agentId, controllerJSON);
