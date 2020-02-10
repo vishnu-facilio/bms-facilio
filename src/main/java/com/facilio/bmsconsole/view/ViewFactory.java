@@ -173,6 +173,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("my", getMyTasks().setOrder(order++));
+		views.put("all", getAllTaskView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TASK, views);
 
 		order = 1;
@@ -643,12 +644,6 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllOccupantsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.OCCUPANT, views);
-
-
-		order = 1;
-		views = new LinkedHashMap<>();
-		views.put("all", getAllTaskView().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.TASK, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
