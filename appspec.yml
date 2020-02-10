@@ -25,6 +25,8 @@ files:
     destination: /home/ubuntu/deployment-files/
   - source: /awsprops-user.properties
     destination: /home/ubuntu/deployment-files/
+  - source: /awsprops-demo.properties
+    destination: /home/ubuntu/deployment-files/
   - source: /log4j-user.properties
     destination: /home/ubuntu/deployment-files/
   - source: /log4j-stage.properties
