@@ -331,13 +331,17 @@ public class VisitorAction extends FacilioAction
  			searchObj.put("query", getSearch());
  			chain.getContext().put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
- 		JSONObject pagination = new JSONObject();
- 	 	pagination.put("page", getPage());
- 	 	pagination.put("perPage", getPerPage());
- 	 	if (getPerPage() < 0) {
- 	 		pagination.put("perPage", 5000);
- 	 	}
- 	 	
+ 		
+ 		if(!getFetchCount()) {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			if (getPerPage() < 0) {
+				pagination.put("perPage", 5000);
+			}
+			chain.getContext().put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+ 		
  	 	chain.execute();
 		if (getFetchCount()) {
 			setResult(FacilioConstants.ContextNames.RECORD_COUNT,chain.getContext().get(FacilioConstants.ContextNames.RECORD_COUNT));
