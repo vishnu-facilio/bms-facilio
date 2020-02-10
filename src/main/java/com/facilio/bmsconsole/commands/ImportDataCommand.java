@@ -36,6 +36,11 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 
 			importProcessContext = ImportAPI.getImportProcessContext(jobId);
 
+			if (importProcessContext.getStatus().intValue() > ImportProcessContext.ImportStatus.IN_PROGRESS.getValue()) {
+				LOGGER.severe("Old job is picked this should not Happen");
+				throw new IllegalArgumentException("Exiting Import - Running old job this should not happen");
+			}
+
 			if (importProcessContext.getImportJobMeta() != null) {
 				if (!importProcessContext.getImportJobMetaJson().isEmpty()) {
 					Long assetId = (Long) importProcessContext.getImportJobMetaJson().get("assetId");

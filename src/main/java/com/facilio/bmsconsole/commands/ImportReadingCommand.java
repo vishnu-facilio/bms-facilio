@@ -31,6 +31,11 @@ public class ImportReadingCommand extends FacilioCommand implements PostTransact
 		LOGGER.info("IMPORT READING JOB CALLED -- " + jobId);
 		try {
 			importProcessContext = ImportAPI.getImportProcessContext(jobId);
+
+			if (importProcessContext.getStatus().intValue() > ImportProcessContext.ImportStatus.IN_PROGRESS.getValue()) {
+				LOGGER.severe("Old job is picked this should not Happen");
+				throw new IllegalArgumentException("Exiting Reading Import - Running old job this should not happen");
+			}
 			FacilioChain importReadingChain = TransactionChainFactory.getImportReadingChain();
 			importReadingChain.getContext().put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT,
 					importProcessContext);
