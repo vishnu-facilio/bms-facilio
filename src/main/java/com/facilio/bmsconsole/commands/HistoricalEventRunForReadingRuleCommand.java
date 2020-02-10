@@ -41,11 +41,14 @@ import com.facilio.bmsconsole.util.WorkflowRuleResourceLoggerAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -110,7 +113,6 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			}
 
 			LOGGER.info("Historical Rule Job Started for JobId: "+ jobId +" Reading Rule : "+ruleId+" for resource : "+resourceId+ " at the JobStartTime: "+ jobStartTime);	
-			
 			boolean isFirstIntervalJob = false;
 			boolean isLastIntervalJob = false;
 			
@@ -294,14 +296,15 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 		}
 	}
 	
-private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<ReadingEventContext> readingEvents,ReadingEventContext previousEventMeta) throws Exception {
-		
+	private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<ReadingEventContext> readingEvents,ReadingEventContext previousEventMeta) throws Exception 
+	{
 		int alarmCount = 0;
 		if (readings != null && !readings.isEmpty()) {
 			Map<String, Object> placeHolders = new HashMap<>();
 			CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
 			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
-			
+			RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES, RuleType.IMPACT_RULE};
+
 			FacilioContext context = new FacilioContext();
 			Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = new HashMap<>();
 			context.put(FacilioConstants.ContextNames.READING_RULE_ALARM_META, alarmMetaMap);
@@ -313,33 +316,25 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 			List<FacilioField> allFields = modBean.getAllFields(readingRule.getReadingField().getModule().getName());
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
 			Map<String, Integer> lastItr = new HashMap<>(); //To store itr of currently matched rdm itr
-			ReadingEventContext latestEvent = null;
 			
 			for (int i = itr; i < readings.size(); i++) {
 				ReadingContext reading = readings.get(i);
-//				LOGGER.info("Executing rule for reading : "+reading);
-				try {
+				try 
+				{
 					ReadingDataMeta currentRDM = getRDM(reading, readingRule.getReadingField());
-//					LOGGER.info("Current RDM : "+currentRDM);
 					if (currentRDM != null) {
 						context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, Collections.singletonMap(ReadingsAPI.getRDMKey(reading.getParentId(), readingRule.getReadingField()), prevRDM));
 						
 						Map<String, ReadingDataMeta> rdmCache = getCurrentRDMs(reading, fieldMap);
-//						LOGGER.info("Current RDMs : "+rdmCache);
 						getOtherRDMs(reading.getParentId(), reading.getTtime(), supportFieldsRDM, rdmCache, lastItr, fields);
-//						LOGGER.info("After other RDM : "+rdmCache);
-						
 						context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, rdmCache);
 						
 						Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 						CommonCommandUtil.appendModuleNameInKey(readingRule.getReadingField().getModule().getName(), readingRule.getReadingField().getModule().getName(), FieldUtil.getAsProperties(reading), recordPlaceHolders);
-//						WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(readingRule, readingRule.getReadingField().getModule().getName(), reading, null, recordPlaceHolders, context);
 						
-						RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES, RuleType.IMPACT_RULE};
 						context.put(EventConstants.EventContextNames.PREVIOUS_EVENT_META, previousEventMeta);
 						
 						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, null, recordPlaceHolders, context, false, Collections.singletonList(readingRule.getActivityTypeEnum()), ruleTypes);
-						
 						prevRDM = currentRDM;
 						
 						Boolean isAlarmCreated = (Boolean) context.get(FacilioConstants.ContextNames.IS_ALARM_CREATED);
@@ -347,12 +342,9 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 							alarmCount++;
 							context.put(FacilioConstants.ContextNames.IS_ALARM_CREATED, Boolean.FALSE);
 						}
-
 						List<ReadingEventContext> currentEvent = (List<ReadingEventContext>) context.remove(EventConstants.EventContextNames.EVENT_LIST);
 						if (CollectionUtils.isNotEmpty(currentEvent)) {
-							latestEvent = currentEvent.get(0);
 							previousEventMeta = currentEvent.get(0);
-//							LOGGER.info("Event from history : "+FieldUtil.getAsJSON(latestEvent).toJSONString());
 							readingEvents.addAll(currentEvent);
 						}
 					}
@@ -368,28 +360,11 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 					throw e;
 				}
 			}
-			if (readingRule.clearAlarm()) {
-				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-//					newClearLatestAlarm(latestEvent, readingRule, readingEvents);
-				}
-				else {
-					clearLatestAlarms(alarmMetaMap, readingRule);
-				}
+			if (readingRule.clearAlarm() && !AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+				clearLatestAlarms(alarmMetaMap, readingRule);		
 			}
 		}
 		return alarmCount;
-	}
-
-
-	private void newClearLatestAlarm(ReadingEventContext event, ReadingRuleContext rule, List<ReadingEventContext> events) throws Exception {
-		if (event != null && !event.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-			int interval = ReadingsAPI.getDataInterval(event.getResource().getId(), rule.getReadingField());
-			ReadingEventContext clearEvent = rule.constructClearEvent(event.getResource(), event.getCreatedTime() + (interval * 60 * 1000));
-			clearEvent.setComment("System auto cleared Historical Alarm because associated rule executed false for the associated resource");
-			if (clearEvent != null) {
-				events.add(clearEvent);
-			}
-		}
 	}
 	
 	private void clearLatestAlarms(Map<Long, ReadingRuleAlarmMeta> alarmMetaMap, ReadingRuleContext rule) throws Exception { //Clearing the alarm that is not cleared even with the last reading. It's assumed that it'll be cleared in the next interval
