@@ -914,6 +914,9 @@ public class WorkflowRuleAPI {
 			workflowRule.setTerminateExecution(false);
 			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
 			LOGGER.debug("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
+			if ((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 210l && (workflowRule.getId() == 35189l || workflowRule.getId() == 35188l))) {
+				LOGGER.info("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
+			}
 
 			LOGGER.debug("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 
@@ -935,16 +938,25 @@ public class WorkflowRuleAPI {
 					stopFurtherExecution = true;
 				}
 			}
-			
+			if ((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 210l && (workflowRule.getId() == 35189l || workflowRule.getId() == 35188l))) {
+				LOGGER.info("Time taken without child rule execution to execute rule: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));
+			}
 			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));
 			if(workflowRule.getRuleTypeEnum().isChildSupport() && !stopFurtherExecution) {
 				Criteria currentCriteria = new Criteria();
 				currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRuleField, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
 				currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccessField, String.valueOf(result), BooleanOperators.IS));
 				
+				long workflowFetchStartTime = System.currentTimeMillis();
 				List<WorkflowRuleContext> currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(workflowRule.getModule(), eventTypes, currentCriteria, ruleTypes);
-				executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module, record, changeSet, itr, recordPlaceHolders, context, propagateError, eventTypes, ruleTypes);
+				if ((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 210l && (workflowRule.getId() == 35189l || workflowRule.getId() == 35188l))) {
+					LOGGER.info("Timetaken for Fetching currentWorkflows for rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowFetchStartTime));
+				}
 				
+				executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module, record, changeSet, itr, recordPlaceHolders, context, propagateError, eventTypes, ruleTypes);				
+			}
+			if ((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 210l && (workflowRule.getId() == 35189l || workflowRule.getId() == 35188l))) {
+				LOGGER.info("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" including child rule execution is "+(System.currentTimeMillis() - workflowStartTime));
 			}
 			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" including child rule execution is "+(System.currentTimeMillis() - workflowStartTime));
 			return stopFurtherExecution;
