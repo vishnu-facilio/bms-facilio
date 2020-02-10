@@ -61,7 +61,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 				LOGGER.info("CHECKGAM LOCAL TIME DATE :: "+date1);
 			}
 			
-			time = date1.getTime()-1;
+			time = date1.getTime();
 			
 		}else{
 			time = System.currentTimeMillis();
