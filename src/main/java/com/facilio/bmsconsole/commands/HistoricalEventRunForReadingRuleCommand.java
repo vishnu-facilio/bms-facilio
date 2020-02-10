@@ -225,7 +225,6 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 					LOGGER.info("Process Time taken for Historical Run for jobId: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is  -- "+(System.currentTimeMillis() - processStartTime));				
 				}			
 			}
-			
 
 			LOGGER.info("Time taken for Historical Run for jobId: "+jobId+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is -- " +(System.currentTimeMillis() - jobStartTime) + " and isReadingsEmpty -- " +isReadingsEmpty+
 					" Fetch prequisite readings time taken will be : --" + (readingsFetchStartTime - jobStartTime) + " Fetch readings time taken -- " + (eventProcessingStartTime - readingsFetchStartTime) +
@@ -241,8 +240,8 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 		throw historicalRuleException;
 	}	
 	return false;
-	
 	}
+	
 	@Override
 	public boolean postExecute() throws Exception {
 		
@@ -268,17 +267,13 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 	public void constructErrorMessage() throws Exception 
 	{
 		try {
-			
 			Exception mailExp = new Exception(exceptionMessage);
-			if (stack != null) 
-			{
+			if (stack != null) {
 				mailExp.setStackTrace(stack);
 			}
 			CommonCommandUtil.emailException(HistoricalEventRunForReadingRuleCommand.class.getName(), "Historical Run failed for reading_rule_resource_event_logger : "+jobId, mailExp);
-
 			LOGGER.severe("HISTORICAL RULE RESOURCE EVENT JOB COMMAND FAILED, JOB ID -- : "+jobId);
 			LOGGER.log(Level.SEVERE, exceptionMessage);
-
 			if(workflowRuleHistoricalLogsContext != null)	{
 				WorkflowRuleHistoricalLogsAPI.updateWorkflowRuleHistoricalLogsContextToResolvedState(workflowRuleHistoricalLogsContext, WorkflowRuleHistoricalLogsContext.Status.FAILED.getIntVal());
 			}
@@ -299,7 +294,8 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 	private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<ReadingEventContext> readingEvents,ReadingEventContext previousEventMeta) throws Exception 
 	{
 		int alarmCount = 0;
-		if (readings != null && !readings.isEmpty()) {
+		if (readings != null && !readings.isEmpty()) 
+		{
 			Map<String, Object> placeHolders = new HashMap<>();
 			CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
 			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
@@ -352,10 +348,8 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 				catch (Exception e) {
 					StringBuilder builder = new StringBuilder("Error during execution of rule : ");
 					builder.append(readingRule.getId());
-					builder.append(" for Record : ")
-							.append(reading.getId())
-							.append(" of module : ")
-							.append(readingRule.getReadingField().getModule().getName());
+					builder.append(" for Record : ").append(reading.getId())
+							.append(" of module : ").append(readingRule.getReadingField().getModule().getName());
 					LOGGER.log(Level.SEVERE, builder.toString(), e);
 					throw e;
 				}
@@ -367,19 +361,34 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 		return alarmCount;
 	}
 	
-	private void clearLatestAlarms(Map<Long, ReadingRuleAlarmMeta> alarmMetaMap, ReadingRuleContext rule) throws Exception { //Clearing the alarm that is not cleared even with the last reading. It's assumed that it'll be cleared in the next interval
-		for (ReadingRuleAlarmMeta meta : alarmMetaMap.values()) {
-			if (!meta.isClear()) {
-				AlarmContext alarm = AlarmAPI.getAlarm(meta.getAlarmId());
-				int interval = ReadingsAPI.getDataInterval(alarm.getResource().getId(), rule.getReadingField());
-				JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Historical Alarm because associated rule executed false for the associated resource", alarm.getModifiedTime() + (interval * 60 * 1000));
+	private ReadingDataMeta getRDM(ReadingContext value, FacilioField valField) {
+		Object val = value.getReading(valField.getName());
+		if (val != null) {
+			ReadingDataMeta rdm = new ReadingDataMeta();
+			rdm.setFieldId(valField.getFieldId());
+			rdm.setField(valField);
+			rdm.setTtime(value.getTtime());
+			rdm.setValue(val);
+			rdm.setReadingDataId(value.getId());
+			rdm.setResourceId(value.getParentId());
+			return rdm;
+		}
+		return null;
+	}
 	
-				FacilioContext addEventContext = new FacilioContext();
-				addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
-				FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-				getAddEventChain.execute(addEventContext);
+	private Map<String, ReadingDataMeta> getCurrentRDMs(ReadingContext reading, Map<String, FacilioField> fieldMap) {
+		Map<String, ReadingDataMeta> rdmCache = new HashMap<>();
+		Map<String, Object> data = reading.getReadings();
+		if (data != null && !data.isEmpty()) {
+			for (Map.Entry<String, Object> entry : data.entrySet()) {
+				FacilioField field = fieldMap.get(entry.getKey());
+				if (field != null) {
+					ReadingDataMeta rdm = getRDM(reading, field);
+					rdmCache.put(ReadingsAPI.getRDMKey(reading.getParentId(), field), rdm);
+				}
 			}
 		}
+		return rdmCache;
 	}
 	
 	private void getOtherRDMs(long resourceId, long ttime, Map<String, List<ReadingDataMeta>> rdmMap, Map<String, ReadingDataMeta> rdmCache, Map<String, Integer> lastItr, List<WorkflowFieldContext> fields) {
@@ -411,21 +420,6 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 				}
 			}
 		}
-	}
-	
-	private Map<String, ReadingDataMeta> getCurrentRDMs(ReadingContext reading, Map<String, FacilioField> fieldMap) {
-		Map<String, ReadingDataMeta> rdmCache = new HashMap<>();
-		Map<String, Object> data = reading.getReadings();
-		if (data != null && !data.isEmpty()) {
-			for (Map.Entry<String, Object> entry : data.entrySet()) {
-				FacilioField field = fieldMap.get(entry.getKey());
-				if (field != null) {
-					ReadingDataMeta rdm = getRDM(reading, field);
-					rdmCache.put(ReadingsAPI.getRDMKey(reading.getParentId(), field), rdm);
-				}
-			}
-		}
-		return rdmCache;
 	}
 	
 	private Map<String, List<ReadingDataMeta>> getSupportingData(List<WorkflowFieldContext> fields, long startTime, long endTime, long resourceId) throws Exception {
@@ -504,21 +498,6 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			}
 		}
 		return supportingValues;
-	}
-	
-	private ReadingDataMeta getRDM(ReadingContext value, FacilioField valField) {
-		Object val = value.getReading(valField.getName());
-		if (val != null) {
-			ReadingDataMeta rdm = new ReadingDataMeta();
-			rdm.setFieldId(valField.getFieldId());
-			rdm.setField(valField);
-			rdm.setTtime(value.getTtime());
-			rdm.setValue(val);
-			rdm.setReadingDataId(value.getId());
-			rdm.setResourceId(value.getParentId());
-			return rdm;
-		}
-		return null;
 	}
 	
 	private List<ReadingContext> fetchReadings(ReadingRuleContext readingRule, long resourceId, long startTime, long endTime) throws Exception {
@@ -603,6 +582,21 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 				.fields(modBean.getAllFields(moduleName));
 		builder.addRecords(events);
 		builder.save();	
+	}
+	
+	private void clearLatestAlarms(Map<Long, ReadingRuleAlarmMeta> alarmMetaMap, ReadingRuleContext rule) throws Exception { //Clearing the alarm that is not cleared even with the last reading. It's assumed that it'll be cleared in the next interval
+		for (ReadingRuleAlarmMeta meta : alarmMetaMap.values()) {
+			if (!meta.isClear()) {
+				AlarmContext alarm = AlarmAPI.getAlarm(meta.getAlarmId());
+				int interval = ReadingsAPI.getDataInterval(alarm.getResource().getId(), rule.getReadingField());
+				JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Historical Alarm because associated rule executed false for the associated resource", alarm.getModifiedTime() + (interval * 60 * 1000));
+	
+				FacilioContext addEventContext = new FacilioContext();
+				addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
+				FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+				getAddEventChain.execute(addEventContext);
+			}
+		}
 	}
 }
 
