@@ -68,7 +68,7 @@ public class TenantPageFactory extends PageFactory{
 
 	private static void addTenantSpecialWidget(Section section) {
 		PageWidget specialWidget = new PageWidget(WidgetType.TENANT_SPECIAL_WIDGET);
-		specialWidget.addToLayoutParams(section, 24, 4);
+		specialWidget.addToLayoutParams(section, 24, 8);
 		section.addWidget(specialWidget);
 	}
 	private static void addSecondaryDetailsWidget(Section section) {

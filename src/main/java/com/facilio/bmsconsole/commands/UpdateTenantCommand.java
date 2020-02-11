@@ -16,7 +16,7 @@ public class UpdateTenantCommand extends FacilioCommand {
 		TenantContext tenant = (TenantContext) context.get(TenantsAPI.TENANT_CONTEXT);
 		List<Long> spaceIds = (ArrayList<Long>)context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		
-		if(tenant.getStatusEnum() != TenantContext.Status.ACTIVE) {
+		if(tenant.getStatusEnum() != null && tenant.getStatusEnum() != TenantContext.Status.ACTIVE) {
 			throw new IllegalArgumentException("Cannot update an inactive tenant");
 		}
 		int rowsUpdated = TenantsAPI.updateTenant(tenant, spaceIds);

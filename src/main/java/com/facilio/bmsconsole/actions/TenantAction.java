@@ -16,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SpaceContext;
@@ -438,29 +439,14 @@ private Map<String, Double> readingData;
 	         context.put(FacilioConstants.ContextNames.RECORD, tenant);
 	         context.put(FacilioConstants.ContextNames.SITE_ID, tenant.getSiteId());
 	         context.put(FacilioConstants.ContextNames.IS_TENANT_ZONE, tenantZone);
-	         if (spaces != null && spaces.size() > 0) {
-	        	 context.put(FacilioConstants.ContextNames.SPACES, spaces);
-	         }
-//	         context.put(FacilioConstants.ContextNames.ZONE, zone);
-//	         if (CollectionUtils.isNotEmpty(spaceId)) {
-//	            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
-//	         }
-//	         else if (CollectionUtils.isNotEmpty(spaceIds)) {
-//	            spaceId = new ArrayList<>();
-//	            for (String id : spaceIds) {
-//	               spaceId.add(Long.parseLong(id));
-//	            }
-//	            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
-//	         }
 	         context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
 	         
 	         context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
-//	         tenant.setZone(zone);
 	         if(tenantLogo != null) {
 	            tenant.setTenantLogo(tenantLogo);
 	         }
 	         
-	         FacilioChain addTenant = FacilioChainFactory.addTenantChain();
+	         FacilioChain addTenant = TransactionChainFactory.v2AddTenantChain();
 	         addTenant.execute(context);
 	         tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
 	         setResult("tenant", tenant);
@@ -592,6 +578,34 @@ private Map<String, Double> readingData;
       }
    }
    
+   
+   public String v2updateTenant() {
+	      try {
+	         if(CollectionUtils.isNotEmpty(utilityAssets)) {
+	            tenant.setUtilityAssets(utilityAssets);
+	         }
+	         
+	         tenant.parseFormData();
+	         FacilioContext context = new FacilioContext();
+	         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.EDIT);
+	         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+	         context.put(FacilioConstants.ContextNames.RECORD, tenant);
+	         if(tenantLogo != null) {
+	            tenant.setTenantLogo(tenantLogo);
+	         }
+	         context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
+	         context.put(TenantsAPI.TENANT_CONTEXT, tenant);
+	         FacilioChain update = (TransactionChainFactory.v2UpdateTenantChain());
+	         update.execute(context);
+	         setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+	         return SUCCESS;
+	      }
+	      catch (Exception e) {
+	         setError("error",e.getMessage());
+	         return ERROR;
+	      }
+	   }
+   
    public String markAsPrimaryContact() {
       try {
          FacilioContext context = new FacilioContext();
@@ -700,7 +714,7 @@ private Map<String, Double> readingData;
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, tenantsId);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
-        FacilioChain deleteTenant = FacilioChainFactory.deleteTenantChain();
+        FacilioChain deleteTenant = TransactionChainFactory.v2DeleteTenantChain();
         deleteTenant.execute(context);
         setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
         return SUCCESS;
@@ -1034,5 +1048,23 @@ private Map<String, Double> readingData;
 	   }
 	  return SUCCESS;
    }  
+   
+   public String v2updateTenantLogo() throws Exception {
+	   if(getTenantLogo() != null && getId() > 0) {
+	       FacilioChain addTenantLogo = FacilioChainFactory.addTenantLogoChain();
+	       FacilioContext context = new FacilioContext();
+	       TenantContext tenant = new TenantContext();
+	       tenant.setId(getId());
+	       tenant.setTenantLogo(getTenantLogo());
+	       tenant.setTenantLogoFileName(getTenantLogoFileName());
+	       tenant.setTenantLogoContentType(getTenantLogoContentType());
+	       context.put(FacilioConstants.ContextNames.TENANT, tenant);
+	       addTenantLogo.execute(context);
+	       setResult("fileId", context.get(FacilioConstants.ContextNames.FILE_ID));
+		   
+	   }
+	  return SUCCESS;
+   } 
+
    
 }

@@ -832,6 +832,14 @@
 			<param name="permission">CREATE</param>
 		</action>
 		
+		<action name="update" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="v2updateTenant">
+			<param name="permission">UPDATE</param> 
+			<param name="moduleName">tenant</param>
+	
+		</action>
+		
+		
 		<action name="details" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="v2fetchTenant">
 			<param name="permission">READ</param> 
@@ -859,11 +867,16 @@
 		   <param name="moduleName">tenant</param>
 		</action>
 		
+		<action name="updateTenantLogo" class="com.facilio.bmsconsole.actions.TenantAction" 
+		method="v2updateTenantLogo">
+		<param name="permission">UPDATE</param> 
+		<param name="moduleName">tenant</param>
+	</action>
+		
 		
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.TenantAction" method="v2StatusList" />
- 		<action name="update"
-			class="com.facilio.bmsconsole.actions.TenantAction" method="v2UpdateStatus" /> 
+
 	</package>
 	
 	<package name="workOrderListApiV2"

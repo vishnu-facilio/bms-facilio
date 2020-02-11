@@ -586,8 +586,11 @@ public class FacilioChainFactory {
 	public static FacilioChain deleteTenantChain () {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteTenantCommand());
+		c.addCommand(new DeleteTenantZonesCommand());
 		return c;
 	}
+	
+	
 	public static FacilioChain getCampusDetailsChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSite());
@@ -1926,9 +1929,9 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTenantCommand());
 		c.addCommand(new AddTenantUserCommand());
-		c.addCommand(new AddTenantSpaceRelationCommand());
 		return c;
 	}
+	
 	
 	public static FacilioChain addTenantLogoChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
@@ -1942,6 +1945,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddTenantUserCommand());
 		return c;
 	}
+	
 	
 	public static FacilioChain updatePrimaryContactChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();

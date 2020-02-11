@@ -7,6 +7,7 @@ import java.util.List;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.OccupantsContext;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -258,6 +259,16 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 	public void setPrimaryContactPhone(String primaryContactPhone) {
 		this.primaryContactPhone = primaryContactPhone;
 	}
+	
+	 private List<BaseSpaceContext> spaces;
+	   
+	 public List<BaseSpaceContext> getSpaces() {
+		return spaces;
+		}
+	 
+	 public void setSpaces(List<BaseSpaceContext> spaces) {
+		this.spaces = spaces;
+		}
 	
 	private List<OccupantsContext> occupantList;
 	public List<OccupantsContext> getOccupantList() {

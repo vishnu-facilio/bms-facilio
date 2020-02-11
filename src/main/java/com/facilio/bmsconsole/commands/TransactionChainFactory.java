@@ -206,6 +206,34 @@ public class TransactionChainFactory {
 			c.addCommand(getAddNewTasksChain());
 			return c;
 		}
+		
+		
+		public static FacilioChain v2AddTenantChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTenants());
+			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new AddTenantCommand());
+			c.addCommand(new AddTenantUserCommand());
+			c.addCommand(new AddTenantSpaceRelationCommand());
+			return c;
+		}
+		
+		
+		public static FacilioChain v2UpdateTenantChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new UpdateTenantCommand());
+			c.addCommand(new AddTenantUserCommand());
+			c.addCommand(new DeleteTenantSpaceRelationCommand());
+			c.addCommand(new AddTenantSpaceRelationCommand());
+			return c;
+		}
+		
+		
+		public static FacilioChain v2DeleteTenantChain () {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DeleteTenantCommand());
+			return c;
+		}
 
 		public static FacilioChain getWorkOrderWorkflowsChain(boolean sendNotification) {
 			FacilioChain c = getDefaultChain();

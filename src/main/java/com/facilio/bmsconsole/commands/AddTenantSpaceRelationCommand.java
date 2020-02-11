@@ -8,10 +8,12 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.tenant.UtilityAsset;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FacilioModule;
@@ -26,17 +28,19 @@ public class AddTenantSpaceRelationCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		List<SpaceContext> spaces = (ArrayList<SpaceContext>)context.get(FacilioConstants.ContextNames.SPACES);
 		TenantContext tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
-		if (spaces != null && spaces.size() > 0) {
-			List<Long> spaceIds = spaces.stream().map(a -> a.getId()).collect(Collectors.toList());
+		if (tenant == null) {
+			tenant = (TenantContext) context.get(TenantsAPI.TENANT_CONTEXT);
+		}
+		if (tenant != null && tenant.getSpaces() != null && tenant.getSpaces().size() > 0) {
+			List<Long> spaceIds = tenant.getSpaces().stream().map(a -> a.getId()).collect(Collectors.toList());
 			FacilioModule module = ModuleFactory.getTenantSpacesModule();
 			List<FacilioField> fields = FieldFactory.getTenantSpacesFields();
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(module.getTableName())
 					.fields(fields)
 					;
-			for (SpaceContext space : spaces) {
+			for (BaseSpaceContext space : tenant.getSpaces()) {
 				TenantSpaceContext tenantSpace = new TenantSpaceContext();
 				tenantSpace.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 				tenantSpace.setTenantId(tenant.getId());
