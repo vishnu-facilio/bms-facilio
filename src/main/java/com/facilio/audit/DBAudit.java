@@ -21,7 +21,7 @@ public class DBAudit implements FacilioAudit {
 
     private static final Logger LOGGER = Logger.getLogger(DBAudit.class.getName());
 
-    private static final String TABLE_NAME = "FacilioAudit";
+    private static final String TABLE_NAME = "FacilioDBAudit";
     private static final String MODULE_TABLE_NAME = "FacilioAuditModule";
     private static final String METHOD_TABLE_NAME = "FacilioAuditMethod";
     private static final String ACTION_TABLE_NAME = "FacilioAuditAction";
