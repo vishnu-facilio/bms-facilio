@@ -106,6 +106,14 @@ public class ContactsContext extends ModuleBaseWithCustomFields{
 		this.vendor = vendor;
 	}
 	
+	private ClientContext client;
+	public ClientContext getClient() {
+		return client;
+	}
+	public void setClient(ClientContext client) {
+		this.client = client;
+	}
+	
 	public Boolean isPortalAccessNeeded;
 	public Boolean getIsPortalAccessNeeded() {
 		return isPortalAccessNeeded;

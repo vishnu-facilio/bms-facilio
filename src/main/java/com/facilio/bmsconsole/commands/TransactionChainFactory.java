@@ -4733,6 +4733,7 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForClient());
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateClientIdInSiteCommand());
+		c.addCommand(new AddClientUserCommand());
 		
 		return c;
 	}
@@ -4742,6 +4743,8 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForClient());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdateClientIdInSiteCommand());
+		c.addCommand(new AddClientUserCommand());
+
 		return c;
 	}
 
