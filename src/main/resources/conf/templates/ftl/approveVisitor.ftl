@@ -17,11 +17,6 @@
                  
                   <table cellpadding="0" cellspacing="0" style="width:100%;max-width:100%;padding: 30px 55px 40px;">
                         <tr>
-                              <td colspan="100%" style="border-bottom: 1px solid #eee;">
-                                    <img src="http://api.qrserver.com/v1/create-qr-code/?data=test" alt="" title="" style="width: 70px;height: 16x;padding-bottom: 10px;max-width: 100%;">
-                              </td>
-                        </tr>
-                        <tr>
                               <td style="padding-top: 30px;">
                               <div style="font-family:'Roboto','Helvetica Neue',Helvetica,Arial,sans-serif!important;padding-bottom:20px;color:#282c36;font-size:40px;line-height:50px;text-align:left;font-weight:bold;padding-top: 20px;letter-spacing: 0.6px;">
                                           Please Respond Soon
