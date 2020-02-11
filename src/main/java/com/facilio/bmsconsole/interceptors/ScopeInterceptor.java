@@ -245,7 +245,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
 		try {
 			AccountUtil.setReqUri(request.getRequestURI());
             AccountUtil.setRequestParams(request.getParameterMap());
-            String referer = request.getHeader("referer");
             if(  false ){  // make false to intercept
 				return arg0.invoke();
 			} else {
@@ -254,9 +253,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				int status = 200;
 				try {
 					data = getAuditData(arg0);
-					if(StringUtils.isNotEmpty(referer) && data != null){
-						data.setReferer(referer);
-					}
 					if(data != null) {
 						AuditData finalData = data;
 						FacilioService.runAsServiceWihReturn(() ->audit.add(finalData));
@@ -299,7 +295,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
 			data.setStartTime(System.currentTimeMillis());
 			data.setServer(ServerInfo.getHostname());
 			data.setThread(Long.parseLong(Thread.currentThread().getName()));
-			
 			return data;
 		}
 		return null;
