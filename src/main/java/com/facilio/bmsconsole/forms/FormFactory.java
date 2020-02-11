@@ -955,6 +955,7 @@ public class FormFactory {
 		fields.add(new FormField("tenantType", FieldDisplayType.SELECTBOX, "Tenant Type", Required.OPTIONAL, 9, 1));
 		fields.add(new FormField("inTime", FieldDisplayType.DATE, "Lease Start Time", Required.OPTIONAL, 10, 1));
 		fields.add(new FormField("outTime", FieldDisplayType.DATE, "Lease End Time", Required.OPTIONAL, 11, 1));
+		fields.add(new FormField("spaces",  FieldDisplayType.SPACEMULTICHOOSER, "Spaces", Required.REQUIRED, 5, 1));
 		//fields.add(new FormField("logo", FieldDisplayType.LOGO, "Logo", Required.OPTIONAL, 1, 1));
 		//fields.add(new FormField("tenantContacts", FieldDisplayType.VENDOR_CONTACTS , "Contacts", Required.OPTIONAL, 10, 1));
 		//fields.add(new FormField("utilityMeters", FieldDisplayType.ASSETMULTICHOOSER, "UTILITY METERS", Required.OPTIONAL, 12, 1));
