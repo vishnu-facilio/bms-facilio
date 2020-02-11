@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -230,17 +231,24 @@ public class DBAudit implements FacilioAudit {
 			if(methodId == 0) {
 				methodId =  addMethod(actionId, data);
 			}
-			long refereId = checkReferer(data.getReferer());
-			if(refereId == 0) {
-				refereId = addReferer(data.getReferer());
+			String referer = data.getReferer();
+			long refereId = 0L;
+			if(StringUtils.isNotEmpty(referer)) {
+				 refereId = checkReferer(referer);
+				if(refereId == 0) {
+					refereId = addReferer(data.getReferer());
+				}
+				if(refereId != 0) {
+					data.setRefererId(refereId);
+				}
 			}
+			 
 			long serverId = checkServer(data);
 			if(serverId == 0) {
 				serverId = addServer(data.getServer());
 			}
 			data.setServerId(serverId);
 			data.setModuleId(moduleId);
-			data.setRefererId(refereId);
 			id = insertBuilder(getValueMap(data), TABLE_NAME, FIELDS);
 			data.setId(id);
 		} catch (Exception e) {
