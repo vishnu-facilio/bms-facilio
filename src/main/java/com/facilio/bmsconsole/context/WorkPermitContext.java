@@ -177,10 +177,6 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 	public PermitType getPermitTypeEnum() {
 		return permitType;
 	}
-	public void setPermitType(PermitType permitType) {
-		this.permitType = permitType;
-	}
-
 	private BaseSpaceContext space;
 	
 	public BaseSpaceContext getSpace() {
