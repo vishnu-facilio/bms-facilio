@@ -180,4 +180,12 @@ public class SiteContext extends BaseSpaceContext {
 			return typeMap;
 		}
 	}
+	
+	private ClientContext clientId;
+	public ClientContext getClientId() {
+		return clientId;
+	}
+	public void setClientId(ClientContext clientId) {
+		this.clientId = clientId;
+	}
 }

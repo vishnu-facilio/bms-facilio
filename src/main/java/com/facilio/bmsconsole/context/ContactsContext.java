@@ -59,7 +59,7 @@ public class ContactsContext extends ModuleBaseWithCustomFields{
 	}
 
 	public static enum ContactType implements FacilioEnum {
-		TENANT, VENDOR, EMPLOYEE;
+		TENANT, VENDOR, EMPLOYEE, CLIENT;
 
 		@Override
 		public int getIndex() {

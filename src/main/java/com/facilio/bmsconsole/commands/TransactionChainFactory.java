@@ -4732,6 +4732,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForClient());
 		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new UpdateClientIdInSiteCommand());
 		
 		return c;
 	}
@@ -4740,7 +4741,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForClient());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
-		
+		c.addCommand(new UpdateClientIdInSiteCommand());
 		return c;
 	}
 
