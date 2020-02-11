@@ -2,6 +2,7 @@ package com.facilio.agentv2;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.actions.AgentActionV2;
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.point.Point;
@@ -199,17 +200,17 @@ public class AgentAction extends AgentActionV2 {
     }
 
 
-    public String PointsCount(){
+    public String pointsCount() {
         LOGGER.info(" getting points ");
-        try{
+        try {
             long count = 0;
-            if((controllerId != null) && (controllerId > 0) && (deviceId == null)){
+            if ((controllerId != null) && (controllerId > 0) && (deviceId == null)) {
                 LOGGER.info(" contid ");
-                count = PointsAPI.getPointsCount( getControllerId(), -1);
-            }else if((deviceId != null) && (deviceId > 0) && (controllerId != null)){
-                    LOGGER.info(" device id  ");
-                    count = PointsAPI.getPointsCount(-1, deviceId);
-            }else {
+                count = PointsAPI.getPointsCount(getControllerId(), -1);
+            } else if ((deviceId != null) && (deviceId > 0) && (controllerId != null)) {
+                LOGGER.info(" device id  ");
+                count = PointsAPI.getPointsCount(-1, deviceId);
+            } else {
                 LOGGER.info(" no point id");
                 count = PointsAPI.getPointsCount(-1,-1);
             }
@@ -235,13 +236,19 @@ public class AgentAction extends AgentActionV2 {
     private String identifier;
     public String getControllerUsingIdentifier(){
         try {
-            setResult("DATA", ControllerApiV2.getControllerFromDb(getIdentifier(), getAgentId(), FacilioControllerType.valueOf(getControllerType())));
+            Controller controller = ControllerApiV2.getControllerFromDb(getIdentifier(), getAgentId(), FacilioControllerType.valueOf(getControllerType()));
+            JSONObject jsonObject = new JSONObject();
+            if (controller != null) {
+                jsonObject.putAll(controller.toJSON());
+                jsonObject.put(AgentConstants.CHILDJSON, controller.getChildJSON());
+            }
+            setResult(AgentConstants.DATA, jsonObject);
         }catch (Exception e){
             LOGGER.info("Exception while getting controller",e);
             setResult(AgentConstants.RESULT,new JSONObject());
             setResult(AgentConstants.EXCEPTION,e.getMessage());
         }
-            return SUCCESS;
+        return SUCCESS;
     }
 
     public String getOverview(){
