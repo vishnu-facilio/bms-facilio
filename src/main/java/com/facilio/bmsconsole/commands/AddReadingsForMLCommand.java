@@ -104,7 +104,6 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 							 }
 						 }
 						 
-						 LOGGER.info("Asset Details are "+mlContext.getAssetDetails());
 						 
 						 newReading.addReading("predictedTime", mlContext.getPredictionTime());
 					 	 logReadingList.add(newReading);

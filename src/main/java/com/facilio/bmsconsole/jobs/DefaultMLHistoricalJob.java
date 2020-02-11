@@ -18,11 +18,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
-
-//Get JSONObject Props from db
-//Execute parentML loop Itr = mLid 
-//Inside ParentML Execute childML loop Itr = ChildMlid
-
 public class DefaultMLHistoricalJob extends FacilioJob
 {
 	private static final Logger LOGGER = Logger.getLogger(DefaultMLHistoricalJob.class.getName());
@@ -67,31 +62,6 @@ public class DefaultMLHistoricalJob extends FacilioJob
 				}
 				startTime = startTime + executionTime;
 			}
-			/*
-			for(MLContext mlContext:childMlList)
-			{
-				if(!mlContext.getEventList().isEmpty())
-				{
-					LOGGER.info("Executing Events for ml"+mlContext.getId());
-					FacilioContext context = new FacilioContext();
-					context.put(EventConstants.EventContextNames.EVENT_LIST,mlContext.getEventList());
-					FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
-					chain.execute(context);
-				}
-			}
-			
-			for(MLContext mlContext:parentMlList)
-			{
-				if(!mlContext.getEventList().isEmpty())
-				{
-					LOGGER.info("Executing Events for ml"+mlContext.getId());
-					FacilioContext context = new FacilioContext();
-					context.put(EventConstants.EventContextNames.EVENT_LIST,mlContext.getEventList());
-					FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
-					chain.execute(context);
-				}
-			}
-			*/
 			LOGGER.info("finished HistoricalJob");
 		}
 		catch (Exception e)

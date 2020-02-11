@@ -51,15 +51,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			DateFormat formatterLocal = new SimpleDateFormat("yyyy-MM-dd HH");
 			formatterLocal.setTimeZone(TimeZone.getTimeZone(AccountUtil.getCurrentOrg().getTimezone()));
 			String dateStr = formatterLocal.format(date);
-			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
-				LOGGER.info("CHECKGAM LOCAL TIME STRING :: "+dateStr);
-			}
-			
 			Date date1 = formatterLocal.parse(dateStr);
-			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
-				LOGGER.info("CHECKGAM LOCAL TIME DATE :: "+date1);
-			}
-			
 			time = date1.getTime();
 			
 		}else{
@@ -84,10 +76,6 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			{
 				currentTime = currentTime + variables.getFutureSamplingPeriod();
 			}
-			if(AccountUtil.getCurrentOrg().getOrgId() == 232){
-				LOGGER.info("CHECKGAM Start Time"+startTime);
-				LOGGER.info("CHECKGAM End Time"+currentTime);
-			}
 			SortedMap<Long,Object> data = new TreeMap<Long,Object>();
             FacilioField variableField = modBean.getField(variables.getFieldID());
             FacilioField parentField = modBean.getField(variables.getParentFieldID());
@@ -106,7 +94,6 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 																	.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(variables.getParentID()), NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
-			LOGGER.info("RATIOCHECK :: "+variableField.getName()+" TIME :: "+((long)(props.get(props.size()-1).get(ttimeField.getName()))));
 			for(Map<String,Object> prop : props)
 			{
 					long ttime = (long) prop.get(ttimeField.getName());
