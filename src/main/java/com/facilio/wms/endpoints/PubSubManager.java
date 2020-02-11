@@ -73,7 +73,7 @@ public class PubSubManager {
 						
 						JSONObject watchProps = new JSONObject();
 						watchProps.put("uid", message.getTo());
-						watchProps.put("sessionType", message.getSessionType());
+						watchProps.put("sessionType", message.getSessionType().toString());
 						watchProps.put("uniqueKey", uniqueKey);
 						watchProps.put("timestamp", System.currentTimeMillis());
 						
@@ -353,7 +353,7 @@ public class PubSubManager {
 					
 					long uid = (Long) watcher.get("uid");
 					String uniqueKey = (String) watcher.get("uniqueKey");
-					LiveSessionType liveSessionType = (LiveSessionType) watcher.get("sessionType");
+					LiveSessionType liveSessionType = LiveSessionType.valueOf((String) watcher.get("sessionType"));
 					
 					Message msg = new Message();
 					msg.setMessageType(MessageType.PUBSUB);
