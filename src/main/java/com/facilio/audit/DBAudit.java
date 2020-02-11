@@ -351,10 +351,13 @@ public class DBAudit implements FacilioAudit {
     	}
     	if(CollectionUtils.isNotEmpty(REFERER_INFO_LIST)) {
     		for(Map<String,Object> itr:REFERER_INFO_LIST) {
-        		if(itr.get("referer").equals(data)) {
-        			id = (long) itr.get("id");
-        			return id;
-        		}
+    			String ref = (String) itr.get("referer");
+    			if(StringUtils.isNotEmpty(ref)) {
+    				if(ref.equals(data)) {
+            			id = (long) itr.get("id");
+            			return id;
+            		}
+    			}
         	}
     	}
     	return id;
