@@ -12,10 +12,14 @@ public class AuditData {
     private long queryCount;
     private long sessionId;
     private long thread;
+    private long serverId;
     private String server;
     private String module;
     private String action;
     private String method;
+    private String referer;
+    private long moduleId;
+    private long refererId;
 
     public int getStatus() {
         return status;
@@ -128,4 +132,36 @@ public class AuditData {
     public void setMethod(String method) {
         this.method = method;
     }
+
+	public long getServerId() {
+		return serverId;
+	}
+
+	public void setServerId(long serverId) {
+		this.serverId = serverId;
+	}
+
+	public String getReferer() {
+		return referer;
+	}
+
+	public void setReferer(String referer) {
+		this.referer = referer;
+	}
+
+	public long getModuleId() {
+		return moduleId;
+	}
+
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
+
+	public long getRefererId() {
+		return refererId;
+	}
+
+	public void setRefererId(long refererId) {
+		this.refererId = refererId;
+	}
 }
