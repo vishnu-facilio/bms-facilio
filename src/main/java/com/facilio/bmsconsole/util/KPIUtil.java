@@ -257,9 +257,14 @@ public class KPIUtil {
 	
 	public static Object getKPIValue(KPIContext kpi) throws Exception {
 		FacilioModule module = kpi.getModule();
-		Criteria criteria = kpi.getCriteria();
+		Criteria criteria = new Criteria();
+		Criteria kpiCriteria = kpi.getCriteria();
+		criteria.setPattern(kpiCriteria.getPattern());
+		criteria.setConditions(new HashMap<>(kpiCriteria.getConditions()));
+		
 		FacilioField metric = kpi.getMetric();
 		FacilioField dateField = kpi.getDateField();
+		
 		if (dateField != null) {
 			criteria.addAndCondition(CriteriaAPI.getCondition(dateField, kpi.getDateValue(), kpi.getDateOperatorEnum()));
 		}
