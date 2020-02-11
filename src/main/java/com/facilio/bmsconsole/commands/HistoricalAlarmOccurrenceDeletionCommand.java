@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -26,9 +28,12 @@ import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLogsAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleHistoricalPreAlarmsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleResourceLoggerAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -74,7 +79,15 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 				return false;
 			}
 			
-			DateRange modifiedDateRange = deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime);	
+			DateRange modifiedDateRange = new DateRange();	
+			ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
+			
+			if(readingRule.isConsecutive() || readingRule.getOverPeriod() != -1) {
+			//	modifiedDateRange = deleteEntirePreAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime);	
+			}
+			else {
+				modifiedDateRange = deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime);	
+			}			
 						 		
 			updateParentRuleResourceLoggerToModifiedRangeAndEventGeneratingState(parentRuleResourceLoggerContext, modifiedDateRange);
 			
@@ -126,7 +139,7 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 		}
 		
 		return new DateRange(startTime, endTime);	
-	}
+	}	
 	
 	public static void clearAlarmOccurrenceIdForEdgeEvents(AlarmOccurrenceContext edgeAlarmOccurrence, long startTime, long endTime) throws Exception {
 		
@@ -156,7 +169,7 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 		map.put("alarmOccurrence", FieldUtil.getAsProperties(alarmOccurrenceContextNull));
 		updateBuilder.updateViaMap(map);
 	}
-	
+
 	public static BaseEventContext getFinalEventForAlarmOccurrence(AlarmOccurrenceContext finalEdgeCaseAlarmOccurrence) throws Exception {
 	
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -202,6 +215,40 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 		{
 			FacilioTimer.scheduleOneTimeJobWithDelay(ruleResourceLoggerContext.getId(), "HistoricalEventRunForReadingRuleJob", 30, "history"); //For events, splitted start and end time would be fetched from the loggers
 		}				
+	}
+	
+	public static DateRange deleteEntirePreAlarmOccurrences(long ruleId, long resourceId, long startTime, long endTime) throws Exception 
+	{
+		List<AlarmOccurrenceContext> preAlarmOccurrenceList = WorkflowRuleHistoricalPreAlarmsAPI.getAllPreAlarmOccurrences(ruleId, startTime, endTime, resourceId);
+		if (preAlarmOccurrenceList != null && !preAlarmOccurrenceList.isEmpty())
+		{
+			AlarmOccurrenceContext lastPreAlarmOccurrence = preAlarmOccurrenceList.get(preAlarmOccurrenceList.size() - 1);
+			BaseAlarmContext baseAlarm =  lastPreAlarmOccurrence.getAlarm();
+			BaseAlarmContext baseAlarmContext = NewAlarmAPI.getBaseAlarmById(baseAlarm.getId());
+			
+			if (preAlarmOccurrenceList.get(0).getCreatedTime() < startTime) 
+			{
+				AlarmOccurrenceContext initialEdgePreAlarmOccurrence = preAlarmOccurrenceList.get(0);				
+				clearAlarmOccurrenceIdForEdgeEvents(initialEdgePreAlarmOccurrence, initialEdgePreAlarmOccurrence.getCreatedTime(), startTime); 
+				WorkflowRuleHistoricalPreAlarmsAPI.clearAlarmOccurrenceIdForEdgePreAlarms(initialEdgePreAlarmOccurrence, initialEdgePreAlarmOccurrence.getCreatedTime(), startTime); 
+				startTime = initialEdgePreAlarmOccurrence.getCreatedTime();
+			}
+			if (lastPreAlarmOccurrence.getClearedTime() == -1 || lastPreAlarmOccurrence.getClearedTime() > endTime) 
+			{
+				BaseEventContext finalEvent = getFinalEventForAlarmOccurrence(lastPreAlarmOccurrence);
+				if(finalEvent != null && finalEvent.getCreatedTime() > endTime) {
+					clearAlarmOccurrenceIdForEdgeEvents(lastPreAlarmOccurrence, endTime, finalEvent.getCreatedTime()); //avoid event deletion
+					WorkflowRuleHistoricalPreAlarmsAPI.clearAlarmOccurrenceIdForEdgePreAlarms(lastPreAlarmOccurrence, endTime, finalEvent.getCreatedTime()); 
+					endTime = finalEvent.getCreatedTime();
+				}
+			}	
+			
+			deleteAllAlarmOccurences(baseAlarmContext, startTime, endTime);
+			NewAlarmAPI.updateBaseAlarmWithNoOfOccurences(baseAlarm);	
+			NewAlarmAPI.changeLatestAlarmOccurrence(baseAlarmContext);		
+		}
+		
+		return new DateRange(startTime, endTime);	
 	}
 	
 	@Override
