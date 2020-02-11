@@ -1240,7 +1240,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		if (serviceRequest != null) {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.REQUESTER, serviceRequest.getRequester());
-			context.put(FacilioConstants.ContextNames.RECORD, serviceRequest);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(serviceRequest));
 
 			if (attachedFiles != null && !attachedFiles.isEmpty() && attachedFileNames != null && !attachedFileNames.isEmpty() && attachedFilesContentType != null && !attachedFilesContentType.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, attachedFiles);

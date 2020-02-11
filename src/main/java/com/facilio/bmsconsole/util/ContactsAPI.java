@@ -274,6 +274,7 @@ public class ContactsAPI {
 											.table(module.getTableName())
 											.fields(updatedfields)
 											.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS))
+											.andCondition(CriteriaAPI.getCondition("ID", "contactId", String.valueOf(id), NumberOperators.NOT_EQUALS))
 											
 											;
 		
