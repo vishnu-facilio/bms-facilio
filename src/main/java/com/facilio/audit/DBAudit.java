@@ -85,11 +85,11 @@ public class DBAudit implements FacilioAudit {
     private static final FacilioField REFERER_ID_FIELD = FieldFactory.getIdField(ID, "REFERER_ID", REFERER_MODULE);
     private static final List<FacilioField> REFERER_FIELDS = getFacilioAuditRefererFields();
     
-	List<Map<String, Object>> MODULE_INFO_LIST = new ArrayList<Map<String,Object>>();
-    List<Map<String, Object>> ACTION_INFO_LIST = new ArrayList<Map<String,Object>>();
-    List<Map<String, Object>> SERVER_INFO_LIST = new ArrayList<Map<String,Object>>();
-    List<Map<String, Object>> METHOD_INFO_LIST = new ArrayList<Map<String,Object>>();
-    List<Map<String, Object>> REFERER_INFO_LIST = new ArrayList<Map<String,Object>>();
+	private List<Map<String, Object>> MODULE_INFO_LIST = new ArrayList<Map<String,Object>>();
+    private List<Map<String, Object>> ACTION_INFO_LIST = new ArrayList<Map<String,Object>>();
+    private List<Map<String, Object>> SERVER_INFO_LIST = new ArrayList<Map<String,Object>>();
+    private List<Map<String, Object>> METHOD_INFO_LIST = new ArrayList<Map<String,Object>>();
+    private List<Map<String, Object>> REFERER_INFO_LIST = new ArrayList<Map<String,Object>>();
 
     private static FacilioModule getFacilioAuditModule() {
         FacilioModule module = new FacilioModule();
@@ -425,7 +425,7 @@ public class DBAudit implements FacilioAudit {
 				
 			}
 		} catch (Exception e) {
-			LOGGER.info("Exception Occurred In Getting ActionInfoList",e);
+			LOGGER.info("Exception Occurred In Getting ServerInfoList",e);
 		}
 		return prop;
 		
@@ -451,7 +451,7 @@ public class DBAudit implements FacilioAudit {
 		} catch (Exception e) {
 			LOGGER.info("Exception Occurred In Getting ActionInfoList",e);
 		}
-		return Collections.emptyList();
+		return prop;
 	}
     
     private List<Map<String, Object>> getModuleInfoList() {
@@ -496,9 +496,9 @@ public class DBAudit implements FacilioAudit {
 	    		return prop;
 			}
 		} catch (Exception e) {
-			LOGGER.info("Exception Occurred In Getting ModuleInfoList",e);
+			LOGGER.info("Exception Occurred In Getting MethodInfoList",e);
 		}
-		return Collections.emptyList();
+		return prop;
 	}
     
     private List<Map<String, Object>> getRefererInfoList() {
@@ -519,8 +519,8 @@ public class DBAudit implements FacilioAudit {
 	    		return prop;
 			}
 		} catch (Exception e) {
-			LOGGER.info("Exception Occurred In Getting ModuleInfoList",e);
+			LOGGER.info("Exception Occurred In Getting RefererInfoList",e);
 		}
-		return Collections.emptyList();
+		return prop;
 	}
 }
