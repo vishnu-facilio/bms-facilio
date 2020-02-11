@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext;
@@ -35,15 +36,17 @@ public class AddTenantUserCommand extends FacilioCommand {
 			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
 		}
 		else {
-			ContactsContext existingcontactForPhone = ContactsAPI.getContactforPhone(tenant.getPrimaryContactPhone(), tenant.getId(), false);
-			if(existingcontactForPhone == null) {
-				existingcontactForPhone = addDefaultTenantPrimaryContact(tenant);
-				RecordAPI.addRecord(true, Collections.singletonList(existingcontactForPhone), module, fields);
-			}
-			else {
-				existingcontactForPhone.setName(tenant.getPrimaryContactName());
-				existingcontactForPhone.setEmail(tenant.getPrimaryContactEmail());
-				RecordAPI.updateRecord(existingcontactForPhone, module, fields);
+			if(StringUtils.isNotEmpty(tenant.getPrimaryContactPhone())) {
+				ContactsContext existingcontactForPhone = ContactsAPI.getContactforPhone(tenant.getPrimaryContactPhone(), tenant.getId(), false);
+				if(existingcontactForPhone == null) {
+					existingcontactForPhone = addDefaultTenantPrimaryContact(tenant);
+					RecordAPI.addRecord(true, Collections.singletonList(existingcontactForPhone), module, fields);
+				}
+				else {
+					existingcontactForPhone.setName(tenant.getPrimaryContactName());
+					existingcontactForPhone.setEmail(tenant.getPrimaryContactEmail());
+					RecordAPI.updateRecord(existingcontactForPhone, module, fields);
+				}
 			}
 		}
 		

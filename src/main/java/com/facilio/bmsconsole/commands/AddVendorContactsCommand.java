@@ -39,15 +39,17 @@ public class AddVendorContactsCommand extends FacilioCommand{
 			RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
 		}
 		else {
-			ContactsContext existingcontactForPhone = ContactsAPI.getContactforPhone(vendor.getPrimaryContactPhone(), vendor.getId(), true);
-			if(existingcontactForPhone == null) {
-				existingcontactForPhone = addDefaultVendorPrimaryContact(vendor);
-				RecordAPI.addRecord(true, Collections.singletonList(existingcontactForPhone), module, fields);
-			}
-			else {
-				existingcontactForPhone.setName(vendor.getPrimaryContactName());
-				existingcontactForPhone.setEmail(vendor.getPrimaryContactEmail());
-				RecordAPI.updateRecord(existingcontactForPhone, module, fields);
+			if(StringUtils.isNotEmpty(vendor.getPrimaryContactPhone())) {
+				ContactsContext existingcontactForPhone = ContactsAPI.getContactforPhone(vendor.getPrimaryContactPhone(), vendor.getId(), true);
+				if(existingcontactForPhone == null) {
+					existingcontactForPhone = addDefaultVendorPrimaryContact(vendor);
+					RecordAPI.addRecord(true, Collections.singletonList(existingcontactForPhone), module, fields);
+				}
+				else {
+					existingcontactForPhone.setName(vendor.getPrimaryContactName());
+					existingcontactForPhone.setEmail(vendor.getPrimaryContactEmail());
+					RecordAPI.updateRecord(existingcontactForPhone, module, fields);
+				}
 			}
 		}
 
