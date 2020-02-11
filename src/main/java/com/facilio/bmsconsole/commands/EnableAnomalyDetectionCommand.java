@@ -164,7 +164,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		hourlyList.add(LocalTime.MIDNIGHT.plusMinutes(15));
 		for(int i=1;i<24;i++)
 		{
-			hourlyList.add(LocalTime.MIDNIGHT.plusHours(i));
+			hourlyList.add(LocalTime.MIDNIGHT.plusMinutes(15).plusHours(i));
 		}
 		info.setTimeObjects(hourlyList);
 		try {
