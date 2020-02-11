@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 
 public class WorkPermitAction extends FacilioAction {
 
@@ -138,13 +140,17 @@ private static final long serialVersionUID = 1L;
 	public String updateWorkPermit() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(workPermitRecords)) {
+			List<Long> recordIds = new ArrayList<Long>();
 			for(WorkPermitContext wp: workPermitRecords) {
 				wp.parseFormData();
+				recordIds.add(wp.getId());
 			}
 			FacilioChain c = TransactionChainFactory.updateWorkPermitRecordsChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, workPermitRecords);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+			
 			c.execute();
 			setResult(FacilioConstants.ContextNames.WORKPERMIT_RECORDS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}

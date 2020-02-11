@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,6 +15,7 @@ import com.facilio.bmsconsole.context.InsuranceContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.mysql.fabric.xmlrpc.base.Array;
 
 public class InsuranceAction extends FacilioAction{
 
@@ -113,9 +115,14 @@ private static final long serialVersionUID = 1L;
 	public String updateInsurances() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(insurances)) {
+			List<Long> recordIds = new ArrayList<Long>();
+			for(InsuranceContext insurance : insurances) {
+				recordIds.add(insurance.getId());
+			}
 			FacilioChain c = TransactionChainFactory.updateInsurancesChain();
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, insurances);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.INSURANCES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
