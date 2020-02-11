@@ -62,6 +62,7 @@ import com.facilio.logging.SysOutLogger;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.queue.FacilioDBQueueExceptionProcessor;
+import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.kafka.notification.NotificationProcessor;
@@ -121,7 +122,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 		try {
 //			migrateSchemaChanges();
-			// ServerInfo.registerServer();
+			ServerInfo.registerServer();
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
 			initializeDB();
 			if( !FacilioProperties.isDevelopment()) {

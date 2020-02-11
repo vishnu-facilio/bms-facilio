@@ -6,6 +6,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TimerTask;
 
 import javax.transaction.HeuristicMixedException;
@@ -19,8 +23,12 @@ import org.apache.log4j.Logger;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.transaction.FTransactionManager;
 import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class ServerInfo extends TimerTask {
 
@@ -42,12 +50,41 @@ public class ServerInfo extends TimerTask {
 
     private static final String PING_TIME = "pingtime";
     private static final String ID = "id";
+    private static final String SERVER_INFO_ID = "server_info_id";
+    private static final String PRIVATE_IP = "private_ip";
+    private static final String ENVIRONMENT = "environment";
+    private static final String PINGTIME ="pingtime";
+    private static final String IN_USE ="in_use";
+    private static final String LEADER = "leader";
+    private static final String STATUS = "status";
 
-    static {
-        //assignConnection();
-        registerServer();
+    private static final String SEREVR_TABLE_NAME = "server_info";
+    private static final FacilioModule SEREVER_INFO = getFacilioAuditServerInfoTable();
+    private static final FacilioField SEREVR_INFO_ID_FIELD = FieldFactory.getIdField(SERVER_INFO_ID, "id", SEREVER_INFO);
+    private static final List<FacilioField> SERVER_FIELDS = getFacilioAuditServerInfoFields();
+    
+    private static FacilioModule getFacilioAuditServerInfoTable() {
+        FacilioModule module = new FacilioModule();
+        module.setTableName(SEREVR_TABLE_NAME);
+        module.setDisplayName(SEREVR_TABLE_NAME);
+        module.setName(SEREVR_TABLE_NAME);
+        return module;
     }
 
+    private static List<FacilioField> getFacilioAuditServerInfoFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(SEREVR_INFO_ID_FIELD);
+        fields.add(FieldFactory.getStringField(PRIVATE_IP, PRIVATE_IP, SEREVER_INFO));
+        fields.add(FieldFactory.getStringField(ENVIRONMENT, ENVIRONMENT, SEREVER_INFO));
+        fields.add(FieldFactory.getNumberField(STATUS,STATUS, SEREVER_INFO));
+        fields.add(FieldFactory.getNumberField(PINGTIME, PINGTIME, SEREVER_INFO));
+        fields.add(FieldFactory.getNumberField(IN_USE, IN_USE, SEREVER_INFO));
+        fields.add(FieldFactory.getNumberField(LEADER, LEADER, SEREVER_INFO));
+
+        return fields;
+    }
+
+    
     private static void assignConnection() {
         try {
             connection = FacilioConnectionPool.getInstance().getConnection();
@@ -56,15 +93,20 @@ public class ServerInfo extends TimerTask {
         }
     }
 
-    public static void registerServer() {
+    public static void registerServer() throws Exception {
         String ip;
         try {
             ip = InetAddress.getLocalHost().getHostName();
             hostname = ip;
-            /*serverId = getServerId(ip);
+            serverId = getServerId(ip);
             if(serverId == -1L) {
-                serverId = addServerInfo(ip);
-            }*/
+            	Map<String,Object> prop = new HashMap<>();
+            	prop.put(PRIVATE_IP, ip);
+            	serverId = addServer(prop,SEREVR_TABLE_NAME,SERVER_FIELDS);
+            	if(serverId == 0) {
+            		serverId = -1;
+            	}
+            }
         } catch (UnknownHostException e) {
             hostname = "-1";
             LOGGER.info("Unable to set IP ");
@@ -94,27 +136,32 @@ public class ServerInfo extends TimerTask {
         }
         return -1L;
     }
-
-    private static long addServerInfo(String ip) {
-        try (PreparedStatement insertQuery = connection.prepareStatement(INSERT_IP)){
-            LOGGER.info("Server id is empty ");
-            String environment = "user";
-            if (FacilioProperties.isScheduleServer()) {
-               environment = "scheduler";
-            }
-
-            insertQuery.setString(1, ip);
-            insertQuery.setString(2, environment);
-            insertQuery.setBoolean(3, true);
-            insertQuery.setLong(4, System.currentTimeMillis());
-            insertQuery.setBoolean(5, true);
-            insertQuery.setBoolean(6, false);
-            insertQuery.executeUpdate();
-        } catch (SQLException e) {
-            LOGGER.info("Exception while adding server info ", e);
-        }
-        return getServerId(ip);
+    
+    private static long addServer(Map<String, Object> prop, String tableName, List<FacilioField> serverFields) throws Exception {
+    	 GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder().table(tableName).fields(serverFields);
+     	return insertBuilder.insert(prop);
     }
+    
+//    private static long addServerInfo(String ip) {
+//        try (PreparedStatement insertQuery = connection.prepareStatement(INSERT_IP)){
+//            LOGGER.info("Server id is empty ");
+//            String environment = "user";
+//            if (FacilioProperties.isScheduleServer()) {
+//               environment = "scheduler";
+//            }
+//
+//            insertQuery.setString(1, ip);
+//            insertQuery.setString(2, environment);
+//            insertQuery.setBoolean(3, true);
+//            insertQuery.setLong(4, System.currentTimeMillis());
+//            insertQuery.setBoolean(5, true);
+//            insertQuery.setBoolean(6, false);
+//            insertQuery.executeUpdate();
+//        } catch (SQLException e) {
+//            LOGGER.info("Exception while adding server info ", e);
+//        }
+//        return getServerId(ip);
+//    }
 
     private static void markDownOutdatedServers () {
         ResultSet resultSet = null;
