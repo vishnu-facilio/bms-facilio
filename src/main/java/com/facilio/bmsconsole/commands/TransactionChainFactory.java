@@ -1733,8 +1733,6 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddSubModuleDataCommand());
 			c.addCommand(new AddVendorContactsCommand());
 			c.addCommand(new AddInsuranceVendorRollUpsCommand());
-			c.addCommand(new LoadVendorLookUpCommand());
-			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ExecuteStateFlowCommand());
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
@@ -3983,8 +3981,6 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
-			c.addCommand(new LoadVisitorLoggingLookUpCommand());
-			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 										.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION))
 										.addCommand(new VisitorFaceRecognitionCommand()));
@@ -4007,8 +4003,6 @@ public class TransactionChainFactory {
 			c.addCommand(new SchedulePreOpenVisitorLogsCreateCommand(false));
 			c.addCommand(new UpdateVisitorInviteRelArrivedStateCommand());
 			c.addCommand(new ChangeVisitorInviteStateCommand());
-			c.addCommand(new LoadVisitorLoggingLookUpCommand());
-			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
 			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
@@ -4250,8 +4244,6 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-		c.addCommand(new LoadWorkPermitLookUpsCommand());
-		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 		c.addCommand(new RollUpWorkOrderFieldOnWorkPermitApprovalCommand());
 
@@ -4268,8 +4260,6 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION));
-		c.addCommand(new LoadWorkPermitLookUpsCommand());
-		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 		c.addCommand(new RollUpWorkOrderFieldOnWorkPermitApprovalCommand());
 
