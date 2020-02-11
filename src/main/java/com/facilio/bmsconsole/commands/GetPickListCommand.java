@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
@@ -15,6 +17,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -37,16 +40,16 @@ public class GetPickListCommand extends FacilioCommand {
 		try {
 			if(dataTableName != null && !dataTableName.isEmpty() && defaultField != null) {
 				List<FacilioField> fields = new ArrayList<>();
-				fields.add(defaultField);				
+				fields.add(defaultField);			
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleName);
 				SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																	.table(dataTableName)
-																	.moduleName(moduleName)
+																	.module(module)
 																	.select(fields)
-																	.orderBy("ID");
-				
+																	;
 				
 				if (search != null) {
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioField primaryField = modBean.getPrimaryField(moduleName);
 					builder.andCondition(CriteriaAPI.getCondition(primaryField, search, StringOperators.CONTAINS));
 
@@ -57,6 +60,8 @@ public class GetPickListCommand extends FacilioCommand {
 				if (filterCriteria != null) {
 					builder.andCriteria(filterCriteria);
 				}
+				
+				String orderBy = "ID";
 				
 				JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 				if (pagination != null) {
@@ -71,9 +76,16 @@ public class GetPickListCommand extends FacilioCommand {
 
 						builder.offset(offset);
 						builder.limit(perPage);
+						
+						List<Long> defaultIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+						if (CollectionUtils.isNotEmpty(defaultIds)) {
+							orderBy = "FIELD(ID," + StringUtils.join(defaultIds, ",") +") desc, " + orderBy;
+						}
 					}
-
 				}
+				
+				
+				builder.orderBy(orderBy);
 				
 				List<Map<String, Object>> records = builder.getAsProps();
 				Map<Long, String> pickList = new HashMap<>();

@@ -26,7 +26,6 @@ import com.facilio.bmsconsole.context.ToolStatusContext;
 import com.facilio.bmsconsole.context.ToolTypesCategoryContext;
 import com.facilio.bmsconsole.context.ToolTypesStatusContext;
 import com.facilio.bmsconsole.context.VisitorTypeContext;
-import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -65,6 +64,7 @@ public class PickListAction extends FacilioAction {
 				JSONObject json = (JSONObject) parser.parse(getFilters());
 				context.put(FacilioConstants.ContextNames.FILTERS, json);
 			}
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, defaultIds);
 			//FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 			FacilioChain pickListChain = FacilioChainFactory.getPickListChain();
 			pickListChain.execute(context);
@@ -132,6 +132,15 @@ public class PickListAction extends FacilioAction {
 		this.moduleName = moduleName;
 	}
 	
+	private List<Long> defaultIds;
+	public List<Long> getDefaultIds() {
+		return defaultIds;
+	}
+	public void setDefaultIds(List<Long> defaultIds) {
+		this.defaultIds = defaultIds;
+	}
+
+
 	TicketCategoryContext ticketCategory;
 	public TicketCategoryContext getTicketCategory() {
 		return ticketCategory;
