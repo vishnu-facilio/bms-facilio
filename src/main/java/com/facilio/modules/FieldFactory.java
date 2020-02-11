@@ -654,7 +654,7 @@ public class FieldFactory {
 		fields.add(getField("value", "DEFAULT_VALUE", module, FieldType.STRING));
 		fields.add(getField("sectionId", "SECTIONID", module, FieldType.NUMBER));
 
-		fields.add(getField("config", "CONFIG", module, FieldType.STRING));
+		fields.add(getField("configStr", "CONFIG", module, FieldType.STRING));
 
 		FacilioField allowCreateOptions = new FacilioField();
 		allowCreateOptions.setName("allowCreate");
