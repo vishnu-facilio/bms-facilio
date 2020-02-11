@@ -2,13 +2,11 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -74,8 +72,16 @@ public class TenantAction extends FacilioAction {
    public void setId(long id) {
       this.id = id;
    }
-    
-   private int status;
+   
+   private List<Long> ids;
+   public List<Long> getIds() {
+	   return ids;
+   }
+   public void setIds(List<Long> ids) {
+	   this.ids = ids;
+   }
+
+private int status;
 
    public int getStatus() {
       return status;
@@ -709,21 +715,14 @@ private Map<String, Double> readingData;
       }
    }
    
-   public String v2deleteTenant() {
-       try {
-        FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, tenantsId);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
-        FacilioChain deleteTenant = TransactionChainFactory.v2DeleteTenantChain();
-        deleteTenant.execute(context);
-        setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
-        return SUCCESS;
-        
-      }
-     catch (Exception e) {
-        setError("error",e.getMessage());
-        return ERROR;
-     }
+   public String v2deleteTenant() throws Exception {
+	   FacilioChain deleteTenant = TransactionChainFactory.v2DeleteTenantChain();
+	   FacilioContext context = deleteTenant.getContext();
+       context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+       context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
+       deleteTenant.execute();
+       setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+       return SUCCESS;
   }
    
    

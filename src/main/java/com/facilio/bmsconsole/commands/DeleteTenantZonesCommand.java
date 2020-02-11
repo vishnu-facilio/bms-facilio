@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -19,6 +20,9 @@ public class DeleteTenantZonesCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		
 		List<Long> ids = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		if (CollectionUtils.isEmpty(ids)) {
+			return false;
+		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		DeleteRecordBuilder<BaseSpaceContext> deleteAs = new DeleteRecordBuilder<BaseSpaceContext>()

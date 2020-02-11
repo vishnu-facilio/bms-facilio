@@ -31,7 +31,9 @@ public class DeleteTenantCommand extends FacilioCommand {
 			for(int i=0;i<recordIds.size();i++)
 			{
 				TenantContext oldTenant = TenantsAPI.getTenant(recordIds.get(i), true);
-				zoneIds.add(oldTenant.getZone().getId());
+				if (oldTenant.getZone() != null) {
+					zoneIds.add(oldTenant.getZone().getId());
+				}
 				TenantsAPI.deleteTenantLogo(oldTenant.getLogoId());
 			}
 			
