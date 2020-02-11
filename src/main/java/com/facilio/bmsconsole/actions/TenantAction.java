@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
@@ -278,7 +279,17 @@ public class TenantAction extends FacilioAction {
       this.tenants = tenants;
    }
    
-   private boolean tenantZone;
+   
+   private List<SpaceContext> spaces;
+   
+   public List<SpaceContext> getSpaces() {
+	return spaces;
+	}
+	public void setSpaces(List<SpaceContext> spaces) {
+		this.spaces = spaces;
+	}
+
+private boolean tenantZone;
    
    public boolean getTenantZone() {
       return tenantZone;
@@ -413,6 +424,54 @@ private Map<String, Double> readingData;
       this.reportcards = reportcards;
    }
 
+   
+   public String v2AddTenant() {
+	      try {
+	         
+	         FacilioContext context = new FacilioContext();
+	         if(CollectionUtils.isNotEmpty(utilityAssets)) {
+	            tenant.setUtilityAssets(utilityAssets);
+	         }
+	         tenant.parseFormData();
+	         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+	         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+	         context.put(FacilioConstants.ContextNames.RECORD, tenant);
+	         context.put(FacilioConstants.ContextNames.SITE_ID, tenant.getSiteId());
+	         context.put(FacilioConstants.ContextNames.IS_TENANT_ZONE, tenantZone);
+	         if (spaces != null && spaces.size() > 0) {
+	        	 context.put(FacilioConstants.ContextNames.SPACES, spaces);
+	         }
+//	         context.put(FacilioConstants.ContextNames.ZONE, zone);
+//	         if (CollectionUtils.isNotEmpty(spaceId)) {
+//	            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
+//	         }
+//	         else if (CollectionUtils.isNotEmpty(spaceIds)) {
+//	            spaceId = new ArrayList<>();
+//	            for (String id : spaceIds) {
+//	               spaceId.add(Long.parseLong(id));
+//	            }
+//	            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
+//	         }
+	         context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
+	         
+	         context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
+//	         tenant.setZone(zone);
+	         if(tenantLogo != null) {
+	            tenant.setTenantLogo(tenantLogo);
+	         }
+	         
+	         FacilioChain addTenant = FacilioChainFactory.addTenantChain();
+	         addTenant.execute(context);
+	         tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
+	         setResult("tenant", tenant);
+	         return SUCCESS;
+	      }
+	      catch (Exception e) {
+	         setError("error",e.getMessage());
+	         return ERROR;
+	      }
+	   } 
+   
    public String addTenant() {
       try {
          
@@ -562,6 +621,25 @@ private Map<String, Double> readingData;
          setError("error",e.getMessage());
          return ERROR;
       }
+   }
+   
+   
+   public String v2ToggleStatus() throws Exception {
+	   
+	   try {
+	         FacilioContext context = new FacilioContext();
+	         context.put(FacilioConstants.ContextNames.RECORD_ID, tenantId);
+	         context.put(FacilioConstants.ContextNames.TENANT_STATUS, status);
+	         FacilioChain updateTnantStatusChain = FacilioChainFactory.toggleStatusChain();
+	         updateTnantStatusChain.execute(context);
+	         setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+	         return SUCCESS;
+	      }
+	      catch (Exception e) {
+	         setError("error",e.getMessage());
+	         return ERROR;
+	      }
+	   
    }
    public String tenantCount () throws Exception {
       return fetchAllTenants();

@@ -1927,6 +1927,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTenantCommand());
 		c.addCommand(new AddTenantUserCommand());
+		c.addCommand(new AddTenantSpaceRelationCommand());
 		return c;
 	}
 	

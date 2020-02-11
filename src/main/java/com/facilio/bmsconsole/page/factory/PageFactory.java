@@ -28,6 +28,8 @@ public class PageFactory {
 		switch(module.getName()) {
 			case ContextNames.ASSET:
 				return AssetPageFactory.getAssetPage((AssetContext) record);
+			case ContextNames.TENANT:
+				return TenantPageFactory.getTenantPage((ModuleBaseWithCustomFields) record);
 			case ContextNames.READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
 			case ContextNames.MV_PROJECT_MODULE:

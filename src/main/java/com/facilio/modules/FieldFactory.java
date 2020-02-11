@@ -6235,6 +6235,17 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	
+	public static List<FacilioField> getTenantSpacesFields() {
+		FacilioModule module = ModuleFactory.getTenantSpacesModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("tenantId", "TENANT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("space", "SPACE", module, FieldType.LOOKUP));
+		
+		return fields;
+		
+	}
 
 
 	public static List<FacilioField> getTenantsUserFields() {

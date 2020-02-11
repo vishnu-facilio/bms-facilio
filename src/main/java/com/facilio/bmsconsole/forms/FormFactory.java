@@ -949,7 +949,6 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
-		fields.add(new FormField("spaces", FieldDisplayType.SPACEMULTICHOOSER, "Spaces", Required.REQUIRED, 5, 1));
 		fields.add(new FormField("primaryContactName", FieldDisplayType.TEXTBOX, "Primary Contact Name", Required.REQUIRED, 6, 1));
 		fields.add(new FormField("primaryContactEmail", FieldDisplayType.TEXTBOX, "Primary Contact E-mail", Required.REQUIRED, 7, 1));
 		fields.add(new FormField("primaryContactPhone", FieldDisplayType.TEXTBOX, "Primary Contact Phone", Required.REQUIRED, 8, 1));

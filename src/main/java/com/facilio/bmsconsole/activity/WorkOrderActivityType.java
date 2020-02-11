@@ -160,6 +160,12 @@ public enum WorkOrderActivityType implements ActivityType {
 			return " assigned to vendor ";
 		}
 		
+	},CREATION (89) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " Created ";
+		}
 	}
 	;
 	private int value;

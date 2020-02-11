@@ -289,6 +289,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2UpdateStatus" />
 	</package>
+	
 
 	<package name="customButton" namespace="/api/v2/custombutton" extends="v2Api">
 		<action name="addOrUpdate"
@@ -822,6 +823,29 @@
 		</action>
 
 	</package>
+	
+	<package name="tenantApiV2" namespace="/api/v2/tenant" extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.TenantAction"
+			method="v2AddTenant">
+			<param name="moduleName">tenant</param>
+			<param name="permission">CREATE</param>
+		</action>
+		
+		<action name="toggleStatus" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="v2ToggleStatus">
+			
+			<param name="permission">UPDATE</param> 
+			<param name="moduleName">tenant</param>
+	
+		</action>
+		
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.TenantAction" method="v2StatusList" />
+ 		<action name="update"
+			class="com.facilio.bmsconsole.actions.TenantAction" method="v2UpdateStatus" /> 
+	</package>
+	
 	<package name="workOrderListApiV2"
 		namespace="/api/v2/workorders/view" extends="v2Api">
 		<action name="*"

@@ -822,6 +822,14 @@ public class ModuleFactory {
 		tenantModule.setTableName("Tenant");
 		return tenantModule;
 	}
+	
+	public static FacilioModule getTenantSpacesModule() {
+		FacilioModule tenantSpaceModule = new FacilioModule();
+		tenantSpaceModule.setName("tenantspaces");
+		tenantSpaceModule.setDisplayName("Tenant Spaces");
+		tenantSpaceModule.setTableName("Tenant_spaces");
+		return tenantSpaceModule;
+	}
 
 	public static FacilioModule getCriteriaModule() {
 		FacilioModule criteriaModule = new FacilioModule();
