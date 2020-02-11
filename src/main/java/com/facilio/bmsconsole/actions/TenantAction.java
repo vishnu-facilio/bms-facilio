@@ -432,10 +432,10 @@ private Map<String, Double> readingData;
    }
 
    
-   public String v2AddTenant() {
-	      try {
+   public String v2AddTenant() throws Exception {
 	         
-	         FacilioContext context = new FacilioContext();
+		   	 FacilioChain addTenant = TransactionChainFactory.v2AddTenantChain();
+	  	     FacilioContext context = addTenant.getContext();
 	         if(CollectionUtils.isNotEmpty(utilityAssets)) {
 	            tenant.setUtilityAssets(utilityAssets);
 	         }
@@ -451,17 +451,10 @@ private Map<String, Double> readingData;
 	         if(tenantLogo != null) {
 	            tenant.setTenantLogo(tenantLogo);
 	         }
-	         
-	         FacilioChain addTenant = TransactionChainFactory.v2AddTenantChain();
-	         addTenant.execute(context);
+	         addTenant.execute();
 	         tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
 	         setResult("tenant", tenant);
 	         return SUCCESS;
-	      }
-	      catch (Exception e) {
-	         setError("error",e.getMessage());
-	         return ERROR;
-	      }
 	   } 
    
    public String addTenant() {
@@ -585,14 +578,15 @@ private Map<String, Double> readingData;
    }
    
    
-   public String v2updateTenant() {
-	      try {
+   public String v2updateTenant() throws Exception {
+	   
+		     FacilioChain update = TransactionChainFactory.v2UpdateTenantChain();
+		     FacilioContext context = update.getContext();
 	         if(CollectionUtils.isNotEmpty(utilityAssets)) {
 	            tenant.setUtilityAssets(utilityAssets);
 	         }
 	         
 	         tenant.parseFormData();
-	         FacilioContext context = new FacilioContext();
 	         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.EDIT);
 	         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 	         context.put(FacilioConstants.ContextNames.RECORD, tenant);
@@ -601,15 +595,9 @@ private Map<String, Double> readingData;
 	         }
 	         context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
 	         context.put(TenantsAPI.TENANT_CONTEXT, tenant);
-	         FacilioChain update = (TransactionChainFactory.v2UpdateTenantChain());
-	         update.execute(context);
+	         update.execute();
 	         setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
 	         return SUCCESS;
-	      }
-	      catch (Exception e) {
-	         setError("error",e.getMessage());
-	         return ERROR;
-	      }
 	   }
    
    public String markAsPrimaryContact() {
@@ -679,12 +667,11 @@ private Map<String, Double> readingData;
       return SUCCESS;
    }
    public String v2fetchTenant() throws Exception {
-	      FacilioContext context = new FacilioContext();
+	      FacilioChain tenantDetailChain = TransactionChainFactory.v2fetchTenantDetails();
+	      FacilioContext context = tenantDetailChain.getContext();
 	      context.put(FacilioConstants.ContextNames.ID, getId());
 	      context.put(FacilioConstants.ContextNames.IS_TENANT_PORTAL, getTenantPortal());
-	      
-	      FacilioChain tenantDetailChain = TransactionChainFactory.v2fetchTenantDetails();
-	      tenantDetailChain.execute(context);
+	      tenantDetailChain.execute();
 	      tenant = (TenantContext )context.get(FacilioConstants.ContextNames.TENANT);
 	      setResult("tenant", tenant);
 	      setResult(FacilioConstants.ContextNames.SPACE_LIST, context.get(FacilioConstants.ContextNames.SPACE_LIST));
@@ -771,7 +758,10 @@ private Map<String, Double> readingData;
    
    public String v2fetchAllTenants() throws Exception {
 	   
-	      FacilioContext context = new FacilioContext();
+	   		
+	   	  FacilioChain fetchTenants = FacilioChainFactory.getTenantListChain();
+	      FacilioContext context = fetchTenants.getContext();
+	   
 	      context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 	      context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
 	      
@@ -799,8 +789,7 @@ private Map<String, Double> readingData;
 	            pagination.put("perPage", 5000);
 	         }
 	         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
-	          FacilioChain fetchTenants = FacilioChainFactory.getTenantListChain();
-	          fetchTenants.execute(context);
+	         fetchTenants.execute();
 	          if (getCount()) {
 	            setTenantCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 	         }

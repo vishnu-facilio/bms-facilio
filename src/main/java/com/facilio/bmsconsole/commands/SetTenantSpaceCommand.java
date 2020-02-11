@@ -40,6 +40,7 @@ public class SetTenantSpaceCommand extends FacilioCommand {
 				List<BaseSpaceContext> baseSpaces = SpaceAPI.getBaseSpaces(ids);
 				tenant.setSpaces(baseSpaces);
 			}
+			context.put(FacilioConstants.ContextNames.TENANT, tenant);
 		}
 		
 		return false;
