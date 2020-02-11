@@ -658,7 +658,20 @@ private Map<String, Double> readingData;
       
       return SUCCESS;
    }
-   
+   public String v2fetchTenant() throws Exception {
+	      FacilioContext context = new FacilioContext();
+	      context.put(FacilioConstants.ContextNames.ID, getId());
+	      context.put(FacilioConstants.ContextNames.IS_TENANT_PORTAL, getTenantPortal());
+	      
+	      FacilioChain tenantDetailChain = ReadOnlyChainFactory.fetchTenantDetails();
+	      tenantDetailChain.execute(context);
+	      tenant = (TenantContext )context.get(FacilioConstants.ContextNames.TENANT);
+	      setResult("tenant", tenant);
+	      setResult(FacilioConstants.ContextNames.SPACE_LIST, context.get(FacilioConstants.ContextNames.SPACE_LIST));
+	      
+	      return SUCCESS;
+	   }
+
    public String getTenantForAssetId() throws Exception {
       TenantContext tenantContext = TenantsAPI.getTenantForAsset(assetId);
       setResult("tenant", tenantContext);
@@ -681,6 +694,24 @@ private Map<String, Double> readingData;
          return ERROR;
       }
    }
+   
+   public String v2deleteTenant() {
+       try {
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, tenantsId);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
+        FacilioChain deleteTenant = FacilioChainFactory.deleteTenantChain();
+        deleteTenant.execute(context);
+        setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+        return SUCCESS;
+        
+      }
+     catch (Exception e) {
+        setError("error",e.getMessage());
+        return ERROR;
+     }
+  }
+   
    
    public String fetchAllTenants() throws Exception {
    
@@ -724,6 +755,50 @@ private Map<String, Double> readingData;
           return SUCCESS;
    
          }
+   
+   public String v2fetchAllTenants() throws Exception {
+	   
+	      FacilioContext context = new FacilioContext();
+	      context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+	      context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
+	      
+	      context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tenants.ID asc");
+	      if(getFilters() != null)
+	      {  
+	         JSONParser parser = new JSONParser();
+	         JSONObject json = (JSONObject) parser.parse(getFilters());
+	         context.put(FacilioConstants.ContextNames.FILTERS, json);
+	         context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+	      }
+	      if (getSearch() != null) {
+	         JSONObject searchObj = new JSONObject();
+	         searchObj.put("fields", "tenant.name");
+	         searchObj.put("query", getSearch());
+	         context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+	      }
+	      if (getCount()) {  // only count
+	         context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+	      }
+	         JSONObject pagination = new JSONObject();
+	         pagination.put("page", getPage());
+	         pagination.put("perPage", getPerPage());
+	         if (getPerPage() < 0) {
+	            pagination.put("perPage", 5000);
+	         }
+	         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+	          FacilioChain fetchTenants = FacilioChainFactory.getTenantListChain();
+	          fetchTenants.execute(context);
+	          if (getCount()) {
+	            setTenantCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+	         }
+	         else {
+	          tenants =(List<TenantContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
+	         }
+	          setResult("tenants", tenants);
+	          return SUCCESS;
+	   
+	         }
+  
    
    public String getTenantUsers() throws Exception {
       tenantsUsers = TenantsAPI.getAllTenantsUsers(tenantId);

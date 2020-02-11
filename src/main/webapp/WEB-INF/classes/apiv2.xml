@@ -832,6 +832,19 @@
 			<param name="permission">CREATE</param>
 		</action>
 		
+		<action name="details" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="v2fetchTenant">
+			<param name="permission">READ</param> 
+			<param name="moduleName">tenant</param>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="v2fetchAllTenants">
+			<param name="permission">READ</param> 
+			<param name="moduleName">tenant</param>
+		    <param name="viewName">{1}</param>
+		</action>
+		
 		<action name="toggleStatus" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="v2ToggleStatus">
 			
@@ -839,6 +852,13 @@
 			<param name="moduleName">tenant</param>
 	
 		</action>
+		
+		<action name="delete" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="v2deleteTenant">
+		   <param name="permission">DELETE</param> 
+		   <param name="moduleName">tenant</param>
+		</action>
+		
 		
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.TenantAction" method="v2StatusList" />

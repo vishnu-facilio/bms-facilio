@@ -586,7 +586,6 @@ public class FacilioChainFactory {
 	public static FacilioChain deleteTenantChain () {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteTenantCommand());
-		c.addCommand(new DeleteTenantZonesCommand());
 		return c;
 	}
 	public static FacilioChain getCampusDetailsChain() {
