@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
 import com.facilio.bmsconsole.context.MLAnomalyEvent;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.RCAEvent;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -171,13 +172,14 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 				LOGGER.info("Generating clear Event for assetID:"+assetID);
 				String message = "Anomaly Cleared";
 				MLAnomalyEvent event = new MLAnomalyEvent();
+				ResourceContext resource = ResourceAPI.getResource(assetID);
 				event.setEventMessage(message);
-		        event.setResource(ResourceAPI.getResource(assetID));
+		        event.setResource(resource);
 		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		        event.setReadingTime(ttime);
 		        event.setCreatedTime(ttime);
 		        event.setmlid(mlContext.getId());
-		        
+		        event.setSiteId(resource.getSiteId());
 		        addEvent(mlContext,event);
 		   
 			}
@@ -198,13 +200,15 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 				LOGGER.info("Generating RCAclear Event for assetID:"+assetID+" and PARENTID: "+alarmOccuranceContext.getAlarm().getId()+" Check"+alarmOccuranceContext.getId());
 				String message = "Anomaly Cleared";
 				RCAEvent event = new RCAEvent();
+				ResourceContext resource = ResourceAPI.getResource(assetID);
 				event.setEventMessage(message);
-		        event.setResource(ResourceAPI.getResource(assetID));
+		        event.setResource(resource);
 		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		        event.setReadingTime(ttime);
 		        event.setCreatedTime(ttime);
 		        event.setparentid(alarmOccuranceContext.getAlarm().getId());
 		        event.setmlid(mlContext.getId());
+				event.setSiteId(resource.getSiteId());
 		        
 		        addEvent(mlContext,event);
 			}
@@ -223,9 +227,10 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		String message = "Anomaly Detected. Actual Consumption :"+df.format(actualValue)+", Expected Max Consumption :"+df.format(adjustedUpperBound);
 		
 		MLAnomalyEvent event = new MLAnomalyEvent();
+		ResourceContext resource = ResourceAPI.getResource(assetID);
 		event.setEventMessage("Anomaly Detected");
 		event.setDescription(message);
-        event.setResource(ResourceAPI.getResource(assetID));
+        event.setResource(resource);
         event.setActualValue(actualValue);
         event.setAdjustedUpperBoundValue(adjustedUpperBound);
         event.setSeverityString("Minor");
@@ -234,6 +239,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         event.setEnergyDataFieldid(energyDataFieldid);
         event.setUpperAnomalyFieldid(upperAnomalyFieldid);
         event.setmlid(mlContext.getId());
+        event.setSiteId(resource.getSiteId());
         
        addEvent(mlContext,event);
        return event;
@@ -247,9 +253,10 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		String message = "Anomaly Detected. Actual Consumption :"+df.format(actualValue)+", Expected Max Consumption :"+df.format(adjustedUpperBound);
 		
 		MLAnomalyEvent event = new MLAnomalyEvent();
+		ResourceContext resource = ResourceAPI.getResource(assetID);
 		event.setEventMessage("Anomaly Detected");
 		event.setDescription(message);
-        event.setResource(ResourceAPI.getResource(assetID));
+        event.setResource(resource);
         event.setActualValue(actualValue);
         event.setAdjustedUpperBoundValue(adjustedUpperBound);
         event.setSeverityString("Minor");
@@ -260,6 +267,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         //event.setParentID(parentid);
         event.setParentEvent(parentEvent);
         event.setType(MLAlarmOccurenceContext.MLAnomalyType.RCA);
+        event.setSiteId(resource.getSiteId());
         if(assetDetails.containsKey(assetID+"_ratio"))
         {
         	event.setRatio(((Number)assetDetails.get(assetID+"_ratio")).doubleValue());
