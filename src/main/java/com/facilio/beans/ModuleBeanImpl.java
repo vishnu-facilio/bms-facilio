@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -45,14 +46,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.EnumFieldValue;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.FileField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.modules.fields.SystemEnumField;
 
 
 public class ModuleBeanImpl implements ModuleBean {
@@ -569,15 +562,16 @@ public class ModuleBeanImpl implements ModuleBean {
 				
 				try {
 					FieldType type = FieldType.getCFType((int) prop.get("dataType"));
+					FacilioField field = null;
 					switch(type) {
 						case NUMBER:
 						case DECIMAL:
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-								fields.add(FieldUtil.getAsBeanFromMap(prop, NumberField.class));
+								field = FieldUtil.getAsBeanFromMap(prop, NumberField.class);
 							break;
 						case BOOLEAN:
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-								fields.add(FieldUtil.getAsBeanFromMap(prop, BooleanField.class));
+								field = FieldUtil.getAsBeanFromMap(prop, BooleanField.class);
 							break;
 						case LOOKUP:
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
@@ -591,26 +585,31 @@ public class ModuleBeanImpl implements ModuleBean {
 									FacilioModule lookupModule = getMod(specialType);
 									prop.put("lookupModule", lookupModule);
 								}
-								fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
+								field = FieldUtil.getAsBeanFromMap(prop, LookupField.class);
+							break;
+						case MULTI_LOOKUP:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								field = constructMultiLookupField(prop);
 							break;
 						case FILE:
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-								fields.add(FieldUtil.getAsBeanFromMap(prop, FileField.class));
+								field = FieldUtil.getAsBeanFromMap(prop, FileField.class);
 							break;
 						case ENUM:
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-								fields.add(FieldUtil.getAsBeanFromMap(prop, EnumField.class));
+								field = FieldUtil.getAsBeanFromMap(prop, EnumField.class);
 							break;
 						case SYSTEM_ENUM:
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 								SystemEnumField enumField = FieldUtil.getAsBeanFromMap(prop, SystemEnumField.class);
 								enumField.setValues(FacilioEnum.getEnumValues(enumField.getEnumName()));
-								fields.add(enumField);
+								field = enumField;
 								break;
 						default:
-							fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
+							field = FieldUtil.getAsBeanFromMap(prop, FacilioField.class);
 							break;
 					}
+					fields.add(field);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					// e.printStackTrace();
@@ -621,6 +620,18 @@ public class ModuleBeanImpl implements ModuleBean {
 			return Collections.unmodifiableList(fields);
 		}
 		return null;
+	}
+
+	private MultiLookupField constructMultiLookupField(Map<String, Object> props) throws Exception {
+		MultiLookupField field = FieldUtil.getAsBeanFromMap(props, MultiLookupField.class);
+		FacilioModule relModule = getModule(field.getRelModuleId());
+		field.setRelModule(relModule);
+
+		Map<String, FacilioField> relFields = FieldFactory.getAsMap(getAllFields(relModule.getName()));
+		LookupField childField = (LookupField) relFields.get(field.childFieldName());
+		field.setLookupProps(childField);
+
+		return field;
 	}
 	
 	private Map<FieldType, Map<Long, Map<String, Object>>> getTypeWiseExtendedProps(Map<FieldType, List<Long>> extendedIdList) throws Exception {
@@ -636,6 +647,9 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case LOOKUP:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), entry.getValue()));
+					break;
+				case MULTI_LOOKUP:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getMultiLookupFieldsModule(), FieldFactory.getMultiLookupFieldFields(), entry.getValue()));
 					break;
 				case FILE:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), entry.getValue()));
@@ -910,35 +924,33 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case LOOKUP:
 					if (field instanceof LookupField) {
-						LookupField lookupField = (LookupField) field;
-						if (lookupField.getLookupModuleId() > 0 || lookupField.getLookupModule() != null) {
-							FacilioModule module;
-							if (lookupField.getLookupModuleId() > 0) {
-								module = getMod(lookupField.getLookupModuleId());
-							}
-							else {
-								module = getMod(lookupField.getLookupModule().getModuleId());
-							}
-							if (module == null) {
-								throw new IllegalArgumentException("Invalid lookup Module");
-							}
-							lookupField.setLookupModule(module);
-							fieldProps.put("lookupModuleId", module.getModuleId());
-
-							addSubModule(module.getModuleId(), lookupField.getModuleId());
-						}
-						else if (StringUtils.isNotEmpty(lookupField.getSpecialType())) {
-							FacilioModule module = getMod(lookupField.getSpecialType());
-							if (module == null) {
-								throw new IllegalArgumentException("Invalid lookup Module");
-							}
-							lookupField.setLookupModule(module);
-						}
-						else {
-							throw new IllegalArgumentException("Lookup module is not specified");
-						}
+						validateLookupField((LookupField) field, fieldProps, true);
+					}
+					else {
+						throw new IllegalArgumentException("Invalid Field instance for the LOOKUP data type");
 					}
 					addExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), fieldProps);
+					break;
+				case MULTI_LOOKUP:
+					if (field instanceof MultiLookupField) {
+						MultiLookupField multiLookupField = (MultiLookupField) field;
+						validateLookupField(multiLookupField, fieldProps, false);
+						if (multiLookupField.getRelModuleId() < 1) {
+							if (multiLookupField.getParentFieldPositionEnum() == null) {
+								multiLookupField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
+								fieldProps.put("parentFieldPosition", MultiLookupField.ParentFieldPosition.LEFT.getIndex());
+							}
+							long relModuleId = addRelModule(multiLookupField);
+							fieldProps.put("relModuleId", relModuleId);
+						}
+						else if (multiLookupField.getParentFieldPositionEnum() == null) {
+							throw new IllegalArgumentException("Parent field position cannot be null when rel module id is already present");
+						}
+					}
+					else {
+						throw new IllegalArgumentException("Invalid Field instance for the MULTI_LOOKUP data type");
+					}
+					addExtendedProps(ModuleFactory.getMultiLookupFieldsModule(), FieldFactory.getMultiLookupFieldFields(), fieldProps);
 					break;
 				case FILE:
 					addExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), fieldProps);
@@ -957,6 +969,83 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		else {
 			throw new IllegalArgumentException("Invalid field object for addition");
+		}
+	}
+
+	private static final String CUSTOM_REL_RECORD_TABLENAME = "Custom_Rel_Records";
+	private long addRelModule(MultiLookupField field) throws Exception {
+		FacilioModule module = new FacilioModule();
+
+		String relModuleName = new StringBuilder(field.getModule().getName())
+											.append("-")
+											.append(field.getLookupModule().getName())
+											.append("-rel")
+											.toString();
+		module.setName(relModuleName);
+
+		String relDisplayName = new StringBuilder()
+									.append(field.getModule().getDisplayName())
+									.append(" ")
+									.append(field.getLookupModule().getDisplayName())
+									.append(" Rel")
+									.toString();
+		module.setDisplayName(relDisplayName);
+		module.setTableName(CUSTOM_REL_RECORD_TABLENAME);
+		module.setType(ModuleType.LOOKUP_REL_MODULE);
+
+		long moduleId = addModule(module);
+		module.setModuleId(moduleId);
+
+		LookupField parentField = new LookupField();
+		parentField.setDataType(FieldType.LOOKUP);
+		parentField.setName(field.parentFieldName());
+		parentField.setDisplayName(field.getModule().getDisplayName());
+		parentField.setColumnName(StringUtils.upperCase(field.parentFieldName())+"_ID");
+		parentField.setModule(module);
+		parentField.setLookupModule(field.getModule());
+		addField(parentField);
+
+		LookupField childField = new LookupField();
+		childField.setDataType(FieldType.LOOKUP);
+		childField.setName(field.childFieldName());
+		childField.setDisplayName(field.getLookupModule().getDisplayName());
+		childField.setColumnName(StringUtils.upperCase(field.childFieldName())+"_ID");
+		childField.setModule(module);
+		childField.setLookupProps(field);
+		addField(childField);
+
+		field.setRelModuleId(moduleId);
+		return moduleId;
+	}
+
+	private void validateLookupField (BaseLookupField lookupField, Map<String, Object> fieldProps, boolean addSubModule) throws Exception {
+		if (lookupField.getLookupModuleId() > 0 || lookupField.getLookupModule() != null) {
+			FacilioModule module;
+			if (lookupField.getLookupModuleId() > 0) {
+				module = getMod(lookupField.getLookupModuleId());
+			}
+			else {
+				module = getMod(lookupField.getLookupModule().getModuleId());
+			}
+			if (module == null) {
+				throw new IllegalArgumentException("Invalid lookup Module");
+			}
+			lookupField.setLookupModule(module);
+			fieldProps.put("lookupModuleId", module.getModuleId());
+
+			if (addSubModule) {
+				addSubModule(module.getModuleId(), lookupField.getModuleId());
+			}
+		}
+		else if (StringUtils.isNotEmpty(lookupField.getSpecialType())) {
+			FacilioModule module = getMod(lookupField.getSpecialType());
+			if (module == null) {
+				throw new IllegalArgumentException("Invalid lookup Module");
+			}
+			lookupField.setLookupModule(module);
+		}
+		else {
+			throw new IllegalArgumentException("Lookup module is not specified");
 		}
 	}
 	

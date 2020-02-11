@@ -46,4 +46,19 @@ public class LookupField extends BaseLookupField implements SupplementRecord {
 	public FetchSupplementHandler newFetchHandler() {
 		return new LookupFetchHandler(this);
 	}
+
+	@Override
+	public InsertSupplementHandler newInsertHandler() {
+		return null;
+	}
+
+	@Override
+	public UpdateSupplementHandler newUpdateHandler() {
+		return null;
+	}
+
+	@Override
+	public DeleteSupplementHandler newDeleteHandler() {
+		return null;
+	}
 }

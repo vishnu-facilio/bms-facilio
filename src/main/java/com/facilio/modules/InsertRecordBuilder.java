@@ -2,13 +2,11 @@ package com.facilio.modules;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.sql.SQLException;
+import java.util.*;
 
-import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.fields.InsertSupplementHandler;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -29,13 +27,15 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private FacilioModule module;
 	private List<FacilioField> fields;
 	private int level = 1;
-	private List<E> records = new ArrayList<>();
+	private List<E> records = null;
+	private List<Map<String, Object>> recordProps = null;
 	private boolean inserted = false;
 	private boolean withChangeSet = false;
 	private Map<Long, List<UpdateChangeSet>> changeSet;
 	private boolean isWithLocalIdModule;
 	private Connection conn = null;
 	private int recordsPerBatch = -1;
+	private List<SupplementRecord> insertSupplements;
 
 	public InsertRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -79,15 +79,40 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 
+	private List<E> initRecords() {
+		if (records == null) {
+			records = new ArrayList<>();
+		}
+		return records;
+	}
+
 	@Override
 	public InsertRecordBuilder<E> addRecord(E bean) {
-		this.records.add(bean);
+		initRecords().add(bean);
 		return this;
 	}
 	
 	@Override
 	public InsertRecordBuilder<E> addRecords(List<E> beans) {
-		this.records.addAll(beans);
+		initRecords().addAll(beans);
+		return this;
+	}
+
+
+	private List<Map<String, Object>> initRecordProps() {
+		if (recordProps == null) {
+			recordProps = new ArrayList<>();
+		}
+		return recordProps;
+	}
+
+	public InsertRecordBuilder<E> addRecordProp(Map<String, Object> prop) {
+		initRecordProps().add(prop);
+		return this;
+	}
+
+	public InsertRecordBuilder<E> addRecordProps(List<Map<String, Object>> props) {
+		initRecordProps().addAll(props);
 		return this;
 	}
 	
@@ -99,11 +124,32 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	@Override
 	public List<E> getRecords() {
 		// TODO Auto-generated method stub
-		return records;
+		return initRecords();
+	}
+
+	public List<Map<String, Object>> getRecordProps() {
+		// TODO Auto-generated method stub
+		return initRecordProps();
 	}
 	
 	public InsertRecordBuilder<E> withChangeSet() {
 		this.withChangeSet = true;
+		return this;
+	}
+
+	public InsertRecordBuilder<E> insertSupplement(SupplementRecord supplement) {
+		if (insertSupplements == null) {
+			insertSupplements = new ArrayList<>();
+		}
+		insertSupplements.add(supplement);
+		return this;
+	}
+
+	public InsertRecordBuilder<E> insertSupplements(Collection<? extends SupplementRecord> supplements) {
+		if (insertSupplements == null) {
+			insertSupplements = new ArrayList<>();
+		}
+		insertSupplements.addAll(supplements);
 		return this;
 	}
 	
@@ -117,7 +163,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	
 	private void checkForNull() throws Exception {
 		
-		if(fields == null || fields.size() < 1) {
+		if(CollectionUtils.isEmpty(fields)) {
 			throw new IllegalArgumentException("Fields cannot be null or empty");
 		}
 		
@@ -132,28 +178,68 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	
 	@Override
 	public void save() throws Exception {
-		inserted = true;
-		
-		if(records.isEmpty()) {
+
+		if(CollectionUtils.isEmpty(records) && CollectionUtils.isEmpty(recordProps)) {
 			return;
 		}
-		
+
 		checkForNull();
 
 		List<Pair<FacilioModule, Long>> modules = splitModules();
 		Map<Long, List<FacilioField>> fieldMap = splitFields();
-		
-		long localId = getLocalId(modules);
-		
-		List<Map<String, Object>> beanProps = new ArrayList<>();
-		for(E bean : records) {
-			if(isWithLocalIdModule) {
-				bean.setLocalId(++localId);
+
+		int beansSize = records == null ? 0 : records.size(), propsSize = recordProps == null ? 0 : recordProps.size();
+		int totalRecords = beansSize + propsSize;
+		long localId = getLocalId(modules, totalRecords);
+		List<Map<String, Object>> props = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(records)) {
+			for(E bean : records) {
+				if (isWithLocalIdModule) {
+					long currentLocalId = ++localId;
+					bean.setLocalId(currentLocalId);
+				}
+				props.add(getAsProps(bean));
 			}
-			beanProps.add(getAsProps(bean));
+		}
+		if (CollectionUtils.isNotEmpty(this.recordProps)) {
+			for (Map<String, Object> prop : this.recordProps) {
+				addDefaultProps(prop, null);
+				if (isWithLocalIdModule) {
+					long currentLocalId = ++localId;
+					prop.put("localId", currentLocalId);
+				}
+				props.add(prop);
+			}
 		}
 		List<FileField> fileFields = new ArrayList<>();
-		
+		insertData(modules, fieldMap, props, fileFields);
+		handleSupplements(props);
+
+		Map<String, FacilioField> fieldNameMap = null;
+		if (withChangeSet) {
+			fieldNameMap = FieldFactory.getAsMap(fields);
+			changeSet = new HashMap<>();
+		}
+
+		for (int itr = 0; itr < props.size(); itr++) {
+			Map<String, Object> prop = props.get(itr);
+			long id = (long) prop.get("id");
+			if (withChangeSet) {
+				List<UpdateChangeSet> changeList = FieldUtil.constructChangeSet(id, prop, fieldNameMap);
+				changeSet.put(id, changeList);
+			}
+			removeFileCustomFields(fileFields, prop); //Removing any fileObject from map
+
+			if (itr < beansSize) {
+				E bean = records.get(itr);
+				bean.setId(id);
+				removeFileCustomFields(fileFields, bean.getData()); //Removing any fileObject from custom map
+			}
+		}
+		inserted = true;
+	}
+
+	private void insertData(List<Pair<FacilioModule, Long>> modules, Map<Long, List<FacilioField>> fieldMap, List<Map<String, Object>> props, List<FileField> fileFields) throws SQLException {
 		int currentLevel = 1;
 		for(Pair<FacilioModule, Long> modulePair : modules) {
 			if(currentLevel >= level) {
@@ -165,29 +251,29 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				currentFields.add(FieldFactory.getIdField(currentModule));
 				/*currentFields.add(FieldFactory.getOrgIdField(currentModule));*/
 				currentFields.add(FieldFactory.getModuleIdField(currentModule));
-				
+
 				if (FieldUtil.isSiteIdFieldPresent(currentModule, true)) {
 					currentFields.add(FieldFactory.getSiteIdField(currentModule));
 				}
-				
+
 				if (FieldUtil.isSystemFieldsPresent(currentModule)) {
 					currentFields.addAll(FieldFactory.getSystemFields(currentModule));
 				}
-				
+
 				if (FieldUtil.isBaseEntityRootModule(currentModule)) {
 					currentFields.addAll(FieldFactory.getBaseModuleSystemFields(currentModule));
 				}
-				
+
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-																.table(currentModule.getTableName())
-																.fields(currentFields);
+						.table(currentModule.getTableName())
+						.fields(currentFields);
 
 				long moduleId = modulePair.getRight();
-				for(Map<String, Object> beanProp : beanProps) {
+				for(Map<String, Object> beanProp : props) {
 					beanProp.put("moduleId", moduleId);
 					insertBuilder.addRecord(beanProp);
 				}
-				
+
 				if (conn != null) {
 					insertBuilder.useExternalConnection(conn);
 				}
@@ -195,62 +281,42 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				if (recordsPerBatch != -1) {
 					insertBuilder.recordsPerBatch(recordsPerBatch);
 				}
-				
+
 				insertBuilder.save();
-				
+
 				if (CollectionUtils.isNotEmpty(insertBuilder.getFileFields())) {
 					fileFields.addAll(insertBuilder.getFileFields());
 				}
 			}
 			currentLevel++;
 		}
-		
-		
-		
-		Map<String, FacilioField> fieldNameMap = null;
-		if (withChangeSet) {
-			fieldNameMap = FieldFactory.getAsMap(fields);
-			changeSet = new HashMap<>();
-		}
-		
-		if (CollectionUtils.isNotEmpty(fileFields)) {
-			fileFields = fileFields.stream().filter(field -> !field.isDefault()).collect(Collectors.toList());
-		}
-		
-		for(int itr = 0; itr < records.size(); itr++) {
-			Map<String, Object> beanProp = beanProps.get(itr);
-			if(beanProp.get("id") != null) {
-				long id = (long) beanProp.get("id");
-				records.get(itr).setId(id);
-				
-				if (withChangeSet) {
-					List<UpdateChangeSet> changeList = FieldUtil.constructChangeSet(id, beanProp, fieldNameMap);
-					changeSet.put(id, changeList);
-				}
-				
-				removeFileCustomFields(fileFields, records.get(itr));
-				
-			}
-		}
-		
 	}
-	
-	private void removeFileCustomFields(List<FileField> fileFields, E bean) {
-		if (CollectionUtils.isNotEmpty(fileFields) && MapUtils.isNotEmpty(bean.getData())) {
-			for(FacilioField field : fileFields) {
-				if (bean.getData().containsKey(field.getName())) {
-					bean.getData().remove(field.getName());
+
+	private void handleSupplements(List<Map<String, Object>> props) throws Exception {
+		if (CollectionUtils.isNotEmpty(insertSupplements)) {
+			for (SupplementRecord supplement : insertSupplements) {
+				InsertSupplementHandler handler = supplement.newInsertHandler();
+				if (handler != null) {
+					handler.insertSupplements(props);
 				}
 			}
 		}
 	}
 
-	private long getLocalId (List<Pair<FacilioModule, Long>> modules) throws Exception {
+	private void removeFileCustomFields(List<FileField> fileFields, Map<String, Object> prop) {
+		if (CollectionUtils.isNotEmpty(fileFields) && MapUtils.isNotEmpty(prop)) {
+			for(FacilioField field : fileFields) {
+				prop.remove(field.getName());
+			}
+		}
+	}
+
+	private long getLocalId (List<Pair<FacilioModule, Long>> modules, int size) throws Exception {
 		long localId = -1;
 		if(isWithLocalIdModule) {
 			for (int i = modules.size() - 1; i >= 0; i--) {
 				FacilioModule module = modules.get(i).getLeft();
-				localId = ModuleLocalIdUtil.getAndUpdateModuleLocalId(module.getName(), records.size());
+				localId = ModuleLocalIdUtil.getAndUpdateModuleLocalId(module.getName(), size);
 				if (localId != -1) {
 					break;
 				}
@@ -283,49 +349,52 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		
 		// TODO check this again
 		for(FacilioField field : fields) {
-			FacilioModule module = field.getModule();
-			long moduleId = -1;
-			if (module != null) {
-				moduleId = module.getModuleId();
+			if (field.getDataTypeEnum() != null && !field.getDataTypeEnum().isMultiRecord()) { //Not including multi record data
+				FacilioModule module = field.getModule();
+				long moduleId = -1;
+				if (module != null) {
+					moduleId = module.getModuleId();
+				}
+				List<FacilioField> moduleFields = fieldMap.get(moduleId);
+				if (moduleFields == null) {
+					moduleFields = new ArrayList<>();
+					fieldMap.put(moduleId, moduleFields);
+				}
+				moduleFields.add(field);
 			}
-			List<FacilioField> moduleFields = fieldMap.get(moduleId);
-			if(moduleFields == null) {
-				moduleFields = new ArrayList<>();
-				fieldMap.put(moduleId, moduleFields);
-			}
-			moduleFields.add(field);
 		}
 		
 		return fieldMap;
 	}
-	
-	private Map<String, Object> getAsProps(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
-		moduleProps.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
-		moduleProps.put("sysCreatedTime", System.currentTimeMillis());
-		moduleProps.put("sysModifiedTime", System.currentTimeMillis());
+
+	private void addDefaultProps(Map<String, Object> prop, E bean) {
+		prop.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
+		prop.put("sysCreatedTime", System.currentTimeMillis());
+		prop.put("sysModifiedTime", System.currentTimeMillis());
 		if (AccountUtil.getCurrentUser() != null) {
-			moduleProps.put("sysCreatedBy", AccountUtil.getCurrentUser().getId());
-			moduleProps.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
+			prop.put("sysCreatedBy", AccountUtil.getCurrentUser().getId());
+			prop.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
 		}
 		for(FacilioField field : fields) {
 			switch (field.getDataTypeEnum()) {
 				case LOOKUP:
-					Object val = moduleProps.get(field.getName());
+					Object val = prop.get(field.getName());
 					if(val != null && val instanceof Map) {
-						Map<String, Object> lookupProps = (Map<String, Object>) val; 
+						Map<String, Object> lookupProps = (Map<String, Object>) val;
 						if(lookupProps != null) {
-							moduleProps.put(field.getName(), lookupProps.get("id"));
+							prop.put(field.getName(), lookupProps.get("id"));
 						}
 					}
 					break;
 				case ENUM:
 					if (!field.isDefault()) {
-						val = moduleProps.get(field.getName());
+						val = prop.get(field.getName());
 						if (val != null) {
 							val = FacilioUtil.castOrParseValueAsPerType(field, val);
-							moduleProps.put(field.getName(), val);
-							bean.setDatum(field.getName(), val); //This is for workflow rules to work
+							prop.put(field.getName(), val);
+							if (bean != null) {
+								bean.setDatum(field.getName(), val); //This is for workflow rules to work
+							}
 						}
 					}
 					break;
@@ -333,7 +402,12 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					break;
 			}
 		}
-		return moduleProps;
+	}
+	
+	private Map<String, Object> getAsProps(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		Map<String, Object> prop = FieldUtil.getAsProperties(bean);
+		addDefaultProps(prop, bean);
+		return prop;
 	}
 	
 	@Override

@@ -277,6 +277,15 @@ public class ModuleFactory {
 		return fieldModule;
 	}
 
+	public static FacilioModule getMultiLookupFieldsModule() {
+		FacilioModule multiLookup = new FacilioModule();
+		multiLookup.setName("multiLookupField");
+		multiLookup.setDisplayName("Multi Lookup Fields");
+		multiLookup.setTableName("MultiLookupFields");
+		multiLookup.setExtendModule(getFieldsModule());
+		return multiLookup;
+	}
+
 	public static FacilioModule getNumberFieldModule() {
 		FacilioModule numberModule = new FacilioModule();
 		numberModule.setName("numberField");

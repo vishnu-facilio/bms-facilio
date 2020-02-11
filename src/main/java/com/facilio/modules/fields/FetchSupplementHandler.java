@@ -7,5 +7,5 @@ public interface FetchSupplementHandler {
 
     public void fetchSupplements(boolean isMap) throws Exception;
 
-    public void updateRecord (Map<String,Object> record);
+    public void updateRecordWithSupplement(Map<String,Object> record);
 }

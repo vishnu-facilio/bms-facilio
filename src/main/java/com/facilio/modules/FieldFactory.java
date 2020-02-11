@@ -745,6 +745,17 @@ public class FieldFactory {
 		return field;
 	}
 
+	public static List<FacilioField> getMultiLookupFieldFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMultiLookupFieldsModule();
+
+		fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
+		fields.add(getField("relModuleId", "REL_MODULE_ID", module, FieldType.NUMBER));
+		fields.add(getField("parentFieldPosition", "PARENT_FIELD_POSITION", module, FieldType.NUMBER));
+
+		return fields;
+	}
+
 	public static List<FacilioField> getLookupFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getLookupFieldsModule();
@@ -1108,9 +1119,12 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getSystemField("sysCreatedTime", module));
-		fields.add(getSystemField("sysModifiedTime", module));
 		fields.add(getSystemField("sysCreatedBy", module));
-		fields.add(getSystemField("sysModifiedBy", module));
+
+		if (module != null && module.getTypeEnum() != FacilioModule.ModuleType.LOOKUP_REL_MODULE && module.getTypeEnum() != FacilioModule.ModuleType.ENUM_REL_MODULE) {
+			fields.add(getSystemField("sysModifiedTime", module));
+			fields.add(getSystemField("sysModifiedBy", module));
+		}
 
 		return fields;
 	}

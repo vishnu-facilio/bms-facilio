@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.fields.DeleteSupplementHandler;
+import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.modules.fields.UpdateSupplementHandler;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -33,6 +36,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private FacilioModule module;
 	private WhereBuilder where = new WhereBuilder();
 	private int level = 1;
+	private List<SupplementRecord> deleteSupplements;
 
 	public DeleteRecordBuilder<E> moduleName (String moduleName) {
 		selectBuilder.moduleName(moduleName);
@@ -137,6 +141,22 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 
+	public DeleteRecordBuilder<E> deleteSupplement(SupplementRecord supplement) {
+		if (deleteSupplements == null) {
+			deleteSupplements = new ArrayList<>();
+		}
+		deleteSupplements.add(supplement);
+		return this;
+	}
+
+	public DeleteRecordBuilder<E> deleteSupplements(Collection<? extends SupplementRecord> supplements) {
+		if (deleteSupplements == null) {
+			deleteSupplements = new ArrayList<>();
+		}
+		deleteSupplements.addAll(supplements);
+		return this;
+	}
+
 	@Override
 	public int delete() throws Exception {
 		// TODO Auto-generated method stub
@@ -153,6 +173,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 
 	private int commonDeleteByIds (Collection<Long> ids) throws Exception {
 		if (CollectionUtils.isNotEmpty(ids)) {
+			handleSupplements(ids);
 			FacilioModule currentModule = module;
 			FacilioModule extendedModule = module.getExtendModule();
 			int currentLevel = maxLevel();
@@ -181,6 +202,17 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 //			}
 		}
 		return 0;
+	}
+
+	private void handleSupplements(Collection<Long> ids) throws Exception {
+		if (CollectionUtils.isNotEmpty(deleteSupplements)) {
+			for (SupplementRecord record : deleteSupplements) {
+				DeleteSupplementHandler handler = record.newDeleteHandler();
+				if (handler != null) {
+					handler.deleteSupplements(ids);
+				}
+			}
+		}
 	}
 	
 	public int markAsDelete() throws Exception {

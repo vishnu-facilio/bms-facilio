@@ -30,7 +30,7 @@ class LookupFetchHandler implements FetchSupplementHandler {
     }
 
     @Override
-    public void updateRecord(Map<String, Object> record) {
+    public void updateRecordWithSupplement(Map<String, Object> record) {
         Map<String, Object> lookupRecord = (Map<String, Object>) record.get(field.getName());
         if (lookupRecord != null) {
             record.put(field.getName(), lookupObjects.get(lookupRecord.get("id")));

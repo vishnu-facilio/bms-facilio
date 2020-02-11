@@ -2,15 +2,11 @@ package com.facilio.modules;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MapUtils;
+import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.modules.fields.UpdateSupplementHandler;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -31,6 +27,7 @@ import com.facilio.modules.fields.FileField;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections4.MapUtils;
 
 public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implements UpdateBuilderIfc<E> {
 	
@@ -46,6 +43,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private List<E> oldValues;
 	private boolean updated = false;
 	private E bean;
+	private List<SupplementRecord> updateSupplements;
+	private List<Long> recordIds = null;
+	private boolean isIdsFetched = false;
 	
 	public UpdateRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -185,6 +185,22 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		
 		return oldValues;
 	}
+
+	public UpdateRecordBuilder<E> updateSupplement(SupplementRecord supplement) {
+		if (updateSupplements == null) {
+			updateSupplements = new ArrayList<>();
+		}
+		updateSupplements.add(supplement);
+		return this;
+	}
+
+	public UpdateRecordBuilder<E> updateSupplements(Collection<? extends SupplementRecord> supplements) {
+		if (updateSupplements == null) {
+			updateSupplements = new ArrayList<>();
+		}
+		updateSupplements.addAll(supplements);
+		return this;
+	}
  	
 	@Override
 	public int update(E bean) throws Exception {
@@ -209,8 +225,8 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	public int updateViaMap(Map<String, Object> props) throws Exception {
-		updated = true;
-		if(props != null) {
+		int rowsUpdated = 0;
+		if(MapUtils.isNotEmpty(props)) {
 			checkForNull();
 			Map<String, Object> moduleProps = new HashMap<>(props);
 			removeSystemProps(moduleProps);
@@ -221,14 +237,14 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				if (AccountUtil.getCurrentUser() != null) {
 					moduleProps.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
 				}
-				
+
 				if (withChangeSet) {
-					List<Long> ids = constructChangeSet(moduleProps);
-					if (ids != null && !ids.isEmpty()) {
+					recordIds = constructChangeSet(moduleProps);
+					if (CollectionUtils.isNotEmpty(recordIds)) {
 						WhereBuilder whereCondition = new WhereBuilder();
-						whereCondition.andCondition(CriteriaAPI.getIdCondition(ids, module));
+						whereCondition.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 					
-						return update(whereCondition, moduleProps);
+						rowsUpdated = update(whereCondition, moduleProps);
 					}
 				}
 				else {
@@ -250,11 +266,40 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 						whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 					}
 					whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
-					return update(whereCondition, moduleProps);
+					rowsUpdated = update(whereCondition, moduleProps);
+				}
+				handleSupplements(moduleProps);
+
+			}
+		}
+		updated = true;
+		return rowsUpdated;
+	}
+
+	private void handleSupplements(Map<String, Object> props) throws Exception {
+		if (CollectionUtils.isNotEmpty(updateSupplements)) {
+			for (SupplementRecord record : updateSupplements) {
+				UpdateSupplementHandler handler = record.newUpdateHandler();
+				if (handler != null) {
+					if (CollectionUtils.isNotEmpty(fetchIds())) {
+						handler.updateSupplements(props, fetchIds());
+					}
 				}
 			}
 		}
-		return 0;
+	}
+
+	private List<Long> fetchIds() throws Exception {
+		if (CollectionUtils.isEmpty(recordIds) && !isIdsFetched) {
+			List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField(module));
+			this.selectBuilder.select(fields).skipPermission();
+			List<Map<String, Object>> oldProps = selectBuilder.getAsProps();
+			recordIds = oldProps.stream()
+						.map(p -> (Long) p.get("id"))
+						.collect(Collectors.toList());
+			isIdsFetched = true;
+		}
+		return recordIds;
 	}
 	
 	private List<Long> constructChangeSet(Map<String, Object> moduleProps) throws Exception {
@@ -266,8 +311,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			selectBuilder.skipPermission();
 			oldValues = selectBuilder.get();
 		}
-		
-		if (oldValues != null && !oldValues.isEmpty()) {
+
+		isIdsFetched = true;
+		if (CollectionUtils.isNotEmpty(oldValues)) {
 			List<Long> ids = new ArrayList<>();
 			changeSet = new HashMap<>();
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -285,7 +331,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				getDifference(id, fieldNames, fieldMap, difference.entriesDiffering(), currentChangeList);
 				changeSet.put(id, currentChangeList);
 			}
-			
+
 			return ids;
 		}
 		return null;
@@ -325,7 +371,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			updateFields.add(isDeletedField);
 		}
 		
-		updateFields.addAll(fields);
+		updateFields.addAll(FieldUtil.removeMultiRecordFields(fields));
 		if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() == -1) {
 			updateFields.add(FieldFactory.getSiteIdField(module));
 		}
@@ -412,44 +458,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					if(lookupProps.get("id") != null) {
 						moduleProps.put(field.getName(), lookupProps.get("id"));
 					}
-					//Lookup fields should not be updated while updating the parent field. This was the behaviour when ticket was a lookup in workorder/ alarm. It's no longer required and so I'm commenting it out
-					/*else {
-						LookupField lookupField = (LookupField) field;
-						if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-							//Not sure if we are handling update of special fields like this
-						}
-						else {
-							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-							List<FacilioField> lookupBeanFields = modBean.getAllFields(lookupField.getLookupModule().getName());
-							
-							UpdateRecordBuilder<ModuleBaseWithCustomFields> lookupUpdateBuilder = new UpdateRecordBuilder<>()
-																									.moduleName(lookupField.getLookupModule().getName())
-																									.table(lookupField.getLookupModule().getTableName())
-																									.fields(lookupBeanFields)
-																									.andCustomWhere(getParentWhereClauseForLookup(field.getColumnName()), where.getValues());
-							lookupUpdateBuilder.update(lookupProps);
-						}
-						moduleProps.remove(field.getName());
-					}*/
 				}
 				else {
 					moduleProps.remove(field.getName());
 				}
 			}
 		}
-	}
-	
-	private String getParentWhereClauseForLookup(String columnName) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(" ID in (SELECT ")
-				.append(columnName)
-				.append(" FROM ")
-				.append(module.getTableName())
-				.append(" WHERE ")
-				.append(where.getWhereClause())
-				.append(")");
-		
-		return builder.toString();
 	}
 	
 	private void checkForNull() throws Exception {

@@ -3,12 +3,12 @@ package com.facilio.modules.fields;
 import java.util.Collection;
 import java.util.List;
 
-public class MultiLookupMeta extends MultiLookup {
+public class MultiLookupMeta extends MultiLookupField {
     /**
      *
      */
     private static final long serialVersionUID = 1L;
-    public MultiLookupMeta(MultiLookup field) {
+    public MultiLookupMeta(MultiLookupField field) {
         // TODO Auto-generated constructor stub
         super(field);
     }
@@ -29,11 +29,11 @@ public class MultiLookupMeta extends MultiLookup {
         this.childLookupFields = childLookupFields;
     }
 
-    private Collection<MultiLookup> childMultiLookupFields;
-    public Collection<MultiLookup> getChildMultiLookupFields() {
+    private Collection<MultiLookupField> childMultiLookupFields;
+    public Collection<MultiLookupField> getChildMultiLookupFields() {
         return childMultiLookupFields;
     }
-    public void setChildMultiLookupFields(Collection<MultiLookup> childMultiLookupFields) {
+    public void setChildMultiLookupFields(Collection<MultiLookupField> childMultiLookupFields) {
         this.childMultiLookupFields = childMultiLookupFields;
     }
 }

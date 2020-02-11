@@ -1,6 +1,6 @@
 package com.facilio.modules;
 
-public class RelModule extends ModuleBaseWithCustomFields {
+public class RelRecord extends ModuleBaseWithCustomFields {
     private Object left;
     public Object getLeft() {
         return left;

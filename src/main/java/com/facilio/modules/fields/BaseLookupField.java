@@ -15,6 +15,11 @@ public class BaseLookupField extends FacilioField {
 
     protected BaseLookupField(BaseLookupField field) { // Do not forget to Handle here if new property is added
         super(field);
+        setLookupProps(field);
+    }
+
+    public void setLookupProps(BaseLookupField field) {
+        this.lookupModuleId = field.lookupModuleId;
         this.lookupModule = field.lookupModule;
         this.specialType = field.specialType;
     }

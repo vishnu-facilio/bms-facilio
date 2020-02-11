@@ -418,7 +418,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 
 		if (CollectionUtils.isNotEmpty(select)) {
-			selectFields.addAll(select);
+			selectFields.addAll(FieldUtil.removeMultiRecordFields(select));
 		}
 		if (CollectionUtils.isNotEmpty(fetchLookup)) {
 			selectFields.addAll(fetchLookup);
@@ -496,10 +496,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		Set<FacilioField> selectFields = constructQuery();
 
 		List<Map<String, Object>> props = builder.get();
-		if (CollectionUtils.isNotEmpty(props)) {
+		if (!isAggregation && CollectionUtils.isNotEmpty(props)) {
 //		handleLookup(selectFields, props, isMap);
 			handleLookup(selectFields, props, isMap);
-			handleExtras(props, isMap);
+			handleSupplements(props, isMap);
 		}
 		return props;
 	}
@@ -585,7 +585,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 	}
 
-	private void handleExtras (List<Map<String, Object>> propList, boolean isMap) throws Exception {
+	private void handleSupplements(List<Map<String, Object>> propList, boolean isMap) throws Exception {
 //			if (level < maxLevel && CollectionUtils.isNotEmpty(selectFields)) {
 //				fetchLookups(select.stream().filter(f -> f.getDataTypeEnum() == FieldType.LOOKUP).map(f -> (LookupField)f).collect(Collectors.toList()));
 //			}
@@ -595,9 +595,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			List<Pair<SupplementRecord, FetchSupplementHandler>> handlers = new ArrayList<>();
 			for (SupplementRecord fetchExtra : fetchSupplements) {
 				FetchSupplementHandler handler = fetchExtra.newFetchHandler();
-				handlers.add(Pair.of(fetchExtra, handler));
-				for(Map<String, Object> props : propList) {
-					handler.processRecord(props);
+				if (handler != null) {
+					handlers.add(Pair.of(fetchExtra, handler));
+					for (Map<String, Object> props : propList) {
+						handler.processRecord(props);
+					}
 				}
 			}
 
@@ -607,7 +609,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 			for (Pair<SupplementRecord, FetchSupplementHandler> handler : handlers) {
 				for(Map<String, Object> props : propList) {
-					handler.getRight().updateRecord(props);
+					handler.getRight().updateRecordWithSupplement(props);
 				}
 			}
 		}

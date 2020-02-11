@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
 import com.facilio.modules.fields.*;
@@ -421,7 +422,9 @@ public class FieldUtil {
 
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
 		// custom modules will have system fields by default
-		if (module.isCustom()) {
+		if (module.isCustom()
+				|| module.getTypeEnum() == FacilioModule.ModuleType.ENUM_REL_MODULE
+				|| module.getTypeEnum() == FacilioModule.ModuleType.LOOKUP_REL_MODULE) {
 			return true;
 		}
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
@@ -503,5 +506,12 @@ public class FieldUtil {
 		} else {
 			record.setDatum(field.getName(), value);
 		}
+	}
+
+	public static List<FacilioField> removeMultiRecordFields(Collection<FacilioField> fields) {
+		return	fields
+				.stream()
+				.filter(f -> !(f.getDataTypeEnum() != null && f.getDataTypeEnum().isMultiRecord()))
+				.collect(Collectors.toList());
 	}
 }
