@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -345,6 +346,9 @@ public class ActionAPI {
 							case FIELD_CHANGE:
 							case CREATE_WORK_ORDER:
 								setJsonTemplate(action, rule, Type.JSON);
+								break;
+							case ACTIVITY_FOR_MODULE_RECORD:
+								setDefaultTemplate(action, rule);
 								break;
 							case FORMULA_FIELD_CHANGE:
 							case ALARM_IMPACT_ACTION:

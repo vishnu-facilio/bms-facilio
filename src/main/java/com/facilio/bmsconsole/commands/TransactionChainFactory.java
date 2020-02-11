@@ -38,6 +38,8 @@ import com.facilio.mv.command.*;
 import com.facilio.workflows.command.*;
 import org.apache.commons.chain.Context;
 
+import java.util.Collections;
+
 public class TransactionChainFactory {
 
 	private static FacilioChain getDefaultChain() {
@@ -258,9 +260,9 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_CUSTOM_CHANGE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
+			c.addCommand(new ExecuteSLAWorkFlowsCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-			c.addCommand(new ExecuteSLAWorkFlowsCommand());
 
 			if (sendNotification) {
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
@@ -290,9 +292,23 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTicketActivityCommand());
 			c.addCommand(getAddTasksChain());
 			c.addCommand(new AddPrerequisiteApproversCommand());
+			c.addCommand(new FacilioCommand() {
+				@Override
+				public boolean executeCommand(Context context) throws Exception {
+					context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(context.get(FacilioConstants.ContextNames.WORK_ORDER)));
+					return false;
+				}
+			});
 			c.addCommand(getWorkOrderWorkflowsChain(true));
+			c.addCommand(new AddOrUpdateSLABreachJobCommand(true));
 			c.addCommand(new AddActivitiesCommand());
 			return c;
+		}
+
+		public static FacilioChain getAddActivitiesCommand() {
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(new AddActivitiesCommand());
+			return chain;
 		}
 
 		public static FacilioChain getAddNewTasksChain() {
@@ -356,6 +372,7 @@ public class TransactionChainFactory {
 				.addCommand(new ClearAlarmOnWOCloseCommand())
 				.addCommand(new ExecuteTaskFailureActionCommand())
 			);
+			c.addCommand(new AddOrUpdateSLABreachJobCommand(false));
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
 			c.addCommand(new AddAttachmentCommand());

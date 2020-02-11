@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.SLAWorkflowAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -22,11 +23,9 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.json.simple.JSONObject;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
 
@@ -117,10 +116,29 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 FacilioChain recordRuleChain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
                 FacilioContext recordRuleContext = recordRuleChain.getContext();
                 recordRuleContext.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
-                recordRuleContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, escalation.getActions());
+                List<ActionContext> actions = escalation.getActions();
+                if (actions == null) {
+                    actions = new ArrayList<>();
+                }
+                actions.add(getDefaultSLAEscalationTriggeredAction(count));
+                recordRuleContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
                 recordRuleChain.execute();
             }
         }
+    }
+
+    private ActionContext getDefaultSLAEscalationTriggeredAction(int count) {
+        ActionContext actionContext = new ActionContext();
+        actionContext.setActionType(ActionType.ACTIVITY_FOR_MODULE_RECORD);
+        JSONObject json = new JSONObject();
+        json.put("activityType", WorkOrderActivityType.SLA_ESCALATION_TRIGGERED.getValue());
+        JSONObject infoJson = new JSONObject();
+        infoJson.put("stage", count);
+        infoJson.put("message", "Stage " + count + " escalation raised");
+        json.put("info", infoJson);
+        actionContext.setTemplateJson(json);
+        actionContext.setStatus(true);
+        return actionContext;
     }
 
     public static class SLAEntityDuration {

@@ -166,6 +166,18 @@ public enum WorkOrderActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return " Created ";
 		}
+	},
+	SLA_MEET(60) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			return "SLA Met";
+		}
+	},
+	SLA_ESCALATION_TRIGGERED(61) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			return "SLA Escalation Triggered";
+		}
 	}
 	;
 	private int value;

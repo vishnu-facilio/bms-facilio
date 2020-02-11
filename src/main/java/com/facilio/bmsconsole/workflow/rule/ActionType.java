@@ -12,6 +12,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.facilio.accounts.impl.OrgBeanImpl;
+import com.facilio.activity.ActivityContext;
+import com.facilio.activity.ActivityType;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
@@ -20,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -1438,6 +1443,47 @@ public enum ActionType {
 		}
 
 	},
+	ACTIVITY_FOR_MODULE_RECORD(31) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			try {
+				if (currentRecord instanceof ModuleBaseWithCustomFields) {
+					ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) currentRecord;
+
+					FacilioChain chain = TransactionChainFactory.getAddActivitiesCommand();
+					FacilioContext activityContext = chain.getContext();
+
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule module = modBean.getModule(record.getModuleId());
+					if (module == null) {
+						throw new IllegalArgumentException("Invalid module");
+					}
+
+					long activityTypeInt = (long) obj.get("activityType");
+					ActivityType activityType = ActivityType.getActivityType(((Long) activityTypeInt).intValue());
+					if (activityType == null) {
+						throw new IllegalArgumentException("Activity Type cannot be empty");
+					}
+
+					activityContext.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+					ActivityContext ac = new ActivityContext();
+					ac.setTtime(DateTimeUtil.getCurrenTime());
+					ac.setParentId(record.getId());
+					ac.setType(activityType);
+					JSONObject info = (JSONObject) obj.get("info");
+					ac.setInfo(info);
+					long orgId = AccountUtil.getCurrentOrg().getId();
+					ac.setDoneBy(AccountUtil.getOrgBean().getSuperAdmin(orgId));
+
+					activityContext.put(FacilioConstants.ContextNames.ACTIVITY_LIST, Collections.singletonList(ac));
+					chain.execute();
+				}
+			}
+			catch (Exception ex) {
+				LOGGER.error("Exception occurred ", ex);
+			}
+		}
+	}
 	
 	;
 	
