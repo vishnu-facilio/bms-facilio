@@ -677,7 +677,7 @@ private Map<String, Double> readingData;
 	      context.put(FacilioConstants.ContextNames.ID, getId());
 	      context.put(FacilioConstants.ContextNames.IS_TENANT_PORTAL, getTenantPortal());
 	      
-	      FacilioChain tenantDetailChain = ReadOnlyChainFactory.fetchTenantDetails();
+	      FacilioChain tenantDetailChain = TransactionChainFactory.v2fetchTenantDetails();
 	      tenantDetailChain.execute(context);
 	      tenant = (TenantContext )context.get(FacilioConstants.ContextNames.TENANT);
 	      setResult("tenant", tenant);

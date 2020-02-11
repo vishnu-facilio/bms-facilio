@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -19,19 +18,31 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
+public class SetTenantSpaceCommand extends FacilioCommand {
 
-public class GetTenantDetailCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
 		if (context.get(FacilioConstants.ContextNames.ID) != null) {
 			TenantContext tenant = TenantsAPI.fetchTenant((Long)context.get(FacilioConstants.ContextNames.ID));
-			if(tenant != null && tenant.getZone() != null) {
-				List<BaseSpaceContext> spaces =	SpaceAPI.getZoneChildren(Collections.singletonList(tenant.getZone().getId()));
-				context.put(FacilioConstants.ContextNames.SPACE_LIST, spaces);
+			Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(FieldFactory.getTenantSpacesFields());
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(FieldFactory.getTenantSpacesFields())
+					.table(ModuleFactory.getTenantSpacesModule().getTableName())
+					.andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("tenantId"), String.valueOf(tenant.getId()), NumberOperators.EQUALS));
+			
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				List<Long> ids = new ArrayList<>();
+				for (Map<String, Object> prop : props) {
+					ids.add((Long) prop.get("space"));
+				}
+				List<BaseSpaceContext> baseSpaces = SpaceAPI.getBaseSpaces(ids);
+				tenant.setSpaces(baseSpaces);
 			}
-			context.put(FacilioConstants.ContextNames.TENANT, tenant);
 		}
+		
 		return false;
 	}
+
 }

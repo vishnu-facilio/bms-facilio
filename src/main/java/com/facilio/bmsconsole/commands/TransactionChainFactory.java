@@ -228,6 +228,16 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain v2fetchTenantDetails() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTenants());
+			c.addCommand(new AssociateTenantToContactCommand());
+			c.addCommand(new GetTenantDetailCommand());
+			c.addCommand(new SetTenantSpaceCommand());
+			return c;
+		}
+		
+		
 		
 		public static FacilioChain v2DeleteTenantChain () {
 			FacilioChain c = getDefaultChain();
