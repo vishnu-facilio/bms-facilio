@@ -23,7 +23,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.server.ServerInfo;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -35,7 +35,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.facilio.activity.ActivityType;
-import com.facilio.agent.integration.queue.AgentIntegrationQueueFactory;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -54,6 +53,7 @@ import com.facilio.logging.SysOutLogger;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.queue.FacilioDBQueueExceptionProcessor;
+import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.kafka.notification.NotificationProcessor;
@@ -136,6 +136,7 @@ public class FacilioContextListener implements ServletContextListener {
 			if (FacilioProperties.isMessageProcessor()) {
 				FacilioFactory.getMessageQueue().start();
 			}
+			
 			//AgentIntegrationQueueFactory.startIntegrationQueues();
 
 			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
@@ -232,7 +233,7 @@ public class FacilioContextListener implements ServletContextListener {
 		json.put("sender", "error@facilio.com");
 		json.put("to", "error@facilio.com");
 		json.put("subject", "Startup Error at " + getInstanceId());
-		json.put("message", e.getMessage());
+		json.put("message", ExceptionUtils.getStackTrace(e));
 		try {
 			FacilioFactory.getEmailClient().sendEmail(json);
 		} catch (Exception e1) {
