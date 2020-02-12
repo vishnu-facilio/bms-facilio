@@ -1,7 +1,6 @@
 package com.facilio.services.kafka;
 
 import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
 import com.facilio.agentv2.DataProcessorV2;
@@ -82,7 +81,7 @@ public class KafkaProcessor extends FacilioProcessor {
             }*/
 
             try {
-                AccountUtil.getCurrentAccount().clearCounters();
+                AccountUtil.getCurrentAccount().clearStateVariables();
                 if (!dataProcessorUtil.processRecord(record)) {
                     LOGGER.info("Exception while processing ->" + record.getData());
                 }

@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.config.InstantJobConf;
@@ -49,7 +48,7 @@ public abstract class InstantJob {
 
             if (account != null) {
                 try {
-                    account.clearCounters();
+                    account.clearStateVariables();
                     AccountUtil.cleanCurrentAccount();
                     AccountUtil.setCurrentAccount(account);
 

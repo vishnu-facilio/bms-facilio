@@ -298,7 +298,7 @@ public class Account implements AccountsInterface<User>, Serializable{
     	return timeZone;
 	}
 
-	public void clearCounters() {
+	public void clearStateVariables() {
 		selectQueries = 0;
 		insertQueries = 0;
 		updateQueries = 0;
@@ -315,6 +315,10 @@ public class Account implements AccountsInterface<User>, Serializable{
 		redisGetTime = 0L;
 		redisPutTime = 0L;
 		redisDeleteTime = 0L;
+
+		if (redisLocalCache != null) {//Better for gc I guess
+			redisLocalCache.clear();
+		}
 	}
 
 	private HashMap<String, Long> redisLocalCache;
