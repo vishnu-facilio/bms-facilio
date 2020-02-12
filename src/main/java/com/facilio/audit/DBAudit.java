@@ -493,7 +493,7 @@ public class DBAudit implements FacilioAudit {
     	List<Map<String, Object>> prop = builder.get();
     	if(CollectionUtils.isNotEmpty(prop)) {
     		for (Map<String,Object> itr:prop) {
-    			id=(long) itr.get(key);
+    			id=(long) itr.get("id");
     		}
     	}
     	return id;
