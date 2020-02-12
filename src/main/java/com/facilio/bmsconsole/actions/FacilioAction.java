@@ -95,6 +95,28 @@ public class FacilioAction extends ActionSupport {
 		return NONE;
 	}
 	
+	// value in  seconds
+	/*public void setExpiry(String value) {
+		setHeader("Cache-Control", "max-age: );
+	}*/
+	public void setCacheControl(String value) {
+		setHeader("Cache-Control", value);
+	}
+	public void setLastModified(String value) {
+		setHeader("Last-Modified", value);
+	}
+	
+	public void setHeader(String name, String value) {
+		HttpServletResponse response = ServletActionContext.getResponse();
+		response.setHeader(name, value);
+	}
+	
+	protected String getHeader(String name) {
+		HttpServletResponse response = ServletActionContext.getResponse();
+		return response.getHeader(name);
+	}
+	
+	
 	private JSONObject result;
 	public JSONObject getResult() {
 		return result;

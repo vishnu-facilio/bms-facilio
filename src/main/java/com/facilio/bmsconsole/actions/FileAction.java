@@ -10,21 +10,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.FileContext;
-import com.facilio.bmsconsole.context.PublicFileContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
-import com.facilio.fw.BeanFactory;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-import com.facilio.services.filestore.FileStoreFactory;
-import com.facilio.services.filestore.PublicFileUtil;
-import com.facilio.time.DateTimeUtil;
 
 public class FileAction extends FacilioAction {
 
@@ -178,7 +171,7 @@ public class FileAction extends FacilioAction {
 					downloadStream = fs.readFile(fileInfo);
 					 if (downloadStream != null) {
 						String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
-						response.setHeader("Last-Modified", dateStamp);
+						setLastModified(dateStamp);
 						if (getIsDownload()) {
 							setContentType("application/x-download");
 							setFilename(fileInfo.getFileName());
