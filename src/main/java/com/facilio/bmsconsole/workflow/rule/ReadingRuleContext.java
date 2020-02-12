@@ -940,7 +940,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			
 			ReadingEventContext previousEventMeta = (ReadingEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META);	
 			if (previousEventMeta != null && previousEventMeta.getSeverityString() != null && !previousEventMeta.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-				ReadingEventContext clearEvent = constructClearEvent(resource, ttime);
+				ReadingEventContext clearEvent = constructClearEvent(resource, ttime, previousEventMeta.getEventMessage());
 				context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(clearEvent));
 			}	
 		}
@@ -951,7 +951,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (alarmMeta != null && !alarmMeta.isClear()) {
 //			LOGGER.info("Alarm meta before clearing : "+alarmMeta);
 			alarmMeta.setClear(true);
-			ReadingEventContext event = constructClearEvent(resource, ttime);
+			ReadingEventContext event = constructClearEvent(resource, ttime, alarmMeta.getSubject());
 //			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed clear condition for the associated resource", ttime);
 //			if (alarm.getSourceTypeEnum() == SourceType.THRESHOLD_ALARM) {
 //				json.put("readingDataId", readingDataId);
@@ -975,13 +975,14 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		return null;
 	}
 
-	public ReadingEventContext constructClearEvent(ResourceContext resource, long ttime) {
+	public ReadingEventContext constructClearEvent(ResourceContext resource, long ttime, String eventMessage) {
 		ReadingEventContext event = new ReadingEventContext();
 //		event.setEventMessage("Auto cleared event");
 		event.setResource(resource);
 		event.setReadingFieldId(this.getReadingFieldId());
 		event.setRuleId(this.getRuleGroupId());
 		event.setSubRuleId(this.getId());
+		event.setEventMessage(eventMessage);
 		event.setComment("System auto cleared Alarm because associated rule executed clear condition for the associated resource");
 		event.setCreatedTime(ttime);
 		event.setAutoClear(true);

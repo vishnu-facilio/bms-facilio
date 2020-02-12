@@ -299,7 +299,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			if (CollectionUtils.isNotEmpty(readingAlarms)) {
 				Map<Long, ReadingRuleAlarmMeta> metaMap = new HashMap<>();
 				for (ReadingAlarm alarm : readingAlarms) {
-					ReadingRuleAlarmMeta alarmMeta = constructNewAlarmMeta(alarm.getId(), alarm.getResource(), rule, alarm.getSeverity().getSeverity().equals(FacilioConstants.Alarm.CLEAR_SEVERITY));
+					ReadingRuleAlarmMeta alarmMeta = constructNewAlarmMeta(alarm.getId(), alarm.getResource(), rule, alarm.getSeverity().getSeverity().equals(FacilioConstants.Alarm.CLEAR_SEVERITY), alarm.getSubject());
 					metaMap.put(alarmMeta.getResourceId(), alarmMeta);
 				}
 				rule.setAlarmMetaMap(metaMap);
@@ -370,7 +370,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		return meta;
 	}
 
-	public static ReadingRuleAlarmMeta constructNewAlarmMeta (long alarmId, ResourceContext resource, ReadingRuleContext rule, boolean isClear) {
+	public static ReadingRuleAlarmMeta constructNewAlarmMeta (long alarmId, ResourceContext resource, ReadingRuleContext rule, boolean isClear, String subject) {
 		ReadingRuleAlarmMeta meta = new ReadingRuleAlarmMeta();
 		meta.setOrgId(AccountUtil.getCurrentOrg().getId());
 		meta.setAlarmId(alarmId);
@@ -379,7 +379,9 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		meta.setResource(resource);
 		meta.setReadingFieldId(rule.getReadingFieldId());
 		meta.setClear(isClear);
-
+		if(!StringUtils.isEmpty(subject)) {
+			meta.setSubject(subject);
+		}
 		return meta;
 	}
 

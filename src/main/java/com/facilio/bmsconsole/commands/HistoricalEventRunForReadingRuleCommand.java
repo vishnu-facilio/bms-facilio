@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -312,6 +313,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			List<FacilioField> allFields = modBean.getAllFields(readingRule.getReadingField().getModule().getName());
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
 			Map<String, Integer> lastItr = new HashMap<>(); //To store itr of currently matched rdm itr
+			Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
 			
 			for (int i = itr; i < readings.size(); i++) {
 				ReadingContext reading = readings.get(i);
@@ -330,7 +332,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 						
 						context.put(EventConstants.EventContextNames.PREVIOUS_EVENT_META, previousEventMeta);
 						
-						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, null, recordPlaceHolders, context, false, Collections.singletonList(readingRule.getActivityTypeEnum()), ruleTypes);
+						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, null, recordPlaceHolders, context, false, workflowRuleCacheMap, Collections.singletonList(readingRule.getActivityTypeEnum()), ruleTypes);
 						prevRDM = currentRDM;
 						
 						Boolean isAlarmCreated = (Boolean) context.get(FacilioConstants.ContextNames.IS_ALARM_CREATED);

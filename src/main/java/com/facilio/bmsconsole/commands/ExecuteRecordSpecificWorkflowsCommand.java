@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -106,6 +107,7 @@ public class ExecuteRecordSpecificWorkflowsCommand extends FacilioCommand implem
 				Criteria parentCriteria = new Criteria();
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 
+				Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
 				Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 				List records = new LinkedList<>(entry.getValue());
 				Iterator it = records.iterator();
@@ -120,7 +122,7 @@ public class ExecuteRecordSpecificWorkflowsCommand extends FacilioCommand implem
 							Map<String, Object> recordPlaceHolders = WorkflowRuleAPI
 									.getRecordPlaceHolders(module.getName(), record, placeHolders);
 							WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record,
-									changeSet, it, recordPlaceHolders, context, propagateError, activities);
+									changeSet, it, recordPlaceHolders, context, propagateError, workflowRuleCacheMap, activities);
 						}
 					}
 				}

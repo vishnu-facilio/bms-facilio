@@ -87,6 +87,10 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			throw new Exception("Not a valid Inclusion/Exclusion of Resources");
 		}
 	
+		if(((ReadingRuleContext) rule).isConsecutive() || ((ReadingRuleContext) rule).getOverPeriod() != -1) {
+			isScaledFlow = false;
+		}
+		
 		if(isScaledFlow)
 		{
 			int minutesInterval = 24*60; 								//As of now, splitting up the rule_resource job each day

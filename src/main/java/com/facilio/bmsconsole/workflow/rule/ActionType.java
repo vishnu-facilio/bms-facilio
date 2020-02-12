@@ -1650,6 +1650,6 @@ public enum ActionType {
 	}
 
 	private static ReadingRuleAlarmMeta addAlarmMeta (AlarmOccurrenceContext alarmOccurence, ResourceContext resource, ReadingRuleContext rule) throws Exception {
-		return ReadingRuleAPI.constructNewAlarmMeta(-1, resource, rule, false);
+		return ReadingRuleAPI.constructNewAlarmMeta(-1, resource, rule, false, alarmOccurence.getSubject());
 	}
 }
