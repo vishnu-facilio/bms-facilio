@@ -1,18 +1,29 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class GetSiteReportCards extends FacilioCommand {
@@ -27,6 +38,7 @@ public class GetSiteReportCards extends FacilioCommand {
 			
 			JSONObject reports = new JSONObject();
 			reports.put("independent_spaces", getIndependentSpaces(campusId));
+			reports.put("allSpaces", getAllSpaces(campusId));
 			
 			JSONObject woCount = new JSONObject();
 			woCount.put("type", "count");
@@ -93,5 +105,30 @@ public class GetSiteReportCards extends FacilioCommand {
 		else {
 			return ((Number) rs.get(0).get("count")).longValue();
 		}
+	}
+	
+	private long getAllSpaces (long siteId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		SelectRecordsBuilder builder = new SelectRecordsBuilder()
+				.select(new HashSet<>())
+				.module(module)
+				.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("spaceType"), String.valueOf(SpaceType.SPACE.getIntVal()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(siteId), NumberOperators.EQUALS))
+				;
+		
+		List<Map<String, Object>> props = builder.getAsProps();
+		long count = 0;
+		if (CollectionUtils.isNotEmpty(props)) {
+			count = ((Number) props.get(0).get("id")).longValue();
+		}
+		return count;
+		
 	}
 }

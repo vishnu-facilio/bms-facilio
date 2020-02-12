@@ -96,9 +96,12 @@ public class FacilioAction extends ActionSupport {
 	}
 	
 	// value in  seconds
-	/*public void setExpiry(String value) {
-		setHeader("Cache-Control", "max-age: );
-	}*/
+	public void setExpiry(String value) {
+		setCacheControl("max-age=" + value);
+	}
+	public void setDayExpiry() {
+		setExpiry("86400");
+	}
 	public void setCacheControl(String value) {
 		setHeader("Cache-Control", value);
 	}

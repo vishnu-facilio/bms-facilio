@@ -172,6 +172,7 @@ public class FileAction extends FacilioAction {
 					 if (downloadStream != null) {
 						String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
 						setLastModified(dateStamp);
+						setDayExpiry();
 						if (getIsDownload()) {
 							setContentType("application/x-download");
 							setFilename(fileInfo.getFileName());
