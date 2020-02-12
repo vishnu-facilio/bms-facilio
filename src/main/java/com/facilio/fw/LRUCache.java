@@ -32,7 +32,7 @@ public class LRUCache<K, V>{
 
         System.out.println("value for babu old -" + testcache.get("babu"));
     	Thread.sleep(1500);
-    	//testcache.putInRedis("babu" , "babu1");
+    	//testcache.putInRedis("babu" , "babu1");private Long getFromLocalRedisCache ()
 
     	//testcache.get("manthosh");
         System.out.println("value for babu new - " + testcache.get("babu"));
@@ -199,9 +199,9 @@ public class LRUCache<K, V>{
 
     public V get(K key){
     	try {
-            long redisTimeStamp = getFromRedis(key);
             Node<K, V> tempNode = cache.get(key);
             if (tempNode != null) {
+				long redisTimeStamp = getFromRedis(key);
             	if(tempNode.addedTime >= redisTimeStamp){
 					hitcount++;
 					return tempNode.getValue();
@@ -216,29 +216,47 @@ public class LRUCache<K, V>{
 		return null;
     }
 
+    private Long getFromLocalRedis (String key) {
+		return AccountUtil.getCurrentAccount().getFromRedisLocalCache(key);
+	}
+
+	private void addToLocalRedis (String key, Long value) {
+		AccountUtil.getCurrentAccount().addToRedisLocalCache(key, value);
+	}
+
+	private Long removeFromLocalRedis (String key) {
+		return AccountUtil.getCurrentAccount().removeFromRedisLocalCache(key);
+	}
+
     private long getFromRedis(K key) {
 		if (redis != null) {
-			long startTime = System.currentTimeMillis();
-			if(AccountUtil.getCurrentAccount() != null) {
-				AccountUtil.getCurrentAccount().incrementRedisGetCount(1);
+			String redisKey = getRedisKey(key.toString());
+			Long redisTimestamp = getFromLocalRedis(redisKey);
+			if (redisTimestamp == null) {
+				long startTime = System.currentTimeMillis();
+				if (AccountUtil.getCurrentAccount() != null) {
+					AccountUtil.getCurrentAccount().incrementRedisGetCount(1);
+				}
+				try (Jedis jedis = redis.getJedis()) {
+					String value = jedis.get(redisKey);
+					if (value == null) {
+						redisTimestamp = Long.MAX_VALUE;
+					}
+					try {
+						redisTimestamp = Long.parseLong(value);
+					} catch (NumberFormatException e) {
+						redisTimestamp = Long.MAX_VALUE;
+					}
+					addToLocalRedis(redisKey, redisTimestamp);
+				} catch (Exception e) {
+					LOGGER.debug("Exception while getting key from Redis");
+				} finally {
+					if (AccountUtil.getCurrentAccount() != null) {
+						AccountUtil.getCurrentAccount().incrementRedisGetTime((System.currentTimeMillis() - startTime));
+					}
+				}
 			}
-			try (Jedis jedis = redis.getJedis()) {
-				String value = jedis.get(getRedisKey((String) key));
-				if (value == null) {
-					return Long.MAX_VALUE;
-				}
-				try {
-					return Long.parseLong(value);
-				} catch (NumberFormatException e) {
-					return Long.MAX_VALUE;
-				}
-			} catch (Exception e) {
-				LOGGER.debug("Exception while getting key from Redis");
-			} finally {
-				if(AccountUtil.getCurrentAccount() != null) {
-					AccountUtil.getCurrentAccount().incrementRedisGetTime((System.currentTimeMillis()-startTime));
-				}
-			}
+			return redisTimestamp;
 		}
         return -1L;
     }
@@ -281,7 +299,9 @@ public class LRUCache<K, V>{
 				AccountUtil.getCurrentAccount().incrementRedisDeleteCount(1);
 			}
 			try (Jedis jedis = redis.getJedis()) {
-				jedis.del(getRedisKey((String) key));
+				String redisKey = getRedisKey(key.toString());
+				jedis.del(redisKey);
+				removeFromLocalRedis(redisKey);
 			} catch (Exception e) {
 				LOGGER.debug("Exception while removing key in Redis. ");
 			} finally {
@@ -299,7 +319,9 @@ public class LRUCache<K, V>{
 				AccountUtil.getCurrentAccount().incrementRedisPutCount(1);
 			}
 			try (Jedis jedis = redis.getJedis()) {
-				jedis.setnx(getRedisKey((String) key), String.valueOf(node.addedTime));
+				String redisKey = getRedisKey(key.toString());
+				jedis.setnx(redisKey, String.valueOf(node.addedTime));
+				addToLocalRedis(redisKey, node.addedTime);
 			} catch (Exception e) {
 				LOGGER.debug("Exception while putting key in Redis. ");
 			} finally {

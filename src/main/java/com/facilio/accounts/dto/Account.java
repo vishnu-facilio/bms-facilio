@@ -1,6 +1,7 @@
 package com.facilio.accounts.dto;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -314,6 +315,23 @@ public class Account implements AccountsInterface<User>, Serializable{
 		redisGetTime = 0L;
 		redisPutTime = 0L;
 		redisDeleteTime = 0L;
+	}
+
+	private HashMap<String, Long> redisLocalCache;
+	public Long getFromRedisLocalCache (String key) {
+		return redisLocalCache == null ? null : redisLocalCache.get(key);
+	}
+	public void addToRedisLocalCache  (String key, Long value) {
+		if (redisLocalCache == null) {
+			redisLocalCache = new HashMap<>();
+		}
+		redisLocalCache.put(key, value);
+	}
+	public Long removeFromRedisLocalCache (String key) {
+		if (redisLocalCache != null) {
+			return redisLocalCache.remove(key);
+		}
+		return null;
 	}
 
 	private Level level = null;
