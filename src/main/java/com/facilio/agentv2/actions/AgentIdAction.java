@@ -9,6 +9,7 @@ import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
+import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.chain.FacilioContext;
@@ -249,6 +250,19 @@ public class AgentIdAction extends AgentActionV2 {
             LOGGER.info("Exception occurred while getting agent overview ",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             setResult(AgentConstants.RESULT,ERROR);
+        }
+        return SUCCESS;
+    }
+
+    public String getIotMessages(){
+        try{
+            List<Map<String, Object>> result = new ArrayList<>();
+            result = IotMessageApiV2.listIotMessages(agentId, constructListContext(new FacilioContext()));
+            setResult(AgentConstants.DATA, result );
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while getting iot messages->"+getAgentId()+" ",e);
+            setResult(AgentConstants.RESULT,ERROR);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
         }
         return SUCCESS;
     }

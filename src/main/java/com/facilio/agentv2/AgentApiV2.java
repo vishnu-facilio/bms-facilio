@@ -78,6 +78,7 @@ public class AgentApiV2 {
         if (!getDeleted) {
             criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.DELETED_TIME), "NULL", CommonOperators.IS_EMPTY));
         }
+        context.put(FacilioConstants.ContextNames.SORT_FIELDS,fieldMap.get(AgentConstants.CONNECTION_STATUS).getColumnName()+" DESC");
         context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 
         List<Map<String, Object>> records = bean.getRows(context);
@@ -250,22 +251,25 @@ public class AgentApiV2 {
 
     static JSONObject getAgentCountDetails(){
         try{
+            List<FacilioField> fields = new ArrayList<>();
+            fields.add(FIELDSMAP.get(AgentConstants.CONNECTION_STATUS));
+            fields.add(FieldFactory.getIdField(MODULE));
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                     .table(MODULE.getTableName())
-                    .select(Collections.singletonList(FIELDSMAP.get(AgentConstants.CONNECTION_STATUS)))
+                    .select(fields)
                     .andCondition(getDeletedTimeNullCondition(MODULE));
             List<Map<String, Object>> data = selectRecordBuilder.get();
-            int deletedCount = 0;
+            int offlineCount = 0;
             if( ! data.isEmpty() ){
                 for (Map<String, Object> datum : data) {
-                    if( ! (boolean)datum.get(AgentConstants.CONNECTION_STATUS)){
-                        deletedCount++;
+                    if( (datum.get(AgentConstants.CONNECTION_STATUS) == null ) || (! (boolean)datum.get(AgentConstants.CONNECTION_STATUS)) ){
+                        offlineCount++;
                     }
                 }
             }
             JSONObject countData = new JSONObject();
             countData.put(AgentConstants.TOTAL_COUNT,data.size());
-            countData.put(AgentConstants.ACTIVE_COUNT,(data.size()-deletedCount));
+            countData.put(AgentConstants.ACTIVE_COUNT,(data.size()-offlineCount));
             LOGGER.info(" agent count -- "+countData);
             return countData;
         } catch (Exception e) {

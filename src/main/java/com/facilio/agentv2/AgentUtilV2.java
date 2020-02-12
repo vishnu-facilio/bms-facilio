@@ -35,6 +35,7 @@ public class AgentUtilV2
         JSONObject overiewData = new JSONObject();
         try {
             overiewData.put(AgentConstants.CONTROLLER,ControllerApiV2.getControllerCountData(agentId));
+            overiewData.put(AgentConstants.POINTS,PointsAPI.getPointsCountData(agentId));
         } catch (Exception e) {
             LOGGER.info("Exception while getting controllerCountdata",e);
         }

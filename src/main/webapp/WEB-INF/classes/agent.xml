@@ -132,6 +132,9 @@
         <action name="agentOverview" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentOverView">
         </action>
 
+
+        <action name="getIotMessages" class="com.facilio.agentv2.actions.AgentIdAction" method="getIotMessages">
+        </action>
     </package>
 
     <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent">

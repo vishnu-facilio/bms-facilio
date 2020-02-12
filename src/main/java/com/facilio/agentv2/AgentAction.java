@@ -28,9 +28,15 @@ public class AgentAction extends AgentActionV2 {
             constructListContext(context);
             List<FacilioAgent> agents = AgentApiV2.listFacilioAgents(context);
             JSONArray jsonArray = new JSONArray();
+            long offLineAgents = 0;
             for (FacilioAgent agent : agents) {
                 jsonArray.add(agent.toJSON());
+                if( ! agent.getConnectionStatus()){
+                    offLineAgents++;
+                }
             }
+            setResult(AgentConstants.TOTAL_COUNT,agents.size());
+            setResult(AgentConstants.ACTIVE_COUNT,agents.size()-offLineAgents);
             setResult(AgentConstants.DATA, jsonArray);
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             setResult(AgentConstants.RESULT, SUCCESS);

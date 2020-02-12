@@ -9,10 +9,13 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.logs.LogsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -268,4 +271,51 @@ public class IotMessageApiV2 {
         }
     }
 
+    public static List<Map<String, Object>> listIotMessages(long agentId, FacilioContext paginationContext) throws Exception {
+        List<Long> getIotDataIds = getIotDataIds(agentId);
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(MODULE.getTableName())
+                .select(FieldFactory.getIotMessageFields());
+        if( ! getIotDataIds.isEmpty()){
+            FacilioField parentIdField = FieldFactory.getAsMap(FieldFactory.getIotMessageFields()).get(AgentConstants.PARENT_ID);
+            builder.andCondition(CriteriaAPI.getCondition(parentIdField,getIotDataIds,NumberOperators.EQUALS));
+            JSONObject pagination = (JSONObject) paginationContext.get(FacilioConstants.ContextNames.PAGINATION);
+            if (pagination != null ) {
+                int page = (int) pagination.get("page");
+                int perPage = (int) pagination.get("perPage");
+
+                int offset = ((page-1) * perPage);
+                if (offset < 0) {
+                    offset = 0;
+                }
+
+                builder.offset(offset);
+                builder.limit(perPage);
+            }
+            return builder.get();
+        }else {
+            throw new Exception(" No iot message for agent ->"+agentId);
+        }
+    }
+
+    private static List<Long> getIotDataIds(long agentId) throws Exception {
+        FacilioModule iotDataModule = ModuleFactory.getIotDataModule();
+        FacilioField idField = FieldFactory.getIdField();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(iotDataModule.getTableName())
+                .select(Collections.singletonList(idField));
+        if(agentId > 0){
+            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(iotDataModule), String.valueOf(agentId), NumberOperators.EQUALS));
+        }
+        List<Long> ids = new ArrayList<>();
+        List<Map<String, Object>> data = builder.get();
+        LOGGER.info(" query "+builder.toString());
+        if (data != null && (! data.isEmpty()) ) {
+            for (Map<String, Object> datum : data) {
+                ids.add((Long) datum.get(idField.getName()));
+            }
+        }
+        LOGGER.info(" iotData ids "+ids);
+        return ids;
+    }
 }
