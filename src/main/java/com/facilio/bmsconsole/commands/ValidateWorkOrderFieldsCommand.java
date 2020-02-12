@@ -4,8 +4,10 @@ import java.util.Calendar;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class ValidateWorkOrderFieldsCommand extends FacilioCommand {
@@ -21,6 +23,11 @@ public class ValidateWorkOrderFieldsCommand extends FacilioCommand {
 			}
 			else {
 				woContext.setSubject(woContext.getSubject().trim());
+			}
+			
+			if (woContext.getSiteId() == -1 && woContext.getResource() != null && woContext.getResource().getId() != -1) {
+				ResourceContext resource = ResourceAPI.getResource(woContext.getResource().getId());
+				woContext.setSiteId(resource.getSiteId());
 			}
 
 			if(woContext.getDescription() != null && !woContext.getDescription().isEmpty()) {
