@@ -1,7 +1,7 @@
 demoRollUpTableList : 
    
        
-   - tableName: Energy_Data_2
+   - tableName: Energy_Data
      columns: [ACTUAL_TTIME , TTIME , CREATED_TIME]
      primaryColumn: TTIME
       
@@ -132,19 +132,7 @@ demoRollUpTableList :
    - tableName: PM_Readings 
      columns: [ACTUAL_TTIME , TTIME]    
      primaryColumn: TTIME 
-     
-   - tableName: Reading_Alarms 
-     columns: [START_TIME , END_TIME]   
-     primaryColumn: START_TIME
 
-   - tableName: Alarms 
-     columns: [CREATED_TIME , MODIFIED_TIME , CLEARED_TIME , DATETIME_CF1 , DATETIME_CF2 , DATETIME_CF3 , DATETIME_CF4]   
-     primaryColumn: CREATED_TIME
-     
-   - tableName: ML_Alarm_Occurrences 
-     columns: [TTIME]   
-     primaryColumn: TTIME 
-     
    - tableName: Marked_Reading 
      columns: [TTIME]   
      primaryColumn: TTIME  
@@ -163,6 +151,18 @@ demoRollUpTableList :
      
    - tableName: Chiller_Readings2 
      columns: [ACTUAL_TTIME , TTIME]    
+     primaryColumn: TTIME      
+ 
+   - tableName: Reading_Alarms 
+     columns: [START_TIME , END_TIME]   
+     primaryColumn: START_TIME
+
+   - tableName: Alarms 
+     columns: [CREATED_TIME , MODIFIED_TIME , CLEARED_TIME , DATETIME_CF1 , DATETIME_CF2 , DATETIME_CF3 , DATETIME_CF4]   
+     primaryColumn: CREATED_TIME
+     
+   - tableName: ML_Alarm_Occurrences 
+     columns: [TTIME]   
      primaryColumn: TTIME 
      
    - tableName: AlarmOccurrence 
@@ -185,9 +185,9 @@ demoRollUpTableList :
      columns: [READING_TIME]   
      primaryColumn: READING_TIME       
  
-   - tableName: Reading_Data_Meta    
-     columns: [TTIME]  
-     primaryColumn: TTIME
+   - tableName: ReadingAlarmOccurrence    
+     columns: [DATETIME_CF1 , DATETIME_CF2 , DATETIME_CF3 , DATETIME_CF4 , DATETIME_CF5, DATETIME_CF6, DATETIME_CF7, DATETIME_CF8, DATETIME_CF9, DATETIME_CF10]  
+     primaryColumn: DATETIME_CF1
      
      
      

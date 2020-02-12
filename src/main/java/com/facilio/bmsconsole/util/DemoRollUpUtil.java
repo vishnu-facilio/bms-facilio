@@ -119,7 +119,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Scheduled_Actions" , Arrays.asList("JOB_TIME"));
 		tablesContainsDateField.put("Task_Section_Template_Triggers" , Arrays.asList("EXECUTE_IF_NOT_IN_TIME"));
 		tablesContainsDateField.put("PM_Jobs" , Arrays.asList("NEXT_EXECUTION_TIME"));
-//		tablesContainsDateField.put("Reading_Data_Meta" , Arrays.asList("TTIME"));
+		tablesContainsDateField.put("Reading_Data_Meta" , Arrays.asList("TTIME"));
 //		tablesContainsDateField.put("Marked_Reading" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Tenant_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Tenant_Notes" , Arrays.asList("CREATED_TIME"));
