@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,12 +21,76 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
 public class FilterUtil {
 	private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(FilterUtil.class.getName());
+	
+	public static Criteria getTimeFilterCriteria(String moduleName, JSONObject criteriaObj) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Criteria criteria = new Criteria();
+		
+		JSONObject conditions = (JSONObject) criteriaObj.get("conditions");
+		if(conditions != null && !conditions.isEmpty()) {
+			for(Object key : conditions.keySet()) {
+				JSONObject condition = (JSONObject)conditions.get((String)key);
+				
+				FacilioField timeField = modBean.getField(condition.get("field").toString(), moduleName);
+				criteria.addAndCondition(getTimeFieldCondition(timeField, condition));
+			}
+		}
+		return criteria;
+	}
+	public static Condition getTimeFieldCondition(FacilioField timeField, JSONObject conditionObj){
+		String value = "";
+		Object valueObj = conditionObj.get("value");
+		if(valueObj!=null && valueObj instanceof JSONArray) {
+			value = StringUtils.join((JSONArray)valueObj, ",");
+		}
+		else {
+			value = (String)valueObj;
+		}
+		Operator operator = Operator.getOperator((int)(long)conditionObj.get("operatorId"));
+		return CriteriaAPI.getCondition(timeField, value, operator);
+	}
+	
+	public static void setDataFilterCriteria(String parrentModuleName, JSONObject criteriaObj, SelectRecordsBuilder<ModuleBaseWithCustomFields> parrentBuilder) throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField timeField = modBean.getField("ttime", parrentModuleName);
+		
+		JSONObject conditions = (JSONObject) criteriaObj.get("conditions");
+		if(conditions != null && !conditions.isEmpty()) {
+			for(Object key : conditions.keySet()) {
+				JSONObject condition = (JSONObject)conditions.get((String)key);
+				
+				String moduleName = (String) condition.get("moduleName");
+				String field = (String) condition.get("fieldName");
+				Long parentId = (Long) condition.get("parentId");
+				
+				FacilioField selectField = modBean.getField("ttime", moduleName);
+				FacilioField parentIdField = modBean.getField("parentId", moduleName);
+				FacilioField conditionField = modBean.getField(field, moduleName);
+				String tableName = conditionField.getModule().getTableName();
+				
+				String value = (String) condition.get("value");
+				int operatorId = ((Number) condition.get("operatorId")).intValue();
+				Operator operator = Operator.getOperator(operatorId);
+				
+				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+						.table(tableName)
+						.select(Collections.singletonList(selectField))
+						.andCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), NumberOperators.EQUALS))
+						.andCondition(CriteriaAPI.getCondition(conditionField, value, operator));
+						;
+						
+				parrentBuilder.andCustomWhere(timeField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
+			}
+		}
+	}
 	
 	public static Criteria getTimeFilterCriteria(DateRange dateRange, String moduleName, JSONObject calendarObj) throws Exception {
 		

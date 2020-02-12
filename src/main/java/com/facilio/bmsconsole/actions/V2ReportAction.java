@@ -73,6 +73,7 @@ import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.report.context.ReportFolderContext;
@@ -2054,6 +2055,24 @@ public class V2ReportAction extends FacilioAction {
 		List<ReportContext> reports = ReportUtil.getReports(moduleName, getSearch());
 		setResult("reportFolders", reportFolders);
 		setResult("reports", reports);
+		return SUCCESS;
+	}
+	
+	public String fetchCriteriaReport() throws Exception {
+		JSONParser parser = new JSONParser();
+		List<ReportDataPointContext> dataPoints = ReportUtil.getDataPoints((JSONObject) parser.parse(dataFilter));
+		reportContext = new ReportContext();
+		reportContext.setDataPoints(dataPoints);
+		reportContext.setDateOperator(DateOperators.BETWEEN);
+		reportContext.setDateValue(startTime+", "+endTime);
+//		reportContext.setType(ReportType.READING_REPORT);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReportDataChain() : ReadOnlyChainFactory.fetchReportDataChain();
+		fetchReadingDataChain.execute(context);
+		
+		setReportResult(context);
 		return SUCCESS;
 	}
 	

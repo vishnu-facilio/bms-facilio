@@ -2019,6 +2019,10 @@
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="searchReportAndFolders">
 		</action>
+		<action name="fetchCriteriaReport"
+			class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="fetchCriteriaReport">
+		</action>
 	</package>
 
 	<package name="reportFoldersApiv2"

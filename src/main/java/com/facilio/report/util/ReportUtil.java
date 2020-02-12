@@ -36,6 +36,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
@@ -55,6 +56,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFactory;
 import com.facilio.report.context.ReportFactory.ModuleType;
+import com.facilio.report.context.ReportFactory.ReportFacilioField;
 import com.facilio.report.context.ReportFactory.WorkOrder;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
@@ -834,5 +836,81 @@ public class ReportUtil {
 			}
 		}
 		return alias;
+	}
+	
+	public static List<ReportDataPointContext> getDataPoints(JSONObject criteriaObj) throws Exception {
+		List<ReportDataPointContext> dataPoints = new ArrayList<>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		JSONObject conditions = (JSONObject) criteriaObj.get("conditions");
+		if(conditions != null && !conditions.isEmpty()) {
+			for(Object key : conditions.keySet()) {
+				JSONObject condition = (JSONObject)conditions.get((String)key);
+				
+				ReportDataPointContext dataPoint = new ReportDataPointContext();
+				
+				String moduleName = (String) condition.get("moduleName");
+				String field = (String) condition.get("fieldName");
+				Long parentId = (Long) condition.get("parentId");
+				
+				FacilioField timeField = modBean.getField("ttime", moduleName);
+				FacilioField parentIdField = modBean.getField("parentId", moduleName);
+				FacilioField conditionField = modBean.getField(field, moduleName);
+				
+				FacilioModule module = conditionField.getModule();
+				String tableName = module.getTableName();
+				
+				String value = (String) condition.get("value");
+				int operatorId = ((Number) condition.get("operatorId")).intValue();
+				Operator operator = Operator.getOperator(operatorId);
+				
+				Criteria dpCriteria = new Criteria();
+				dpCriteria.addAndCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), NumberOperators.EQUALS));
+				dpCriteria.addAndCondition(CriteriaAPI.getCondition(conditionField, value, operator));
+//				dataPoint.setDpCriteria(dpCriteria);
+				
+				ReportFacilioField yField = getCriteriaField("appliedVsUnapplied", "appliedVsUnapplied", module, "CASE WHEN "+conditionField.getCompleteColumnName()+"="+value+" THEN 'true' ELSE 'false' END", FieldType.BOOLEAN);
+				ReportYAxisContext yAxis = new ReportYAxisContext();
+				yAxis.setField(module, yField);
+				Map<Integer, Object> enumMap = new HashMap<>();
+				enumMap.put(0, "False");
+				enumMap.put(1, "True");
+				yAxis.setEnumMap(enumMap);
+				dataPoint.setyAxis(yAxis);
+				
+				dataPoint.setModuleName(moduleName);
+				
+				ReportFieldContext xAxis = new ReportFieldContext();
+				xAxis.setField(module, timeField);
+				dataPoint.setxAxis(xAxis);
+				
+				ReportFieldContext dateField = new ReportFieldContext();
+				dateField.setField(module, timeField);
+				dataPoint.setDateField(dateField);
+				
+				dataPoint.setName((String)key);
+				
+				Map<String, String> aliases = new HashMap<>();
+				aliases.put("actual", (String)key);
+				dataPoint.setAliases(aliases);
+				
+				List<String> orderBy = new ArrayList<>();
+				orderBy.add(timeField.getCompleteColumnName());
+//				dataPoint.setOrderBy(orderBy);
+				dataPoints.add(dataPoint);
+			}
+		}
+		return dataPoints;
+		
+	}
+	
+	public static ReportFacilioField getCriteriaField(String name, String displayName, FacilioModule module, String columnName, FieldType fieldType){
+		ReportFacilioField field = new ReportFacilioField(-1);
+		field.setName(name);
+		field.setDisplayName(displayName);
+		field.setModule(module);
+		field.setGenericColumnName(columnName);
+		field.setDataType(fieldType);
+		return field;
 	}
 }

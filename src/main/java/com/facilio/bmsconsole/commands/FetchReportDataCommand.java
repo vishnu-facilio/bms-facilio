@@ -422,17 +422,18 @@ public class FetchReportDataCommand extends FacilioCommand {
 			newSelectBuilder.andCriteria(report.getCriteria());
 		}
 		
+		if(dp.getDpCriteria() != null) {
+			newSelectBuilder.andCriteria(dp.getDpCriteria());
+		}
+		
 		if(timeFilter != null && !timeFilter.isEmpty()) {
-			Criteria timeFilterCriteria = FilterUtil.getTimeFilterCriteria(report.getDateRange(), dp.getxAxis().getModuleName(), timeFilter);
+			Criteria timeFilterCriteria = FilterUtil.getTimeFilterCriteria(dp.getxAxis().getModuleName(), timeFilter);
 			if(timeFilterCriteria != null && !timeFilterCriteria.isEmpty()){
 				newSelectBuilder.andCriteria(timeFilterCriteria);
 			}
 		}
 		if(dataFilter != null && !dataFilter.isEmpty()) {
-			Criteria timeFilterCriteria = FilterUtil.getDataFilterCriteria(dp.getxAxis().getModuleName(), dataFilter);
-			if(timeFilterCriteria != null && !timeFilterCriteria.isEmpty()){
-				newSelectBuilder.andCriteria(timeFilterCriteria);
-			}
+			FilterUtil.setDataFilterCriteria(dp.getxAxis().getModuleName(), dataFilter, newSelectBuilder);
 		}
 
 		List<Map<String, Object>> props;

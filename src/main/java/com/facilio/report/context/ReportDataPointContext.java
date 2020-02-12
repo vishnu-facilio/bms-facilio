@@ -336,6 +336,14 @@ public class ReportDataPointContext {
 	public void setModuleName(String moduleName){
 		this.moduleName = moduleName;
 	}
+	
+	private Criteria dpCriteria;
+	public Criteria getDpCriteria() {
+		return this.dpCriteria;
+	}
+	public void setDpCriteria(Criteria criteria) {
+		this.dpCriteria = criteria;
+	}
 
 	public static enum OrderByFunction {
 		NONE (null),
