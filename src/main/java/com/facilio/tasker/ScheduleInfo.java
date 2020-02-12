@@ -9,10 +9,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -356,7 +353,7 @@ public class ScheduleInfo implements Serializable {
 					throw new IllegalArgumentException("Invalid value range for Week");
 				}
 
-				if (yearlyDayOfWeekValues != null && !yearlyDayOfWeekValues.isEmpty() && !yearlyDayOfWeekValues.stream().allMatch(x -> x >= 1 & x <= 7)) {
+				if (yearlyDayOfWeekValues != null && !yearlyDayOfWeekValues.isEmpty() && !yearlyDayOfWeekValues.stream().allMatch(x -> x >= 1 && x <= 7)) {
 					throw new IllegalArgumentException("Invalid value for yearlyDayOfWeekValues");
 				}
 
@@ -369,7 +366,14 @@ public class ScheduleInfo implements Serializable {
 
 				// 1. Move to the first day of the nearest month if the start time month doesn't fall in the rule
 				if (!values.contains(zdt.getMonthValue())) {
-					zdt = incrementYear(zdt, 1);
+					final int monthVal = zdt.getMonthValue();
+					Optional<Integer> nearestMonth = values.stream().filter(i -> i > monthVal).sorted().findFirst();
+					if (nearestMonth.isPresent()) {
+						zdt = zdt.withMonth(nearestMonth.get());
+					} else {
+						zdt = incrementYear(zdt, 1);
+						zdt = zdt.withMonth(values.get(0));
+					}
 					zdt = zdt.withDayOfMonth(1);
 				}
 
