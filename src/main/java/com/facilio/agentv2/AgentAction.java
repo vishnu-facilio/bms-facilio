@@ -15,7 +15,9 @@ import org.json.simple.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class AgentAction extends AgentActionV2 {
@@ -29,12 +31,15 @@ public class AgentAction extends AgentActionV2 {
             List<FacilioAgent> agents = AgentApiV2.listFacilioAgents(context);
             JSONArray jsonArray = new JSONArray();
             long offLineAgents = 0;
+            Set<Long> siteCount = new HashSet<>();
             for (FacilioAgent agent : agents) {
                 jsonArray.add(agent.toJSON());
                 if( ! agent.getConnectionStatus()){
                     offLineAgents++;
+                    siteCount.add(agent.getSiteId());
                 }
             }
+            setResult(AgentConstants.SITE_COUNT,siteCount.size());
             setResult(AgentConstants.TOTAL_COUNT,agents.size());
             setResult(AgentConstants.ACTIVE_COUNT,agents.size()-offLineAgents);
             setResult(AgentConstants.DATA, jsonArray);

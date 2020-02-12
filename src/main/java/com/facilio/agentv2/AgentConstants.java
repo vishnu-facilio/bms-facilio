@@ -160,4 +160,5 @@ public class AgentConstants
     public static final String LINK_TYPE = "linkType";
     public static final String TARGET_COMP = "targetComp";
     public static final String TARGET_NAME = "targetName";
+    public static final String SITE_COUNT = "siteCount";
 }

@@ -783,7 +783,11 @@ public class PointsAPI extends AgentUtilities {
                 .andCondition(AgentApiV2.getDeletedTimeNullCondition(MODULE));
         if (agentId > 0) {
             Set<Long> controllerIds = ControllerApiV2.getControllerIds(agentId).keySet();
-            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(MODULE), controllerIds, NumberOperators.EQUALS));
+            if( ! controllerIds.isEmpty()){
+                builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(MODULE), controllerIds, NumberOperators.EQUALS));
+            }else {
+                return new ArrayList<>();
+            }
         }
         List<Map<String, Object>> data = builder.get();
         LOGGER.info(" data " + data);
