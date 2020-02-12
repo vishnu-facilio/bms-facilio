@@ -614,6 +614,13 @@ public class ViewAPI {
 			
 			if(viewField.getParentFieldId() != -1) {
 				viewField.setParentField(modBean.getField(viewField.getParentFieldId()));
+			} else if (viewField.getParentFieldName() != null && StringUtils.isNotEmpty(viewField.getParentFieldName())) {
+				FacilioField parentField = modBean.getField(viewField.getParentFieldName(), moduleName);
+				if (parentField != null) {
+					FacilioField childField = modBean.getField(viewField.getName(), viewField.getParentFieldName());
+					viewField.setField(childField);
+					viewField.setParentField(parentField);
+				}
 			}
 		}
 	}

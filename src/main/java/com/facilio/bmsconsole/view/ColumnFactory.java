@@ -136,6 +136,14 @@ public class ColumnFactory {
 		columnMap.put("vendors-myInactiveVendors", getPortalVendorsColumns());
 		columnMap.put("vendors-myAll", getPortalVendorsColumns());
 
+		// safety plan submodules default columns
+		columnMap.put("safetyPlanHazard-all", getSafetyPlanHazardColumns());
+		columnMap.put("assetHazard-all", getSafetyPlanHazardColumns());
+		columnMap.put("workorderHazard-all", getSafetyPlanHazardColumns());
+		columnMap.put("hazardPrecaution-all", getAllHazardPrecautionsColumns());
+		columnMap.put("hazardPrecaution-associatedprecautions", getHazardPrecautionsColumns());
+		columnMap.put("hazardPrecaution-associatedhazards", getAssociatedHazardPrecautionsColumns());
+
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
@@ -1122,5 +1130,34 @@ public class ColumnFactory {
 		return columns;
 	}
 
+	public static  List<ViewField> getSafetyPlanHazardColumns() {
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("hazard", "Hazard"));
+		columns.add(new ViewField("description", "Description", "hazard"));
+		columns.add(new ViewField("type", "Type", "hazard"));
+		return columns;
+	}
 
+	public static  List<ViewField> getAssociatedHazardPrecautionsColumns() {
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("hazard", "Hazard"));
+		columns.add(new ViewField("description", "Description", "hazard"));
+		columns.add(new ViewField("type", "Type", "hazard"));
+		return columns;
+	}
+
+	public static  List<ViewField> getHazardPrecautionsColumns() {
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("precaution", "Precaution"));
+		columns.add(new ViewField("description", "Description", "precaution"));
+		return columns;
+	}
+
+	public static  List<ViewField> getAllHazardPrecautionsColumns() {
+		List<ViewField> columns = new ArrayList<>();
+		columns.add(new ViewField("precaution", "Precaution"));
+		columns.add(new ViewField("description", "Description", "precaution"));
+		columns.add(new ViewField("hazard", "Hazard"));
+		return columns;
+	}
 }

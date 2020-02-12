@@ -239,7 +239,8 @@ public class PageWidget {
 		PORTAL_INSURANCE("portalInsurance"),
 		PORTAL_WORKPERMIT("portalWorkPermit"),
 		SAFETY_PLAN_PRECAUTIONS("safetyPlanPrecautions"),
-		PRECAUTION_HAZARDS("precautionHazards")
+		PRECAUTION_HAZARDS_LIST("precautionHazardsList"),
+		HAZARD_PECAUTIONS_LIST("hazardPrecautionsList")
  		;
 		
 		private String name;

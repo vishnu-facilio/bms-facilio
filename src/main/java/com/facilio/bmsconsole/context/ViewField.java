@@ -77,10 +77,25 @@ public class ViewField{
 	}
 	
 	public ViewField() { }
+
+	private String parentFieldName;
 	
 	public ViewField(String name, String displayName) {
 		this.name = name;
 		this.columnDisplayName = displayName;
 	}
-	
+
+	public ViewField(String name, String displayName, String parentFieldName) {
+		this.name = name;
+		this.columnDisplayName = displayName;
+		this.parentFieldName =parentFieldName;
+	}
+
+	public String getParentFieldName() {
+		return parentFieldName;
+	}
+
+	public void setParentFieldName(String parentFieldName) {
+		this.parentFieldName = parentFieldName;
+	}
 }

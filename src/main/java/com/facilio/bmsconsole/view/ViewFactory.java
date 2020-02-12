@@ -663,7 +663,24 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("associatedhazards", getAssociatedHazardPrecautionView().setOrder(order++));
+		views.put("associatedprecautions", getAssociatedPrecautionView().setOrder(order++));
+		views.put("all", getAllHazardPrecautionView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.HAZARD_PRECAUTION, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllSafetyPlanHazardsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SAFETYPLAN_HAZARD, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllAssetHazardsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.ASSET_HAZARD, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWorkOrderHazardsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_HAZARD, views);
 
 
 		return viewsMap;
@@ -6177,6 +6194,7 @@ public class ViewFactory {
 
 		return allView;
 	}
+
 	private static FacilioView getAssociatedHazardPrecautionView() {
 
 		FacilioView allView = new FacilioView();
@@ -6185,4 +6203,50 @@ public class ViewFactory {
 
 		return allView;
 	}
+
+	private static FacilioView getAssociatedPrecautionView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("associatedprecautions");
+		allView.setDisplayName("Associated Precautions");
+
+		return allView;
+	}
+
+	private static FacilioView getAllSafetyPlanHazardsView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("Safety Plan Hazards");
+
+		return allView;
+	}
+
+	private static FacilioView getAllAssetHazardsView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("Asset Hazards");
+
+		return allView;
+	}
+
+	private static FacilioView getAllWorkOrderHazardsView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("Workorder Hazards");
+
+		return allView;
+	}
+
+	private static FacilioView getAllHazardPrecautionView() {
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Hazuard Precaution");
+
+		return allView;
+	}
+
 }
