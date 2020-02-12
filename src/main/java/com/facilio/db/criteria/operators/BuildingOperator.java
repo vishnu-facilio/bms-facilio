@@ -141,6 +141,7 @@ public enum BuildingOperator implements Operator<String> {
 
 		List<FacilioField> spaceFields = moduleBean.getAllFields(baseSpaceModule.getName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(spaceFields);
+		Map<String, FacilioField> resourceFieldMap = FieldFactory.getAsMap(moduleBean.getAllFields(resourceModule.getName()));
 		for (Map.Entry<BaseSpaceContext.SpaceType, List<Long>> entry : typeWiseIds.entrySet()) {
 			switch (entry.getKey()) {
 				case SITE:
@@ -156,6 +157,7 @@ public enum BuildingOperator implements Operator<String> {
 					resourceBuilder.orCondition(CriteriaAPI.getCondition(floorField, entry.getValue(), PickListOperators.IS));
 					break;
 				case SPACE:
+					resourceBuilder.orCondition(CriteriaAPI.getCondition(resourceFieldMap.get("space"), entry.getValue(), PickListOperators.IS));
 					for (int i = 1; i<=4; i++) {
 						FacilioField spaceField = fieldMap.get("space"+i);
 						resourceBuilder.orCondition(CriteriaAPI.getCondition(spaceField, entry.getValue(), PickListOperators.IS));
