@@ -219,6 +219,7 @@ public class WeatherUtil {
 			LOGGER.log(Level.INFO,"The response is null from the weather server");
 			return null;
 		}
+		LOGGER.log(Level.INFO," Weather url is : " + weatherURL);
 		JSONObject weatherData=null;
 		JSONParser parser = new JSONParser();
 		try {
