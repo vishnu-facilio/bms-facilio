@@ -14,6 +14,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -288,26 +289,40 @@ public class DBAudit implements FacilioAudit {
         return new ArrayList<>();
     }
 
-    private long checkModule(String module2) throws Exception {
+    private long checkModule(String module) throws Exception {
     	long id = 0L;
     	if(MapUtils.isEmpty(MODULE_INFO_LIST)) {
     		MODULE_INFO_LIST = getModuleInfoList();
     	}
     		if(MapUtils.isNotEmpty(MODULE_INFO_LIST)) {
-    		if(StringUtils.isNotEmpty(module2)) {
-    			id = (long) MODULE_INFO_LIST.get(module2);
+    		if(StringUtils.isNotEmpty(module)) {
+    			if(MODULE_INFO_LIST.containsKey(module)) {
+    				id = (long) MODULE_INFO_LIST.get(module);
+    			}else{
+    				id = getData(module,MODULE_TABLE_NAME,MODULE_FIELDS,"module");
+    				if(id != 0) {
+    					MODULE_INFO_LIST.put(module, id);
+    				}
+    			}
     		}
     	}
     	return id;
     }
 
-    private long checkReferer(String data) {
+    private long checkReferer(String data) throws Exception {
     	long id = 0L;
     	if(MapUtils.isEmpty(REFERER_INFO_LIST)) {
     		REFERER_INFO_LIST = getRefererInfoList();
     	}if(MapUtils.isNotEmpty(REFERER_INFO_LIST)){
     		if(StringUtils.isNotEmpty(data)) {
-    			id = (long) REFERER_INFO_LIST.get(data);
+    			if(REFERER_INFO_LIST.containsKey(data)) {
+    				id = (long) REFERER_INFO_LIST.get(data);
+    			}else {
+    				id = getData(data , REFERER_TABLE_NAME, REFERER_FIELDS,"referer");
+    				if(id != 0) {
+    					REFERER_INFO_LIST.put(data, id);
+    				}
+    			}
     		}
     	}
     	return id;
@@ -319,19 +334,31 @@ public class DBAudit implements FacilioAudit {
     		ACTION_INFO_LIST =getActionInfoList();
     	}if(MapUtils.isNotEmpty(ACTION_INFO_LIST)){
     		if(StringUtils.isNotEmpty(action)) {
-    			id = (long) ACTION_INFO_LIST.get(action);
+    			if(ACTION_INFO_LIST.containsKey(action)) {
+    				id = (long) ACTION_INFO_LIST.get(action);
+    			}else {
+    				id = getData(action,ACTION_TABLE_NAME,ACTION_FIELDS,"action");
+    				if(id != 0) {
+    					ACTION_INFO_LIST.put(action, id);
+    				}
+    			}
     		}
     	}
     	return id;
     }
 
-    private long checkMethod(String data) {
+    private long checkMethod(String data) throws Exception {
     	long id=0L;
     	if(MapUtils.isEmpty(METHOD_INFO_LIST)) {
     		METHOD_INFO_LIST =getMethodInfoList();
     	}if(MapUtils.isNotEmpty(METHOD_INFO_LIST)){
     		if(StringUtils.isNotEmpty(data)) {
-    			id = (long) METHOD_INFO_LIST.get(data);
+    			if(METHOD_INFO_LIST.containsKey(data)) {
+    				id = getData(data, METHOD_TABLE_NAME, METHOD_FIELDS, "method");
+    			}
+    			if(id != 0) {
+    				METHOD_INFO_LIST.put(data, id);
+    			}
     		}
     	}
     	return id;
@@ -448,8 +475,27 @@ public class DBAudit implements FacilioAudit {
 	    		}
 			}
 		} catch (Exception e) {
-			LOGGER.info("Exception Occurred In Getting ModuleInfoList",e);
+			LOGGER.info("Exception Occurred In Getting RefererInfoList",e);
 		}
 		return REFERER_INFO_LIST;
 	}
+    
+    private long getData(String data, String tableName, List<FacilioField> fields, String key) throws Exception {
+    	List<FacilioField> field = new ArrayList<FacilioField>();
+    	field.addAll(fields);
+    	Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+    	long id = 0L;
+    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(field)
+				.table(tableName)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get(key), data, StringOperators.IS));
+    	
+    	List<Map<String, Object>> prop = builder.get();
+    	if(CollectionUtils.isNotEmpty(prop)) {
+    		for (Map<String,Object> itr:prop) {
+    			id=(long) itr.get(key);
+    		}
+    	}
+    	return id;
+    }
 }

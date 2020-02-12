@@ -122,9 +122,9 @@ public class FacilioContextListener implements ServletContextListener {
 
 		try {
 //			migrateSchemaChanges();
-			ServerInfo.registerServer();
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
 			initializeDB();
+			ServerInfo.registerServer();
 			if( !FacilioProperties.isDevelopment()) {
 				new Thread(new NotificationProcessor()).start();
 			}
