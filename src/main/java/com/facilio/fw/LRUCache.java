@@ -189,10 +189,6 @@ public class LRUCache<K, V>{
         cache.clear();
     }
 
-    private String getRedisKey(String key) {
-		return name + '_' + key;
-	}
-    
     public boolean contains(K key) {
     	return cache.containsKey(key);
     }
@@ -230,7 +226,7 @@ public class LRUCache<K, V>{
 
     private long getFromRedis(K key) {
 		if (redis != null) {
-			String redisKey = getRedisKey(key.toString());
+			String redisKey = key.toString();
 			Long redisTimestamp = getFromLocalRedis(redisKey);
 			if (redisTimestamp == null) {
 				long startTime = System.currentTimeMillis();
@@ -299,7 +295,7 @@ public class LRUCache<K, V>{
 				AccountUtil.getCurrentAccount().incrementRedisDeleteCount(1);
 			}
 			try (Jedis jedis = redis.getJedis()) {
-				String redisKey = getRedisKey(key.toString());
+				String redisKey = key.toString();
 				jedis.del(redisKey);
 				removeFromLocalRedis(redisKey);
 			} catch (Exception e) {
@@ -319,7 +315,7 @@ public class LRUCache<K, V>{
 				AccountUtil.getCurrentAccount().incrementRedisPutCount(1);
 			}
 			try (Jedis jedis = redis.getJedis()) {
-				String redisKey = getRedisKey(key.toString());
+				String redisKey = key.toString();
 				jedis.setnx(redisKey, String.valueOf(node.addedTime));
 				addToLocalRedis(redisKey, node.addedTime);
 			} catch (Exception e) {
