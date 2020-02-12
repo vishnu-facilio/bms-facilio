@@ -55,7 +55,7 @@ public class FieldUtil {
 		return prop;
 	}
 	
-	public static void inti() {
+	public static void init() {
 
 	}
 	

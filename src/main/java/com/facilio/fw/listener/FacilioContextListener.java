@@ -23,18 +23,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.alarms.AgentEventContext;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.events.constants.EventConstants;
+import com.facilio.server.ServerInfo;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
-import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,13 +54,11 @@ import com.facilio.logging.SysOutLogger;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.queue.FacilioDBQueueExceptionProcessor;
-import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.kafka.notification.NotificationProcessor;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.FacilioInstantJobExecutor;
-import com.facilio.tasker.executor.InstantJobExecutor;
 
 public class FacilioContextListener implements ServletContextListener {
 
@@ -81,9 +71,6 @@ public class FacilioContextListener implements ServletContextListener {
 			RedisManager.getInstance().release();// destroying redis connection pool
 		}
 		FacilioScheduler.stopSchedulers();
-//		if(FacilioProperties.isProduction()) {
-//			InstantJobExecutor.INSTANCE.stopExecutor();
-//		}
 		FacilioInstantJobExecutor.INSTANCE.stopExecutor();
 		timer.cancel();
 		FacilioConnectionPool.INSTANCE.close();
@@ -102,117 +89,106 @@ public class FacilioContextListener implements ServletContextListener {
 			LOGGER.info("Exception occurred ", e1);
 		}
 
-		timer.schedule(new TransactionMonitor(), 0L, 3000L);
-		
-//		if(FacilioProperties.isScheduleServer() && FacilioProperties.isProduction()) {
-//			timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
-//		}
-		if(FacilioProperties.isScheduleServer()) {
-			LOGGER.info("##Facilio exception queue Pull method calling");
-			timer.schedule(new FacilioDBQueueExceptionProcessor(), 0L, 900000L); // 30 minutes
-		}
-
-		initDBConnectionPool();
-		Operator.getOperator(1);
-		registerMBeans();
-		TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
-		ActivityType.getActivityType(1);
-		FieldUtil.inti();
-		FacilioEnum.getEnumValues("CostType");
-
 		try {
+
+			timer.schedule(new TransactionMonitor(), 0L, 3000L);
+
+			if(FacilioProperties.isScheduleServer()) {
+				LOGGER.info("Starting FacilioDBQueueExceptionProcessor");
+				timer.schedule(new FacilioDBQueueExceptionProcessor(), 0L, 900000L); // 30 minutes
+			}
+
+
+			initDBConnectionPool();
+			Operator.getOperator(1);
+			registerMBeans();
+			TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
+			ActivityType.getActivityType(1);
+			FieldUtil.init();
+			FacilioEnum.getEnumValues("CostType");
 //			migrateSchemaChanges();
-			//timer.schedule(new ServerInfo(), 30000L, 30000L);
 			initializeDB();
 			ServerInfo.registerServer();
+
 			if( !FacilioProperties.isDevelopment()) {
 				new Thread(new NotificationProcessor()).start();
 			}
 
 			BeanFactory.initBeans();
-			
+
 			FacilioScheduler.initScheduler();
-//			if(FacilioProperties.isProduction()) {
-//				InstantJobExecutor.INSTANCE.startExecutor();
-//			}
+
 			FacilioInstantJobExecutor.INSTANCE.startExecutor();
-			
-			
 
 			if(RedisManager.getInstance() != null) {
 				RedisManager.getInstance().connect(); // creating redis connection pool
 			}
 
-			HashMap customDomains = getCustomDomains();
+			/*HashMap customDomains = getCustomDomains();
 			if(customDomains!=null) {
 				event.getServletContext().setAttribute("custom domains", customDomains);
 				LOGGER.info("Custom domains loaded " + customDomains);
-			}
-			
-			/*if(AwsUtil.isDevelopment() || AwsUtil.disableCSP()) {
-				initializeDB();
 			}*/
 
-			try {
-				if (!FacilioProperties.isProduction()) {
-					downloadEnvironmentFiles();
-				}
-				if (FacilioProperties.isMessageProcessor()) {
-					FacilioFactory.getMessageQueue().start();
-				}
-				AgentIntegrationQueueFactory.startIntegrationQueues();
-
-			} catch (Exception e){
-				LOGGER.info("Exception occurred ", e);
+			if (!FacilioProperties.isProduction()) {
+				downloadEnvironmentFiles();
 			}
-			InputStream versionFile;
-			try {
-				versionFile = SQLScriptRunner.class.getClassLoader().getResourceAsStream("version.txt");
-				Properties prop = new Properties();
-				prop.load(versionFile);
-				event.getServletContext().setAttribute("buildinfo", prop);
-				LOGGER.info("Loaded build properties "+prop);
-
-			} catch (Exception e) {
-				LOGGER.info("Exception occurred ", e);
+			if (FacilioProperties.isMessageProcessor()) {
+				FacilioFactory.getMessageQueue().start();
 			}
+			AgentIntegrationQueueFactory.startIntegrationQueues();
 
 			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 			LOGGER.info("Loading the domain name as ######" + PortalAuthInterceptor.getPortalDomain());
 			initLocalHostName();
+			setVersion(event);
 			HealthCheckFilter.setStatus(200);
 
 		} catch (Exception e) {
 			sendFailureEmail(e);
-			LOGGER.info("Exception occurred ", e);
+			LOGGER.info("Shutting down, because of an exception ", e);
+			System.exit(123);
 		}
 
 	}
-	private void downloadEnvironmentFiles() throws Exception {
-		downloadGoogleAppCredentials();
+
+	private void setVersion(ServletContextEvent event) {
+		InputStream versionFile;
+		try {
+			versionFile = SQLScriptRunner.class.getClassLoader().getResourceAsStream("version.txt");
+			Properties prop = new Properties();
+			prop.load(versionFile);
+			event.getServletContext().setAttribute("buildinfo", prop);
+			LOGGER.info("Loaded build properties "+prop);
+
+		} catch (Exception e) {
+			LOGGER.info("Exception occurred ", e);
+		}
 	}
 
-	private void downloadGoogleAppCredentials() throws Exception {
-		InputStream inputStream = FacilioFactory.getFileStore().getSecretFile("GOOGLE_APP_CREDENTIALS");
+	private void downloadEnvironmentFiles() throws Exception {
 		File secretsDir = new File("/tmp/secrets");
-		if (!secretsDir.exists())
-			secretsDir.mkdir();
-
-			File file = new File("/tmp/secrets/google_app_credentials.json");
-			if(file.exists()) file.delete();
-			try (FileOutputStream outputStream = new FileOutputStream(file)) {
-
-				int read;
-				byte[] bytes = new byte[1024];
-
-				while (inputStream!=null && (read = inputStream.read(bytes)) != -1) {
-					outputStream.write(bytes, 0, read);
+		if (!secretsDir.exists()) {
+			if (secretsDir.mkdir()) {
+				File file = new File("/tmp/secrets/google_app_credentials.json");
+				if (file.exists()) {
+					if (file.delete()) {
+						try (FileOutputStream outputStream = new FileOutputStream(file)) {
+							InputStream inputStream = FacilioFactory.getFileStore().getSecretFile("GOOGLE_APP_CREDENTIALS");
+							int read;
+							byte[] bytes = new byte[1024];
+							while (inputStream != null && (read = inputStream.read(bytes)) != -1) {
+								outputStream.write(bytes, 0, read);
+							}
+							return;
+						} catch (IOException e) {
+							LOGGER.info("Error while downloading Google app credentials " + e.getMessage());
+						}
+					}
 				}
-
-			} catch (IOException e) {
-				LOGGER.info("Error while downloading Google app credentials "+e.getMessage());
 			}
-
+		}
+		LOGGER.info("Unable write secret file.");
 	}
 
 	private void registerMBeans() {
@@ -231,8 +207,6 @@ public class FacilioContextListener implements ServletContextListener {
 			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/PublicDB.sql", null);
 			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/AppDB.sql", Collections.singletonMap("defaultAppDB", FacilioProperties.getDefaultAppDB()));
 		}
-//		createTables("conf/leedconsole.sql");
-		//createTables("conf/db/" + DBConf.getInstance().getDBName() + "/eventconsole.sql");
 	}
 
 	private void createTables(String fileName, Map<String, String> paramValues) {
@@ -266,7 +240,7 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 
 	}
-	
+
 	private void migrateSchemaChanges() {
 		LOGGER.info("Flyway migration handler started...");
 		try {
@@ -283,9 +257,9 @@ public class FacilioContextListener implements ServletContextListener {
 			LOGGER.info("Exception occurred ", e);
 		}
 	}
-	
+
 	private void initDBConnectionPool() {
-		System.out.println("Initializing DB Connection Pool");
+		LOGGER.info("Initializing DB Connection Pool");
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -293,7 +267,7 @@ public class FacilioContextListener implements ServletContextListener {
 			conn = FacilioConnectionPool.getInstance().getConnection();
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery("select 1"); //Test Connection
-			
+
 			while(rs.next()) {
 				LOGGER.info("testing connection : " + rs.getInt(1));
 			}
@@ -304,7 +278,7 @@ public class FacilioContextListener implements ServletContextListener {
 			DBUtil.closeAll(conn, stmt, rs);
 		}
 	}
-	
+
 	private HashMap getCustomDomains() {
 		URL url = this.getClass().getClassLoader().getResource("conf/customdomains.xml");
 		if(url != null) {
