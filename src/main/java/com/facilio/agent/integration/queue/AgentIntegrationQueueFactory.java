@@ -1,6 +1,6 @@
-package com.facilio.agentIntegration.AgentIntegrationQueue;
+package com.facilio.agent.integration.queue;
 
-import com.facilio.agentIntegration.AgentIntegrationQueue.preprocessor.AltairSmartEdge;
+import com.facilio.agent.integration.queue.preprocessor.AltairSmartEdge;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -22,25 +22,29 @@ public class AgentIntegrationQueueFactory {
         List<AgentIntegrationQueue> list = new ArrayList<>();
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getAgentMessageIntegrationModule().getTableName())
-                .select(FieldFactory.getAgentMessageIntegrationFields()). limit(100);
+                .select(FieldFactory.getAgentMessageIntegrationFields()).limit(100);
         List<Map<String, Object>> rows = select.get();
 
-        for (Map<String,Object> row: rows ){
-            int queueType = (int)row.get("queueType");
-            int preProcessorType = (int)row.get("preProcessorType");
-            long orgId = 100;
+        for (Map<String, Object> row : rows) {
+            int queueType = (int) row.get("queueType");
+            int preProcessorType = (int) row.get("preProcessorType");
+            long orgId = Long.parseLong(row.get("orgId").toString());
             AgentIntegrationQueue integrationQueue = null;
-            switch (queueType){
-                case 2: integrationQueue = new GooglePubSub((String)row.get("topic"),(String)row.get("clientId"));
-                        LOGGER.info("GooglePubsubCreated....");
-                        break;
-                default: LOGGER.info("Invalid QUEUE_TYPE ");
+            if (queueType == 2) {
+                integrationQueue = new GooglePubSub((String) row.get("topic"), (String) row.get("clientId"));
+                LOGGER.info("Google Pub SubCreated....");
+            } else {
+                LOGGER.info("Invalid QUEUE_TYPE ");
             }
-            switch (preProcessorType){
-                case 2: integrationQueue.setPreprocessor(new AltairSmartEdge());
-                        LOGGER.info("Altair smartEdge...");
-                        break;
-                default: LOGGER.info("Invalid Preprocessor_type");
+            if (preProcessorType == 2) {
+                if (integrationQueue != null) {
+                    integrationQueue.setPreprocessor(new AltairSmartEdge());
+                    LOGGER.info("Altair smartEdge...");
+                } else {
+                    LOGGER.info("integration queue is null");
+                }
+            } else {
+                LOGGER.info("Invalid Preprocessor_type");
             }
             if (integrationQueue != null && integrationQueue.getPreProcessor() != null) {
                 integrationQueue.setOrgId(orgId);
@@ -57,6 +61,7 @@ public class AgentIntegrationQueueFactory {
         List<AgentIntegrationQueue> list = AgentIntegrationQueueFactory.getIntegrationQueues();
         for (AgentIntegrationQueue item : list) {
             try {
+                item.initialize();
                 new Thread(item).start();
             } catch (Exception ex){
                 LOGGER.info("Exception while starting integeration queue : "+ item);

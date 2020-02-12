@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
-import com.facilio.agentIntegration.DownloadCertFile;
+import com.facilio.agent.integration.DownloadCertFile;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;

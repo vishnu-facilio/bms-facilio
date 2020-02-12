@@ -35,7 +35,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.facilio.activity.ActivityType;
-import com.facilio.agentIntegration.AgentIntegrationQueue.AgentIntegrationQueueFactory;
+import com.facilio.agent.integration.queue.AgentIntegrationQueueFactory;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;

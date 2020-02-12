@@ -1,14 +1,11 @@
-package com.facilio.agentIntegration.AgentIntegrationQueue;
+package com.facilio.agent.integration.queue;
 
-import com.facilio.agentIntegration.AgentIntegrationQueue.preprocessor.AgentIntegrationPreprocessor;
-import com.facilio.dataFetchers.DataFetcher;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.google.cloud.pubsub.v1.AckReplyConsumer;
 import com.google.cloud.pubsub.v1.MessageReceiver;
 import com.google.cloud.pubsub.v1.Subscriber;
 import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
-import com.google.protobuf.GeneratedMessage;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

@@ -1,7 +1,7 @@
 package com.facilio.modules;
 
 import com.facilio.agent.AgentKeys;
-import com.facilio.agentIntegration.AgentIntegrationKeys;
+import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;

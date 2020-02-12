@@ -1,6 +1,6 @@
-package com.facilio.agentIntegration.AgentIntegrationQueue.preprocessor;
+package com.facilio.agent.integration.queue.preprocessor;
 
-import com.facilio.agentIntegration.AgentIntegrationQueue.AgentMessageIntegrationProcessorType;
+import com.facilio.agent.integration.queue.AgentMessageIntegrationProcessorType;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;

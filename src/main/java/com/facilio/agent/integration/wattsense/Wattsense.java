@@ -1,12 +1,11 @@
-package com.facilio.agentIntegration.wattsense;
+package com.facilio.agent.integration.wattsense;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.agent.integration.AgentIntegrationKeys;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-import com.facilio.agentIntegration.AgentIntegrationKeys;
 
 public class Wattsense
 {

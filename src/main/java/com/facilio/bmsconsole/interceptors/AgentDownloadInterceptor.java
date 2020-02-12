@@ -1,14 +1,11 @@
 package com.facilio.bmsconsole.interceptors;
 
-import com.facilio.agentIntegration.AgentIntegrationQueue.AgentIntegrationQueueFactory;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.service.FacilioService;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
@@ -19,7 +16,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

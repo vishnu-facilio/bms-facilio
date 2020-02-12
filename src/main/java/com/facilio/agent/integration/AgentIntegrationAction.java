@@ -1,15 +1,15 @@
-package com.facilio.agentIntegration;
+package com.facilio.agent.integration;
 
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agent.integration.wattsense.WattsenseUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.agentIntegration.wattsense.WattsenseUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 
 public class AgentIntegrationAction extends FacilioAction

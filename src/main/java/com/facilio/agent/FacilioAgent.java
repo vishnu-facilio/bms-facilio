@@ -1,6 +1,6 @@
 package com.facilio.agent;
 
-import com.facilio.agentIntegration.AgentIntegrationKeys;
+import com.facilio.agent.integration.AgentIntegrationKeys;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.IotPolicy;
 import com.facilio.bmsconsole.context.ControllerContext;

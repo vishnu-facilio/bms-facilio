@@ -1,4 +1,4 @@
-package com.facilio.agentIntegration.AgentIntegrationQueue;
+package com.facilio.agent.integration.queue;
 /**
  * Enums for Agent Message Integration Queue Type
  */

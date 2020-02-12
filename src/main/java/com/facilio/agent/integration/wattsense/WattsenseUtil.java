@@ -1,12 +1,12 @@
-package com.facilio.agentIntegration.wattsense;
+package com.facilio.agent.integration.wattsense;
 
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
-import com.facilio.agentIntegration.AgentIntegrationKeys;
-import com.facilio.agentIntegration.AgentIntegrationUtil;
-import com.facilio.agentIntegration.DownloadCertFile;
-import com.facilio.agentIntegration.MultipartHttpPost;
+import com.facilio.agent.integration.AgentIntegrationKeys;
+import com.facilio.agent.integration.AgentIntegrationUtil;
+import com.facilio.agent.integration.DownloadCertFile;
+import com.facilio.agent.integration.MultipartHttpPost;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;

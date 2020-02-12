@@ -1,12 +1,12 @@
-package com.facilio.agentIntegration.wattsense;
+package com.facilio.agent.integration.wattsense;
 
+import com.facilio.agent.integration.AgentIntegrationKeys;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentUtil;
-import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.chain.FacilioContext;

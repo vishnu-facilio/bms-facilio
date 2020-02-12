@@ -1,4 +1,4 @@
-package com.facilio.agentIntegration;
+package com.facilio.agent.integration;
 
 import org.apache.commons.chain.Context;
 
