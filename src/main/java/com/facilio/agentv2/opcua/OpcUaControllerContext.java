@@ -7,6 +7,7 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -158,8 +159,15 @@ public class OpcUaControllerContext extends Controller {
         processIdentifier(identifier);
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.URL),getUrl(), StringOperators.IS));
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.CERT_PATH),getCertPath(),StringOperators.IS));
+        if (fieldsMap.containsKey(AgentConstants.URL) && fieldsMap.containsKey(AgentConstants.URL) && fieldsMap.containsKey(AgentConstants.URL)) {
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.URL), getUrl(), StringOperators.IS));
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SECURITY_MODE), String.valueOf(getSecurityMode()), NumberOperators.EQUALS));
+            conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SECURITY_POLICY), String.valueOf(getSecurityPolicy()), NumberOperators.EQUALS));
+        } else {
+            LOGGER.info("Error while getting conditions");
+            LOGGER.info(fieldsMap);
+        }
+        LOGGER.info(conditions);
         return conditions;
     }
 }
