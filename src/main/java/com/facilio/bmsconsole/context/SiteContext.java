@@ -181,11 +181,11 @@ public class SiteContext extends BaseSpaceContext {
 		}
 	}
 	
-	private ClientContext clientId;
-	public ClientContext getClientId() {
-		return clientId;
+	private ClientContext client;
+	public ClientContext getClient() {
+		return client;
 	}
-	public void setClientId(ClientContext clientId) {
-		this.clientId = clientId;
+	public void setClient(ClientContext client) {
+		this.client = client;
 	}
 }

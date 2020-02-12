@@ -2192,4 +2192,11 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		return c;
 	}
+	
+	public static FacilioChain deleteClientListChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForClient());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
 }

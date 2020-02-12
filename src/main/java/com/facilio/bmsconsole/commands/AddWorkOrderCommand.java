@@ -197,6 +197,7 @@ public class AddWorkOrderCommand extends FacilioCommand {
 					CommonCommandUtil.emailException("AddWorkOrderCommand", "Workorder site different from PM", strBuilder.toString());
 				}
 			}
+			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 
 		}
 		else {

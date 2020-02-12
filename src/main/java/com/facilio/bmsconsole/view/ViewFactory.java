@@ -666,6 +666,11 @@ public class ViewFactory {
 		views.put("associatedprecautions", getAssociatedPrecautionView().setOrder(order++));
 		views.put("all", getAllHazardPrecautionView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.HAZARD_PRECAUTION, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllClientView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.CLIENT, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -6249,4 +6254,12 @@ public class ViewFactory {
 		return allView;
 	}
 
+	
+	private static FacilioView getAllClientView() {
+	
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("Clients");
+		return allView;
+	}
 }

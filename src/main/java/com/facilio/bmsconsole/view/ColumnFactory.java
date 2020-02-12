@@ -148,8 +148,7 @@ public class ColumnFactory {
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
-		
-		
+		columnMap.put("client-default", getDefaultClientColumns());
 		
 		// Special types
 		columnMap.put("preventivemaintenance-default", getPreventiveMaintenanceColumns());
@@ -1158,6 +1157,16 @@ public class ColumnFactory {
 		columns.add(new ViewField("precaution", "Precaution"));
 		columns.add(new ViewField("description", "Description", "precaution"));
 		columns.add(new ViewField("hazard", "Hazard"));
+		return columns;
+	}
+	private static List<ViewField> getDefaultClientColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("name", "Tenant Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("primaryContactName", "Primary Contact Name"));
+		columns.add(new ViewField("primaryContactEmail", "Primary Contact Email"));
+		
 		return columns;
 	}
 }

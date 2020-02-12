@@ -1,16 +1,22 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ClientContext;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.VisitorContext;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class ClientAction extends FacilioAction {
@@ -53,6 +59,14 @@ public class ClientAction extends FacilioAction {
 
 	public void setClientIds(List<Long> clientIds) {
 		this.clientIds = clientIds;
+	}
+	
+	private long recordId = -1;
+	public long getRecordId() {
+		return recordId;
+	}
+	public void setRecordId(long recordId) {
+		this.recordId = recordId;
 	}
 
 	public String addClient() throws Exception {
@@ -123,4 +137,106 @@ public class ClientAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
+	
+	public String deleteClients() throws Exception {
+		
+		if(!CollectionUtils.isEmpty(clientIds)) {
+			FacilioChain c = FacilioChainFactory.deleteClientListChain();
+			c.getContext().put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, clientIds);
+			c.execute();
+			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		}
+		return SUCCESS;
+	}
+	
+	public String getClientDetails() throws Exception {
+		
+		FacilioChain chain = ReadOnlyChainFactory.getClientDetailsChain();
+		chain.getContext().put(FacilioConstants.ContextNames.ID, clientId);
+		
+		chain.execute();
+		
+		ClientContext client = (ClientContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
+		setResult(FacilioConstants.ContextNames.CLIENT, client);
+		
+		return SUCCESS;
+	}
+	
+	public String clientsList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Clients.ID desc");
+		
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getFilters());
+			context.put(FacilioConstants.ContextNames.FILTERS, json);
+			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		}
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "client.name");
+			searchObj.put("query", getSearch());
+			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		}
+		if (getCount()) { // only count
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		} else {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			if (getPerPage() < 0) {
+				pagination.put("perPage", 5000);
+			}
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+
+		FacilioChain clientListChain = ReadOnlyChainFactory.getClientsListChain();
+		clientListChain.execute(context);
+		if (getCount()) {
+			setItemCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult("count", itemCount);
+		} else {
+			clients = (List<ClientContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			// Temp...needs to handle in client
+			if (clients == null) {
+				clients = new ArrayList<>();
+			}
+			setResult(FacilioConstants.ContextNames.CLIENTS, clients);
+		}
+		return SUCCESS;
+	}
+	
+	private boolean includeParentFilter;
+
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
+	
+	private Boolean count;
+
+	public Boolean getCount() {
+		if (count == null) {
+			return false;
+		}
+		return count;
+	}
+
+	public void setCount(Boolean count) {
+		this.count = count;
+	}
+	
+	private Long itemCount;
+	public Long getItemCount() {
+		return itemCount;
+	}
+	public void setItemCount(Long inventryCount) {
+		this.itemCount = inventryCount;
+	}
+	
 }

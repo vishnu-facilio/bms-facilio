@@ -27,7 +27,7 @@ public class UpdateClientIdInSiteCommand extends FacilioCommand {
 					for (long siteId : client.getSiteIds()) {
 						SiteContext site = new SiteContext();
 						site.setId(siteId);
-						site.setClientId(client);
+						site.setClient(client);
 						RecordAPI.updateRecord(site, module, fields);
 					}
 				}

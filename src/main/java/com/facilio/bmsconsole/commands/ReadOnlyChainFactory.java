@@ -2122,4 +2122,25 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getClientDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForClient());
+		c.addCommand(new LoadClientLookupCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+	
+	public static FacilioChain getClientsListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForClient());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new LoadClientLookupCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+
 }

@@ -5258,8 +5258,18 @@
 			class="com.facilio.bmsconsole.actions.ClientAction" method="addClient" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ClientAction" method="updateClient" />
+			<action name="delete"
+			class="com.facilio.bmsconsole.actions.ClientAction" method="deleteClients" />
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.AssetHazardAction" method="assetHazardList">
+			class="com.facilio.bmsconsole.actions.ClientAction" method="getClientDetails">
+			<param name="clientId">{1}</param>
+		</action>
+	</package>
+	<package name="clientViews" namespace="/api/v2/clients/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ClientAction" method="clientsList" >
+			<param name="viewName">{1}</param>
 		</action>
 	</package>
 </struts>
