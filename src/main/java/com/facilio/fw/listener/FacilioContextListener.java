@@ -149,7 +149,6 @@ public class FacilioContextListener implements ServletContextListener {
 		} catch (Exception e) {
 			sendFailureEmail(e);
 			LOGGER.info("Shutting down, because of an exception ", e);
-			System.exit(123);
 		}
 
 	}
