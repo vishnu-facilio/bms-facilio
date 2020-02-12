@@ -70,7 +70,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getIdField(module));
-		//fields.add(getField("orgId","ORGID",module,FieldType.NUMBER));
+		fields.add(getField("orgId","ORGID",module,FieldType.NUMBER));
 		fields.add(getNameField(module));
 		fields.add(getField("url","URL",module,FieldType.STRING));
 		fields.add(getField("topic","TOPIC",module,FieldType.STRING));

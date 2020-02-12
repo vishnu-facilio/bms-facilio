@@ -19,7 +19,9 @@ public class AgentIntegrationQueueFactory {
      * returns list of all AgentIntegrationQueue threads
      */
     public static List<AgentIntegrationQueue> getIntegrationQueues() throws Exception {
+
         List<AgentIntegrationQueue> list = new ArrayList<>();
+        try {
         GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getAgentMessageIntegrationModule().getTableName())
                 .select(FieldFactory.getAgentMessageIntegrationFields()).limit(100);
@@ -51,13 +53,16 @@ public class AgentIntegrationQueueFactory {
                 list.add(integrationQueue);
             }
         }
-
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting queue ", e);
+        }
         return list;
     }
     /**
      * Starts all the AgentIntegrationQueue threads
      */
     public static void startIntegrationQueues() throws Exception {
+
         List<AgentIntegrationQueue> list = AgentIntegrationQueueFactory.getIntegrationQueues();
         for (AgentIntegrationQueue item : list) {
             try {

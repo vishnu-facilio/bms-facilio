@@ -23,6 +23,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.agent.integration.queue.AgentIntegrationQueueFactory;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -137,7 +138,7 @@ public class FacilioContextListener implements ServletContextListener {
 				FacilioFactory.getMessageQueue().start();
 			}
 			
-			//AgentIntegrationQueueFactory.startIntegrationQueues();
+			AgentIntegrationQueueFactory.startIntegrationQueues();
 
 			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 			LOGGER.info("Loading the domain name as ######" + PortalAuthInterceptor.getPortalDomain());
