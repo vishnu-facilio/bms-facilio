@@ -167,6 +167,7 @@ public class WeatherUtil {
 			url.append(","+time);
 		}
 		url.append(weatherParams);
+		LOGGER.log(Level.INFO,"Weather url is : " + url);
 		return url.toString();
 	}
 	
@@ -186,7 +187,6 @@ public class WeatherUtil {
 		String weatherURL=WeatherUtil.getForecastURL(lat, lng,time);
 		HttpURLConnection connection= WeatherUtil.getHttpURLConnection(weatherURL);
 		String response=WeatherUtil.getResponse(connection);
-		LOGGER.log(Level.INFO," site Weather url is : " + weatherURL);
 		if(response==null){
 			LOGGER.log(Level.INFO,"The response is null from the weather server");
 			return null;
@@ -216,7 +216,6 @@ public class WeatherUtil {
 		String weatherURL=WeatherUtil.getForecastURL(lat, lng,time);
 		HttpURLConnection connection= WeatherUtil.getHttpURLConnection(weatherURL);
 		String response=WeatherUtil.getResponse(connection);
-		LOGGER.log(Level.INFO," station Weather url is : " + weatherURL);
 		if(response==null){
 			LOGGER.log(Level.INFO,"The response is null from the weather server");
 			return null;
@@ -265,6 +264,7 @@ public class WeatherUtil {
 		if(lat==null || lng==null) {
 			return null;
 		}
+		LOGGER.log(Level.INFO," site: "+site.getName()+" lat: " +lat+" long: "+lng);
 		Map<String,Object> cordinates= new HashMap<String,Object>();
 		cordinates.put("latitude", lat);
 		cordinates.put("longtitude", lng);
