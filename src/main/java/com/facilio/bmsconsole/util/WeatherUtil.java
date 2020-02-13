@@ -96,7 +96,7 @@ public class WeatherUtil {
 			if(apiCount!=null) {
 				apiCallCount=Integer.valueOf(apiCount);
 			}
-			LOGGER.log(Level.INFO,"Weather API call count: "+apiCallCount);
+			//LOGGER.log(Level.INFO,"Weather API call count: "+apiCallCount);
 			
 		} catch (IOException e) {
 			LOGGER.error("Exception ",e);		
@@ -186,6 +186,7 @@ public class WeatherUtil {
 		String weatherURL=WeatherUtil.getForecastURL(lat, lng,time);
 		HttpURLConnection connection= WeatherUtil.getHttpURLConnection(weatherURL);
 		String response=WeatherUtil.getResponse(connection);
+		LOGGER.log(Level.INFO," site Weather url is : " + weatherURL);
 		if(response==null){
 			LOGGER.log(Level.INFO,"The response is null from the weather server");
 			return null;
@@ -215,11 +216,11 @@ public class WeatherUtil {
 		String weatherURL=WeatherUtil.getForecastURL(lat, lng,time);
 		HttpURLConnection connection= WeatherUtil.getHttpURLConnection(weatherURL);
 		String response=WeatherUtil.getResponse(connection);
+		LOGGER.log(Level.INFO," station Weather url is : " + weatherURL);
 		if(response==null){
 			LOGGER.log(Level.INFO,"The response is null from the weather server");
 			return null;
 		}
-		LOGGER.log(Level.INFO," Weather url is : " + weatherURL);
 		JSONObject weatherData=null;
 		JSONParser parser = new JSONParser();
 		try {
@@ -251,7 +252,7 @@ public class WeatherUtil {
 		List<Map<String, Object>> weatherStation= getWeatherStationLocation(site.getWeatherStation());
 		if(weatherStation!=null && !weatherStation.isEmpty()) {
 			Map<String, Object> prop = weatherStation.get(0);
-			LOGGER.info("Weather Util::ORGID::"+AccountUtil.getCurrentOrg().getId()+"::Location::"+prop);
+			//LOGGER.info("Weather Util::ORGID::"+AccountUtil.getCurrentOrg().getId()+"::Location::"+prop);
 			return prop;
 		}
 		
@@ -409,14 +410,14 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 																	.andCondition(parentCondition)
 																	.andCondition(ttimeCondition);
 		List<ReadingContext> props = selectBuilder.get();
-		LOGGER.info("Matching reading from DB: "+props);
+		//LOGGER.info("Matching reading from DB: "+props);
 		Map<Long,ReadingContext> ttimeVsReading = new HashMap<Long,ReadingContext>();
 		for(ReadingContext reading : props) {
 			
 			Long ttime=reading.getTtime();
 			ttimeVsReading.put(ttime, reading);
 		}
-		LOGGER.info("ttimeVsReading map for moduleName: "+ttimeVsReading);
+		//LOGGER.info("ttimeVsReading map for moduleName: "+ttimeVsReading);
 		return ttimeVsReading;
 	}
 	
@@ -431,7 +432,7 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 			//need to adjust the ttime based on the roundoff..
 			ttimeCriteria.add(String.valueOf(ttime));
 		}
-		LOGGER.info("ttimeCriteria >> "+ttimeCriteria);
+	//	LOGGER.info("ttimeCriteria >> "+ttimeCriteria);
 
 		return ttimeCriteria.toString();
 	}

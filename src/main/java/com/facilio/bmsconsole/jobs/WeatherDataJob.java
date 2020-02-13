@@ -27,7 +27,7 @@ public class WeatherDataJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		try {
-			logger.log(Level.INFO,"The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
+			//logger.log(Level.INFO,"The weather data feature enabled for orgid: "+AccountUtil.getCurrentOrg().getOrgId());
 			if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION))
 			{
 				return;
@@ -47,7 +47,7 @@ public class WeatherDataJob extends FacilioJob {
 			for(SiteContext site:sites) {
 
 				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site,null);
-				logger.log(Level.INFO,"The weather data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+weatherData);
+				logger.log(Level.INFO,"The weather data: "+weatherData);
 				if(weatherData==null || weatherData.isEmpty()) {
 					continue;
 				}
@@ -62,7 +62,7 @@ public class WeatherDataJob extends FacilioJob {
 					if(psychrometricReading != null) {
 						psychrometricReadings.add(psychrometricReading);
 					}
-					logger.log(Level.INFO,"The psychometric data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+psychrometricReading);
+					logger.log(Level.INFO,"The psychometric data: "+psychrometricReading);
 				}
 				//forecast..
 				List<ReadingContext> hourlyForecast= WeatherUtil.getHourlyForecastReadings(siteId,FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING,weatherData,true);
