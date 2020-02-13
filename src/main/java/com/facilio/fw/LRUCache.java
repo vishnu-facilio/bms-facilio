@@ -213,15 +213,23 @@ public class LRUCache<K, V>{
     }
 
     private Long getFromLocalRedis (String key) {
-		return AccountUtil.getCurrentAccount().getFromRedisLocalCache(key);
+		if (AccountUtil.getCurrentAccount() != null) {
+			return AccountUtil.getCurrentAccount().getFromRedisLocalCache(key);
+		}
+		return null;
 	}
 
 	private void addToLocalRedis (String key, Long value) {
-		AccountUtil.getCurrentAccount().addToRedisLocalCache(key, value);
+		if (AccountUtil.getCurrentAccount() != null) {
+			AccountUtil.getCurrentAccount().addToRedisLocalCache(key, value);
+		}
 	}
 
 	private Long removeFromLocalRedis (String key) {
-		return AccountUtil.getCurrentAccount().removeFromRedisLocalCache(key);
+		if (AccountUtil.getCurrentAccount() != null) {
+			return AccountUtil.getCurrentAccount().removeFromRedisLocalCache(key);
+		}
+		return null;
 	}
 
     private long getFromRedis(K key) {
