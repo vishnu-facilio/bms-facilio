@@ -5640,7 +5640,7 @@ public class ViewFactory {
 	
 	private static FacilioView getVendorExpiredWorkPermitView() {
 		Criteria expiredCriteria = new Criteria();
-		expiredCriteria.addAndCondition(getWorkPermitStatusCriteria("InActive"));
+		expiredCriteria.addAndCondition(getWorkPermitStatusCriteria("Expired"));
 		FacilioView allView = new FacilioView();
 		allView.setName("vendorExpiredWorkpermits");
 		allView.setDisplayName("Expired Work Permit");
