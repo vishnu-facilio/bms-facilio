@@ -104,7 +104,7 @@ public class ProcessImportCommand extends FacilioCommand {
 
 						if (!ImportAPI.isInsertImport(importProcessContext)) {
 							if (fieldMapping.containsKey(importProcessContext.getModule().getName() + "__id") && colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__id")) != null) {
-								Object idValue = (Object) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__id"));
+								Object idValue = colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__id"));
 
 								if (idValue != null && StringUtils.isNotEmpty(idValue.toString())) {
 									props.put("id", (long) Double.parseDouble(idValue.toString()));
@@ -223,10 +223,10 @@ public class ProcessImportCommand extends FacilioCommand {
 						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
 					} else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.TASK)) {
 						String sectionName = (String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__sectionId"));
-						String parentTicketId = (String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__parentTicketId"));
-						if (sectionName != null && StringUtils.isNotEmpty(sectionName) && parentTicketId != null && StringUtils.isNotEmpty(parentTicketId)) {
+						Object parentTicketId = colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__parentTicketId"));
+						if (sectionName != null && StringUtils.isNotEmpty(sectionName) && parentTicketId != null && StringUtils.isNotEmpty(parentTicketId.toString())) {
 							Criteria criteria = new Criteria();
-							criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_TICKET_ID", "parentTicketId" , parentTicketId, NumberOperators.EQUALS));
+							criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_TICKET_ID", "parentTicketId" , parentTicketId.toString(), NumberOperators.EQUALS));
 							criteria.addAndCondition(CriteriaAPI.getCondition("NAME","name", sectionName.trim().replace(",", StringOperators.DELIMITED_COMMA), StringOperators.IS));
 							List<TaskSectionContext> taskSection = TicketAPI.getTaskSections(criteria);
 							if (taskSection != null && CollectionUtils.isNotEmpty(taskSection) && taskSection.size() > 0) {
@@ -237,10 +237,10 @@ public class ProcessImportCommand extends FacilioCommand {
 										.fields(FieldFactory.getTaskSectionFields())
 										;
 								TaskSectionContext section = new TaskSectionContext();
-								section.setParentTicketId(Long.parseLong(parentTicketId));
+								section.setParentTicketId((long) Double.parseDouble(parentTicketId.toString()));
 								section.setName(sectionName);
 								section.setPreRequest(Boolean.FALSE);
-								Map<Long, TaskSectionContext> taskSections = TicketAPI.getRelatedTaskSections(Long.parseLong(parentTicketId));
+								Map<Long, TaskSectionContext> taskSections = TicketAPI.getRelatedTaskSections((long) Double.parseDouble(parentTicketId.toString()));
 								if (taskSections != null && taskSections.size() > 0) {
 									section.setSequenceNumber(taskSections.size() + 1);
 								} else {
