@@ -827,7 +827,7 @@
 	<package name="tenantApiV2" namespace="/api/v2/tenant" extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.TenantAction"
-			method="v2AddTenant">
+			method="addV2Tenant">
 			<param name="moduleName">tenant</param>
 			<param name="permission">CREATE</param>
 		</action>
@@ -852,6 +852,13 @@
 			<param name="moduleName">tenant</param>
 		    <param name="viewName">{1}</param>
 		</action>
+		
+<!-- 		<action name="disassociateSpace" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="v2disassociateSpace">
+			<param name="permission">UPDATE</param> 
+			<param name="moduleName">tenant</param>
+	
+		</action> -->
 		
 		<action name="toggleStatus" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="v2ToggleStatus">

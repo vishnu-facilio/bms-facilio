@@ -432,19 +432,18 @@ private Map<String, Double> readingData;
    }
 
    
-   public String v2AddTenant() throws Exception {
+   public String addV2Tenant() throws Exception {
 	         
 		   	 FacilioChain addTenant = TransactionChainFactory.v2AddTenantChain();
 	  	     FacilioContext context = addTenant.getContext();
 	         if(CollectionUtils.isNotEmpty(utilityAssets)) {
 	            tenant.setUtilityAssets(utilityAssets);
 	         }
-	         tenant.parseFormData();
+//	         tenant.parseFormData();
 	         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
 	         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 	         context.put(FacilioConstants.ContextNames.RECORD, tenant);
 	         context.put(FacilioConstants.ContextNames.SITE_ID, tenant.getSiteId());
-	         context.put(FacilioConstants.ContextNames.IS_TENANT_ZONE, tenantZone);
 	         context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
 	         
 	         context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
@@ -453,7 +452,7 @@ private Map<String, Double> readingData;
 	         }
 	         addTenant.execute();
 	         tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
-	         setResult("tenant", tenant);
+	         setResult(FacilioConstants.ContextNames.TENANT, (TenantContext)context.get(FacilioConstants.ContextNames.TENANT));
 	         return SUCCESS;
 	   } 
    
@@ -600,6 +599,14 @@ private Map<String, Double> readingData;
 	         return SUCCESS;
 	   }
    
+//   public String v2disassociateSpace() throws Exception {
+//	   FacilioChain disassociateSpace = TransactionChainFactory.v2disassociateSpaceChain();
+//	   FacilioContext context = disassociateSpace.getContext();
+//	   
+//	   context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
+//	   disassociateSpace.execute();
+//	   return SUCCESS;
+//   }
    public String markAsPrimaryContact() {
       try {
          FacilioContext context = new FacilioContext();

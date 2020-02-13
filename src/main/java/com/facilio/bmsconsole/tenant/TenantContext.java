@@ -165,9 +165,9 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 		this.status = Status.valueOf(status);
 	}
 	
-	public void setStatus(Status status) {
-		this.status = status;
-	}
+//	public void setStatus(Status status) {
+//		this.status = status;
+//	}
 	
 	
 	public static enum Status {
@@ -207,9 +207,9 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 	public TenantType getTenantTypeEnum() {
 		return tenantType;
 	}
-	public void setTenantType(TenantType tenantType) {
-		this.tenantType = tenantType;
-	}
+//	public void setTenantType(TenantType tenantType) {
+//		this.tenantType = tenantType;
+//	}
 	
 	public static enum TenantType implements FacilioEnum {
 		COMMERCIAL, RESIDENTIAL;
@@ -277,5 +277,56 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 	public void setOccupantList(List<OccupantsContext> occupantList) {
 		this.occupantList = occupantList;
 	}
+	
+	private File avatar;
+	public File getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(File avatar) {
+		this.avatar = avatar;
+	}
+	
+	private String avatarFileName;
+	public String getAvatarFileName() {
+		return avatarFileName;
+	}
+
+	public void setAvatarFileName(String avatarFileName) {
+		this.avatarFileName = avatarFileName;
+	}
+	
+	private long avatarId;
+	public long getAvatarId() {
+		return avatarId;
+	}
+
+	public void setAvatarId(long avatarId) {
+		this.avatarId = avatarId;
+	}
+	
+	private String avatarUrl;
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
+	}
+	
+	private  String avatarContentType;
+	public String getAvatarContentType() {
+		return avatarContentType;
+	}
+
+	public void setAvatarContentType(String avatarContentType) {
+		this.avatarContentType = avatarContentType;
+	}
+	
+	
+	
+	
+	
+	
 	
 }

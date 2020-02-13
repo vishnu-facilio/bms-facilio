@@ -946,6 +946,7 @@ public class FormFactory {
 
 	private static List<FormField> getTenantsFormField() {
 		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("avatar",FieldDisplayType.IMAGE,"Tenant Logo",Required.OPTIONAL,1,1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
