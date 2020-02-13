@@ -355,7 +355,7 @@
 				if (thisYearOccurrence != null) {
 					for each index, value in thisYearOccurrence {
 						if (occurrenceCount < value.rule) {
-							ruleId = value.result.id;
+							ruleId = value.result;
 							occurrenceCount = value.rule;
 						}
 					}
@@ -1096,8 +1096,8 @@
 				ranking = 0;
 				if (activeRecord != null) {
 					for each index, value in activeRecord {
-						temp = value.result.id;
-						temp = value.result.id + 0;
+						temp = value.result;
+						temp = value.result + 0;
 						if (temp == ruleId) {
 							ranking = index + 1;
 						}
