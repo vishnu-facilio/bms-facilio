@@ -496,7 +496,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		Set<FacilioField> selectFields = constructQuery();
 
 		List<Map<String, Object>> props = builder.get();
-		if (!isAggregation && CollectionUtils.isNotEmpty(props)) {
+		if (CollectionUtils.isNotEmpty(props)) {
 //		handleLookup(selectFields, props, isMap);
 			handleLookup(selectFields, props, isMap);
 			handleSupplements(props, isMap);
