@@ -32,7 +32,7 @@ public class WeatherDataJob extends FacilioJob {
 			{
 				return;
 			}
-			List<SiteContext> sites=SpaceAPI.getAllSites(1);
+			List<SiteContext> sites=SpaceAPI.getAllSites(true);
 			
 			List<ReadingContext> hourlyReadings= new ArrayList<ReadingContext>();
 			List<ReadingContext> dailyReadings=new ArrayList<ReadingContext>();

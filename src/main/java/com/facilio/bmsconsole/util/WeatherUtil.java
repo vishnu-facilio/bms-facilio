@@ -261,7 +261,7 @@ public class WeatherUtil {
 		}
 		Double lat=location.getLat();
 		Double lng=location.getLng();
-		if(lat==null || lng==null) {
+		if(lat==null || lng==null || lat==-1 || lng==-1) {
 			return null;
 		}
 		LOGGER.log(Level.INFO," site: "+site.getName()+" lat: " +lat+" long: "+lng);

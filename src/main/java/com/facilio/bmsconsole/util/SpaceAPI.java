@@ -51,6 +51,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 
 public class SpaceAPI {
 	
@@ -914,7 +915,7 @@ public class SpaceAPI {
 		return spaces;
 	}
 	
-	public static List<SiteContext> getAllSites(int lookupLevel) throws Exception {
+	public static List<SiteContext> getAllSites(boolean fetchLocation) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
@@ -922,9 +923,11 @@ public class SpaceAPI {
 		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
 																	.select(fields)
 																	.module(module)
-																	.maxLevel(lookupLevel)
 //																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.beanClass(SiteContext.class);
+		if (fetchLocation) {
+			selectBuilder.fetchSupplement((SupplementRecord) FieldFactory.getAsMap(fields).get("location"));
+		}
 		List<SiteContext> sites = selectBuilder.get();
 		return sites;
 	}
@@ -964,7 +967,7 @@ public class SpaceAPI {
 	}
 	
 	public static List<SiteContext> getAllSites() throws Exception {
-		return getAllSites(0);
+		return getAllSites(false);
 	}
 	
 	
