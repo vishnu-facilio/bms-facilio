@@ -63,8 +63,9 @@ public class PermissionUtil {
 
 			criteria.addOrCondition(multiResourceCondition);
 		}
-		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned") || moduleName.equals("alarm") 
-				)
+		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned") || moduleName.equals("alarm")
+		|| moduleName.equals(FacilioConstants.ContextNames.NEW_READING_ALARM) || moduleName.equals(FacilioConstants.ContextNames.BMS_ALARM) ||
+				moduleName.equals(FacilioConstants.ContextNames.ML_ALARM) || moduleName.equals(FacilioConstants.ContextNames.VIOLATION_ALARM) || moduleName.equals(FacilioConstants.ContextNames.AGENT_ALARM))
 		{
 			Condition condition = new Condition();
 			if (moduleName.equals("planned")) {
@@ -89,6 +90,16 @@ public class PermissionUtil {
 			case "planned": siteColumn = "Preventive_Maintenance.SITE_ID";
 			break;
 			case "alarm": siteColumn = "Alarms.SITE_ID";
+			break;
+			case FacilioConstants.ContextNames.NEW_READING_ALARM : siteColumn = "ReadingAlarm.SITE_ID";
+			break;
+			case FacilioConstants.ContextNames.BMS_ALARM : siteColumn = "BMSAlarm.SITE_ID";
+			break;
+			case  FacilioConstants.ContextNames.ML_ALARM : siteColumn = "ML_Alarms.SITE_ID";
+			break;
+			case  FacilioConstants.ContextNames.VIOLATION_ALARM : siteColumn = "ReadingViolationAlarm.SITE_ID";
+			break;
+			case  FacilioConstants.ContextNames.AGENT_ALARM : siteColumn = "Agent_Alarm.SITE_ID";
 			break;
 			}
 
