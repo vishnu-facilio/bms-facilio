@@ -12,6 +12,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -21,6 +22,7 @@ import org.json.simple.JSONObject;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AddOrUpdateSLABreachJobCommand extends FacilioCommand {
 
@@ -37,7 +39,9 @@ public class AddOrUpdateSLABreachJobCommand extends FacilioCommand {
             for (String moduleName : recordMap.keySet()) {
                 List<ModuleBaseWithCustomFields> records = recordMap.get(moduleName);
 
-                deleteAllExistingSingleRecordJob(records);
+                if (!addMode) {
+                    deleteAllExistingSingleRecordJob(records, moduleName);
+                }
 
                 FacilioChain slaEntityChain = ReadOnlyChainFactory.getAllSLAEntityChain();
                 FacilioContext slaEntityContext = slaEntityChain.getContext();
@@ -60,7 +64,7 @@ public class AddOrUpdateSLABreachJobCommand extends FacilioCommand {
                             } else {
                                 value = record.getDatum(field.getName());
                             }
-                            if (value instanceof Long) {
+                            if (value instanceof Long && !FacilioUtil.isEmptyOrNull(value)) {
                                 addSLAEntityBreachJob(entity.getName() + "_" + record.getId() + "_Breach", module, record, entity.getCriteria(),
                                         field, entity);
                             }
@@ -72,8 +76,12 @@ public class AddOrUpdateSLABreachJobCommand extends FacilioCommand {
         return false;
     }
 
-    private void deleteAllExistingSingleRecordJob(List<ModuleBaseWithCustomFields> records) {
-
+    private void deleteAllExistingSingleRecordJob(List<ModuleBaseWithCustomFields> records, String moduleName) throws Exception {
+        FacilioChain chain = TransactionChainFactory.getDeleteSingleRecordJobChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, records.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList()));
+        chain.execute();
     }
 
     private void addSLAEntityBreachJob(String name, FacilioModule module, ModuleBaseWithCustomFields moduleRecord, Criteria criteria, FacilioField dueField, SLAEntityContext entity) throws Exception {

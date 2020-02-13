@@ -3515,6 +3515,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getDeleteSingleRecordJobChain() {
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(new DeleteRecordRuleJobOnRecordDeletionCommand());
+			return chain;
+		}
+
 		public static FacilioChain getAddOrUpdateDigestConfigChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddActionToDigestConfigCommand());
