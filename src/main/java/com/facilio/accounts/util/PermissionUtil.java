@@ -13,6 +13,7 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants.ModulePermission;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -20,6 +21,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class PermissionUtil {
@@ -130,6 +132,9 @@ public class PermissionUtil {
 
 			criteria = new Criteria();
 			criteria.addAndCondition(condition);
+		}
+		if (moduleName.equals(ContextNames.MV_PROJECT_MODULE)) {
+			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(), accessibleSpace, BuildingOperator.BUILDING_IS));
 		}
 		if (fields != null && fields.length > 0) {
 			criteria = new Criteria();
