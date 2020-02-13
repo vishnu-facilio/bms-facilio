@@ -111,7 +111,7 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
 
 
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workOrders.stream().map(i -> i.getId()).collect(Collectors.toList()));
-        context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrders);
+//        context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrders);
         return false;
     }
 

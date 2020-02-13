@@ -34,7 +34,7 @@ public class GenericSetClientIdForModuleDataCommand extends FacilioCommand {
 
 			List<FacilioField> fields = new ArrayList<>();
 			FacilioField clientField = null;
-			clientField = modBean.getField("client", module.getName());
+			clientField = modBean.getField("clientId", module.getName());
 			fields.add(clientField);
 			
 			long clientId = getClientIdForSite(record.getSiteId());
