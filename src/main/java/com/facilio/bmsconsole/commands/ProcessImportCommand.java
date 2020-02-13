@@ -510,8 +510,8 @@ public class ProcessImportCommand extends FacilioCommand {
 
 				if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) || lookupField.getModule().getName().equals(FacilioConstants.ContextNames.TICKET)) {
 					if (lookupField.getName().equals("priority")) {
-						columnName = "PRIORITY";
-						fieldName = "priority";
+						columnName = "DISPLAY_NAME";
+						fieldName = "displayName";
 					} else if (lookupField.getName().equals("moduleState") || lookupField.getName().equals("status")) {
 						columnName = "DISPLAY_NAME";
 						fieldName = "displayName";
