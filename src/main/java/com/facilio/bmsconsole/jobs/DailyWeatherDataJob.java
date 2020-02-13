@@ -32,11 +32,11 @@ public class DailyWeatherDataJob extends FacilioJob {
 			}
 			Map<Long,List<ReadingContext>> siteDailyReadings = new HashMap<Long,List<ReadingContext>>();
 
-			List<SiteContext> sites=SpaceAPI.getAllSites(1);
+			List<SiteContext> sites=SpaceAPI.getAllSites(true);
 			for(SiteContext site:sites) {
 				
 				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site,DateTimeUtil.getDayStartTime(-1)/1000);
-				logger.log(Level.INFO,"Daily weather data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+weatherData);
+				logger.log(Level.INFO,"Daily weather data : "+weatherData);
 				if(weatherData==null || weatherData.isEmpty()) {
 					continue;
 				}
