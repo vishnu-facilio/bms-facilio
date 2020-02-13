@@ -30,8 +30,10 @@ public class LoadServiceRequestLookupCommand extends FacilioCommand {
 		List<LookupField> additionaLookups = new ArrayList<LookupField>();
 		LookupField priorityField = (LookupField) fieldsAsMap.get("urgency");
 		LookupField requesterField = (LookupField) fieldsAsMap.get("requester");
+		LookupField resourceField = (LookupField) fieldsAsMap.get("resource");
 		additionaLookups.add(priorityField);
 		additionaLookups.add(requesterField);
+		additionaLookups.add(resourceField);
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST, additionaLookups);
 		return false;
 	}
