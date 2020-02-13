@@ -533,7 +533,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 					groupByField.setField(groupByField.getModule(), modBean.getField(groupByField.getFieldId()));
 				}
 
-				FacilioField gField = groupByField.getField();
+				FacilioField gField = groupByField.getField().clone();
 
 				if (groupByField.getAggrEnum() != null) {
 					if (groupByField.getAggrEnum() instanceof SpaceAggregateOperator) {
@@ -877,7 +877,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 	
 	private boolean handleUserScope(ReportDataPointContext dataPoint) throws Exception{
 		Collection<Long> parentIds = dataPoint.getMetaData() != null ? (Collection<Long>) dataPoint.getMetaData().get("parentIds") : null;
-		if(parentIds != null){
+		if(parentIds != null && !(dataPoint.getModuleName() != null && dataPoint.getModuleName().equals("mvproject"))){
 			ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 			
