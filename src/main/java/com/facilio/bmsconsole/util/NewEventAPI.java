@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.agent.alarms.AgentEventContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
@@ -52,6 +53,10 @@ public class NewEventAPI {
 				
 			case VIOLATION_ALARM:
 				return ViolationEventContext.class;
+
+			case AGENT_ALARM:
+				return AgentEventContext.class;
+
 
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");

@@ -45,6 +45,7 @@ public class FieldFactory {
 		lookupModuleVsSortFieldName.put("visitor",  Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("host",  Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("servicerequestpriority", Pair.of("sequenceNumber", true));
+		lookupModuleVsSortFieldName.put("readingalarmcategory", Pair.of("name", true));
 		return lookupModuleVsSortFieldName;
 	}
 

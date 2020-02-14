@@ -1,6 +1,7 @@
 
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.bmsconsole.context.*;
 import org.json.simple.JSONObject;
 
@@ -41,6 +42,8 @@ public class PageFactory {
 			case ContextNames.READING_ALARM:
 			case ContextNames.NEW_READING_ALARM:
 				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record);
+			case ContextNames.AGENT_ALARM:
+				return AgentAlarmPageFactory.getAgentAlarmPage((BaseAlarmContext) record);
 			case ContextNames.WORKPERMIT:
 				return WorkpermitPageFactory.getWorkPermitPage((WorkPermitContext) record);
 			case ContextNames.VENDORS:
