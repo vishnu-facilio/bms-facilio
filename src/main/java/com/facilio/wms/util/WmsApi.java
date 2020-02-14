@@ -50,7 +50,11 @@ public class WmsApi
 			if (socketUrl != null) {
 				WEBSOCKET_URL = "wss://"+socketUrl+"/websocket";
 			}
-			kinesisNotificationTopic = FacilioProperties.getConfig("environment") + "-" + kinesisNotificationTopic;
+			if(FacilioProperties.isProduction()) {
+				kinesisNotificationTopic = "production-"+ kinesisNotificationTopic;
+			} else {
+				kinesisNotificationTopic = FacilioProperties.getEnvironment() + "-" + kinesisNotificationTopic;
+			}
 			producer = new FacilioKafkaProducer(kinesisNotificationTopic);
 			LOGGER.info("Initialized Kafka Producer");
 		}
