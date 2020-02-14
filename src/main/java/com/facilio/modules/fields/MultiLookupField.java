@@ -33,6 +33,7 @@ public class MultiLookupField extends BaseLookupField implements SupplementRecor
         super(field);
         this.relModuleId = field.relModuleId;
         this.relModule = field.relModule;
+        this.parentFieldPosition = field.parentFieldPosition;
     }
 
     private ParentFieldPosition parentFieldPosition;
@@ -90,22 +91,22 @@ public class MultiLookupField extends BaseLookupField implements SupplementRecor
 
     @Override
     public FetchSupplementHandler newFetchHandler() {
-        return new MultiLookupFetchHandler(this);
+        return new MultiLookupCRUDHandler(this);
     }
 
     @Override
     public InsertSupplementHandler newInsertHandler() {
-        return new MultiLookupWriteHandler(this);
+        return new MultiLookupCRUDHandler(this);
     }
 
     @Override
     public UpdateSupplementHandler newUpdateHandler() {
-        return new MultiLookupWriteHandler(this);
+        return new MultiLookupCRUDHandler(this);
     }
 
     @Override
     public DeleteSupplementHandler newDeleteHandler() {
-        return new MultiLookupWriteHandler(this);
+        return new MultiLookupCRUDHandler(this);
     }
 
     public static enum ParentFieldPosition implements FacilioEnum {

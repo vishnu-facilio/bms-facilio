@@ -287,6 +287,15 @@ public class ModuleFactory {
 		return multiLookup;
 	}
 
+	public static FacilioModule getMultiEnumFieldsModule() {
+		FacilioModule multiLookup = new FacilioModule();
+		multiLookup.setName("multiEnumField");
+		multiLookup.setDisplayName("Multi Enum Fields");
+		multiLookup.setTableName("MultiEnumFields");
+		multiLookup.setExtendModule(getFieldsModule());
+		return multiLookup;
+	}
+
 	public static FacilioModule getNumberFieldModule() {
 		FacilioModule numberModule = new FacilioModule();
 		numberModule.setName("numberField");

@@ -757,6 +757,16 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getMultiEnumFieldFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMultiEnumFieldsModule();
+
+		fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
+		fields.add(getField("relModuleId", "REL_MODULE_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+
 	public static List<FacilioField> getLookupFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getLookupFieldsModule();

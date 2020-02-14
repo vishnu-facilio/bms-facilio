@@ -599,6 +599,10 @@ public class ModuleBeanImpl implements ModuleBean {
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 								field = FieldUtil.getAsBeanFromMap(prop, EnumField.class);
 							break;
+						case MULTI_ENUM:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								field = constructMultiEnumField(prop);
+							break;
 						case SYSTEM_ENUM:
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 								SystemEnumField enumField = FieldUtil.getAsBeanFromMap(prop, SystemEnumField.class);
@@ -620,6 +624,18 @@ public class ModuleBeanImpl implements ModuleBean {
 			return Collections.unmodifiableList(fields);
 		}
 		return null;
+	}
+
+	private MultiEnumField constructMultiEnumField(Map<String, Object> props) throws Exception {
+		MultiEnumField field = FieldUtil.getAsBeanFromMap(props, MultiEnumField.class);
+		FacilioModule relModule = getModule(field.getRelModuleId());
+		field.setRelModule(relModule);
+
+		Map<String, FacilioField> relFields = FieldFactory.getAsMap(getAllFields(relModule.getName()));
+		EnumField childEnumField = (EnumField) relFields.get(MultiEnumField.VALUE_FIELD_NAME);
+		field.setEnumProps(childEnumField);
+
+		return field;
 	}
 
 	private MultiLookupField constructMultiLookupField(Map<String, Object> props) throws Exception {
@@ -656,6 +672,9 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case ENUM:
 					extendedProps.put(entry.getKey(), getEnumExtendedProps(entry.getValue()));
+					break;
+				case MULTI_ENUM:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getMultiEnumFieldsModule(), FieldFactory.getMultiEnumFieldFields(), entry.getValue()));
 					break;
 				case SYSTEM_ENUM:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSystemEnumFieldModule(), FieldFactory.getSystemEnumFields(), entry.getValue()));
@@ -958,6 +977,19 @@ public class ModuleBeanImpl implements ModuleBean {
 				case ENUM:
 					addEnumField((EnumField) field);
 					break;
+				case MULTI_ENUM:
+					if (field instanceof MultiEnumField) {
+						MultiEnumField multiEnumField = (MultiEnumField) field;
+						if (multiEnumField.getRelModuleId() < 1) {
+							long relModuleId = addMultiEnumModule(multiEnumField);
+							fieldProps.put("relModuleId", relModuleId);
+						}
+					}
+					else {
+						throw new IllegalArgumentException("Invalid Field instance for the MULTI_ENUM data type");
+					}
+					addExtendedProps(ModuleFactory.getMultiEnumFieldsModule(), FieldFactory.getMultiEnumFieldFields(), fieldProps);
+					break;
 				case SYSTEM_ENUM:
 					addExtendedProps(ModuleFactory.getSystemEnumFieldModule(), FieldFactory.getSystemEnumFields(), fieldProps);
 					break;
@@ -972,7 +1004,53 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 	}
 
-	private static final String CUSTOM_REL_RECORD_TABLENAME = "Custom_Rel_Records";
+	private static final String CUSTOM_MULTI_ENUM_TABLENAME = "Custom_Multi_Enum_Values";
+	private long addMultiEnumModule(MultiEnumField field) throws Exception {
+		FacilioModule module = new FacilioModule();
+
+		String relModuleName = new StringBuilder(field.getModule().getName())
+									.append("-")
+									.append(field.getName())
+									.append("-multi")
+									.toString();
+		module.setName(relModuleName);
+		String relDisplayName = new StringBuilder()
+									.append(field.getModule().getDisplayName())
+									.append(" ")
+									.append(field.getDisplayName())
+									.append(" Multi")
+									.toString();
+		module.setDisplayName(relDisplayName);
+		module.setTableName(CUSTOM_MULTI_ENUM_TABLENAME);
+		module.setType(ModuleType.ENUM_REL_MODULE);
+
+		long moduleId = addModule(module);
+		module.setModuleId(moduleId);
+
+		LookupField parentField = new LookupField();
+		parentField.setDataType(FieldType.LOOKUP);
+		parentField.setName(MultiEnumField.PARENT_FIELD_NAME);
+		parentField.setDisplayName(field.getModule().getDisplayName());
+		parentField.setColumnName(StringUtils.upperCase(MultiEnumField.PARENT_FIELD_NAME)+"_ID");
+		parentField.setModule(module);
+		parentField.setLookupModule(field.getModule());
+		addField(parentField);
+
+		EnumField valueField = new EnumField();
+		valueField.setDataType(FieldType.ENUM);
+		valueField.setName(MultiEnumField.VALUE_FIELD_NAME);
+		valueField.setDisplayName(field.getDisplayName());
+		valueField.setColumnName(StringUtils.upperCase(MultiEnumField.VALUE_FIELD_NAME+"_ID"));
+		valueField.setModule(module);
+		valueField.setEnumProps(field);
+		addField(valueField);
+
+		field.setRelModuleId(moduleId);
+		field.setRelModule(module);
+		return moduleId;
+	}
+
+	private static final String CUSTOM_LOOKUP_REL_RECORD_TABLENAME = "Custom_Rel_Records";
 	private long addRelModule(MultiLookupField field) throws Exception {
 		FacilioModule module = new FacilioModule();
 
@@ -990,7 +1068,7 @@ public class ModuleBeanImpl implements ModuleBean {
 									.append(" Rel")
 									.toString();
 		module.setDisplayName(relDisplayName);
-		module.setTableName(CUSTOM_REL_RECORD_TABLENAME);
+		module.setTableName(CUSTOM_LOOKUP_REL_RECORD_TABLENAME);
 		module.setType(ModuleType.LOOKUP_REL_MODULE);
 
 		long moduleId = addModule(module);
@@ -1015,6 +1093,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		addField(childField);
 
 		field.setRelModuleId(moduleId);
+		field.setRelModule(module);
 		return moduleId;
 	}
 
@@ -1101,6 +1180,10 @@ public class ModuleBeanImpl implements ModuleBean {
 			i++;
 		}
 		insertBuilder.save();
+		i = 0;
+		for (EnumFieldValue enumVal : values) {
+			enumVal.setId((Long) insertBuilder.getRecords().get(i++).get("id"));
+		}
 	}
 
 	private int updateEnumVal (EnumFieldValue enumVal) throws Exception {
@@ -1113,9 +1196,22 @@ public class ModuleBeanImpl implements ModuleBean {
 		return updateBuilder.update(FieldUtil.getAsProperties(enumVal));
 
 	}
+
+	private int updateMultiEnumField(MultiEnumField field) throws Exception {
+		if (CollectionUtils.isEmpty(field.getValues())) {
+			return 0;
+		}
+		FacilioModule relModule = field.getRelModule();
+		if (relModule == null) {
+			relModule = getModule(field.getRelModuleId());
+		}
+		EnumField valueField = (EnumField) getField(MultiEnumField.VALUE_FIELD_NAME, relModule.getName());
+		valueField.setValues(field.getValues());
+		return updateField(valueField);
+	}
 	
 	private int updateEnumField(EnumField field) throws Exception {
-		if (field.getValues() == null || field.getValues().isEmpty()) {
+		if (CollectionUtils.isEmpty(field.getValues())) {
 			return 0;
 		}
 		List<EnumFieldValue> enumsToBeAdded = new ArrayList<>();
@@ -1182,6 +1278,10 @@ public class ModuleBeanImpl implements ModuleBean {
 			else if (field instanceof EnumField) {
 				extendendPropsCount = updateEnumField((EnumField) field);
 			}
+			else if (field instanceof MultiEnumField) {
+				extendendPropsCount = updateMultiEnumField((MultiEnumField) field);
+			}
+
 			return Math.max(count, extendendPropsCount);
 		}
 		else {
