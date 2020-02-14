@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.util.ImportFieldFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -327,7 +328,7 @@ public class ImportProcessContext implements Serializable
 				String moduleName = getModule().getName();
 				List<FacilioField> fieldsList= bean.getAllFields(moduleName);
 				List<String> removeFields = ImportFieldFactory.getFieldsTobeRemoved(getModule().getName());
-				
+				fieldsList.addAll(FieldFactory.getImportFieldMappingDisplayFields(getModule()));
 				for(FacilioField field : fieldsList)
 				{
 					if(!ImportAPI.isRemovableFieldOnImport(field.getName()) && !removeFields.contains(field.getName()))
@@ -352,6 +353,7 @@ public class ImportProcessContext implements Serializable
 						
 					}
 				}
+
 				return facilioFieldMapping;
 			}
 			catch(Exception e) {

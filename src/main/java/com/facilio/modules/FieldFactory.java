@@ -1193,6 +1193,17 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getImportFieldMappingDisplayFields (FacilioModule module) {
+		List<FacilioField> fieldMappingFields = new ArrayList<>();
+		fieldMappingFields.add(FieldFactory.getIdField(module));
+		fieldMappingFields.add(FieldFactory.getField("building", "Building", "BUILDING", module,FieldType.STRING));
+		fieldMappingFields.add(FieldFactory.getField("floor", "Floor", "FLOOR", module,FieldType.STRING));
+		fieldMappingFields.add(FieldFactory.getField("spaceName", "Space", "SPACE", module,FieldType.STRING));
+		fieldMappingFields.add(FieldFactory.getField("space1", "Space 1", "SPACE_1", module,FieldType.STRING));
+		fieldMappingFields.add(FieldFactory.getField("space2", "Space 2", "SPACE_2", module,FieldType.STRING));
+		fieldMappingFields.add(FieldFactory.getField("space3", "Space 3", "SPACE_3", module,FieldType.STRING));
+		return fieldMappingFields;
+	}
 
 	public static FacilioField getKinesisField() {
 		return getKinesisField(null);
