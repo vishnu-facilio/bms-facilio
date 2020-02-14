@@ -334,8 +334,7 @@ public  class AgentUtil
         } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
             s = " has regained connection with the facilio cloud @";
         }
-        event.setEventMessage("Agent " + agentName + s + DateTimeUtil.getFormattedTime(currentTime));
-        event.setMessage("Agent connection state change ( " + agentName + " )");
+        event.setMessage("Agent " + agentName + s + DateTimeUtil.getFormattedTime(currentTime));
         //event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
         event.setSeverityString(severity);
         event.setCreatedTime(currentTime);
