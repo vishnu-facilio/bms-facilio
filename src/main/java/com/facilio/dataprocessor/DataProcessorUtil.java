@@ -186,7 +186,7 @@ public class DataProcessorUtil {
                 agent.setId(agentId);
             }
 
-            LOGGER.info("Agent ID : " + agent.getId());
+            // LOGGER.info("Agent ID : " + agent.getId());
             agentUtil.addAgentMetrics(Math.toIntExact(record.getSize()), agent.getId(), publishType.getKey()); //TODO make size long
 
 
@@ -256,7 +256,7 @@ public class DataProcessorUtil {
             LOGGER.info("Exception occurred in processing payload ", e);
             return false;
         }
-        LOGGER.info(" processing successful");
+        // LOGGER.info(" processing successful");
         return true;
     }
 
@@ -356,14 +356,14 @@ public class DataProcessorUtil {
     private void processTimeSeries(FacilioRecord record, JSONObject payLoad, boolean isTimeSeries) throws Exception {
         long timeStamp = record.getTimeStamp();
         long startTime = System.currentTimeMillis();
-         LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
+        // LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
         /*if (AccountUtil.getCurrentOrg().getId() == 146 ) {
             LOGGER.info("Payload in processor : "+payLoad);
         }*/
         bean.processTimeSeries(timeStamp, payLoad, record, isTimeSeries);
         long timeTaken = (System.currentTimeMillis() - startTime);
-        LOGGER.info("timetaken to process timeseries data2 : " + timeTaken);
+        // LOGGER.info("timetaken to process timeseries data2 : " + timeTaken);
         if (timeTaken > 100000L) {
             LOGGER.info("timetaken to process timeseries is  > 100000  : " + timeTaken);
         }
