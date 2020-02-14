@@ -1162,7 +1162,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultClientColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("name", "Tenant Name"));
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("primaryContactName", "Primary Contact Name"));
 		columns.add(new ViewField("primaryContactEmail", "Primary Contact Email"));

@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -86,6 +87,11 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
                 }
 
                 workOrder.setEstimatedEnd(workOrder.getDueDate());
+                if (workOrder.getSiteId() > 0) {
+				    workOrder.setClient(RecordAPI.getClientForSite(workOrder.getSiteId()));
+			    } else {
+				    workOrder.setClient(null);
+			    }
             }
             builder.addRecord(workOrder);
         }

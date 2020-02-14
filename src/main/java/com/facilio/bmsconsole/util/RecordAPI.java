@@ -5,6 +5,9 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ClientContext;
+import com.facilio.bmsconsole.context.ServiceContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -59,5 +62,26 @@ public class RecordAPI {
 		else {
 			return null;
 		}
+	}
+	
+	public static ClientContext getClientForSite(long siteId) throws Exception {
+		ClientContext clientContext = null;
+		if (siteId <= 0) {
+			return clientContext;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
+		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(SiteContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(siteId, module))
+				;
+		List<SiteContext> services = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(services)) {
+			return services.get(0).getClient();
+		}
+		
+		return clientContext;
+		
 	}
 }

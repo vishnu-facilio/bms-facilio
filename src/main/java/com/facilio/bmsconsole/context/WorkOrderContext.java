@@ -557,5 +557,12 @@ public class WorkOrderContext extends TicketContext {
 		this.hazardIds = hazardIds;
 	}
 	
+	private ClientContext client;
+	public ClientContext getClient() {
+		return client;
+	}
+	public void setClient(ClientContext client) {
+		this.client = client;
+	}
 	
 }

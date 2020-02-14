@@ -162,7 +162,6 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new BulkAddWorkOrderCommand());
-			c.addCommand(new GenericSetClientIdForListModuleDataCommand());
 			c.addCommand(new BulkAddAttachmentRelationshipCommand());
 			c.addCommand(getTempAddTaskChain());
 			return c;
@@ -286,7 +285,6 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new AddWorkOrderCommand());
-			c.addCommand(new GenericSetClientIdForModuleDataCommand());
 			c.addCommand(new AddWorkorderHazardsFromSafetyPlanCommand());
 			c.addCommand(new AddAttachmentCommand());
 			c.addCommand(new AttachmentContextCommand());
@@ -4745,7 +4743,7 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForClient());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdateClientIdInSiteCommand());
-		c.addCommand(new AddClientUserCommand());
+//		c.addCommand(new AddClientUserCommand());
 
 		return c;
 	}

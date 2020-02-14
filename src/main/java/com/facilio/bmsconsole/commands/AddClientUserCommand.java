@@ -33,14 +33,14 @@ public class AddClientUserCommand extends FacilioCommand {
 						EventType.CREATE);
 
 				if (eventType == EventType.CREATE) {
-					ContactsContext primarycontact = addDefaultTenantPrimaryContact(client);
+					ContactsContext primarycontact = addDefaultClientPrimaryContact(client);
 					RecordAPI.addRecord(true, Collections.singletonList(primarycontact), module, fields);
 				} else {
 					if (StringUtils.isNoneEmpty(client.getPrimaryContactPhone())) {
 						ContactsContext existingcontactForPhone = ContactsAPI
 								.getContactforPhone(client.getPrimaryContactPhone(), client.getId(), false);
 						if (existingcontactForPhone == null) {
-							existingcontactForPhone = addDefaultTenantPrimaryContact(client);
+							existingcontactForPhone = addDefaultClientPrimaryContact(client);
 							RecordAPI.addRecord(true, Collections.singletonList(existingcontactForPhone), module,
 									fields);
 						} else {
@@ -56,7 +56,7 @@ public class AddClientUserCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private ContactsContext addDefaultTenantPrimaryContact(ClientContext client) throws Exception {
+	private ContactsContext addDefaultClientPrimaryContact(ClientContext client) throws Exception {
 		ContactsAPI.unMarkPrimaryContact(client.getId(), false);
 		ContactsContext contact = new ContactsContext();
 		contact.setName(client.getPrimaryContactName() != null ? client.getPrimaryContactName() : client.getName());

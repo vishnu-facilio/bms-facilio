@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -76,7 +77,12 @@ public class AddWorkOrderCommand extends FacilioCommand {
 				workOrder.setDueDate(workOrder.getCreatedTime()+(workOrder.getDuration()*1000));
 			}
 			workOrder.setEstimatedEnd(workOrder.getDueDate());
-			
+			if (workOrder.getSiteId() > 0) {
+				workOrder.setClient(RecordAPI.getClientForSite(workOrder.getSiteId()));
+			} else {
+				workOrder.setClient(null);
+			}
+
 			//associate Tenant
 			TicketAPI.associateTenant(workOrder);
 			TicketAPI.updateTicketAssignedBy(workOrder);

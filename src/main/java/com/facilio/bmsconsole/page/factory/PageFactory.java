@@ -75,6 +75,8 @@ public class PageFactory {
 				return SafetyPlanPageFactory.getPrecautionPage((PrecautionContext) record);
 			case ContextNames.SITE:
 				return SitePageFactory.getSitePage((SiteContext) record);
+			case ContextNames.CLIENT:
+				return ClientPageFactory.getclientPage((ClientContext) record);
 				
 		}
 		if (module.getExtendModule() == null) {	// temp
