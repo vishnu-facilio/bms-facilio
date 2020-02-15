@@ -20,8 +20,13 @@ import javax.websocket.server.ServerEndpoint;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
+import com.facilio.bmsconsole.util.DevicesUtil;
 import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.screen.context.RemoteScreenContext;
+import com.facilio.screen.util.ScreenUtil;
+import com.facilio.service.FacilioService;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageDecoder;
@@ -156,6 +161,24 @@ public class FacilioServerEndpoint
     	long id = Long.parseLong(session.getPathParameters().get("id"));
     	message.setTo(id);
     	message.setSessionType(ls.getLiveSessionType());
+    	if (ls.getLiveSessionType() == LiveSessionType.REMOTE_SCREEN) {
+    		try {
+				RemoteScreenContext remoteScreen = FacilioService.runAsServiceWihReturn(() ->  ScreenUtil.getRemoteScreen(id));
+				message.setOrgId(remoteScreen.getOrgId());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+//    	else if (ls.getLiveSessionType() == LiveSessionType.DEVICE) {
+//    		try {
+//    			ConnectedDeviceContext deviceContext = FacilioService.runAsServiceWihReturn(() ->  DevicesUtil.getConnectedDevice(id));
+//				message.setOrgId(deviceContext.getOrgId());
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//    	}
     	if ("subscribe".equalsIgnoreCase(message.getAction())) {
     		PubSubManager.getInstance().subscribe(message);
     	}

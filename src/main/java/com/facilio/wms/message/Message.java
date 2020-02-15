@@ -19,6 +19,7 @@ public class Message
 	private String action;
 	private JSONObject content = new JSONObject();
 	private long timestamp;
+	private long orgId = -1;
 
 	private static final Logger LOGGER = LogManager.getLogger(Message.class.getName());
 	private static final String SESSION_TYPE = "sessionType";
@@ -70,6 +71,15 @@ public class Message
 
 	public Message setFrom(long from) {
 		this.from = from;
+		return this;
+	}
+	
+	public long getOrgId() {
+		return this.orgId;
+	}
+
+	public Message setOrgId(long orgId) {
+		this.orgId = orgId;
 		return this;
 	}
 	
