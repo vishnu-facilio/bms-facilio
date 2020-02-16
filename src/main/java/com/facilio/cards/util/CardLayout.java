@@ -150,6 +150,72 @@ public enum CardLayout {
 			
 			return returnValue;
 		}
+	},
+	KPICARD_LAYOUT_2 ("kpicard_layout_2") {
+		@Override
+		public Object execute(WidgetCardContext cardContext) throws Exception {
+			JSONObject cardParams = cardContext.getCardParams();
+			
+			String title = (String) cardParams.get("title");
+			String kpiType = (String) cardParams.get("kpiType");
+			String dateRange = (String) cardParams.get("dateRange");
+			String dateField = (String) cardParams.get("dateField");
+			String baselineRange = (String) cardParams.get("baseline");
+			 
+			Long kpiId;
+			Long parentId;
+			String yAggr;
+			if (cardParams.get("kpi") instanceof JSONObject) {
+				JSONObject kpiConfig = (JSONObject) cardParams.get("kpi");
+				kpiId = (Long) kpiConfig.get("kpiId");
+				parentId = (Long) kpiConfig.get("parentId");
+				yAggr = (String) kpiConfig.get("yAggr");
+			} else if (cardParams.get("kpi") instanceof Map) {
+				Map<String, Object> kpiConfig = (Map<String, Object>) cardParams.get("kpi");
+				kpiId = (Long) kpiConfig.get("kpiId");
+				parentId = (Long) kpiConfig.get("parentId");
+				yAggr = (String) kpiConfig.get("yAggr");
+			} else {
+				throw new IllegalStateException();
+			}
+			
+			Object cardValue = null;
+			
+			if ("module".equalsIgnoreCase(kpiType)) {
+				try {
+					KPIContext kpiContext = KPIUtil.getKPI(kpiId, false);
+					if (dateRange != null) {
+						kpiContext.setDateOperator((DateOperators) DateOperators.getAllOperators().get(dateRange));
+					}
+					cardValue = KPIUtil.getKPIValue(kpiContext);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					LOGGER.log(Level.WARNING, "Exception in getKPIValue::: ", e);
+				}
+			}
+			else if ("reading".equalsIgnoreCase(kpiType)) {
+				try {
+					cardValue = FormulaFieldAPI.getFormulaCurrentValue(kpiId, parentId);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					LOGGER.log(Level.WARNING, "Exception in get KPI Reading Value::: ", e);
+				}
+			}
+			
+			JSONObject jobj = new JSONObject();
+			jobj.put("value", cardValue);
+			jobj.put("unit", null);
+			
+			JSONObject returnValue = new JSONObject();
+			returnValue.put("title", title);
+			returnValue.put("value", jobj);
+			returnValue.put("baselineValue", jobj);
+			returnValue.put("period", dateRange);
+			returnValue.put("baselinePeriod", baselineRange);
+
+			
+			return returnValue;
+		}
 	};
 	
 	private static final Logger LOGGER = Logger.getLogger(CardLayout.class.getName());
