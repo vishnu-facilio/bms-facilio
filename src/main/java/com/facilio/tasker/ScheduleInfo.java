@@ -365,34 +365,6 @@ public class ScheduleInfo implements Serializable {
 				addAndSortValue(zdt.getMonthValue());
 
 				// 1. Move to the first day of the nearest month if the start time month doesn't fall in the rule
-				if (!values.contains(zdt.getMonthValue())) {
-					final int monthVal = zdt.getMonthValue();
-					Optional<Integer> nearestMonth = values.stream().filter(i -> i > monthVal).sorted().findFirst();
-					if (nearestMonth.isPresent()) {
-						zdt = zdt.withMonth(nearestMonth.get());
-					} else {
-						zdt = incrementYear(zdt, 1);
-						zdt = zdt.withMonth(values.get(0));
-					}
-					zdt = zdt.withDayOfMonth(1);
-				}
-
-				// 2 Move to first day of the nearest week in the month, in case zdt does not fall in the rule
-				int calculatedFrequency = weekFrequency;
-				if (weekFrequency == LAST_WEEK) {
-					calculatedFrequency = zdt.with(TemporalAdjusters.lastDayOfMonth()).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
-				}
-				if (!checkWeekOfMonthForYearly(zdt)) {
-					if (zdt.get(ChronoField.ALIGNED_WEEK_OF_MONTH) > calculatedFrequency) { // move to next year earliest feasible month and week
-						zdt = zdt.with(LocalTime.of(0, 0)).with(TemporalAdjusters.firstDayOfNextYear());
-						zdt = zdt.withMonth(values.get(0));
-						zdt = zdt.with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency);
-					} else {
-						zdt = zdt.with(LocalTime.of(0, 0)).with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, 1).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency);
-					}
-				}
-
-				// 3 Move to the particular day
 				int alignedWeek = zdt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 				ZonedDateTime alignedStartOfWeek = zdt.with(LocalTime.of(0, 0)).with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, 1).with(ChronoField.ALIGNED_WEEK_OF_MONTH, alignedWeek);
 				int alignedStartActualWeekDay = alignedStartOfWeek.getDayOfWeek().getValue();
@@ -405,20 +377,51 @@ public class ScheduleInfo implements Serializable {
 				Collections.sort(convertedWeekDays);
 
 				int zdtAlignedWeekDay = ((7 + zdtWeekDay - alignedStartActualWeekDay) % 7) + 1;
-
 				boolean moveToNextYear = true;
-				for (int val : convertedWeekDays) {
-					if (zdtAlignedWeekDay == val) {
-						if (times.get(times.size() - 1).isAfter(zdt.toLocalTime())) {
+
+				int month = zdt.getMonthValue();
+
+				for (Integer allowedMonth: values) {
+					if (month == allowedMonth) {
+						if (checkWeekOfMonth(zdt)) {
+							for (int convertedDayOfWeek: convertedWeekDays) {
+								if (zdtAlignedWeekDay == convertedDayOfWeek) { // tested
+									if (zdt.toLocalTime().isBefore(times.get(times.size() - 1))) {
+										moveToNextYear = false;
+										break;
+									}
+								} else if (zdtAlignedWeekDay < convertedDayOfWeek) { // tested
+									zdt = zdt.with(LocalTime.of(0, 0)).with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, convertedDayOfWeek);
+									moveToNextYear = false;
+									break;
+								}
+							}
+							if (!moveToNextYear) {
+								break;
+							}
+						} else if (zdt.get(ChronoField.ALIGNED_WEEK_OF_MONTH) < weekFrequency) { // tested
+							zdt = zdt.with(LocalTime.of(0, 0)).with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, convertedWeekDays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, weekFrequency);
 							moveToNextYear = false;
 							break;
 						}
-					} else if (zdtAlignedWeekDay < val) {
-						ZonedDateTime tmp = zdt.with(LocalTime.of(0, 0)).with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, val);
-						if (tmp.getMonthValue() > zdt.getMonthValue()) {
-							tmp = tmp.with(LocalTime.of(0, 0)).withMonth(zdt.getMonthValue()).with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, val).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency - 1);
+					} else if (allowedMonth > month) {
+						zdt = zdt.withDayOfMonth(1).with(LocalTime.of(0, 0)).withMonth(allowedMonth);
+						alignedWeek = zdt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+						alignedStartOfWeek = zdt.with(LocalTime.of(0, 0)).with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, 1).with(ChronoField.ALIGNED_WEEK_OF_MONTH, alignedWeek);
+						alignedStartActualWeekDay = alignedStartOfWeek.getDayOfWeek().getValue();
+						int calculatedFrequency = weekFrequency;
+						if (weekFrequency == LAST_WEEK) {
+							calculatedFrequency = zdt.with(TemporalAdjusters.lastDayOfMonth()).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 						}
-						zdt = tmp;
+
+						convertedWeekDays = getOffsettedWeekDays(alignedStartActualWeekDay, yearlyDayOfWeekValues);
+
+						ZonedDateTime temp = zdt.with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH,  convertedWeekDays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency);
+						if (temp.getMonthValue() > zdt.getMonthValue()) {
+							zdt = zdt.with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH,  convertedWeekDays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency - 1);
+						} else {
+							zdt = temp;
+						}
 						moveToNextYear = false;
 						break;
 					}
@@ -427,7 +430,7 @@ public class ScheduleInfo implements Serializable {
 				if (moveToNextYear) {
 					zdt = zdt.with(LocalTime.of(0, 0)).with(TemporalAdjusters.firstDayOfNextYear());
 					zdt = zdt.withMonth(values.get(0));
-					calculatedFrequency = weekFrequency;
+					int calculatedFrequency = weekFrequency;
 					if (weekFrequency == LAST_WEEK) {
 						calculatedFrequency = zdt.with(TemporalAdjusters.lastDayOfMonth()).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 					}
@@ -569,7 +572,7 @@ public class ScheduleInfo implements Serializable {
 				int alignedWeek = zdt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 				ZonedDateTime alignedStartOfWeek = zdt.with(LocalTime.of(0, 0)).with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, 1).with(ChronoField.ALIGNED_WEEK_OF_MONTH, alignedWeek);
 				int alignedStartActualWeekDay = alignedStartOfWeek.getDayOfWeek().getValue();
-				List<Integer> convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay);
+				List<Integer> convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay, this.values);
 
 				int zdtWeekDay = zdt.getDayOfWeek().getValue();
 				int zdtAlignedWeekDay = (((7 + zdtWeekDay - alignedStartActualWeekDay) % 7) + 1);
@@ -622,7 +625,7 @@ public class ScheduleInfo implements Serializable {
 								calculatedFrequency = zdt.with(TemporalAdjusters.lastDayOfMonth()).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 							}
 
-							convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay);
+							convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay, this.values);
 
 							ZonedDateTime temp = zdt.with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, convertedWeekdays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency);
 							if (temp.getMonthValue() > zdt.getMonthValue()) {
@@ -643,7 +646,7 @@ public class ScheduleInfo implements Serializable {
 							calculatedFrequency = zdt.with(TemporalAdjusters.lastDayOfMonth()).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 						}
 
-						convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay);
+						convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay, this.values);
 
 						ZonedDateTime temp = zdt.with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH,  convertedWeekdays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency);
 						if (temp.getMonthValue() > zdt.getMonthValue()) {
@@ -666,7 +669,7 @@ public class ScheduleInfo implements Serializable {
 						calculatedFrequency = zdt.with(TemporalAdjusters.lastDayOfMonth()).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 					}
 
-					convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay);
+					convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay, this.values);
 
 					ZonedDateTime temp = zdt.with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH,  convertedWeekdays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency);
 					if (temp.getMonthValue() > zdt.getMonthValue()) {
@@ -788,7 +791,7 @@ public class ScheduleInfo implements Serializable {
 				int alignedWeek = zdt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 				ZonedDateTime alignedStartOfWeek = zdt.with(LocalTime.of(0, 0)).with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, 1).with(ChronoField.ALIGNED_WEEK_OF_MONTH, alignedWeek);
 				int alignedStartActualWeekDay = alignedStartOfWeek.getDayOfWeek().getValue();
-				List<Integer> convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay);
+				List<Integer> convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay, this.values);
 
 				int zdtWeekDay = zdt.getDayOfWeek().getValue();
 				int zdtAlignedWeekDay = (((7 + zdtWeekDay - alignedStartActualWeekDay) % 7) + 1);
@@ -840,7 +843,7 @@ public class ScheduleInfo implements Serializable {
 							if (weekFrequency == LAST_WEEK) {
 								calculatedFrequency = zdt.with(TemporalAdjusters.lastDayOfMonth()).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 							}
-							convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay);
+							convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay, this.values);
 							ZonedDateTime temp = zdt.with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, convertedWeekdays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency);
 							if (temp.getMonthValue() > zdt.getMonthValue()) {
 								zdt = zdt.with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, convertedWeekdays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency - 1);
@@ -859,7 +862,7 @@ public class ScheduleInfo implements Serializable {
 						if (weekFrequency == LAST_WEEK) {
 							calculatedFrequency = zdt.with(TemporalAdjusters.lastDayOfMonth()).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 						}
-						convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay);
+						convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay, this.values);
 						ZonedDateTime temp = zdt.with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH,  convertedWeekdays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency);
 						if (temp.getMonthValue() > zdt.getMonthValue()) {
 							zdt = zdt.with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH,  convertedWeekdays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency - 1);
@@ -880,7 +883,7 @@ public class ScheduleInfo implements Serializable {
 					if (weekFrequency == LAST_WEEK) {
 						calculatedFrequency = zdt.with(TemporalAdjusters.lastDayOfMonth()).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 					}
-					convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay);
+					convertedWeekdays = getOffsettedWeekDays(alignedStartActualWeekDay, this.values);
 					ZonedDateTime temp = zdt.with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, convertedWeekdays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency);
 					if (temp.getMonthValue() > zdt.getMonthValue()) {
 						zdt = zdt.with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH,  convertedWeekdays.get(0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, calculatedFrequency - 1);
@@ -896,7 +899,7 @@ public class ScheduleInfo implements Serializable {
 		return nextZdt.toEpochSecond() - 1;
 	}
 
-	private List<Integer> getOffsettedWeekDays(int alignedStartActualWeekDay) {
+	private List<Integer> getOffsettedWeekDays(int alignedStartActualWeekDay, List<Integer> values) {
 		List<Integer> convertedWeekdays;
 		convertedWeekdays = new ArrayList<>();
 		for (int dayOfWeek : values) {
