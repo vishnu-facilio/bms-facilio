@@ -125,14 +125,6 @@
 			</result>
 		</action>
 		
-		<action name="getLogoUrl" class="com.facilio.bmsconsole.actions.TenantAction"
-			method="getTenantLogoUrl">
-			<param name="permission">READ</param> 
-			<param name="moduleName">tenant</param>
-		     <result name="success" type="json">
-				<param name="includeProperties">logoUrl</param>
-			</result>
-		</action>
 		
 		<action name="tenantuser" class="com.facilio.bmsconsole.actions.TenantAction" 
 				method="tenantServicePortal">
@@ -286,6 +278,20 @@
 				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
 			</result>
 		</action>
+	</package>
+	
+	
+	<package name="tenant" namespace="/api/service/tenant" extends="serviceportal">
+	
+	<action name="getLogoUrl" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="getTenantLogoUrl">
+			<param name="permission">READ</param> 
+			<param name="moduleName">tenant</param>
+		     <result name="success" type="json">
+				<param name="includeProperties">logoUrl</param>
+			</result>
+	</action>
+	
 	</package>
 	<package name="dashboardApi" namespace="/api/service/dashboard" extends="serviceportal">
 			<action name="populateDefaultReports" class="com.facilio.bmsconsole.actions.DashboardAction" method="populateDefaultReports">
