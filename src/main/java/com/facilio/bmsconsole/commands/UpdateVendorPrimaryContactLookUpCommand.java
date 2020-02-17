@@ -19,11 +19,11 @@ public class UpdateVendorPrimaryContactLookUpCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(contactList)) {
 			for(ContactsContext contact : contactList) {
 				if(contact.isPrimaryContact() && contact.getContactTypeEnum() == ContactType.VENDOR && contact.getVendor() != null && contact.getVendor().getId() > 0) {
-					ContactsAPI.unMarkPrimaryContact(contact.getVendor().getId(), true);
+					ContactsAPI.unMarkPrimaryContact(contact.getId(), contact.getVendor().getId(), true);
 					ContactsAPI.rollUpVendorPrimarycontactFields(contact.getVendor().getId(), contact);
 				}
 				else if(contact.isPrimaryContact() && contact.getContactTypeEnum() == ContactType.TENANT && contact.getTenant() != null && contact.getTenant().getId() > 0) {
-					ContactsAPI.unMarkPrimaryContact(contact.getTenant().getId(), false);
+					ContactsAPI.unMarkPrimaryContact(contact.getId(), contact.getTenant().getId(), false);
 					ContactsAPI.rollUpTenantPrimarycontactFields(contact.getTenant().getId(), contact);
 				}
 			}

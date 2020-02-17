@@ -161,11 +161,11 @@ public class ContactsAPI {
 		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 		FacilioField primaryContactField = contactFieldMap.get("isPrimaryContact");
 		if(contact.getVendor() != null && contact.isPrimaryContact()) {
-			unMarkPrimaryContact(contact.getVendor().getId(), true);
+			unMarkPrimaryContact(contact.getId(), contact.getVendor().getId(), true);
 			rollUpVendorPrimarycontactFields(contact.getVendor().getId(), contact);
 		}
 		else if(contact.getTenant() != null && contact.isPrimaryContact()) {
-			unMarkPrimaryContact(contact.getTenant().getId(), false);
+			unMarkPrimaryContact(contact.getId(), contact.getTenant().getId(), false);
 			rollUpTenantPrimarycontactFields(contact.getTenant().getId(), contact);
 		}
 		updatedfields.add(primaryContactField);
@@ -261,7 +261,7 @@ public class ContactsAPI {
 		
 	}
 	
-	public static int unMarkPrimaryContact(long id, boolean isVendor) throws Exception{
+	public static int unMarkPrimaryContact(long contactId, long id, boolean isVendor) throws Exception{
         
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
@@ -274,10 +274,13 @@ public class ContactsAPI {
 											.table(module.getTableName())
 											.fields(updatedfields)
 											.andCondition(CriteriaAPI.getCondition("IS_PRIMARY_CONTACT", "isPrimaryContact", "true", BooleanOperators.IS))
-											.andCondition(CriteriaAPI.getCondition("ID", "contactId", String.valueOf(id), NumberOperators.NOT_EQUALS))
 											
 											;
 		
+		if(contactId > 0) {
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ID", "contactId", String.valueOf(contactId), NumberOperators.NOT_EQUALS));
+			
+		}
 		if(isVendor) {
 			updateBuilder.andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(id), NumberOperators.EQUALS));
 			

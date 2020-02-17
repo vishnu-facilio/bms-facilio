@@ -75,7 +75,7 @@ public class AddVendorContactsCommand extends FacilioCommand{
 	}
 	
 	private ContactsContext addDefaultVendorPrimaryContact(VendorContext vendor) throws Exception {
-		ContactsAPI.unMarkPrimaryContact(vendor.getId(), true);
+		ContactsAPI.unMarkPrimaryContact(-1, vendor.getId(), true);
 		ContactsContext contact = new ContactsContext();
 		contact.setName(vendor.getPrimaryContactName() != null ? vendor.getPrimaryContactName() : vendor.getName());
 		contact.setContactType(ContactType.VENDOR);
