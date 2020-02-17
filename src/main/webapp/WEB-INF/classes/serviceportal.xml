@@ -125,6 +125,15 @@
 			</result>
 		</action>
 		
+		<action name="getLogoUrl" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="getTenantLogoUrl">
+			<param name="permission">READ</param> 
+			<param name="moduleName">tenant</param>
+		     <result name="success" type="json">
+				<param name="includeProperties">logoUrl</param>
+			</result>
+		</action>
+		
 		<action name="tenantuser" class="com.facilio.bmsconsole.actions.TenantAction" 
 				method="tenantServicePortal">
 			<result name="success" type="json">
