@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.time.ZonedDateTime;
+import java.time.temporal.IsoFields;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,6 +16,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.time.DateTimeUtil;
 
 public class DemoRollUpYearlyCommand extends FacilioCommand {
 
@@ -21,11 +24,19 @@ public class DemoRollUpYearlyCommand extends FacilioCommand {
 	private static final String DEFAULT_DB_CONF_PATH = "conf/demorolluptables.yml"; 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+
 		long jobStartTime = System.currentTimeMillis();
 		long orgId=(long) context.get(ContextNames.DEMO_ROLLUP_JOB_ORG);
-		long startTTime = (long) context.get(ContextNames.START_TIME);
-		long endTTime = (long) context.get(ContextNames.END_TIME);
-		long weekDiff = (long) context.get(ContextNames.TIME_DIFF);
+		ZonedDateTime currentZdt = (ZonedDateTime) context.get(ContextNames.START_TIME);
+		ZonedDateTime thisYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(currentZdt);
+		int currentWeek = thisYearWeekStartZdt.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+		ZonedDateTime lastYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearWeekStartZdt.minusYears(1).with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, currentWeek));
+		ZonedDateTime lastYearWeekEndZdt = DateTimeUtil.getWeekEndTimeOf(lastYearWeekStartZdt);
+		long lastYearWeekStart = lastYearWeekStartZdt.toInstant().toEpochMilli();
+		long lastYearWeekEnd = lastYearWeekEndZdt.toInstant().toEpochMilli();
+		long thisYearWeekStart = thisYearWeekStartZdt.toInstant().toEpochMilli();
+		long weekDiff = (thisYearWeekStart - lastYearWeekStart);
+
 		ClassLoader classLoader = DemoRollUpYearlyCommand.class.getClassLoader();
         Yaml yaml = new Yaml();
         Map<String ,List<Map<String,Object>>> json = null;
@@ -52,7 +63,7 @@ public class DemoRollUpYearlyCommand extends FacilioCommand {
 					}
 					sql.replace(sql.length() - 1, sql.length(), " ");
 					sql.append(" WHERE ORGID = ").append(orgId).append(" AND ").append(primaryColumn)
-					.append("  BETWEEN ").append(startTTime).append(" AND ").append(endTTime);
+					.append("  BETWEEN ").append(lastYearWeekStart).append(" AND ").append(lastYearWeekEnd);
 					try (PreparedStatement pstmt = conn.prepareStatement(sql.toString());) {
 						int count = pstmt.executeUpdate();
 						System.out.println("###DemoRollUpYearlyJob " + count + " of rows updated in  " + tableNamekey + "  successfully");

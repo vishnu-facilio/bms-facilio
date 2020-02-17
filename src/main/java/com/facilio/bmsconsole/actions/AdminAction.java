@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -266,7 +268,27 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 
 	}
+	
+	public String demoRollUpYearly() {
+		
+		HttpServletRequest request = ServletActionContext.getRequest();
+		long orgId = Long.parseLong(request.getParameter("orgId"));
+		String lastYearStartTime = request.getParameter("lastYearStartTime");
+		lastYearStartTime = lastYearStartTime.replace('T', ' ');
+		long time = convertDatetoTTime(lastYearStartTime);
+		ZonedDateTime  currentZdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
+		try {
+			FacilioChain demoRollupChain = TransactionChainFactory.demoRollUpYearlyChain();
+			demoRollupChain.getContext().put(ContextNames.START_TIME, currentZdt);
+			demoRollupChain.getContext().put(ContextNames.DEMO_ROLLUP_JOB_ORG, orgId);
+			demoRollupChain.execute();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Exception while executing Demojob" + e.getMessage(), e);
+		}
 
+		return SUCCESS;
+	}
+	
 	public static List<Instance> getAwsInstance()throws Exception{
 
 		List<Instance> instanceInfo = DescribeInstances.getAwsvalue();
@@ -350,7 +372,6 @@ public class AdminAction extends ActionSupport {
 	public long convertDatetoTTime(String time) {
 
 		LocalDateTime localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-
 		long millis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		System.out.println("###ttime" + millis);
 		return millis;

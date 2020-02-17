@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.time.ZonedDateTime;
-import java.time.temporal.IsoFields;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,21 +22,10 @@ public class DemoRollUpYearlyJob extends FacilioJob {
 	public void execute(JobContext jc) throws Exception {
 
 		ZonedDateTime currentZdt = DateTimeUtil.getDateTime();
-		ZonedDateTime thisYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(currentZdt);
-		int currentWeek = thisYearWeekStartZdt.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-		ZonedDateTime lastYearWeekStartZdt = DateTimeUtil.getWeekStartTimeOf(thisYearWeekStartZdt.minusYears(1).with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, currentWeek));
-		ZonedDateTime lastYearWeekEndZdt = DateTimeUtil.getWeekEndTimeOf(lastYearWeekStartZdt);
-		long lastYearWeekStart = lastYearWeekStartZdt.toInstant().toEpochMilli();
-		long lastYearWeekEnd = lastYearWeekEndZdt.toInstant().toEpochMilli();
-		long thisYearWeekStart = thisYearWeekStartZdt.toInstant().toEpochMilli();
-		long weekDiff = (thisYearWeekStart - lastYearWeekStart);
 		try {
-			System.out.println("DemorollupYearlyJob started in facilioJob");
 			LOGGER.info("DemorollupYearlyJob started in facilioJob");
 			FacilioChain context = TransactionChainFactory.demoRollUpYearlyChain();
-			context.getContext().put(ContextNames.START_TIME, lastYearWeekStart);
-			context.getContext().put(ContextNames.END_TIME, lastYearWeekEnd);
-			context.getContext().put(ContextNames.TIME_DIFF, weekDiff);
+			context.getContext().put(ContextNames.START_TIME, currentZdt);
 			context.getContext().put(ContextNames.DEMO_ROLLUP_JOB_ORG, jc.getOrgId());
 			context.execute();
 		} catch (Exception e) {

@@ -1142,7 +1142,12 @@
 			<action name="getinstance" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/awsinstances.jsp</result>
 			</action>
-			
+			<action name="demorollupyearly" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/demorollupyearly.jsp</result>
+			</action>
+			<action name="demoRollUpYearly" class="com.facilio.bmsconsole.actions.AdminAction" method ="demoRollUpYearly">
+			<result   type="tiles">adminpage/demorollupyearly.jsp</result>
+			</action>			
 			<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method ="addAgentVersion">
 			</action>
 		<action name="uploadSecretFilesPage" class="com.facilio.bmsconsole.actions.AdminAction">
