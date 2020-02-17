@@ -687,7 +687,10 @@ public class ViewFactory {
 		views.put("all", getAllWorkOrderHazardsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_HAZARD, views);
 
+		views.put("all", getAllSites().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SITE, views);
 
+		
 		return viewsMap;
 	}
 
@@ -873,6 +876,26 @@ public class ViewFactory {
 
 		return moduleVsGroup;
 
+	}
+	
+	private static FacilioView getAllSites() {
+
+		FacilioModule siteModule = ModuleFactory.getSiteModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("id");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("ID");
+		createdTime.setModule(siteModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Sites");
+		allView.setSortFields(sortFields);
+
+		return allView;
 	}
 	
 	private static FacilioView getEvents(String category) {

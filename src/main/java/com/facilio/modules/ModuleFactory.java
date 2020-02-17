@@ -118,6 +118,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.HAZARD, getHazardModule());
 		moduleMap.put(ContextNames.PRECAUTION, getPrecautionModule());
 		moduleMap.put(ContextNames.CLIENT, getClientModule());
+		moduleMap.put(ContextNames.SITE, getSiteModule());
 
 		return moduleMap;
 	}
@@ -3353,4 +3354,12 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getSiteModule() {
+		FacilioModule workOrdersModule = new FacilioModule();
+		workOrdersModule.setName(FacilioConstants.ContextNames.SITE);
+		workOrdersModule.setDisplayName("Site");
+		workOrdersModule.setTableName("Site");
+		workOrdersModule.setExtendModule(getResourceModule());
+		return workOrdersModule;
+	}
 }

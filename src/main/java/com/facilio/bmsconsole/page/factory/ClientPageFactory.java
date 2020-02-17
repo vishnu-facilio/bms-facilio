@@ -31,7 +31,7 @@ public class ClientPageFactory extends PageFactory{
         addSecondaryDetailsWidget(tab1Sec1);
         Section tab1Sec2 = page.new Section();
         tab1.addSection(tab1Sec2);
-        addRelatedListWidget(tab1Sec2, "site", client.getModuleId(), "Sites");
+        addSiteListWidget(tab1Sec2, "site", client.getModuleId(), "Sites");
         addRelatedListWidget(tab1Sec2, "contact", client.getModuleId(), "Contacts");
         addRelatedListWidget(tab1Sec2, "workorder", client.getModuleId(), "Workorders");
 //        addSafetyPlanHazardsWidget(tab1Sec2);
@@ -56,6 +56,27 @@ public class ClientPageFactory extends PageFactory{
         if (CollectionUtils.isNotEmpty(fields)) {
             for (FacilioField field : fields) {
                 PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
+                JSONObject relatedList = new JSONObject();
+                module.setDisplayName(moduleDisplayName);
+                relatedList.put("module", module);
+                relatedList.put("field", field);
+                relatedListWidget.setRelatedList(relatedList);
+                relatedListWidget.addToLayoutParams(section, 24, 10);
+                section.addWidget(relatedListWidget);
+            }
+        }
+    }
+    
+    private static void addSiteListWidget(Section section, String moduleName, long parenModuleId, String moduleDisplayName) throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == parenModuleId)).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(fields)) {
+            for (FacilioField field : fields) {
+                PageWidget relatedListWidget = new PageWidget(WidgetType.SITE_LSIT_WIDGET);
                 JSONObject relatedList = new JSONObject();
                 module.setDisplayName(moduleDisplayName);
                 relatedList.put("module", module);

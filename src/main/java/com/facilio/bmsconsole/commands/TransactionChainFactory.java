@@ -4748,6 +4748,11 @@ public class TransactionChainFactory {
 		return c;
 	}
 
+	public static FacilioChain disassociateClientFromSiteChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DisassociateClientFromSiteCommand());
+		return c;
+	}
 }
 
 

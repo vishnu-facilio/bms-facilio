@@ -241,7 +241,9 @@ public class PageWidget {
 		SAFETY_PLAN_PRECAUTIONS("safetyPlanPrecautions"),
 		PRECAUTION_HAZARDS_LIST("precautionHazardsList"),
 		HAZARD_PECAUTIONS_LIST("hazardPrecautionsList"),
-		RELATED_COUNT("relatedCount")
+		RELATED_COUNT("relatedCount"),
+		PRECAUTION_HAZARDS("precautionHazards"),
+		SITE_LSIT_WIDGET ("siteListWidget")
  		;
 		
 		private String name;

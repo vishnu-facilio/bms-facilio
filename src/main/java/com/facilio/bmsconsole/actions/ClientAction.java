@@ -60,13 +60,25 @@ public class ClientAction extends FacilioAction {
 	public void setClientIds(List<Long> clientIds) {
 		this.clientIds = clientIds;
 	}
-	
+
 	private long recordId = -1;
+
 	public long getRecordId() {
 		return recordId;
 	}
+
 	public void setRecordId(long recordId) {
 		this.recordId = recordId;
+	}
+
+	private List<Long> siteIds;
+
+	public List<Long> getSiteIds() {
+		return siteIds;
+	}
+
+	public void setSiteIds(List<Long> siteIds) {
+		this.siteIds = siteIds;
 	}
 
 	public String addClient() throws Exception {
@@ -94,80 +106,92 @@ public class ClientAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
-	
+
 	public String updateClient() throws Exception {
-		if(!CollectionUtils.isEmpty(clients)) {
-			for(ClientContext v : clients) {
-				//update location
+		if (!CollectionUtils.isEmpty(clients)) {
+			for (ClientContext v : clients) {
+				// update location
 				LocationContext address = v.getAddress();
-				
-				if(address != null && address.getLat() != -1 && address.getLng() != -1)
-				{
+
+				if (address != null && address.getLat() != -1 && address.getLng() != -1) {
 					FacilioChain locationChain = null;
-					address.setName(v.getName()+"_Location");
-					
+					address.setName(v.getName() + "_Location");
+
 					if (address.getId() > 0) {
 						locationChain = FacilioChainFactory.updateLocationChain();
 						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD, address);
 						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, address.getId());
-						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(address.getId()));
-					
+						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST,
+								Collections.singletonList(address.getId()));
+
 						locationChain.execute();
 						v.setAddress(address);
-					}
-					else {
+					} else {
 						locationChain = FacilioChainFactory.addLocationChain();
 						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD, address);
 						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, address.getId());
-						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(address.getId()));
-					
+						locationChain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST,
+								Collections.singletonList(address.getId()));
+
 						locationChain.execute();
-						long locationId = (long) locationChain.getContext().get(FacilioConstants.ContextNames.RECORD_ID);
+						long locationId = (long) locationChain.getContext()
+								.get(FacilioConstants.ContextNames.RECORD_ID);
 						address.setId(locationId);
 					}
-				}
-				else {
+				} else {
 					v.setAddress(null);
 				}
 			}
 			FacilioChain c = TransactionChainFactory.updateClientsChain();
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, clients);
 			c.execute();
-			setResult(FacilioConstants.ContextNames.CLIENTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+			setResult(FacilioConstants.ContextNames.CLIENTS,
+					c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}
 		return SUCCESS;
 	}
-	
+
 	public String deleteClients() throws Exception {
-		
-		if(!CollectionUtils.isEmpty(clientIds)) {
+
+		if (!CollectionUtils.isEmpty(clientIds)) {
 			FacilioChain c = FacilioChainFactory.deleteClientListChain();
 			c.getContext().put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, clientIds);
 			c.execute();
-			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+			setResult(FacilioConstants.ContextNames.RECORD_ID_LIST,
+					c.getContext().get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		}
 		return SUCCESS;
 	}
-	
-	public String getClientDetails() throws Exception {
-		
-		FacilioChain chain = ReadOnlyChainFactory.getClientDetailsChain();
-		chain.getContext().put(FacilioConstants.ContextNames.ID, clientId);
-		
-		chain.execute();
-		
-		ClientContext client = (ClientContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
-		setResult(FacilioConstants.ContextNames.CLIENT, client);
-		
+
+	public String disassociateClientFromSite() throws Exception {
+		if (!CollectionUtils.isEmpty(siteIds)) {
+			FacilioChain chain = TransactionChainFactory.disassociateClientFromSiteChain();
+			chain.getContext().put(FacilioConstants.ContextNames.SITE_LIST, siteIds);
+			chain.execute();
+		}
+
 		return SUCCESS;
 	}
-	
+
+	public String getClientDetails() throws Exception {
+
+		FacilioChain chain = ReadOnlyChainFactory.getClientDetailsChain();
+		chain.getContext().put(FacilioConstants.ContextNames.ID, clientId);
+
+		chain.execute();
+
+		ClientContext client = (ClientContext) chain.getContext().get(FacilioConstants.ContextNames.RECORD);
+		setResult(FacilioConstants.ContextNames.CLIENT, client);
+
+		return SUCCESS;
+	}
+
 	public String clientsList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Clients.ID desc");
-		
+
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -207,7 +231,7 @@ public class ClientAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
-	
+
 	private boolean includeParentFilter;
 
 	public boolean getIncludeParentFilter() {
@@ -217,7 +241,7 @@ public class ClientAction extends FacilioAction {
 	public void setIncludeParentFilter(boolean includeParentFilter) {
 		this.includeParentFilter = includeParentFilter;
 	}
-	
+
 	private Boolean count;
 
 	public Boolean getCount() {
@@ -230,13 +254,15 @@ public class ClientAction extends FacilioAction {
 	public void setCount(Boolean count) {
 		this.count = count;
 	}
-	
+
 	private Long itemCount;
+
 	public Long getItemCount() {
 		return itemCount;
 	}
+
 	public void setItemCount(Long inventryCount) {
 		this.itemCount = inventryCount;
 	}
-	
+
 }

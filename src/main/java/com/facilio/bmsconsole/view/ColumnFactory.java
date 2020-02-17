@@ -39,6 +39,7 @@ public class ColumnFactory {
 //		columnMap.put("asset-energy", getDefaultAssetsColumns());
 		
 		// For getting default columns for a module
+		columnMap.put("site-default", getDefaultSiteViewColumns());
 		columnMap.put("workorder-default", getDefaultViewColumns());
 		columnMap.put("workorder-tenantWorkorder", getTenantWorkorderColumns());
 		columnMap.put("workorder-vendorWorkorder", getVendorWorkorderColumns());
@@ -196,6 +197,19 @@ public class ColumnFactory {
 	public static List<SortField> getDefaultSortField(String moduleName) {
 		return defaultSortFields.get(moduleName);
 	}
+	
+	private static List<ViewField> getDefaultSiteViewColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("name", "Site Name"));
+		columns.add(new ViewField("managedBy", "Type"));
+		columns.add(new ViewField("managedBy", "Mananged By"));
+		columns.add(new ViewField("grossFloorArea", "Floor Area"));
+		columns.add(new ViewField("area", "Total Area"));
+		
+		return columns;
+	}
+	
 	
 	private static List<ViewField> getDefaultViewColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();

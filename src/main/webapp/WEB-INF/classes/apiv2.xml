@@ -5260,6 +5260,8 @@
 			class="com.facilio.bmsconsole.actions.ClientAction" method="updateClient" />
 			<action name="delete"
 			class="com.facilio.bmsconsole.actions.ClientAction" method="deleteClients" />
+			<action name="disassociateClient"
+			class="com.facilio.bmsconsole.actions.ClientAction" method="disassociateClientFromSite" />
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ClientAction" method="getClientDetails">
 			<param name="clientId">{1}</param>
