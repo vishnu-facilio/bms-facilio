@@ -281,7 +281,7 @@
 	</package>
 	
 	
-	<package name="tenant" namespace="/api/service/tenant" extends="serviceportal">
+	<package name="tenantService" namespace="/api/service/tenant" extends="serviceportal">
 	
 	<action name="getLogoUrl" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="getTenantLogoUrl">
