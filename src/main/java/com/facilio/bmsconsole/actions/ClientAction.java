@@ -173,6 +173,17 @@ public class ClientAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+	
+	public String associateClientFromSite() throws Exception {
+		if (!CollectionUtils.isEmpty(siteIds) && clientId > 0) {
+			FacilioChain chain = TransactionChainFactory.associateClientFromSiteChain();
+			chain.getContext().put(FacilioConstants.ContextNames.SITE_LIST, siteIds);
+			chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, clientId);
+			chain.execute();
+		}
+
+		return SUCCESS;
+	}
 
 	public String getClientDetails() throws Exception {
 

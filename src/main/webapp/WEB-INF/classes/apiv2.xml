@@ -5252,18 +5252,19 @@
 			class="com.facilio.bmsconsole.actions.AssetHazardAction" method="assetHazardList">
 		</action>
 	</package>
-	<package name="client" namespace="/api/v2/client"
-		extends="v2Api">
-		<action name="add"
-			class="com.facilio.bmsconsole.actions.ClientAction" method="addClient" />
-		<action name="update"
-			class="com.facilio.bmsconsole.actions.ClientAction" method="updateClient" />
-			<action name="delete"
-			class="com.facilio.bmsconsole.actions.ClientAction" method="deleteClients" />
-			<action name="disassociateClient"
-			class="com.facilio.bmsconsole.actions.ClientAction" method="disassociateClientFromSite" />
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.ClientAction" method="getClientDetails">
+	<package name="client" namespace="/api/v2/client" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.ClientAction"
+			method="addClient" />
+		<action name="update" class="com.facilio.bmsconsole.actions.ClientAction"
+			method="updateClient" />
+		<action name="delete" class="com.facilio.bmsconsole.actions.ClientAction"
+			method="deleteClients" />
+		<action name="disassociateClient" class="com.facilio.bmsconsole.actions.ClientAction"
+			method="disassociateClientFromSite" />
+		<action name="associateClient" class="com.facilio.bmsconsole.actions.ClientAction"
+			method="associateClientFromSite" />
+		<action name="*" class="com.facilio.bmsconsole.actions.ClientAction"
+			method="getClientDetails">
 			<param name="clientId">{1}</param>
 		</action>
 	</package>
