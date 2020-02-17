@@ -31,63 +31,67 @@ public abstract class FacilioJob implements Runnable {
 	
 	@Override
 	public void run() {
-		long startTime = 0L;
-		Thread currentThread = Thread.currentThread();
-		String threadName = currentThread.getName();
-		currentThread.setName(threadName + "-" + jc.getJobId()+"-"+ jc.getJobName());
-		int status = 0;
 		try {
-			AccountUtil.cleanCurrentAccount();
-			if ( JobStore.updateStartExecution(jc.getOrgId(), jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount()) < 1 ) {
+			if (JobStore.updateStartExecution(jc.getOrgId(), jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount()) < 1) {
 				executor.jobEnd(jc.getJobKey());
 				return;
 			}
-			startTime = System.currentTimeMillis();
-			LOGGER.debug("Starting job " + jc.getJobKey());
-			retryExecutionCount++;
-
-			long orgId = jc.getOrgId();
-			if(orgId > 0) {
-				AccountUtil.setCurrentAccount(orgId);
-				AccountUtil.setReqUri(jc.getJobName());
-				if (jc.getLoggerLevel() != -1) {
-					AccountUtil.getCurrentAccount().setLoggerLevel(jc.getLoggerLevel());
-				}
-			}
-			if (StringUtils.isNotEmpty(jc.getTimezone())) {
-				AccountUtil.setTimeZone(jc.getTimezone());
-			}
-			jc.setNextExecutionTime(getNextExecutionTime());
-
-			if (orgId <= 0 || AccountUtil.getCurrentAccount() != null) { //To prevent execution of job with invalid org
-				FacilioChain executionChain = JobConstants.ChainFactory.jobExecutionChain(jc.getTransactionTimeout());
-				FacilioContext context = executionChain.getContext();
-				context.put(JobConstants.JOB_CONTEXT, jc);
-				context.put(JobConstants.FACILIO_JOB, this);
-				executionChain.execute();
-			}
-
-			status = 1;
-			executor.jobEnd(jc.getJobKey());
-		}
-		catch(Exception e) {
-			status = 2;
-			LOGGER.error("Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(),e);
-			SentryUtil.handleSchedulerExceptions(jc,e);
-			// CommonCommandUtil.emailException("FacilioJob", "Job execution failed for Job : "+jc.getJobId()+" : "+ jc.getJobName(), e);
-//			reschedule();
-		} finally {
-			long timeTaken = (System.currentTimeMillis()-startTime);
-			if(status == 0) {
-				timeTaken = 1;
-			}
-			JobLogger.log(jc, timeTaken, status);
 			AccountUtil.cleanCurrentAccount();
-			if(status == 1) {
-				updateNextExecutionTime();
+			long startTime = 0L;
+			Thread currentThread = Thread.currentThread();
+			String threadName = currentThread.getName();
+			currentThread.setName(threadName + "-" + jc.getJobId() + "-" + jc.getJobName());
+			int status = 0;
+			try {
+				startTime = System.currentTimeMillis();
+				LOGGER.debug("Starting job " + jc.getJobKey());
+				retryExecutionCount++;
+
+				long orgId = jc.getOrgId();
+				if (orgId > 0) {
+					AccountUtil.setCurrentAccount(orgId);
+					AccountUtil.setReqUri(jc.getJobName());
+					if (jc.getLoggerLevel() != -1) {
+						AccountUtil.getCurrentAccount().setLoggerLevel(jc.getLoggerLevel());
+					}
+				}
+				if (StringUtils.isNotEmpty(jc.getTimezone())) {
+					AccountUtil.setTimeZone(jc.getTimezone());
+				}
+				jc.setNextExecutionTime(getNextExecutionTime());
+
+				if (orgId <= 0 || AccountUtil.getCurrentAccount() != null) { //To prevent execution of job with invalid org
+					FacilioChain executionChain = JobConstants.ChainFactory.jobExecutionChain(jc.getTransactionTimeout());
+					FacilioContext context = executionChain.getContext();
+					context.put(JobConstants.JOB_CONTEXT, jc);
+					context.put(JobConstants.FACILIO_JOB, this);
+					executionChain.execute();
+				}
+
+				status = 1;
+				executor.jobEnd(jc.getJobKey());
+			} catch (Exception e) {
+				status = 2;
+				LOGGER.error("Job execution failed for Job :" + jc.getJobId() + " : " + jc.getJobName(), e);
+				SentryUtil.handleSchedulerExceptions(jc, e);
+				// CommonCommandUtil.emailException("FacilioJob", "Job execution failed for Job : "+jc.getJobId()+" : "+ jc.getJobName(), e);
+//			reschedule();
+			} finally {
+				long timeTaken = (System.currentTimeMillis() - startTime);
+				if (status == 0) {
+					timeTaken = 1;
+				}
+				JobLogger.log(jc, timeTaken, status);
+				AccountUtil.cleanCurrentAccount();
+				if (status == 1) {
+					updateNextExecutionTime();
+				}
+				LOGGER.debug("Job completed " + jc.getJobId() + "-" + jc.getJobName() + " time taken : " + timeTaken);
+				currentThread.setName(threadName);
 			}
-			LOGGER.debug("Job completed " +jc.getJobId()+"-"+ jc.getJobName() + " time taken : " + timeTaken);
-			currentThread.setName(threadName);
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred in updating job for "+jc, e);
 		}
 	}
 
