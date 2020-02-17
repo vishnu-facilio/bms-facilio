@@ -4485,7 +4485,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain createAgentChain() {
 		FacilioChain chain = getDefaultChain();
-		//chain.addCommand();
+		chain.addCommand(new CreateAgentCommand());
 		return chain;
 	}
 

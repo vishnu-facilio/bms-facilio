@@ -238,7 +238,7 @@ public class ControllerApiV2 {
             try {
                 controllerMap.put(controller.makeIdentifier(),controller);
             } catch (Exception e) {
-                LOGGER.info("Exception while making identifier");
+                LOGGER.info("Exception while making identifier ",e);
             }
         });
         return controllerMap;
@@ -334,22 +334,22 @@ public class ControllerApiV2 {
     }
 
         private static FacilioChain getFetchControllerChain(FacilioControllerType controllerType,FacilioContext paginationContext) throws Exception {
-            if (controllerType == null) {
-                throw new Exception(" controller type cant be null ");
-            }
-            FacilioChain getControllerChain = TransactionChainFactory.getControllerChain();
-            FacilioContext context = getControllerChain.getContext();
-            if (paginationContext != null) {
-                context.putAll(paginationContext);
-            }
-            String moduleName = getControllerModuleName(controllerType);
-            if (moduleName == null || moduleName.isEmpty()) {
-                LOGGER.info("Exception Occurred, Module name is null or empty " + moduleName + "   for ");
-                return null;
-            }
-            context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-            return getControllerChain;
+        if (controllerType == null) {
+            throw new Exception(" controller type cant be null ");
         }
+        FacilioChain getControllerChain = TransactionChainFactory.getControllerChain();
+        FacilioContext context = getControllerChain.getContext();
+        if(paginationContext != null){
+            context.putAll(paginationContext);
+        }
+        String moduleName = getControllerModuleName(controllerType);
+        if (moduleName == null || moduleName.isEmpty()) {
+            LOGGER.info("Exception Occurred, Module name is null or empty " + moduleName + "   for ");
+            return null;
+        }
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        return getControllerChain;
+    }
 
     /**
      * Based on the controllerType it creates a dummy controller of a particular type using the identifier constructor and then uses the controller object to get uniques to build the condition.

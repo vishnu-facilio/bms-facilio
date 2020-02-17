@@ -1,5 +1,6 @@
 package com.facilio.agentv2;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.actions.AgentActionV2;
 import com.facilio.agentv2.controller.Controller;
@@ -7,6 +8,7 @@ import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.chain.FacilioContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,6 +25,16 @@ import java.util.Set;
 public class AgentAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentAction.class.getName());
 
+   /* public String createPolicy(){
+            CreateKeysAndCertificateResult cert = AwsUtil.signUpIotToKinesis(AccountUtil.getCurrentOrg().getDomain(), AccountUtil.getCurrentOrg().getDomain(), "facilio");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("cert arn",cert.getCertificateArn());
+            jsonObject.put("cert id",cert.getCertificateId());
+            jsonObject.put("cert cert pem",cert.getCertificatePem());
+            setResult("Data",jsonObject);
+
+        return SUCCESS;
+    }*/
 
     public String listAgents() {
         try {
@@ -211,17 +223,17 @@ public class AgentAction extends AgentActionV2 {
     }
 
 
-    public String pointsCount() {
+    public String PointsCount(){
         LOGGER.info(" getting points ");
-        try {
+        try{
             long count = 0;
-            if ((controllerId != null) && (controllerId > 0) && (deviceId == null)) {
+            if((controllerId != null) && (controllerId > 0) && (deviceId == null)){
                 LOGGER.info(" contid ");
-                count = PointsAPI.getPointsCount(getControllerId(), -1);
-            } else if ((deviceId != null) && (deviceId > 0) && (controllerId != null)) {
-                LOGGER.info(" device id  ");
-                count = PointsAPI.getPointsCount(-1, deviceId);
-            } else {
+                count = PointsAPI.getPointsCount( getControllerId(), -1);
+            }else if((deviceId != null) && (deviceId > 0) && (controllerId != null)){
+                    LOGGER.info(" device id  ");
+                    count = PointsAPI.getPointsCount(-1, deviceId);
+            }else {
                 LOGGER.info(" no point id");
                 count = PointsAPI.getPointsCount(-1,-1);
             }
@@ -272,6 +284,27 @@ public class AgentAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    private String name;
+    public String createPolicy(){
+        try{
+            LOGGER.info(" calling create policy ");
+            setResult(AgentConstants.DATA,AwsUtil.createIotPolicy(getName(), AccountUtil.getCurrentOrg().getDomain(),"facilio"));
+            //AwsUtil.addAwsIotClient();
+        }catch (Exception e){
+            LOGGER.info(" Exception while creating policy for "+getName()+" ",e);
+        }
+        return SUCCESS;
+    }
+
 
     //__________________________________________________
     // general utilities

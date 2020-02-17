@@ -1,8 +1,6 @@
 package com.facilio.agent;
 
 import com.facilio.agent.integration.AgentIntegrationKeys;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.IotPolicy;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.log4j.LogManager;
@@ -130,28 +128,7 @@ public class FacilioAgent
             return FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID;
         }
     }
-    public static IotPolicy getIotRule(String name,String type){
-        LOGGER.info(" creating IotRule for "+name+"   and type "+type);
-        IotPolicy policy = new IotPolicy();
-        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)){
-            policy.setToModify(true);
-            policy.setClientIds(new String[] {AwsUtil.getIotArnClientId(name)});
-            policy.setPublishtopics(new String[] { (name +AgentIntegrationKeys.TOPIC_WT_EVENTS) ,
-                    ( name+ AgentIntegrationKeys.TOPIC_WT_ALARMS ),
-                    ( name+ AgentIntegrationKeys.TOPIC_WT_VALUES )});
-            policy.setReceiveTopics(new String[]{name+AgentIntegrationKeys.TOPIC_WT_CMD});
-            policy.setSubscribeTopics(new String[]{AwsUtil.getIotArnTopicFilter(name)+AgentIntegrationKeys.TOPIC_WT_CMD});
-            policy.setPublishTypes(new String[]{PublishType.event.getValue(),PublishType.event.getValue(),PublishType.timeseries.getValue()});
-            LOGGER.info("topic and pubtype "+policy.getMappedTopicAndPublished());
-            return policy;
-        }
-        else {
-            policy.setClientIds(new String[] { AwsUtil.getIotArnClientId(name)});
-            policy.setPublishtopics(new String[] {name});
-            policy.setSubscribeTopics(new String[]{ AwsUtil.getIotArnTopicFilter(name)+"/msgs"});
-            policy.setReceiveTopics(new String[]{name+"/msgs"});
-            return policy;
-        }
-    }
+
+
     private static final Logger LOGGER = LogManager.getLogger(FacilioAgent.class.getName());
 }

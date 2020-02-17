@@ -18,7 +18,7 @@ public class LonWorksPointContext extends Point {
     @JsonInclude
     private String targetName;
     @JsonInclude
-    private int linkType;
+    private String linkType;
 
     public String getTargetComp() {
         return targetComp;
@@ -36,11 +36,11 @@ public class LonWorksPointContext extends Point {
         this.targetName = targetName;
     }
 
-    public int getLinkType() {
+    public String getLinkType() {
         return linkType;
     }
 
-    public void setLinkType(int linkType) {
+    public void setLinkType(String linkType) {
         this.linkType = linkType;
     }
 

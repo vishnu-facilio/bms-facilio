@@ -1,12 +1,13 @@
 package com.facilio.agentv2.actions;
 
-import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -43,13 +44,19 @@ public class AddAgentAction extends AgentActionV2
     public String createAgent() {
         try {
             FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
+            FacilioContext context = addAgentChain.getContext();
             FacilioAgent agent = new FacilioAgent();
             agent.setName(getAgentName());
             agent.setInterval(getDataInterval());
             agent.setSiteId(getSiteId());
-            long agentId = AgentApiV2.addAgent(agent);
-            agent.setId(agentId);
-            setResult(AgentConstants.DATA, agentId);
+            context.put(AgentConstants.AGENT,agent);
+            addAgentChain.execute();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(AgentConstants.AGENT_ID,agent.getId());
+            if (context.containsKey(AgentConstants.DOWNLOAD_LINK) )  {
+                jsonObject.put(AgentConstants.DOWNLOAD_LINK,context.get(AgentConstants.DOWNLOAD_LINK));
+            }
+            setResult(AgentConstants.DATA, agent.getId());
             setResult(AgentConstants.RESULT, SUCCESS);
             setResponseCode(HttpURLConnection.HTTP_CREATED);
         }catch (Exception e){

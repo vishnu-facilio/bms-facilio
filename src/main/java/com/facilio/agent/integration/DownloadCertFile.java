@@ -1,14 +1,17 @@
 package com.facilio.agent.integration;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
+import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.FacilioAgent;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -17,18 +20,6 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.FacilioAgent;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 
 public class DownloadCertFile
 {
@@ -54,38 +45,38 @@ public class DownloadCertFile
         }
         return null;
     }
-
     public static String downloadCertificate( String policyName, String type) {
-        LOGGER.info(" wattsense policy name "+policyName);
+        try {
+            return downloadCertificateCommand(policyName,type);
+        } catch (Exception e) {
+            LOGGER.info("Exception while downloadCertificate for poilcy name ->"+policyName+" for type->"+type);
+        }
+        return null;
+    }
+    public static String downloadCertificateCommand( String policyName, String type) throws Exception {
+        LOGGER.info("policy name "+policyName);
         String certFileId = FacilioAgent.getCertFileId(type);
-        LOGGER.info(" certFileId "+certFileId);
+        LOGGER.info("certFileId "+certFileId);
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         String url=null;
-        try {
             Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, certFileId);
             if (orgInfo != null) {
-
                     long fileId = Long.parseLong((String) orgInfo.get("value"));
                     FileStore fs = FacilioFactory.getFileStore();
                     url = fs.getPrivateUrl(fileId);
-
-
             }
-        } catch (Exception e) {
-            LOGGER.info( "Exception in downloading certificate while getting orginfo details for " + certFileId, e);
-        }
         if (url == null) {
             LOGGER.info(" url not present ");
-            String orgName = AccountUtil.getCurrentAccount().getOrg().getDomain();
-            CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgName,policyName,type );
-            AwsUtil.getIotKinesisTopic(orgName);
+            String orgDomainName = AccountUtil.getCurrentAccount().getOrg().getDomain();
+            CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgDomainName,policyName,type );
+            AwsUtil.getIotKinesisTopic(orgDomainName);
             String directoryName = "facilio/";
             String outFileName = FacilioAgent.getCertFileName(type);
             File file = new File(System.getProperty("user.home") + outFileName );
             try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
                 addToZip(out, directoryName + "facilio.crt", certificateResult.getCertificatePem());
                 addToZip(out, directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
-                addToZip(out, directoryName + "facilio.config", getFacilioConfig(orgName));
+                addToZip(out, directoryName + "facilio.config", getFacilioConfig(orgDomainName));
                 out.finish();
                 out.flush();
 
@@ -93,13 +84,8 @@ public class DownloadCertFile
                     long id = fs.addFile(file.getName(), file, "application/octet-stream");
                     url = fs.getPrivateUrl(id);
                     CommonCommandUtil.insertOrgInfo(orgId, certFileId, String.valueOf(id));
-
-
                 file.delete();
-            } catch (Exception e) {
-                LOGGER.info("Exception occurred",e);
             }
-
             FacilioFactory.getMessageQueue().start();
         }
         return url;

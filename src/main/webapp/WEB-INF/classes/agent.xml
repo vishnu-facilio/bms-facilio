@@ -290,4 +290,9 @@
         </action>
     </package>
 
+    <package name="test" namespace="/api/v2/agent/test" extends="agent">
+        <action name="createPolicy" class="com.facilio.agentv2.AgentAction" method="createPolicy">
+        </action>
+
+    </package>
 </struts>

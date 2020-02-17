@@ -1,47 +1,44 @@
 package com.facilio.aws.util;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.activation.URLDataSource;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeUtility;
-import javax.transaction.SystemException;
-
+import com.amazon.sqs.javamessaging.AmazonSQSExtendedClient;
+import com.amazon.sqs.javamessaging.ExtendedClientConfiguration;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.iot.AWSIot;
+import com.amazonaws.services.iot.AWSIotClientBuilder;
+import com.amazonaws.services.iot.client.AWSIotException;
+import com.amazonaws.services.iot.client.AWSIotMqttClient;
+import com.amazonaws.services.iot.model.*;
+import com.amazonaws.services.kinesis.AmazonKinesis;
+import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
+import com.amazonaws.services.kinesis.model.CreateStreamResult;
+import com.amazonaws.services.kinesis.model.ResourceInUseException;
+import com.amazonaws.services.rekognition.AmazonRekognition;
+import com.amazonaws.services.rekognition.AmazonRekognitionClientBuilder;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
+import com.amazonaws.services.simpleemail.model.*;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentType;
+import com.facilio.bmsconsole.util.CommonAPI;
+import com.facilio.bmsconsole.util.CommonAPI.NotificationType;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.transaction.FacilioTransactionManager;
+import com.facilio.email.EmailUtil;
+import com.facilio.service.FacilioService;
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.messageQueue.MessageQueueFactory;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -57,68 +54,28 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
-import com.amazon.sqs.javamessaging.AmazonSQSExtendedClient;
-import com.amazon.sqs.javamessaging.ExtendedClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.InstanceProfileCredentialsProvider;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.iot.AWSIot;
-import com.amazonaws.services.iot.AWSIotClientBuilder;
-import com.amazonaws.services.iot.client.AWSIotException;
-import com.amazonaws.services.iot.client.AWSIotMqttClient;
-import com.amazonaws.services.iot.model.Action;
-import com.amazonaws.services.iot.model.AttachPolicyRequest;
-import com.amazonaws.services.iot.model.AttachPolicyResult;
-import com.amazonaws.services.iot.model.AttachPrincipalPolicyRequest;
-import com.amazonaws.services.iot.model.CreateKeysAndCertificateRequest;
-import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
-import com.amazonaws.services.iot.model.CreatePolicyRequest;
-import com.amazonaws.services.iot.model.CreatePolicyResult;
-import com.amazonaws.services.iot.model.CreatePolicyVersionRequest;
-import com.amazonaws.services.iot.model.CreatePolicyVersionResult;
-import com.amazonaws.services.iot.model.CreateTopicRuleRequest;
-import com.amazonaws.services.iot.model.CreateTopicRuleResult;
-import com.amazonaws.services.iot.model.GetPolicyRequest;
-import com.amazonaws.services.iot.model.GetPolicyResult;
-import com.amazonaws.services.iot.model.KinesisAction;
-import com.amazonaws.services.iot.model.ResourceAlreadyExistsException;
-import com.amazonaws.services.iot.model.TopicRulePayload;
-import com.amazonaws.services.kinesis.AmazonKinesis;
-import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
-import com.amazonaws.services.kinesis.model.CreateStreamResult;
-import com.amazonaws.services.kinesis.model.ResourceInUseException;
-import com.amazonaws.services.rekognition.AmazonRekognition;
-import com.amazonaws.services.rekognition.AmazonRekognitionClientBuilder;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
-import com.amazonaws.services.simpleemail.model.Body;
-import com.amazonaws.services.simpleemail.model.Content;
-import com.amazonaws.services.simpleemail.model.Destination;
-import com.amazonaws.services.simpleemail.model.Message;
-import com.amazonaws.services.simpleemail.model.RawMessage;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest;
-import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentType;
-import com.facilio.agent.FacilioAgent;
-import com.facilio.bmsconsole.util.CommonAPI;
-import com.facilio.bmsconsole.util.CommonAPI.NotificationType;
-import com.facilio.db.builder.DBUtil;
-import com.facilio.db.transaction.FacilioConnectionPool;
-import com.facilio.db.transaction.FacilioTransactionManager;
-import com.facilio.email.EmailUtil;
-import com.facilio.service.FacilioService;
-import com.facilio.time.DateTimeUtil;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+import javax.transaction.SystemException;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.util.*;
 
 public class AwsUtil 
 {
@@ -636,6 +593,10 @@ public class AwsUtil
 		return awsIot;
 	}
 
+	static  String getIotArn(){
+		return "arn:aws:iot:" + getRegion() + ":" + getUserId();
+	}
+
 	public static AmazonSQS getSQSClient() {
 		if(awsSQS == null) {
 			synchronized (LOCK) {
@@ -670,112 +631,53 @@ public class AwsUtil
 		return user.getUserId();*/
     	return FacilioProperties.getConfig("user.id");
 	}
-	public static void addIotClient(String policyName, String clientId){
+	/*public static void addIotClient(String policyName, String clientId){
 		addAwsIotClient(policyName,clientId);
 	}
 
 	public static boolean addAwsIotClient(String policyName, String clientId) {
 		try {
 			AWSIot client = getIotClient();
-			GetPolicyRequest request = new GetPolicyRequest().withPolicyName(policyName);
-			GetPolicyResult result = client.getPolicy(request);
-			JSONParser parser = new JSONParser();
-			JSONObject object = (JSONObject) parser.parse(result.getPolicyDocument());
-
-			JSONArray array = (JSONArray) object.get("Statement");
-			List<String> clients = new ArrayList<>();
-			for (int i = 0; i < array.size(); i++) {
-				JSONObject stat = (JSONObject) array.get(i);
-				String action = (String) stat.get("Action");
-				if ("iot:Connect".equalsIgnoreCase(action)) {
-					JSONArray resourceArray = (JSONArray) stat.get("Resource");
-					for (int j = 0; j < resourceArray.size(); j++) {
-						clients.add((String) resourceArray.get(j));
-					}
-					break;
-				}
-			}
-			clients.add(getIotArnClientId(clientId));
-			CreatePolicyVersionRequest versionRequest = new CreatePolicyVersionRequest().withPolicyName(policyName)
-					.withPolicyDocument(getPolicyDoc(policyName, new String[] { getIotArnClientId(policyName)},new String[] {getIotArnTopic(policyName)},new String[]{getIotArnTopicFilter(policyName)+"/msgs"},new String[]{getIotArnTopic(policyName)+"/msgs"}).toString())
-					.withSetAsDefault(true);
-			CreatePolicyVersionResult versionResult = client.createPolicyVersion(versionRequest);
-			LOGGER.info("Policy updated for " + policyName + ", with " + versionResult.getPolicyDocument() + ", status: " + versionResult.getSdkHttpMetadata().getHttpStatusCode());
-		return true;
-    	} catch (Exception e){
-    		LOGGER.info("Error ",e);
+			JSONObject policyDocumentJson = getPolicyDocumentJson(getPolicy(policyName, client));
+			JSONObject newPolicyDocumentJson = addClientToPolicyDoc(policyName, clientId, policyDocumentJson);
+			createPolicyVersion(policyName, client, newPolicyDocumentJson);
+			return true;
+    	} catch (VersionsLimitExceededException limitException ){
+    		LOGGER.info("policy limit exceeded ",limitException);
+		} catch (ParseException e) {
+			LOGGER.info(" Exception while creating policy ",e);
 		}
-    	return false;
+		return false;
+	}
+*/
+
+	public static String createIotPolicy(String topic, String domain, String facilio) {
+		IotPolicy policy = AwsPolicyUtils.createIotPolicy(topic, domain, facilio, getIotClient());
+		return policy.getPolicyDocument().toString();
 	}
 
-	public static String getIotArnClientId(String clientId){
-    	return getIotArn() + ":client/" + clientId;
-	}
+/*	private static void deletePolicyVersion(AWSIot client, String policyName) {
+		AWSIotClient iotClient = (AWSIotClient) client;
+		//iotClient.attachPolicy();
+		GetPolicyVersionRequest policyVersionRequest = new GetPolicyVersionRequest()
+				.withPolicyName(policyName);
+		GetPolicyVersionResult policyVersionResult = client.getPolicyVersion(policyVersionRequest);
 
-	private static String getIotArnTopic(String topic) {
-    	return getIotArn() +":topic/"+ topic;
-	}
-
-	public static String getIotArnTopicFilter(String topic) {
-		return getIotArn() +":topicfilter/"+ topic;
-	}
-
-	private static JSONObject getPolicyInJson(String action, String[] resource){
-		JSONObject object = new JSONObject();
-		object.put("Effect", "Allow");
-		object.put("Action", action);
-		JSONArray array = new JSONArray();
-		for(String str : resource) {
-			array.add(str);
-		}
-		object.put("Resource", array);
-		return object;
-	}
+		DeletePolicyVersionRequest deletePolicyVersionRequest = new DeletePolicyVersionRequest()
+				.withPolicyName(policyName);
+	}*/
 
 
-	private static JSONObject getPolicyDoc(String name, String[] clientIds, String[] publish, String[] subscribe, String[] receive ){
-		JSONArray statements = new JSONArray();
-		statements.add(getPolicyInJson("iot:Connect", clientIds));
-		statements.add(getPolicyInJson("iot:Publish",publish ));
-		statements.add(getPolicyInJson("iot:Subscribe", subscribe));
-		statements.add(getPolicyInJson("iot:Receive", receive));
-		JSONObject policyDocument = new JSONObject();
-		policyDocument.put("Version", "2012-10-17"); //Refer the versions available in AWS policy document before changing.
-		LOGGER.info(" policy doc statement "+statements.toString());
-		policyDocument.put("Statement", statements);
-		return policyDocument;
-	}
-
-	private static  String getIotArn(){
-		return "arn:aws:iot:" + getRegion() + ":" + getUserId();
-	}
 
 
-    private static void createIotPolicy( AWSIot iotClient , String name , IotPolicy rule) {
-        LOGGER.info(" creating Iot policy for "+name);
-        String[] publish = rule.getPublishtopics().clone();
-        String[] receive = rule.getReceiveTopics().clone();
-        String logStr ="";
-        for(int i=0;i<publish.length;i++){
-            publish[i] = getIotArnTopic(publish[i]);
-            logStr += publish[i]+" - ";
-        }
-        LOGGER.info(" publish[]  "+logStr);
-        logStr = "";
-        for(int i=0;i<receive.length;i++){
-            receive[i] = getIotArnTopic(receive[i]);
-			logStr += receive[i]+" - ";
-        }
-        LOGGER.info(" recieve[] "+logStr);
-        try {
-            CreatePolicyRequest policyRequest;
-            policyRequest = new CreatePolicyRequest().withPolicyName(rule.getPolicyName()).withPolicyDocument(getPolicyDoc(name, rule.getClientIds(), publish, rule.getSubscribeTopics(), receive).toString());
-            CreatePolicyResult policyResult = iotClient.createPolicy(policyRequest);
-            LOGGER.info("Policy created : " + policyResult.getPolicyArn() + " version " + policyResult.getPolicyVersionId());
-        } catch (ResourceAlreadyExistsException resourceExists){
-            LOGGER.info("Policy already exists for name : " + rule.getPolicyName());
-        }
-    }
+	/*private static void createPolicy(AWSIotClient client,IotPolicy policy) {
+		CreatePolicyVersionRequest createPolicyVersionRequest = new CreatePolicyVersionRequest();
+		createPolicyVersionRequest.withPolicyDocument()
+	}*/
+
+
+
+
 
 	private static CreateKeysAndCertificateResult createCertificate(AWSIot iotClient){
 	    LOGGER.info(" creating certificate ");
@@ -874,28 +776,29 @@ public class AwsUtil
 
 	}
 
-	private static CreateKeysAndCertificateResult createIotToKinesis(String name, String policyName, String type){
+
+
+	private static CreateKeysAndCertificateResult createIotToKinesis(String topic, String policyName, String type){
 		LOGGER.info(" create Iot Kenesis "+policyName);
 		AWSIot iotClient = getIotClient();
-		IotPolicy policy = new IotPolicy();
-		policy = FacilioAgent.getIotRule(name,type);
-		policy.setPolicyName(policyName);
-		policy.setType(type);
-		createIotPolicy(iotClient, name, policy);
-    	CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
+		IotPolicy policy;
+		policy = AwsPolicyUtils.createIotPolicy(topic, policyName, type, iotClient);
+		CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
     	attachPolicy(iotClient, certificateResult, policyName);
-    	createKinesisStream(getKinesisClient(), name);
+    	createKinesisStream(getKinesisClient(), topic);
     	// Creating topic in kafka
-		MessageQueueFactory.getMessageQueue().createQueue(name);
-    	policy.setStreamName(name);
+		MessageQueueFactory.getMessageQueue().createQueue(topic);
+    	policy.setStreamName(topic);
     	createIotTopicRule(policy,iotClient,type);
     	return certificateResult;
 	}
 
+
+
 	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgDomainName, String policyName, String type){
 		LOGGER.info(" signing up to kinesis policyname "+policyName);
-		String name = getIotKinesisTopic(orgDomainName);
-		return AwsUtil.createIotToKinesis(name, policyName, type);
+		String topic = getIotKinesisTopic(orgDomainName);
+		return AwsUtil.createIotToKinesis(topic, policyName, type);
 	}
 
 	public static String getIotKinesisTopic(String orgDomainName){
