@@ -109,7 +109,7 @@
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action> 
 	</package>
-	<package name="servicePreviewApiV2" namespace="/api/v2/service/files/preview" extends="attachmentPreviewApi">
+	<package name="servicePreviewApiV2" namespace="/api/v2/service/files/preview" extends="newServicePortalApiV2">
 		<global-results>
 			<result name="success" type="stream">
 				<param name="contentType">${contentType}</param>
