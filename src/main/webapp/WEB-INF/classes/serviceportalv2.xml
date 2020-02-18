@@ -1072,7 +1072,7 @@
 	<package name="TenantDetails" namespace="/api/service/v2/tenant"
 		extends="newServicePortalApiV2">
 		<action name="details"
-			class="com.facilio.bmsconsole.actions.TenantAction" method="fetchTenant" >
+			class="com.facilio.bmsconsole.actions.TenantAction" method="v2fetchTenant" >
 			<param name="tenantPortal">true</param>
 			</action>
 		</package>
