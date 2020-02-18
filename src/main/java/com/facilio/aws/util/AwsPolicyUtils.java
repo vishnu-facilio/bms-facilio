@@ -68,6 +68,10 @@ public class AwsPolicyUtils
         updateClientPolicyVersion(client, policyName, policy);
     }
 
+    private static void updateClientPolicyVersion(AWSIot client, String policyName, JSONObject policy) {
+        updateClientPolicyVersion(client,policyName,policy,0);
+    }
+
     public static IotPolicy getIotRule(String topic,String type){
         LOGGER.info(" creating IotRule for "+topic+"   and type "+type);
         IotPolicy policy = new IotPolicy();
@@ -121,7 +125,11 @@ public class AwsPolicyUtils
             JSONObject policyDocumentJSON = getPolicyDoc(rule.getClientIds(), rule.getPublishtopics(), rule.getSubscribeTopics(), rule.getReceiveTopics());
             LOGGER.info(" policy document "+policyDocumentJSON);
             rule.setPolicyDocument(policyDocumentJSON);
-            return createPolicyVersion(rule.getName(), iotClient, rule.getPolicyDocument());
+            CreatePolicyRequest createPolicyRequest = new CreatePolicyRequest()
+                    .withPolicyName(rule.getName())
+                    .withPolicyDocument(rule.getPolicyDocument().toString());
+            CreatePolicyResult createPolicyResult = iotClient.createPolicy(createPolicyRequest);
+            return createPolicyResult.getPolicyVersionId();
         } catch (ResourceAlreadyExistsException resourceExists){
             LOGGER.info("Policy already exists for name : " + rule.getName());
             try {
@@ -156,22 +164,21 @@ public class AwsPolicyUtils
         }
     }
 
-    private static void updateClientPolicyVersion(AWSIot client, String policyName, JSONObject policy) {
-        CreatePolicyVersionRequest createPolicyVersionRequest = new CreatePolicyVersionRequest()
-                .withPolicyName(policyName)
-                .withPolicyDocument(policy.toString())
-                .withSetAsDefault(true);
-        try{
-            CreatePolicyVersionResult createPolicyVersionResult = client.createPolicyVersion(createPolicyVersionRequest);
-            LOGGER.info(" updated policy for ->"+policyName+" and version is "+createPolicyVersionResult.getPolicyVersionId());
+    private static void updateClientPolicyVersion(AWSIot client, String policyName, JSONObject policy, int count) { //TODO possibility of recursion
+       try{
+           if(count > 3){
+               LOGGER.info(" Exception occurred, recursive execution");
+               return;
+           }
+        createPolicyVersion(policyName,client,policy);
         }catch (VersionsLimitExceededException e){
             LOGGER.info(" policy limit reached ");
-            deleteOldAndUpdatePolicyVersion(client,policyName);
-            updateClientPolicyVersion(client,policyName,policy);
+            deleteOldPolicyVersion(client,policyName);
+            updateClientPolicyVersion(client,policyName,policy,count++);
         }
     }
 
-    private static void deleteOldAndUpdatePolicyVersion(AWSIot client, String policyName) {
+    private static void deleteOldPolicyVersion(AWSIot client, String policyName) {
         LOGGER.info(" delete policy not implemented ");
         List<PolicyVersion> policyVersionList = getPolicyVersions(client, policyName);
         String oldestVersion = getOldestPolicyVersion(policyVersionList);
@@ -247,12 +254,12 @@ public class AwsPolicyUtils
         JSONParser parser = new JSONParser();
         return (JSONObject) parser.parse(result.getPolicyDocument());
     }
-    private static String createPolicyVersion(String policyName, AWSIot client, JSONObject policyDoc) {
+    private static String createPolicyVersion(String policyName, AWSIot client, JSONObject policyDoc) throws VersionsLimitExceededException {
         CreatePolicyVersionRequest versionRequest = new CreatePolicyVersionRequest().withPolicyName(policyName)
                 .withPolicyDocument(policyDoc.toString())
                 .withSetAsDefault(true);
         CreatePolicyVersionResult versionResult = client.createPolicyVersion(versionRequest);
-        LOGGER.info("Policy updated for " + policyName + ", with " + versionResult.getPolicyDocument() + ", status: " + versionResult.getSdkHttpMetadata().getHttpStatusCode());
+        LOGGER.info("Policy created for " + policyName + ", with " + versionResult.getPolicyDocument() + ", status: " + versionResult.getSdkHttpMetadata().getHttpStatusCode());
         String policyVersion = versionResult.getPolicyVersionId();
         LOGGER.info(" policy created v->"+policyVersion);
         return policyVersion;
