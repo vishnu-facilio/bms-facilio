@@ -2160,6 +2160,29 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadClientLookupCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
+	
+	}
+
+	public static FacilioChain getPeopleListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForPeople());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getVendorContactListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForVendorContact());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
 	}
 
 	public static FacilioChain getFeedbackTypeListChain() {
@@ -2178,6 +2201,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new SmartControlKioskListCommand());
 		return chain;
 	}
+	
 	public static FacilioChain getFeedbackKioskDetailsChain() {
 		FacilioChain chain = getDefaultChain();		
 		chain.addCommand(new FeedbackKioskDetailsCommand());
@@ -2263,4 +2287,56 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetApproversListCommand());
 		return chain;
 	}
+	public static FacilioChain getTenantContactListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForTenantContact());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getEmployeeListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForEmployee());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getPeopleDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPeople());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+	
+	public static FacilioChain getVendorContactDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVendorContact());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+	
+	public static FacilioChain getTenantContactDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForTenantContact());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+	
+	public static FacilioChain getEmployeeDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForEmployee());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+	
+	
+	
 }

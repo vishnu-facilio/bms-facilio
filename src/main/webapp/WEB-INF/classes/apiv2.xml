@@ -5646,6 +5646,98 @@
 	<package name="fieldMigration" namespace="/api/v2/fieldMigrate" extends="v2Api">
 		<action name="migrate" class="com.facilio.bmsconsole.actions.ReadingFieldMigrationAction" method="migrateField" />
 		<action name="fieldDependency" class="com.facilio.bmsconsole.actions.ReadingFieldMigrationAction" method="fieldDependency" />
+	
+	<package name="peopleViews" namespace="/api/v2/people/views"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PeopleAction" method="getPeopleList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="people" namespace="/api/v2/people"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.PeopleAction" method="addPeople" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.PeopleAction" method="updatePeople" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.PeopleAction" method="deletePeople" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.PeopleAction" method="getPeopleDetails" />
+		<action name="updatePortalAccess"
+			class="com.facilio.bmsconsole.actions.PeopleAction" method="updatePortalAccess" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PeopleAction" method="peopleList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="vendorContactViews" namespace="/api/v2/vendorcontact/views"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VendorContactAction" method="vendorContactList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="vendorcontact" namespace="/api/v2/vendorcontact"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.VendorContactAction" method="addVendorContacts" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.VendorContactAction" method="updateVendorContacts" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.VendorContactAction" method="deleteVendorContacts" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.VendorContactAction" method="getVendorContactDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.VendorContactAction" method="vendorContactList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="tenantContactViews" namespace="/api/v2/tenantcontact/views"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.TenantContactAction" method="tenantContactList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="tenantcontact" namespace="/api/v2/tenantcontact"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.TenantContactAction" method="addTenantContacts" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.TenantContactAction" method="updateTenantContacts" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.TenantContactAction" method="deleteTenantContacts" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.TenantContactAction" method="getTenantContactDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.TenantContactAction" method="tenantContactList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="employeeViews" namespace="/api/v2/employee/views"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.EmployeeAction" method="employeeList" >
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="employee" namespace="/api/v2/employee"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.EmployeeAction" method="addEmployees" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.EmployeeAction" method="updateEmployees" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.EmployeeAction" method="deleteEmployees" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.EmployeeAction" method="getEmployeeDetails" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.EmployeeAction" method="employeeList">
+			<param name="viewName">{1}</param>
+		</action>
 	</package>
 	
 	

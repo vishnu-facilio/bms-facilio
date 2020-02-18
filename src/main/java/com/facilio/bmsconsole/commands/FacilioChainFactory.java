@@ -2239,4 +2239,33 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		return c;
 	}
+	
+	public static FacilioChain deletePeopleChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForPeople());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteVendorContactChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForVendorContact());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	
+	public static FacilioChain deleteTenantContactChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTenantContact());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteEmployeeChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForEmployee());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
 }

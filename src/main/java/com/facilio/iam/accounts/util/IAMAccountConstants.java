@@ -63,6 +63,33 @@ public class IAMAccountConstants {
 
 			return userModule;
 		}
+		
+		public static FacilioModule getAppDomainModule() {
+			FacilioModule userModule = new FacilioModule();
+			userModule.setName("appdomain");
+			userModule.setDisplayName("App Domain");
+			userModule.setTableName("App_Domain");
+
+			return userModule;
+		}
+		
+		public static FacilioModule getAccountUserAppsModule() {
+			FacilioModule accountUserAppsModule = new FacilioModule();
+			accountUserAppsModule.setName("accountUserApps");
+			accountUserAppsModule.setDisplayName("Account User Apps");
+			accountUserAppsModule.setTableName("Account_User_Apps");
+
+			return accountUserAppsModule;
+		}
+		
+		public static FacilioModule getAccountUserAppOrgsModule() {
+			FacilioModule accountUserAppsModule = new FacilioModule();
+			accountUserAppsModule.setName("accountUserAppOrgs");
+			accountUserAppsModule.setDisplayName("Account User App Orgs");
+			accountUserAppsModule.setTableName("Account_User_Apps_Orgs");
+
+			return accountUserAppsModule;
+		}
 
 		public static FacilioModule getOrgModule() {
 			FacilioModule orgModule = new FacilioModule();
@@ -286,19 +313,12 @@ public class IAMAccountConstants {
 			name.setModule(module);
 			fields.add(name);
 			
-			FacilioField domainName = new FacilioField();
-			domainName.setName("domainName");
-			domainName.setDataType(FieldType.STRING);
-			domainName.setColumnName("DOMAIN_NAME");
-			domainName.setModule(module);
-			fields.add(domainName);
-
-		/*	FacilioField cognitoId = new FacilioField();
-			cognitoId.setName("cognitoId");
-			cognitoId.setDataType(FieldType.STRING);
-			cognitoId.setColumnName("COGNITO_ID");
-			cognitoId.setModule(module);
-			fields.add(cognitoId);*/
+			FacilioField userName = new FacilioField();
+			userName.setName("userName");
+			userName.setDataType(FieldType.STRING);
+			userName.setColumnName("USERNAME");
+			userName.setModule(module);
+			fields.add(userName);
 
 			FacilioField userVerified = new FacilioField();
 			userVerified.setName("userVerified");
@@ -384,13 +404,99 @@ public class IAMAccountConstants {
 			country.setModule(module);
 			fields.add(country);
 
-			FacilioField portalUserType = new FacilioField();
-			portalUserType.setName("appType");
-			portalUserType.setDataType(FieldType.SYSTEM_ENUM);
-			portalUserType.setColumnName("APP_TYPE");
-			portalUserType.setModule(module);
-			fields.add(portalUserType);
+			FacilioField identifier = new FacilioField();
+			identifier.setName("identifier");
+			identifier.setDataType(FieldType.NUMBER);
+			identifier.setColumnName("IDENTIFIER");
+			identifier.setModule(module);
+			fields.add(identifier);
 
+			return fields;
+		}
+		
+		public static List<FacilioField> getAppDomainFields() {
+			FacilioModule module = getAppDomainModule();
+			List<FacilioField> fields = new ArrayList<>();
+
+			FacilioField id = new FacilioField();
+			id.setName("id");
+			id.setDataType(FieldType.ID);
+			id.setColumnName("ID");
+			id.setModule(module);
+			fields.add(id);
+
+			FacilioField domain = new FacilioField();
+			domain.setName("domain");
+			domain.setDataType(FieldType.STRING);
+			domain.setColumnName("DOMAIN");
+			domain.setModule(module);
+			fields.add(domain);
+			
+			FacilioField appDomainType = new FacilioField();
+			appDomainType.setName("appDomainType");
+			appDomainType.setDataType(FieldType.SYSTEM_ENUM);
+			appDomainType.setColumnName("APP_DOMAIN_TYPE");
+			appDomainType.setModule(module);
+			fields.add(appDomainType);
+			
+			FacilioField groupType = new FacilioField();
+			groupType.setName("groupType");
+			groupType.setDataType(FieldType.NUMBER);
+			groupType.setColumnName("APP_GROUP_TYPE");
+			groupType.setModule(module);
+			fields.add(groupType);
+
+			return fields;
+		}
+
+		
+		public static List<FacilioField> getAccountUserAppsFields() {
+			FacilioModule module = getAccountUserAppsModule();
+			List<FacilioField> fields = new ArrayList<>();
+
+			FacilioField id = new FacilioField();
+			id.setName("id");
+			id.setDataType(FieldType.ID);
+			id.setColumnName("ID");
+			id.setModule(module);
+			fields.add(id);
+
+			FacilioField userId = new FacilioField();
+			userId.setName("userId");
+			userId.setDataType(FieldType.NUMBER);
+			userId.setColumnName("USERID");
+			userId.setModule(module);
+			fields.add(userId);
+			
+			FacilioField appDomainId = new FacilioField();
+			appDomainId.setName("appDomainId");
+			appDomainId.setDataType(FieldType.NUMBER);
+			appDomainId.setColumnName("APP_DOMAIN_ID");
+			appDomainId.setModule(module);
+			fields.add(appDomainId);
+			
+			return fields;
+		}
+
+		
+		public static List<FacilioField> getAccountUserAppOrgsFields() {
+			FacilioModule module = getAccountUserAppOrgsModule();
+			List<FacilioField> fields = new ArrayList<>();
+
+			FacilioField id = new FacilioField();
+			id.setName("id");
+			id.setDataType(FieldType.NUMBER);
+			id.setColumnName("ID");
+			id.setModule(module);
+			fields.add(id);
+
+			FacilioField orgId = new FacilioField();
+			orgId.setName("orgId");
+			orgId.setDataType(FieldType.NUMBER);
+			orgId.setColumnName("ORGID");
+			orgId.setModule(module);
+			fields.add(orgId);
+			
 			return fields;
 		}
 

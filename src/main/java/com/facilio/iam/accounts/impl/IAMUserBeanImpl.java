@@ -29,6 +29,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.facilio.accounts.dto.AccountUserApp;
+import com.facilio.accounts.dto.AccountUserAppOrg;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.IAMUser.AppType;
@@ -38,6 +41,7 @@ import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.OrgInfoKeys;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -150,7 +154,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	@Override
 	public long addUserv2(long orgId, IAMUser user) throws Exception {
-		return  addUserv2(orgId, user, false);
+	//	return  addUserv2(orgId, user, false);
+		return  addUserV3(orgId, user, false);
 	}
 
 	public IAMUser getUserFromToken(String userToken) throws Exception{
@@ -1502,5 +1507,145 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	}
 	
+	public IAMUser getFacilioUserV3(String username, String pwd, int identifier) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Account_Users")
+				.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME","userName" , username, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("Account_Users.PASSWORD","password" , pwd, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER","identifier" , String.valueOf(identifier), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			IAMUser user =  createUserFromProps(props.get(0), true, true);
+			return user;
+		}
+		return null;
+	}
 	
+	private long addUserV3(long orgId, IAMUser user, boolean emailRegRequired) throws Exception {
+
+		IAMUser orgUser = getFacilioUserV3(user.getEmail(), user.getPassword(), 1);
+		long finalIdAdded = -1;
+		if (orgUser != null) {
+			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
+		}
+		else {
+			 finalIdAdded = addUserEntryV3(user, orgId, "app.facilio.com", 1, 1);
+		}
+		//if apptype == 1,put this
+		IAMUser userExistsForAnyOrg = getFacilioUserFromUserId(user.getUid(), null);
+		if(userExistsForAnyOrg != null) {
+			user.setDefaultOrg(false);
+		}
+		else {
+			user.setDefaultOrg(true);
+		}
+		user.setUserStatus(true);
+		user.setOrgId(orgId);
+		return finalIdAdded;
+	}
+
+	private long addUserEntryV3(IAMUser user, long orgId, String domain_name, int group_type, int app_type) throws Exception {
+
+		if(StringUtils.isEmpty(domain_name)) {
+			domain_name = "app.facilio.com";
+		}
+		List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
+		fields.add(IAMAccountConstants.getUserPasswordField());
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
+				.fields(fields);
+
+		Map<String, Object> props = FieldUtil.getAsProperties(user);
+
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		long userId = (Long) props.get("id");
+		user.setUid(userId);
+		
+		long appDomainId = checkDomainExists(domain_name, group_type, app_type);
+		long accUserAppId = addAccountUserAppEntry(user.getUid(), appDomainId);
+		long accUserAppOrgId = addAccountUserAppOrgEntry(accUserAppId, orgId);
+		
+		return accUserAppOrgId;
+	}
+	
+	private long checkDomainExists(String domainName, int groupType, int appType) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(IAMAccountConstants.getAppDomainFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("App_Domain")
+				.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN","domainName" , domainName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE","appDomainType" , String.valueOf(appType), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("App_Domain.APP_GROUP_TYPE","groupType" , String.valueOf(groupType), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			Map<String, Object> map = props.get(0);
+			return (long)map.get("id");
+		}
+		else {
+			return addAppDomain(domainName, groupType, appType);
+		}
+		
+	}
+	
+	private long addAppDomain(String domain_name, int group_type, int app_type) throws Exception {
+
+		if(StringUtils.isEmpty(domain_name)) {
+			domain_name = "app.facilio.com";
+		}
+		
+		List<FacilioField> fields = IAMAccountConstants.getAppDomainFields();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(IAMAccountConstants.getAppDomainModule().getTableName())
+				.fields(fields);
+
+		AppDomain appDomain = new AppDomain(domain_name, app_type, group_type);
+		Map<String, Object> props = FieldUtil.getAsProperties(appDomain);
+
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		long appdomainId = (Long) props.get("id");
+		return appdomainId;
+			
+	}
+	
+	private long addAccountUserAppEntry(long appDomainId, long userId) throws Exception {
+
+		List<FacilioField> fields = IAMAccountConstants.getAccountUserAppsFields();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(IAMAccountConstants.getAccountUserAppsModule().getTableName())
+				.fields(fields);
+
+		AccountUserApp accUserApp = new AccountUserApp(userId, appDomainId);
+		Map<String, Object> props = FieldUtil.getAsProperties(accUserApp);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		long accUserAppId = (Long) props.get("id");
+		return accUserAppId;
+			
+	}
+	
+	private long addAccountUserAppOrgEntry(long accUserAppId, long orgId) throws Exception {
+
+		List<FacilioField> fields = IAMAccountConstants.getAccountUserAppOrgsFields();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(IAMAccountConstants.getAccountUserAppOrgsModule().getTableName())
+				.fields(fields);
+
+		AccountUserAppOrg accUserAppOrg = new AccountUserAppOrg(accUserAppId, orgId);
+		Map<String, Object> props = FieldUtil.getAsProperties(accUserAppOrg);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		long accUserAppOrgId = (Long) props.get("id");
+		return accUserAppOrgId;
+			
+	}
 }

@@ -1543,6 +1543,18 @@ public class FacilioConstants {
 		public static final String RULE_ASSET_COUNT = "ruleassetcount";
 
 		
+	
+		public static final String EMPLOYEE = "employee";
+		public static final String EMPLOYEES = "employees";
+		
+		public static final String TENANT_CONTACT = "tenantcontact";
+		public static final String TENANT_CONTACTS = "tenantcontacts";
+	
+		public static final String VENDOR_CONTACT = "vendorcontact";
+		public static final String VENDOR_CONTACTS = "vendorcontacts";
+	
+		public static final String PEOPLE = "people";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

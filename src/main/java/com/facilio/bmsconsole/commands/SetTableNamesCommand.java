@@ -478,6 +478,22 @@ public class SetTableNamesCommand extends FacilioCommand {
 	public static SetTableNamesCommand getForFloorPlan() {
 		return new SetTableNamesCommand("floorPlan", "Floor_Plan");
 	}
+	public static SetTableNamesCommand getForPeople() {
+		return new SetTableNamesCommand("people", "People");
+	}
+	
+	public static SetTableNamesCommand getForTenantContact() {
+		return new SetTableNamesCommand("tenantcontact", "Tenant_Contacts");
+	}
+	
+	public static SetTableNamesCommand getForVendorContact() {
+		return new SetTableNamesCommand("vendorcontact", "Vendor_Contacts");
+	}
+	
+	public static SetTableNamesCommand getForEmployee() {
+		return new SetTableNamesCommand("employee", "Employee");
+	}
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

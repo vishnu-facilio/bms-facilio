@@ -4772,6 +4772,13 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericAddModuleDataListCommand());
 		c.addCommand(new UpdateClientIdInSiteCommand());
 		c.addCommand(new AddClientUserCommand());
+		return c;
+	}
+	
+	public static FacilioChain addPeopleChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPeople());
+		c.addCommand(new GenericAddModuleDataListCommand());
 		
 		return c;
 	}
@@ -4793,7 +4800,30 @@ public class TransactionChainFactory {
 	public static FacilioChain getFloorPlanChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new getFloorPlanCommand());
+		return c;
+	}
 
+	public static FacilioChain addTenantContactChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForTenantContact());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain addVendorContactChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVendorContact());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain addEmployeeChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForEmployee());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		
 		return c;
 	}
 	public static FacilioChain getListOfFloorPlanChain() {
@@ -4802,6 +4832,39 @@ public class TransactionChainFactory {
 		
 		return c;
 	}
+	
+	public static FacilioChain updateTenantContactChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForTenantContact());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain updateVendorContactChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVendorContact());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain updateEmployeeChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForEmployee());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain updatePeopleChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPeople());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		
+		return c;
+	}
+
 	public static FacilioChain addOrUpdateFeedbackKioskChain()
 	{
 		FacilioChain c=getDefaultChain();
