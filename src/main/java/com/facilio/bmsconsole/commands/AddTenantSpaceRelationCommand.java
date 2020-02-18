@@ -29,25 +29,30 @@ public class AddTenantSpaceRelationCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		
 		TenantContext tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
+		Boolean spacesUpdate = (Boolean) context.get(FacilioConstants.ContextNames.SPACE_UPDATE);
 		if (tenant == null) {
 			tenant = (TenantContext) context.get(TenantsAPI.TENANT_CONTEXT);
 		}
-		if (tenant != null && tenant.getSpaces() != null && tenant.getSpaces().size() > 0) {
-			List<Long> spaceIds = tenant.getSpaces().stream().map(a -> a.getId()).collect(Collectors.toList());
-			FacilioModule module = ModuleFactory.getTenantSpacesModule();
-			List<FacilioField> fields = FieldFactory.getTenantSpacesFields();
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(module.getTableName())
-					.fields(fields)
-					;
-			for (BaseSpaceContext space : tenant.getSpaces()) {
-				TenantSpaceContext tenantSpace = new TenantSpaceContext();
-				tenantSpace.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-				tenantSpace.setTenantId(tenant.getId());
-				tenantSpace.setSpace(space.getId());
-				insertBuilder.addRecord(FieldUtil.getAsProperties(tenantSpace));
+		
+		
+		if (tenant != null) {
+		if ((spacesUpdate != null && spacesUpdate) || (tenant.getSpaces() != null && tenant.getSpaces().size() > 0)) {
+				List<Long> spaceIds = tenant.getSpaces().stream().map(a -> a.getId()).collect(Collectors.toList());
+				FacilioModule module = ModuleFactory.getTenantSpacesModule();
+				List<FacilioField> fields = FieldFactory.getTenantSpacesFields();
+				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+						.table(module.getTableName())
+						.fields(fields)
+						;
+				for (BaseSpaceContext space : tenant.getSpaces()) {
+					TenantSpaceContext tenantSpace = new TenantSpaceContext();
+					tenantSpace.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+					tenantSpace.setTenantId(tenant.getId());
+					tenantSpace.setSpace(space.getId());
+					insertBuilder.addRecord(FieldUtil.getAsProperties(tenantSpace));
+				}
+				insertBuilder.save();
 			}
-			insertBuilder.save();
 		}
 		return false;
 	}

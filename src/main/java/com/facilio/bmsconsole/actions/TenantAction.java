@@ -54,7 +54,18 @@ public class TenantAction extends FacilioAction {
       this.message = message;
    }
    
-   private Boolean tenantPortal;
+    private Boolean spacesUpdate;
+   
+   
+    public Boolean getSpacesUpdate() {
+	return spacesUpdate;
+	}
+   
+	public void setSpacesUpdate(Boolean spacesUpdate) {
+		this.spacesUpdate = spacesUpdate;
+	}
+
+private Boolean tenantPortal;
    public Boolean getTenantPortal() {
       if (tenantPortal == null) {
          return false;
@@ -598,6 +609,7 @@ private Map<String, Double> readingData;
 	         tenant.parseFormData();
 	         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.EDIT);
 	         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+	         context.put(FacilioConstants.ContextNames.SPACE_UPDATE, spacesUpdate);
 	         context.put(FacilioConstants.ContextNames.RECORD, tenant);
 	         if(tenantLogo != null) {
 	            tenant.setTenantLogo(tenantLogo);
