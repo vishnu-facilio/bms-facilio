@@ -131,46 +131,35 @@ public class copyAssetReadingCommand extends FacilioCommand {
 				targetModule = createNewModule(assetIdTarget,createModule,fields);
 				targetModuleName = targetModule.getName();
 			}else if(module.getName().equals("ahureading") || module.getName().equals("chillerreading") || module.getName().equals("energydata") || module.getName().equals("chillerprimarypumpreading") ||
-					module.getName().equals("chillersecondarypumpreading") || module.getName().equals("fcureading")) {
+					module.getName().equals("chillersecondarypumpreading") || module.getName().equals("fcureading") || module.getName().equals("checkratiomllogreadings")) {
 				targetModuleName = module.getName();
-			}else {
-				if(CollectionUtils.isNotEmpty(fields)) {
-					targetModuleName  = targetModule.getName();
-					boolean isNextSubModule = false;
-					int count = 0;
-					while(true) {
-						if(isNextSubModule) {
-							targetModuleName = targetModuleName.split("_")[0];
-							targetModuleName = targetModuleName+"_"+count;
-						}
-						List<FacilioField> targetFields = bean.getAllFields(targetModuleName);
-						if(CollectionUtils.isEmpty(targetFields)) {
-							String newModule = module.getName();
-							newModule = newModule.split("_")[0];
-							targetModule = createNewModule(assetIdTarget,newModule,fields);
-							targetModuleName = targetModule.getName();
-							break;
-						}
-						List<String> checksourceFields = getFieldsName(fields);
-						List<String> checkTargetFields = getFieldsName(targetFields);
-						if(AccountUtil.getCurrentOrg().getId() == 114  || AccountUtil.getCurrentOrg().getId() == 238 || AccountUtil.getCurrentOrg().getId() == 255) {
-							LOGGER.info("TargetFields are : "+checkTargetFields + " checksourceFields : "+checksourceFields );
-						}
-						boolean isExistingField = checkTargetFields.containsAll(checksourceFields);
-						if(isExistingField) {
-							break;
-						}else {
-							isNextSubModule =true;
-							count++;
-						}
-					}
-					
-				}
-			}
-			
+			} /*
+				 * else { if(CollectionUtils.isNotEmpty(fields)) { targetModuleName =
+				 * targetModule.getName(); boolean isNextSubModule = false; int count = 0;
+				 * while(true) { if(isNextSubModule) { targetModuleName =
+				 * targetModuleName.split("_")[0]; targetModuleName =
+				 * targetModuleName+"_"+count; } List<FacilioField> targetFields =
+				 * bean.getAllFields(targetModuleName);
+				 * if(CollectionUtils.isEmpty(targetFields)) { String newModule =
+				 * module.getName(); newModule = newModule.split("_")[0]; targetModule =
+				 * createNewModule(assetIdTarget,newModule,fields); targetModuleName =
+				 * targetModule.getName(); break; } List<String> checksourceFields =
+				 * getFieldsName(fields); List<String> checkTargetFields =
+				 * getFieldsName(targetFields); if(AccountUtil.getCurrentOrg().getId() == 114 ||
+				 * AccountUtil.getCurrentOrg().getId() == 238 ||
+				 * AccountUtil.getCurrentOrg().getId() == 255) {
+				 * LOGGER.info("TargetFields are : "+checkTargetFields +
+				 * " checksourceFields : "+checksourceFields ); } boolean isExistingField =
+				 * checkTargetFields.containsAll(checksourceFields); if(isExistingField) {
+				 * break; }else { isNextSubModule =true; count++; } }
+				 * 
+				 * } }
+				 */
+			targetModuleName = targetModule.getName();
 			LOGGER.info("copy Asset Insert Started target AssetId is :" + targetAssetId + " and module is  : "
 					+ targetModuleName);
 			List<ReadingContext> readings = new ArrayList<ReadingContext>();
+			List<FacilioField> targetFields = bean.getAllFields(targetModuleName);
 			for (int i = 0; i < prop.size(); i++) {
 				ReadingContext context = new ReadingContext();
 				for (Entry<String, Object> entry : prop.get(i).entrySet()) {
@@ -188,7 +177,14 @@ public class copyAssetReadingCommand extends FacilioCommand {
 					} else if (entry.getKey().equals("sysCreatedTime")) {
 						context.setSysCreatedTime((long) entry.getValue());
 					} else {
-						context.setDatum(entry.getKey(), entry.getValue());
+						for(FacilioField field : targetFields) {
+							if(field.getName().equals(entry.getKey())) {
+								if(entry.getValue()==null) {
+									continue;
+								}
+								context.setDatum(entry.getKey(), entry.getValue());
+							}
+						}
 					}
 				}
 				readings.add(context);
