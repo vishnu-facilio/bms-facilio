@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -51,7 +52,7 @@ public class TenantPageFactory extends PageFactory{
 			for (FacilioModule subModule : subModules) {
 				List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
 				List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
-				if ((CollectionUtils.isNotEmpty(fields)) && (!subModule.getName().equals("tenantspaces")) && (!subModule.getName().equals("contact"))) {
+				if ((CollectionUtils.isNotEmpty(fields)) && (!subModule.getName().equals("tenantspaces")) && (subModule.getName().equals("contact") && AccountUtil.getCurrentAccount().getOrg().getOrgId() != 297)) {
 					for (FacilioField field : fields) {
 						PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
 						JSONObject relatedList = new JSONObject();
