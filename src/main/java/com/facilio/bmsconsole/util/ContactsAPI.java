@@ -105,7 +105,7 @@ public class ContactsAPI {
 				AccountUtil.getUserBean().disableUser(contact.getRequester().getOuid());
 			}
 			else {
-				User user = AccountUtil.getUserBean().getPortalUser(contact.getRequester().getUid());
+				User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), contact.getRequester().getUid());
 				if(!user.isUserVerified() || !user.isInviteAcceptStatus() ) {
 					AccountUtil.getUserBean().resendInvite(user.getOuid());
 				}
