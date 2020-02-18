@@ -55,7 +55,7 @@
 			FacilioModule serviceRequestModule = modBean.getModule("serviceRequest");
 			FacilioModule workorderModule = modBean.getModule("workorder");
 			FacilioModule ticketModule = modBean.getModule("ticket");
-			if(serviceRequestModule!=null && workorderModule && ticketModule !=null) {
+			if(serviceRequestModule!=null && workorderModule!=null && ticketModule !=null) {
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSubModuleRelFields());
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(ModuleFactory.getSubModulesRelModule().getTableName())
