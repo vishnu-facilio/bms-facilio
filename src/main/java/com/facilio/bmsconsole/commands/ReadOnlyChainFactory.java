@@ -1965,6 +1965,14 @@ public class ReadOnlyChainFactory {
 
 		return c;
 	}
+	
+	public static FacilioChain getServiceRequestSubModulesChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForServiceRequests());
+		c.addCommand(new GetServiceRequestSubModules());
+		
+		return c;
+	}
 
 	public static FacilioChain copySpecificAssetReadingToAnotherOrgChain() {
 		FacilioChain chain = getDefaultChain();

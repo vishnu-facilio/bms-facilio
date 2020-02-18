@@ -5095,6 +5095,8 @@
 			class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="updateServiceRequests" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="deleteServiceRequests" />	
+		<action name="fetchSubModules"
+			class="com.facilio.bmsconsole.actions.ServiceRequestsAction" method="getServcieRequestSubModules" />	
 	</package>
 	<package name="serviceRequestsList" namespace="/api/v2/servicerequests/view"
 		extends="v2Api">

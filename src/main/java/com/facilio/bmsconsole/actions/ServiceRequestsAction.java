@@ -235,4 +235,12 @@ public class ServiceRequestsAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+	
+	public String getServcieRequestSubModules() throws Exception{
+		FacilioChain chain = ReadOnlyChainFactory.getServiceRequestSubModulesChain();
+		chain.execute();
+		setResult(FacilioConstants.ContextNames.SUB_MODULES, chain.getContext().get(FacilioConstants.ContextNames.SUB_MODULES));
+		return SUCCESS;
+		
+	}
 }
