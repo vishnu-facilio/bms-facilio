@@ -192,7 +192,18 @@ public enum ActionType {
 						List<String> emails = new ArrayList<>();
 						Boolean sendAsSeparateMail = (Boolean) obj.get("sendAsSeparateMail");
 						if (sendAsSeparateMail != null && !sendAsSeparateMail) {
-							obj.put("to", toAddr);
+							String activeToEmails = "";
+							for (Object toEmail : toEmails) {
+								String to = (String) toEmail;
+								if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
+									if (StringUtils.isNotEmpty(activeToEmails)) {
+										activeToEmails += ",";
+									}
+									activeToEmails += to;
+									emails.add(to);
+								}
+							}
+							obj.put("to", activeToEmails);
 							FacilioFactory.getEmailClient().sendEmail(obj);
 						} else {
 							for (Object toEmail : toEmails) {
