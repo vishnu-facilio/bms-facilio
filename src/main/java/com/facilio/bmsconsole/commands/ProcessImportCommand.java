@@ -543,15 +543,20 @@ public class ProcessImportCommand extends FacilioCommand {
 				if (props.isEmpty()) {
 
 					HashMap<String, Object> insertProps = new LinkedHashMap<String, Object>();
+					if (FieldFactory.getAsMap(bean.getAllFields(lookupModuleName)).get("displayName") != null) {
+						insertProps.put(fieldName, value);
+					}
+					if (FieldFactory.getAsMap(bean.getAllFields(lookupModuleName)).get("name") != null) {
+						insertProps.put("name", value);
+					}
 
-					insertProps.put(fieldName, value);
 					insertProps.put("orgId", AccountUtil.getCurrentOrg().getId());
 					insertProps.put("moduleId", lookupField.getLookupModule().getModuleId());
 
 					if (lookupModuleName.equals(FacilioConstants.ContextNames.ASSET_CATEGORY)) {
 						throw new Exception("Value not found");
 					} else if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) || lookupField.getModule().getName().equals(FacilioConstants.ContextNames.TICKET)) {
-						if (lookupField.getName().equals("moduleState") || lookupField.getName().equals("ticketstatus")  ||  lookupField.getName().equals("resource")) {
+						if (lookupField.getName().equals("moduleState") || lookupField.getName().equals("ticketstatus")  ||  lookupField.getName().equals("resource") || lookupField.getName().equals("priority")) {
 							throw new Exception("Value not found");
 						}
 					} else if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.TASK)) {
@@ -686,6 +691,9 @@ public class ProcessImportCommand extends FacilioCommand {
 			}
 			case "groups": {
 				Group group = AccountUtil.getGroupBean().getGroup(value.toString());
+				if (group == null && lookupField.getName().equals("assignmentGroup")) {
+					throw new Exception("Value not found");
+				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(group);
 				return prop;
 			}
