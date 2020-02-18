@@ -24,9 +24,7 @@ public class AwsPolicyUtils
             for (Object policyStatementObject : policyStatements) {
                 JSONObject policyStatement = (JSONObject) policyStatementObject;
                 if((policyStatement.containsKey("Action"))&&(policyStatement.get("Action") != null)){
-                    JSONArray actionArray = (JSONArray) policyStatement.get("Action");
-                    for (Object o : actionArray) {
-                        String action = (String) o;
+                    String action = (String) policyStatement.get("Action");
                         switch (action){
                             case "iot:Connect":
                                 addResourceToPolicyIfNotPresent(policyStatement,connectTopics);
@@ -41,7 +39,6 @@ public class AwsPolicyUtils
                                 addResourceToPolicyIfNotPresent(policyStatement,subscribeTopics);
                                 break;
                         }
-                    }
                 }else{
                     throw new Exception("key -Action- missing from policyJson ");
                 }
@@ -135,7 +132,7 @@ public class AwsPolicyUtils
             try {
                 updatePolicy(iotClient,rule.getName(),rule);
             } catch (Exception e) {
-                LOGGER.info(" Exception while updating policy ");
+                LOGGER.info(" Exception while updating policy ",e);
             }
         } catch (Exception e) {
             LOGGER.info("Exception while creating iot policy ",e);
