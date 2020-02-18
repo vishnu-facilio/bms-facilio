@@ -244,6 +244,12 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteTenantCommand());
 			return c;
 		}
+		
+		public static FacilioChain v2disassociateSpaceChain () {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DisassociateTenantSpaceRelationCommand());
+			return c;
+		}
 
 		public static FacilioChain getWorkOrderWorkflowsChain(boolean sendNotification) {
 			FacilioChain c = getDefaultChain();

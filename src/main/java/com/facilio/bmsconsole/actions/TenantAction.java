@@ -73,6 +73,16 @@ public class TenantAction extends FacilioAction {
       this.id = id;
    }
    
+   private long spacesId = -1;
+   
+   public long getSpacesId() {
+	return spacesId;
+	}
+   
+   public void setSpacesId(long spacesId) {
+		this.spacesId = spacesId;
+   }
+
    private List<Long> ids;
    public List<Long> getIds() {
 	   return ids;
@@ -599,14 +609,7 @@ private Map<String, Double> readingData;
 	         return SUCCESS;
 	   }
    
-//   public String v2disassociateSpace() throws Exception {
-//	   FacilioChain disassociateSpace = TransactionChainFactory.v2disassociateSpaceChain();
-//	   FacilioContext context = disassociateSpace.getContext();
-//	   
-//	   context.put(FacilioConstants.ContextNames.CONTACTS, tenantContacts);
-//	   disassociateSpace.execute();
-//	   return SUCCESS;
-//   }
+   
    public String markAsPrimaryContact() {
       try {
          FacilioContext context = new FacilioContext();
@@ -712,12 +715,23 @@ private Map<String, Double> readingData;
    public String v2deleteTenant() throws Exception {
 	   FacilioChain deleteTenant = TransactionChainFactory.v2DeleteTenantChain();
 	   FacilioContext context = deleteTenant.getContext();
-       context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+	    context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
        context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
        deleteTenant.execute();
        setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
        return SUCCESS;
   }
+   
+   public String v2disassociateSpace() throws Exception {
+	   FacilioChain disassociateSpace = TransactionChainFactory.v2disassociateSpaceChain();
+	   FacilioContext context = disassociateSpace.getContext();
+	   context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+	   context.put(FacilioConstants.ContextNames.SPACE, spacesId);
+	   context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
+	   disassociateSpace.execute();
+	   setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+	   return SUCCESS;
+   }
    
    
    public String fetchAllTenants() throws Exception {
@@ -953,6 +967,15 @@ private Map<String, Double> readingData;
        setLogoUrl(TenantsAPI.getLogoUrl(logoId));
       return SUCCESS;
    }
+   
+   public String v2getTenantLogoUrl() throws Exception {
+	      
+      setLogoUrl(TenantsAPI.getLogoUrl(logoId));
+      setResult("logoUrl", getLogoUrl());
+      return SUCCESS;
+   }
+   
+   
    
    @SuppressWarnings("unchecked")
    public String generateBill() throws Exception {

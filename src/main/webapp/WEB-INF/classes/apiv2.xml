@@ -853,12 +853,22 @@
 		    <param name="viewName">{1}</param>
 		</action>
 		
-<!-- 		<action name="disassociateSpace" class="com.facilio.bmsconsole.actions.TenantAction"
+		<action name="getLogoUrl" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="v2getTenantLogoUrl">
+			<param name="permission">READ</param> 
+			<param name="moduleName">tenant</param>
+		     <result name="success" type="json">
+				<param name="includeProperties">logoUrl</param>
+			</result>
+		</action>
+		
+		
+		<action name="disassociateSpace" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="v2disassociateSpace">
 			<param name="permission">UPDATE</param> 
 			<param name="moduleName">tenant</param>
 	
-		</action> -->
+		</action>
 		
 		<action name="toggleStatus" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="v2ToggleStatus">
