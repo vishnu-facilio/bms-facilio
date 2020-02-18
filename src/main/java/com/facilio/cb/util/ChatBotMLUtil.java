@@ -1,27 +1,17 @@
 package com.facilio.cb.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.cb.context.ChatBotIntent;
 import com.facilio.cb.context.ChatBotIntentInvokeSample;
 import com.facilio.cb.context.ChatBotModel;
 import com.facilio.services.FacilioHttpUtils;
 import com.facilio.util.FacilioUtil;
-import com.rabbitmq.http.client.HttpException;
 
 public class ChatBotMLUtil {
 
@@ -85,7 +75,7 @@ public class ChatBotMLUtil {
 
 			headers.put("Content-Type", "application/json");
 
-			String response = FacilioHttpUtils.doHttpPost("http://172.31.13.7:7446/api/chatbot/createchatbot", headers,
+			String response = FacilioHttpUtils.doHttpPost("https://chatbot.facilio.com/api/chatbot/createchatbot", headers,
 					null, intentJson.toJSONString());
 
 			System.out.println("respose ---- "+response);
@@ -106,7 +96,7 @@ public class ChatBotMLUtil {
 			params.put(ML_MODEL_NAME_STRING, model.getMlModel());
 			params.put(ML_TEXT_STRING, text);
 
-			String response = FacilioHttpUtils.doHttpGet("http://172.31.13.7:7446/api/chatbot/findchatintent", null,params);
+			String response = FacilioHttpUtils.doHttpGet("https://chatbot.facilio.com/api/chatbot/findchatintent", null,params);
 
 			System.out.println("respose ---- " + response);
 			JSONObject responseJson = FacilioUtil.parseJson(response);
@@ -116,12 +106,4 @@ public class ChatBotMLUtil {
 		}
 		return null;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 }
