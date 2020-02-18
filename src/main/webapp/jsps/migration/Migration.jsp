@@ -52,15 +52,15 @@
 			Long orgId = org.getOrgId();
 			AccountUtil.setCurrentAccount(orgId);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule sreviceRequestModule = modBean.getModule("serviceRequest");
-			if(sreviceRequestModule!=null) {
+			FacilioModule serviceRequestModule = modBean.getModule("serviceRequest");
 			FacilioModule workorderModule = modBean.getModule("workorder");
 			FacilioModule ticketModule = modBean.getModule("ticket");
+			if(serviceRequestModule!=null && workorderModule && ticketModule !=null) {
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getSubModuleRelFields());
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(ModuleFactory.getSubModulesRelModule().getTableName())
 					.fields(FieldFactory.getSubModuleRelFields())
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentModuleId"), sreviceRequestModule.getModuleId()+"", NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentModuleId"), serviceRequestModule.getModuleId()+"", NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("childModuleId"), ticketModule.getModuleId()+"", NumberOperators.EQUALS));
 					
 			Map<String, Object> props = new HashMap<>();
