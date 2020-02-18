@@ -1463,6 +1463,7 @@ public class FacilioConstants {
 		public static final String ASSET_HAZARDS = "assetHazards";
 
 		public static final String TIME_DIFF = "timeDiff";
+		public static final String NEED_CRITERIAREPORT = "needCriteriaReport";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

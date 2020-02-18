@@ -435,7 +435,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			}
 		}
 		if(dataFilter != null && !dataFilter.isEmpty()) {
-			FilterUtil.setDataFilterCriteria(dp.getxAxis().getModuleName(), dataFilter, newSelectBuilder);
+			FilterUtil.setDataFilterCriteria(dp.getxAxis().getModuleName(), dataFilter,  report.getDateRange(), newSelectBuilder);
 		}
 
 		List<Map<String, Object>> props;

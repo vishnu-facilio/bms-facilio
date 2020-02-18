@@ -325,6 +325,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		context.put(FacilioConstants.ContextNames.DEFAULT_DATE, defaultDate);
 		context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
+		context.put(FacilioConstants.ContextNames.NEED_CRITERIAREPORT, needCriteriaReport);
 		if(trendLine != null){
 			context.put(FacilioConstants.ContextNames.TREND_LINE, trendLine);
 		}
@@ -1799,6 +1800,14 @@ public class V2ReportAction extends FacilioAction {
 	public void setDataFilter(String dataFilter) {
 		this.dataFilter = dataFilter;
 	}
+	
+	private boolean needCriteriaReport = false;
+	public boolean getNeedCriteriaReport () {
+		return needCriteriaReport;
+	}
+	public void setNeedCriteriaReport(boolean needCriteriaReport) {
+		this.needCriteriaReport = needCriteriaReport;
+	}
 
 	private AggregateOperator xAggr;
 	public int getxAggr() {
@@ -2055,24 +2064,6 @@ public class V2ReportAction extends FacilioAction {
 		List<ReportContext> reports = ReportUtil.getReports(moduleName, getSearch());
 		setResult("reportFolders", reportFolders);
 		setResult("reports", reports);
-		return SUCCESS;
-	}
-	
-	public String fetchCriteriaReport() throws Exception {
-		JSONParser parser = new JSONParser();
-		List<ReportDataPointContext> dataPoints = ReportUtil.getDataPoints((JSONObject) parser.parse(dataFilter));
-		reportContext = new ReportContext();
-		reportContext.setDataPoints(dataPoints);
-		reportContext.setDateOperator(DateOperators.BETWEEN);
-		reportContext.setDateValue(startTime+", "+endTime);
-//		reportContext.setType(ReportType.READING_REPORT);
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
-		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
-		FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReportDataChain() : ReadOnlyChainFactory.fetchReportDataChain();
-		fetchReadingDataChain.execute(context);
-		
-		setReportResult(context);
 		return SUCCESS;
 	}
 	
