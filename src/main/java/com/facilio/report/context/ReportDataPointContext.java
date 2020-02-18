@@ -374,7 +374,8 @@ public class ReportDataPointContext {
 	public static enum DataPointType {
 		MODULE,
 		DERIVATION,
-		TRENDLINE
+		TRENDLINE,
+		FIELD,		//Number Fields of Site, Building, Asset Modules
 		;
 		
 		public int getValue() {

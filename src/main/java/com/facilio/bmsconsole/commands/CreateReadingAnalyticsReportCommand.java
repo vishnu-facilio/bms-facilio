@@ -29,6 +29,7 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule.ModuleType;
@@ -94,6 +95,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 				ReportDataPointContext dataPoint = null;
 				switch (metric.getTypeEnum()) {
 					case MODULE:
+					case FIELD:
 						dataPoint = getModuleDataPoint(report, metric, mode, modBean, resourceAlias);
 						break;
 					case DERIVATION:
@@ -245,8 +247,9 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		return null;
 	}
 	
-	private void setXAndDateFields (ReportDataPointContext dataPoint, ReportMode mode, Map<String, FacilioField> fieldMap) {
+	private void setXAndDateFields (ReportDataPointContext dataPoint, ReportMode mode, Map<String, FacilioField> fieldMap) throws Exception {
 		FacilioField xField = null;
+		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
 		switch (mode) {
 			case SERIES:
 				xField = fieldMap.get("parentId");
@@ -256,7 +259,12 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 			case FLOOR:
 			case SPACE:
 			case RESOURCE:
-				xField = fieldMap.get("parentId");
+				if(fieldMap.get("parentId")!= null) {
+					xField = fieldMap.get("parentId");
+				}else {
+					FacilioModule module = bean.getModule(mode.getStringVal());
+					xField = FieldFactory.getIdField(module);
+				}
 				dataPoint.setFetchResource(true);
 				break;
 			case TIMESERIES:
@@ -270,10 +278,11 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		ReportFieldContext xAxis = new ReportFieldContext();
 		xAxis.setField(xField.getModule(), xField);
 		dataPoint.setxAxis(xAxis);
-		
+		if(fieldMap.get("ttime")!= null) {
 		ReportFieldContext dateField = new ReportFieldContext();
 		dateField.setField(fieldMap.get("ttime").getModule(), fieldMap.get("ttime"));
 		dataPoint.setDateField(dateField);
+		}
 	}
 	
 	private String getName(ReportYAxisContext yField, ReportMode mode, ReportFilterMode filterMode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric, FacilioContext context) throws Exception {
@@ -356,9 +365,10 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		return ResourceAPI.getResourceAsMapFromIds(resourceIds);
 	}
 	
-	private ReportFilterContext getBasicReadingReportFilter(ModuleBean modBean) throws Exception {
+	private ReportFilterContext getBasicReadingReportFilter(ModuleBean modBean, String filterFieldName, String filterModuleName) throws Exception {
 		ReportFilterContext filter = new ReportFilterContext();
-		filter.setFilterFieldName("parentId");
+		filter.setFilterFieldName(filterFieldName);
+		filter.setFilterModuleName(filterModuleName);
 		
 		FacilioField field = modBean.getField("id", FacilioConstants.ContextNames.ASSET);
 		filter.setField(field.getModule(), field);
@@ -376,7 +386,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 				case ALL_ASSET_CATEGORY:
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					List<Long> categoryId = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
-					filter = getBasicReadingReportFilter(modBean);
+					filter = getBasicReadingReportFilter(modBean, "parentId", "energydata");
 					FacilioField categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
 					
 					criteria = new Criteria();
@@ -391,7 +401,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 					}
 					
 					modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					filter = getBasicReadingReportFilter(modBean);
+					filter = getBasicReadingReportFilter(modBean, "parentId", "energydata");
 					filter.setDataFilter(true);
 					filter.setFilterOperator(PickListOperators.IS);
 					filter.setFilterValue(StringUtils.join(parentIds, ","));
@@ -400,7 +410,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 					modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					categoryId = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
 					List<Long> spaceId = (List<Long>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST);
-					filter = getBasicReadingReportFilter(modBean);
+					filter = getBasicReadingReportFilter(modBean, "parentId", "energydata");
 					categoryField = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
 					FacilioField spaceField = modBean.getField("space", FacilioConstants.ContextNames.ASSET);
 					

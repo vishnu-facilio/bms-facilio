@@ -162,20 +162,30 @@ public class ReadingAnalysisContext {
 	}
 	
 	public static enum ReportMode {
-		TIMESERIES,
-		SERIES,
-		CONSOLIDATED,
+		TIMESERIES("timeseries"),
+		SERIES("series"),
+		CONSOLIDATED("consolidated"),
 		
 		//New modes for portfolio. Long run only these will be used
-		TIME_CONSOLIDATED,
-		TIME_SPLIT,
-		SITE,
-		BUILDING,
-		RESOURCE,
-		FLOOR,
-		SPACE,
-		TIME_DURATION
+		TIME_CONSOLIDATED("timeconsolidated"),
+		TIME_SPLIT("timesplit"),
+		SITE("site"),
+		BUILDING("building"),
+		RESOURCE("asset"),
+		FLOOR("floor"),
+		SPACE("space"),
+		TIME_DURATION("timeduration")
 		;
+		
+		private String strVal;
+		
+		private ReportMode(String strVal) {
+			this.strVal = strVal;
+		}
+		
+		public String getStringVal() {
+			return strVal;
+		}
 		
 		public int getValue() {
 			return ordinal() + 1;

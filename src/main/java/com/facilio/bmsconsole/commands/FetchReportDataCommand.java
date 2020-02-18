@@ -313,12 +313,14 @@ public class FetchReportDataCommand extends FacilioCommand {
 				if (!filter.isDataFilter() && (filter.getFilterValue() == null || filter.getFilterValue().isEmpty())) {
 					return true;
 				}
-				FacilioField filterField = modBean.getField(filter.getFilterFieldName(), dataPoint.getxAxis().getModuleName());
-				if (filter.isDataFilter()) {
-					selectBuilder.andCondition(CriteriaAPI.getCondition(filterField, filter.getFilterValue(), filter.getFilterOperatorEnum()));
-				}
-				else {
-					selectBuilder.andCondition(CriteriaAPI.getEqualsCondition(filterField, filter.getFilterValue()));
+				if (filter.getFilterModuleName().equals(dataPoint.getxAxis().getModuleName())) {
+					FacilioField filterField = modBean.getField(filter.getFilterFieldName(), dataPoint.getxAxis().getModuleName());
+					if (filter.isDataFilter()) {
+						selectBuilder.andCondition(CriteriaAPI.getCondition(filterField, filter.getFilterValue(), filter.getFilterOperatorEnum()));
+					}
+					else {
+						selectBuilder.andCondition(CriteriaAPI.getEqualsCondition(filterField, filter.getFilterValue()));
+					}
 				}
 			}
 		}
@@ -536,7 +538,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				FacilioField gField = groupByField.getField().clone();
 
 				if (groupByField.getAggrEnum() != null) {
-					if (groupByField.getAggrEnum() instanceof SpaceAggregateOperator) {
+					if (groupByField.getAggrEnum() instanceof SpaceAggregateOperator  && !groupByField.getAggrEnum().getStringValue().equalsIgnoreCase(baseModule.getName())) {
 						gField = applySpaceAggregation(dp, groupByField.getAggrEnum(), selectBuilder, addedModules, groupByField.getField());
 					} else {
 						gField = groupByField.getAggrEnum().getSelectField(gField);
@@ -577,7 +579,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 	}
 
 	private void applyDateCondition(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine) throws Exception {
-		if (report.getDateOperatorEnum() != null) {
+		if (report.getDateOperatorEnum() != null && dp.getTypeEnum()!= DataPointType.FIELD) {
 			if (dp.getDateField() == null) {
 				throw new IllegalArgumentException("Date Field for datapoint cannot be null when report has date filter");
 			}
@@ -603,6 +605,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				}
 				switch (dataPoint.getTypeEnum()) {
 					case MODULE:
+					case FIELD:
 						if (handleBooleanField) {
 							handleBooleanField(dataPoint);
 						}
@@ -656,16 +659,17 @@ public class FetchReportDataCommand extends FacilioCommand {
 		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE));
-
+		
 		if (!isAlreadyAdded(addedModules, resourceModule)) {
 			selectBuilder.innerJoin(resourceModule.getTableName())
-						.on(resourceModule.getTableName()+".ID = " + field.getCompleteColumnName());
+			.on(resourceModule.getTableName()+".ID = " + field.getCompleteColumnName());
 			addedModules.add(resourceModule);
 		}
+		
 		selectBuilder.innerJoin(baseSpaceModule.getTableName())
 		.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");		
 		addedModules.add(baseSpaceModule);
-
+		
 		FacilioField spaceField = null;
 		switch ((SpaceAggregateOperator) aggr) {
 			case SITE:
@@ -764,7 +768,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		FacilioField xAggrField = null;
 		if (dp.getyAxis().getAggrEnum() != null && dp.getyAxis().getAggr() != 0) {
 			if (xAggr != null) {
-				if (xAggr instanceof SpaceAggregateOperator) {
+				if (xAggr instanceof SpaceAggregateOperator && !xAggr.getStringValue().equalsIgnoreCase(baseModule.getName())) {
 					xAggrField = applySpaceAggregation(dp, xAggr, selectBuilder, addedModules, dp.getxAxis().getField());
 				}
 				else {

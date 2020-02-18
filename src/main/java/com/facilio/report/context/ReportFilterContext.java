@@ -13,6 +13,14 @@ public class ReportFilterContext extends ReportFieldContext {
 		this.filterFieldName = filterFieldName;
 	}
 	
+	private String filterModuleName;	
+	public String getFilterModuleName() {
+		return filterModuleName;
+	}
+	public void setFilterModuleName(String filterModuleName) {
+		this.filterModuleName = filterModuleName;
+	}
+
 	private Operator filterOperator;
 	public Operator getFilterOperatorEnum() {
 		return filterOperator;
