@@ -40,20 +40,20 @@ import com.facilio.util.FacilioUtil;
 
 public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 
-	public List<Map<String,Object>> getAvgResolutionTime(List<Object> objects) throws Exception {
+	public List<Map<String,Object>> getAvgResolutionTime(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		return WorkOrderAPI.getTopNCategoryOnAvgCompletionTime(String.valueOf(objects.get(0).toString()),Long.valueOf(objects.get(1).toString()),Long.valueOf(objects.get(2).toString()));
 	}
 	
-	public List<Map<String,Object>> getWorkOrdersByCompletionTime(List<Object> objects) throws Exception {
+	public List<Map<String,Object>> getWorkOrdersByCompletionTime(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		return WorkOrderAPI.getWorkOrderStatusPercentageForWorkflow(String.valueOf(objects.get(0)),Long.valueOf(objects.get(1).toString()),Long.valueOf(objects.get(2).toString()));
 	}
 	
-	public List<Map<String, Object>> getTopNTechnicians(List<Object> objects) throws Exception{
+	public List<Map<String, Object>> getTopNTechnicians(Map<String,Object> globalParams,List<Object> objects) throws Exception{
 		return WorkOrderAPI.getTopNTechnicians(objects.get(0).toString(), Long.valueOf(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()));
 	}
 	
 	@Override
-	public void add(List<Object> objects) throws Exception {
+	public void add(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 
 		Object insertObject = objects.get(1);
 		
@@ -97,7 +97,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		
 	}
 	
-	public void addNote(List<Object> objects) throws Exception {
+	public void addNote(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		
 		Long woId = (Long) objects.get(1);
@@ -119,7 +119,7 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 	}
 	
 	@Override
-	public Map<String, Object> addTemplateData(List<Object> objects) throws Exception {
+	public Map<String, Object> addTemplateData(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		

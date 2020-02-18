@@ -27,6 +27,7 @@ import com.facilio.workflowv2.autogens.WorkflowV2Lexer;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 import com.facilio.workflowv2.contexts.ErrorListener;
 import com.facilio.workflowv2.parser.ScriptParser;
+import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
 
 public class WorkflowContext implements Serializable {
 	
@@ -64,6 +65,7 @@ public class WorkflowContext implements Serializable {
 	}
 	public void setCachedRDM(Map<String, ReadingDataMeta> cachedRDM) {
 		this.cachedRDM = cachedRDM;
+		addGlobalParamater(WorkflowGlobalParamUtil.RDM_CACHE, this.cachedRDM);
 	}
 	Boolean isV2Script;
 	
@@ -92,6 +94,7 @@ public class WorkflowContext implements Serializable {
 	}
 	public void setCachedData(Map<String, List<Map<String, Object>>> cachedData) {
 		this.cachedData = cachedData;
+		addGlobalParamater(WorkflowGlobalParamUtil.DATA_CACHE, this.cachedData);
 	}
 	public void addCachedData(String name, List<Map<String, Object>> data) {
 		if (cachedData == null) {
@@ -105,7 +108,7 @@ public class WorkflowContext implements Serializable {
 	String workflowString;
 	String workflowV2String;
 	List<ParameterContext> parameters;
-	List<ParameterContext> globalParameters;
+	Map<String,Object> globalParameters;
 	List<Object> params;							// for v2 workflow
 	
 	boolean isParsedV2Script;
@@ -244,14 +247,6 @@ public class WorkflowContext implements Serializable {
 		this.terminateExecution = terminateExecution;
 	}
 
-	boolean getDataFromCache;
-	public boolean isGetDataFromCache() {
-		return getDataFromCache;
-	}
-	public void setGetDataFromCache(boolean getDataFromCache) {
-		this.getDataFromCache = getDataFromCache;
-	}
-
 	private List<Long> dependentFieldIds;
 	public List<Long> getDependentFieldIds() {
 		return dependentFieldIds;
@@ -320,19 +315,22 @@ public class WorkflowContext implements Serializable {
 		this.parameters.add(parameter);
 	}
 	
-	public List<ParameterContext> getGlobalParameters() {
+	public Map<String,Object> getGlobalParameters() {
 		return globalParameters;
 	}
 
-	public void setGlobalParameters(List<ParameterContext> globalParameters) {
+	public void setGlobalParameters(Map<String,Object> globalParameters) {
 		this.globalParameters = globalParameters;
 	}
 	
-	public void addGlobalParamater(ParameterContext parameter) {
-		if(this.globalParameters == null) {
-			this.globalParameters = new ArrayList<>();
+	public void addGlobalParamater(String key,Object value) {
+		if(key == null && !WorkflowGlobalParamUtil.getApprovedGlobalParamNames().contains(key)) {
+			return;
 		}
-		this.globalParameters.add(parameter);
+		if(this.globalParameters == null) {
+			this.globalParameters = new HashMap<>();
+		}
+		this.globalParameters.put(key, value);
 	}
 
 	public String getResultEvaluator() {
@@ -472,9 +470,8 @@ public class WorkflowContext implements Serializable {
 		}
 		
 		if(globalParameters != null && !globalParameters.isEmpty()) {
-			for(ParameterContext parameter:globalParameters) {
-				variableResultMap.put(parameter.getName(), parameter.getValue());
-			}
+			
+			variableResultMap.putAll(globalParameters);
 		}
 		
 		if (expressions != null) {

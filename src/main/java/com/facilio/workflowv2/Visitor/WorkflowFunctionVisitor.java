@@ -47,15 +47,30 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 
     private Map<String, Value> varMemoryMap = new HashMap<String, Value>();
     
-    private List<ParameterContext> globalParameters;
+    private Map<String, Object> globalVarMemoryMap = new HashMap<String, Object>();		// keeping this as <String, Object> since we have to move this to all sub functions;
     
-    public List<ParameterContext> getGlobalParameters() {
-		return globalParameters;
-	}
-
-	public void setGlobalParameters(List<ParameterContext> globalParameters) {
-		this.globalParameters = globalParameters;
-	}
+    private void putParamValue(String key,Value value) {
+    	if(key != null) {
+    		varMemoryMap.put(key, value);
+    	}
+    }
+    
+    private Value getParamValue(String key) {
+    	if(varMemoryMap.containsKey(key)) {
+    		return varMemoryMap.get(key);
+    	}
+    	else if (globalVarMemoryMap.containsKey(key)) {
+    		return new Value(globalVarMemoryMap.get(key));
+    	}
+    	return null;
+    }
+    
+    private Value removeParamValue(String key) {
+    	if(varMemoryMap.containsKey(key)) {
+    		return varMemoryMap.remove(key);
+    	}
+    	return null;
+    }
     
     WorkflowContext workflowContext;
     
@@ -75,19 +90,19 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
         	for(int i = 0;i<parmasObjects.size(); i++) {
         		ParameterContext param = workflowContext.getParameters().get(i);
         		Object value = parmasObjects.get(i);
-        		varMemoryMap.put(param.getName(), new Value(value));
+        		putParamValue(param.getName(), new Value(value));
         	}
     	}
     }
     
-    public void setGlobalParams(List<ParameterContext> parmasObjects) throws Exception {
-    	if(parmasObjects != null && !parmasObjects.isEmpty()) {
-        	
-    		setGlobalParameters(parmasObjects);
-        	for(ParameterContext param : parmasObjects) {
-        		varMemoryMap.put(param.getName(), new Value(param.getValue()));
-        	}
+    public void setGlobalParams(Map<String, Object> globalParameters) throws Exception {
+    	if(globalParameters != null) {
+    		globalVarMemoryMap = globalParameters;
     	}
+    }
+    
+    public Map<String, Object> getGlobalParam() {
+    	return globalVarMemoryMap;
     }
     
     public void visitFunctionHeader(ParseTree tree) {
@@ -123,11 +138,11 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
         				String functionName = functionCall.VAR().getText();
             			
         				Object moduleFunctionObject = WorkflowV2Util.getInstanceOf(module);
-            			Method method = moduleFunctionObject.getClass().getMethod(functionName, List.class);
+            			Method method = moduleFunctionObject.getClass().getMethod(functionName, Map.class,List.class);
             			
             			List<Object> params = WorkflowV2Util.getParamList(functionCall,true,this,value);
-
-            			Object result = method.invoke(moduleFunctionObject, params);
+            			
+            			Object result = method.invoke(moduleFunctionObject, getGlobalParam(),params);
             			value =  new Value(result);
                 	}
             		else if (value.asObject() instanceof WorkflowNamespaceContext) {					// user defined functions
@@ -137,7 +152,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
             			
             			WorkflowContext wfContext = UserFunctionAPI.getWorkflowFunction(namespaceContext.getId(), functionCall.VAR().getText());
             			wfContext.setParams(paramValues);
-            			wfContext.setGlobalParameters(getGlobalParameters());
+            			wfContext.setGlobalParameters(getGlobalParam());
             			
             			Object res = wfContext.executeWorkflow();
             			
@@ -191,7 +206,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
                     	
                     	List<Object> paramValues = WorkflowV2Util.getParamList(functionCall,isDataTypeSpecificFunction,this,value);
                     	
-                    	Object result = WorkflowUtil.evalSystemFunctions(wfFunctionContext, paramValues);
+                    	Object result = WorkflowUtil.evalSystemFunctions(getGlobalParam(),wfFunctionContext, paramValues);
                     	value = new Value(result); 
             		}
     			}
@@ -238,7 +253,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     	
     	Value value = assignmentValue;
     	
-    	varMemoryMap.put(varName, value);
+    	putParamValue(varName, value);
     	
     	assignmentValue = null;
     	
@@ -252,7 +267,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     	
     	Value value = assignmentValue;
     	
-    	Value parentValue = varMemoryMap.get(varName);
+    	Value parentValue = getParamValue(varName);
     	
     	if(parentValue.asObject() instanceof List) {
     		
@@ -290,10 +305,10 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     		String varName = var.getText();
     		
     		if(isFirst) {
-    			Value parentValue = varMemoryMap.get(varName);
+    			Value parentValue = getParamValue(varName);
     			if (parentValue == null) {
     				parentValue = new Value(new HashMap<>());
-    				varMemoryMap.put(varName, parentValue);
+    				putParamValue(varName, parentValue);
     			}
     			
     			if(parentValue.asObject() instanceof Map) {
@@ -392,7 +407,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
     @Override
     public Value visitVarAtom(WorkflowV2Parser.VarAtomContext ctx) {
         String varName = ctx.getText();
-        Value value = varMemoryMap.get(varName);
+        Value value = getParamValue(varName);
         if(value == null) {
             return Value.VOID;
         }
@@ -668,6 +683,8 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
         Value value = this.visit(ctx.expr());
         workflowContext.getLogStringBuilder().append(value.asString()+"\n");
         LOGGER.log(Level.INFO, workflowContext.getId()+" - "+value.asString());
+        
+        System.out.println(workflowContext.getId()+" - "+value.asString());
         return value;
     }
     
@@ -711,25 +728,25 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 			List iterateList = new ArrayList((Collection)exprValue.asObject());
 			
 			for(int i=0 ; i<iterateList.size() ;i++) {
-				varMemoryMap.put(loopVariableIndexName, new Value(i));
-				varMemoryMap.put(loopVariableValueName, new Value(iterateList.get(i)));
+				putParamValue(loopVariableIndexName, new Value(i));
+				putParamValue(loopVariableValueName, new Value(iterateList.get(i)));
 				
 				this.visit(ctx.statement_block());
 			}
-			varMemoryMap.remove(loopVariableIndexName);
-			varMemoryMap.remove(loopVariableValueName);
+			removeParamValue(loopVariableIndexName);
+			removeParamValue(loopVariableValueName);
 			
 		}
 		else if(exprValue.asObject() instanceof Map) {
 			Map iterateMap = (Map) exprValue.asObject();
 			for(Object key :iterateMap.keySet() ) {
-				varMemoryMap.put(loopVariableIndexName, new Value(key));						// index acts as key for Map Iteration 
-				varMemoryMap.put(loopVariableValueName, new Value(iterateMap.get(key)));
+				putParamValue(loopVariableIndexName, new Value(key));						// index acts as key for Map Iteration
+				putParamValue(loopVariableValueName, new Value(iterateMap.get(key)));
 				
 				this.visit(ctx.statement_block());
 			}
-			varMemoryMap.remove(loopVariableIndexName);
-			varMemoryMap.remove(loopVariableValueName);
+			removeParamValue(loopVariableIndexName);
+			removeParamValue(loopVariableValueName);
 		}
     	
     	return Value.VOID; 

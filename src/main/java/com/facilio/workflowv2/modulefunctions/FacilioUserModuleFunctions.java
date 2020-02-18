@@ -26,7 +26,7 @@ public class FacilioUserModuleFunctions extends FacilioModuleFunctionImpl {
 
 	
 	@Override
-	public void add(List<Object> objects) throws Exception {
+	public void add(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		Object insertObject = objects.get(1);
 		

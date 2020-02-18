@@ -115,13 +115,4 @@ public class DBParamContext {
 				+ ", sortByFieldName=" + sortByFieldName + ", sortOrder=" + sortOrder + ", criteria=" + criteria
 				+ ", seqOrder=" + seqOrder + "]";
 	}
-	
-	Map<String, List<Map<String, Object>>> cache;
-
-	public Map<String, List<Map<String, Object>>> getCache() {
-		return cache;
-	}
-	public void setCache(Map<String, List<Map<String, Object>>> cache) {
-		this.cache = cache;
-	}
 }

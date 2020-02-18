@@ -922,8 +922,13 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			String subject = (String) obj.get("subject");
 			event.setEventMessage(subject);
 		}
-		DateRange range = getRange(reading);
-		event.setDescription(getMessage(range, reading));
+		try {
+			DateRange range = getRange(reading);
+			event.setDescription(getMessage(range, reading));
+		}
+		catch(Exception e) {
+			LOGGER.error("Problem while constructing description");		
+		}
 		event.setResource((ResourceContext) reading.getParent());
 		event.setSiteId(((ResourceContext) reading.getParent()).getSiteId());
 		event.setCreatedTime(reading.getTtime());

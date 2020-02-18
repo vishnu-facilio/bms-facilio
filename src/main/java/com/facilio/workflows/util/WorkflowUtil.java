@@ -102,6 +102,7 @@ import com.facilio.workflows.functions.FacilioWorkOrderFunctions;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.functions.MLFunctions;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
+import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.udojava.evalex.Expression;
@@ -360,9 +361,8 @@ public class WorkflowUtil {
 			workflowContext.setParams(params);
 		}
 		
-		List<ParameterContext> globalParameterContexts = validateAndGetGlobalParameters(workflowContext,paramMap);
-		workflowContext.setGlobalParameters(globalParameterContexts);
-		
+		Map<String, Object> globalParameters = validateAndGetGlobalParameters(workflowContext,paramMap);
+		workflowContext.setGlobalParameters(globalParameters);
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		
@@ -1193,33 +1193,25 @@ public class WorkflowUtil {
 		
 	}
 	
-	public static List<ParameterContext> validateAndGetGlobalParameters(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
+	public static Map<String,Object> validateAndGetGlobalParameters(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
 		
-		List<ParameterContext> paramterContexts = getGlobalParamsList();
-		if(paramterContexts != null && !paramterContexts.isEmpty() && paramMap != null) {
+		
+		Map<String,Object> globalParams = new HashMap<>();
+		List<String> aprovedGlobalParams = WorkflowGlobalParamUtil.getApprovedGlobalParamNames();
+		if(aprovedGlobalParams != null && !aprovedGlobalParams.isEmpty() && paramMap != null) {
 			
-			for(ParameterContext parameterContext:paramterContexts) {
-				Object value = paramMap.get(parameterContext.getName());
+			for(String aprovedGlobalParam:aprovedGlobalParams) {
+				Object value = paramMap.get(aprovedGlobalParam);
 				
 				if(value != null) {
-					parameterContext.setValue(value);
+					globalParams.put(aprovedGlobalParam, value);
 					
-					workflowContext.addVariableResultMap(parameterContext.getName(), value);
+					workflowContext.addVariableResultMap(aprovedGlobalParam, value);
 				}
 			}
 		}
-		return paramterContexts;
+		return globalParams;
 		
-	}
-	
-	private static List<ParameterContext> getGlobalParamsList() {
-		
-		List<ParameterContext> paramterContexts = new ArrayList<>();
-		
-		paramterContexts.add(new ParameterContext("previousValue", null));
-		paramterContexts.add(new ParameterContext("previousValueReceivedTime", null));
-		
-		return paramterContexts;
 	}
 	
 	public static boolean checkType(ParameterContext parameterContext,Object value) throws Exception {
@@ -1921,7 +1913,9 @@ public class WorkflowUtil {
         }
 		return null;
 	}
-	public static Object evalSystemFunctions(WorkflowFunctionContext workflowFunctionContext,List<Object> objects) throws Exception {
+	
+	// for v2
+	public static Object evalSystemFunctions(Map<String, Object> globalParams, WorkflowFunctionContext workflowFunctionContext,List<Object> objects) throws Exception {
 		
 		FacilioWorkflowFunctionInterface defaultFunctions = getFacilioFunction(workflowFunctionContext.getNameSpace(),workflowFunctionContext.getFunctionName());
 		
@@ -1930,10 +1924,11 @@ public class WorkflowUtil {
 		for(int i=0;i<objects.size();i++) {
 			objs[i] = objects.get(i);
 		}
-		return defaultFunctions.execute(objs);
+		return defaultFunctions.execute(globalParams, objs);
 	}
 	
-	public static Object evalSystemFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {
+	// for v1
+	public static Object evalSystemFunctions(Map<String, Object> globalParams,WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {		
 		
 		FacilioWorkflowFunctionInterface defaultFunctions = getFacilioFunction(workflowFunctionContext.getNameSpace(),workflowFunctionContext.getFunctionName());
 		
@@ -1963,7 +1958,7 @@ public class WorkflowUtil {
 		else {
 			LOGGER.fine("function params---"+Arrays.toString(objects));
 		}
-		return defaultFunctions.execute(objects);
+		return defaultFunctions.execute(globalParams, objects);
 	}
 	
 	public static FacilioWorkflowFunctionInterface getFacilioFunction(String nameSpace,String functionName) {

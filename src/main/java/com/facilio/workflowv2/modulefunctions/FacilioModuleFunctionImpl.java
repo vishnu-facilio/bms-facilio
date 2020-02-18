@@ -50,6 +50,7 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.contexts.DBParamContext;
+import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
 
 public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 
@@ -57,7 +58,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	private static final String RESULT_STRING = "result";
 	
 	@Override
-	public Map<String, Object> addTemplateData(List<Object> objects) throws Exception {
+	public Map<String, Object> addTemplateData(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
@@ -108,7 +109,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		return moduleData.getData();
 	}
 	@Override
-	public void add(List<Object> objects) throws Exception {
+	public void add(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		// TODO Auto-generated method stub
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
@@ -169,7 +170,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 
 	@Override
-	public void update(List<Object> objects) throws Exception {
+	public void update(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -197,7 +198,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 
 	@Override
-	public void delete(List<Object> objects) throws Exception {
+	public void delete(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
@@ -219,9 +220,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		delete.delete();
 	}
-
+	
 	@Override
-	public Object fetch(List<Object> objects) throws Exception {
+	public Object fetch(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
@@ -235,37 +236,20 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			dbParamContext.setCriteria((Criteria)objects.get(1));
 		}
 		
-		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = null;
+		Map<String, List<Map<String, Object>>> cache = (Map<String, List<Map<String, Object>>>) globalParams.get(WorkflowGlobalParamUtil.DATA_CACHE);
+		Map<String, ReadingDataMeta> cachedRDM = (Map<String, ReadingDataMeta>) globalParams.get(WorkflowGlobalParamUtil.RDM_CACHE);
 		
-		Map<String, List<Map<String, Object>>> cache = dbParamContext.getCache();
+		
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = null;
 		
 		Object result = null;
 		
-		if(cache != null) {
-			
-			String parentId = WorkflowUtil.getParentIdFromCriteria(dbParamContext.getCriteria());
-			
-			List<Map<String, Object>> cachedDatas = cache.get(WorkflowUtil.getCacheKey(module.getName(), parentId));
-
-			if (cachedDatas != null && !cachedDatas.isEmpty()) {
-				List<Map<String, Object>> passedData = new ArrayList<>();
-				for(Map<String, Object> cachedData :cachedDatas) {
-					org.apache.commons.collections.Predicate Predicate = dbParamContext.getCriteria().computePredicate(cachedData);
-					if(Predicate.evaluate(cachedData)) {
-						passedData.add(cachedData);
-					}
-				}
-				
-				if (!passedData.isEmpty()) {
-					if(dbParamContext.getAggregateOpperator() != null) {
-						result =  dbParamContext.getAggregateOpperator().getAggregateResult(passedData, dbParamContext.getFieldName());
-					}
-					if(result != null) {
-						return result;
-					}
-				}
-			}
+		result = fetchDataFromCache(cache,module,dbParamContext);
+		
+		if(result != null) {
+			return result;
 		}
+		
 		List<Map<String, Object>> props = null;
 		if (!LookupSpecialTypeUtil.isSpecialType(module.getName())) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -339,10 +323,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 								}
 							}
 							ReadingDataMeta readingDataMeta = null;
-//							if(workflowContext.getCachedRDM() != null && !workflowContext.getCachedRDM().isEmpty()) {
-//								String key = ReadingsAPI.getRDMKey(Long.parseLong(parentIdString), modBean.getField(fieldName, moduleName));
-//								readingDataMeta = workflowContext.getCachedRDM().get(key);
-//							}
+							if(cachedRDM != null && !cachedRDM.isEmpty()) {
+								String key = ReadingsAPI.getRDMKey(Long.parseLong(parentIdString), modBean.getField(dbParamContext.getFieldName(), module.getName()));
+								readingDataMeta = cachedRDM.get(key);
+							}
 							if(readingDataMeta == null) {
 								readingDataMeta = ReadingsAPI.getReadingDataMeta(Double.valueOf(parentIdString).longValue(), select);
 							}
@@ -460,9 +444,41 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		LOGGER.fine("EXP -- "+toString()+" RESULT -- "+result);
 		return result;
 	}
+	
+	public Object fetchDataFromCache(Map<String, List<Map<String, Object>>> cache,FacilioModule module,DBParamContext dbParamContext) throws Exception {
+		
+		Object result = null;
+		
+		if(cache != null) {
+			
+			String parentId = WorkflowUtil.getParentIdFromCriteria(dbParamContext.getCriteria());
+			
+			List<Map<String, Object>> cachedDatas = cache.get(WorkflowUtil.getCacheKey(module.getName(), parentId));
+
+			if (cachedDatas != null && !cachedDatas.isEmpty()) {
+				List<Map<String, Object>> passedData = new ArrayList<>();
+				for(Map<String, Object> cachedData :cachedDatas) {
+					org.apache.commons.collections.Predicate Predicate = dbParamContext.getCriteria().computePredicate(cachedData);
+					if(Predicate.evaluate(cachedData)) {
+						passedData.add(cachedData);
+					}
+				}
+				
+				if (!passedData.isEmpty()) {
+					if(dbParamContext.getAggregateOpperator() != null) {
+						result =  dbParamContext.getAggregateOpperator().getAggregateResult(passedData, dbParamContext.getFieldName());
+					}
+					if(result != null) {
+						return result;
+					}
+				}
+			}
+		}
+		return result;
+	}
 
 	@Override
-	public String export(List<Object> objects) throws Exception {
+	public String export(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		// TODO Auto-generated method stub
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
@@ -483,13 +499,13 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 	}
 
 	@Override
-	public Map<String, Object> asMap(List<Object> objects) throws Exception {
+	public Map<String, Object> asMap(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		FacilioModule module = (FacilioModule) objects.get(0);
 		return FieldUtil.getAsProperties(module);
 	}
 
 	@Override
-	public Criteria getViewCriteria(List<Object> objects) throws Exception {
+	public Criteria getViewCriteria(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		

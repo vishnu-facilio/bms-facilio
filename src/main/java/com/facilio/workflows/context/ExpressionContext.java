@@ -247,7 +247,7 @@ public class ExpressionContext implements WorkflowExpression {
 		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = null;
 		if(isCustomFunctionResultEvaluator) {
-			return WorkflowUtil.evalSystemFunctions(defaultFunctionContext,variableToExpresionMap);
+			return WorkflowUtil.evalSystemFunctions(workflowContext.getGlobalParameters(),defaultFunctionContext,variableToExpresionMap);
 		}
 		if(getConstant() != null) {
 			return getConstant();
@@ -258,7 +258,7 @@ public class ExpressionContext implements WorkflowExpression {
 		if(getPrintStatement() != null) {
 			return printStatement(getPrintStatement(),variableToExpresionMap);
 		}
-		if(workflowContext != null && workflowContext.isGetDataFromCache() && workflowContext.getCachedData() != null) {
+		if(workflowContext.getCachedData() != null && !workflowContext.getCachedData().isEmpty()) {
 			
 			String parentId = WorkflowUtil.getParentIdFromCriteria(criteria);
 			
