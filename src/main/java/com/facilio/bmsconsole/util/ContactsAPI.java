@@ -106,11 +106,14 @@ public class ContactsAPI {
 			}
 			else {
 				User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), contact.getRequester().getUid());
-				if(!user.isUserVerified() || !user.isInviteAcceptStatus() ) {
-					AccountUtil.getUserBean().resendInvite(user.getOuid());
+				if(user != null) {
+					AccountUtil.getUserBean().enableUser(contact.getRequester().getOuid());
+					if(!user.isUserVerified() || !user.isInviteAcceptStatus() ) {
+						AccountUtil.getUserBean().resendInvite(user.getOuid());
+					}
 				}
 				else {
-					AccountUtil.getUserBean().enableUser(contact.getRequester().getOuid());
+					addUserAsRequester(contact);
 				}
 			}
 		}
