@@ -15,7 +15,7 @@ public enum FacilioDateRangeFunctions implements FacilioWorkflowFunctionInterfac
 	
 	GET_START_TIME(1,"getStartTime") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -35,7 +35,7 @@ public enum FacilioDateRangeFunctions implements FacilioWorkflowFunctionInterfac
 	
 	GET_END_TIME(2,"getEndTime") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -55,7 +55,7 @@ public enum FacilioDateRangeFunctions implements FacilioWorkflowFunctionInterfac
 	
 	CREATE(3,"create") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			

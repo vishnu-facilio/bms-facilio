@@ -14,7 +14,7 @@ public enum FacilioFieldFunctions implements FacilioWorkflowFunctionInterface {
 
 	GETID(1,"id") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -34,7 +34,7 @@ public enum FacilioFieldFunctions implements FacilioWorkflowFunctionInterface {
 	},
 	AS_MAP(2,"asMap") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			

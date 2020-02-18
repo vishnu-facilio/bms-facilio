@@ -13,7 +13,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 
 	CREATE_LIST(1,"create") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			checkParam();
 			
 			List<Object> list = new ArrayList<>();
@@ -26,7 +26,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	},
 	ADD(2,"add") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -46,7 +46,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	},
 	REMOVE(3,"remove") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			 
 			checkParam(objects);
 			
@@ -66,7 +66,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	},
 	REMOVE_ELEMENT(4,"removeElement") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
@@ -85,7 +85,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	},
 	CLEAR(5,"clear") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
@@ -102,7 +102,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	},
 	SORT(6,"sort") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
@@ -137,7 +137,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	},
 	ADD_ALL(7,"addAll") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -156,7 +156,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	},
 	REMOVE_ALL(8,"removeAll") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
@@ -174,7 +174,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	},
 	SIZE_OF(9,"size") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
@@ -192,7 +192,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	// for workflow 2.0
 	PUSH(10,"push") {										
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -212,7 +212,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	},
 	SPLICE(11,"splice") {										
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -235,7 +235,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET(12,"get") {										
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -253,7 +253,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	},
 	CONTAINS(13,"contains") {										
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			

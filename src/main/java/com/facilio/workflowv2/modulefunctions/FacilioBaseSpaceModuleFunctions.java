@@ -2,6 +2,7 @@ package com.facilio.workflowv2.modulefunctions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -11,7 +12,7 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 
 public class FacilioBaseSpaceModuleFunctions extends FacilioModuleFunctionImpl {
 
-	public List<Long> getSubordinates(List<Object> objects) throws Exception {
+	public List<Long> getSubordinates(Map<String,Object> globalParams,List<Object> objects) throws Exception {
 		
 		List<Long> spaceIds;
 		if(!(objects.get(1) instanceof List)) {

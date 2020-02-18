@@ -11,7 +11,7 @@ public enum FacilioPsychrometricsFunction implements FacilioWorkflowFunctionInte
 	
 	GET_MOIST_AIR_ENTHALPY(1,"getMoistAirEnthalpy") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			if(objects == null || objects.length <2 || objects[0] == null || objects[1] == null || objects[2] == null) {
@@ -33,7 +33,7 @@ public enum FacilioPsychrometricsFunction implements FacilioWorkflowFunctionInte
 	
 	GET_DEW_POINT_TEMPERATURE(2,"getDewPointTemperature") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			if(objects == null || objects.length <2 || objects[0] == null || objects[1] == null || objects[2] == null) {
@@ -55,7 +55,7 @@ public enum FacilioPsychrometricsFunction implements FacilioWorkflowFunctionInte
 	
 	GET_WET_BULB_TEMPERATURE(3,"getWetBulbTemperature") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			if(objects == null || objects.length <2 || objects[0] == null || objects[1] == null || objects[2] == null) {

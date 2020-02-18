@@ -15,7 +15,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 	
 	CREATE(1,"create") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -29,7 +29,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 	},
 	PUT(2,"put") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -53,7 +53,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 	},
 	PUT_ALL(3,"putAll") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -74,7 +74,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 	},
 	REMOVE(4,"remove") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -95,7 +95,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 	},
 	REMOVE_ALL(5,"removeAll") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -118,7 +118,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 	},
 	CLEAR(6,"clear") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			Map<String,Object> map = (Map<String, Object>) objects[0];
 			map = new HashMap<>();
@@ -133,7 +133,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET(7,"get") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			Map<String,Object> map = (Map<String, Object>) objects[0];
@@ -152,7 +152,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 	},
 	SIZE_OF(8,"size") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			Map<String,Object> map = (Map<String, Object>) objects[0];
@@ -168,7 +168,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 	PARSE(9, "parse") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			if(objects[0] instanceof Map) {

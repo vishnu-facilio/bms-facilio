@@ -26,7 +26,7 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 	 */
 	ROLE_EMAILS (1, "getRoleEmails", 2) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			LOGGER.info("Role Mail params : "+Arrays.toString(objects));
@@ -56,7 +56,7 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 	 */
 	ROLE_PHONE (2, "getRolePhone", 2) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			if ( !ROLE_PHONE.checkParams(objects) ) {
@@ -88,7 +88,7 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 	 */
 	ROLE_OUID (3, "getRoleOuids", 2) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if ( !ROLE_OUID.checkParams(objects) ) {
 				return "";
@@ -106,7 +106,7 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 	},
 	GET_AS_PROP_MAP(4, "getAsMap", 1) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			return FieldUtil.getAsProperties(objects[0]);
 		}
 	}
@@ -140,7 +140,7 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 	}
 
 	@Override
-	public abstract Object execute(Object... objects) throws Exception;
+	public abstract Object execute(Map<String, Object> globalParam, Object... objects) throws Exception;
 	
 	public static Map<String, FacilioSystemFunctions> getAllFunctions() {
 		return SYSTEM_FUNCTIONS;

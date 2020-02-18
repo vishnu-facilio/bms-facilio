@@ -18,7 +18,7 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 
 	GET(1,"get") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -49,7 +49,7 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 	},
 	POST(2,"post") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			

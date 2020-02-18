@@ -41,7 +41,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 
 	ENERGY_READINGS(1,"getEnergyReading") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			Long baseSpaceId = Long.parseLong(objects[0].toString());
 			int dateOperator = Integer.parseInt(objects[1].toString());
@@ -126,7 +126,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 	
 	GET_LAST_VALUE(2,"getLastValue") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			Criteria criteria = new Criteria();
@@ -162,7 +162,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 	
 	GET(3,"get") {															//change name
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 			Criteria criteria = (Criteria)objects[1];
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -203,7 +203,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 	
 	GET_ENUM_MAP(4,"getEnumMap") {															//change name
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
@@ -240,7 +240,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 	
 	GET_RDM(5,"getRDM") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

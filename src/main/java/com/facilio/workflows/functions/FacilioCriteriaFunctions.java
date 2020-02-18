@@ -16,7 +16,7 @@ public enum FacilioCriteriaFunctions implements FacilioWorkflowFunctionInterface
 	
 	GET_CRITERIA(1,"get") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			Criteria criteria = null;
 			if(objects[0] instanceof JSONObject) {
@@ -39,7 +39,7 @@ public enum FacilioCriteriaFunctions implements FacilioWorkflowFunctionInterface
 	},
 	EVALUATE(2,"evaluate") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			Criteria criteria = (Criteria)objects[0];
 			
@@ -60,7 +60,7 @@ public enum FacilioCriteriaFunctions implements FacilioWorkflowFunctionInterface
 	},
 	AND(3,"and") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			Criteria criteria = (Criteria)objects[0];
 			
@@ -78,7 +78,7 @@ public enum FacilioCriteriaFunctions implements FacilioWorkflowFunctionInterface
 	},
 	OR(4,"or") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			Criteria criteria = (Criteria)objects[0];
 			

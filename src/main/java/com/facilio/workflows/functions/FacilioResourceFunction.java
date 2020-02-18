@@ -22,7 +22,7 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 
 	GETRESOURCENAME(1,"getResourceName",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"resourceId"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.BOOLEAN.getValue(),"isWithSpaceName") ) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -61,7 +61,7 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 	},
 	GET_VISITOR_LOG(2,"getVisitorLog") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			VisitorLoggingContext vLog = VisitorManagementAPI.getVisitorLoggingTriggers(Long.valueOf(objects[0].toString()), null, false);
 			return vLog;
@@ -76,7 +76,7 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 	},
 	GET_VISITOR_INVITE_REL(3,"getVisitorInviteRel") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			InviteVisitorRelContext rel = VisitorManagementAPI.getInviteVisitorRel(Long.valueOf(objects[0].toString()));
 			return rel;
@@ -91,7 +91,7 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 	},
 	GET_VENDOR(4,"getVendor") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			VendorContext vendor = InventoryApi.getVendor(Long.valueOf(objects[0].toString()));
 			return vendor;
@@ -106,7 +106,7 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 	},
 	GET_BASESPACE(5,"getBaseSpace") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			BaseSpaceContext baseSpaceContext = SpaceAPI.getBaseSpace(Long.valueOf(objects[0].toString()));
 			return baseSpaceContext;

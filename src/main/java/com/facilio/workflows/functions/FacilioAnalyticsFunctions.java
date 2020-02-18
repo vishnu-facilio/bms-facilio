@@ -14,7 +14,7 @@ public enum FacilioAnalyticsFunctions implements FacilioWorkflowFunctionInterfac
 	
 	GET_CRITERIA(1,"getData") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			HashMap<String,Object> dataObjectMap = (HashMap<String,Object>)objects[0];
 			

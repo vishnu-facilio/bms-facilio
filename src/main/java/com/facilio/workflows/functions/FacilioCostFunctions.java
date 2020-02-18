@@ -11,7 +11,7 @@ public enum FacilioCostFunctions implements FacilioWorkflowFunctionInterface {
 
 	GET_COST_FROM_KWH(1,"getCostFromKwh") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			

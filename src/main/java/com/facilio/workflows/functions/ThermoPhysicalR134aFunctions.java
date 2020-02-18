@@ -12,7 +12,7 @@ public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInter
 
 	GET_TEMP_FROM_PRESSURE(1,"getTempratureFromPresure") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			if(objects[0] == null) {

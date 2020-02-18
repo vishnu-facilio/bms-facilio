@@ -67,7 +67,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 
 	ALL_MATCH(1,"allMatch",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.LIST.getValue(),"list") ) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -92,7 +92,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_MAIN_ENERGY_METER(2,"getMainEnergyMeter",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"spaceId")) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -123,7 +123,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	STRING_EQUALS(3,"stringEquals",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"string1"), WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"string2")) {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects.length < 2) {
 				return false;
@@ -135,7 +135,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	STRING_CONTAINS(4,"stringContains",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"string1"), WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"string2")) {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects.length < 2) {
 				return false;
@@ -146,7 +146,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	CONVERT_UNIT(5,"convertUnit",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.DECIMAL.getValue(),"value"), WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"fromUnit"), WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"toUnit")) {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects.length < 3) {
 				return null;
@@ -175,7 +175,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_FILE_PRIVATE_URL(6,"getFilePrivateUrl",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.DECIMAL.getValue(),"fileId")) {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			FileStore fs = FacilioFactory.getFileStore();
 			
@@ -190,7 +190,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	
 	FETCH_DATA(6,"fetchData") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects.length < 2) {
 				return false;
@@ -226,7 +226,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	
 	GET_UNIT(6,"getUnit") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects.length < 1) {
 				return false;
@@ -259,7 +259,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	
 	SUM_DATA(7,"sumData") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects == null || objects.length < 2) {
 				return false;
@@ -349,7 +349,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	PICKLIST(8, "picklist") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects == null || objects.length < 1) {
 				return null;
@@ -386,7 +386,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_PERMALINK_URL(9, "getPermaLinkUrl") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects == null || objects.length < 1) {
 				return null;
@@ -403,7 +403,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_MAINTENANCE_PERMALINK_URL(10, "getMaintenancePermaLinkUrl") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects == null || objects.length < 1) {
 				return null;
@@ -437,7 +437,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_CURRENT_USER_NAME(11, "getUserName") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			User user = AccountUtil.getCurrentUser();
 			return user.getName();
@@ -447,7 +447,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_CURRENT_USER_EMAIL(13, "getUserEmail") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			User user = AccountUtil.getCurrentUser();
 			return user.getEmail();
@@ -457,7 +457,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_RECORD(14, "getRecord") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(objects[0].toString());
@@ -488,7 +488,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	MERGE_JSON(14, "mergeJson") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			Map json1 = (Map) objects[0];
 			Map json2 = (Map) objects[1];
@@ -516,7 +516,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	EXPORT_URL(15, "exportURL") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			String url = (String) objects[0];
 			String fileName = PdfUtil.exportUrlAsPdf(url.toString(), true, null, FileFormat.PDF);
@@ -527,7 +527,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_ORG_FILE_URL(16, "getOrgFileUrl") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			FileStore fs = FacilioFactory.getFileStore();
@@ -539,7 +539,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_ORG_DOWNLOAD_URL(17, "getOrgDownloadUrl") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			FileStore fs = FacilioFactory.getFileStore();
@@ -551,7 +551,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_IMAGE_BASE_64_STRING(17, "encodeFileToBase64Binary") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			FileStore fs = FacilioFactory.getFileStore();
@@ -567,7 +567,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_TINY_URL(18, "getTinyUrl") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			String longUrl = objects[0].toString();
@@ -580,7 +580,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_TRANSITION_PERMALINK_URL(19, "getTransitionPermaLink") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			if (objects == null || objects.length < 1) {
 				return null;
@@ -618,7 +618,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_TIME_INTERVALS(20, "getTimeIntervals") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			long startTime = (long) Double.parseDouble(objects[0].toString());
@@ -632,7 +632,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_PERMA_LINK_TOKEN(21, "getPermaLinkToken") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			FacilioChain chain = FacilioChainFactory.getPermaLinkTokenChain();
@@ -659,7 +659,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_ORG_INFO (22, "getOrgInfo") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			String[] names = objects[0].toString().split(",");
 			return CommonCommandUtil.getOrgInfo(names);
@@ -669,7 +669,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_PUBLIC_FILE_URL_FOR_FILEID (23, "getPublicFileUrl") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			if(objects[0] != null) {
 //				FileStore fs = FacilioFactory.getFileStore();
 //		    	FileInfo fileInfo = fs.getFileInfo((long)objects[0]);
@@ -686,7 +686,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	GET_FROM_OBJECT(10, "getFromObject") {
 		
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			if(objects[0] != null) {
 				Map<String, Object> map = FieldUtil.getAsProperties(objects[0]);
 				return map.get(objects[1]);
@@ -698,7 +698,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
    GET_LANG_LONG_FOR_SITE(11, "getLatLngForSite") {
 		
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			if(objects[0] != null) {
 				ResourceContext resource = ResourceAPI.getResource((long)objects[0]);
 				if(resource != null) {

@@ -17,7 +17,7 @@ public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface 
 
 	PARAM(1,"param") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -39,7 +39,7 @@ public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface 
 	},
 	CONFIRM(2,"confirm") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -57,7 +57,7 @@ public enum FacilioChatBotFunctions implements FacilioWorkflowFunctionInterface 
 	},
 	EXECUTE(3,"execute") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 //			checkParam(objects);
 			

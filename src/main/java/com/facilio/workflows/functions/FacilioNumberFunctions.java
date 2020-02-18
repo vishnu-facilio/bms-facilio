@@ -10,7 +10,7 @@ public enum FacilioNumberFunctions implements FacilioWorkflowFunctionInterface  
 
 	INT_VALUE(1,"intValue") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			if(objects[0] instanceof Integer) {
 	    		return (Integer)objects[0];
@@ -27,7 +27,7 @@ public enum FacilioNumberFunctions implements FacilioWorkflowFunctionInterface  
 	},
 	LONG_VALUE(1,"longValue") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			if(objects[0] instanceof Long) {
 	    		return (Long)objects[0];

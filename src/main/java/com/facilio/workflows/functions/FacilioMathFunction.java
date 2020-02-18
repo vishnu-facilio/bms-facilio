@@ -10,7 +10,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 
 	ABS(1,"abs") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			double value = (double) objects[0];
 			return Math.abs(value);
@@ -25,7 +25,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 	
 	CEIL(2,"ceil") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			double value = (double) objects[0];
 			return Math.ceil(value);
@@ -40,7 +40,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 	
 	FLOOR(3,"floor") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			double value = (double) objects[0];
 			return Math.floor(value);
@@ -54,7 +54,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 	},
 	POWER(4,"pow") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			double a = Double.parseDouble(objects[0].toString());
 			double b = Double.parseDouble(objects[1].toString());
@@ -69,7 +69,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 	},
 	CUBEROOT(5,"cbrt") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			double a = Double.parseDouble(objects[0].toString());
 			return Math.cbrt(a);
@@ -83,7 +83,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 	},
 	SQRT(6,"sqrt") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			double a = Double.parseDouble(objects[0].toString());
 			return Math.sqrt(a);

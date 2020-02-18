@@ -12,7 +12,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	STRING_EQUALS(1,"stringEquals") {	// depricate this method on new workflow
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			checkParam(objects);
 			return (objects[0] == null ? objects[1] == null : objects[0].toString().equals(objects[1].toString()));
@@ -26,7 +26,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	STRING_CONTAINS(2,"stringContains") {	// depricate this method on new workflow
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			checkParam(objects);
 			
@@ -41,7 +41,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	CHAR_AT(3,"charAt") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			checkParam(objects);
@@ -60,7 +60,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	LENGTH(4,"length") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			checkParam(objects);
@@ -78,7 +78,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	SUB_STRING(5,"subString") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			checkParam(objects);
@@ -101,7 +101,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	CONTAINS(6,"contains") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			
 			checkParam(objects);
@@ -120,7 +120,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	EQUALS(7,"equals") {	// depricate this method on new workflow
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			checkParam(objects);
 			return (objects[0] == null ? objects[1] == null : objects[0].toString().equals(objects[1].toString()));
@@ -134,7 +134,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	ADD_DOUBLE_QUOTES(8,"addDoubleQuotes") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			String string = objects[0].toString();
 			string = string + "\"";
@@ -149,7 +149,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	ENCLOSE_DOUBLE_QUOTES(9,"encloseDoubleQuotes") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			String string = objects[0].toString();
 			string = "\"" + string + "\"";
@@ -164,7 +164,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	INDEX_OF(10,"indexOf") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			String string = objects[0].toString();
 			String subString = objects[1].toString();
@@ -188,7 +188,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	TRIM(11,"trim") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			String string = objects[0].toString();
 			return string.trim();

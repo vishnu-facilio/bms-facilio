@@ -15,7 +15,7 @@ public enum FacilioEnergyMeterFunction implements FacilioWorkflowFunctionInterfa
 	
 	GET_PHYSICAL_METER_COUNT(1,"getPhysicalMeterCount",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"spaceId"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"purposeId")) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -43,7 +43,7 @@ public enum FacilioEnergyMeterFunction implements FacilioWorkflowFunctionInterfa
 	
 	GET_VIRTUAL_METER_COUNT(2,"getVirtualMeterCount",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"spaceId"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.NUMBER.getValue(),"purposeId")) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			

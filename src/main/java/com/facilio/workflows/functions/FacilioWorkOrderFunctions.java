@@ -16,7 +16,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	
 	GET_AVG_RESOLUTION_TIME(1,"getAvgResolutionTime") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> avgResolutionTimeByCategory = WorkOrderAPI.getTopNCategoryOnAvgCompletionTime(String.valueOf(objects[0].toString()),Long.valueOf(objects[1].toString()),Long.valueOf(objects[2].toString()));
 			
@@ -31,7 +31,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_WORK_ORDERS_ON_COMPLETION_TIME(2,"getWorkOrdersByCompletionTime") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> siteOnCompletion = WorkOrderAPI.getWorkOrderStatusPercentageForWorkflow(String.valueOf(objects[0]),Long.valueOf(objects[1].toString()),Long.valueOf(objects[2].toString()));
 			
@@ -46,7 +46,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_TOP_N_TECHNICIANS(3,"getTopNTechnicians") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> siteOnCompletion = WorkOrderAPI.getTopNTechnicians(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()));
 			
@@ -61,7 +61,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_TOP_N_BUILDING_PLANNED_TYPE_COUNT(4,"getTopNBuildingsWithPlannedTypeCount") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> plannedMapList = WorkOrderAPI.getTopNBuildingsWithPlannedTypeCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
 			
@@ -76,7 +76,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_TEAM_CLOSED_OPEN_COUNT(5,"getTopNTeamsWithOpenCloseCount") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> teamOpenCloseCountList = WorkOrderAPI.getTopNTeamWithOpenCloseCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
 		    return teamOpenCloseCountList;
@@ -90,7 +90,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_TOP_N_TECH_AVG_RESOLUTION_TIME(6,"getTopNTechWithAvgResolutionTime") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> techResolutionTimeList = WorkOrderAPI.getAvgCompletionTimeByTechnician(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
 		    return techResolutionTimeList;
@@ -104,7 +104,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_TOP_N_BUILDING_UNPLANNED_TYPE_COUNT(7,"getTopNBuildingsWithUnPlannedTypeCount") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> unPlannedMapList = WorkOrderAPI.getTopNBuildingsWithUnPlannedTypeCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
 			
@@ -119,7 +119,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_SITE_NAME(8,"getSiteName") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			String siteName = WorkOrderAPI.getSiteName(Long.valueOf(objects[0].toString()));
 			
@@ -134,7 +134,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_TECHNICIAN_CLOSED_OPEN_COUNT(9,"getTopNTechWithOpenCloseCount") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> techOpenCloseCountList = WorkOrderAPI.getTopNTechniciansWithOpenCloseCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
 		    return techOpenCloseCountList;
@@ -148,7 +148,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_TOP_N_BUILDING_PLANNED_UNPLANNED_CLOSED_VS_TOTAL_WO_COUNT(10,"getTopNBuildingsPlannedClosedTotalWoCount") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> closedVsTotalWoCountMap = WorkOrderAPI.getTopNBuildingsWithUnPlannedPlannedClosedCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
 			return closedVsTotalWoCountMap;
@@ -162,7 +162,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_TOP_N_BUILDING_RECURRING_WO_FOR_RESOURCE_COUNT(11,"getTopNBuildingsWithRecurringUnPlannedCountForResource") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> closedVsTotalWoCountMap = WorkOrderAPI.getTopNBuildingsWithRecurringUnPlannedCountForResource(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()));
 			return closedVsTotalWoCountMap;
@@ -176,7 +176,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_TOP_N_BUILDING_UNPLANNED_COUNT_CATEGORIES(12,"getTopNBuildingsWithUnPlannedCountForCategories") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> assetAndSpaceCount = WorkOrderAPI.getTopNBuildingsWithUnPlannedCountForCategories(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
 			return assetAndSpaceCount;
@@ -190,7 +190,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	},
 	GET_TOP_N_BUILDING_ONTIME_CLOSED_COUNT(13,"getTopNBuildingsWithRecurringUnPlannedCountForResource") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			List<Map<String,Object>> assetAndSpaceCount = WorkOrderAPI.getTopNBuildingsWithRecurringUnPlannedCountForResource(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()));
 			return assetAndSpaceCount;

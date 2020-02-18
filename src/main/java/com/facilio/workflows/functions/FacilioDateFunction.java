@@ -29,7 +29,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 	MINS_TO_HOUR(1,"minsToHour") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -50,7 +50,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	
 	SEC_TO_HOUR(2,"secToHour") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -71,7 +71,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	
 	HOUR_TO_DAY(3,"hourToDay") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -92,7 +92,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	
 	CURRENT_MONTH_DAYS(4,"getCurrentMonthDays") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -119,7 +119,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	LAST_MONTH_DAYS(5,"getLastMonthDays") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -134,7 +134,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	DAYS_BETWEEN(6,"getDaysBetween") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -157,7 +157,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	CURRENT_HOUR(7,"getCurrentHour") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -181,7 +181,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	CURRENT_DATE(8,"getCurrentDate") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -205,7 +205,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	CURRENT_DAY(9,"getCurrentDay") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -229,7 +229,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	CURRENT_MONTH(10,"getCurrentMonth") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -254,7 +254,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	
 	ADD_YEAR(11,"addYears") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -269,7 +269,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	ADD_MONTHS(12,"addMonths") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -284,7 +284,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	ADD_DAYS(13,"addDays") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -299,7 +299,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	ADD_HOURS(14,"addHours") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -314,7 +314,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	ADD_MINUTES(15,"addMinutes") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -329,7 +329,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	ADD_SECONDS(16,"addSeconds") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -344,7 +344,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	ADD_WEEKS(17,"addWeeks") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -359,7 +359,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_PREVIOUS_MONTH_START_DATE(18,"getPreviousMonthStartDate") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -373,7 +373,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_PREVIOUS_MONTH_END_DATE(19,"getPreviousMonthEndDate") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			 Long previousStart = DateTimeUtil.getMonthStartTime(-1,false);
@@ -385,7 +385,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	PREVIOUS_MONTH_NAME(20,"getPreviousMonthName") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -411,7 +411,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	PREVIOUS_LAST_MONTH_NAME(21,"getPreviousLastMonthName") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -437,7 +437,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	NOW(22, "now") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			if(objects == null || objects.length == 0) {
@@ -453,7 +453,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_DATE_RANGE(23, "getDateRange") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			String name = objects[0].toString();
 			DateOperators operator = null;
@@ -511,7 +511,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_TODAY_START_TIME(24, "getDayStartTime") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			
 			if(objects == null || objects.length == 0) {
@@ -528,7 +528,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_MONTH_RANGE(25, "getMonthRange") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			
 			if(objects == null || objects.length == 0) {
@@ -550,7 +550,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_DATE_RANGE_WITH_START_AND_END(26, "dateRange") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			String startTimeString = objects[0].toString();
 			String endTimeString = objects[1].toString();
@@ -567,7 +567,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_PREVIOUS_QUARTER_START_DATE(27,"getPreviousQuarterStartDate") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -581,7 +581,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_PREVIOUS_QUARTER_END_DATE(28,"getPreviousQuarterEndDate") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			 Long previousStart = DateTimeUtil.getMonthStartTime(-1,false);
@@ -593,7 +593,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	PREVIOUS_QUARTER_NAME(29,"getPreviousQuarterName") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			ZonedDateTime zdt = null;
@@ -615,7 +615,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	PREVIOUS_LAST_QUARTER_NAME(30,"getPreviousLastQuarterName") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			ZonedDateTime zdt = null;
@@ -637,7 +637,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_FROMATTED_TIME(31,"getFormattedTime") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -658,7 +658,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_DATE_OPERATOR(32,"getDateOperator") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			String name = objects[0].toString();
 			DateOperators operator = null;
@@ -678,7 +678,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_RFC_3339_FORMATED_DATE_STRING(33,"getRFC3339FormatedDateString") {		// need to change
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			long time = (long) Double.parseDouble(objects[0].toString());
 			
@@ -692,7 +692,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	},
 	GET_MILLISEC_FROM_RFC_3339_FORMATED_DATE_STRING(33,"getMilliSecondFromRFC3339FormatedDateString") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			String timeString = objects[0].toString();
 			
@@ -710,7 +710,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	
 	GET_MILLISEC_FROM_FORMATED_DATE_STRING(33,"getMilliSecondFromFormatedDateString") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			String timeString = objects[0].toString();
 			String formatString = objects[1].toString();

@@ -16,7 +16,7 @@ public enum MLFunctions implements FacilioWorkflowFunctionInterface {
 	CHECK_IF_VALID_PREDICTION (1, "isPredictionValid") {
 
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			checkParam(2, objects);
 			long mlForecastingId = FacilioUtil.parseLong(objects[0]);

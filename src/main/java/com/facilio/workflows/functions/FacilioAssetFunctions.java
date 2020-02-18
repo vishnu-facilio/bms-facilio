@@ -13,7 +13,7 @@ public enum FacilioAssetFunctions implements FacilioWorkflowFunctionInterface {
 
 	GET_ASSETS_FROM_SPACE_ID(1,"getAssetsFromSpaceId") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			if(objects.length > 1) {
 				

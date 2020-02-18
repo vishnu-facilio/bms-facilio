@@ -18,7 +18,7 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 
 	GETMODULE(1,"getModule",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"moduleRefObject") ) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -46,7 +46,7 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 	},
 	GETFIELD(2,"getField",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"fieldRefObject"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"moduleRefObject")) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -88,7 +88,7 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 	},
 	GETENUMFIELDVALUE(3,"getEnumFieldValue",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"fieldName"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"moduleName"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"enumIntValue")) {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			

@@ -22,7 +22,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 
 	SEND_EMAIL(1,"sendMail") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -44,7 +44,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 	},
 	SEND_SMS(2,"sendSms") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -65,7 +65,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 	},
 	SEND_MOBILE_NOTIFICATION(3,"sendNotification") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -89,7 +89,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 	
 	MAKE_CALL(4,"makeCall") {
 		@Override
-		public Object execute(Object... objects) throws Exception {
+		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
 			checkParam(objects);
 			
@@ -169,7 +169,7 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 		return typeMap;
 	}
 	@Override
-	public Object execute(Object... objects) throws Exception {
+	public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
