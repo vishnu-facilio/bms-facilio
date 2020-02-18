@@ -467,7 +467,7 @@ public class WorkflowUtil {
 		}
 	}
 	
-	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {
+	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {	// change this method
 
 		WorkflowContext workflow = new WorkflowContext();
 		
@@ -1412,8 +1412,8 @@ public class WorkflowUtil {
 				 Object key = conditionEntry.getKey();
 				 Element conditionElement = doc.createElement(CONDITION_STRING);
 				 conditionElement.setAttribute(SEQUENCE_STRING, key.toString());
-				 if (condition.getOperator() instanceof DateOperators && expressionContext.getConditionSeqVsBaselineId() != null &&  expressionContext.getConditionSeqVsBaselineId().containsKey(key)) {
-					 conditionElement.setTextContent(condition.getFieldName()+"`baseLine{" + expressionContext.getConditionSeqVsBaselineId().get(key) + "}"+condition.getOperator().getOperator()+"`"+condition.getValue());
+				 if (condition.getOperator() instanceof DateOperators && expressionContext.getConditionSeqVsBaselineId() != null &&  expressionContext.getConditionSeqVsBaselineId().containsKey(Integer.parseInt(key.toString()))) {
+					 conditionElement.setTextContent(condition.getFieldName()+"`baseLine{" + expressionContext.getConditionSeqVsBaselineId().get(Integer.parseInt(key.toString())) + "}"+condition.getOperator().getOperator()+"`"+condition.getValue());
 				 }
 				 else {
 					 conditionElement.setTextContent(condition.getFieldName()+"`"+condition.getOperator().getOperator()+"`"+condition.getValue());
