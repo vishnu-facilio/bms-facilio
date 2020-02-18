@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissin
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportLookupModuleValueNotFoundException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -256,7 +257,17 @@ public class ProcessImportCommand extends FacilioCommand {
 						if (moduleObj.isStateFlowEnabled()) {
 							props.put(FacilioConstants.ContextNames.STATE_FLOW_ID, StateFlowRulesAPI.getDefaultStateFlow(moduleObj).getId());
 						} else if (ImportAPI.isAssetBaseModule(importProcessContext)) {
-							props.put(FacilioConstants.ContextNames.STATE_FLOW_ID, StateFlowRulesAPI.getDefaultStateFlow(modBean.getModule(FacilioConstants.ContextNames.ASSET)).getId());
+							StateFlowRuleContext stateFlow = StateFlowRulesAPI.getDefaultStateFlow(modBean.getModule(FacilioConstants.ContextNames.ASSET));
+							if (stateFlow != null) {
+								props.put(FacilioConstants.ContextNames.STATE_FLOW_ID, stateFlow.getId());
+								if (ImportAPI.isInsertImport(importProcessContext)) {
+									if (!fieldMapping.containsKey("asset__moduleState")) {
+										lookupHolder = new HashMap<>();
+										lookupHolder.put("id", stateFlow.getDefaultStateId());
+										props.put("moduleState", lookupHolder);
+									}
+								}
+							}
 						} else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 							props.put(FacilioConstants.ContextNames.STATE_FLOW_ID, StateFlowRulesAPI.getDefaultStateFlow(moduleObj).getId());
 						}

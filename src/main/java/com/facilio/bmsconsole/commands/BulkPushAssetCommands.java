@@ -107,7 +107,6 @@ public static List<Long> populateData(ImportProcessContext importProcessContext,
 				
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = bean.getModule(moduleName);
-			bean.getAllFields(moduleName);
 			InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
 					.table(moduleTableName)
 					.moduleName(moduleName)

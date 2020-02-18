@@ -56,9 +56,6 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				if (!fieldMapping.containsKey("resource__name")) {
 					missingColumns.add("Asset Name");
 				}
-//				if (!fieldMapping.containsKey("asset__moduleState")) {
-//					missingColumns.add("Module State");
-//				}
 			} else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 				if (!fieldMapping.containsKey("ticket__subject")) {
 					missingColumns.add("Subject");
