@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.chain.FacilioChain;
@@ -34,7 +35,7 @@ public class AddOrUpdateSLABreachJobCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+        Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
         if (MapUtils.isNotEmpty(recordMap)) {
             for (String moduleName : recordMap.keySet()) {
                 List<ModuleBaseWithCustomFields> records = recordMap.get(moduleName);
