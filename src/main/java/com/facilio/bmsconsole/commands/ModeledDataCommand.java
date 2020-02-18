@@ -124,9 +124,6 @@ public class ModeledDataCommand extends AgentV2Command {
 					dataPoints = getValueContainsPointsData(deviceName, pointName, controllerId, dataPointsValue);
 					if (dataPoints == null) {      //if it is a (new point and old agent) add to Points Table
 						//if it is a (new point and new agent) do nothing
-						if(deviceName.equals("BECO 2") && pointName.equals("Cooling Capacity Enable|dac-8")) {
-							LOGGER.info("InsatanceName and deviceName is not in Points . InsatnceName is :"+pointName+"  deviceName is  : " + deviceName);
-						}
 						LOGGER.info(" point is missing -> " + pointName);
 						Map<String, Object> value = new HashMap<String, Object>();
 						value.put("orgId", orgId);
@@ -143,13 +140,6 @@ public class ModeledDataCommand extends AgentV2Command {
 						Long resourceId = (Long) dataPoints.get("resourceId");
 						Long fieldId = (Long) dataPoints.get("fieldId");
 						if (fieldId != null && resourceId != null) {
-							if(AccountUtil.getCurrentOrg().getId() == 297) {
-								LOGGER.info("Testing BECO 2 controller");	
-							}
-							
-							if(deviceName.equals("BECO 2") && pointName.equals("Cooling Capacity Enable|dac-8")) {
-								LOGGER.info("InsatanceName and deviceName is in Points and commissioned");
-							}
 							ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 							FacilioField field = bean.getField(fieldId);
 							FieldType type = field.getDataTypeEnum();
