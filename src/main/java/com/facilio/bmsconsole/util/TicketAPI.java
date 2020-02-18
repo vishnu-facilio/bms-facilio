@@ -1595,6 +1595,10 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 
 		List<Long> resourceIds = tickets.stream().filter(i -> i.getResource() != null && i.getResource().getId() != -1).map(i -> i.getResource().getId()).collect(Collectors.toList());
 
+		if (resourceIds != null && CollectionUtils.isEmpty(resourceIds)) {
+			return;
+		}
+
 		List<ResourceContext> resources = ResourceAPI.getResources(resourceIds, false);
 
 		List<Long> assetIds = resources.stream().filter(i -> i.getResourceTypeEnum() == ResourceType.ASSET).map(i -> i.getId()).collect(Collectors.toList());

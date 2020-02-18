@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
@@ -7,6 +8,8 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportMandatoryFieldsE
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import org.apache.commons.chain.Context;
@@ -39,51 +42,41 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		Workbook workbook = WorkbookFactory.create(is);
 
 		int row_no = 0;
-
-		Long siteId = importProcessContext.getSiteId();
 		ArrayList<String> missingColumns = new ArrayList<String>();
-		if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) ||
-				(importProcessContext.getModule().getExtendModule()!= null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-			if(ImportAPI.isInsertImport(importProcessContext) && (!fieldMapping.containsKey("resource__name") || (siteId == null))) {
-				if(!fieldMapping.containsKey("resource__name") && (siteId == null) ) {
-					missingColumns.add("Asset Name");
-					missingColumns.add("Site");
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String moduleName = importProcessContext.getModule().getName();
+		FacilioModule module = modBean.getModule(importProcessContext.getModule().getName());
+		if (ImportAPI.isInsertImport(importProcessContext)) {
+			if (module.isStateFlowEnabled() && !ImportAPI.isAssetBaseModule(importProcessContext) && !importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+				if (!fieldMapping.containsKey(moduleName + "__moduleState")) {
+					missingColumns.add("Module State");
 				}
-				else if(siteId == null) {
-					missingColumns.add("Site");
-				}
-				else {
-					missingColumns.add("Asset Name");
-				}
-				throw new ImportMandatoryFieldsException(null, missingColumns, new Exception());
 			}
-		} else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-			if(!fieldMapping.containsKey("ticket__subject") || !fieldMapping.containsKey("workorder__site")) {
-				if(!fieldMapping.containsKey("ticket__subject") && !fieldMapping.containsKey("workorder__site")) {
-					missingColumns.add("Subject");
-					missingColumns.add("Site");
+			if (ImportAPI.isAssetBaseModule(importProcessContext)) {
+				if (!fieldMapping.containsKey("resource__name")) {
+					missingColumns.add("Asset Name");
 				}
-				else if(!fieldMapping.containsKey("workorder__site")) {
-					missingColumns.add("Site");
-				}
-				else {
+//				if (!fieldMapping.containsKey("asset__moduleState")) {
+//					missingColumns.add("Module State");
+//				}
+			} else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+				if (!fieldMapping.containsKey("ticket__subject")) {
 					missingColumns.add("Subject");
 				}
+				if (!fieldMapping.containsKey("ticket__moduleState")) {
+					missingColumns.add("Module State");
+				}
+			} else if (requiredFields.size() != 0) {
+
+				for (String field : requiredFields) {
+					if (!fieldMapping.containsKey(importProcessContext.getModule().getName() + "__" + field)) {
+						missingColumns.add(field);
+					}
+				}
+			}
+			if (missingColumns.size() > 0) {
 				throw new ImportMandatoryFieldsException(null, missingColumns, new Exception());
 			}
-		}
-		
-		else if(requiredFields.size() != 0) {
-			ArrayList<String> columns = new ArrayList<String>();
-			
-			for(String field: requiredFields) {
-				if(!fieldMapping.containsKey(importProcessContext.getModule().getName() + "__" + field)) {
-					columns.add(field);
-			}
-			}
-				if(columns.size() != 0) {
-					throw new ImportMandatoryFieldsException(null, columns, new Exception());
-				}
 		}
 			
 		
@@ -175,13 +168,9 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				}
 				else if (ImportAPI.isInsertImport(importProcessContext) && importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 					String name = fieldMapping.get("ticket__subject");
-					String site = fieldMapping.get("workorder__site");
 					ArrayList<String> columns = new ArrayList<>();
 					if (!colVal.containsKey(name) || (colVal.get(name) == null)) {
 						columns.add("Subject");
-					}
-					if (!colVal.containsKey(name) || colVal.get(site) == null) {
-						columns.add("Site");
 					}
 					if (CollectionUtils.isNotEmpty(columns)) {
 						throw new ImportMandatoryFieldsException(row_no, columns, new Exception());

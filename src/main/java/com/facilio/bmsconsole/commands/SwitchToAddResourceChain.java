@@ -99,7 +99,8 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			
 			context.put(ImportAPI.ImportProcessConstants.READINGS_CONTEXT_LIST, readingsContext);
-			
+			Long siteId = importProcessContext.getSiteId();
+			context.put(FacilioConstants.ContextNames.SITE, siteId);
 			FacilioChain c = TransactionChainFactory.getBulkWorkOrderImportChain();
 			c.execute(context);
 

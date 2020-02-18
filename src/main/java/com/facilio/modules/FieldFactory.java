@@ -1202,6 +1202,7 @@ public class FieldFactory {
 		fieldMappingFields.add(FieldFactory.getField("space1", "Space 1", "SPACE_1", module,FieldType.STRING));
 		fieldMappingFields.add(FieldFactory.getField("space2", "Space 2", "SPACE_2", module,FieldType.STRING));
 		fieldMappingFields.add(FieldFactory.getField("space3", "Space 3", "SPACE_3", module,FieldType.STRING));
+		fieldMappingFields.add(FieldFactory.getField("asset", "Asset", "ASSET", module,FieldType.STRING));
 		return fieldMappingFields;
 	}
 

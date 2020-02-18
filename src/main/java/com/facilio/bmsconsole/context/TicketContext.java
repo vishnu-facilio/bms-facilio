@@ -446,7 +446,8 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		SERVICE_PORTAL_REQUEST(10, "Service Portal Request"),
 		WORKFLOW_RULE(11, "Workflow Rule"),
 		ML_ALARM(12, "Prediction Alarm"),
-		TASK_DEVIATION(13, "Task Deviation")
+		TASK_DEVIATION(13, "Task Deviation"),
+		IMPORT(14, "Import")
 		;
 		
 		private int intVal;

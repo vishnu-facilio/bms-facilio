@@ -6,17 +6,16 @@ import com.facilio.bmsconsole.actions.*;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.*;
@@ -654,6 +653,24 @@ public class ImportAPI {
 							fields.add(field.getName());
 						}
 					}					
+				} else if (facilioModule.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+					for(FacilioField field : fieldsList)
+					{
+						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
+						{
+							fields.add(field.getName());
+						}
+					}
+
+					fields.remove("resource");
+					fields.remove("site");
+					fields.add("building");
+					fields.add("floor");
+					fields.add("spaceName");
+					fields.add("space1");
+					fields.add("space2");
+					fields.add("space3");
+					fields.add("asset");
 				}
 				else {
 					for(FacilioField field : fieldsList)
@@ -758,6 +775,17 @@ public class ImportAPI {
 		return true;
 	}
 
+	public static boolean canUpdateResource(ImportProcessContext importProcessContext) throws Exception {
+		JSONObject fieldMapping = importProcessContext.getFieldMappingJSON();
+		String module = importProcessContext.getModule().getName();
+		if (fieldMapping != null) {
+			if (fieldMapping.containsKey(module + "__floor") || fieldMapping.containsKey(module + "__building") || fieldMapping.containsKey(module + "__spaceName") || fieldMapping.containsKey(module + "__space") || fieldMapping.containsKey(module + "__space1") || fieldMapping.containsKey(module + "__space2") || fieldMapping.containsKey(module + "__space3") || fieldMapping.containsKey(module + "__asset")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static  boolean isInsertImport(ImportProcessContext importProcessContext) {
 		if (importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.INSERT.getValue() || importProcessContext.getImportSetting().intValue() == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
 			return true;
@@ -771,6 +799,25 @@ public class ImportAPI {
 		} else {
 			return false;
 		}
+	}
+
+	public static AssetContext getAssetFromName(String assetName, Long siteId) throws Exception {
+
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule assetModule = bean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> assetFields = bean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		SelectRecordsBuilder<AssetContext> resourceBuilder = new SelectRecordsBuilder<AssetContext>()
+				.select(assetFields)
+				.module(bean.getModule(FacilioConstants.ContextNames.ASSET))
+				.table(assetModule.getTableName())
+				.beanClass(AssetContext.class)
+				.andCondition(CriteriaAPI.getCondition("NAME", "name", assetName.replaceAll(",", StringOperators.DELIMITED_COMMA), StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(assetModule), String.valueOf(siteId), PickListOperators.IS));
+		List<AssetContext> props = resourceBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			return props.get(0);
+		}
+		return null;
 	}
 	
 	
@@ -821,6 +868,7 @@ public class ImportAPI {
 		public static final String JOB_ID = "jobId";
 		public static final String MODULE_META = "moduleMeta";
 		public static final String CHOOSEN_MODULE = "choosenModule";
+		public static final String IS_FROM_IMPORT = "isFromImport";
 		
 	}
 	

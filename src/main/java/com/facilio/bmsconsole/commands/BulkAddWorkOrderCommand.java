@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.util.ImportAPI;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -58,31 +59,34 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
         for (int i = 0; i < workOrders.size(); i++) {
             WorkOrderContext workOrder = workOrders.get(i);
             TicketAPI.validateSiteSpecificData(workOrder);
+            boolean isFromImport = (boolean) context.get(ImportAPI.ImportProcessConstants.IS_FROM_IMPORT);
             workOrder.setCreatedBy(AccountUtil.getCurrentUser());
-            if (workOrder.getScheduledStart() > 0) {
-                if (workOrder.getWoCreationOffset() > -1) {
-                    workOrder.setCreatedTime(workOrder.getScheduledStart() - (workOrder.getWoCreationOffset() * 1000L));
-                } else {
-                    workOrder.setCreatedTime(workOrder.getScheduledStart());
-                    workOrder.setScheduledStart(workOrder.getCreatedTime());
-                }
-            } else {
-                workOrder.setCreatedTime(workOrder.getCurrentTime());
-                workOrder.setScheduledStart(workOrder.getCreatedTime());
-            }
-            workOrder.setModifiedTime(workOrder.getCreatedTime());
-            workOrder.setEstimatedStart(workOrder.getScheduledStart());
             workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED);
-
             if (workOrder.getPriority() == null || workOrder.getPriority().getId() == -1) {
                 workOrder.setPriority(lowPriority);
             }
+            if (!isFromImport) {
+                if (workOrder.getScheduledStart() > 0) {
+                    if (workOrder.getWoCreationOffset() > -1) {
+                        workOrder.setCreatedTime(workOrder.getScheduledStart() - (workOrder.getWoCreationOffset() * 1000L));
+                    } else {
+                        workOrder.setCreatedTime(workOrder.getScheduledStart());
+                        workOrder.setScheduledStart(workOrder.getCreatedTime());
+                    }
+                } else {
+                    workOrder.setCreatedTime(workOrder.getCurrentTime());
+                    workOrder.setScheduledStart(workOrder.getCreatedTime());
+                }
+                workOrder.setModifiedTime(workOrder.getCreatedTime());
+                workOrder.setEstimatedStart(workOrder.getScheduledStart());
 
-            if(workOrder.getDuration() != -1 && workOrder.getDueDate() < 0) {
-                workOrder.setDueDate(workOrder.getScheduledStart() + (workOrder.getDuration()*1000));
+
+                if (workOrder.getDuration() != -1 && workOrder.getDueDate() < 0) {
+                    workOrder.setDueDate(workOrder.getScheduledStart() + (workOrder.getDuration() * 1000));
+                }
+
+                workOrder.setEstimatedEnd(workOrder.getDueDate());
             }
-
-            workOrder.setEstimatedEnd(workOrder.getDueDate());
             builder.addRecord(workOrder);
         }
 
