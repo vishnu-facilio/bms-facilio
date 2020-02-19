@@ -62,7 +62,7 @@ public class MiscPoint extends Point {
         JSONObject json = FieldUtil.getAsJSON(point);
         json.remove("subscribestatusEnum");
         System.out.println(" p 2 j "+json);
-        System.out.println(" j 2 p "+FieldUtil.getAsBeanFromMap(json,MiscPoint.class).getSubscribestatusEnum());
-        System.out.println(" j 2 p "+FieldUtil.getAsBeanFromMap(json,MiscPoint.class).getConfigureStatusEnum());
+        System.out.println(" j 2 p "+((MiscPoint) FieldUtil.getAsBeanFromMap(json,MiscPoint.class)).getSubscribestatusEnum());
+        System.out.println(" j 2 p "+((MiscPoint) FieldUtil.getAsBeanFromMap(json,MiscPoint.class)).getConfigureStatusEnum());
     }
 }
