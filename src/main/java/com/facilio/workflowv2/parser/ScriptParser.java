@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
@@ -145,6 +146,9 @@ public class ScriptParser extends CommonParser<Value> {
     		
     		String fieldValue = ctx.expr().getText();
     		dbParamContext.setSortByFieldName(fieldValue.substring(1, fieldValue.length()-1));
+    		if(ctx.op != null) {
+    			dbParamContext.setSortOrder(ctx.op.getText());
+    		}
     	}
     	
     	return Value.VOID;
@@ -193,7 +197,13 @@ public class ScriptParser extends CommonParser<Value> {
 					expressionContext.setLimit(dbParam.getLimit()+"");
 				}
 				expressionContext.setGroupBy(dbParam.getGroupBy());
-				expressionContext.setSortBy(dbParam.getSortByFieldName());
+				expressionContext.setOrderByFieldName(dbParam.getSortByFieldName());
+				expressionContext.setSortBy(dbParam.getSortOrder());
+				if(dbParam.getFieldCriteria() != null) {
+					for(Condition condition : dbParam.getFieldCriteria().getConditions().values()) {
+						expressionContext.addAggregateCondition(condition);
+					}
+				}
 			}
 		}
 		else {
@@ -283,6 +293,8 @@ public class ScriptParser extends CommonParser<Value> {
 	
 	@Override 
     public Value visitCondition_atom(WorkflowV2Parser.Condition_atomContext ctx) {
+		
+		Criteria currentCriteria = criteria != null ? criteria : fieldCriteria;
     	
     	Condition condition = new Condition();
     	condition.setFieldName(ctx.VAR().getText());
@@ -330,9 +342,9 @@ public class ScriptParser extends CommonParser<Value> {
     	
     	condition.setValue(value);
     	
-    	int seq = criteria.addConditionMap(condition);
+    	int seq = currentCriteria.addConditionMap(condition);
     	
-    	criteria.setPattern(criteria.getPattern().replaceFirst(Pattern.quote(ctx.getText()), String.valueOf(seq)));
+    	currentCriteria.setPattern(currentCriteria.getPattern().replaceFirst(Pattern.quote(ctx.getText()), String.valueOf(seq)));
     	
     	return Value.VOID; 
     }
