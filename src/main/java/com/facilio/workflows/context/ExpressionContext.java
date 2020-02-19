@@ -422,9 +422,6 @@ public class ExpressionContext implements WorkflowExpression {
 				List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(moduleName));
 				fields.add(FieldFactory.getIdField(module));
 				selectBuilder.select(fields);
-				if(getAggregateOpperator() != null && getAggregateOpperator().equals(BmsAggregateOperators.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
-					selectBuilder.orderBy("TTIME");
-				}
 			}
 			
 			if(getOrderByFieldName() != null) {
@@ -480,20 +477,11 @@ public class ExpressionContext implements WorkflowExpression {
 						}
 					}
 					if(isPassedData) {
-						if(getAggregateOpperator().equals(BmsAggregateOperators.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
-							if(i < props.size()-1) {
-								Long ss = (Long)props.get(i+1).get("ttime") - (Long)prop.get("ttime");
-								ttimeCount = ttimeCount + ss;
-							}
-						}
 						passedData.add(prop);
 					}
 				}
-				if(getAggregateOpperator() != null && !getAggregateOpperator().equals(BmsAggregateOperators.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
+				if(getAggregateOpperator() != null) {
 					return getAggregateOpperator().getAggregateResult(passedData, fieldName);
-				}
-				else if (getAggregateOpperator() != null && getAggregateOpperator().equals(BmsAggregateOperators.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
-					return ttimeCount;
 				}
 				else {
 					return passedData;

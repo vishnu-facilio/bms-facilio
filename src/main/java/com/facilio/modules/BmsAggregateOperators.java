@@ -527,7 +527,6 @@ public class BmsAggregateOperators {
                 return null;
             }
         },
-        COUNT_RUNNING_TIME(29,"countRunningTime","{$place_holder$}"),
         ;
 
         private int value;
