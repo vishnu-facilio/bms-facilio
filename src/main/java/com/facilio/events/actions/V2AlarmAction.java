@@ -81,6 +81,16 @@ public class V2AlarmAction extends FacilioAction {
 	public void setOccurrenceModule(String occurrenceModule) {
 		this.occurrenceModule = occurrenceModule;
 	}
+
+	private Boolean overrideViewOrderBy;
+
+	public Boolean getOverrideViewOrderBy() {
+		return overrideViewOrderBy;
+	}
+
+	public void setOverrideViewOrderBy(Boolean overrideViewOrderBy) {
+		this.overrideViewOrderBy = overrideViewOrderBy;
+	}
 	
 	public String alarmList() throws Exception {
 		FacilioChain alarmListChain = ReadOnlyChainFactory.getV2AlarmListChain();
@@ -129,6 +139,8 @@ public class V2AlarmAction extends FacilioAction {
 		constructListContext(context);
  		context.put(ContextNames.MODULE_NAME, ContextNames.BASE_EVENT);
  		context.put(ContextNames.RECORD_ID, getId());
+		context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, getOverrideViewOrderBy());
+
 		eventListChain.execute();
 		
 		if (isFetchCount()) {
