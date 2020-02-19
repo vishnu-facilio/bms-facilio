@@ -45,11 +45,11 @@ public class LoadViewCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(viewName != null && !viewName.isEmpty()) {
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String parentViewName = (String) context.get(FacilioConstants.ContextNames.PARENT_VIEW);	// eg: to get default report columns
 			FacilioView view = null;
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			long moduleId = module.getModuleId();
 			if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
@@ -129,6 +129,16 @@ public class LoadViewCommand extends FacilioCommand {
 				
 				context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);
 				view.setSharingType(ViewAPI.getViewSharingDetail(view.getId()));
+			}
+		}
+		else {
+			Boolean overrideSorting = (Boolean) context.get(ContextNames.OVERRIDE_SORTING);
+			JSONObject sortObj = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
+			if (overrideSorting != null && overrideSorting && sortObj != null) {
+				String orderByColName = (String) sortObj.get("orderBy");
+				String orderType = (String) sortObj.get("orderType");
+				String sortQuery = orderByColName + " IS NULL," + orderByColName + " " + orderType;
+				context.put(FacilioConstants.ContextNames.SORTING_QUERY, sortQuery);
 			}
 		}
 		long timeTaken = System.currentTimeMillis() - startTime;
