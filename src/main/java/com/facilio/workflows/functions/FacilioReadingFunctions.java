@@ -150,7 +150,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			
 			FacilioModuleFunctionImpl functions = new FacilioModuleFunctionImpl();
 			
-			return functions.fetch(params);
+			return functions.fetch(globalParam,params);
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
@@ -191,7 +191,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			
 			FacilioModuleFunctionImpl functions = new FacilioModuleFunctionImpl();
 			
-			return functions.fetch(params);
+			return functions.fetch(globalParam,params);
 		};
 		
 		public void checkParam(Object... objects) throws Exception {

@@ -236,8 +236,13 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			dbParamContext.setCriteria((Criteria)objects.get(1));
 		}
 		
-		Map<String, List<Map<String, Object>>> cache = (Map<String, List<Map<String, Object>>>) globalParams.get(WorkflowGlobalParamUtil.DATA_CACHE);
-		Map<String, ReadingDataMeta> cachedRDM = (Map<String, ReadingDataMeta>) globalParams.get(WorkflowGlobalParamUtil.RDM_CACHE);
+		Map<String, List<Map<String, Object>>> cache = null;
+		Map<String, ReadingDataMeta> cachedRDM = null;
+		
+		if(globalParams != null) {
+			cache = (Map<String, List<Map<String, Object>>>) globalParams.get(WorkflowGlobalParamUtil.DATA_CACHE);
+			cachedRDM = (Map<String, ReadingDataMeta>) globalParams.get(WorkflowGlobalParamUtil.RDM_CACHE);
+		}
 		
 		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = null;

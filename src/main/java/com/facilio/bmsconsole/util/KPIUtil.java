@@ -304,7 +304,7 @@ public class KPIUtil {
 		params.add(dbParamContext);
 		
 		FacilioModuleFunctionImpl function = new FacilioModuleFunctionImpl();
-		Object obj = function.fetch(params);
+		Object obj = function.fetch(null,params);
 		if (obj == null) {
 			return 0;
 		}
