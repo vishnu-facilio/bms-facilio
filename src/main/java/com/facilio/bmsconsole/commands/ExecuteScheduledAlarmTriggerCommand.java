@@ -34,8 +34,8 @@ public class ExecuteScheduledAlarmTriggerCommand extends FacilioCommand {
 		Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
 		Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), null, placeHolders);
-		
-		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, recordPlaceHolders, (FacilioContext)context,true, workflowRuleCacheMap, Collections.singletonList(rule.getActivityTypeEnum()));
+
+		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, recordPlaceHolders, (FacilioContext)context,true, workflowRuleCacheMap, false, Collections.singletonList(rule.getActivityTypeEnum()));
 		return false;
 	}
 

@@ -319,9 +319,7 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 //						WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(readingRule, readingRule.getReadingField().getModule().getName(), reading, null, recordPlaceHolders, context);
 						
 						RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES, RuleType.IMPACT_RULE};
-						
-						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, recordPlaceHolders, context, false, workflowRuleCacheMap, Collections.singletonList(readingRule.getActivityTypeEnum()), ruleTypes);
-						
+						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, recordPlaceHolders, context, false, workflowRuleCacheMap, false, Collections.singletonList(readingRule.getActivityTypeEnum()), ruleTypes);						
 						prevRDM = currentRDM;
 						
 						Boolean isAlarmCreated = (Boolean) context.get(FacilioConstants.ContextNames.IS_ALARM_CREATED);

@@ -69,8 +69,8 @@ public class HistoricalAlarmOccurrenceDeletionJob extends FacilioJob {
 		}
 		catch(Exception historicalRuleAlarmOccurrenceDeletionException) {
 			try {
-				FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
 				LOGGER.error("Error occurred while doing Historical Rule Alarm Occurrence Deletion Job" +historicalRuleAlarmOccurrenceDeletionException.toString());
+				throw historicalRuleAlarmOccurrenceDeletionException;
 			}
 			catch(Exception transactionException) {
 				LOGGER.error(transactionException.toString());

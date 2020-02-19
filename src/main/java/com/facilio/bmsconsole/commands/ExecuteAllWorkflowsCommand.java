@@ -76,11 +76,17 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 			if (historyReading != null && historyReading==true) {
 				return false;
 			}
+			Boolean isParallelRuleExecution = (Boolean) context.get(FacilioConstants.ContextNames.IS_PARALLEL_RULE_EXECUTION);
+			isParallelRuleExecution = isParallelRuleExecution != null ? isParallelRuleExecution : Boolean.FALSE;
+			if(AccountUtil.getCurrentOrg().getId() == 78l || AccountUtil.getCurrentOrg().getId() == 1l) {
+				isParallelRuleExecution = true;
+			}
+			
 			recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
 			Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
 			if(recordMap != null && !recordMap.isEmpty()) {
 				if (recordsPerThread == -1) {
-					fetchAndExecuteRules(recordMap, changeSetMap, (FacilioContext) context);
+					fetchAndExecuteRules(recordMap, changeSetMap, isParallelRuleExecution, (FacilioContext) context);
 				}
 				else {
 					new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
@@ -127,7 +133,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 		return parentCriteria;
 	}
 
-	private void fetchAndExecuteRules(Map<String, List> recordMap, Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap, FacilioContext context) throws Exception {
+	private void fetchAndExecuteRules(Map<String, List> recordMap, Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap, boolean isParallelRuleExecution, FacilioContext context) throws Exception {
 		for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 			String moduleName = entry.getKey();
 			if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
@@ -179,7 +185,8 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 						Object record = it.next();
 						List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
 						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, placeHolders);
-						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, activities);
+						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, recordPlaceHolders, context,propagateError, workflowRuleCacheMap, isParallelRuleExecution, activities);
+
 					}
 				}
 				LOGGER.debug("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
@@ -239,7 +246,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 					if (records != null && !records.isEmpty()) {
 						String moduleName = entry.getKey();
 						if (records.size() <= recordsPerThread) {
-							fetchAndExecuteRules(recordMap, changeSetMap, context);
+							fetchAndExecuteRules(recordMap, changeSetMap, false, context);
 						}
 						else {
 							List<List> recordLists = Lists.partition(records, recordsPerThread);

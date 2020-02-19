@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.workflow.rule;
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,14 +23,21 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -669,6 +678,74 @@ public class WorkflowRuleContext implements Serializable {
 	public void setParentId(long parentId) {
 		this.parentId = parentId;
 	}
-		
 	
+
+	public boolean executeRuleAndChildren (WorkflowRuleContext workflowRule, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, FacilioField parentRuleField, FacilioField onSuccessField, Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap, boolean isParallelRuleExecution, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
+		try {		
+			long workflowStartTime = System.currentTimeMillis();
+			workflowRule.setTerminateChildExecution(false);
+			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
+			LOGGER.debug("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
+			LOGGER.debug("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+		
+			if ((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 210l && (workflowRule.getId() == 35189l || workflowRule.getId() == 35188l))) {
+				LOGGER.info("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
+				LOGGER.info("Select Query Count till execution of workflow and actions" + AccountUtil.getCurrentAccount().getSelectQueries() + " Timetaken "+AccountUtil.getCurrentAccount().getSelectQueriesTime());
+			}
+			
+			boolean stopFurtherExecution = false;	
+			if (result) {
+				if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
+					stopFurtherExecution = true;
+				}
+			}
+
+			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));
+			if(workflowRule.getRuleTypeEnum().isChildSupport() && !workflowRule.shouldTerminateChildExecution()) {
+				String workflowRuleKey = WorkflowRuleAPI.constructParentWorkflowRuleKey(workflowRule.getId(),result);
+				List<WorkflowRuleContext> currentWorkflows = workflowRuleCacheMap.get(workflowRuleKey);	
+				if(currentWorkflows == null) {
+					Criteria criteria = new Criteria();
+					criteria.addAndCondition(CriteriaAPI.getCondition(parentRuleField, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
+					criteria.addAndCondition(CriteriaAPI.getCondition(onSuccessField, String.valueOf(result), BooleanOperators.IS));
+					currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(workflowRule.getModule(), eventTypes, criteria, ruleTypes);
+					if(currentWorkflows == null) {
+						workflowRuleCacheMap.put(workflowRuleKey, Collections.EMPTY_LIST);
+					}
+					else {
+						workflowRuleCacheMap.put(workflowRuleKey, currentWorkflows);
+					}
+				}	
+				WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module, record, changeSet, recordPlaceHolders, context, propagateError, workflowRuleCacheMap, isParallelRuleExecution, eventTypes, ruleTypes);
+			}
+
+			if ((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 210l && (workflowRule.getId() == 35189l || workflowRule.getId() == 35188l))) {
+				LOGGER.info("Time taken including childrule execution -- for rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));	
+				LOGGER.info("Select Query Count including childrule execution  -- " + AccountUtil.getCurrentAccount().getSelectQueries() + " Timetaken till childrule execution "+AccountUtil.getCurrentAccount().getSelectQueriesTime());
+			}
+			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" including child rule execution is "+(System.currentTimeMillis() - workflowStartTime));
+			return stopFurtherExecution;
+		}
+		catch (Exception e) {
+			StringBuilder builder = new StringBuilder("Error during execution of rule : ");
+			builder.append(workflowRule.getId());
+			if (record instanceof ModuleBaseWithCustomFields) {
+				builder.append(" for Record : ")
+						.append(((ModuleBaseWithCustomFields)record).getId())
+						.append(" of module : ")
+						.append(module.getName());
+			}
+			LOGGER.error(builder.toString(), e);
+			
+			if (propagateError) {
+				throw e;
+			}
+		}
+		return false;
+	}
+	
+	
+	
+	
+		
 }

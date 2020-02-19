@@ -24,8 +24,8 @@ public class HistoricalAlarmProcessingJob extends FacilioJob {
 		}
 		catch(Exception historicalRuleAlarmProcessingException) {
 			try {
-				FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
 				LOGGER.error("Error occurred while doing Historical Rule Alarm Processing Job" +historicalRuleAlarmProcessingException.toString());
+				throw historicalRuleAlarmProcessingException;
 			}
 			catch(Exception transactionException) {
 				LOGGER.error(transactionException.toString());

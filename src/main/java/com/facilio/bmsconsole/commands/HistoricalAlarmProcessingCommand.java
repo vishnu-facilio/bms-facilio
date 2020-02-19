@@ -76,7 +76,7 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 		catch (Exception historicalAlarmProcessingException) {	
 			exceptionMessage = historicalAlarmProcessingException.getMessage();
 			stack = historicalAlarmProcessingException.getStackTrace();
-			LOGGER.error("HISTORICAL RULE ALARM PROCESSING JOB COMMAND FAILED, JOB ID -- : "+parentRuleResourceLoggerId+ " Exception -- " + exceptionMessage + " Trace -- " + stack);
+			LOGGER.error("HISTORICAL RULE ALARM PROCESSING JOB COMMAND FAILED, JOB ID -- : "+parentRuleResourceLoggerId+ " parentRuleResourceLoggerContext --: " +parentRuleResourceLoggerContext+ " Exception -- " + exceptionMessage + " Trace -- " + stack);
 			
 			if(parentRuleResourceLoggerContext != null) {		
 				WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal());				

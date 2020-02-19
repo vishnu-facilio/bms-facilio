@@ -164,6 +164,7 @@ public class FacilioConstants {
 		public static final String WITH_CHANGE_SET = "withChangeSet";
 		public static final String CHANGE_SET = "changeSet";
 		public static final String CHANGE_SET_MAP = "changeSetMap";
+		public static final String PROPAGATE_ERROR = "propagateError";
 		public static final String RECORD = "record";
 		public static final String REVISED_RECORD = "revisedRecord";
 		public static final String PARENT_RECORD = "parentRecord";
@@ -808,6 +809,14 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULE_LOGGERS = "workflowRuleLoggers";
 		public static final String WORKFLOW_RULE_RESOURCE_LOGGERS = "workflowRuleResourceLoggers";
 		public static final String WORKFLOW_RULE_HISTORICAL_LOGS = "workflowRuleHistoricalLogs";
+		public static final String WORKFLOW_PARALLEL_RULE_EXECUTION_MAP = "workflowParallelRuleExecutionMap";
+		public static final String RECORD_CONTEXT_FOR_RULE_EXECUTION = "recordContextForRuleExecution";
+		public static final String IS_PARALLEL_RULE_EXECUTION= "isParallelRuleExecution";
+		public static final String PARENT_RULE_FIELD = "parentRuleField";
+		public static final String ON_SUCCESS_FIELD = "onSuccessField";
+		public static final String WORKFLOW_RULE_CACHE_MAP = "workflowRuleCacheMap";
+		public static final String EVENT_TYPES = "eventTypes";
+		public static final String RULE_TYPES = "ruleTypes";
 		public static final String READING_RULE_MODULE = "readingrule";
 		public static final String READING_ALARM_RULES = "readingalarmrules";
 		public static final String READING_ALARM_RULE = "readingalarmrule";

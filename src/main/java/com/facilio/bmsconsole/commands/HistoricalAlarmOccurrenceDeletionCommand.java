@@ -44,6 +44,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -97,7 +98,7 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 		catch (Exception historicalRuleDeletionException) {
 			exceptionMessage = historicalRuleDeletionException.getMessage();
 			stack = historicalRuleDeletionException.getStackTrace();
-			LOGGER.error("HISTORICAL RULE DELETION JOB COMMAND FAILED, JOB ID -- : "+parentRuleResourceLoggerId+ " Exception -- " + exceptionMessage + " Trace -- " + stack);
+			LOGGER.error("HISTORICAL RULE DELETION JOB COMMAND FAILED, JOB ID -- : "+parentRuleResourceLoggerId+ " parentRuleResourceLoggerContext --: " +  parentRuleResourceLoggerContext + " Exception -- " + exceptionMessage + " Trace -- " + stack);
 			
 			if(parentRuleResourceLoggerContext != null) {
 				WorkflowRuleResourceLoggerAPI.updateWorkflowRuleResourceContextState(parentRuleResourceLoggerContext, WorkflowRuleResourceLoggerContext.Status.FAILED.getIntVal());				
@@ -190,16 +191,16 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
 	
-		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table(module.getTableName())
+		DeleteRecordBuilder<AlarmOccurrenceContext> deleteBuilder = new DeleteRecordBuilder<AlarmOccurrenceContext>()
+				.module(module)
 				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", "" +baseAlarmContext.getId(), NumberOperators.EQUALS));
 	
 		Criteria criteria = new Criteria();
 		criteria.addOrCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN));
 		criteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", startTime+","+endTime, DateOperators.BETWEEN));	
 		
-		builder.andCriteria(criteria);
-		builder.delete();			
+		deleteBuilder.andCriteria(criteria);
+		deleteBuilder.delete();			
 	}
 	
 	public static void updateParentRuleResourceLoggerToModifiedRangeAndEventGeneratingState(WorkflowRuleResourceLoggerContext parentRuleResourceLoggerContext, DateRange modifiedRange) throws Exception {
