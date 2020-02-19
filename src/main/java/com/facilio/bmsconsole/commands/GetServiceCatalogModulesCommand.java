@@ -17,9 +17,8 @@ public class GetServiceCatalogModulesCommand extends FacilioCommand {
         List<FacilioModule> modules = new ArrayList<>();
 
         modules.add(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-        modules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
+//        modules.add(modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.ASSET));
-        modules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.WORKPERMIT));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.VENDORS));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACT));
