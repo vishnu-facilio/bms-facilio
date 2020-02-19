@@ -612,6 +612,16 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitDb_param_criteria(WorkflowV2Parser.Db_param_criteriaContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link WorkflowV2Parser#db_param_field_criteria}.
+	 * @param ctx the parse tree
+	 */
+	void enterDb_param_field_criteria(WorkflowV2Parser.Db_param_field_criteriaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link WorkflowV2Parser#db_param_field_criteria}.
+	 * @param ctx the parse tree
+	 */
+	void exitDb_param_field_criteria(WorkflowV2Parser.Db_param_field_criteriaContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link WorkflowV2Parser#db_param_field}.
 	 * @param ctx the parse tree
 	 */

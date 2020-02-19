@@ -20,6 +20,8 @@ public class DBParamContext {
 	String sortByFieldName;
 	String sortOrder;
 	Criteria criteria;
+	Criteria fieldCriteria;
+
 	int limit;
 	boolean ignoreMarkedReadings;
 	String groupBy;
@@ -107,6 +109,13 @@ public class DBParamContext {
 	}
 	public void setAggregateFieldName(String aggregateFieldName) {
 		this.aggregateFieldName = aggregateFieldName;
+	}
+	
+	public Criteria getFieldCriteria() {
+		return fieldCriteria;
+	}
+	public void setFieldCriteria(Criteria fieldCriteria) {
+		this.fieldCriteria = fieldCriteria;
 	}
 
 	@Override

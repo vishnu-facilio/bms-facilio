@@ -367,6 +367,12 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDb_param_criteria(WorkflowV2Parser.Db_param_criteriaContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link WorkflowV2Parser#db_param_field_criteria}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDb_param_field_criteria(WorkflowV2Parser.Db_param_field_criteriaContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link WorkflowV2Parser#db_param_field}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

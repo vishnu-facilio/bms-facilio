@@ -141,6 +141,7 @@ db_param
  
 db_param_group
  : db_param_field
+ | db_param_field_criteria
  | db_param_aggr
  | db_param_limit
  | db_param_range
@@ -150,6 +151,10 @@ db_param_group
  
 db_param_criteria
  : 'criteria' COLON criteria (COMMA)*
+ ;
+ 
+db_param_field_criteria
+ : 'fieldCriteria' COLON criteria (COMMA)*
  ;
 
 db_param_field

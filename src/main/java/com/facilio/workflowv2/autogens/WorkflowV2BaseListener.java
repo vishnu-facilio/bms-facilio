@@ -664,6 +664,18 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterDb_param_field_criteria(WorkflowV2Parser.Db_param_field_criteriaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDb_param_field_criteria(WorkflowV2Parser.Db_param_field_criteriaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDb_param_field(WorkflowV2Parser.Db_param_fieldContext ctx) { }
 	/**
 	 * {@inheritDoc}

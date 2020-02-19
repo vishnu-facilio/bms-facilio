@@ -23,6 +23,7 @@ import com.facilio.workflowv2.autogens.WorkflowV2BaseVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_aggrContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_fieldContext;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_field_criteriaContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_groupContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_group_byContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_limitContext;
@@ -38,9 +39,13 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
 	
 	public Criteria criteria = null;
 	
+	public Criteria fieldCriteria = null;
+	
 	@Override 
     public Value visitCondition_atom(WorkflowV2Parser.Condition_atomContext ctx) {
     	
+		Criteria currentCriteria = criteria != null ? criteria : fieldCriteria;
+		
     	Condition condition = new Condition();
     	condition.setFieldName(ctx.VAR().getText());
     	
@@ -118,9 +123,9 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
     	
     	condition.setValue(value);
     	
-    	int seq = criteria.addConditionMap(condition);
+    	int seq = currentCriteria.addConditionMap(condition);
     	
-    	criteria.setPattern(criteria.getPattern().replaceFirst(Pattern.quote(ctx.getText()), String.valueOf(seq)));
+    	currentCriteria.setPattern(currentCriteria.getPattern().replaceFirst(Pattern.quote(ctx.getText()), String.valueOf(seq)));
     	
     	return visitChildren(ctx); 
     }
@@ -143,6 +148,27 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
     	criteria = null;
     	return criteriaVal;
     }
+    
+    @Override
+	public Value visitDb_param_field_criteria(Db_param_field_criteriaContext ctx) {
+		
+    	fieldCriteria = new Criteria(); 
+    	
+    	String criteriaSting = ctx.getText();
+    	
+    	fieldCriteria.setPattern(criteriaSting);
+    	
+    	this.visit(ctx.criteria().condition());
+    	
+    	fieldCriteria.setPattern(WorkflowV2Util.adjustCriteriaPattern(fieldCriteria.getPattern()));
+    	
+    	Value criteriaVal = new Value(fieldCriteria);
+    	
+    	dbParamContext.setFieldCriteria(criteriaVal.asCriteria());
+    	fieldCriteria = null;
+    	
+    	return criteriaVal;
+	}
 	
 	@Override
     public Value visitDb_param_field(Db_param_fieldContext ctx) {
@@ -153,7 +179,7 @@ public abstract class CommonParser<T> extends WorkflowV2BaseVisitor<Value> {
     	}
 		return Value.VOID;
     }
-    
+	
     @Override
     public Value visitDb_param_aggr(Db_param_aggrContext ctx) {
     	

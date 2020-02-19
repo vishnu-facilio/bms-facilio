@@ -31,6 +31,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
@@ -271,7 +272,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			}
 			
 			
-			if(dbParamContext.getFieldName() != null) {
+			if(dbParamContext.getFieldName() != null && dbParamContext.getFieldCriteria() == null) {
 				List<FacilioField> selectFields = new ArrayList<>();
 				
 				FacilioField select = modBean.getField(dbParamContext.getFieldName(), module.getName());
@@ -420,30 +421,50 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		if(props != null && !props.isEmpty()) {
 			
-			if((dbParamContext.getFieldName() == null && dbParamContext.getAggregateString() == null) || (dbParamContext.getAggregateString() != null && dbParamContext.getAggregateFieldName() != null && dbParamContext.getGroupBy() != null)) {
-				result = props;
-			}
-			else if(dbParamContext.getAggregateString() == null || dbParamContext.getAggregateString().equals("")) {
-				List<Object> returnList = new ArrayList<>(); 
-				for(Map<String, Object> prop:props) {
-					String fieldName = !LookupSpecialTypeUtil.isSpecialType(module.getName()) ? RESULT_STRING : dbParamContext.getFieldName();
-					returnList.add(prop.get(fieldName));
+			if(dbParamContext.getFieldCriteria() != null) {
+				List<Map<String, Object>> passedData = new ArrayList<>();
+
+				for(Map<String, Object> prop : props) {
+					
+					org.apache.commons.collections.Predicate Predicate = dbParamContext.getFieldCriteria().computePredicate(prop);
+					if(Predicate.evaluate(prop)) {
+						passedData.add(prop);
+					}
 				}
-				result = returnList;
+				if(dbParamContext.getAggregateOpperator() != null) {
+					result = dbParamContext.getAggregateOpperator().getAggregateResult(passedData, dbParamContext.getFieldName());
+				}
+				else {
+					result = passedData;
+				}
 			}
 			else {
-				// Temp check
-				String name = LookupSpecialTypeUtil.isSpecialType(module.getName()) ? dbParamContext.getFieldName() : RESULT_STRING;
-				result = props.get(0).get(name);
 				
-				if(dbParamContext.isIgnoreMarkedReadings() && module.getName().equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
-					
-					Object hasMarked = props.get(0).get("hasMarked");
-					
-					if(hasMarked != null && "1".equals(hasMarked.toString())) {
-						//workflowContext.setTerminateExecution(true); need to handle
+				if((dbParamContext.getFieldName() == null && dbParamContext.getAggregateString() == null) || (dbParamContext.getAggregateString() != null && dbParamContext.getAggregateFieldName() != null && dbParamContext.getGroupBy() != null)) {
+					result = props;
+				}
+				else if(dbParamContext.getAggregateString() == null || dbParamContext.getAggregateString().equals("")) {
+					List<Object> returnList = new ArrayList<>(); 
+					for(Map<String, Object> prop:props) {
+						String fieldName = !LookupSpecialTypeUtil.isSpecialType(module.getName()) ? RESULT_STRING : dbParamContext.getFieldName();
+						returnList.add(prop.get(fieldName));
 					}
- 				}
+					result = returnList;
+				}
+				else {
+					// Temp check
+					String name = LookupSpecialTypeUtil.isSpecialType(module.getName()) ? dbParamContext.getFieldName() : RESULT_STRING;
+					result = props.get(0).get(name);
+					
+					if(dbParamContext.isIgnoreMarkedReadings() && module.getName().equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+						
+						Object hasMarked = props.get(0).get("hasMarked");
+						
+						if(hasMarked != null && "1".equals(hasMarked.toString())) {
+							//workflowContext.setTerminateExecution(true); need to handle
+						}
+	 				}
+				}
 			}
 		}
 		LOGGER.fine("EXP -- "+toString()+" RESULT -- "+result);
