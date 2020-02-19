@@ -228,11 +228,12 @@ public class FormAction extends FacilioAction {
 		if (fetchExtendedModuleForms != null && fetchExtendedModuleForms) {
 			context.put(FacilioConstants.ContextNames.FETCH_EXTENDED_MODULE_FORMS, true);
 		}
-		if (fetchDisabledForms != null && fetchDisabledForms) {
-			context.put(FacilioConstants.ContextNames.FETCH_DISABLED_FORMS, true);
-		}
 		else {
 			context.put(FacilioConstants.ContextNames.FETCH_EXTENDED_MODULE_FORMS, false);
+		}
+		
+		if (fetchDisabledForms != null && fetchDisabledForms) {
+			context.put(FacilioConstants.ContextNames.FETCH_DISABLED_FORMS, true);
 		}
 		if (formType != null && CollectionUtils.isEmpty(formTypes)) {
 			formTypes = Collections.singletonList(formType.getIntVal());
