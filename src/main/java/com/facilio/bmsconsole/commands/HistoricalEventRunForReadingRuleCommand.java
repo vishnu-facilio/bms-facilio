@@ -332,7 +332,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 						
 						context.put(EventConstants.EventContextNames.PREVIOUS_EVENT_META, previousEventMeta);
 						
-						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, null, recordPlaceHolders, context, false, workflowRuleCacheMap, Collections.singletonList(readingRule.getActivityTypeEnum()), ruleTypes);
+						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, recordPlaceHolders, context, false, workflowRuleCacheMap, Collections.singletonList(readingRule.getActivityTypeEnum()), ruleTypes);
 						prevRDM = currentRDM;
 						
 						Boolean isAlarmCreated = (Boolean) context.get(FacilioConstants.ContextNames.IS_ALARM_CREATED);

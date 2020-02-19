@@ -666,7 +666,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 		else if(this.getTriggerExecutePeriod() > 0) {
 			FacilioTimer.scheduleOneTimeJobWithDelay(this.getId(), FacilioConstants.Job.SCHEDULED_ALARM_TRIGGER_RULE_JOB_NAME, this.getTriggerExecutePeriod(), FacilioConstants.Job.EXECUTER_NAME_FACILIO);
-			this.setTerminateExecution(true);
+			this.setTerminateChildExecution(true);
 			return false;
 		}
 		

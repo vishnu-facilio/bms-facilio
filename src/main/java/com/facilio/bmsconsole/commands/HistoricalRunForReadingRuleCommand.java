@@ -320,7 +320,7 @@ private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext
 						
 						RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES, RuleType.IMPACT_RULE};
 						
-						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, null, recordPlaceHolders, context, false, workflowRuleCacheMap, Collections.singletonList(readingRule.getActivityTypeEnum()), ruleTypes);
+						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, recordPlaceHolders, context, false, workflowRuleCacheMap, Collections.singletonList(readingRule.getActivityTypeEnum()), ruleTypes);
 						
 						prevRDM = currentRDM;
 						

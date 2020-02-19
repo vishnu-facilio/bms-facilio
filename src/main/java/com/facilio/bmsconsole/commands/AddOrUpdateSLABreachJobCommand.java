@@ -13,6 +13,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
@@ -65,7 +66,7 @@ public class AddOrUpdateSLABreachJobCommand extends FacilioCommand {
                             } else {
                                 value = record.getDatum(field.getName());
                             }
-                            if (value instanceof Long && !FacilioUtil.isEmptyOrNull(value)) {
+                            if (value instanceof Long && !FacilioUtil.isEmptyOrNull(value) && ((Long) value) > System.currentTimeMillis()) {
                                 addSLAEntityBreachJob(entity.getName() + "_" + record.getId() + "_Breach", module, record, entity.getCriteria(),
                                         field, entity);
                             }

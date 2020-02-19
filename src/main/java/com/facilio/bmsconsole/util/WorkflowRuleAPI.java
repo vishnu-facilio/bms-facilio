@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -914,10 +913,10 @@ public class WorkflowRuleAPI {
 		return result;
 	}
 	
-	private static boolean executeRuleAndChildren (WorkflowRuleContext workflowRule, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, FacilioField parentRuleField, FacilioField onSuccessField, Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
+	private static boolean executeRuleAndChildren (WorkflowRuleContext workflowRule, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, FacilioField parentRuleField, FacilioField onSuccessField, Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
 		try {
 			long workflowStartTime = System.currentTimeMillis();
-			workflowRule.setTerminateExecution(false);
+			workflowRule.setTerminateChildExecution(false);
 			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
 			LOGGER.debug("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
 			LOGGER.debug("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
@@ -929,11 +928,10 @@ public class WorkflowRuleAPI {
 				LOGGER.info("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
 			}
 			
-			boolean stopFurtherExecution = workflowRule.isTerminateExecution();
+			boolean stopFurtherExecution = false;
 			
 			if (result) {
 				if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
-					itr.remove();
 					stopFurtherExecution = true;
 				}
 			}
@@ -942,7 +940,7 @@ public class WorkflowRuleAPI {
 				LOGGER.info("Time taken without child rule execution to execute rule: "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));
 			}
 			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));
-			if(workflowRule.getRuleTypeEnum().isChildSupport() && !stopFurtherExecution) {		
+			if(workflowRule.getRuleTypeEnum().isChildSupport() && !workflowRule.shouldTerminateChildExecution()) {
 				String workflowRuleKey = constructParentWorkflowRuleKey(workflowRule.getId(),result);
 				List<WorkflowRuleContext> currentWorkflows = workflowRuleCacheMap.get(workflowRuleKey);	
 				if(currentWorkflows == null) {
@@ -957,7 +955,7 @@ public class WorkflowRuleAPI {
 						workflowRuleCacheMap.put(workflowRuleKey, currentWorkflows);
 					}
 				}	
-				executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module, record, changeSet, itr, recordPlaceHolders, context, propagateError, workflowRuleCacheMap, eventTypes, ruleTypes);			
+				executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module, record, changeSet, recordPlaceHolders, context, propagateError, workflowRuleCacheMap, eventTypes, ruleTypes);
 			}
 
 			if ((AccountUtil.getCurrentOrg().getId() == 231l && (workflowRule.getId() == 36242l || workflowRule.getId() == 36243l)) || (AccountUtil.getCurrentOrg().getId() == 210l && (workflowRule.getId() == 35189l || workflowRule.getId() == 35188l))) {
@@ -984,14 +982,14 @@ public class WorkflowRuleAPI {
 		return false;
 	}
 	
-	public static void executeWorkflowsAndGetChildRuleCriteria(List<WorkflowRuleContext> workflowRules, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
+	public static void executeWorkflowsAndGetChildRuleCriteria(List<WorkflowRuleContext> workflowRules, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
 		if(workflowRules != null && !workflowRules.isEmpty()) {
 			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
 			FacilioField parentRule = fields.get("parentRuleId");
 			FacilioField onSuccess = fields.get("onSuccess");
 			
 			for(WorkflowRuleContext workflowRule : workflowRules) {
-				boolean stopFurtherExecution = executeRuleAndChildren(workflowRule, module, record, changeSet, itr, recordPlaceHolders, context, propagateError, parentRule, onSuccess, workflowRuleCacheMap, eventTypes, ruleTypes);
+				boolean stopFurtherExecution = executeRuleAndChildren(workflowRule, module, record, changeSet, recordPlaceHolders, context, propagateError, parentRule, onSuccess, workflowRuleCacheMap, eventTypes, ruleTypes);
 				if(stopFurtherExecution) {
 					break;
 				}
@@ -1049,7 +1047,7 @@ public class WorkflowRuleAPI {
 		recordPlaceHolders.put("executionTime", executionTime);
 		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, executionTime);
 		Map<String, List<WorkflowRuleContext>> workflowRuleCacheMap = new HashMap<String, List<WorkflowRuleContext>>();
-		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, context,true, workflowRuleCacheMap, Collections.singletonList(rule.getActivityTypeEnum()));
+		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, recordPlaceHolders, context,true, workflowRuleCacheMap, Collections.singletonList(rule.getActivityTypeEnum()));
 	}
 
 	public static void updateExecutionOrder(WorkflowRuleContext rule) throws Exception {

@@ -63,10 +63,10 @@ public class WorkflowRuleContext implements Serializable {
 	}
 	private boolean terminateExecution = false;
 	
-	public boolean isTerminateExecution() {
+	public boolean shouldTerminateChildExecution() {
 		return terminateExecution;
 	}
-	public void setTerminateExecution(boolean terminateExecution) {
+	public void setTerminateChildExecution(boolean terminateExecution) {
 		this.terminateExecution = terminateExecution;
 	}
 	
@@ -526,8 +526,8 @@ public class WorkflowRuleContext implements Serializable {
 		VALIDATION_RULE, //9
 		
 		ASSET_ACTION_RULE,
-		SLA_WORKFLOW_RULE,
-		SLA_POLICY_RULE(false, false, false, true), //12
+		SLA_WORKFLOW_RULE(true),
+		SLA_POLICY_RULE(true, false, false, true), //12
 		
 		APPROVAL_RULE(true, true),
 		REQUEST_APPROVAL_RULE(true),

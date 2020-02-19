@@ -38,6 +38,17 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
     }
 
     @Override
+    public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+        ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+
+        if (moduleRecord.getSlaPolicyId() != getParentRuleId()) {
+            return false;
+        }
+
+        return super.evaluateMisc(moduleName, record, placeHolders, context);
+    }
+
+    @Override
     public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -64,7 +75,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 FacilioField baseField = modBean.getField(slaEntity.getBaseFieldId());
                 FacilioField dueField = modBean.getField(slaEntity.getDueFieldId());
 
-                if (FacilioUtil.isEmptyOrNull(FieldUtil.getValue(moduleRecord, dueField))) {
+//                if (FacilioUtil.isEmptyOrNull(FieldUtil.getValue(moduleRecord, dueField))) {
                     Long timeValue = (Long) FieldUtil.getValue(moduleRecord, baseField);
                     if (timeValue == null) {
                         continue;
@@ -78,7 +89,7 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                             .fields(Collections.singletonList(dueField))
                             .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
                     update.update(moduleRecord);
-                }
+//                }
 
                 if (MapUtils.isNotEmpty(escalationMap)) {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());

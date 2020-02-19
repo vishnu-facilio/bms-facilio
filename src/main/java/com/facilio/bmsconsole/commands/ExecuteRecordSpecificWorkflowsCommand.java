@@ -122,7 +122,7 @@ public class ExecuteRecordSpecificWorkflowsCommand extends FacilioCommand implem
 							Map<String, Object> recordPlaceHolders = WorkflowRuleAPI
 									.getRecordPlaceHolders(module.getName(), record, placeHolders);
 							WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record,
-									changeSet, it, recordPlaceHolders, context, propagateError, workflowRuleCacheMap, activities);
+									changeSet, recordPlaceHolders, context, propagateError, workflowRuleCacheMap, activities);
 						}
 					}
 				}
