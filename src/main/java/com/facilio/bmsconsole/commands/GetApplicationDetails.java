@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.NewPermission;
@@ -10,6 +14,7 @@ import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class GetApplicationDetails extends FacilioCommand {
 
@@ -30,9 +35,18 @@ public class GetApplicationDetails extends FacilioCommand {
 				for (WebTabGroupContext webTabGroup : webTabGroups) {
 					List<WebTabContext> webTabs = ApplicationApi.getWebTabsForWebGroup(webTabGroup.getId());
 					if (webTabs != null && !webTabs.isEmpty()) {
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						for (WebTabContext webtab : webTabs) {
 							webtab.setPermissions(ApplicationApi.getPermissionsForWebTab(webtab.getId()));
 							webtab.setModuleIds(ApplicationApi.getModuleIdsForTab(webtab.getId()));
+
+							if (CollectionUtils.isNotEmpty(webtab.getModuleIds())) {
+								List<FacilioModule> modules = new ArrayList<>();
+								for (Long moduleId : webtab.getModuleIds()) {
+									modules.add(modBean.getModule(moduleId));
+								}
+								webtab.setModules(modules);
+							}
 						}
 					}
 					webTabGroup.setWebTabs(webTabs);
