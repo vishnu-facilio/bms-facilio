@@ -91,6 +91,16 @@ public class FormAction extends FacilioAction {
 	public void setFetchExtendedModuleForms(Boolean fetchExtendedModuleForms) {
 		this.fetchExtendedModuleForms = fetchExtendedModuleForms;
 	}
+	
+	private Boolean fetchDisabledForms;
+
+	public Boolean getFetchDisabledForms() {
+		return fetchDisabledForms;
+	}
+
+	public void setFetchDisabledForms(Boolean fetchDisabledForms) {
+		this.fetchDisabledForms = fetchDisabledForms;
+	}
 
 	private long formId = -1;
     private long formFieldId;
@@ -217,6 +227,9 @@ public class FormAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		if (fetchExtendedModuleForms != null && fetchExtendedModuleForms) {
 			context.put(FacilioConstants.ContextNames.FETCH_EXTENDED_MODULE_FORMS, true);
+		}
+		if (fetchDisabledForms != null && fetchDisabledForms) {
+			context.put(FacilioConstants.ContextNames.FETCH_DISABLED_FORMS, true);
 		}
 		else {
 			context.put(FacilioConstants.ContextNames.FETCH_EXTENDED_MODULE_FORMS, false);

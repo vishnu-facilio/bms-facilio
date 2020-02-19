@@ -28,11 +28,13 @@ public class FacilioForm implements Serializable {
 		this.formType = formType;
 		this.labelPosition = labelPosition;
 		this.showInMobile = true;
+		this.showInWeb = true;
 	}
 
 	public FacilioForm(FacilioForm form) {
 		this(form.id, form.orgId, form.name, form.displayName, form.moduleId, new ArrayList<>(form.fields), form.module, form.formType, form.labelPosition);
 		this.showInMobile = form.showInMobile;
+		this.showInWeb = form.showInWeb;
 		this.hideInList = form.hideInList;
 	}
 
@@ -206,6 +208,16 @@ public class FacilioForm implements Serializable {
 		this.showInMobile = showInMobile;
 	}
 	
+	private Boolean showInWeb;
+	
+	public Boolean getShowInWeb() {
+		return showInWeb;
+	}
+
+	public void setShowInWeb(Boolean showInWeb) {
+		this.showInWeb = showInWeb;
+	}
+
 	private Boolean hideInList;
 	public Boolean getHideInList() {
 		return hideInList;

@@ -38,6 +38,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
@@ -136,7 +137,7 @@ public class FormsAPI {
 	}
 
 	public static List<FacilioForm> getFormFromDB(Criteria criteria) throws Exception {
-		return getDBFormList(null, (List<Integer>) null, criteria, null, true, false);
+		return getDBFormList(null, (List<Integer>) null, criteria, null, true, false,false);
 	}
 	
 	private static void setFormFields (FacilioForm form) throws Exception {
@@ -456,7 +457,7 @@ public class FormsAPI {
 	public static FacilioForm getFormFromDB(long id, boolean fetchFields) throws Exception {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getIdCondition(id, ModuleFactory.getFormModule()));
-		List<FacilioForm> dbFormList = getDBFormList(null, (List<Integer>) null, criteria, null, fetchFields, false);
+		List<FacilioForm> dbFormList = getDBFormList(null, (List<Integer>) null, criteria, null, fetchFields, false, true);
 		if (CollectionUtils.isNotEmpty(dbFormList)) {
 			return dbFormList.get(0);
 		}
@@ -526,8 +527,8 @@ public class FormsAPI {
 		return formField;
 	}
 	
-	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,List<Integer> formTypes,Boolean fetchExtendedModuleForms) throws Exception {
-		List<FacilioForm> forms = getDBFormList(moduleName, formTypes, fetchExtendedModuleForms);
+	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,List<Integer> formTypes,Boolean fetchExtendedModuleForms,Boolean fetchDisabledForms) throws Exception {
+		List<FacilioForm> forms = getDBFormList(moduleName, formTypes, fetchExtendedModuleForms, fetchDisabledForms);
 		Map<String, FacilioForm> formMap = new LinkedHashMap<>();
 		if (forms != null && !forms.isEmpty()) {
 			for(FacilioForm form: forms) {
@@ -538,8 +539,8 @@ public class FormsAPI {
 		return null;
 	}
 	
-	public static List<FacilioForm> getDBFormList(String moduleName,List<Integer> formTypes, Boolean fetchExtendedModuleForms) throws Exception{
-		return getDBFormList(moduleName, formTypes, null, null, false, fetchExtendedModuleForms);
+	public static List<FacilioForm> getDBFormList(String moduleName,List<Integer> formTypes, Boolean fetchExtendedModuleForms, Boolean fetchDisabledForms) throws Exception{
+		return getDBFormList(moduleName, formTypes, null, null, false, fetchExtendedModuleForms, fetchDisabledForms);
 	}
 	
 	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields) throws Exception{
@@ -547,10 +548,10 @@ public class FormsAPI {
 		if (formType != null) {
 			formTypes = Collections.singletonList(formType.getIntVal());
 		}
-		return getDBFormList(moduleName, formTypes, criteria, selectParams, fetchFields, false);
+		return getDBFormList(moduleName, formTypes, criteria, selectParams, fetchFields, false, false);
 	}
 	
-	public static List<FacilioForm> getDBFormList(String moduleName,List<Integer> formTypes, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields, Boolean fetchExtendedModuleForms) throws Exception{
+	public static List<FacilioForm> getDBFormList(String moduleName,List<Integer> formTypes, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields, Boolean fetchExtendedModuleForms,Boolean fetchDisabledForms) throws Exception{
 		
 		FacilioModule formModule = ModuleFactory.getFormModule();
 		
@@ -608,6 +609,11 @@ public class FormsAPI {
 		if (spaces != null && spaces.size() > 0) {
 			formListBuilder.andCustomWhere("(" + FieldFactory.getIdField().getColumnName() + " in (" + forms1.constructSelectStatement() + ")");
 			formListBuilder.orCustomWhere(FieldFactory.getIdField().getColumnName() + " not in (" + forms2.constructSelectStatement() + "))");
+		}
+		if (fetchDisabledForms != null && fetchDisabledForms) {
+		}
+		else {
+			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("showInWeb"), "true", BooleanOperators.IS));
 		}
 		if (formTypes != null) {
 			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("formType"), StringUtils.join(formTypes, ","), NumberOperators.EQUALS));

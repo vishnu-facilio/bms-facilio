@@ -27,8 +27,11 @@ public class GetFormListCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		List<Integer> formTypes = (List<Integer>) context.get(FacilioConstants.ContextNames.FORM_TYPE);
 		Boolean fetchExtendedModuleForms = (Boolean) context.get(ContextNames.FETCH_EXTENDED_MODULE_FORMS);
+		
+		Boolean fetchDisabledForms = (Boolean) context.get(ContextNames.FETCH_DISABLED_FORMS);
+		
 		Map<String, FacilioForm> forms = new LinkedHashMap<>(FormFactory.getForms((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), formTypes));
-		Map<String, FacilioForm> dbForms=FormsAPI.getFormsAsMap((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), formTypes, fetchExtendedModuleForms);
+		Map<String, FacilioForm> dbForms=FormsAPI.getFormsAsMap((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), formTypes, fetchExtendedModuleForms, fetchDisabledForms);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule((String)context.get(FacilioConstants.ContextNames.MODULE_NAME));
 		if (forms != null) {
