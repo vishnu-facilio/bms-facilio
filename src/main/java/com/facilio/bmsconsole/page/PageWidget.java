@@ -240,7 +240,8 @@ public class PageWidget {
 		PORTAL_WORKPERMIT("portalWorkPermit"),
 		SAFETY_PLAN_PRECAUTIONS("safetyPlanPrecautions"),
 		PRECAUTION_HAZARDS_LIST("precautionHazardsList"),
-		HAZARD_PECAUTIONS_LIST("hazardPrecautionsList")
+		HAZARD_PECAUTIONS_LIST("hazardPrecautionsList"),
+		RELATED_COUNT("relatedCount")
  		;
 		
 		private String name;
@@ -278,10 +279,31 @@ public class PageWidget {
 		FAILURE_RATE("failureRate"),
 		AVG_TTR("avgTtr"),
 		SET_COMMAND("setCommand"),
+		MAINTENACE_COST("maintenanceCost"),
+ 		PLANNED_MAINTENACE_COST("plannedMaintenanceCost"),
+ 		UNPLANNED_MAINTENACE_COST("unplannedMaintenanceCost"),
+ 		MAINTENANCE_COST_TREND("maintenanceCostTrend"),
+ 		ASSET_COST_DETAILS("assetCostDetails"),
+ 		COST_BREAKUP("costBreakup"),
+ 		DEPRECIATION_SCHEDULE("depreciationSchedule"),
+ 		DEPRECIATION_COST_TREND("depreciationCostTrend"),
+		
 		RANK_RULE("rankRule"),
 		RULE_ASSETS_ALARM("assetsAlarm"),
 		RULE_ALARM_INSIGHT("ruleInsights"),
 		RULE_WO(""),
+		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
+		RULE_WO_DURATION("ruleWoDuration"),
+		NO_OF_ANOMALIES("noOfAnomalies"),
+ 		ML_ALARM_ENERGY_CDD("mlAlarmEnergyCdd"),
+ 		ENERGY_WASTAGE_DETAILS("energWastageDetails"),
+ 		ML_MTBA("mlMtba"),
+ 		ML_MTTC("mlMttc"),
+ 		ML_DEVIATION("mlDeviation"),
+ 		ALARM_DUARTION("alarmDuration"),
+		ANALYTICS_CHART("analyticsChart"),
+ 		IMPACT_DETAILS("impactDetails"),
+		
 		ECM("ecm"),
 		MV_SAVINGS("savings"),
 		MV_ENERGY("mvEnergy"),
@@ -292,31 +314,19 @@ public class PageWidget {
 		MV_COST_TREND("costTrend"),
 		MV_CUMULATIVE_SAVINGS("cumulativeSavings"),
 		MV_PERCENTAGE_SAVINGS("mvPercentageSavings"),
-		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
-		RULE_WO_DURATION("ruleWoDuration"),
-		MAINTENACE_COST("maintenanceCost"),
- 		PLANNED_MAINTENACE_COST("plannedMaintenanceCost"),
- 		UNPLANNED_MAINTENACE_COST("unplannedMaintenanceCost"),
- 		MAINTENANCE_COST_TREND("maintenanceCostTrend"),
- 		NO_OF_ANOMALIES("noOfAnomalies"),
- 		ML_ALARM_ENERGY_CDD("mlAlarmEnergyCdd"),
- 		ENERGY_WASTAGE_DETAILS("energWastageDetails"),
- 		ASSET_COST_DETAILS("assetCostDetails"),
- 		COST_BREAKUP("costBreakup"),
- 		DEPRECIATION_SCHEDULE("depreciationSchedule"),
- 		DEPRECIATION_COST_TREND("depreciationCostTrend"),
- 		ML_MTBA("mlMtba"),
- 		ML_MTTC("mlMttc"),
- 		ML_DEVIATION("mlDeviation"),
+ 		
  		KPI_METERS_ASSOCIATED("metersAssociated"),
  		KPI_VIOLATIONS("kpiViolations"),
  		KPI_TARGET("kpiTarget"),
  		KPI_LATEST_VALUE("kpiLatestValue"),
  		KPI_TREND("kpiTrend"),
  		KPI_TABULAR("kpiTabular"),
-		ALARM_DUARTION("alarmDuration"),
-		ANALYTICS_CHART("analyticsChart"),
- 		IMPACT_DETAILS("impactDetails")
+ 		
+ 		WEATHER("weather"),
+ 		ENERGY("energy"),
+ 		OPERATING_HOURS("operatingHours"),
+ 		BUILDING("building"),
+ 		SPACE("space"),
  		;
 		private String name;
 		

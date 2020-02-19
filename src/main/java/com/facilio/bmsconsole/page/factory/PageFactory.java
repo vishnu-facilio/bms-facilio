@@ -1,10 +1,23 @@
 
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.agent.alarms.AgentAlarmContext;
-import com.facilio.bmsconsole.context.*;
+import java.util.List;
+
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.HazardContext;
+import com.facilio.bmsconsole.context.InsuranceContext;
+import com.facilio.bmsconsole.context.PrecautionContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.SafetyPlanContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -60,6 +73,8 @@ public class PageFactory {
 				return SafetyPlanPageFactory.getHazardPage((HazardContext) record);
 			case ContextNames.PRECAUTION:
 				return SafetyPlanPageFactory.getPrecautionPage((PrecautionContext) record);
+			case ContextNames.SITE:
+				return SitePageFactory.getSitePage((SiteContext) record);
 				
 		}
 		if (module.getExtendModule() == null) {	// temp
@@ -67,8 +82,6 @@ public class PageFactory {
 		}
 		return null;
 	}
-
-	
 
 	protected static PageWidget addCommonSubModuleGroup(Section section) {
 
@@ -136,6 +149,12 @@ public class PageFactory {
 		PageWidget pageWidget = new PageWidget(WidgetType.DETAILS_WIDGET);
 		pageWidget.addToLayoutParams(section, 24, 6);
 		section.addWidget(pageWidget);
+	}
+	
+	protected static void addRelatedCountWidget(Section section, int yPos, List<String> modules) {
+		PageWidget cardWidget = new PageWidget(WidgetType.RELATED_COUNT);
+		cardWidget.addToLayoutParams(0, yPos, 16, 4);
+		section.addWidget(cardWidget);
 	}
 	
 	private static void addReadingCard(PageWidget cardWidget, String fieldName, String moduleName, long aggregateFunc, long dateOperator, long xAggr) {
