@@ -34,9 +34,6 @@ public class GetModulesListCommand extends FacilioCommand {
     	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
     	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WARRANTY_CONTRACTS));
         }
-       if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.HUDSON_YARDS)) {
-    	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.WORKPERMIT));
-       }
        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
     	   sysytemModules.add(modBean.getModule(FacilioConstants.ContextNames.TENANT));
        }
