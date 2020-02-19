@@ -83,6 +83,8 @@
 	 <job name='AnomalyEventJob' classname='com.facilio.bmsconsole.jobs.AnomalyEventJob' transactionTimeout='7200000' />
      <job name='InitiateSplitJob' classname='com.facilio.bmsconsole.jobs.InitiateSplitJob' transactionTimeout='7200000' />
      
+     <job name='AddAnomalyEventJob' classname='com.facilio.bmsconsole.jobs.AddAnomalyEventJob' transactionTimeout='7200000' />
+     
 	 <!-- Facilio DemoJob -->
 	 <job name='DemoRollUpJob' classname='com.facilio.bmsconsole.jobs.DemoRollUpJob' transactionTimeout='900000'/> 
 	 <!-- Facilio DeltaCalculation -->
