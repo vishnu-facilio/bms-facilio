@@ -13,11 +13,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import com.facilio.accounts.dto.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.AccountsInterface;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -231,7 +234,7 @@ public class BmsDBConf extends DBConf {
         FileStore fs = FacilioFactory.getFileStore();
         for(Map<String, Object> value : values) {
             for(FacilioField field : fileFields) {
-                if (value.containsKey(field.getName())) {
+                if (value.get(field.getName()) != null) {
                     Object fileObj = value.get(field.getName());
                     fileObj = fileObj instanceof List && ((ArrayList)fileObj).get(0) != null ? ((Map<String,Object>)((ArrayList)fileObj).get(0)) : fileObj;
                     File file = null;
