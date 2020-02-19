@@ -142,7 +142,7 @@ public class AddAnomalyEventJob extends FacilioJob {
                         while(startTime<endTime)
                         {
                                 long checkGamModuleid = 55443;
-                                long checkratioModuleid1 = 81653;
+                                long checkratioModuleid1 = 55445;
 
                                 FacilioModule checkGamModule = modBean.getModule(checkGamModuleid);
                                 List<FacilioField> gamFields = modBean.getAllFields(checkGamModule.getName());
