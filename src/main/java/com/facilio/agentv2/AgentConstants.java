@@ -163,4 +163,5 @@ public class AgentConstants
     public static final String SITE_COUNT = "siteCount";
     public static final String CERT_FILE_DOWNLOAD_URL = "certFileDownloadUrl";
     public static final String DOWNLOAD_LINK = "downloadLink";
+    public static final String PROCESSOR_VERSION = "processorVersion";
 }

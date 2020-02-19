@@ -66,6 +66,9 @@ public class AgentApiV2 {
     private static List<FacilioAgent> getAgents(String agentName, AgentType type, boolean getDeleted,FacilioContext context) throws Exception {
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentDataFields());
+        if(context == null){
+            context = new FacilioContext();
+        }
         context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentConstants.AGENT_TABLE);
         context.put(FacilioConstants.ContextNames.FIELDS, fieldMap.values());
         Criteria criteria = new Criteria();

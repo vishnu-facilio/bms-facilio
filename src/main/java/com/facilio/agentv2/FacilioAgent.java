@@ -31,6 +31,16 @@ public class FacilioAgent {
     private long createdTime = -1L;
     private long transformWorkflowId = -1;
 
+    public int getProcessorVersion() {
+        return processorVersion;
+    }
+
+    public void setProcessorVersion(int processorVersion) {
+        this.processorVersion = processorVersion;
+    }
+
+    private int processorVersion = -1;
+
     public long getTransformWorkflowId() {
 		return transformWorkflowId;
 	}

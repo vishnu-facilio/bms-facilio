@@ -437,6 +437,7 @@ public class FieldFactory {
 		fields.add(getField(AgentConstants.STATE, "STATE", module, FieldType.NUMBER));
 		fields.add(getField(AgentConstants.SITE_ID, "SITE_ID", module, FieldType.NUMBER));
 		fields.add(getWritableField(module));
+		fields.add(getField(AgentConstants.PROCESSOR_VERSION,"PROCESSOR_VERSION",module,FieldType.NUMBER));
 		fields.add(getField(AgentConstants.DELETED_TIME, "DELETED_TIME", FieldType.NUMBER));
 		fields.add(getField(AgentKeys.TRANSFORM_WORKFLOW_ID,"TRANSFORM_WORKFLOW_ID",module,FieldType.NUMBER));
 		return fields;

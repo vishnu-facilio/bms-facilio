@@ -2,6 +2,7 @@ package com.facilio.dataprocessor;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
+import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.DataProcessorV2;
 import com.facilio.aws.util.FacilioProperties;
@@ -115,26 +116,38 @@ public class DataProcessorUtil {
             if (ruleList != null) {
                 eventRules = ruleList;
             }
+
+            int processorVersion = 0;
             try {
+                if(payLoad.containsKey(AgentConstants.AGENT) && ( payLoad.get(AgentConstants.AGENT) != null ) ){
+                    com.facilio.agentv2.FacilioAgent agentV2 = AgentApiV2.getAgent((String) payLoad.get(AgentConstants.AGENT));
+                    if(agentV2 != null){
+                        processorVersion = agentV2.getProcessorVersion();
+                    }
+                    LOGGER.info(" checking agent version for agent "+payLoad.get(AgentConstants.AGENT)+"  version "+processorVersion);
+                }else {
+                    LOGGER.info(" payload missing key 'agent' "+payLoad);
+                }
+            }catch (Exception e){
+                LOGGER.info(" Exception occurred while checking agent version ",e);
+            }
+
+            switch (processorVersion){
+                case 2:
+                    LOGGER.info(" new processor data ");
+                    return sendToProcessorV2(payLoad,recordId);
+                default:
+                    LOGGER.info(" old processor data ");
+                    // will divert to another class in future.
+            }
+
+
+           /* try {
                 if (payLoad.containsKey(AgentConstants.VERSION)) {
                     Object version = payLoad.get(AgentConstants.VERSION);
                     if (version instanceof String) {
                         if (("2#".equalsIgnoreCase((String) version))) {
-                            if (dataProcessorV2 != null) {
-                                LOGGER.info(" newProcessor payload -> " + payLoad);
-                                try {
-                                    if (!dataProcessorV2.processRecord(payLoad)) {
-                                        return false;
-                                    }
-                                    updateAgentMessage(recordId, MessageStatus.PROCESSED);
-                                    return true;
-                                } catch (Exception newProcessorException) {
-                                    LOGGER.info("Exception occurred ", newProcessorException);
-                                    return false;
-                                }
-                            } else {
-                                LOGGER.info(" DATAPROCESSOR object is null ");
-                            }
+
                         } else {
                             LOGGER.info(" version not V2 -> " + version);
                         }
@@ -142,7 +155,7 @@ public class DataProcessorUtil {
                 }
             } catch (Exception e) {
                 LOGGER.info("Exception occurred while processing new agent's message", e);
-            }
+            }*/
 
             String dataType = PublishType.event.getValue();
             if (payLoad.containsKey(EventUtil.DATA_TYPE)) {
@@ -258,6 +271,24 @@ public class DataProcessorUtil {
         }
         // LOGGER.info(" processing successful");
         return true;
+    }
+
+    private boolean sendToProcessorV2(JSONObject payLoad, String recordId) {
+        if (dataProcessorV2 != null) {
+            try {
+                if (!dataProcessorV2.processRecord(payLoad)) {
+                    return false;
+                }
+                updateAgentMessage(recordId, MessageStatus.PROCESSED);
+                return true;
+            } catch (Exception newProcessorException) {
+                LOGGER.info("Exception occurred ", newProcessorException);
+                return false;
+            }
+        } else {
+            LOGGER.info(" DATAPROCESSOR object is null ");
+            return false;
+        }
     }
 
     public static boolean checkIfDuplicate(String recordId) {
