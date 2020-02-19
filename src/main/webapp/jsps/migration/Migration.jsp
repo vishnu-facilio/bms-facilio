@@ -60,10 +60,15 @@
 				FacilioModule visitorLogModule=modBean.getModule("visitorlogging");
 				FacilioModule visitorModule=modBean.getModule("visitor");
 				
-				FacilioField visitedSpace=modBean.getField("visitedSpace", "visitorlogging");				
-				FacilioField lastVisitedSpace=modBean.getField("lastVisitedSpace", "visitor");
+				;
 				
-				if(visitorLogModule!=null&&visitorModule!=null&&visitedSpace!=null&&lastVisitedSpace!=null&&baseSpaceModule!=null)
+				if(visitorLogModule!=null&&visitorModule!=null&&baseSpaceModule!=null)
+				{
+				
+					FacilioField visitedSpace=modBean.getField("visitedSpace", "visitorlogging");				
+					FacilioField lastVisitedSpace=modBean.getField("lastVisitedSpace", "visitor");
+					
+				if(visitedSpace!=null&&lastVisitedSpace!=null)
 				{
 					
 					
@@ -79,7 +84,7 @@
 					
 					
 				}
-				
+				}
 				
 
 				
