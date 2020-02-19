@@ -35,15 +35,15 @@ public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 	private long checkInTime = -1;
 	private long checkOutTime = -1;
 	private VisitorContext visitor;
-	private ResourceContext visitedSpace;
+	private BaseSpaceContext visitedSpace;
 	
 	
 
-	public ResourceContext getVisitedSpace() {
+	public BaseSpaceContext getVisitedSpace() {
 		return visitedSpace;
 	}
 
-	public void setVisitedSpace(ResourceContext visitedSpace) {
+	public void setVisitedSpace(BaseSpaceContext visitedSpace) {
 		this.visitedSpace = visitedSpace;
 	}
 

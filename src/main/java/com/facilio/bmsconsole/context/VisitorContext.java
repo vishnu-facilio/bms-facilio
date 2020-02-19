@@ -122,7 +122,7 @@ public class VisitorContext extends ModuleBaseWithCustomFields{
 	private long firstVisitedTime;
 	
 	private ContactsContext lastVisitedHost;
-	private ResourceContext lastVisitedSpace;
+	private BaseSpaceContext lastVisitedSpace;
 
 	public long getLastVisitedTime() {
 		return lastVisitedTime;
@@ -141,11 +141,11 @@ public class VisitorContext extends ModuleBaseWithCustomFields{
 		this.lastVisitedHost = lastVisitedHost;
 	}
 
-	public ResourceContext getLastVisitedSpace() {
+	public BaseSpaceContext getLastVisitedSpace() {
 		return lastVisitedSpace;
 	}
 
-	public void setLastVisitedSpace(ResourceContext lastVisitedSpace) {
+	public void setLastVisitedSpace(BaseSpaceContext lastVisitedSpace) {
 		this.lastVisitedSpace = lastVisitedSpace;
 	}
 	
