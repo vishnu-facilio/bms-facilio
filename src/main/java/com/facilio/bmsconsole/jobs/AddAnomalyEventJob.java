@@ -62,9 +62,9 @@ public class AddAnomalyEventJob extends FacilioJob {
         while(startTime<endTime)
         {
 //          SELECT DISTINCT PREDICTION_LOG_MODULEID from ML WHERE MODEL_PATH='checkGam1' and ORGID=?
-            long checkGamModuleid = 48128;
+            long checkGamModuleid = 55443;
 //          SELECT DISTINCT PREDICTION_LOG_MODULEID from ML WHERE MODEL_PATH='ratioCheck' and ORGID=?   
-            long checkratioModuleid1 = 48150;
+            long checkratioModuleid1 = 55445;
 //          long checkratioModuleid2 = 77887; // IF there is more than one set in ratio hierarchy [1,2,3,4] , [4,5,6,7]
 
             FacilioModule checkGamModule = modBean.getModule(checkGamModuleid);
@@ -112,21 +112,21 @@ public class AddAnomalyEventJob extends FacilioJob {
                     {
                         data = checkGamData.get("1270982");
                         MLAnomalyEvent event = generateRCAEvent(Long.parseLong("1270982"),(Double)data.get("actualValue"),
-                                        (Double)data.get("adjustedUpperBound"),startTime,87,(Double)ratio1data.get("1270982_ratio"),parentEvent);
+                                        (Double)data.get("adjustedUpperBound"),startTime,135,(Double)ratio1data.get("1270982_ratio"),parentEvent);
                         eventList.add(event);
                     }
                     if(ratio1data.has("1270992_ratio"))
                     {
                         data = checkGamData.get("1270992");
                         MLAnomalyEvent event = generateRCAEvent(Long.parseLong("1270992"),(Double)data.get("actualValue"),
-                                        (Double)data.get("adjustedUpperBound"),startTime,91,(Double)ratio1data.get("1270992_ratio"),parentEvent);
+                                        (Double)data.get("adjustedUpperBound"),startTime,136,(Double)ratio1data.get("1270992_ratio"),parentEvent);
                         eventList.add(event);
                     }
                     if(ratio1data.has("1270961_ratio"))
                     {
                         data = checkGamData.get("1270961");
                         MLAnomalyEvent event = generateRCAEvent(Long.parseLong("1270961"),(Double)data.get("actualValue"),
-                                        (Double)data.get("adjustedUpperBound"),startTime,85,(Double)ratio1data.get("1270961_ratio"),parentEvent);
+                                        (Double)data.get("adjustedUpperBound"),startTime,137,(Double)ratio1data.get("1270961_ratio"),parentEvent);
                         eventList.add(event);
                     }
                 }
