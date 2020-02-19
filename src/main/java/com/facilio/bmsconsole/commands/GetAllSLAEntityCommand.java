@@ -49,10 +49,12 @@ public class GetAllSLAEntityCommand extends FacilioCommand {
                             criteriaIds.add(entityContext.getCriteriaId());
                         }
                     }
-                    Map<Long, Criteria> criteriaAsMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
-                    if (MapUtils.isNotEmpty(criteriaAsMap)) {
-                        for (SLAEntityContext entityContext : slaEntities) {
-                            entityContext.setCriteria(criteriaAsMap.get(entityContext.getCriteriaId()));
+                    if (CollectionUtils.isNotEmpty(criteriaIds)) {
+                        Map<Long, Criteria> criteriaAsMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+                        if (MapUtils.isNotEmpty(criteriaAsMap)) {
+                            for (SLAEntityContext entityContext : slaEntities) {
+                                entityContext.setCriteria(criteriaAsMap.get(entityContext.getCriteriaId()));
+                            }
                         }
                     }
                 }
