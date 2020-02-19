@@ -7,6 +7,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.chain.FacilioChain;
@@ -1068,7 +1069,7 @@ public class ReadingsAPI {
 		}
 	}
 	
-	public static void deleteReadings(long parentId, List<FacilioField> assetFields, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap, Boolean... deleteReadings) throws Exception {
+	public static void deleteReadings(long parentId, List<FacilioField> assetFields, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldMap,List<Long> readingDataIds, Boolean... deleteReadings) throws Exception {
 		ReadingDataMeta rdm = new ReadingDataMeta();
 		List<Long> fieldIds = new ArrayList<>();
 		ReadingContext reading = new ReadingContext();
@@ -1096,7 +1097,9 @@ public class ReadingsAPI {
 					.module(module)
 					.fields(fields)
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS));
-			
+			if (readingDataIds != null) {
+				updateBuilder.andCondition(CriteriaAPI.getIdCondition(readingDataIds, module));
+			}
 			updateBuilder.update(reading);
 			
 			rdm.setValue("-1");
@@ -1104,6 +1107,9 @@ public class ReadingsAPI {
 		}
 		
 		rdm.setInputType(ReadingInputType.WEB);
+		rdm.setReadingType(ReadingType.READ);
+		rdm.setIsControllable(false);
+		rdm.setControlActionMode(ControlActionMode.SANDBOX.getValue());
 		
 		ReadingsAPI.updateReadingDataMeta(parentId, fieldIds, rdm);
 	}

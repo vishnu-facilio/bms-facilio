@@ -253,6 +253,9 @@ public class FormsAPI {
 		long orgId = AccountUtil.getCurrentOrg().getId();
 		form.setOrgId(orgId);
 		form.setModule(module);
+		if (form.getShowInWeb() == null) {
+			form.setShowInWeb(true);
+		}
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(form);
 		FacilioModule formModule = ModuleFactory.getFormModule();

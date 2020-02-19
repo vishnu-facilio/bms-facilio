@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 
@@ -54,8 +55,8 @@ public class MigrateReadingDataCommand extends FacilioCommand {
 		if (readingsList != null && !readingsList.isEmpty()) {
 			
 			addReading(assetId, fieldId, oldField.getName(), readingsList);
-			
-			ReadingsAPI.deleteReadings(oldAssetId, Collections.singletonList(oldField), oldModule, oldModulefields, oldModulefieldMap);
+			List<Long> readingDataIds = readingsList.stream().map(reading -> reading.getId()).collect(Collectors.toList());
+			ReadingsAPI.deleteReadings(oldAssetId, Collections.singletonList(oldField), oldModule, oldModulefields, oldModulefieldMap, readingDataIds);
 		}
 		
 		return false;
