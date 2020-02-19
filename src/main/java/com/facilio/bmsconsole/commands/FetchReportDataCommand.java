@@ -313,7 +313,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				if (!filter.isDataFilter() && (filter.getFilterValue() == null || filter.getFilterValue().isEmpty())) {
 					return true;
 				}
-				if (filter.getFilterModuleName().equals(dataPoint.getxAxis().getModuleName())) {
+				if (dataPoint.getTypeEnum()!= DataPointType.FIELD) {
 					FacilioField filterField = modBean.getField(filter.getFilterFieldName(), dataPoint.getxAxis().getModuleName());
 					if (filter.isDataFilter()) {
 						selectBuilder.andCondition(CriteriaAPI.getCondition(filterField, filter.getFilterValue(), filter.getFilterOperatorEnum()));
