@@ -178,6 +178,12 @@ public enum WorkOrderActivityType implements ActivityType {
 		public String constructMessage(JSONObject json) {
 			return "SLA Escalation Triggered";
 		}
+	},
+	SLA_ACTIVATED(62) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			return "Service-level agreement has been activated";
+		}
 	}
 	;
 	private int value;

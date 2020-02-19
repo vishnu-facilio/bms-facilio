@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.workflow.rule;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.SLAWorkflowAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.chain.FacilioChain;
@@ -10,16 +11,12 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.time.DateTimeUtil;
-import com.facilio.util.FacilioUtil;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -75,21 +72,21 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 FacilioField baseField = modBean.getField(slaEntity.getBaseFieldId());
                 FacilioField dueField = modBean.getField(slaEntity.getDueFieldId());
 
-//                if (FacilioUtil.isEmptyOrNull(FieldUtil.getValue(moduleRecord, dueField))) {
-                    Long timeValue = (Long) FieldUtil.getValue(moduleRecord, baseField);
-                    if (timeValue == null) {
-                        continue;
-                    }
-                    timeValue += slaEntityDuration.getAddDuration() * 1000;
+                Long timeValue = (Long) FieldUtil.getValue(moduleRecord, baseField);
+                if (timeValue == null) {
+                    continue;
+                }
+                timeValue += slaEntityDuration.getAddDuration() * 1000;
 
-                    FieldUtil.setValue(moduleRecord, dueField, timeValue);
+                Long oldTime = (Long) FieldUtil.getValue(moduleRecord, dueField);
+                addSLATriggeredActivity(context, moduleRecord, slaPolicy, oldTime, timeValue);
+                FieldUtil.setValue(moduleRecord, dueField, timeValue);
 
-                    UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>()
-                            .module(module)
-                            .fields(Collections.singletonList(dueField))
-                            .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
-                    update.update(moduleRecord);
-//                }
+                UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>()
+                        .module(module)
+                        .fields(Collections.singletonList(dueField))
+                        .andCondition(CriteriaAPI.getIdCondition(moduleRecord.getId(), module));
+                update.update(moduleRecord);
 
                 if (MapUtils.isNotEmpty(escalationMap)) {
                     SLAPolicyContext.SLAPolicyEntityEscalationContext slaPolicyEntityEscalationContext = escalationMap.get(slaEntityDuration.getSlaEntityId());
@@ -136,6 +133,16 @@ public class SLAWorkflowCommitmentRuleContext extends WorkflowRuleContext {
                 recordRuleChain.execute();
             }
         }
+    }
+
+    private void addSLATriggeredActivity(Context context, ModuleBaseWithCustomFields record, SLAPolicyContext slaPolicy, Long oldDate, Long newDate) throws Exception {
+        JSONObject infoJson = new JSONObject();
+        infoJson.put("name", slaPolicy.getName());
+        infoJson.put("oldDate", oldDate);
+        infoJson.put("newDate", newDate);
+
+        CommonCommandUtil.addActivityToContext(record.getId(), System.currentTimeMillis(), WorkOrderActivityType.SLA_ACTIVATED, infoJson,
+                (FacilioContext) context);
     }
 
     private ActionContext getDefaultSLAEscalationTriggeredAction(int count) {

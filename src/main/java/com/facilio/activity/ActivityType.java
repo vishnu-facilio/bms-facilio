@@ -35,7 +35,7 @@ public interface ActivityType {
 		for (ActivityType type: AlarmActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Max number = 61
+		// Max number = 62
 
 		return activityMap;
 	}
