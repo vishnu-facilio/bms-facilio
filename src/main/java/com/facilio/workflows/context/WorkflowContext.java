@@ -421,7 +421,8 @@ public class WorkflowContext implements Serializable {
 		        this.setParsedV2Script(true);
 			}
 			catch(Exception e) {
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+//				e.printStackTrace();
+//				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				this.setWorkflowExpressions(null);
 				this.setParsedV2Script(false);
 			}
