@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
 import com.facilio.bmsconsole.context.MLAnomalyEvent;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -37,7 +38,8 @@ public class AddAnomalyEventJob extends FacilioJob {
     {
     	try{
             LOGGER.info("generating Alarm ML started ");
-            generateAnomalyEvents();
+            org.json.simple.JSONObject props=BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
+            generateAnomalyEvents(Long.parseLong(props.get("startTime").toString()),Long.parseLong(props.get("endTime").toString()));
             LOGGER.info("generating Alarm ML finished ");
     	}catch(Exception e){
     		LOGGER.fatal("ERROR in AddAnomalyEventJob"+e);
@@ -45,13 +47,13 @@ public class AddAnomalyEventJob extends FacilioJob {
     	}
     }
     
-    private void generateAnomalyEvents() throws Exception
+    private void generateAnomalyEvents(long startTime,long endTime) throws Exception
     {	
 //      select PARENT_METER_ID,MIN(TTIME),MAX(TTIME) from Energy_Data where ORGID=78 and PARENT_METER_ID in (1273322,1270982,1270992,1270961) group by PARENT_METER_ID
 //      start time is min time
 //      end time = max time+ interval
-        long startTime = 1564646400000L;
-        long endTime = 1581667200000L;
+//        long startTime = 1564646400000L;
+//        long endTime = 1581667200000L;
         long interval = 3600000;
 
         String checkGamParent="1273322,1270982,1270992,1270961";
