@@ -1441,6 +1441,9 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.NoteAction" method="v2addNote">
 		</action>
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.NoteAction" method="deleteNote">
+		</action>
 	</package>
 
 	<package name="noteApiListv2" namespace="/api/v2/notes/parent"

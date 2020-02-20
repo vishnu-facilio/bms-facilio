@@ -336,6 +336,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain deleteNotesChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteNoteCommand());
+		return c;
+	}
+	
 	public static FacilioChain getReadingAlarmsChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForReadingAlarm());

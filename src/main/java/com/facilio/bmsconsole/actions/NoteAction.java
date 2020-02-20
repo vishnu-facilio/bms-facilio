@@ -66,6 +66,16 @@ public class NoteAction extends FacilioAction {
 	public String addNote() throws Exception {
 		return addNote(module);
 	}
+
+	public String deleteNote() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, module);
+		context.put(FacilioConstants.ContextNames.NOTE_ID, noteId);
+		FacilioChain deleteNote = FacilioChainFactory.deleteNotesChain();
+		deleteNote.execute(context);
+		setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+		return SUCCESS;
+	}
 	
 	private String addNote(String moduleName) throws Exception {
 		FacilioContext context = new FacilioContext();

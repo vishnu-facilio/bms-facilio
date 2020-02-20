@@ -526,6 +526,7 @@ public class FacilioConstants {
 		public static final String REPORT_CALLING_FROM = "reportCallingFrom";
 		
 		public static final String NOTE = "note";
+		public static final String NOTE_ID = "noteId";
 		public static final String NOTE_LIST = "notes";
 		public static final String NOTES_LIST = "notesList";
 		public static final String COMMENT = "comment";
