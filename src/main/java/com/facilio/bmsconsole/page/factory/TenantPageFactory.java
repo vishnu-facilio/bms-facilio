@@ -52,7 +52,7 @@ public class TenantPageFactory extends PageFactory{
 			for (FacilioModule subModule : subModules) {
 				List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
 				List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
-				if ((CollectionUtils.isNotEmpty(fields)) && (!subModule.getName().equals("tenantspaces")) && (subModule.getName().equals("contact") && AccountUtil.getCurrentAccount().getOrg().getOrgId() != 297)) {
+				if ((CollectionUtils.isNotEmpty(fields)) && (!subModule.getName().equals("tenantspaces"))) {
 					for (FacilioField field : fields) {
 						PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
 						JSONObject relatedList = new JSONObject();
