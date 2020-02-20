@@ -1,23 +1,16 @@
 package com.facilio.agent.alarms;
 
+import com.facilio.agent.FacilioAgent;
 import com.facilio.bmsconsole.context.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.chain.Context;
 
 public class AgentEventContext extends BaseEventContext {
-    long agentId;
-
-    public long getAgentId() {
-        return agentId;
-    }
-
-    public void setAgentId(long agentId) {
-        this.agentId = agentId;
-    }
+    private FacilioAgent agent;
 
     @Override
     public String constructMessageKey() {
-        return "AgentAlarm_" + getAgentId();
+        return "AgentAlarm_" + getAgent();
     }
 
     @Override
@@ -32,7 +25,7 @@ public class AgentEventContext extends BaseEventContext {
             alarmOccurrence = new AgentAlarmOccurrenceContext();
         }
         AgentAlarmOccurrenceContext agentAlarmOccurrenceContext = (AgentAlarmOccurrenceContext) alarmOccurrence;
-        agentAlarmOccurrenceContext.setAgentId(agentId);
+        agentAlarmOccurrenceContext.setAgent(getAgent());
 
         return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
     }
@@ -45,9 +38,17 @@ public class AgentEventContext extends BaseEventContext {
         super.updateAlarmContext(baseAlarm, add);
 
         AgentAlarmContext alarm = (AgentAlarmContext) baseAlarm;
-        alarm.setAgentId(getAgentId());
+        alarm.setAgent(getAgent()); 
 
 
         return baseAlarm;
+    }
+
+    public void setAgent(FacilioAgent agent) {
+        this.agent = agent;
+    }
+
+    public FacilioAgent getAgent() {
+        return agent;
     }
 }

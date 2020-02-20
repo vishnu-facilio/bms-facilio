@@ -33,6 +33,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
+import sun.management.Agent;
 
 import java.security.SecureRandom;
 import java.sql.SQLException;
@@ -162,7 +163,7 @@ public  class AgentUtil
 
     }
 
-    public long processAgent(JSONObject jsonObject, String agentName, long agentId) {
+    public long processAgent(JSONObject jsonObject, String agentName) {
        /* String agentName = agentName;
         if (StringUtils.isEmpty(agentName)) { //Temp fix to avoid NPE
         	agentName = orgDomainName;
@@ -246,10 +247,10 @@ public  class AgentUtil
                 if (jsonObject.containsKey(AgentKeys.STATUS)) {
                     int status = Integer.parseInt(jsonObject.get(AgentKeys.STATUS).toString());
                     if (status == 0) {
-                        raiseAgentAlarm(agentName, agentId);
+                        raiseAgentAlarm(agent);
                     }
                     if (status == 1) {
-                        dropAgentAlarm(agentName, agentId);
+                        dropAgentAlarm( agent);
                     }
                 }
 
@@ -300,11 +301,11 @@ public  class AgentUtil
         return 0;
     }
 
-    public static void dropAgentAlarm(String agentName, long agentId) throws Exception {
+    public static void dropAgentAlarm(FacilioAgent agent) throws Exception {
         long currentTime = System.currentTimeMillis();
-        AgentEventContext event = getAgentEventContext(agentName, agentId, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY);
+        AgentEventContext event = getAgentEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY);
         addEventToDB(event);
-        LOGGER.info("Cleared Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
+        LOGGER.info("Cleared Agent Alarm for Agent : " + agent.getAgentName() + " ( ID :" + agent.getId()+ ")");
 
     }
 
@@ -317,29 +318,33 @@ public  class AgentUtil
         chain.execute(context);
     }
 
-    public static void raiseAgentAlarm(String agentName, long agentId) throws Exception {
+    public static void raiseAgentAlarm(FacilioAgent agent) throws Exception {
         long currentTime = System.currentTimeMillis();
-        AgentEventContext event = getAgentEventContext(agentName, agentId, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY);
+        AgentEventContext event = getAgentEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY);
 
         addEventToDB(event);
-        LOGGER.info("Added Agent Alarm for Agent : " + agentName + " ( ID :" + agentId + ")");
+        LOGGER.info("Added Agent Alarm for Agent : " + agent.getAgentName() + " ( ID :" + agent.getId() + ")");
 
     }
 
-    private static AgentEventContext getAgentEventContext(String agentName, long agentId, long currentTime, String severity) {
+    private static AgentEventContext getAgentEventContext( FacilioAgent agent, long currentTime, String severity) {
         AgentEventContext event = new AgentEventContext();
-        String s = null;
+        String description = null;
+        String message = null;
         if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
-            s = " has lost connection with the facilio cloud @";
+            description = "Agent " + agent.getAgentName() + " has lost connection with the facilio cloud @"+ DateTimeUtil.getFormattedTime(currentTime);
+            message = "agent "+agent.getAgentName() +" connection lost ";
         } else if (severity.equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
-            s = " has regained connection with the facilio cloud @";
+            description = "Agent " + agent.getAgentName() + " has lost connection with the facilio cloud @"+ DateTimeUtil.getFormattedTime(currentTime);
+            message = "agent "+agent.getAgentName() +" connection reestablished";
         }
-        event.setMessage("Agent " + agentName + s + DateTimeUtil.getFormattedTime(currentTime));
+        event.setMessage(message);
+        event.setDescription(description);
         //event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
         event.setSeverityString(severity);
         event.setCreatedTime(currentTime);
         event.setSiteId(AccountUtil.getCurrentSiteId());
-        event.setAgentId(agentId);
+        event.setAgent(agent);
         return event;
     }
 

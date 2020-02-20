@@ -385,8 +385,9 @@ public class NewAlarmAPI {
 				info.put("oldValue",  AlarmAPI.getAlarmSeverity(alarmOccurrence.getPreviousSeverity().getId()).getDisplayName());
 			}
 			info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
-
-			CommonCommandUtil.addAlarmActivityToContext(baseAlarm.getId(), -1, AlarmActivityType.AUTO_CLEARED, info, (FacilioContext) context, alarmOccurrence.getId());
+			if (baseAlarm.getId()>0) {
+				CommonCommandUtil.addAlarmActivityToContext(baseAlarm.getId(), -1, AlarmActivityType.AUTO_CLEARED, info, (FacilioContext) context, alarmOccurrence.getId());
+			}
 			baseAlarm.setLastClearedTime(alarmOccurrence.getLastOccurredTime());
 		}
 	}

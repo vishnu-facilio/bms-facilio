@@ -221,7 +221,7 @@ public class DataProcessorUtil {
                         // updateDeviceTable(record.getPartitionKey());
                         break;
                     case agent:
-                        i = agentUtil.processAgent(payLoad, agentName, agent.getId());
+                        i = agentUtil.processAgent(payLoad, agentName);
                         processLog(payLoad, agent.getId());
                         break;
                     case devicepoints:
