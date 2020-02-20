@@ -44,7 +44,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		boolean needCriteriaReport =  (boolean) context.get(FacilioConstants.ContextNames.NEED_CRITERIAREPORT);
+		boolean needCriteriaReport =  (boolean) context.getOrDefault(FacilioConstants.ContextNames.NEED_CRITERIAREPORT, false);
 		if(needCriteriaReport) {
 			
 			ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
