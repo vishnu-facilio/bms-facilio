@@ -668,6 +668,83 @@
 				return null;
 			}"
 		},
+		"11": {
+			"description" : "Agent Alarm Insight",
+			"usage" : "Agent Alarm Summary",
+			"workflow" : "Map agentMetrics(Number alarmId) {
+				date = NameSpace(\"date\");
+				thisMonthRanges = date.getDateRange(\"Current Month\");
+				lastMonthRanges = date.getDateRange(\"Last Month\");
+				alarmoccurrenceModule = Module(\"alarmoccurrence\");
+				occurenceThisMonthCrit = null;
+				occurenceLastMonthCrit = null;
+				resMap = {};
+				occurenceThisMonthCrit = {
+					criteria: [alarm == alarmId && createdTime == thisMonthRanges],
+					orderBy : \"createdTime\" asc
+				};
+				occurenceLastMonthCrit = {
+					criteria: [alarm == alarmId && createdTime == lastMonthRanges],
+					orderBy : \"createdTime\" asc
+				};
+				mtba = 0;
+				previousClearedTime = 0;
+				noOfOccurrence = 0;
+				lstNoOfOccurrence = 0;
+				maxDuration = 0;
+				maxDurationTime = 0;
+				thisMonthOccurence =  alarmoccurrenceModule.fetch(occurenceThisMonthCrit);
+				if (thisMonthOccurence != null) {
+					noOfOccurrence = thisMonthOccurence.size();
+					for each index,value in thisMonthOccurence {
+						createdTime = value.createdTime;
+						duration = 0;
+						if (value.clearedTime != null) {
+							duration = value.duration;
+						} else {
+							duration = (date().now() - createdTime);
+						}
+						mtba = mtba + duration;
+						if (maxDuration < duration) {
+							maxDuration = duration;
+							maxDurationTime = value.createdTime;
+						}
+					}
+				}
+				resMap[\"mtba\"] = mtba;
+				resMap[\"noOfOcc\"] = noOfOccurrence;
+				resMap[\"maxDuration\"] = maxDuration;
+				resMap[\"maxDurationTime\"] = maxDurationTime;
+				mtba = 0;
+				maxDuration = 0;
+				maxTimeDuration = null;
+				previousClearedTime = 0;
+				lastMonthOccurence =  alarmoccurrenceModule.fetch(occurenceLastMonthCrit);
+				if (lastMonthOccurence != null) {
+					lstNoOfOccurrence = lastMonthOccurence.size();
+						for each index,value in lastMonthOccurence {
+						createdTime = value.createdTime;
+						duration = 0;
+						if (value.clearedTime != null) {
+							duration = value.duration;
+						} else {
+							duration = (date().now() - createdTime);
+						}
+						mtba = mtba + duration;
+						if (maxDuration < duration) {
+							maxDuration = duration;
+							maxDurationTime = value.createdTime;
+						}
+					}
+				}
+				resMap[\"mtbaLastMonth\"] = mtba;
+				resMap[\"noOfOccLastMonth\"] = lstNoOfOccurrence;
+				resMap[\"maxDurationLast\"] = maxDuration;
+				resMap[\"maxDurationTimeLast\"] = maxDurationTime;
+				log resMap;
+				return resMap;
+				}"
+		},
 		"46": {
 			"description" : "ML Deviation",
 			"usage" : "AnomalySummary",
