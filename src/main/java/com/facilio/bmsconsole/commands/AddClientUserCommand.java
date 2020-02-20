@@ -57,7 +57,7 @@ public class AddClientUserCommand extends FacilioCommand {
 	}
 	
 	private ContactsContext addDefaultClientPrimaryContact(ClientContext client) throws Exception {
-		ContactsAPI.unMarkPrimaryContact(-1, client.getId(), false);
+		ContactsAPI.unMarkPrimaryContact(-1, client.getId(), ContactType.CLIENT);
 		ContactsContext contact = new ContactsContext();
 		contact.setName(client.getPrimaryContactName() != null ? client.getPrimaryContactName() : client.getName());
 		contact.setContactType(ContactType.CLIENT);

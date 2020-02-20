@@ -25,6 +25,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.twilio.rest.serverless.v1.service.Build;
 
 public class GetWorkOrderCommand extends FacilioCommand {
 
@@ -75,6 +76,7 @@ public class GetWorkOrderCommand extends FacilioCommand {
 				}
 			}
 			builder.fetchSupplements(customLookupFields);
+			builder.fetchSupplement((LookupField) fieldMap.get("client"));
 			
 			List<WorkOrderContext> workOrders = builder.get();
 			if(workOrders.size() > 0) {

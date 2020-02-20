@@ -11,6 +11,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContactsContext;
+import com.facilio.bmsconsole.context.ContactsContext.ContactType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -149,6 +150,8 @@ public class ContactsAPI {
 		}
 		else if(contact.getContactType() == 3) {
 			user.setAppType(1);
+		} else if(contact.getContactType() == 4) {
+			user.setAppType(4);
 		}
 		long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false);
 		user.setId(userId);
@@ -164,13 +167,16 @@ public class ContactsAPI {
 		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 		FacilioField primaryContactField = contactFieldMap.get("isPrimaryContact");
 		if(contact.getVendor() != null && contact.isPrimaryContact()) {
-			unMarkPrimaryContact(contact.getId(), contact.getVendor().getId(), true);
+			unMarkPrimaryContact(contact.getId(), contact.getVendor().getId(), ContactType.VENDOR);
 			rollUpVendorPrimarycontactFields(contact.getVendor().getId(), contact);
 		}
 		else if(contact.getTenant() != null && contact.isPrimaryContact()) {
-			unMarkPrimaryContact(contact.getId(), contact.getTenant().getId(), false);
+			unMarkPrimaryContact(contact.getId(), contact.getTenant().getId(), ContactType.TENANT);
 			rollUpTenantPrimarycontactFields(contact.getTenant().getId(), contact);
-		}
+		} else if(contact.getClient() != null && contact.isPrimaryContact()) {
+			unMarkPrimaryContact(contact.getId(), contact.getClient().getId(), ContactType.CLIENT);
+			rollUpClientPrimarycontactFields(contact.getClient().getId(), contact);
+		} 
 		updatedfields.add(primaryContactField);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 											.table(module.getTableName())
@@ -239,6 +245,34 @@ public class ContactsAPI {
 		updateBuilder.update(value);
 
 	}
+	
+	public static void rollUpClientPrimarycontactFields(long clientId, ContactsContext contact) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CLIENT);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.CLIENT);
+		Map<String, FacilioField> contactFieldMap = FieldFactory.getAsMap(fields);
+		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+		
+		FacilioField primaryEmailField = contactFieldMap.get("primaryContactEmail");
+		FacilioField primaryPhoneField = contactFieldMap.get("primaryContactPhone");
+		FacilioField primaryNameField = contactFieldMap.get("primaryContactName");
+		
+		updatedfields.add(primaryEmailField);
+		updatedfields.add(primaryPhoneField);
+		updatedfields.add(primaryNameField);
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+											.table(module.getTableName())
+											.fields(updatedfields)
+											.andCondition(CriteriaAPI.getIdCondition(clientId, module));
+									
+		Map<String, Object> value = new HashMap<>();
+		value.put("primaryContactEmail", contact.getEmail());
+		value.put("primaryContactPhone", contact.getPhone());
+		value.put("primaryContactName", contact.getName());
+		updateBuilder.update(value);
+
+	}
 
 	public static void deleteContactUser(long contactId) throws Exception {
 		ContactsContext contact = (ContactsContext) RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, contactId);
@@ -264,7 +298,7 @@ public class ContactsAPI {
 		
 	}
 	
-	public static int unMarkPrimaryContact(long contactId, long id, boolean isVendor) throws Exception{
+	public static int unMarkPrimaryContact(long contactId, long id, ContactType	contactType) throws Exception{
         
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
@@ -284,12 +318,13 @@ public class ContactsAPI {
 			updateBuilder.andCondition(CriteriaAPI.getCondition("ID", "contactId", String.valueOf(contactId), NumberOperators.NOT_EQUALS));
 			
 		}
-		if(isVendor) {
-			updateBuilder.andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(id), NumberOperators.EQUALS));
-			
+		if(contactType == ContactType.VENDOR) {
+			updateBuilder.andCondition(CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(id), NumberOperators.EQUALS));	
 		}
-		else {
+		else if(contactType == ContactType.TENANT){
 			updateBuilder.andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenant", String.valueOf(id), NumberOperators.EQUALS));
+		} else if(contactType == ContactType.CLIENT){
+			updateBuilder.andCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(id), NumberOperators.EQUALS));
 		}
 									
 		Map<String, Object> value = new HashMap<>();

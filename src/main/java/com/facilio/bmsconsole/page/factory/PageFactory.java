@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.ClientContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.HazardContext;
 import com.facilio.bmsconsole.context.InsuranceContext;

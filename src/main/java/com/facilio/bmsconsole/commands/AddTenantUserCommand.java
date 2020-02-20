@@ -71,7 +71,7 @@ public class AddTenantUserCommand extends FacilioCommand {
 	}
 
 	private ContactsContext addDefaultTenantPrimaryContact(TenantContext tenant) throws Exception {
-		ContactsAPI.unMarkPrimaryContact(-1, tenant.getId(), false);
+		ContactsAPI.unMarkPrimaryContact(-1, tenant.getId(), ContactType.TENANT);
 		ContactsContext contact = new ContactsContext();
 		contact.setName(tenant.getPrimaryContactName() != null ? tenant.getPrimaryContactName() : tenant.getName());
 		contact.setContactType(ContactType.TENANT);
