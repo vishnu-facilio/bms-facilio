@@ -1694,9 +1694,6 @@ public class FormFactory {
 		fields.add(new FormField("vendorContact", FieldDisplayType.LOOKUP_SIMPLE, "Vendor Contact", Required.OPTIONAL, "contact",9, 1));
 
 		//fields.add(new FormField("requestedBy", FieldDisplayType.LOOKUP_SIMPLE, "Requested By", Required.OPTIONAL, "requester",10, 1));
-
-
-
 		fields.add(new FormField("expectedStartTime", FieldDisplayType.DATE, "Valid From", Required.OPTIONAL, 14, 1));
 		fields.add(new FormField("expectedEndTime", FieldDisplayType.DATE, "Valid To", Required.OPTIONAL, 15, 1));
 	

@@ -30,7 +30,7 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 		addWorkrequestDetailsWidget(tab1Sec1);
 		
 		
-		Section tab1Sec2 = page.new Section();
+		Section tab1Sec2 = page.new Section("portalWorkrequestFormDetails");
 		tab1.addSection(tab1Sec2);
 		addSecondaryDetailsWidget(tab1Sec2);
 		
@@ -57,7 +57,7 @@ public class TenantWorkRequestPageFactory extends PageFactory{
 
 	private static void addWorkrequestDetailsWidget(Section section) {
 		PageWidget recurringInfoWidget = new PageWidget(WidgetType.WORK_REQUEST_DETAILS_WIDGET, "workRequestDetails");
-		recurringInfoWidget.addToLayoutParams(section, 24, 5);
+		recurringInfoWidget.addToLayoutParams(section, 24, 6);
 		section.addWidget(recurringInfoWidget);
 	}
 	
