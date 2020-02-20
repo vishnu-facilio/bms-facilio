@@ -1368,7 +1368,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw new IllegalArgumentException("Module Type cannot be null during addition of modules");
 		}
 		
-		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, HIDE_FROM_PARENTS, MODULE_TYPE, DATA_INTERVAL, DESCRIPTION, CREATED_BY, CREATED_TIME, STATE_FLOW_ENABLED, IS_CUSTOM) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, HIDE_FROM_PARENTS, MODULE_TYPE, DATA_INTERVAL, DESCRIPTION, CREATED_BY, CREATED_TIME, STATE_FLOW_ENABLED, IS_CUSTOM, IS_TRASH_ENABLED) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		ResultSet rs = null;
 		try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setLong(1, getOrgId());
@@ -1429,6 +1429,13 @@ public class ModuleBeanImpl implements ModuleBean {
 
 			pstmt.setBoolean(12, module.isStateFlowEnabled());
 			pstmt.setBoolean(13, module.isCustom());
+
+			if (module.getTrashEnabled() != null) {
+				pstmt.setBoolean(14, module.isTrashEnabled());
+			}
+			else {
+				pstmt.setNull(14, Types.BOOLEAN);
+			}
 			
 			if (pstmt.executeUpdate() < 1) {
 				throw new Exception("Unable to add Module");
