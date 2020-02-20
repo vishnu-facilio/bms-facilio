@@ -87,7 +87,6 @@ public class SitePageFactory extends PageFactory {
 			obj.put("id", building.getId());
 			obj.put("name", building.getName());
 			obj.put("noOfFloors", building.getNoOfFloors());
-			obj.put("noOfFloors", building.getArea());
 			obj.put("area", building.getArea());
 			obj.put("avatarUrl", building.getAvatarUrl());
 

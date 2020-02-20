@@ -310,7 +310,7 @@ public class ProcessImportCommand extends FacilioCommand {
 										else if(facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
 											EnumField enumField = (EnumField) facilioField;
 											String enumString = (String)colVal.get(fieldMapping.get(key));
-											int enumIndex = enumField.getIndex(enumString.toLowerCase());
+											int enumIndex = enumField.getIndex(enumString);
 											
 											if(!props.containsKey(facilioField.getName())) {
 												props.put(facilioField.getName(), enumIndex);
