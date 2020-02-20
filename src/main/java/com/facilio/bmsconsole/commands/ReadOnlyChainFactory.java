@@ -99,6 +99,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FormatHeatMapDataCommand());
 		c.addCommand(new GetTrendLineCommand());
 		c.addCommand(new FormatForTimeDuration());
+		c.addCommand(new FetchCriteriaReportCommand());
 		return c;
 	}
 	

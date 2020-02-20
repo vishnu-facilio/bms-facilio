@@ -81,43 +81,49 @@ public class FilterUtil {
 			for(Object key : conditions.keySet()) {
 				JSONObject condition = (JSONObject)conditions.get((String)key);
 				
-				String moduleName = (String) condition.get("moduleName");
-				String field = (String) condition.get("fieldName");
-				Long parentId = (Long) condition.get("parentId");
-				
-				FacilioField selectField = modBean.getField("ttime", moduleName);
-				FacilioField parentIdField = modBean.getField("parentId", moduleName);
-				FacilioField conditionField = modBean.getField(field, moduleName);
-				String tableName = conditionField.getModule().getTableName();
-				
-				String value = "";
-				if (conditionField instanceof NumberField) {
-					NumberField numberField =  (NumberField)conditionField;
-					Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
-					value = String.valueOf(UnitsUtil.convertToSiUnit(condition.get("value"), siUnit));
-				}else {
-					value = (String) condition.get("value");
-				}
-				int operatorId = ((Number) condition.get("operatorId")).intValue();
-				Operator operator = Operator.getOperator(operatorId);
-				
-				FacilioField orgIdField = AccountConstants.getOrgIdField(selectField.getModule());
-				FacilioField moduleIdField = FieldFactory.getModuleIdField(selectField.getModule());
-
-				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-						.table(tableName)
-						.select(Collections.singletonList(selectField))
-						.andCondition(CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
-						.andCondition(CriteriaAPI.getCondition(moduleIdField, String.valueOf(selectField.getModuleId()), NumberOperators.EQUALS))
-						.andCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), NumberOperators.EQUALS))
-						.andCondition(CriteriaAPI.getCondition(selectField, range.toString(), DateOperators.BETWEEN))
-						.andCondition(CriteriaAPI.getCondition(conditionField, value, operator));
+				GenericSelectRecordBuilder builder = getDFConditionSelectBuilder(condition, range);
 						
 				parrentBuilder.andCustomWhere(timeField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
 			}
 		}
 	}
 	
+	public static GenericSelectRecordBuilder getDFConditionSelectBuilder(JSONObject conditionObj, DateRange range) throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		String moduleName = (String) conditionObj.get("moduleName");
+		String field = (String) conditionObj.get("fieldName");
+		Long parentId = (Long) conditionObj.get("parentId");
+		
+		FacilioField selectField = modBean.getField("ttime", moduleName);
+		FacilioField parentIdField = modBean.getField("parentId", moduleName);
+		FacilioField conditionField = modBean.getField(field, moduleName);
+		String tableName = conditionField.getModule().getTableName();
+		
+		Object value = conditionObj.get("value"); 
+		if (conditionField instanceof NumberField) {
+			NumberField numberField =  (NumberField)conditionField;
+			if(numberField.getUnitEnum() != null) {
+				value = UnitsUtil.convertToSiUnit(value, numberField.getUnitEnum());
+			}
+		}
+		int operatorId = ((Number) conditionObj.get("operatorId")).intValue();
+		Operator operator = Operator.getOperator(operatorId);
+		
+		FacilioField orgIdField = AccountConstants.getOrgIdField(selectField.getModule());
+		FacilioField moduleIdField = FieldFactory.getModuleIdField(selectField.getModule());
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(tableName)
+				.select(Collections.singletonList(selectField))
+				.andCondition(CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(moduleIdField, String.valueOf(selectField.getModuleId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(selectField, range.toString(), DateOperators.BETWEEN))
+				.andCondition(CriteriaAPI.getCondition(conditionField, String.valueOf(value), operator));
+		return builder;
+		
+	}
 	public static List<ReportDataPointContext> getDFDataPoints(JSONObject criteriaObj) throws Exception {
 		List<ReportDataPointContext> dataPoints = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
