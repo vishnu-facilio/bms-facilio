@@ -455,7 +455,8 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Map<String, Object> globalParam, Object... objects) throws Exception {
 			
-			String name = objects[0].toString();
+			int pointer = 0;
+			String name = objects[pointer++].toString();
 			DateOperators operator = null;
 			if(FacilioUtil.isNumeric(name)) {
 				operator = (DateOperators) Operator.getOperator(Integer.parseInt(name));
@@ -472,20 +473,44 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			String operatorParam = null; 
 			String baselineName = null;
 			String baselineAdjustmentType = null;
-			if(objects.length > 1 && objects[1] != null) {
-				String secondParam = objects[1].toString();
-				if(FacilioUtil.isNumeric(secondParam)) {
-					operatorParam = ""+(int) Double.parseDouble(secondParam);
-					if(objects.length > 2 && objects[2] != null) {
-						Double operatorParam2 = (Double)objects[2];
-						operatorParam = operatorParam + ","+WorkflowUtil.getStringValueFromDouble(operatorParam2);
+			
+				
+			if(objects.length > pointer && objects[pointer] != null) {
+				String value1 = objects[pointer++].toString();
+				if(FacilioUtil.isNumeric(value1)) {
+					operatorParam = ""+(int) Double.parseDouble(value1);
+					if(objects.length > pointer && objects[pointer] != null) {
+						String value2 = objects[pointer++].toString();
+						if(FacilioUtil.isNumeric(value2)) {
+							Long operatorParam2 = Long.parseLong(value2);
+							operatorParam = operatorParam + ","+operatorParam2;
+						}
+						else {
+							
+							baselineName = value2;
+							if(objects.length > pointer && objects[pointer] != null) {
+								String value3 = objects[pointer++].toString();
+								baselineAdjustmentType = value3;
+							}
+						}
 					}
 				}
 				else {
-					baselineName = secondParam;
-					if(objects.length > 2 && objects[2] != null) {
-						baselineAdjustmentType = objects[2].toString();
+					baselineName = value1;
+					if(objects.length > pointer && objects[pointer] != null) {
+						String value2 = objects[pointer++].toString();
+						baselineAdjustmentType = value2;
 					}
+				}
+				
+			}
+			
+			if(objects.length > pointer && objects[pointer] != null) {
+				String value1 = objects[pointer++].toString();
+				baselineName = value1;
+				if(objects.length > pointer && objects[pointer] != null) {
+					String value2 = objects[pointer++].toString();
+					baselineAdjustmentType = value2;
 				}
 			}
 			

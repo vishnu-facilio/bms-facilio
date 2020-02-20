@@ -469,7 +469,7 @@ public class WorkflowUtil {
 	
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {	// change this method
 
-		if(workflowContext.isV2Script()) {
+		if(workflowContext.isV2Script() && workflowContext.getWorkflowV2String() == null) {
 //			getV2ScriptFromWorkflowContext(workflowContext);
 		}
 		else {
@@ -631,7 +631,7 @@ public class WorkflowUtil {
 	private static final Pattern REG_EX = Pattern.compile("([1-9]\\d*)");
 	
 	
-	private static String getV2ScriptFromCondition(Condition condition) {
+	private static String getV2ScriptFromCondition(Condition condition,ExpressionContext exp) throws Exception {
 		
 		String conditionFieldName = condition.getFieldName();
 		Operator opp = condition.getOperator();
@@ -665,14 +665,21 @@ public class WorkflowUtil {
 					
 					String value1 = getValueStringFromValue(values[0]);
 					String value2 = getValueStringFromValue(values[1]);
-					if(value2 != null && BaseLineContext.AdjustType.getAllAdjustments().get(value2) != null) {
-						dateOperatorValue = value1 +",\""+value2+"\"";
+					if(value2 != null) {
+						dateOperatorValue = value1 +","+value2;
 					}
-					dateOperatorValue = value1;
+					else {
+						dateOperatorValue = value1;
+					}
 				}
 				else {
 					dateOperatorValue = value;
 				}
+			}
+			if(exp != null && exp.getConditionSeqVsBaselineId() != null && !exp.getConditionSeqVsBaselineId().isEmpty() && exp.getConditionSeqVsBaselineId().containsKey(condition.getSequence())) {
+				Long baselineID = exp.getConditionSeqVsBaselineId().get(condition.getSequence());
+				BaseLineContext baseline = BaseLineAPI.getBaseLine(baselineID);
+				dateOperatorValue = dateOperatorValue + ",\""+baseline.getName()+"\"";
 			}
 			String dateOperatorVal = null;
 			operatorStringValue = "\""+operatorStringValue+"\"";
@@ -778,7 +785,9 @@ public class WorkflowUtil {
 				String key = matcher.group(1);
 				Condition condition = criteria.getConditions().get(key);
 				
-				String conditionString = getV2ScriptFromCondition(condition);
+				condition.setSequence(Integer.parseInt(key));
+				
+				String conditionString = getV2ScriptFromCondition(condition,exp);
 				patternBuilder.append(pattern.substring(i, matcher.start()));
 				patternBuilder.append(conditionString);
 				i = matcher.end();
@@ -791,13 +800,13 @@ public class WorkflowUtil {
 					db = db + "aggregation : \""+aggregate+"\",";
 				}
 			}
-			if(fieldConditions != null) {
+			if(fieldConditions != null && !fieldConditions.isEmpty()) {
 				
 				String conditionString = "";
 				for(int j=0;j<fieldConditions.size();j++) {
 					
 					Condition condition =  fieldConditions.get(j);
-					conditionString = conditionString + getV2ScriptFromCondition(condition);
+					conditionString = conditionString + getV2ScriptFromCondition(condition,null);
 					
 					if(j != fieldConditions.size()-1) {
 						conditionString = conditionString + " && ";
