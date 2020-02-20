@@ -469,31 +469,18 @@ public class WorkflowUtil {
 	
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {	// change this method
 
-		WorkflowContext workflow = new WorkflowContext();
-		
-		workflow.setIsV2Script(workflowContext.getIsV2Script());
 		if(workflowContext.isV2Script()) {
-			workflow.setWorkflowV2String(workflowContext.getWorkflowV2String());
+//			getV2ScriptFromWorkflowContext(workflowContext);
 		}
 		else {
 			if(workflowContext.getWorkflowString() == null) {
-				workflow.setWorkflowString(getXmlStringFromWorkflow(workflowContext));
-			}
-			else {
-				workflow.setWorkflowString(workflowContext.getWorkflowString());
+				workflowContext.setWorkflowString(getXmlStringFromWorkflow(workflowContext));
 			}
 			
-			getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
+			getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
 			
-			validateWorkflow(workflow);
+			validateWorkflow(workflowContext);
 		}
-		
-		workflow.setWorkflowUIMode(workflowContext.getWorkflowUIMode());
-		
-		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		
-		workflow.setType(workflowContext.getType());
-		workflow.setReturnType(workflowContext.getReturnType());
 		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
@@ -501,7 +488,7 @@ public class WorkflowUtil {
 				.table(ModuleFactory.getWorkflowModule().getTableName())
 				.fields(FieldFactory.getWorkflowFields());
 
-		Map<String, Object> props = FieldUtil.getAsProperties(workflow);
+		Map<String, Object> props = FieldUtil.getAsProperties(workflowContext);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		
@@ -643,7 +630,105 @@ public class WorkflowUtil {
 	
 	private static final Pattern REG_EX = Pattern.compile("([1-9]\\d*)");
 	
-	public static String getExpressionOldToNew(ExpressionContext exp,String code) throws Exception {
+	
+	private static String getV2ScriptFromCondition(Condition condition) {
+		
+		String conditionFieldName = condition.getFieldName();
+		Operator opp = condition.getOperator();
+		String value = condition.getValue();
+		
+		String operatorStringValue = opp.getOperator().trim();
+		
+		String conditionString = null;
+		List<String> dateOperatorKeys = new ArrayList(DateOperators.getAllOperators().keySet());
+		dateOperatorKeys.removeAll(CommonOperators.getAllOperators().keySet());
+		dateOperatorKeys.remove(DateOperators.ISN_T.getOperator());
+		dateOperatorKeys.remove(DateOperators.IS.getOperator());
+		
+		
+		if(operatorStringValue.equals("between")) {
+			String[] values = getMultipleValueStringFromValue(value);
+			conditionString = conditionFieldName +" >= "+ values[0] +" && "+conditionFieldName +" <= "+ values[1];
+		}
+		else if (operatorStringValue.equals("is empty")) {
+			conditionString = conditionFieldName +" == null";
+		}
+		else if (operatorStringValue.equals("is not empty")) {
+			conditionString = conditionFieldName +" != null";
+		}
+		else if (dateOperatorKeys.contains(operatorStringValue)) {
+			
+			String dateOperatorValue = null;
+			if(value != null) {
+				if(value.contains(",")) {
+					String[] values = value .split(",");
+					
+					String value1 = getValueStringFromValue(values[0]);
+					String value2 = getValueStringFromValue(values[1]);
+					if(value2 != null && BaseLineContext.AdjustType.getAllAdjustments().get(value2) != null) {
+						dateOperatorValue = value1 +",\""+value2+"\"";
+					}
+					dateOperatorValue = value1;
+				}
+				else {
+					dateOperatorValue = value;
+				}
+			}
+			String dateOperatorVal = null;
+			operatorStringValue = "\""+operatorStringValue+"\"";
+			if(dateOperatorValue != null && !dateOperatorValue.equals("null") && !dateOperatorValue.isEmpty()) {
+				dateOperatorVal =  "NameSpace(\"date\").getDateRange("+operatorStringValue+","+dateOperatorValue+")";
+			}
+			else {
+				dateOperatorVal =  "NameSpace(\"date\").getDateRange("+operatorStringValue+")";
+			}
+			
+			conditionString = conditionFieldName +" == "+ dateOperatorVal;
+		}
+		else {
+			value = getValueStringFromValue(value);
+			if(operatorStringValue.equals("=")) {
+				operatorStringValue = "==";
+			}
+			if(operatorStringValue.equals("is")) {
+				operatorStringValue = "==";
+			}
+			if(operatorStringValue.equals("isn't")) {
+				operatorStringValue = "!=";
+			}
+			if(operatorStringValue.equals("lookup")) {
+				operatorStringValue = "==";
+				if(value.contains("ID =")) {
+					value = value.substring(value.indexOf('=')+1, value.length()).trim();
+				}
+			}
+			
+			if(value.contains(",")) {
+				String[] values = value.split(",");
+				conditionString = "(";
+				int j = 0;
+				for(String value1 : values) {
+					j++;
+					conditionString = conditionString + conditionFieldName +" "+ operatorStringValue +" "+ value1;
+					if(j != values.length) {
+						if(operatorStringValue.equals("==")) {
+							conditionString = conditionString + " || ";
+						}
+						else if (operatorStringValue.equals("!=")) {
+							conditionString = conditionString + " && ";
+						}
+					}
+				}
+				conditionString = conditionString + ")";
+			}
+			else {
+				conditionString = conditionFieldName +" "+ operatorStringValue +" "+ value;
+			}
+		}
+		return conditionString;
+	}
+	
+	private static String getV2ScriptFromExpressionContext(ExpressionContext exp,String code) throws Exception {
 		
 		String name = exp.getName();
 		
@@ -676,6 +761,9 @@ public class WorkflowUtil {
 			String orderBy = exp.getOrderByFieldName();
 			String sortBy = exp.getSortBy();
 			String pattern = criteria.getPattern();
+			String limit = exp.getLimit();
+			
+			List<Condition> fieldConditions = exp.getAggregateCondition();
 			
 			pattern = pattern.replace("or", " || ");
 			pattern = pattern.replace("and", " && ");
@@ -690,98 +778,7 @@ public class WorkflowUtil {
 				String key = matcher.group(1);
 				Condition condition = criteria.getConditions().get(key);
 				
-				String conditionFieldName = condition.getFieldName();
-				Operator opp = condition.getOperator();
-				String value = condition.getValue();
-				
-				String operatorStringValue = opp.getOperator().trim();
-				
-				String conditionString = null;
-				List<String> dateOperatorKeys = new ArrayList(DateOperators.getAllOperators().keySet());
-				dateOperatorKeys.removeAll(CommonOperators.getAllOperators().keySet());
-				dateOperatorKeys.remove(DateOperators.ISN_T.getOperator());
-				dateOperatorKeys.remove(DateOperators.IS.getOperator());
-				
-				
-				if(operatorStringValue.equals("between")) {
-					String[] values = getMultipleValueStringFromValue(value);
-					conditionString = conditionFieldName +" >= "+ values[0] +" && "+conditionFieldName +" <= "+ values[1];
-				}
-				else if (operatorStringValue.equals("is empty")) {
-					conditionString = conditionFieldName +" == null";
-				}
-				else if (operatorStringValue.equals("is not empty")) {
-					conditionString = conditionFieldName +" != null";
-				}
-				else if (dateOperatorKeys.contains(operatorStringValue)) {
-					
-					String dateOperatorValue = null;
-					if(value != null) {
-						if(value.contains(",")) {
-							String[] values = value .split(",");
-							
-							String value1 = getValueStringFromValue(values[0]);
-							String value2 = getValueStringFromValue(values[1]);
-							if(value2 != null && BaseLineContext.AdjustType.getAllAdjustments().get(value2) != null) {
-								dateOperatorValue = value1 +",\""+value2+"\"";
-							}
-							dateOperatorValue = value1;
-						}
-						else {
-							dateOperatorValue = value;
-						}
-					}
-					String dateOperatorVal = null;
-					operatorStringValue = "\""+operatorStringValue+"\"";
-					if(dateOperatorValue != null && !dateOperatorValue.equals("null") && !dateOperatorValue.isEmpty()) {
-						dateOperatorVal =  "NameSpace(\"date\").getDateRange("+operatorStringValue+","+dateOperatorValue+")";
-					}
-					else {
-						dateOperatorVal =  "NameSpace(\"date\").getDateRange("+operatorStringValue+")";
-					}
-					
-					conditionString = conditionFieldName +" == "+ dateOperatorVal;
-				}
-				else {
-					value = getValueStringFromValue(value);
-					if(operatorStringValue.equals("=")) {
-						operatorStringValue = "==";
-					}
-					if(operatorStringValue.equals("is")) {
-						operatorStringValue = "==";
-					}
-					if(operatorStringValue.equals("isn't")) {
-						operatorStringValue = "!=";
-					}
-					if(operatorStringValue.equals("lookup")) {
-						operatorStringValue = "==";
-						if(value.contains("ID =")) {
-							value = value.substring(value.indexOf('=')+1, value.length()).trim();
-						}
-					}
-					
-					if(value.contains(",")) {
-						String[] values = value.split(",");
-						conditionString = "(";
-						int j = 0;
-						for(String value1 : values) {
-							j++;
-							conditionString = conditionString + conditionFieldName +" "+ operatorStringValue +" "+ value1;
-							if(j != values.length) {
-								if(operatorStringValue.equals("==")) {
-									conditionString = conditionString + " || ";
-								}
-								else if (operatorStringValue.equals("!=")) {
-									conditionString = conditionString + " && ";
-								}
-							}
-						}
-						conditionString = conditionString + ")";
-					}
-					else {
-						conditionString = conditionFieldName +" "+ operatorStringValue +" "+ value;
-					}
-				}
+				String conditionString = getV2ScriptFromCondition(condition);
 				patternBuilder.append(pattern.substring(i, matcher.start()));
 				patternBuilder.append(conditionString);
 				i = matcher.end();
@@ -794,12 +791,32 @@ public class WorkflowUtil {
 					db = db + "aggregation : \""+aggregate+"\",";
 				}
 			}
+			if(fieldConditions != null) {
+				
+				String conditionString = "";
+				for(int j=0;j<fieldConditions.size();j++) {
+					
+					Condition condition =  fieldConditions.get(j);
+					conditionString = conditionString + getV2ScriptFromCondition(condition);
+					
+					if(j != fieldConditions.size()-1) {
+						conditionString = conditionString + " && ";
+					}
+				}
+				
+				conditionString = "fieldCriteria : ["+conditionString +"],";
+				
+				db = db + conditionString;
+			}
 			if(orderBy != null) {
 				String sort = "asc";
 				if(sortBy != null) {
-					sortBy = sortBy.toLowerCase();
+					sort = sortBy.toLowerCase();
 				}
 				db = db + "orderBy : \""+orderBy+"\" "+sort+",";
+			}
+			if(limit != null) {
+				db = db + "limit : "+limit+",";
 			}
 			db = db.substring(0, db.length()-1);
 			code = code + name + " = Module(\""+moduleName+"\").fetch({"+db+"});\n";
@@ -873,11 +890,11 @@ public class WorkflowUtil {
 		return null;
 	}
 	
-	public static WorkflowContext convertOldWorkflowToNew(long wfId) throws Exception {
+	public static WorkflowContext getV2ScriptFromWorkflowContext(long wfId) throws Exception {
 		
 		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(wfId, true);
 		
-		return convertOldWorkflowToNew(workflow);
+		return getV2ScriptFromWorkflowContext(workflow);
 	}
 	
 	private static void oldWorkflowCorrection(WorkflowContext workflow) {
@@ -889,7 +906,7 @@ public class WorkflowUtil {
 		}
 	}
 	
-	public static WorkflowContext convertOldWorkflowToNew(WorkflowContext workflow) throws Exception {
+	public static WorkflowContext getV2ScriptFromWorkflowContext(WorkflowContext workflow) throws Exception {
 		// TODO Auto-generated method stub
 		
 		oldWorkflowCorrection(workflow);
@@ -934,7 +951,7 @@ public class WorkflowUtil {
 			if(expression instanceof ExpressionContext) {
 				ExpressionContext exp = (ExpressionContext) expression;
 				
-				code = getExpressionOldToNew(exp, code);
+				code = getV2ScriptFromExpressionContext(exp, code);
 				
 			 }
 			 else if(expression instanceof IteratorContext) {						// remove this after all migration
@@ -947,7 +964,7 @@ public class WorkflowUtil {
 					 
 					 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
 					 
-					 code = getExpressionOldToNew(exp, code);
+					 code = getV2ScriptFromExpressionContext(exp, code);
 				 }
 				 code = code +"}\n";
 			 }
@@ -970,7 +987,7 @@ public class WorkflowUtil {
 						 
 						 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
 						 
-						 code = getExpressionOldToNew(exp, code);
+						 code = getV2ScriptFromExpressionContext(exp, code);
 					 }
 				 }
 				 code = code +"}\n";
@@ -988,7 +1005,7 @@ public class WorkflowUtil {
 								 
 								 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
 								 
-								 code = getExpressionOldToNew(exp, code);
+								 code = getV2ScriptFromExpressionContext(exp, code);
 							 }
 						 }
 						 code = code +"}\n";
@@ -1001,7 +1018,7 @@ public class WorkflowUtil {
 							 
 							 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
 							 
-							 code = getExpressionOldToNew(exp, code);
+							 code = getV2ScriptFromExpressionContext(exp, code);
 						 }
 					 }
 					 code = code +"}\n";
@@ -1115,12 +1132,14 @@ public class WorkflowUtil {
 	
 	private static WorkflowContext getWorkflowFromProp(Map<String, Object> prop, boolean isWithExpParsed) throws Exception {
 		WorkflowContext workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowContext.class);
-		if(!workflow.isV2Script()) {
-			workflow = getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
+		if(workflow.isV2Script()) {
+			workflow.parseScript();
 		}
-		
-		if(isWithExpParsed) {
-			parseExpression(workflow);
+		else {
+			workflow = getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
+			if(isWithExpParsed) {
+				parseExpression(workflow);
+			}
 		}
 		return workflow;
 	}
