@@ -59,13 +59,13 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
         for (int i = 0; i < workOrders.size(); i++) {
             WorkOrderContext workOrder = workOrders.get(i);
             TicketAPI.validateSiteSpecificData(workOrder);
-            boolean isFromImport = (boolean) context.get(ImportAPI.ImportProcessConstants.IS_FROM_IMPORT);
+            Boolean isFromImport = (Boolean) context.get(ImportAPI.ImportProcessConstants.IS_FROM_IMPORT);
             workOrder.setCreatedBy(AccountUtil.getCurrentUser());
             workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED);
             if (workOrder.getPriority() == null || workOrder.getPriority().getId() == -1) {
                 workOrder.setPriority(lowPriority);
             }
-            if (!isFromImport) {
+            if (isFromImport == null || (isFromImport != null && !isFromImport)) {
                 if (workOrder.getScheduledStart() > 0) {
                     if (workOrder.getWoCreationOffset() > -1) {
                         workOrder.setCreatedTime(workOrder.getScheduledStart() - (workOrder.getWoCreationOffset() * 1000L));
