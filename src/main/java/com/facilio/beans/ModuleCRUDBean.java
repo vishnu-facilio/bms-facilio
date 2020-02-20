@@ -16,6 +16,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -119,4 +120,6 @@ public interface ModuleCRUDBean {
 	
 	public long addServcieRequestFromEmail(ServiceRequestContext serviceRequest, List<File> attachedFiles,
 			List<String> attachedFileNames, List<String> attachedFilesContentType) throws Exception;
+
+	public void demoOneTimeJob(long orgId, ZonedDateTime currentZdt) throws Exception;
 }

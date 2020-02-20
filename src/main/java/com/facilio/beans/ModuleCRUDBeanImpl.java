@@ -55,6 +55,7 @@ import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.sql.BatchUpdateException;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1255,6 +1256,20 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			return serviceRequest.getId();
 		}
 		return 0;
+	}
+
+	@Override
+	public void demoOneTimeJob(long orgId, ZonedDateTime currentZdt) throws Exception {
+		// TODO Auto-generated method stub
+		try {
+			FacilioChain chain = TransactionChainFactory.demoRollUpOneTimeJobChain();
+			chain.getContext().put("ORGID",orgId);
+			chain.getContext().put("START_TIME", currentZdt);
+			chain.execute();
+		}catch(Exception e) {
+			throw e;
+		}
+		
 	}
 }
 

@@ -445,7 +445,13 @@ public class TransactionChainFactory {
 			c.addCommand(new DemoRollUpYearlyCommand());
 			return c;
 		}
-
+		
+		public static FacilioChain demoRollUpOneTimeJobChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DemoRollUpOneTimeJobCommand());
+			return c;
+		}
+		
 		public static FacilioChain deleteMessageQueueChain(){
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new DeleteMessageQueueJobsCommand());

@@ -113,4 +113,5 @@
 
 	<!-- DemoRollUpYearly Job -->
 	<job name = 'DemoRollUpYearlyJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpYearlyJob' transactionTimeout = '900000'></job>
+	<job name = 'DemoRollUpYearlyOneTimeJob' classname = 'com.facilio.bmsconsole.jobs.DemoRollUpOneTimeJob' transactionTimeout = '900000'></job>
 </scheduler>
