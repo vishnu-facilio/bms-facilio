@@ -137,7 +137,7 @@ public class FormsAPI {
 	}
 
 	public static List<FacilioForm> getFormFromDB(Criteria criteria) throws Exception {
-		return getDBFormList(null, (List<Integer>) null, criteria, null, true, false,false);
+		return getDBFormList(null, (List<Integer>) null, criteria, null, true, false,true);
 	}
 	
 	private static void setFormFields (FacilioForm form) throws Exception {
@@ -551,7 +551,7 @@ public class FormsAPI {
 		if (formType != null) {
 			formTypes = Collections.singletonList(formType.getIntVal());
 		}
-		return getDBFormList(moduleName, formTypes, criteria, selectParams, fetchFields, false, false);
+		return getDBFormList(moduleName, formTypes, criteria, selectParams, fetchFields, false, true);
 	}
 	
 	public static List<FacilioForm> getDBFormList(String moduleName,List<Integer> formTypes, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields, Boolean fetchExtendedModuleForms,Boolean fetchDisabledForms) throws Exception{
