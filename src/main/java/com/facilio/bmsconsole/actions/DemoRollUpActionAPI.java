@@ -34,7 +34,7 @@ public class DemoRollUpActionAPI {
     private static List<FacilioField> getDemoRollUpFields() {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(ID_FIELD);
-        fields.add(FieldFactory.getDateField(START_TIME, "STARTTIME", MODULE));
+        fields.add(FieldFactory.getStringField(START_TIME, "STARTTIME", MODULE));
         return fields;
     }
 
