@@ -362,7 +362,7 @@ public class ControllerAPI {
 		return FieldUtil.getAsBeanFromMap(prop, ControllerActivityWatcherContext.class);
 	}
 	
-	public static void scheduleControllerActivityJob (ControllerActivityWatcherContext watcher, List<ControllerContext> controllers) {
+	public static void scheduleControllerActivityJob (ControllerActivityWatcherContext watcher, List<ControllerContext> controllers) throws Exception {
 		FacilioContext jobContext = new FacilioContext();
 		jobContext.put(FacilioConstants.ContextNames.CONTROLLER_ACTIVITY_WATCHER, watcher);
 		jobContext.put(FacilioConstants.ContextNames.CONTROLLER_LIST, controllers);

@@ -3,6 +3,8 @@ package com.facilio.tasker.job;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.tasker.executor.FacilioInstantJobExecutor;
+import com.facilio.tasker.executor.InstantJobExecutor;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.Account;
@@ -10,8 +12,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.config.InstantJobConf;
-import com.facilio.tasker.executor.FacilioInstantJobExecutor;
-import com.facilio.tasker.executor.InstantJobExecutor;
 
 public abstract class InstantJob {
 
@@ -31,6 +31,10 @@ public abstract class InstantJob {
 	public void setMessageId(String messageId) {
 		this.messageId = messageId;
 	}
+    private FacilioInstantJobExecutor executor = null;
+    public void setExecutor(FacilioInstantJobExecutor executor) {
+        this.executor = executor;
+    }
 	public final void _execute(FacilioContext context, int transactionTimeout) {
         Thread currentThread = Thread.currentThread();
         String threadName = currentThread.getName();
@@ -77,7 +81,7 @@ public abstract class InstantJob {
 //            	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
 //            }
             if(getMessageId() !=null) {
-            	FacilioInstantJobExecutor.INSTANCE.jobEnd(getMessageId());
+            	executor.jobEnd(getMessageId());
             } else {
             	InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
             }

@@ -15,7 +15,7 @@ import com.facilio.tasker.job.InstantJob;
 @XmlRootElement(name="instantjob")
 public class InstantJobConf {
 
-    private static final Logger logger = LogManager.getLogger(SchedulerJobConf.class.getName());
+    private static final Logger logger = LogManager.getLogger(InstantJobConf.class.getName());
     private static final String JOB_NAME_KEY = "INSTANT_JOB";
     private static final String ACCOUNT_KEY = "INSTANT_JOB_ACCOUNT";
     private static final String INSTANT_JOB_QUEUE = "InstantJob";

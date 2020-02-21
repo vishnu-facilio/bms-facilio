@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.tasker.FacilioInstantJobScheduler;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -74,7 +75,7 @@ public enum InstantJobExecutor implements Runnable {
 							String jobName = (String) context.get(InstantJobConf.getJobNameKey());
 							LOGGER.debug("Gonna Execute job : " + jobName);
 							if (jobName != null) {
-								InstantJobConf.Job instantJob = FacilioScheduler.getInstantJob(jobName);
+								InstantJobConf.Job instantJob = FacilioInstantJobScheduler.getInstantJob(jobName);
 								if (instantJob != null) {
 									Class<? extends InstantJob> jobClass = instantJob.getClassObject();
 									if (jobClass != null) {

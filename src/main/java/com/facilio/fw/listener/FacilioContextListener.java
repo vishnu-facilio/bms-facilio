@@ -24,6 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.facilio.agent.integration.queue.AgentIntegrationQueueFactory;
+import com.facilio.tasker.FacilioInstantJobScheduler;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -72,7 +73,7 @@ public class FacilioContextListener implements ServletContextListener {
 			RedisManager.getInstance().release();// destroying redis connection pool
 		}
 		FacilioScheduler.stopSchedulers();
-		FacilioInstantJobExecutor.INSTANCE.stopExecutor();
+		FacilioInstantJobScheduler.stopExecutors();
 		timer.cancel();
 		FacilioConnectionPool.INSTANCE.close();
 	}
@@ -118,8 +119,7 @@ public class FacilioContextListener implements ServletContextListener {
 			BeanFactory.initBeans();
 
 			FacilioScheduler.initScheduler();
-
-			FacilioInstantJobExecutor.INSTANCE.startExecutor();
+			FacilioInstantJobScheduler.init();
 
 			if(RedisManager.getInstance() != null) {
 				RedisManager.getInstance().connect(); // creating redis connection pool

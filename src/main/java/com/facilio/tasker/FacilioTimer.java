@@ -89,31 +89,15 @@ public class FacilioTimer {
 		FacilioService.runAsService(() -> JobStore.addJob(jc));
 	}
 
-	public static void scheduleInstantJob(String jobName, FacilioContext context){
-		context.put(InstantJobConf.getJobNameKey(), jobName);
-		context.put(InstantJobConf.getAccountKey(), AccountUtil.getCurrentAccount());
-		
-//		StringJoiner size = new StringJoiner(",\n");
-//		for (Object key : context.keySet()) {
-//			size.add(new StringBuilder().append(key).append(" : ").append(SizeOf.sizeOf(context.get(key))).toString());
-//		}
-//		LOGGER.info(new StringBuilder().append("Adding instant job : ").append(jobName).append("\n Size : \n").append(size.toString()));
+	private static final String DEFAULT_INSTANT_JOB_EXECUTOR = "default";
+	public static void scheduleInstantJob(String jobName, FacilioContext context) throws Exception {
 		LOGGER.debug("Adding instant job : "+jobName);
-//		if(FacilioProperties.isProduction()) {
-//			if (!ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
-//				throw new IllegalArgumentException("Unable to add instant job to queue");
-//			}
-//		}else {
-			try {
-				if (!FacilioObjectQueue.sendMessage(context)) {
-					throw new IllegalArgumentException("Unable to add instant job to queue");
-				}
-			} catch (Exception e) {
-				LOGGER.info("Exception occurred in Facilio Instant Job Queue"+e);
-			}
-//		}
-		
-		
+		FacilioInstantJobScheduler.addInstantJob(DEFAULT_INSTANT_JOB_EXECUTOR, jobName, context);
+	}
+
+	public static void scheduleInstantJob(String executorName, String jobName, FacilioContext context) throws Exception {
+		LOGGER.debug("Adding instant job : "+jobName);
+		FacilioInstantJobScheduler.addInstantJob(executorName, jobName, context);
 	}
 
 	public static void scheduleOneTimeJobWithDelay(long jobId, String jobName, int delayInSec, String executorName) throws Exception {

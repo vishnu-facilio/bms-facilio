@@ -10,46 +10,51 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.facilio.tasker.FacilioInstantJobScheduler;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.queue.FacilioObjectQueue;
 import com.facilio.queue.ObjectMessage;
-import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.job.InstantJob;
 import com.facilio.tasker.job.JobTimeOutInfo;
 
-public enum FacilioInstantJobExecutor implements Runnable {
-	INSTANCE;
+public class FacilioInstantJobExecutor implements Runnable {
+//	INSTANCE ("default", "FacilioInstantJobQueue", "FacilioInstantJobQueue_Data", -1 , -1);
 
 	private static final Logger LOGGER = LogManager.getLogger(FacilioInstantJobExecutor.class.getName());
 
-	private static final int CORE_POOL_SIZE = 10;
-	private static final int MAX_POOL_SIZE = 10;
+	private static final int DEFAULT_MAX_THREADS = 10;
 	private static final long KEEP_ALIVE = 300000L;
 	private static final int QUEUE_SIZE = 100;
 	private static final int JOB_TIMEOUT_BUFFER = 5;
-	private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE,
-			KEEP_ALIVE, TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_SIZE));
-
-	private static final ConcurrentMap<String, JobTimeOutInfo> JOB_MONITOR_MAP = new ConcurrentHashMap<>();
 
 	private boolean isRunning = false;
-	private Thread executorThread = null;
+	private FacilioObjectQueue objectQueue = null;
+	private ThreadPoolExecutor threadPoolExecutor = null;
+	private ConcurrentMap<String, JobTimeOutInfo> jobMonitorMap = new ConcurrentHashMap<>();
+	private int maxThreads;
+	private String name;
 
-	private FacilioInstantJobExecutor() {
 
+	public FacilioInstantJobExecutor(String name, String tableName, String dataTableName, int maxThreads, int queueSize) {
+		this.name = name;
+		objectQueue = new FacilioObjectQueue(tableName, dataTableName);
+		this.maxThreads = maxThreads > 0 ? maxThreads : DEFAULT_MAX_THREADS;
+		threadPoolExecutor = new ThreadPoolExecutor(this.maxThreads, //core pool size
+													this.maxThreads, //max pool size
+													KEEP_ALIVE,
+													TimeUnit.SECONDS,
+													new LinkedBlockingQueue<>(queueSize > 0 ? queueSize : QUEUE_SIZE));
 	}
 
 	public void startExecutor() {
-		if (Boolean.parseBoolean(FacilioProperties.getConfig("instantJobServer")) && !isRunning) {
-			executorThread = new Thread(this, "facilioInstantJobExecutor");
+		if (!isRunning) {
 			isRunning = true;
-			executorThread.start();
+			new Thread(this, "facilioInstantJobExecutor").start();
 		}
 	}
 
@@ -58,7 +63,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 	}
 
 	private int getNoOfFreeThreads() {
-		int freeCount = MAX_POOL_SIZE - THREAD_POOL_EXECUTOR.getActiveCount();
+		int freeCount = maxThreads - threadPoolExecutor.getActiveCount();
 		LOGGER.debug("Instant jobs Free Count : " + freeCount);
 		return freeCount;
 	}
@@ -71,7 +76,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 				if(getNoOfFreeThreads() == 0) {
 					continue;
 				}
-				List<ObjectMessage> messageList = FacilioObjectQueue.getObjects(
+				List<ObjectMessage> messageList = objectQueue.getObjects(
 						getNoOfFreeThreads());
 				if (messageList != null) {
 					for (ObjectMessage message : messageList) {
@@ -80,7 +85,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 							String jobName = (String) context.get(InstantJobConf.getJobNameKey());
 							LOGGER.debug("Gonna Execute job : " + jobName);
 							if (jobName != null) {
-								InstantJobConf.Job instantJob = FacilioScheduler.getInstantJob(jobName);
+								InstantJobConf.Job instantJob = FacilioInstantJobScheduler.getInstantJob(jobName);
 								if (instantJob != null) {
 									Class<? extends InstantJob> jobClass = instantJob.getClassObject();
 									if (jobClass != null) {
@@ -89,7 +94,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 											if (instantJob.getTransactionTimeout() != InstantJobConf
 													.getDefaultTimeOut()) {
 												try {
-													FacilioObjectQueue.changeVisibilityTimeout(
+													objectQueue.changeVisibilityTimeout(
 															
 															message.getId(),
 															(int) TimeUnit.SECONDS.toMinutes(instantJob.getTransactionTimeout()));
@@ -100,11 +105,12 @@ public enum FacilioInstantJobExecutor implements Runnable {
 												}
 											}
 											String receiptHandle = message.getId();
-											job.setMessageId(receiptHandle);;
+											job.setMessageId(receiptHandle);
+											job.setExecutor(this);
 											LOGGER.debug("Executing job : " + jobName);
-											Future f = THREAD_POOL_EXECUTOR.submit(() -> job._execute(context,
+											Future f = threadPoolExecutor.submit(() -> job._execute(context,
 													(instantJob.getTransactionTimeout() - JOB_TIMEOUT_BUFFER) * 1000));
-											JOB_MONITOR_MAP.put(receiptHandle, new JobTimeOutInfo(
+											jobMonitorMap.put(receiptHandle, new JobTimeOutInfo(
 													System.currentTimeMillis(),
 													(instantJob.getTransactionTimeout() + JOB_TIMEOUT_BUFFER) * 1000, f,
 													job));
@@ -116,7 +122,7 @@ public enum FacilioInstantJobExecutor implements Runnable {
 								}
 							}
 						} else {
-							FacilioObjectQueue.deleteObject( message.getId());
+							objectQueue.deleteObject( message.getId());
 						}
 					}
 				}
@@ -136,15 +142,15 @@ public enum FacilioInstantJobExecutor implements Runnable {
 
 	public void jobEnd(String receiptHandle) {
 		try {
-			FacilioObjectQueue.deleteObject( receiptHandle);
+			objectQueue.deleteObject( receiptHandle);
 		} catch (Exception e) {
 			LOGGER.info("Exception occurred in FacilioInstant Job Qeueu :  "+e);
 		}
-		JOB_MONITOR_MAP.remove(receiptHandle);
+		jobMonitorMap.remove(receiptHandle);
 	}
 
 	private void handleTimeOut() {
-		Iterator<Map.Entry<String, JobTimeOutInfo>> itr = JOB_MONITOR_MAP.entrySet().iterator();
+		Iterator<Map.Entry<String, JobTimeOutInfo>> itr = jobMonitorMap.entrySet().iterator();
 		long currentTime = System.currentTimeMillis();
 		while (itr.hasNext()) {
 			JobTimeOutInfo info = itr.next().getValue();
@@ -154,6 +160,12 @@ public enum FacilioInstantJobExecutor implements Runnable {
 					itr.remove();
 				}
 			}
+		}
+	}
+
+	public void addJob (String jobName, FacilioContext context) throws Exception {
+		if (!objectQueue.sendMessage(context)) {
+			throw new IllegalArgumentException("Unable to add instant job to queue");
 		}
 	}
 }
