@@ -1,5 +1,6 @@
 package com.facilio.cache;
 
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -8,12 +9,14 @@ import com.facilio.aws.util.FacilioProperties;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.JedisPubSub;
 
 public class RedisManager {
 	
 	private static final Logger LOGGER = Logger.getLogger(RedisManager.class.getName());
 	
 	private static final RedisManager instance = new RedisManager();
+	private static final HashMap<String, JedisPubSub> SUBSCRIPTION_CHANNELS = new HashMap<>();
 
 	private static boolean isRedisEnabled = false;
 	private static JedisPool pool;
@@ -35,7 +38,7 @@ public class RedisManager {
 	private boolean isRedisEnabled() {
 		return Boolean.parseBoolean(FacilioProperties.getConfig("redis.enabled"));
 	}
-	
+
 	public void connect() {
 		
 		if (!isRedisEnabled()) {
@@ -68,9 +71,9 @@ public class RedisManager {
 		poolConfig.setTimeBetweenEvictionRunsMillis(60000);
 		// Create the jedisPool
 		pool = new JedisPool(poolConfig, FacilioProperties.getConfig("redis.host"), Integer.parseInt(FacilioProperties.getConfig("redis.port")), 2000, (String) null, Integer.parseInt(FacilioProperties.getConfig("redis.db")));
-		LOGGER.log(Level.INFO, "Redis connection pool successfully initilized..");
+		LOGGER.log(Level.INFO, "Redis connection pool successfully initialized..");
 	}
-	
+
 	public void release() {
 		if (pool != null) {
 			pool.destroy();
@@ -83,5 +86,20 @@ public class RedisManager {
 			return pool.getResource();
 		}
 		return null;
+	}
+
+	public void subscribe(JedisPubSub pubSub, String channelName) {
+		try {
+			new Thread(() -> getJedis().subscribe(pubSub, channelName), channelName + "-redis-subscribe").start();
+			SUBSCRIPTION_CHANNELS.remove(channelName);
+		} catch (Exception e) {
+			SUBSCRIPTION_CHANNELS.put(channelName, pubSub);
+			System.out.println(SUBSCRIPTION_CHANNELS);
+		}
+	}
+
+	public void subscribeErrorChannels() {
+		HashMap<String, JedisPubSub> subscribed = new HashMap<>(SUBSCRIPTION_CHANNELS);
+		subscribed.forEach((k,v) -> subscribe(v, k));
 	}
 }
