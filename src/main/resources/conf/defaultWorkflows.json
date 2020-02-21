@@ -693,12 +693,12 @@
 				lstNoOfOccurrence = 0;
 				maxDuration = 0;
 				maxDurationTime = 0;
+				duration = 0;
 				thisMonthOccurence =  alarmoccurrenceModule.fetch(occurenceThisMonthCrit);
 				if (thisMonthOccurence != null) {
 					noOfOccurrence = thisMonthOccurence.size();
 					for each index,value in thisMonthOccurence {
 						createdTime = value.createdTime;
-						duration = 0;
 						if (value.clearedTime != null) {
 							duration = value.duration;
 						} else {
@@ -707,24 +707,25 @@
 						mtba = mtba + duration;
 						if (maxDuration < duration) {
 							maxDuration = duration;
-							maxDurationTime = value.createdTime;
+							maxDurationTime = value.createdTime
 						}
 					}
 				}
-				resMap[\"mtba\"] = mtba;
+				resMap[\"durationCurrentMonth\"] = mtba / 1000;
 				resMap[\"noOfOcc\"] = noOfOccurrence;
-				resMap[\"maxDuration\"] = maxDuration;
-				resMap[\"maxDurationTime\"] = maxDurationTime;
+				resMap[\"maxDurationThisMonth\"] = maxDuration / 1000;
+				resMap[\"maxDurationCurrentTime\"] = maxDurationTime;
 				mtba = 0;
 				maxDuration = 0;
 				maxTimeDuration = null;
 				previousClearedTime = 0;
+				duration = 0;
+				maxDurationTime = 0;
 				lastMonthOccurence =  alarmoccurrenceModule.fetch(occurenceLastMonthCrit);
 				if (lastMonthOccurence != null) {
 					lstNoOfOccurrence = lastMonthOccurence.size();
 						for each index,value in lastMonthOccurence {
 						createdTime = value.createdTime;
-						duration = 0;
 						if (value.clearedTime != null) {
 							duration = value.duration;
 						} else {
@@ -737,10 +738,10 @@
 						}
 					}
 				}
-				resMap[\"mtbaLastMonth\"] = mtba;
+				resMap[\"durationLastMonth\"] = mtba / 1000;
 				resMap[\"noOfOccLastMonth\"] = lstNoOfOccurrence;
-				resMap[\"maxDurationLast\"] = maxDuration;
-				resMap[\"maxDurationTimeLast\"] = maxDurationTime;
+				resMap[\"maxDurationLastMonth\"] = maxDuration / 1000;
+				resMap[\"maxDurationLastTime\"] = maxDurationTime;
 				log resMap;
 				return resMap;
 				}"

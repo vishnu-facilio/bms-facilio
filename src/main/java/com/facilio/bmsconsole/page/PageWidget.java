@@ -305,6 +305,7 @@ public class PageWidget {
  		ALARM_DUARTION("alarmDuration"),
 		ANALYTICS_CHART("analyticsChart"),
  		IMPACT_DETAILS("impactDetails"),
+		DEFAULT_COMPARISION_CARD("defaultComparison"),
 		
 		ECM("ecm"),
 		MV_SAVINGS("savings"),

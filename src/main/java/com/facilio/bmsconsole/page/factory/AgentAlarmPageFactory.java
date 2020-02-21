@@ -49,9 +49,11 @@ public class AgentAlarmPageFactory extends PageFactory  {
         Page.Section tab2Sec1 = page.new Section();
         tab2.addSection(tab2Sec1);
         // addAlarmRankCard(tab2Sec1);
-        addMeanTimeBetweenCard(tab2Sec1);
-        addMeanTimeToClearCard(tab2Sec1);
         addAlarmDuration(tab2Sec1);
+        addDefaultAlarmDuration(tab2Sec1);
+        addDefaultMaxDuration(tab2Sec1);
+//        addMeanTimeBetweenCard(tab2Sec1);
+//        addMeanTimeToClearCard(tab2Sec1);
 
         // History Tab
         Page.Tab tab3 = page.new Tab("occurrenceHistory", "occurrenceHistory");
@@ -155,11 +157,32 @@ public class AgentAlarmPageFactory extends PageFactory  {
         section.addWidget(cardWidget);
         return  cardWidget;
     }
-    private static  PageWidget  addImpactCard (Page.Section section) {
-        PageWidget impactCard = new PageWidget(PageWidget.WidgetType.IMPACTS);
-        impactCard.addToLayoutParams(section, 24, 8);
-        section.addWidget(impactCard);
-        return impactCard;
+    private  static  PageWidget addDefaultAlarmDuration (Page.Section section) {
+        PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "duration");
+        cardWidget.addToLayoutParams(section, 8, 4);
+        cardWidget.setTitle("Offline Duration");
+        cardWidget.addToWidgetParams("primaryTitle", "This Month");
+        cardWidget.addToWidgetParams("primaryKey", "durationCurrentMonth");
+        cardWidget.addToWidgetParams("secondaryTitle", "Last Month");
+        cardWidget.addToWidgetParams("secondaryKey", "durationLastMonth");
+        cardWidget.addToWidgetParams("type", "duration");
+        cardWidget.addCardType(PageWidget.CardType.DEFAULT_COMPARISION_CARD);
+        section.addWidget(cardWidget);
+        return  cardWidget;
     }
+    private  static  PageWidget addDefaultMaxDuration (Page.Section section) {
+        PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.CARD, "maxDuration");
+        cardWidget.addToLayoutParams(section, 8, 4);
+        cardWidget.setTitle("Max Outage Duration");
+        cardWidget.addToWidgetParams("primaryTitle", "This Month");
+        cardWidget.addToWidgetParams("primaryKey", "maxDurationCurrentTime");
+        cardWidget.addToWidgetParams("secondaryTitle", "Last Month");
+        cardWidget.addToWidgetParams("secondaryKey", "maxDurationLastMonth");
+        cardWidget.addToWidgetParams("type", "duration");
+        cardWidget.addCardType(PageWidget.CardType.DEFAULT_COMPARISION_CARD);
+        section.addWidget(cardWidget);
+        return  cardWidget;
+    }
+
 }
 
