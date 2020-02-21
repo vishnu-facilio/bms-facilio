@@ -15,8 +15,10 @@ import com.facilio.server.ServerInfo;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.procon.processor.FacilioProcessor;
 import com.facilio.util.AckUtil;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -25,6 +27,10 @@ import java.util.List;
 
 //Renamed from Processor
 public class KafkaProcessor extends FacilioProcessor {
+
+    private static final String TIME_TAKEN = "timetaken";
+    private static final String TIME_TAKEN_IN_MILLIS = "timeInMillis";
+
     private AgentUtil agentUtil;
     private DevicePointsUtil devicePointsUtil;
     private AckUtil ackUtil;
@@ -79,7 +85,7 @@ public class KafkaProcessor extends FacilioProcessor {
                     LOGGER.info("Exception occurred while making new checkPointer",e);
                 }
             }*/
-
+            long start = System.currentTimeMillis();
             try {
                 AccountUtil.getCurrentAccount().clearStateVariables();
                 if (!dataProcessorUtil.processRecord(record)) {
@@ -89,15 +95,32 @@ public class KafkaProcessor extends FacilioProcessor {
             } catch (Exception e){
                 LOGGER.info("Exception occurred while processing  ",e);
             } finally {
-                Account account = AccountUtil.getCurrentAccount();
-                String message = " select: " + account.getSelectQueries() + " time: " + account.getSelectQueriesTime() +
-                        " update: " + account.getUpdateQueries() + " time: " + account.getUpdateQueriesTime() +
-                        " insert: " + account.getInsertQueries() + " time: " + account.getInsertQueriesTime() +
-                        " delete: " + account.getDeleteQueries() + " time: " + account.getDeleteQueriesTime() +
-                        " rget: " + account.getRedisGetCount() + " time: " + account.getRedisGetTime() +
-                        " rput: " + account.getRedisPutCount() + " time: " + account.getRedisPutTime() +
-                        " rdel: " + account.getRedisDeleteCount() + " time: " + account.getRedisDeleteTime();
-                LOGGER.info("record : " + recordId + message);
+                try {
+                    long time = System.currentTimeMillis() - start;
+                    Account account = AccountUtil.getCurrentAccount();
+                    LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, recordId, null);
+                    event.setProperty("fselect", String.valueOf(account.getSelectQueries()));
+                    event.setProperty("finsert", String.valueOf(account.getInsertQueries()));
+                    event.setProperty("fdelete", String.valueOf(account.getDeleteQueries()));
+                    event.setProperty("fupdate", String.valueOf(account.getUpdateQueries()));
+                    event.setProperty("fstime", String.valueOf(account.getSelectQueriesTime()));
+                    event.setProperty("fitime", String.valueOf(account.getInsertQueriesTime()));
+                    event.setProperty("fdtime", String.valueOf(account.getDeleteQueriesTime()));
+                    event.setProperty("futime", String.valueOf(account.getUpdateQueriesTime()));
+                    event.setProperty("frget", String.valueOf(account.getRedisGetCount()));
+                    event.setProperty("frput", String.valueOf(account.getRedisPutCount()));
+                    event.setProperty("frdel", String.valueOf(account.getRedisDeleteCount()));
+                    event.setProperty("frgtime", String.valueOf(account.getRedisGetTime()));
+                    event.setProperty("frptime", String.valueOf(account.getRedisPutTime()));
+                    event.setProperty("frdtime", String.valueOf(account.getRedisDeleteTime()));
+                    event.setProperty("ftqueries", String.valueOf(account.getTotalQueries()));
+                    event.setProperty("ftqtime", String.valueOf(account.getTotalQueryTime()));
+                    event.setProperty(TIME_TAKEN, String.valueOf(time / 1000));
+                    event.setProperty(TIME_TAKEN_IN_MILLIS, String.valueOf(time));
+                    LOGGER.callAppenders(event);
+                } catch (Exception e) {
+                    LOGGER.info("record: " + recordId);
+                }
             }
 
 
