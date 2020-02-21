@@ -11,6 +11,13 @@
 <%@ page import="com.facilio.beans.ModuleBean" %>
 <%@ page import="com.facilio.fw.BeanFactory" %>
 <%@ page import="com.facilio.bmsconsole.util.TicketAPI" %>
+<%@ page import="com.facilio.bmsconsole.util.FormsAPI" %>
+<%@ page import="com.facilio.bmsconsole.forms.FacilioForm" %>
+<%@ page import="com.facilio.constants.FacilioConstants" %>
+<%@ page import="com.facilio.modules.fields.FacilioField" %>
+<%@ page import="com.facilio.bmsconsole.forms.FormField" %>
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.Arrays" %>
 
 <%--
 
@@ -35,15 +42,36 @@
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule workorderModule = modBean.getModule("workorder");
-            if (workorderModule != null) {
-                FacilioStatus status = new FacilioStatus();
-                status.setDisplayName("Skipped");
-                status.setStatus("skipped");
-                status.setTypeCode(6);
-                TicketAPI.addStatus(status, workorderModule);
-            }
 
+            List<FacilioModule> modules = Arrays.asList(
+                    modBean.getModule(FacilioConstants.ContextNames.TICKET_NOTES),
+                    modBean.getModule(FacilioConstants.ContextNames.ASSET_NOTES),
+                    modBean.getModule("vendorsNotes")
+                    );
+            for (FacilioModule module : modules) {
+                if (module == null) {
+                    continue;
+                }
+                FacilioField body = modBean.getField("body", module.getName());
+                if (body == null) {
+                    continue;
+                }
+                FacilioForm form = new FacilioForm();
+                form.setName("default_" + module.getName() + "_web");
+                form.setDisplayName("Add Notes");
+                form.setFormType(FacilioForm.FormType.WEB);
+                form.setLabelPosition(FacilioForm.LabelPosition.TOP);
+
+                FormField formField = new FormField();
+                formField.setField(body);
+                formField.setDisplayType(FacilioField.FieldDisplayType.TEXTAREA);
+                formField.setFieldId(body.getFieldId());
+
+                List<FormField> formFields = Collections.singletonList(formField);
+                form.setFields(formFields);
+
+                FormsAPI.createForm(form, module);
+            }
             return false;
         }
     }
