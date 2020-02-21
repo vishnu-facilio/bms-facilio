@@ -1883,6 +1883,12 @@ public class FacilioChainFactory {
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		return c;
 	}
+
+	public static FacilioChain getFieldsByAccessType() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new GetFieldsByAccessType());
+		return c;
+	}
 	
 	public static FacilioChain deleteModuleDataChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();

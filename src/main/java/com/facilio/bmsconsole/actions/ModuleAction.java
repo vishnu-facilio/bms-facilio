@@ -1,13 +1,11 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -704,6 +702,19 @@ public class ModuleAction extends FacilioAction {
 		this.subFormFiles = subFormFiles;
 	}
 
+	private long accessType = -1L;
+
+	public String getFieldsByAccessType() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FIELD_ACCESS_TYPE, accessType);
+		context.put(FacilioConstants.ContextNames.MODULE_ID, moduleId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		FacilioChain fieldsByAccessType = FacilioChainFactory.getFieldsByAccessType();
+		fieldsByAccessType.execute(context);
+		setResult(ContextNames.FIELDS, context.get(FacilioConstants.ContextNames.FIELDS));
+		return SUCCESS;
+	}
+
 	public String updateModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
@@ -834,5 +845,13 @@ public class ModuleAction extends FacilioAction {
 
 	public void setModules(List<FacilioModule> modules) {
 		this.modules = modules;
+	}
+
+	public long getAccessType() {
+		return accessType;
+	}
+
+	public void setAccessType(long accessType) {
+		this.accessType = accessType;
 	}
 }

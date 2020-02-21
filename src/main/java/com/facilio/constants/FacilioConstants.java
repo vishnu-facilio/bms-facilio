@@ -100,7 +100,7 @@ public class FacilioConstants {
 	}
 
 	public static class ContextNames {
-
+		public static final String FIELD_ACCESS_TYPE = "fieldAccessType";
 		public static final String SCHEDULE_GENERATION_TIME = "scheduleGenerationTime";
 		public static final String OLD_TASKS = "oldTasks";
 		public static final String TASKS = "tasks";

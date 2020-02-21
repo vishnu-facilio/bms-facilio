@@ -2118,6 +2118,11 @@
 			method="updateModuleData">
 		</action>
 
+		<action name="getFieldsByAccessType"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="getFieldsByAccessType">
+		</action>
+
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="deleteModuleData">
