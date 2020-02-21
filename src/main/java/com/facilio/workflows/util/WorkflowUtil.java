@@ -470,7 +470,7 @@ public class WorkflowUtil {
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {	// change this method
 
 		if(workflowContext.isV2Script() && workflowContext.getWorkflowV2String() == null) {
-//			getV2ScriptFromWorkflowContext(workflowContext);
+			getV2ScriptFromWorkflowContext(workflowContext);
 		}
 		else {
 			if(workflowContext.getWorkflowString() == null) {

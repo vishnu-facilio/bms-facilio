@@ -14,6 +14,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -207,7 +208,12 @@ public class ScriptParser extends CommonParser<Value> {
 			}
 		}
 		else {
-			expressionContext.setExpr(exprString);
+			if(FacilioUtil.isNumeric(exprString)) {
+				expressionContext.setConstant(exprString);
+			}
+			else {
+				expressionContext.setExpr(exprString);
+			}
 		}
 		this.workflowContext.addWorkflowExpression(expressionContext);
 		
