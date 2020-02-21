@@ -12,6 +12,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.lang3.StringUtils;
@@ -61,23 +62,23 @@ public class FieldDeviceApi
         //try multiple insert if bulk fails
     }
 
-    public static Device getDevice(long agentId, String name) throws Exception {
+    public static Device getDevice(long agentId, String identifier) throws Exception {
         if (agentId > 0) {
-            if ((name != null) && (!name.isEmpty())) {
+            if ((identifier != null) && (!identifier.isEmpty())) {
                 GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                         .table(MODULE.getTableName())
                         .select(FIELD_MAP.values())
-                        .andCondition(CriteriaAPI.getNameCondition(name, MODULE))
+                        .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.IDENTIFIER),identifier.trim(), StringOperators.IS))
                         .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
                 List<Map<String, Object>> result = builder.get();
+                LOGGER.info(" query "+builder.toString());
                 if (result.size() == 1) {
-                    Map<String, Object> row = result.get(0);
                     Device device = FieldUtil.getAsBeanFromMap(result.get(0), Device.class);
                     if (device.getControllerProps().containsKey("type"))
                         device.setType(Integer.parseInt(device.getControllerProps().get("type").toString()));
                     return device;
                 } else {
-                    LOGGER.info("Exception, unexpected results, only one row should be selected for device->" + name + " agentId->" + agentId + " rowsSelected->" + result.size());
+                    LOGGER.info("Exception, unexpected results, only one row should be selected for device->" + identifier + " agentId->" + agentId + " rowsSelected->" + result.size());
                 }
             } else {
                 throw new Exception(" device name can't be null or empty");
@@ -95,6 +96,7 @@ public class FieldDeviceApi
      * @return
      */
     public static List<Map<String, Object>> getDevices(Long agentId, List<Long> ids)  {
+        LOGGER.info(" getting devices for "+agentId+" ids "+ids);
         try {
            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                    .table(MODULE.getTableName())
@@ -125,10 +127,11 @@ public class FieldDeviceApi
         for (Map<String, Object> deviceMap : getDevices(null, ids)) {
             try{
                 device = FieldUtil.getAsBeanFromMap(deviceMap, Device.class);
-                controller = ControllerUtilV2.getControllerFromJSON(device.getAgentId(), device.getControllerProps());
+                controller = ControllerUtilV2.getControllerFromJSON( device.getControllerProps());
                 if (controller == null) {
                     throw new Exception(" controller cant be created ");
                 }
+                controller.setAgentId(device.getAgentId());
                 LOGGER.info(" controller formed is ->" + controller.getChildJSON());
                 ControllerMessenger.discoverPoints(controller);
                 return true;

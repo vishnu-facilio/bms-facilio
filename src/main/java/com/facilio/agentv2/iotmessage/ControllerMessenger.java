@@ -10,7 +10,6 @@ import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.chain.FacilioContext;
-import com.facilio.sqlUtils.contexts.opc.ua.OpcUaController;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -75,12 +74,13 @@ public class ControllerMessenger {
         FacilioAgent agent = AgentApiV2.getAgent(agentId);
         if (agent != null) {
             iotData.setAgentId(agentId);
+            iotData.setCommand(command.asInt());
             JSONObject object = new JSONObject();
             object.put(AgentConstants.COMMAND, command.asInt());
             LOGGER.info(" controller type  " + controller.getControllerType());
             object.put(AgentConstants.TYPE, controller.getControllerType());
-            object.put(AgentConstants.IDENTIFIER, controller.makeIdentifier());
-            object.putAll(controller.getChildJSON());
+            object.put(AgentConstants.CONTROLLER, controller.getChildJSON());
+            //object.putAll(controller.getChildJSON());
             object.put("timestamp", System.currentTimeMillis());
             object.put("agent", agent.getName());
             object.put(AgentConstants.AGENT_ID, agent.getId()); // Agent_Id key must be changed to camelcase.

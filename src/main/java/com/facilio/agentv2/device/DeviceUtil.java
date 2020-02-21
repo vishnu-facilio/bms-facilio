@@ -1,8 +1,11 @@
 package com.facilio.agentv2.device;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -43,19 +46,29 @@ public class DeviceUtil {
 
             for (Object deviceObject : devicesArray) {
                 JSONObject deviceJSON = (JSONObject) deviceObject;
+
                 deviceJSON.put(AgentConstants.AGENT_ID, agent.getId());
                 Device device = new Device(AccountUtil.getCurrentOrg().getOrgId(), agent.getId());
-                device.setType(((Number) deviceJSON.get(AgentConstants.TYPE)).intValue());
+                if(containsValueCheck(AgentConstants.TYPE,deviceJSON)){
+                    device.setType(((Number) deviceJSON.get(AgentConstants.TYPE)).intValue());
+                }else {
+                    throw new Exception(" controllerType missing from deviceJson "+deviceJSON);
+                }
                 if (agent.getSiteId() < 1) {
                     LOGGER.info(" Exception occurred. Agent is missing its siteId,skipping device processing.");
                     continue;
                 }
                 device.setSiteId(agent.getSiteId());
-                if (deviceJSON.containsKey(AgentConstants.IDENTIFIER)) {
-                    device.setName(String.valueOf(deviceJSON.get(AgentConstants.IDENTIFIER)));
+                if (deviceJSON.containsKey(AgentConstants.CONTROLLER)) {
+                    device.setIdentifier( getControllerIdentifier(device.getType(),(JSONObject) deviceJSON.get(AgentConstants.CONTROLLER)));
                 } else {
-                    LOGGER.info("Exception occurred, no identifier found in device json -> " + payload);
-                    continue;
+                    LOGGER.info("Exception occurred, controller params found in device json -> " + payload);
+                    device.setName(deviceJSON.toString());
+                }
+                if(deviceJSON.containsKey(AgentConstants.NAME)){
+                    device.setName((String)deviceJSON.get(AgentConstants.NAME));
+                }else{
+                    device.setName(device.getIdentifier().toString());
                 }
                 device.setCreatedTime(System.currentTimeMillis());
                 if (!deviceJSON.containsKey(AgentConstants.CREATED_TIME)) {
@@ -68,6 +81,16 @@ public class DeviceUtil {
         } else {
             throw new Exception("Exception occurred while processing device, data is missing from payload->" + payload);
         }
+    }
+
+    public static String getControllerIdentifier(int type, JSONObject jsonObject) {
+        try {
+            Controller controller = ControllerApiV2.getControllerFromMap(jsonObject,FacilioControllerType.valueOf(type));
+            return controller.getIdentifier();
+        }catch (Exception e){
+            LOGGER.info("Exception while making identifier "+FacilioControllerType.valueOf(type));
+        }
+        return null;
     }
 
     public boolean addDevices(List<Device> devices) throws Exception {

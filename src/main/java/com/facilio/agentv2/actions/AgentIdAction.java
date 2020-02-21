@@ -11,6 +11,7 @@ import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FieldUtil;
@@ -48,7 +49,7 @@ public class AgentIdAction extends AgentActionV2 {
             newDevices.add(devices.get(0));
             setResult(AgentConstants.DATA, devices);
         }catch (Exception e){
-            LOGGER.info("Exception occurred while getting devices");
+            LOGGER.info("Exception occurred while getting devices ",e);
             setResult(AgentConstants.RESULT,ERROR);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
         }
@@ -115,6 +116,12 @@ public class AgentIdAction extends AgentActionV2 {
                 if ((controllerData != null) && (!controllerData.isEmpty())) {
                     JSONObject object = new JSONObject();
                     for (Controller controller : controllerData.values()) {
+                        JSONObject pointCountData = PointsAPI.getControllerPointsCountData(controller.getId());
+                        if(pointCountData != null && ( ! pointCountData.isEmpty()) ){
+                            object.putAll(pointCountData);
+                        }else {
+                            LOGGER.info(" points count null ");
+                        }
                         object.put(AgentConstants.CHILDJSON, controller.getChildJSON());
                         object.putAll(controller.toJSON());
                         controllerArray.add(object);

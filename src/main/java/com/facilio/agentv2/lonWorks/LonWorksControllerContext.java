@@ -91,12 +91,6 @@ public class LonWorksControllerContext extends Controller {
         this.subnetNode = subnetNode;
     }
 
-
-    @Override
-    public String makeIdentifier() throws Exception {
-        return null;
-    }
-
     @Override
     public JSONObject getChildJSON() {
         JSONObject jsonObject = new JSONObject();
@@ -104,7 +98,7 @@ public class LonWorksControllerContext extends Controller {
         jsonObject.put(AgentConstants.NEURON_ID,neuronId);
         return jsonObject;
     }
-
+/*
     public void processIdentifier(String identifier) throws Exception {
         if ((identifier != null) && (!identifier.isEmpty())) {
             String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
@@ -118,14 +112,19 @@ public class LonWorksControllerContext extends Controller {
         } else {
             throw new Exception("Exception Occurred, identifier can't be null or empty ->"+identifier);
         }
-    }
+    }*/
 
 
     @Override
-    public List<Condition> getControllerConditions(String identifier) throws Exception {
-        processIdentifier(identifier);
+    public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
+        //TODO implement this
         return null;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return subnetNode+IDENTIFIER_SEPERATER+neuronId;
     }
 }

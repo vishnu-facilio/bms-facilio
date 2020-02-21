@@ -54,7 +54,7 @@ public class ModbusTcpControllerContext extends Controller {
             long agentId = ((Number) controllerMap.get(AgentConstants.AGENT_ID)).longValue();
             String identifier = (String) controllerMap.get(AgentConstants.IDENTIFIER);
             ModbusTcpControllerContext controller = new ModbusTcpControllerContext(((Number) controllerMap.get(AgentConstants.AGENT_ID)).longValue(), orgId);
-            controller.processIdentifier((String) controllerMap.get(AgentConstants.IDENTIFIER));
+            //controller.processIdentifier((String) controllerMap.get(AgentConstants.IDENTIFIER));
             return (ModbusTcpControllerContext) controller.getControllerFromJSON(controllerMap);
         }
         if (containsValueCheck(AgentConstants.SLAVE_ID, controllerMap) && containsValueCheck(AgentConstants.IP_ADDRESS, controllerMap)) {
@@ -86,34 +86,6 @@ public class ModbusTcpControllerContext extends Controller {
         return ASSETCATEGORY;
     }
 
-    @Override
-    public String makeIdentifier() throws Exception {
-        if ((identifier != null) && (!identifier.isEmpty())) {
-            return identifier;
-        }
-        if ((ipAddress != null && (!ipAddress.isEmpty())) && (slaveId > 0)) {
-            identifier = FacilioControllerType.MODBUS_IP.asInt() + IDENTIFIER_SEPERATOR + ipAddress + IDENTIFIER_SEPERATOR + slaveId;
-            ;
-            return identifier;
-        }
-        throw new Exception("Exception Occurred, parameters for identifier not set yet ");
-    }
-
-    public void processIdentifier(String identifier) throws Exception {
-        if ((identifier != null) && (!identifier.isEmpty())) {
-            String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
-            if ((uniques.length == 3) && ((FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.MODBUS_IP))) {
-                ipAddress = uniques[1];
-                slaveId = Integer.parseInt(uniques[2]);
-                this.identifier = identifier;
-            } else {
-                throw new Exception(" Exceprion while processing identifier -- length or Type didnt match ");
-            }
-        } else {
-            throw new Exception("Exception Occurred, identifier can't be null or empty ->" + identifier);
-        }
-    }
-
     public JSONObject getChildJSON() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(AgentConstants.ID, getId());
@@ -124,12 +96,16 @@ public class ModbusTcpControllerContext extends Controller {
     }
 
     @Override
-    public List<Condition> getControllerConditions(String identifier) throws Exception {
-        processIdentifier(identifier);
+    public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SLAVE_ID), String.valueOf(getSlaveId()), NumberOperators.EQUALS));
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.IP_ADDRESS),getIpAddress(), StringOperators.IS));
         return conditions;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return slaveId+IDENTIFIER_SEPERATER+ipAddress;
     }
 }

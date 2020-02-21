@@ -67,6 +67,7 @@ public class PointsUtil
     }*/
 
     public static boolean processPoints(JSONObject payload, Device device) throws Exception {
+        LOGGER.info(" processing point "+device.getControllerProps());
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray pointsJSON = (JSONArray) payload.get(AgentConstants.DATA);
             if (pointsJSON.size() == 0) {
@@ -84,6 +85,9 @@ public class PointsUtil
                     LOGGER.info("point made");
                     LOGGER.info("point to json ->" + FieldUtil.getAsJSON(point));
                     if (point != null) {
+                        if (point.getControllerId() < 1) {
+                            point.setControllerId(-1);
+                        }
                         points.add(point);
                     }
                 } catch (Exception e) {

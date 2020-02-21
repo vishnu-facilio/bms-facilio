@@ -2,15 +2,8 @@ package com.facilio.agentv2.controller;
 
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
-import com.facilio.agentv2.misc.MiscController;
-import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
-import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
-import com.facilio.agentv2.niagara.NiagaraControllerContext;
-import com.facilio.agentv2.opcua.OpcUaControllerContext;
-import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -57,12 +50,17 @@ public class ControllerUtilV2 {
         Map<Long, Controller> deviceIdControllerMap = new HashMap<>();
         LOGGER.info("device are " + device);
         JSONObject controllerProps = device.getControllerProps();
+        controllerProps.putAll((JSONObject)controllerProps.get(AgentConstants.CONTROLLER));
         LOGGER.info(" controller props JSON " + controllerProps);
         if ((controllerProps != null) && (!controllerProps.isEmpty())) {
             controllerProps.put(AgentConstants.DEVICE_ID, device.getId());
-            controller = getControllerFromJSON(agentId, controllerProps);
+            controllerProps.putAll((JSONObject)device.getControllerProps().get(AgentConstants.CONTROLLER));
+            controllerProps.put(AgentConstants.CONTROLLER_TYPE,controllerProps.get(AgentConstants.TYPE));
+            controllerProps.remove(AgentConstants.TYPE);
+            controller = getControllerFromJSON( controllerProps);
             if (controller != null) {
-                Controller controllerFromDb = ControllerApiV2.getControllerFromDb(controller.makeIdentifier(), agentId, FacilioControllerType.valueOf(controller.getControllerType()));
+                controller.setAgentId(agentId);
+                Controller controllerFromDb = ControllerApiV2.getControllerFromDb(controller.getChildJSON(), agentId, FacilioControllerType.valueOf(controller.getControllerType()));
                 if (controllerFromDb != null) {
                     LOGGER.info(" controller present ");
                     deviceIdControllerMap.put(device.getId(), controllerFromDb);
@@ -90,45 +88,13 @@ public class ControllerUtilV2 {
         return deviceIdControllerMap;
     }
 
-    public static Controller getControllerFromJSON(long agentId, Map<String, Object> controllerJSON) {
+    public static Controller getControllerFromJSON(Map<String, Object> controllerJSON) {
         Controller controller = null;
         try {
             if (controllerJSON != null && (!controllerJSON.isEmpty())) {
-                if (containsValueCheck(AgentConstants.TYPE, controllerJSON)) {
-                    FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact((Long) controllerJSON.get(AgentConstants.TYPE)));
-                    switch (controllerType) {
-                        case NIAGARA:
-                            controller = NiagaraControllerContext.getNiagaraControllerFromMap(agentId, controllerJSON);
-                            break;
-                        case BACNET_IP:
-                            controller = BacnetIpControllerContext.getBacnetControllerFromMap(agentId, controllerJSON);
-                            break;
-                        case OPC_XML_DA:
-                            controller = OpcXmlDaControllerContext.getOpcXmlDaControllerFromMap(agentId, controllerJSON);
-                            break;
-                        case BACNET_MSTP:
-                            throw new Exception(" No implementation for " + FacilioControllerType.BACNET_MSTP.asString() + " controller");
-                        case MODBUS_RTU:
-                            controller = ModbusRtuControllerContext.getModbusRtuControllerFromMap(agentId, controllerJSON);
-                            break;
-                        case MODBUS_IP:
-                            controller = ModbusTcpControllerContext.getModbusTcpControllerFromMap(controllerJSON);
-                            break;
-                        case LON_WORKS:
-                            throw new Exception(" No implementation for " + FacilioControllerType.LON_WORKS.asString() + " controller");
-                        case KNX:
-                            throw new Exception(" No implementation for " + FacilioControllerType.KNX.asString() + " controller");
-                        case OPC_UA:
-                            controller = OpcUaControllerContext.getBacnetControllerFromMap(agentId, controllerJSON);
-                            break;
-                        case MISC:
-                            controller = MiscController.getMiscControllerFromJSON(agentId, controllerJSON);
-                            break;
-                        case CUSTOM:
-                        default:
-                            controller = CustomController.getCustomControllerFromJSON(agentId, controllerJSON);
-
-                    }
+                if (containsValueCheck(AgentConstants.CONTROLLER_TYPE, controllerJSON)) {
+                    FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact((Long) controllerJSON.get(AgentConstants.CONTROLLER_TYPE)));
+                    controller = ControllerApiV2.getControllerFromMap(controllerJSON,controllerType);
                 } else {
                     LOGGER.info(" Controller Type missing ");
                 }
@@ -163,32 +129,24 @@ public class ControllerUtilV2 {
         return jsonObject.containsKey(key) && (jsonObject.get(key) != null);
     }
 
-    public static Controller makeCustomController(long orgId, long agentId, String name) {
-        CustomController controller;
-        controller = (CustomController) ControllerApiV2.getControllerFromDb(name, agentId, FacilioControllerType.CUSTOM); // check if a custom controller is present already
-
+    public static Controller makeCustomController(long orgId, long agentId, JSONObject controllerJson) {
+        CustomController controller = null;
+        try {
+            controller = (CustomController) ControllerApiV2.getControllerFromDb(controllerJson, agentId, FacilioControllerType.CUSTOM); // check if a custom controller is present already
+        } catch (Exception e) {
+            LOGGER.info(" Exception while fetching controller ",e);
+        }
         if (controller == null) {
             controller = new CustomController();
             controller.setOrgId(orgId);
             controller.setAgentId(agentId);
             controller.setActive(true);
-            controller.setName(name);
+            controller.setName((String)controllerJson.get(AgentConstants.NAME));
             if (ControllerApiV2.addController(controller) < 1) {
                 controller = null;
             }
         }
         return controller;
-    }
-
-    public static BacnetIpControllerContext makeBacnetIpController(long orgId, long agentId, String identifier) {
-        try {
-            BacnetIpControllerContext controller = new BacnetIpControllerContext(agentId, orgId);
-            controller.processIdentifier(identifier);
-            return controller;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public static boolean deleteController(long controllerId) {
@@ -203,23 +161,11 @@ public class ControllerUtilV2 {
         return false;
     }
 
-    public static ModbusTcpControllerContext makeModbusTcoController(long orgId, long agentId, String identifier) {
-        try {
-            ModbusTcpControllerContext controller = new ModbusTcpControllerContext(agentId, orgId);
-            controller.processIdentifier(identifier);
-            return controller;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     /**
-     * @param controllerIdentifier
      * @param controllerType
      * @return
      */
-    public Controller getController(String controllerIdentifier, FacilioControllerType controllerType) {
+    public Controller getController(JSONObject controllerJson, FacilioControllerType controllerType) {
         LOGGER.info(" getting controllers from db");
         // avoids null pointer --  loads the controller map
         if ((controllerMapList.get(controllerType.asInt()) == null)) {
@@ -238,22 +184,27 @@ public class ControllerUtilV2 {
             for (String key : controllers.keySet()) {
                 controllerMapList.get(controllers.get(key).getControllerType()).put(key, controllers.get(key));
             }
-            return controllerMapList.get(controllerType.asInt()).get(controllerIdentifier);
+            return controllerMapList.get(controllerType.asInt()).get(controllerJson.toString());
         } else {
             LOGGER.info(" controller found in map ");
-            if (controllerMapList.get(controllerType.asInt()).containsKey(controllerIdentifier)) {
-                return controllerMapList.get(controllerType.asInt()).get(controllerIdentifier);
+            if (controllerMapList.get(controllerType.asInt()).containsKey(controllerJson.toString())) {
+                return controllerMapList.get(controllerType.asInt()).get(controllerJson.toString());
             } else {
-                Controller controller = ControllerApiV2.getControllerFromDb(controllerIdentifier, agentId, controllerType);
+                Controller controller = null;
+                try {
+                    controller = ControllerApiV2.getControllerFromDb(controllerJson, agentId, controllerType);
+                } catch (Exception e) {
+                    LOGGER.info(" Exception while fetching controller ",e);
+                }
                 if (controller != null) {
                     try {
-                        controllerMapList.get(controllerType.asInt()).put(controller.makeIdentifier(), controller);
+                        controllerMapList.get(controllerType.asInt()).put(controller.getChildJSON().toString(), controller);
                         return controller;
                     } catch (Exception e) {
                         LOGGER.info("Exception occured, cant generate identifier");
                     }
                 }
-                LOGGER.info("Exception Occurred, No such controller for agent " + agentId + ", with identifier " + controllerIdentifier);
+                LOGGER.info("Exception Occurred, No such controller for agent " + agentId + ", with identifier " + controllerJson);
                 return null;
             }
         }
@@ -281,19 +232,19 @@ public class ControllerUtilV2 {
             return null;
         }
 
-        String identifier = String.valueOf(payload.get(AgentConstants.CONTROLLER));
+        JSONObject controllerJson = (JSONObject) payload.get(AgentConstants.CONTROLLER);
 
         if (payload.containsKey(AgentConstants.TYPE)) {
             FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.TYPE)).intValue());
 
             if (controllerType != null) {
                 LOGGER.info(" getControllerFromPayload " + controllerMapList.get(controllerType.asInt()));
-                return getController(identifier, controllerType);
+                return getController(controllerJson, controllerType);
             }
             // if controllerType is null from the information - then make it custom
             else {
                 LOGGER.info(" getControllerFromPayload " + controllerMapList.get(controllerType.asInt()));
-                Controller customController = ControllerUtilV2.makeCustomController(orgId, agentId, identifier);
+                Controller customController = ControllerUtilV2.makeCustomController(orgId, agentId, controllerJson);
                 controllerMapList.get(FacilioControllerType.CUSTOM.asInt()).put(customController.getName(), customController);
                 return customController;
             }
@@ -301,7 +252,7 @@ public class ControllerUtilV2 {
         // if payload isn't having controllerType information- make it custom.
         else if (payload.containsKey(AgentConstants.CONTROLLER)) {
             LOGGER.info(" getControllerFromPayload " + controllerMapList.get(FacilioControllerType.CUSTOM.asInt()));
-            Controller customController = ControllerUtilV2.makeCustomController(orgId, agentId, identifier);
+            Controller customController = ControllerUtilV2.makeCustomController(orgId, agentId, controllerJson);
             controllerMapList.get(FacilioControllerType.CUSTOM.asInt()).put(customController.getName(), customController);
             return customController;
         } else {

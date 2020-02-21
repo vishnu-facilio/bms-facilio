@@ -1,6 +1,5 @@
 package com.facilio.agentv2.bacnet;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
@@ -58,34 +57,8 @@ public class BacnetIpControllerContext extends Controller {
     public BacnetIpControllerContext(long agentId, long orgId) throws Exception {
         super(agentId, orgId);
         this.agentId = agentId;
-        //processIdentifier(identifier);
         setControllerType(FacilioControllerType.BACNET_IP.asInt());
     }
-
-    public static BacnetIpControllerContext getBacnetControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
-        if (controllerMap == null || controllerMap.isEmpty()) {
-            throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
-        }
-        long orgId = AccountUtil.getCurrentOrg().getOrgId();
-        if (containsValueCheck(AgentConstants.IDENTIFIER, controllerMap)) {
-            BacnetIpControllerContext controller = new BacnetIpControllerContext(agentId, orgId);
-            controller.processIdentifier((String) controllerMap.get(AgentConstants.IDENTIFIER));
-            return (BacnetIpControllerContext) controller.getControllerFromJSON(controllerMap);
-        }
-        if (containsValueCheck(AgentConstants.INSTANCE_NUMBER, controllerMap) && containsValueCheck(AgentConstants.IP_ADDRESS, controllerMap) && containsValueCheck(AgentConstants.NETWORK_NUMBER, controllerMap)) {
-            BacnetIpControllerContext controller = new BacnetIpControllerContext(agentId, orgId);
-            controller.setIpAddress((String) controllerMap.get(AgentConstants.IP_ADDRESS));
-            controller.setInstanceNumber(Math.toIntExact((Long) controllerMap.get(AgentConstants.INSTANCE_NUMBER)));
-            controller.setNetworkNumber(Math.toIntExact((Long) controllerMap.get(AgentConstants.NETWORK_NUMBER)));
-            return (BacnetIpControllerContext) controller.getControllerFromJSON(controllerMap);
-        }
-        throw new Exception(" Mandatory fields like " + AgentConstants.INSTANCE_NUMBER + "," + AgentConstants.IP_ADDRESS + "," + AgentConstants.NETWORK_NUMBER + " might be missing from input parameter -> " + controllerMap);
-    }
-
-    /*public BacnetIpController(long agentId, long orgId) throws Exception {
-        new BacnetIpController(agentId, orgId, null);
-    }*/
-
 
     public int getInstanceNumber() {
         return instanceNumber;
@@ -100,36 +73,6 @@ public class BacnetIpControllerContext extends Controller {
 
     public String getIpAddress() { return ipAddress; }
     public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
-
-
-    public void processIdentifier(String identifier) throws Exception {
-        if ((identifier != null) && (!identifier.isEmpty())) {
-            String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
-            if ((uniques.length == 4) && ((FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.BACNET_IP))) {
-                instanceNumber = Integer.parseInt(uniques[1]);
-                networkNumber = Integer.parseInt(uniques[2]);
-                ipAddress = uniques[3];
-                LOGGER.info("setting instance number " + instanceNumber + "  network number " + networkNumber + "   ip address " + ipAddress);
-                this.identifier = identifier;
-            } else {
-                throw new Exception(" Exceprion while processing identifier -- length or Type didnt match ");
-            }
-        } else {
-            throw new Exception("Exception Occurred, identifier can't be null or empty ->"+identifier);
-        }
-    }
-
-    @Override
-    public String makeIdentifier() throws Exception {
-        if (identifier != null) {
-            return identifier;
-        }
-        if ((instanceNumber >= 0) && (networkNumber >= 0) && isNotNull(ipAddress)) {
-            identifier = FacilioControllerType.BACNET_IP.asInt() + IDENTIFIER_SEPERATOR + instanceNumber + IDENTIFIER_SEPERATOR + networkNumber + IDENTIFIER_SEPERATOR + ipAddress;
-            return identifier;
-        }
-        throw new Exception(" Parameters not set yet " + instanceNumber + "- -" + networkNumber + "- -" + ipAddress);
-    }
 
     @JsonIgnore
     public String getModuleName() {
@@ -146,15 +89,18 @@ public class BacnetIpControllerContext extends Controller {
         return bacnetIpControllerJSON;
     }
 
-    @Override
-    public List<Condition> getControllerConditions(String identifier) throws Exception {
-        processIdentifier(identifier);
+    public List<Condition>  getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
-        Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
+        Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName()); // change it to static final
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_NUMBER), String.valueOf(getNetworkNumber()), NumberOperators.EQUALS));
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.INSTANCE_NUMBER), String.valueOf(getInstanceNumber()),NumberOperators.EQUALS));
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.IP_ADDRESS),getIpAddress(), StringOperators.IS));
         return conditions;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return instanceNumber+IDENTIFIER_SEPERATER+ipAddress+IDENTIFIER_SEPERATER+networkNumber;
     }
 
 

@@ -12,19 +12,16 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public abstract class Controller extends AssetContext {
 
-    private static final Logger LOGGER = LogManager.getLogger(Controller.class.getName());
-
-    public final String IDENTIFIER_SEPERATOR = "_#_";
+    public final String IDENTIFIER_SEPERATER = "-";
 
     private long id;
     private long orgId;
@@ -93,50 +90,64 @@ public abstract class Controller extends AssetContext {
         this.agentId = agentId;
         this.orgId = orgId;
         dataInterval = DEFAULT_DATA_INTERVAL;
-     }
+    }
 
-    /**
-     * Make identifier must be implemented for each controller using  IDENTIFIER_SEPERATOR
-     * @return the identifier itself.
-     * @throws Exception
-     */
-    public abstract String makeIdentifier() throws Exception;
 
     public long getAgentId() {
         return agentId;
     }
+
     public void setAgentId(long agentId) {
         this.agentId = agentId;
     }
 
     @Override
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
+
     @Override
-    public void setName(String name) { this.name = name; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public long getDataInterval() {
         return dataInterval;
     }
+
     public void setDataInterval(long dataInterval) {
         this.dataInterval = dataInterval;
     }
 
-    public Boolean isWritable() { return writable; }
+    public Boolean isWritable() {
+        return writable;
+    }
+
     public void setWritable(Boolean writable) {
         this.writable = writable;
     }
 
-    public Boolean getWritable(){ return writable; }
+    public Boolean getWritable() {
+        return writable;
+    }
 
-    public Boolean isActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
+    public Boolean isActive() {
+        return active;
+    }
 
-    public Boolean getActive() {return active; }
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
 
 
     public int getControllerType() {
         return controllerType;
     }
+
     public void setControllerType(int controllerType) {
         this.controllerType = controllerType;
     }
@@ -144,6 +155,7 @@ public abstract class Controller extends AssetContext {
     public Object getControllerProps() {
         return controllerProps;
     }
+
     public void setControllerProps(Object controllerProps) {
         this.controllerProps = controllerProps;
     }
@@ -151,6 +163,7 @@ public abstract class Controller extends AssetContext {
     public int getAvailablePoints() {
         return availablePoints;
     }
+
     public void setAvailablePoints(int availablePoints) {
         this.availablePoints = availablePoints;
     }
@@ -158,6 +171,7 @@ public abstract class Controller extends AssetContext {
     public long getCreatedTime() {
         return createdTime;
     }
+
     public void setCreatedTime(long createdTime) {
         this.createdTime = createdTime;
     }
@@ -165,6 +179,7 @@ public abstract class Controller extends AssetContext {
     public long getLastModifiedTime() {
         return lastModifiedTime;
     }
+
     public void setLastModifiedTime(long lastModifiedTime) {
         this.lastModifiedTime = lastModifiedTime;
     }
@@ -172,6 +187,7 @@ public abstract class Controller extends AssetContext {
     public long getLastDataRecievedTime() {
         return lastDataRecievedTime;
     }
+
     public void setLastDataRecievedTime(long lastDataRecievedTime) {
         this.lastDataRecievedTime = lastDataRecievedTime;
     }
@@ -179,31 +195,30 @@ public abstract class Controller extends AssetContext {
     public long getDeletedTime() {
         return deletedTime;
     }
+
     public void setDeletedTime(long deletedTime) {
         this.deletedTime = deletedTime;
     }
 
     @JsonIgnore
     public static Map<String, FacilioField> getFieldsMap(String moduleName) throws Exception {
-        if(fieldsMap != null){
+        if (fieldsMap != null) {
             return fieldsMap;
         }
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        if(moduleName != null){
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        if (moduleName != null) {
             List<FacilioField> fields = modBean.getAllFields(moduleName);
             Map<String, FacilioField> fieldsMap1 = FieldFactory.getAsMap(fields);
-            fieldsMap=fieldsMap1;
+            fieldsMap = fieldsMap1;
             return fieldsMap;
-        }else {
+        } else {
             throw new Exception(" module name cant be null");
         }
     }
-   /* @JsonIgnore
-    private static void setFieldsMap(Map<String, FacilioField> fieldsMap) { Controller.fieldsMap = fieldsMap; }
-*/
 
     /**
      * Gives Controller as JSON including child controller's details.
+     *
      * @return {@link JSONObject}
      */
     public JSONObject toJSON() {
@@ -215,16 +230,18 @@ public abstract class Controller extends AssetContext {
 
     /**
      * Gives child Controller as JSON .
-     *
+     * <p>
      * used to insert respective child controller in its table.
+     *
      * @return {@link JSONObject}
      */
     public abstract JSONObject getChildJSON();
 
     /**
      * gives Controller as JSON with just parent controller's data.
-     *
+     * <p>
      * used for inserting controller in controller table.
+     *
      * @return
      */
     public JSONObject getParentJSON() {
@@ -252,56 +269,59 @@ public abstract class Controller extends AssetContext {
 
     /**
      * Builds a {@link Controller} from map.
+     *
      * @param row can be {@link Map<String, Object>} from database or {@link JSONObject} from agent.
      * @return {@link Controller} which will be an instance of corresponding child controller's Class.
      */
-    public Controller getControllerFromJSON(Map<String, Object> row){
-        if(containsValueCheck(AgentConstants.ID,row)){
+    public Controller getControllerFromJSON(Map<String, Object> row) {
+        if (containsValueCheck(AgentConstants.ID, row)) {
             setId((Long) row.get(AgentConstants.ID));
         }
-        if(containsValueCheck(AgentConstants.NAME,row)){
+        if (containsValueCheck(AgentConstants.NAME, row)) {
             setName((String) row.get(AgentConstants.NAME));
         }
-        if(containsValueCheck(AgentConstants.DATA_INTERVAL,row)){
+        if (containsValueCheck(AgentConstants.DATA_INTERVAL, row)) {
             setDataInterval(JsonUtil.getLong(row.get(AgentConstants.DATA_INTERVAL)));
         }
-        if(containsValueCheck(AgentConstants.WRITABLE,row)){
+        if (containsValueCheck(AgentConstants.WRITABLE, row)) {
             setWritable(JsonUtil.getBoolean(row.get(AgentConstants.WRITABLE)));
         }
-        if(containsValueCheck(AgentConstants.ACTIVE,row)){
+        if (containsValueCheck(AgentConstants.ACTIVE, row)) {
             setActive(JsonUtil.getBoolean(row.get(AgentConstants.ACTIVE)));
         }
-        if(containsValueCheck(AgentConstants.TYPE,row)){
+        if (containsValueCheck(AgentConstants.TYPE, row)) {
             setControllerType(JsonUtil.getInt(row.get(AgentConstants.TYPE)));
         }
-        if(containsValueCheck(AgentConstants.CONTROLLER_PROPS,row)){
+        if (containsValueCheck(AgentConstants.CONTROLLER_PROPS, row)) {
             setControllerProps(row.get(AgentConstants.CONTROLLER_PROPS));
         }
-        if(containsValueCheck(AgentConstants.AVAILABLE_POINTS,row)){
+        if (containsValueCheck(AgentConstants.AVAILABLE_POINTS, row)) {
             setAvailablePoints(JsonUtil.getInt(row.get(AgentConstants.AVAILABLE_POINTS)));
         }
-        if(containsValueCheck(AgentConstants.CREATED_TIME,row)){
+        if (containsValueCheck(AgentConstants.CREATED_TIME, row)) {
             setCreatedTime(JsonUtil.getLong(row.get(AgentConstants.CREATED_TIME)));
         }
-        if(containsValueCheck(AgentConstants.LAST_MODIFIED_TIME,row)){
-           setLastModifiedTime(JsonUtil.getLong(row.get(AgentConstants.LAST_MODIFIED_TIME)));
+        if (containsValueCheck(AgentConstants.LAST_MODIFIED_TIME, row)) {
+            setLastModifiedTime(JsonUtil.getLong(row.get(AgentConstants.LAST_MODIFIED_TIME)));
         }
-        if(containsValueCheck(AgentConstants.LAST_DATA_SENT_TIME,row)){
-           setLastDataRecievedTime(JsonUtil.getLong(row.get(AgentConstants.LAST_MODIFIED_TIME)));
+        if (containsValueCheck(AgentConstants.LAST_DATA_SENT_TIME, row)) {
+            setLastDataRecievedTime(JsonUtil.getLong(row.get(AgentConstants.LAST_MODIFIED_TIME)));
         }
-        if(containsValueCheck(AgentConstants.DELETED_TIME,row)){ setDeletedTime((Long) row.get(AgentConstants.DELETED_TIME));
+        if (containsValueCheck(AgentConstants.DELETED_TIME, row)) {
+            setDeletedTime((Long) row.get(AgentConstants.DELETED_TIME));
         }
         return this;
     }
 
     /**
      * This method checks {@link Map<String, Object>} for the parameter key and if it's value isn't null.
-     * @param key {@link String} which is the key whose value one wants.
+     *
+     * @param key        {@link String} which is the key whose value one wants.
      * @param jsonObject {@link JSONObject} which has values with respective keys.
      * @return true if there's the specified key and its value is't null, and false if key is missing or has a null value.
      */
-    public static boolean containsValueCheck(String key, Map<String, Object> jsonObject){
-        if(jsonObject.containsKey(key) && ( jsonObject.get(key) != null) ){
+    public static boolean containsValueCheck(String key, Map<String, Object> jsonObject) {
+        if (jsonObject.containsKey(key) && (jsonObject.get(key) != null)) {
             return true;
         }
         return false;
@@ -309,19 +329,20 @@ public abstract class Controller extends AssetContext {
 
     /**
      * Checks if an object is null or empty.
+     *
      * @param object
      * @return
      */
-    public static boolean isNotNull(Object object){
-        if(object != null){
-            if( object instanceof String){
-                return ! ((String) object).isEmpty();
+    public static boolean isNotNull(Object object) {
+        if (object != null) {
+            if (object instanceof String) {
+                return !((String) object).isEmpty();
             }
-            if( object instanceof Collection){
-                return ! ( ((Collection)object).isEmpty() );
+            if (object instanceof Collection) {
+                return !(((Collection) object).isEmpty());
             }
-            if( object instanceof Map){
-                return ! ( ((Map)object).isEmpty() );
+            if (object instanceof Map) {
+                return !(((Map) object).isEmpty());
             }
         }
         return (object != null);
@@ -329,17 +350,19 @@ public abstract class Controller extends AssetContext {
 
     @JsonIgnore
     public FacilioAgent getAgent() throws Exception {
-        if( getAgentId() > 0 ){
+        if (getAgentId() > 0) {
             FacilioAgent agent = AgentApiV2.getAgent(getAgentId());
-            if(agent != null){
+            if (agent != null) {
                 return agent;
-            }else {
+            } else {
                 throw new Exception("agent can't be null");
             }
-        }else {
-            throw new Exception("agentId can't be less than 0 -> for controllerId "+getControllerId());
+        } else {
+            throw new Exception("agentId can't be less than 0 -> for controllerId " + getControllerId());
         }
     }
 
-    public abstract List<Condition> getControllerConditions(String identifier) throws Exception;
+    public abstract List<Condition> getControllerConditions() throws Exception;
+
+    public abstract String getIdentifier() throws IOException;
 }

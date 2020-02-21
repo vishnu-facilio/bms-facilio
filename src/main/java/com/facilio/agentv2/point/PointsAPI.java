@@ -36,6 +36,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -776,27 +777,40 @@ public class PointsAPI extends AgentUtilities {
     }
 
 
-    public static List<MiscPoint> fetchPointsAsMisc(Long agentId) throws Exception {
+    public static List<MiscPoint> getPointsSuperficial(Long agentId) throws Exception {
+        Set<Long> controllerIds = new HashSet<>();
+        if (agentId > 0) {
+            controllerIds = ControllerApiV2.getControllerIds(agentId).keySet();
+        }
+        return getPointsSuperficial(controllerIds);
+    }
+
+    private static List<MiscPoint> getPointsSuperficial(Set<Long> controllerIds) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
                 .select(FieldFactory.getPointFields())
                 .andCondition(AgentApiV2.getDeletedTimeNullCondition(MODULE));
-        if (agentId > 0) {
-            Set<Long> controllerIds = ControllerApiV2.getControllerIds(agentId).keySet();
-            if( ! controllerIds.isEmpty()){
-                builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(MODULE), controllerIds, NumberOperators.EQUALS));
-            }else {
-                return new ArrayList<>();
-            }
+        if( ! controllerIds.isEmpty()){
+            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(MODULE), controllerIds, NumberOperators.EQUALS));
+        }else {
+            return new ArrayList<>();
         }
         List<Map<String, Object>> data = builder.get();
         LOGGER.info(" data " + data);
         return FieldUtil.getAsBeanListFromMapList(data, MiscPoint.class);
     }
 
+    public static JSONObject getControllerPointsCountData(Long controllerId)throws Exception{
+        List<MiscPoint> points = getPointsSuperficial(new HashSet<>(Arrays.asList(controllerId)));
+        return getPointCountDataJSON(points);
+    }
     public static JSONObject getPointsCountData(Long agentId) throws Exception {
+        List<MiscPoint> points = getPointsSuperficial(agentId);
+        return getPointCountDataJSON( points);
+    }
+
+    private static JSONObject getPointCountDataJSON( List<MiscPoint> points) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         JSONObject pointCountData = new JSONObject();
-        List<MiscPoint> points = fetchPointsAsMisc(agentId);
         int subPts = 0;
         int confPts = 0;
         int commPts = 0;

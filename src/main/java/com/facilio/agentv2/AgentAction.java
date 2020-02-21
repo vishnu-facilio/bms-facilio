@@ -248,18 +248,18 @@ public class AgentAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public JSONObject getChildJson() {
+        return childJson;
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    public void setChildJson(JSONObject childJson) {
+        this.childJson = childJson;
     }
 
-    private String identifier;
+    private JSONObject childJson;
     public String getControllerUsingIdentifier(){
         try {
-            Controller controller = ControllerApiV2.getControllerFromDb(getIdentifier(), getAgentId(), FacilioControllerType.valueOf(getControllerType()));
+            Controller controller = ControllerApiV2.getControllerFromDb(getChildJson(), getAgentId(), FacilioControllerType.valueOf(getControllerType()));
             JSONObject jsonObject = new JSONObject();
             if (controller != null) {
                 jsonObject.putAll(controller.toJSON());

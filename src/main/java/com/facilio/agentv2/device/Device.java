@@ -1,5 +1,6 @@
 package com.facilio.agentv2.device;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -11,10 +12,24 @@ public class Device
     private long orgId;
     private long agentId;
     private long siteId;
+    @JsonInclude
     private String name;
     private int type;
+    @JsonInclude
     private JSONObject controllerProps;
+    @JsonInclude
     private Long createdTime;
+
+    @JsonInclude
+    private String identifier;
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
     public int getType() { return type; }
 
@@ -79,5 +94,5 @@ public class Device
         return deviceJSON;
     }*/
 
-
 }
+

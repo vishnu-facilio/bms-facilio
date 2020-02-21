@@ -46,21 +46,24 @@ public class MiscController extends Controller {
     }
 
     @Override
-    public String makeIdentifier() throws Exception {
-        return getName();
-    }
-
-    @Override
     public JSONObject getChildJSON() {
-        return new JSONObject();
+
+        JSONObject childJson = new JSONObject();
+        childJson.put(AgentConstants.NAME,getName());
+        return childJson;
     }
 
     @Override
-    public List<Condition> getControllerConditions(String identifier) throws Exception {
+    public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NAME),identifier, StringOperators.IS));
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NAME),getName(), StringOperators.IS));
         return conditions;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return getName();
     }
 }
 

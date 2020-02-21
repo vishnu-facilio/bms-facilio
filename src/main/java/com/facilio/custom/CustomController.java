@@ -36,20 +36,23 @@ public class CustomController extends Controller {
     }
 
     @Override
-    public String makeIdentifier() throws Exception {
-        return getName();
-    }
-
-    @Override
     public JSONObject getChildJSON() {
-        return null;
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(AgentConstants.NAME,getName());
+        return jsonObject;
     }
 
-    @Override
-    public List<Condition> getControllerConditions(String identifier) throws Exception {
+
+    public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
-        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NAME),identifier, StringOperators.IS));
+        conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NAME),getName(), StringOperators.IS));
         return conditions;
+    }
+
+    @Override
+    public String getIdentifier()  {
+        return getName();
     }
 }

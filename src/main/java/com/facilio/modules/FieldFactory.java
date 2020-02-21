@@ -5778,6 +5778,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getFieldDeviceModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getIdField(module));
+		fields.add(getField(AgentConstants.IDENTIFIER,"IDENTIFIER",module,FieldType.STRING));
 		fields.add(getField(AgentConstants.TYPE, "TYPE", module, FieldType.NUMBER));
 		fields.add(getField(AgentConstants.SITE_ID, "SITE_ID", module, FieldType.NUMBER));
 		fields.add(getNameField(module));

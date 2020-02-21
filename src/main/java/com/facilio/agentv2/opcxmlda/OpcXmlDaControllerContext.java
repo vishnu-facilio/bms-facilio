@@ -1,6 +1,5 @@
 package com.facilio.agentv2.opcxmlda;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
@@ -37,36 +36,12 @@ public class OpcXmlDaControllerContext extends Controller {
 
 
     public OpcXmlDaControllerContext(long agentId, long orgId) throws Exception {
-        new OpcXmlDaControllerContext(agentId, orgId, null);
+        super(agentId,orgId);
     }
 
-    public OpcXmlDaControllerContext(long agentId, long orgId, String identifier) throws Exception {
-        super(agentId, orgId);
-        processIdentifier(identifier);
-        setControllerType(FacilioControllerType.OPC_XML_DA.asInt());
-    }
 
     public OpcXmlDaControllerContext() {
         setControllerType(FacilioControllerType.OPC_XML_DA.asInt());
-    }
-
-    public static OpcXmlDaControllerContext getOpcXmlDaControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
-        if (controllerMap == null || controllerMap.isEmpty()) {
-            throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
-        }
-        long orgId = AccountUtil.getCurrentOrg().getOrgId();
-        if (containsValueCheck(AgentConstants.IDENTIFIER, controllerMap)) {
-            OpcXmlDaControllerContext controller = new OpcXmlDaControllerContext(agentId, orgId, (String) controllerMap.get(AgentConstants.IDENTIFIER));
-            return (OpcXmlDaControllerContext) controller.getControllerFromJSON(controllerMap);
-        }
-        if (containsValueCheck(AgentConstants.USER_NAME, controllerMap) && containsValueCheck(AgentConstants.URL, controllerMap) && containsValueCheck(AgentConstants.PASSWORD, controllerMap)) {
-            OpcXmlDaControllerContext controller = new OpcXmlDaControllerContext(agentId, orgId);
-            controller.setUserName(String.valueOf(controllerMap.get(AgentConstants.USER_NAME)));
-            controller.setUrl(String.valueOf(controllerMap.get(AgentConstants.URL)));
-            controller.setPassword(String.valueOf(controllerMap.get(AgentConstants.PASSWORD)));
-            return (OpcXmlDaControllerContext) controller.getControllerFromJSON(controllerMap);
-        }
-        throw new Exception(" Mandatory fields like " + AgentConstants.USER_NAME + "," + AgentConstants.URL + "," + AgentConstants.PASSWORD + " OR " + AgentConstants.IDENTIFIER + " might be missing from input parameter -> " + controllerMap);
     }
 
     public String getModuleName() {
@@ -97,31 +72,6 @@ public class OpcXmlDaControllerContext extends Controller {
         return url;
     }
 
-    public void processIdentifier(String identifier) throws Exception {
-        if ((identifier != null) && (!identifier.isEmpty())) {
-            String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
-            if ((uniques.length == 2) && ((FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.OPC_XML_DA))) {
-                setUrl(uniques[1]);
-                this.identifier = identifier;
-            } else {
-                throw new Exception(" Exceprion while processing identifier -- length or Type didnt match ");
-            }
-        }else {
-            throw new Exception("Exception Occurred, identifier can't be null or empty ->"+identifier);
-        }
-    }
-
-    @Override
-    public String makeIdentifier() throws Exception {
-        if( (identifier != null ) && ( ! identifier.isEmpty() ) ){
-            return identifier;
-        }
-        if( isNotNull(url)  ){
-            identifier = FacilioControllerType.OPC_XML_DA.asInt()+IDENTIFIER_SEPERATOR+url;
-            return identifier;
-        }
-        throw new Exception("Exception occurred , parameters for identifier not set yet");
-    }
 
     @Override
     public JSONObject getChildJSON() {
@@ -134,13 +84,17 @@ public class OpcXmlDaControllerContext extends Controller {
     }
 
     @Override
-    public List<Condition> getControllerConditions(String identifier) throws Exception {
-        processIdentifier(identifier);
+    public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.USER_NAME),getUserName(), StringOperators.IS));
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.URL),getUrl(),StringOperators.IS));
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.PASSWORD),getPassword(),StringOperators.IS));
         return conditions;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return url+IDENTIFIER_SEPERATER+userName+IDENTIFIER_SEPERATER+password;
     }
 }

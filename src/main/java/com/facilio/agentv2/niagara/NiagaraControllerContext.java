@@ -1,6 +1,5 @@
 package com.facilio.agentv2.niagara;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
@@ -52,29 +51,6 @@ public class NiagaraControllerContext extends Controller {
     public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
 
 
-    public void processIdentifier(String identifier) throws Exception {
-        if ((identifier != null) && (!identifier.isEmpty())) {
-            String[] uniques = identifier.split(IDENTIFIER_SEPERATOR);
-            if ((uniques.length == 3) && ((FacilioControllerType.valueOf(Integer.parseInt(uniques[0])) == FacilioControllerType.NIAGARA))) {
-                portNumber = Long.parseLong(uniques[1]);
-                ipAddress = uniques[2];
-                this.identifier = identifier;
-            } else {
-                throw new Exception(" Exceprion while processing identifier -- length or Type didnt match -> " + identifier);
-            }
-        } else {
-            throw new Exception("Exception Occurred, identifier can't be null or empty ->"+identifier);
-        }
-    }
-
-    @Override
-    public String makeIdentifier() throws Exception {
-        if ((identifier != null) && (!identifier.isEmpty())) {
-            return identifier;
-        }
-        identifier = FacilioControllerType.NIAGARA.asInt() + IDENTIFIER_SEPERATOR + portNumber + IDENTIFIER_SEPERATOR + ipAddress;
-        return identifier;
-    }
 
     @Override
     public JSONObject getChildJSON() {
@@ -86,8 +62,7 @@ public class NiagaraControllerContext extends Controller {
     }
 
     @Override
-    public List<Condition> getControllerConditions(String identifier) throws Exception {
-        processIdentifier(identifier);
+    public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.PORT_NUMBER), String.valueOf(getPortNumber()), NumberOperators.EQUALS));
@@ -95,23 +70,9 @@ public class NiagaraControllerContext extends Controller {
         return conditions;
     }
 
-    public static NiagaraControllerContext getNiagaraControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
-        if (controllerMap == null || controllerMap.isEmpty()) {
-            throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
-        }
-        long orgId = AccountUtil.getCurrentOrg().getOrgId();
-        if (containsValueCheck(AgentConstants.IDENTIFIER, controllerMap)) {
-            NiagaraControllerContext controller = new NiagaraControllerContext(agentId, orgId);
-            controller.processIdentifier((String) controllerMap.get(AgentConstants.IDENTIFIER));
-            return (NiagaraControllerContext) controller.getControllerFromJSON(controllerMap);
-        }
-        if (containsValueCheck(AgentConstants.PORT_NUMBER, controllerMap) && containsValueCheck(AgentConstants.IP_ADDRESS, controllerMap)) {
-            NiagaraControllerContext controller = new NiagaraControllerContext(agentId, orgId);
-            controller.setIpAddress((String) controllerMap.get(AgentConstants.IP_ADDRESS));
-            controller.setPortNumber(Math.toIntExact((Long) controllerMap.get(AgentConstants.PORT_NUMBER)));
-            return (NiagaraControllerContext) controller.getControllerFromJSON(controllerMap);
-        }
-        throw new Exception(" Mandatory fields like " + AgentConstants.IP_ADDRESS + "," + AgentConstants.PORT_NUMBER + "," + AgentConstants.IDENTIFIER + " might be missing from input parameter -> " + controllerMap);
+    @Override
+    public String getIdentifier() {
+        return portNumber+IDENTIFIER_SEPERATER+ipAddress;
     }
 
 }

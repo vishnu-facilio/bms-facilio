@@ -180,6 +180,7 @@ public class DataProcessorV2
 
     private boolean processDevices(FacilioAgent agent, JSONObject payload) {
         try {
+            LOGGER.info(" processing device ");
             return dU.processDevices(agent, payload);
         } catch (Exception e) {
             LOGGER.info("Exception occurred while processing device", e);
@@ -194,17 +195,21 @@ public class DataProcessorV2
     private boolean processDevicePoints(FacilioAgent agent, JSONObject payload) {
         try {
             if (!payload.containsKey(AgentConstants.CONTROLLER)) {
-                throw new Exception(" identifier missing from discoverPoints payload ->" + payload);
+                throw new Exception(" controllerJson missing from discoverPoints payload ->" + payload);
             }
 
-            String identifier = (String) payload.get(AgentConstants.CONTROLLER);
-            if (identifier == null || identifier.isEmpty()) {
+            JSONObject controllerJson = (JSONObject) payload.get(AgentConstants.CONTROLLER);
+            if (controllerJson == null || controllerJson.isEmpty()) {
                 throw new Exception("Exception occurred, Controller identifier can't be null ->" + payload);
             }
-
-            Device device = FieldDeviceApi.getDevice(agent.getId(), identifier);
+            LOGGER.info(" controller json "+controllerJson);
+            if( ! payload.containsKey(AgentConstants.TYPE)){
+                throw new Exception("payload missing controllerType ");
+            }
+            int type = ((Number)payload.get(AgentConstants.TYPE)).intValue();
+            Device device = FieldDeviceApi.getDevice(agent.getId(), DeviceUtil.getControllerIdentifier(type,controllerJson));
             if (device != null) {
-                LOGGER.info(" controller not null and so processing point");
+                LOGGER.info(" device not null and so processing point");
                 return PointsUtil.processPoints(payload, device);
             } else {
                 throw new Exception("Exception occurred, Controller obtained in null");

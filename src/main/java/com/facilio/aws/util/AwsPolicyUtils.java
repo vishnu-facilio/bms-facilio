@@ -48,7 +48,7 @@ public class AwsPolicyUtils
         }
     }
 
-    private static void updatePolicy(AWSIot client, String policyName, IotPolicy rule) throws Exception {
+    private static String updatePolicy(AWSIot client, String policyName, IotPolicy rule) throws Exception {
         LOGGER.info(" updating policy "+policyName);
         JSONObject policy = new JSONObject();
         policy = getPolicyDocumentJson(getPolicy(policyName, client));
@@ -63,6 +63,7 @@ public class AwsPolicyUtils
         updatePolicyStatement(policy, subscribeTopics, publishTopics, receiveTopics, connectTopics);
         LOGGER.info(" updated policy document "+policy);
         updateClientPolicyVersion(client, policyName, policy);
+        return policy.toString();
     }
 
     private static void updateClientPolicyVersion(AWSIot client, String policyName, JSONObject policy) {
@@ -130,7 +131,7 @@ public class AwsPolicyUtils
         } catch (ResourceAlreadyExistsException resourceExists){
             LOGGER.info("Policy already exists for name : " + rule.getName());
             try {
-                updatePolicy(iotClient,rule.getName(),rule);
+                return updatePolicy(iotClient,rule.getName(),rule);
             } catch (Exception e) {
                 LOGGER.info(" Exception while updating policy ",e);
             }
@@ -176,7 +177,6 @@ public class AwsPolicyUtils
     }
 
     private static void deleteOldPolicyVersion(AWSIot client, String policyName) {
-        LOGGER.info(" delete policy not implemented ");
         List<PolicyVersion> policyVersionList = getPolicyVersions(client, policyName);
         String oldestVersion = getOldestPolicyVersion(policyVersionList);
         deletePolicyVersion(client, policyName, oldestVersion);
@@ -200,6 +200,7 @@ public class AwsPolicyUtils
                 .withPolicyName(policyName)
                 .withPolicyVersionId(oldestVersion);
         DeletePolicyVersionResult deletePolicyVersionResult = client.deletePolicyVersion(deletePolicyVersionRequest);
+        LOGGER.info(" deleted policy "+policyName+" version "+oldestVersion);
     }
 
     private static List<PolicyVersion> getPolicyVersions(AWSIot client, String policyName) {

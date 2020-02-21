@@ -1,9 +1,7 @@
 package com.facilio.agentv2.modbusrtu;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -39,7 +37,6 @@ public class ModbusRtuControllerContext extends Controller {
 
     public ModbusRtuControllerContext(long agentId, long orgId, String identifier) throws Exception {
         super(agentId, orgId);
-        processIdentifier(identifier);
         setControllerType(FacilioControllerType.MODBUS_RTU.asInt());
     }
 
@@ -63,7 +60,7 @@ public class ModbusRtuControllerContext extends Controller {
     }
 
     public String getModuleName() { return ASSETCATEGORY; }
-
+/*
     public static ModbusRtuControllerContext getModbusRtuControllerFromMap(long agentId, Map<String, Object> controllerMap) throws Exception {
         if (controllerMap == null || controllerMap.isEmpty()) {
             throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
@@ -79,12 +76,12 @@ public class ModbusRtuControllerContext extends Controller {
             ModbusRtuControllerContext controller = new ModbusRtuControllerContext(agentId, orgId);
             controller.setSlaveId(Math.toIntExact(JsonUtil.getLong(controllerMap.get(AgentConstants.SLAVE_ID))));
             controller.setNetworkId(JsonUtil.getLong(controllerMap.get(AgentConstants.NETWORK_ID)));
-            controller.makeIdentifier();
             return (ModbusRtuControllerContext) controller.getControllerFromJSON(controllerMap);
         }
         throw new Exception("Mandatory fields like "+AgentConstants.SLAVE_ID+" and "+ AgentConstants.IP_ADDRESS+" are missing form input parameters "+controllerMap);
-    }
+    }*/
 
+/*
 
     public void processIdentifier(String identifier) throws Exception {
         if( (identifier != null) && ( ! identifier.isEmpty() ) ){
@@ -102,19 +99,7 @@ public class ModbusRtuControllerContext extends Controller {
             throw new Exception("Exception Occurred, identifier can't be null or empty ->"+identifier);
         }
     }
-
-    @Override
-    public String makeIdentifier() throws Exception {
-        if(identifier != null){
-            return identifier;
-        }
-        LOGGER.info(" making identifier  networkId ->" + networkId + " - slaveId->" + slaveId);
-        if( (networkId != null) && (slaveId > 0) ){
-            identifier = FacilioControllerType.MODBUS_RTU.asInt()+IDENTIFIER_SEPERATOR+networkId+IDENTIFIER_SEPERATOR+slaveId;
-            return identifier;
-        }
-        throw new Exception("Exception occurred , parameters for identifier not set yet ");
-    }
+*/
 
     @Override
     public JSONObject getChildJSON() {
@@ -127,13 +112,17 @@ public class ModbusRtuControllerContext extends Controller {
     }
 
     @Override
-    public List<Condition> getControllerConditions(String identifier) throws Exception {
-        processIdentifier(identifier);
+    public List<Condition> getControllerConditions() throws Exception {
         List<Condition> conditions = new ArrayList<>();
         Map<String, FacilioField> fieldsMap = getFieldsMap(getModuleName());
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.SLAVE_ID), String.valueOf(getSlaveId()), NumberOperators.EQUALS));
         conditions.add(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.NETWORK_ID), String.valueOf(getNetworkId()),NumberOperators.EQUALS));
     return conditions;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return slaveId+IDENTIFIER_SEPERATER+networkId;
     }
 
 }
