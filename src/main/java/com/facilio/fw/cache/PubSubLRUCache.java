@@ -18,6 +18,8 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
     private String name;
     private RedisManager redis;
     private final LinkedHashMap<K, V> cache;
+    private long hit = 0;
+    private long miss = 0;
 
     public PubSubLRUCache(String name, int maxSize){
         this.name = FacilioProperties.getEnvironment()+"-"+name;
@@ -63,7 +65,8 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
     }
     
     public String toString() {
-        return cache.toString();
+        double hitRatio =  ((hit*100d)/(hit+miss));
+        return (" The current size "+cache.size()+"\n hitCount= "+hit+"\n missCount= "+miss+"\n Cache Hit Ratio= "+ hitRatio+"\n\n"+cache );
     }
 
     private void updateRedisDeleteCount() {
@@ -92,6 +95,7 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
         try {
             V value = cache.get(key);
             if (value != null) {
+                hit++;
                 return value;
             } else {
                 cache.remove(key);
@@ -99,6 +103,7 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
         }
+        miss++;
         return null;
     }
 
