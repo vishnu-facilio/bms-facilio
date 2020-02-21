@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.facilio.aws.util.FacilioProperties;
 
+import com.facilio.fw.cache.RedisSubscription;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -16,7 +17,6 @@ public class RedisManager {
 	private static final Logger LOGGER = Logger.getLogger(RedisManager.class.getName());
 	
 	private static final RedisManager instance = new RedisManager();
-	private static final HashMap<String, JedisPubSub> SUBSCRIPTION_CHANNELS = new HashMap<>();
 
 	private static boolean isRedisEnabled = false;
 	private static JedisPool pool;
@@ -90,16 +90,9 @@ public class RedisManager {
 
 	public void subscribe(JedisPubSub pubSub, String channelName) {
 		try {
-			new Thread(() -> getJedis().subscribe(pubSub, channelName), channelName + "-redis-subscribe").start();
-			SUBSCRIPTION_CHANNELS.remove(channelName);
+			new Thread(new RedisSubscription(pubSub, channelName)).start();
 		} catch (Exception e) {
-			SUBSCRIPTION_CHANNELS.put(channelName, pubSub);
-			System.out.println(SUBSCRIPTION_CHANNELS);
+			pubSub.onMessage(channelName, "all");
 		}
-	}
-
-	public void subscribeErrorChannels() {
-		HashMap<String, JedisPubSub> subscribed = new HashMap<>(SUBSCRIPTION_CHANNELS);
-		subscribed.forEach((k,v) -> subscribe(v, k));
 	}
 }

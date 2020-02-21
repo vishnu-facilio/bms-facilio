@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.fw.cache.FacilioCache;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -29,7 +30,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioModule getModule(String moduleName) throws Exception {
 		
-		LRUCache modulecache = LRUCache.getModuleCache();
+		FacilioCache modulecache = LRUCache.getModuleCache();
 		// FacilioModule moduleObj = (FacilioModule) CacheUtil.get(CacheUtil.MODULE_KEY(getOrgId(), moduleName));
 		FacilioModule moduleObj = (FacilioModule) modulecache.get(CacheUtil.MODULE_KEY(getOrgId(), moduleName));
 		if (moduleObj == null) {
@@ -49,7 +50,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 
 	@Override
 	public FacilioModule getModule(long moduleId) throws Exception {
-		LRUCache modulecache = LRUCache.getModuleCache();
+		FacilioCache modulecache = LRUCache.getModuleCache();
 
 		FacilioModule moduleObj = (FacilioModule) modulecache.get(CacheUtil.MODULE_KEY(getOrgId(), moduleId));
 		
@@ -73,7 +74,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		int row =  super.updateModule(module);
 		if (row > 0) {
 			FacilioModule newModule = super.getModule(module.getModuleId());
-			LRUCache moduleCache = LRUCache.getModuleCache();
+			FacilioCache moduleCache = LRUCache.getModuleCache();
 			moduleCache.remove(CacheUtil.MODULE_KEY(getOrgId(), newModule.getModuleId()));
 			moduleCache.remove(CacheUtil.MODULE_KEY(getOrgId(), newModule.getName()));
 		}
@@ -201,7 +202,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public List<FacilioField> getModuleFields(String moduleName) throws Exception {
-		LRUCache cache = 	LRUCache.getModuleFieldsCache();
+		FacilioCache cache = 	LRUCache.getModuleFieldsCache();
 		Object key = CacheUtil.FIELDS_KEY(getOrgId(), moduleName);
 		List<FacilioField> fields = (List<FacilioField>)cache.get(key);
 		if (fields == null) {
@@ -219,7 +220,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioField getField(long fieldId) throws Exception {
 		try {
-		LRUCache cache = 	LRUCache.getFieldsCache();
+		FacilioCache cache = LRUCache.getFieldsCache();
 
 		String key = CacheUtil.FIELD_KEY(getOrgId(), fieldId);
 		FacilioField field = (FacilioField)cache.get(key);
@@ -264,7 +265,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			// clearing primary field and all fields of this module from cache
 		//	CacheUtil.delete(CacheUtil.PRIMARY_FIELD_KEY(getOrgId(), field.getModule().getName()), CacheUtil.FIELDS_KEY(getOrgId(), field.getModule().getName()));
 		
-			LRUCache cache = 	LRUCache.getModuleFieldsCache();
+			FacilioCache cache = LRUCache.getModuleFieldsCache();
 			cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), field.getModule().getName()));
 			//cache.remove(CacheUtil.FIELD_KEY(getOrgId(), field.getFieldId()));
 
@@ -287,7 +288,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	
 	private void dropFieldFromCache(FacilioField newField )
 	{
-		LRUCache cache = 	LRUCache.getModuleFieldsCache();
+		FacilioCache cache = 	LRUCache.getModuleFieldsCache();
 		cache.remove(CacheUtil.FIELDS_KEY(getOrgId(), newField.getModule().getName()));
 		
 		cache = LRUCache.getFieldsCache();

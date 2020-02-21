@@ -5,13 +5,13 @@ import redis.clients.jedis.JedisPubSub;
 
 import java.util.LinkedHashMap;
 
-public class FacilioRedisPubSub extends JedisPubSub {
+public class FacilioRedisPubSub<K, V> extends JedisPubSub {
 
     private static final Logger LOGGER = Logger.getLogger(FacilioRedisPubSub.class.getName());
 
-    private LinkedHashMap<String, Object> cache;
+    private LinkedHashMap<K, V> cache;
 
-    public FacilioRedisPubSub(LinkedHashMap<String, Object> map) {
+    public FacilioRedisPubSub(LinkedHashMap<K, V> map) {
         cache = map;
     }
 

@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.facilio.fw.cache.FacilioCache;
+import com.facilio.fw.cache.PubSubLRUCache;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -15,7 +17,7 @@ import com.facilio.cache.RedisManager;
 
 import redis.clients.jedis.Jedis;
 
-public class LRUCache<K, V>{
+public class LRUCache<K, V> implements FacilioCache<K, V> {
 
 	public static void main(String args []) throws InterruptedException {
 
@@ -44,14 +46,22 @@ public class LRUCache<K, V>{
 
 	private static final Logger LOGGER = LogManager.getLogger(LRUCache.class.getName());
 
-	private static LRUCache<String, Object> fieldCache = new LRUCache<>("fieldCache", 2000);
-	private static LRUCache<String, Object> modulefieldCache = new LRUCache<>("moduleFieldCache", 2000);
-	private static LRUCache<String, Object> userSessionCache = new LRUCache<>("userSessionCache", 300);
-	private static LRUCache<String, Object> moduleCache = new LRUCache<>("moduleCache", 2000);
-	private static LRUCache<String, Long> queryCache = new LRUCache<>("queryCache", 500);
-	private static LRUCache<String, Object> responseCache = new LRUCache<>("responseCache", 5000);
+	private static FacilioCache<String, Object> fieldCache = new LRUCache<>("fieldCache", 2000);
+	private static FacilioCache<String, Object> modulefieldCache = new LRUCache<>("moduleFieldCache", 2000);
+	private static FacilioCache<String, Object> userSessionCache = new LRUCache<>("userSessionCache", 300);
+	private static FacilioCache<String, Object> moduleCache = new LRUCache<>("moduleCache", 2000);
+	private static FacilioCache<String, Long> queryCache = new LRUCache<>("queryCache", 500);
+	private static FacilioCache<String, Object> responseCache = new LRUCache<>("responseCache", 5000);
 
-    private long hitcount = 0;
+	private static FacilioCache<String, Object> fieldCachePS = new PubSubLRUCache<>("fieldCache", 2000);
+	private static FacilioCache<String, Object> modulefieldCachePS = new PubSubLRUCache<>("moduleFieldCache", 2000);
+	private static FacilioCache<String, Object> userSessionCachePS = new PubSubLRUCache<>("userSessionCache", 300);
+	private static FacilioCache<String, Object> moduleCachePS = new PubSubLRUCache<>("moduleCache", 2000);
+	private static FacilioCache<String, Long> queryCachePS = new PubSubLRUCache<>("queryCache", 500);
+	private static FacilioCache<String, Object> responseCachePS = new PubSubLRUCache<>("responseCache", 5000);
+
+
+	private long hitcount = 0;
     private long misscount = 1;
 	private String name;
 	private RedisManager redis;
@@ -66,21 +76,38 @@ public class LRUCache<K, V>{
 	}
 
 
-	public static LRUCache<String, Object> getModuleFieldsCache() {
-		return modulefieldCache;
+	public static FacilioCache<String, Object> getModuleFieldsCache() {
+		if(FacilioProperties.isProduction()) {
+			return modulefieldCache;
+		} else {
+			return modulefieldCachePS;
+		}
 	}
-	public static LRUCache<String, Object> getFieldsCache() {
-		return fieldCache;
+	public static FacilioCache<String, Object> getFieldsCache() {
+		if(FacilioProperties.isProduction()) {
+			return fieldCache;
+		}
+		return fieldCachePS;
 	}
-	public static LRUCache<String, Object> getUserSessionCache() {
-		return userSessionCache;
+	public static FacilioCache<String, Object> getUserSessionCache() {
+		if(FacilioProperties.isProduction()) {
+			return userSessionCache;
+		}
+		return userSessionCachePS;
 	}
-	public static LRUCache<String, Object> getModuleCache() {
-		return moduleCache;
+	public static FacilioCache<String, Object> getModuleCache() {
+		if(FacilioProperties.isProduction()) {
+			return moduleCache;
+		}
+		return moduleCachePS;
 	}
-	public static LRUCache<String, Long> getQueryCache() { return queryCache;}
-	public static LRUCache<String, Object> getResponseCache() {
-		return responseCache;
+	public static FacilioCache<String, Long> getQueryCache() {
+		if(FacilioProperties.isProduction()) {return queryCache;}
+		return queryCachePS;
+	}
+	public static FacilioCache<String, Object> getResponseCache() {
+		if(FacilioProperties.isProduction()){return responseCache;}
+		return responseCachePS;
 	}
 
 	public String toString() {
