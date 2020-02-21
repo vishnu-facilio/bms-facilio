@@ -2,6 +2,7 @@ package com.facilio.fw.cache;
 
 import java.util.LinkedHashMap;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -19,7 +20,7 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
     private final LinkedHashMap<K, V> cache;
 
     public PubSubLRUCache(String name, int maxSize){
-        this.name = name;
+        this.name = FacilioProperties.getEnvironment()+"-"+name;
         cache = new LRUCacheLinkedHashMap<>(maxSize, 0.9f, true);
         redis = RedisManager.getInstance();
         subscribe();
@@ -57,7 +58,7 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
 
     private void subscribe() {
         if(redis != null) {
-            redis.subscribe(new FacilioRedisPubSub(cache), name);
+            redis.subscribe(new FacilioRedisPubSub<>(cache), name);
         }
     }
     
@@ -79,16 +80,12 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
 
     @Override
     public boolean contains(K key) {
-        return cache.containsKey(key.toString());
+        return cache.containsKey(key);
     }
 
     public void purgeCache() {
-        purgeInRedis();
         cache.clear();
-    }
-
-    public boolean contains(String key) {
-        return cache.containsKey(key);
+        deleteInRedis("all");
     }
 
     public V get(K key){
@@ -129,16 +126,6 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
                 LOGGER.debug("Exception while removing key in Redis. ");
             } finally {
                 updateRedisDeleteTime((System.currentTimeMillis()-startTime));
-            }
-        }
-    }
-
-    private void purgeInRedis() {
-        if (redis != null) {
-            try (Jedis jedis = redis.getJedis()) {
-                jedis.publish(name, "all");
-            } catch (Exception e) {
-                LOGGER.info("Exception while purging data in Redis. ", e);
             }
         }
     }
