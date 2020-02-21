@@ -6,6 +6,11 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.facilio.accounts.util.AccountUtil" %>
 <%@ page import="com.facilio.chain.FacilioChain" %>
+<%@ page import="com.facilio.modules.FacilioModule" %>
+<%@ page import="com.facilio.modules.FacilioStatus" %>
+<%@ page import="com.facilio.beans.ModuleBean" %>
+<%@ page import="com.facilio.fw.BeanFactory" %>
+<%@ page import="com.facilio.bmsconsole.util.TicketAPI" %>
 
 <%--
 
@@ -28,6 +33,16 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
+
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule workorderModule = modBean.getModule("workorder");
+            if (workorderModule != null) {
+                FacilioStatus status = new FacilioStatus();
+                status.setDisplayName("Skipped");
+                status.setStatus("skipped");
+                status.setTypeCode(6);
+                TicketAPI.addStatus(status, workorderModule);
+            }
 
             return false;
         }
