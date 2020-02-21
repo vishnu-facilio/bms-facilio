@@ -175,7 +175,7 @@ public class AgentAlarmPageFactory extends PageFactory  {
         cardWidget.addToLayoutParams(section, 8, 4);
         cardWidget.setTitle("Max Outage Duration");
         cardWidget.addToWidgetParams("primaryTitle", "This Month");
-        cardWidget.addToWidgetParams("primaryKey", "maxDurationCurrentTime");
+        cardWidget.addToWidgetParams("primaryKey", "maxDurationThisMonth");
         cardWidget.addToWidgetParams("secondaryTitle", "Last Month");
         cardWidget.addToWidgetParams("secondaryKey", "maxDurationLastMonth");
         cardWidget.addToWidgetParams("type", "duration");

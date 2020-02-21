@@ -707,7 +707,7 @@
 						mtba = mtba + duration;
 						if (maxDuration < duration) {
 							maxDuration = duration;
-							maxDurationTime = value.createdTime
+							maxDurationTime = value.createdTime;
 						}
 					}
 				}
