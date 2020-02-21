@@ -64,6 +64,7 @@
 
                 FormField formField = new FormField();
                 formField.setField(body);
+                formField.setDisplayName("Comment");
                 formField.setDisplayType(FacilioField.FieldDisplayType.TEXTAREA);
                 formField.setFieldId(body.getFieldId());
 
