@@ -104,6 +104,9 @@ private static final long serialVersionUID = 1L;
 	public String addDocuments() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(documents)) {
+			for(DocumentContext doc : documents) {
+				doc.parseFormData();
+			}
 			FacilioChain c = TransactionChainFactory.addDocumentsChain();
 			c.getContext().put(FacilioConstants.ContextNames.MODULE_NAME,getParentAttachmentModuleName());
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
@@ -117,6 +120,9 @@ private static final long serialVersionUID = 1L;
 	public String updateDocuments() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(documents)) {
+			for(DocumentContext doc : documents) {
+				doc.parseFormData();
+			}
 			FacilioChain c = TransactionChainFactory.updateDocumentsChain();
 			c.getContext().put(FacilioConstants.ContextNames.MODULE_NAME,getParentAttachmentModuleName());
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
