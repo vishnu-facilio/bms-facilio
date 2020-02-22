@@ -1,23 +1,19 @@
-<%@ page import="com.facilio.bmsconsole.commands.FacilioCommand" %>
-<%@ page import="org.apache.commons.chain.Context" %>
-<%@ page import="org.apache.log4j.Logger" %>
-<%@ page import="org.apache.log4j.LogManager" %>
 <%@ page import="com.facilio.accounts.dto.Organization" %>
-<%@ page import="java.util.List" %>
 <%@ page import="com.facilio.accounts.util.AccountUtil" %>
-<%@ page import="com.facilio.chain.FacilioChain" %>
-<%@ page import="com.facilio.modules.FacilioModule" %>
-<%@ page import="com.facilio.modules.FacilioStatus" %>
 <%@ page import="com.facilio.beans.ModuleBean" %>
-<%@ page import="com.facilio.fw.BeanFactory" %>
-<%@ page import="com.facilio.bmsconsole.util.TicketAPI" %>
-<%@ page import="com.facilio.bmsconsole.util.FormsAPI" %>
-<%@ page import="com.facilio.bmsconsole.forms.FacilioForm" %>
+<%@ page import="com.facilio.bmsconsole.commands.FacilioCommand" %>
+<%@ page import="com.facilio.chain.FacilioChain" %>
 <%@ page import="com.facilio.constants.FacilioConstants" %>
+<%@ page import="com.facilio.fw.BeanFactory" %>
+<%@ page import="com.facilio.modules.FacilioModule" %>
+<%@ page import="com.facilio.modules.FieldType" %>
 <%@ page import="com.facilio.modules.fields.FacilioField" %>
-<%@ page import="com.facilio.bmsconsole.forms.FormField" %>
-<%@ page import="java.util.Collections" %>
-<%@ page import="java.util.Arrays" %>
+<%@ page import="com.facilio.modules.fields.LookupField" %>
+<%@ page import="com.facilio.modules.fields.NumberField" %>
+<%@ page import="org.apache.commons.chain.Context" %>
+<%@ page import="org.apache.log4j.LogManager" %>
+<%@ page import="org.apache.log4j.Logger" %>
+<%@ page import="java.util.List" %>
 
 <%--
 
@@ -43,36 +39,20 @@
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-            List<FacilioModule> modules = Arrays.asList(
-                    modBean.getModule(FacilioConstants.ContextNames.TICKET_NOTES),
-                    modBean.getModule(FacilioConstants.ContextNames.ASSET_NOTES),
-                    modBean.getModule("vendorsNotes")
-                    );
-            for (FacilioModule module : modules) {
-                if (module == null) {
-                    continue;
-                }
-                FacilioField body = modBean.getField("body", module.getName());
-                if (body == null) {
-                    continue;
-                }
-                FacilioForm form = new FacilioForm();
-                form.setName("default_" + module.getName() + "_web");
-                form.setDisplayName("Add Notes");
-                form.setFormType(FacilioForm.FormType.WEB);
-                form.setLabelPosition(FacilioForm.LabelPosition.TOP);
-
-                FormField formField = new FormField();
-                formField.setField(body);
-                formField.setDisplayName("Comment");
-                formField.setDisplayType(FacilioField.FieldDisplayType.TEXTAREA);
-                formField.setFieldId(body.getFieldId());
-
-                List<FormField> formFields = Collections.singletonList(formField);
-                form.setFields(formFields);
-
-                FormsAPI.createForm(form, module);
+            FacilioModule vendorDocumentModule = modBean.getModule(FacilioConstants.ContextNames.VENDOR_DOCUMENTS);
+            FacilioModule ticketStatusModule = modBean.getModule("ticketstatus");
+            if (vendorDocumentModule != null) {
+                LookupField moduleStateLF = new LookupField(vendorDocumentModule, "moduleState", "Module State", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "MODULE_STATE", FieldType.LOOKUP, true, false, true, false, ticketStatusModule);
+                modBean.addField(moduleStateLF);
+                NumberField stateFlowNF = new NumberField(vendorDocumentModule, "stateFlowId", "State Flow Id", FacilioField.FieldDisplayType.NUMBER, "STATE_FLOW_ID", FieldType.NUMBER, true, false, true, false);
+                modBean.addField(stateFlowNF);
+                FacilioModule vendorDocumentUpdate = new FacilioModule();
+                vendorDocumentUpdate.setModuleId(vendorDocumentModule.getModuleId());
+                vendorDocumentUpdate.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+                vendorDocumentUpdate.setStateFlowEnabled(true);
+                modBean.updateModule(vendorDocumentUpdate);
             }
+
             return false;
         }
     }
