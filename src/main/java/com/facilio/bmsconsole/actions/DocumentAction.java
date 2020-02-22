@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -101,6 +102,16 @@ private static final long serialVersionUID = 1L;
 	public void setDocumentIds(List<Long> documentIds) {
 		this.documentIds = documentIds;
 	}
+	private Long stateTransitionId;
+
+	public Long getStateTransitionId() {
+		return stateTransitionId;
+	}
+
+	public void setStateTransitionId(Long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+
 	public String addDocuments() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(documents)) {
@@ -123,10 +134,13 @@ private static final long serialVersionUID = 1L;
 			for(DocumentContext doc : documents) {
 				doc.parseFormData();
 			}
+			List<Long> documentIds = documents.stream().map(doc -> doc.getId()).collect(Collectors.toList());
 			FacilioChain c = TransactionChainFactory.updateDocumentsChain();
 			c.getContext().put(FacilioConstants.ContextNames.MODULE_NAME,getParentAttachmentModuleName());
 			c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
+			c.getContext().put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, documents);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, documentIds);
 			c.execute();
 			setResult(FacilioConstants.ContextNames.DOCUMENTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
 		}

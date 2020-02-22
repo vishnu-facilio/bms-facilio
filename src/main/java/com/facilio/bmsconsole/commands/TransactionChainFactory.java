@@ -4582,6 +4582,8 @@ public class TransactionChainFactory {
 	public static FacilioChain addDocumentsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddDocumentCommand());
+		c.addCommand(new ExecuteStateFlowCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 
 		return c;
 	}
@@ -4589,6 +4591,9 @@ public class TransactionChainFactory {
 	public static FacilioChain updateDocumentsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new UpdateDocumentsCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new UpdateStateForModuleDataCommand());
+		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 
 		return c;
 	}
