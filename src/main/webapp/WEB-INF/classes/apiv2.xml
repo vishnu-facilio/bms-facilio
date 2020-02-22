@@ -5684,6 +5684,8 @@
 			class="com.facilio.bmsconsole.actions.VendorContactAction" method="addVendorContacts" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VendorContactAction" method="updateVendorContacts" />
+		<action name="updatePortalAccess"
+			class="com.facilio.bmsconsole.actions.VendorContactAction" method="updateVendorPortalAccess" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.VendorContactAction" method="deleteVendorContacts" />
 		<action name="details"
@@ -5707,6 +5709,10 @@
 			class="com.facilio.bmsconsole.actions.TenantContactAction" method="addTenantContacts" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.TenantContactAction" method="updateTenantContacts" />
+		<action name="updateTenantPortalAccess"
+			class="com.facilio.bmsconsole.actions.TenantContactAction" method="updateTenantPortalAccess" />
+		<action name="updateOccupantPortalAccess"
+			class="com.facilio.bmsconsole.actions.TenantContactAction" method="updateOccupantPortalAccess" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.TenantContactAction" method="deleteTenantContacts" />
 		<action name="details"
@@ -5730,6 +5736,10 @@
 			class="com.facilio.bmsconsole.actions.EmployeeAction" method="addEmployees" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.EmployeeAction" method="updateEmployees" />
+		<action name="updateAppAccess"
+			class="com.facilio.bmsconsole.actions.EmployeeAction" method="updateEmployeeAppAccess" />
+		<action name="updatePortalAccess"
+			class="com.facilio.bmsconsole.actions.EmployeeAction" method="updateEmployeeOccupantPortalAccess" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.EmployeeAction" method="deleteEmployees" />
 		<action name="details"

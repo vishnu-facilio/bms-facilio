@@ -27,29 +27,20 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
-import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SetupLayout;
-import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 
@@ -141,36 +132,15 @@ public class UserAction extends FacilioAction {
 //			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 //			  checkforTenantPrimaryContact(user.getEmail());
 //			}
-			
-			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getEmail(), AccountUtil.getCurrentOrg().getDomain());
-			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOuid())) {
+			HttpServletRequest request = ServletActionContext.getRequest(); 
+			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getEmail(), request.getServerName());
+			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOrgId(), userTobeDeleted.getUid(), request.getServerName())) {
 				setUserId(userTobeDeleted.getOuid());
 			    return SUCCESS;
 			}
 			return ERROR;
 		} catch (Exception e) {
 			throw e;
-		}
-	}
-	
-	private void checkforTenantPrimaryContact(String email) throws Exception{
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule tenantModule = modBean.getModule(FacilioConstants.ContextNames.TENANT);
-		List<FacilioField> fields = modBean.getAllFields(tenantModule.getName());
-		
-		
-		User requestorToBeDeleted = AccountUtil.getUserBean().getUser(email);
-		
-		SelectRecordsBuilder<TenantContext> selectBuilder = new SelectRecordsBuilder<TenantContext>()
-												.table(tenantModule.getTableName())
-												.module(tenantModule)
-												.select(fields)
-												.andCondition(CriteriaAPI.getCondition("CONTACT_ID", "contact_id", requestorToBeDeleted.getOuid()+"", NumberOperators.EQUALS))
-												.beanClass(TenantContext.class)
-												;								
-        List<TenantContext> records = selectBuilder.get();
-		if(records.size() > 0) {
-			throw new IllegalArgumentException("Deletion not permitted as the requester is a primary contact for the tenant "+records.get(0).getName());
 		}
 	}
 	
@@ -215,7 +185,9 @@ public class UserAction extends FacilioAction {
 
 	public String deleteUser() throws Exception {
 		
-	    if(AccountUtil.getUserBean().deleteUser(user.getOuid())) {
+		HttpServletRequest request = ServletActionContext.getRequest(); 
+		
+		if(AccountUtil.getUserBean().deleteUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid(), request.getServerName())) {
 	    	setUserId(user.getOuid());
 	    	return SUCCESS;
 	    }
@@ -239,6 +211,8 @@ public class UserAction extends FacilioAction {
 	}
 	public String inviteRequester() throws Exception {
 
+		HttpServletRequest request = ServletActionContext.getRequest(); 
+		
 		boolean isEmailEmpty = (user.getEmail() == null ||  user.getEmail().isEmpty());
 		boolean isMobileEmpty = (user.getMobile() == null || user.getMobile().isEmpty());
 		if(isMobileEmpty && isEmailEmpty ) {
@@ -248,13 +222,11 @@ public class UserAction extends FacilioAction {
 
 		Organization org = AccountUtil.getCurrentOrg();
 		user.setOrgId(org.getOrgId());
-		user.setDomainName(org.getDomain());
 		if(isEmailEmpty) {
 			user.setEmail(user.getMobile());
 		}
 
 		user.setUserType(UserType.REQUESTER.getValue());
-		user.setAppType(AppType.SERVICE_PORTAL);
 		if(emailVerificationNeeded) {
 			user.setUserVerified(false);
 			user.setInviteAcceptStatus(false);
@@ -267,7 +239,8 @@ public class UserAction extends FacilioAction {
 		}
 		
 		try {
-			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true) > 0) {
+			String appDomain = AccountUtil.getCurrentOrg().getDomain() +".facilioportal.com";
+			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, appDomain, 1) > 0) {
 				setUserId(user.getId());
 			}
 			else {
@@ -313,7 +286,6 @@ public class UserAction extends FacilioAction {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String value = FacilioCookie.getUserCookie(request, "fc.authtype");
 		user.setFacilioAuth("facilio".equals(value));
-		user.setDomainName("app");
 		
 		if(emailVerificationNeeded) {
 			user.setUserVerified(false);
@@ -368,22 +340,20 @@ public class UserAction extends FacilioAction {
 	public String resendInvite() throws Exception {
 		ServletActionContext.getRequest().getParameter("portal");
 		
-		user = AccountUtil.getUserBean().getUser(getUserId(), false);
 		System.out.println("##########userOrgid   :"+user.getOrgId());
 		if(user != null) {
 			if(user.getUserType() == AccountConstants.UserType.REQUESTER.getValue())
 			{
-				// requestore
 				PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
 				long portalid = portalInfo.getPortalId();
 				user.setPortalId(portalid);
-				(new UserBeanImpl()).resendInvite(user.getOuid());
+				(new UserBeanImpl()).resendInvite(user.getOrgId(), user.getUid(), ServletActionContext.getRequest().getServerName());
 			}
 			else
 			{
 				long orgId=user.getOrgId();
 				// normal user 
-				AccountUtil.getTransactionalUserBean(orgId).resendInvite(getUserId());
+				AccountUtil.getTransactionalUserBean(orgId).resendInvite(user.getOrgId(), user.getUid(), ServletActionContext.getRequest().getServerName());
 			}
 			return SUCCESS;
 		}
@@ -568,19 +538,23 @@ public class UserAction extends FacilioAction {
 	}
 
 	public String changeStatus() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest(); 
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
 		if(user.getUserStatus()) {
-			if(AccountUtil.getUserBean().enableUser(user.getOuid())) {
+			if(AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid(), request.getServerName())) {
+				setResult(FacilioConstants.ContextNames.ROWS_UPDATED, true);
 				return SUCCESS;
 			}
 		}
 		else {
-			if(AccountUtil.getUserBean().disableUser(user.getOuid())) {
+			if(AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid(), request.getServerName())) {
+				setResult(FacilioConstants.ContextNames.ROWS_UPDATED, true);
 				return SUCCESS;
 			}
 		}
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, false);
 		return ERROR;
 	}
 

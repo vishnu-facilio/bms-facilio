@@ -388,6 +388,8 @@ Pragma: no-cache
 		System.out.println("### AddNewUserDB() :"+emailaddress);
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		HttpServletRequest req = ServletActionContext.getRequest();
+
 		try	{
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("INSERT INTO faciliorequestors(PORTALID, username, email, password) VALUES(?,?,?,?)");
@@ -402,7 +404,7 @@ Pragma: no-cache
 			user.setEmail(emailaddress);
 			   
 			UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-			userBean.inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true);
+			userBean.inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true, req.getServerName(), 1);
 			
 		} catch (MySQLIntegrityConstraintViolationException e){
 			setJsonresponse("message", "Username exists for this portal");

@@ -176,5 +176,33 @@ private static final long serialVersionUID = 1L;
 		
 		return SUCCESS;
 	}
+	
+	public String updateEmployeeAppAccess() throws Exception {
+		
+		if(!CollectionUtils.isEmpty(employees)) {
+			FacilioChain c = TransactionChainFactory.updateEmployeeChain();
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
+			//1 - app, 2- Occupant portal
+			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
+			c.execute();
+			setResult(FacilioConstants.ContextNames.EMPLOYEES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+		}
+		return SUCCESS;
+		  
+	}	
+	
+	public String updateEmployeeOccupantPortalAccess() throws Exception {
+		
+		if(!CollectionUtils.isEmpty(employees)) {
+			FacilioChain c = TransactionChainFactory.updateEmployeeChain();
+			//1 - app, 2- Occupant portal
+			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, employees);
+			c.execute();
+			setResult(FacilioConstants.ContextNames.EMPLOYEES, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+		}
+		return SUCCESS;
+		  
+	}	
 
 }

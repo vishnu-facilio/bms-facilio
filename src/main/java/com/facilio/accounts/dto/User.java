@@ -25,10 +25,9 @@ public class User extends IAMUser {
 		setState(user.getState());
 		setZip(user.getZip());
 		setCountry(user.getCountry());
-		setDomainName(user.getDomainName());
 		setOrgId(user.getOrgId());
 		setIamOrgUserId(user.getIamOrgUserId());
-		setAppType(user.getAppType());
+		setAppDomain(user.getAppDomain());
 	
 	}
 
@@ -200,5 +199,17 @@ public class User extends IAMUser {
 	public void setAvatarContentType(String avatarContentType) {
 		this.avatarContentType = avatarContentType;
 	}
+	
+	
+	private long peopleId;
+
+	public long getPeopleId() {
+		return peopleId;
+	}
+
+	public void setPeopleId(long peopleId) {
+		this.peopleId = peopleId;
+	}
+	
 	
 }

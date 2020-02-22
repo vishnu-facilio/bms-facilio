@@ -52,22 +52,6 @@ public class AccountUtil {
 		}
 	}
 	
-	public static void updateAccount(Account account, boolean addUserEntryIfNotExists) throws Exception {
-		if(account == null) {
-			return;
-		}
-		
-		if (account.getUser() == null || account.getOrg() == null) {
-			return;
-		}
-		
-		String email = account.getUser().getEmail();
-		
-		User user = null;
-		user = AccountUtil.getUserBean().getUser(email);
-		account.setUser(user);
-	}
-
 	public static Account getCurrentAccount() {
 		if (currentAccount.get() != null && !currentAccount.get().isScoped()) {
 			return null;
@@ -415,5 +399,12 @@ public class AccountUtil {
 		return null;
 	}
 	
+	
+	public static String getDefaultAppDomain() throws Exception{
+		if(FacilioProperties.isDevelopment()) {
+			return "localhost";
+		}
+		return FacilioProperties.getAppDomain();
+	}
 	
 }

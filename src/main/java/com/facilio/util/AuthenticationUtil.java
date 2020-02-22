@@ -7,18 +7,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.dto.IAMAccount;
-import com.facilio.accounts.dto.IAMUser.AppType;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 
 
 public class AuthenticationUtil {
 	
-	public static IAMAccount validateToken(HttpServletRequest request, boolean portalUser, String portalDomain) throws Exception {
+	public static IAMAccount validateToken(HttpServletRequest request, boolean portalUser, String appDomain) throws Exception {
 		String facilioToken = null;
 		
-		if(StringUtils.isEmpty(portalDomain)) {
-			portalDomain = "app";
+		if(StringUtils.isEmpty(appDomain)) {
+			appDomain = AccountUtil.getDefaultAppDomain();
 		}
         if(portalUser) {
         	facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
@@ -46,23 +46,13 @@ public class AuthenticationUtil {
                 }
             }
             
-            AppType appType = null;
-            if(!portalDomain.equals("app")) {
-            	appType = AppType.SERVICE_PORTAL;
-				if(request.getServerName() != null && request.getServerName().contains("faciliovendors.com")) {
-					appType = AppType.VENDOR_PORTAL;
-				}
-				else if(request.getServerName() != null && request.getServerName().contains("faciliotenants.com")) {
-					appType = AppType.TENANT_PORTAL;
-				}
-            }
             String userType = "web";
 			String deviceType = request.getHeader("X-Device-Type");
 			if (!StringUtils.isEmpty(deviceType)
 					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
 				userType = "mobile";
 			}
-			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(facilioToken, overrideSessionCheck, null, portalDomain, userType,appType);
+			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(facilioToken, overrideSessionCheck, null, appDomain, userType);
 			return iamAccount;
         }
         return null;

@@ -12,17 +12,19 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
-import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
@@ -35,7 +37,6 @@ import com.facilio.accounts.util.UserUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.PortalInfoContext;
@@ -67,19 +68,12 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.services.filestore.FileStore;
-import org.json.simple.JSONObject;
 
 ;
 
 public class UserBeanImpl implements UserBean {
 
 	private static Logger log = LogManager.getLogger(UserBeanImpl.class.getName());
-
-	private long getUid(String email) throws Exception {
-		return getUser(email).getUid();
-	}
 
 	@Override
 	public boolean updateUser(User user) throws Exception {
@@ -133,36 +127,36 @@ public class UserBeanImpl implements UserBean {
 	
 	
 	@Override
-	public void createUser(long orgId, User user) throws Exception {
+	public void createUser(long orgId, User user, int identifier, String appDomain) throws Exception {
 		try {
 			user.setUserStatus(true);
-			if(IAMUserUtil.addUser(user, orgId) > 0) {
-				createUserEntry(orgId, user, false);
+			user.setIdentifier(identifier);
+			if(IAMUserUtil.addUser(user, orgId, identifier, appDomain) > 0) {
+				createUserEntry(orgId, user, false, appDomain);
 			}
 		}
 		catch(Exception e) {
-			IAMUserUtil.rollbackUserAdded(user, AccountUtil.getCurrentOrg().getOrgId());
+			IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId(), appDomain);
 			throw e;
 		}
 		
 	}
 	
 	@Override
-	public void createUserEntry(long orgId, User user, boolean isSignUpEmailVerificationNeeded) throws Exception {
+	public void createUserEntry(long orgId, User user, boolean isSignUpEmailVerificationNeeded, String appDomain) throws Exception {
 
 		if (isSignUpEmailVerificationNeeded && !user.isUserVerified()) {
-			sendEmailRegistration(user);
+			sendEmailRegistration(user, appDomain);
 		}
 		user.setOrgId(orgId);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		user.setUserStatus(true);
-		//user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
-		addToAppORGUsers(user, true);
+		addToAppORGUsers(user, true, appDomain);
 		addUserDetail(user);
 		
 	}
 	
-	private void addToAppORGUsers(User user, boolean isEmailVerificationNeeded) throws Exception {
+	private void addToAppORGUsers(User user, boolean isEmailVerificationNeeded, String appDomain) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -189,7 +183,7 @@ public class UserBeanImpl implements UserBean {
 		user.setOuid((long) props.get("ouid"));
 		if((long)props.get("ouid") > 0) {
 			if(isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
-				sendInvitation(user, false);
+				sendInvitation(user, false, appDomain);
 			}
 		}
 		FacilioContext context = new FacilioContext();
@@ -201,29 +195,25 @@ public class UserBeanImpl implements UserBean {
 		addRDMChain.execute(context);
 	}
 	
-	private void sendInvitation(User user, boolean registration) throws Exception {
+	private void sendInvitation(User user, boolean registration, String appDomain) throws Exception {
 		Map<String, Object> placeholders = new HashMap<>();
-		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
-		//CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()),
-		//		placeholders);
 		placeholders.put("toUser",user);
 		placeholders.put("org",AccountUtil.getCurrentOrg());
 		placeholders.put("inviter",AccountUtil.getCurrentUser());
 		
-	//	CommonCommandUtil.appendModuleNameInKey(null, "inviter",
-	//			FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
 		addBrandPlaceHolders("brandUrl", placeholders);
 
 		if (user.isPortalUser()) {
-			String inviteLink = getUserLink(user, "/invitation/");
+			String inviteLink = getUserLink(user, "/invitation/", appDomain);
 			if (registration) {
-				inviteLink = getUserLink(user, "/emailregistration/");
+				inviteLink = getUserLink(user, "/emailregistration/", appDomain);
 			}
+			AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
 			String portalType = "Service Portal";
-			if(user.getAppTypeEnum() == AppType.TENANT_PORTAL) {
+			if(appDomainObj.getAppDomainTypeEnum() == AppDomainType.TENANT_PORTAL) {
 				portalType = "Tenant Portal" ;
 			}
-			else if(user.getAppTypeEnum() == AppType.VENDOR_PORTAL) {
+			else if(appDomainObj.getAppDomainTypeEnum() == AppDomainType.VENDOR_PORTAL) {
 				portalType = "Vendor Portal" ;
 			}
 			placeholders.put("invitelink", inviteLink);
@@ -232,7 +222,7 @@ public class UserBeanImpl implements UserBean {
 			AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders, true);
 
 		} else {
-			String inviteLink = getUserLink(user, "/invitation/");
+			String inviteLink = getUserLink(user, "/invitation/", appDomain);
 			placeholders.put("invitelink", inviteLink);
 
 			AccountEmailTemplate.INVITE_USER.send(placeholders, true);
@@ -281,8 +271,8 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User verifyEmail(String token) throws Exception {
-		IAMUser iamUser = IAMUserUtil.verifyEmail(token);
+	public User verifyEmail(String token, String appDomain) throws Exception {
+		IAMUser iamUser = IAMUserUtil.verifyEmail(token, appDomain);
 
 		if (iamUser != null) {
 			User user = new User(iamUser);
@@ -298,8 +288,8 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User validateUserInvite(String token) throws Exception {
-		IAMUser iamUser = IAMUserUtil.validateUserInviteToken(token);
+	public User validateUserInvite(String token, String appDomain) throws Exception {
+		IAMUser iamUser = IAMUserUtil.validateUserInviteToken(token, appDomain);
 		if(iamUser != null && iamUser.isActive()) {
 			return new User(iamUser);
 		}
@@ -308,9 +298,9 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public boolean resendInvite(long ouid) throws Exception {
+	public boolean resendInvite(long orgId, long userId, String appDomain) throws Exception {
 
-		User appUser = getUser(ouid, false);
+		User appUser = getUser(orgId, userId, appDomain);
 		FacilioField invitedTime = new FacilioField();
 		invitedTime.setName("invitedTime");
 		invitedTime.setDataType(FieldType.NUMBER);
@@ -332,15 +322,15 @@ public class UserBeanImpl implements UserBean {
 		
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
-			sendInvitation(appUser, false);
+			sendInvitation(appUser, false, appDomain);
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public boolean acceptInvite(String token, String password) throws Exception {
-		IAMUser iamUser = IAMUserUtil.acceptInvite(token, password);
+	public boolean acceptInvite(String token, String password, String appDomain) throws Exception {
+		IAMUser iamUser = IAMUserUtil.acceptInvite(token, password, appDomain);
 		if(iamUser != null) {
 		   return AccountUtil.getTransactionalUserBean(iamUser.getOrgId()).acceptUser(new User(iamUser));	
 		}
@@ -364,7 +354,7 @@ public class UserBeanImpl implements UserBean {
 	
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
+			UserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			if(CollectionUtils.isNotEmpty(props)) {
 				User user = createUserFromProps(props.get(0), true, true, false); // Giving as false because user cannot
 																					// accept invite via portal APIs
@@ -389,24 +379,18 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public boolean deleteUser(long ouid) throws Exception {
-		User user = getUser(ouid, false);
-		if(user != null) {
-			return IAMUserUtil.deleteUser(user, AccountUtil.getCurrentOrg().getOrgId());
-		}
-		return false;
+	public boolean deleteUser(long orgId, long userId, String appDomain) throws Exception {
+		return IAMUserUtil.deleteUser(userId, orgId, appDomain);
 	}
 	
 	@Override
-	public boolean disableUser(long ouid) throws Exception {
-		User user = getUser(ouid, false);
-		return IAMUserUtil.disableUser(user);
+	public boolean disableUser(long orgId, long userId, String appDomain) throws Exception {
+		return IAMUserUtil.disableUser(userId, orgId, appDomain);
 	}
 
 	@Override
-	public boolean enableUser(long ouid) throws Exception {
-		User user = getUser(ouid, false);
-		return IAMUserUtil.enableUser(user);
+	public boolean enableUser(long orgId, long userId, String appDomain) throws Exception {
+		return IAMUserUtil.enableUser(userId, orgId, appDomain);
 	}
 
 	@Override
@@ -425,7 +409,7 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), fetchDeleted);
+			UserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), fetchDeleted, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			if(CollectionUtils.isNotEmpty(props)) {
 				User user = createUserFromProps(props.get(0), true, true, false);
 				return user;
@@ -435,32 +419,24 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	@Override
-	public User getUser(long orgId, long userId) throws Exception {
+	public User getUser(long orgId, long userId, String appDomain) throws Exception {
 
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField());
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition("ORG_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
-		
-		GenericSelectRecordBuilder selectBuilder = fetchUserSelectBuilder(criteria, orgId, null);
-		
+		IAMUser iamUser = IAMUserUtil.getFacilioUser(orgId, userId, appDomain);
+		if (iamUser != null) {
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition("IAM_ORG_USERID", "iamOrgUserId", String.valueOf(iamUser.getIamOrgUserId()), NumberOperators.EQUALS));
 			
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, orgId, false);
-			if(CollectionUtils.isNotEmpty(props)) {
-				User user = createUserFromProps(props.get(0), true, true, false);
+			GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(criteria, orgId, null);
+			List<Map<String , Object>> mapList = selectRecordBuilder.get();
+			if(CollectionUtils.isNotEmpty(mapList)) {
+				mapList.get(0).putAll(FieldUtil.getAsProperties(iamUser));
+				User user = createUserFromProps(mapList.get(0), true, true, false);
 				return user;
 			}
 		}
+		
 		return null;
 	}
-
-//	@Override
-//	public User getUserInternal(long ouid) throws Exception {
-//		return getUserInternal(ouid, true);
-//	}
 
 	@Override
 	public User getUserInternal(long ouid, boolean withRole) throws Exception {
@@ -483,7 +459,7 @@ public class UserBeanImpl implements UserBean {
 		selectBuilder.andCriteria(criteria);
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, (long)props.get(0).get("orgId"), false);
+			UserUtil.setIAMUserPropsv3(props, (long)props.get(0).get("orgId"), false, AccountUtil.getDefaultAppDomain());
 			if(CollectionUtils.isNotEmpty(props)) {
 				User user = createUserFromProps(props.get(0), withRole, true, false);
 				return user;
@@ -496,7 +472,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public User getUserFromPhone(String phone) throws Exception {
 
-		Map<String, Object> props = UserUtil.getUserFromPhone(phone);
+		Map<String, Object> props = UserUtil.getUserFromPhone(phone, null);
 		if (props != null && !props.isEmpty()) {
 			return getAppUser(props, true, true, false);
 		}
@@ -504,49 +480,14 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User getUser(String emailOrPhone, String portalDomain) throws Exception {
+	public User getUser(String emailOrPhone, String appDomain) throws Exception {
 
-		if(StringUtils.isAllEmpty(portalDomain)) {
-			portalDomain = "app";
-		}
-		
-		Map<String, Object> props = UserUtil.getUserFromEmailOrPhone(emailOrPhone, portalDomain);
+		Map<String, Object> props = UserUtil.getUserFromEmailOrPhone(emailOrPhone, appDomain);
 		if (props != null && !props.isEmpty()) {
 			return getAppUser(props, true, true, false);
 		}
 
 		return null;
-	}
-
-	private User getPortalUser(long uid, long portalId) throws Exception {
-		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField(portalInfoModule));
-
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("ORG_Users")
-				.innerJoin(portalInfoModule.getTableName())
-				.on("ORG_Users.ORGID = "+portalInfoModule.getTableName()+".ORGID")
-				.andCustomWhere("PortalInfo.PORTALID="+ portalId + " and ORG_Users.USERID = "+uid);
-		
-
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
-			if(CollectionUtils.isNotEmpty(props)) {
-				return createUserFromProps(props.get(0), true, false, true);
-			}
-		}
-
-		return null;
-	}
-
-	@Override
-	public User getPortalUser(long uid) throws Exception {
-		PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getId(), false);
-		return getPortalUser(uid, portalInfo.getPortalId());
 	}
 
 	@Override
@@ -555,7 +496,7 @@ public class UserBeanImpl implements UserBean {
 		List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId(), ouids);
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), fetchDeleted);
+			UserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), fetchDeleted, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			for (Map<String, Object> prop : props) {
 				User user = createUserFromProps(prop, true, true, false);
 				if(fetchOnlyActiveUsers) {
@@ -578,7 +519,7 @@ public class UserBeanImpl implements UserBean {
 		criteria.addAndCondition(CriteriaAPI.getConditionFromList("ROLE_ID", "roleId", roleIds, PickListOperators.IS));
 		List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId());
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
+			UserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			Map<Long, List<User>> userMap = new HashMap<>();
 			for (Map<String, Object> prop : props) {
 				User user = createUserFromProps(prop, false, false, false);
@@ -603,7 +544,7 @@ public class UserBeanImpl implements UserBean {
 				CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(roleId), PickListOperators.IS));
 		List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId());
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
+			UserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			List<User> users = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
 				User user = createUserFromProps(prop, false, false, false);
@@ -627,7 +568,7 @@ public class UserBeanImpl implements UserBean {
 			List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId());
 			if (props != null && !props.isEmpty()) {
 				List<User> users = new ArrayList<>();
-				UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
+				UserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 				for (Map<String, Object> prop : props) {
 					User user = createUserFromProps(prop, false, true, false);
 					if (user.getAccessibleSpace() == null || user.getAccessibleSpace().isEmpty()
@@ -672,7 +613,7 @@ public class UserBeanImpl implements UserBean {
 	public Map<Long, User> getUsersAsMap(Criteria criteria, Collection<Long>... ouids) throws Exception {
 		List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId(), ouids);
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), true);
+			UserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), true, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			Map<Long, User> users = new HashMap<>();
 			for (Map<String, Object> prop : props) {
 				User user = createUserFromProps(prop, true, true, false);
@@ -692,7 +633,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public User getUser(long orgId, String email) throws Exception {
 
-		Map<String, Object> props = UserUtil.getUserFromEmailOrPhoneForOrg(email);
+		Map<String, Object> props = UserUtil.getUserFromEmailOrPhoneForOrg(email, null);
 		if (props != null && !props.isEmpty()) {
 			return getAppUser(props, true, true, false);
 		}
@@ -700,26 +641,25 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public List<Organization> getOrgs(long uId) throws Exception {
-		return IAMUserUtil.getUserOrgs(uId);
+	public List<Organization> getOrgs(long uId, String appDomain) throws Exception {
+		return IAMUserUtil.getUserOrgs(uId, appDomain);
 	}
 
 	@Override
-	public Organization getDefaultOrg(long uid) throws Exception {
-		return IAMUserUtil.getDefaultOrg(uid);
+	public Organization getDefaultOrg(long uid, String appDomain) throws Exception {
+		return IAMUserUtil.getDefaultOrg(uid, appDomain);
 	}
 
 	@Override
-	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError) throws Exception {
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String appDomain, int identifier) throws Exception {
 		try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				Organization org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
 				PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(org.getId(), false);
 				org.setPortalId(portalInfo.getPortalId());
 				user.setOrgId(org.getOrgId());
-				user.setDomainName(org.getDomain());
 				user.setPortalId(org.getPortalId());
-				user.setId(addRequester(orgId, user, isEmailVerificationNeeded, shouldThrowExistingUserError));
+				user.setId(addRequester(orgId, user, isEmailVerificationNeeded, shouldThrowExistingUserError, appDomain, identifier));
 				return user.getOuid();
 			}
 		}
@@ -727,32 +667,32 @@ public class UserBeanImpl implements UserBean {
 			if(ex.getErrorCode() == ErrorCode.USER_ALREADY_EXISTS_IN_ORG_PORTAL) {
 				throw ex;
 			}
-			IAMUserUtil.rollbackUserAdded(user, AccountUtil.getCurrentOrg().getOrgId());
+			IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId(), appDomain);
 			throw ex;
 		}
 		catch(Exception e) {
-			IAMUserUtil.rollbackUserAdded(user, AccountUtil.getCurrentOrg().getOrgId());
+			IAMUserUtil.rollbackUserAdded(user.getUid(), AccountUtil.getCurrentOrg().getOrgId(), appDomain);
 			throw e;
 		}
 		return 0L;
 	}
 
-	private long addRequester(long orgId, User user, boolean emailVerification, boolean shouldThrowExistingUserError)
+	private long addRequester(long orgId, User user, boolean emailVerification, boolean shouldThrowExistingUserError, String appDomain, int identifier)
 			throws Exception {
-		IAMUser iamUser = IAMUserUtil.getUser(user.getEmail(), user.getDomainName(), user.getDomainName());
-		if (iamUser != null) {
-			User portalUser = new User(iamUser);
-			log.info("Requester email " + iamUser.getEmail() +" already exists in the portal for org: " + orgId);
+		Map<String, Object> iamUser = IAMUserUtil.getUserForEmailOrPhone(user.getEmail(), appDomain, false, orgId);
+		if (MapUtils.isNotEmpty(iamUser)) {
+			User portalUser = new User(FieldUtil.getAsBeanFromMap(iamUser, IAMUser.class));
+			log.info("Requester email " + portalUser.getEmail() +" already exists in the portal for org: " + orgId);
 			if(shouldThrowExistingUserError) {
 				throw new AccountException(ErrorCode.USER_ALREADY_EXISTS_IN_ORG_PORTAL, "This user already exists in the org portal");
 			}
-			return getUser(portalUser.getEmail(), iamUser.getDomainName()).getOuid();
+			return getUser(portalUser.getEmail(), appDomain).getOuid();
 		}
-		if(IAMUserUtil.addUser(user, orgId) > 0) {
+		if(IAMUserUtil.addUser(user, orgId, identifier, appDomain) > 0) {
 			user.setOrgId(orgId);
 			user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 			user.setUserStatus(true);
-			addToAppORGUsers(user, emailVerification);
+			addToAppORGUsers(user, emailVerification, appDomain);
 			if (user.getAccessibleSpace() != null) {
 				addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 			}
@@ -894,7 +834,6 @@ public class UserBeanImpl implements UserBean {
 			user.setPortalId(portalInfo.getPortalId());
 		}
 		
-
 		return user;
 	}
 
@@ -921,15 +860,9 @@ public class UserBeanImpl implements UserBean {
 		return userSites;
 	}
 
-//	@Override
-//	public User getPortalUser(String email, long portalId) throws Exception {
-//		// TODO Auto-generated method stub
-//		return getPortalUsers(email, portalId);
-//	}
-
 	@Override
-	public boolean sendResetPasswordLinkv2(User user) throws Exception {
-		String inviteLink = getUserLink(user, "/fconfirm_reset_password/");
+	public boolean sendResetPasswordLinkv2(User user, String appDomain) throws Exception {
+		String inviteLink = getUserLink(user, "/fconfirm_reset_password/", appDomain);
 		Map<String, Object> placeholders = new HashMap<>();
 		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("toUser", user);
@@ -947,7 +880,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean acceptUser(User user) throws Exception {
 		// TODO Auto-generated method stub
-		    User appUser = getUser(user.getOrgId(), user.getUid());
+		    User appUser = getUser(user.getOrgId(), user.getUid(), user.getAppDomain().getDomain());
 		    if(appUser != null && appUser.isActive()) {
 				FacilioField inviteAcceptStatus = new FacilioField();
 				inviteAcceptStatus.setName("inviteAcceptStatus");
@@ -1010,7 +943,7 @@ public class UserBeanImpl implements UserBean {
 	public Account getPermalinkAccount(IAMAccount iamAccount) throws Exception {
 		// TODO Auto-generated method stub
 	  if(iamAccount != null) {
-	      User user = getUser(iamAccount.getUser().getOrgId(), iamAccount.getUser().getUid());
+	      User user = getUser(iamAccount.getUser().getOrgId(), iamAccount.getUser().getUid(), iamAccount.getUser().getAppDomain().getDomain());
 	      Account account = new Account(iamAccount.getOrg(), user);
 	      return account;
 	  }
@@ -1023,9 +956,9 @@ public class UserBeanImpl implements UserBean {
 		return IAMUserUtil.getUserSessions(uid, isActive);
 	}
 
-	private void sendEmailRegistration(User user) throws Exception {
+	private void sendEmailRegistration(User user, String appDomain) throws Exception {
 
-		String inviteLink = getUserLink(user, "/emailregistration/");
+		String inviteLink = getUserLink(user, "/emailregistration/", appDomain);
 		Map<String, Object> placeholders = new HashMap<>();
 		placeholders.put("toUser",user);
 		//CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
@@ -1041,12 +974,13 @@ public class UserBeanImpl implements UserBean {
 
 	}
 	
-	private String getUserLink(User user, String url) throws Exception {
-		String inviteToken = IAMUserUtil.getEncodedToken(user);
+	private String getUserLink(User user, String url, String appDomain) throws Exception {
+		String inviteToken = IAMUserUtil.getEncodedToken(user, appDomain);
 		String hostname = "";
 		if (user.isPortalUser()) {
 			try {
-				Organization org = AccountUtil.getOrgBean().getPortalOrg(user.getPortalId(), user.getAppTypeEnum());
+				AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+				Organization org = AccountUtil.getOrgBean().getPortalOrg(user.getPortalId(), appDomainObj.getAppDomainTypeEnum());
 				hostname = "https://" + org.getDomain() + "/service";
 				inviteToken = inviteToken + "&portalid=" + user.getPortalId();
 			} catch (Exception e) {
@@ -1092,10 +1026,10 @@ public class UserBeanImpl implements UserBean {
 			throw new IllegalArgumentException("Organization cannot be empty");
 		}
 		
-		Map<String, Object> props = UserUtil.getUserFromEmailOrPhoneForOrg(emailOrPhone);
+		Map<String, Object> props = UserUtil.getUserFromEmailOrPhoneForOrg(emailOrPhone, null);
 		if (props != null && !props.isEmpty()) {
 			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf((long)props.get("uid")), NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition("IAM_ORG_USERID", "iamOrgUserId", String.valueOf((long)props.get("iamOrgUserId")), NumberOperators.EQUALS));
 			
 			GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(criteria, currentOrg.getOrgId(), null);
 			List<Map<String , Object>> mapList = selectRecordBuilder.get();
@@ -1110,8 +1044,8 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public boolean setDefaultOrg(long orgId, long userId) throws Exception {
-		return IAMUserUtil.setDefaultOrg(userId, orgId);
+	public boolean setDefaultOrg(long orgId, long userId, String appDomain) throws Exception {
+		return IAMUserUtil.setDefaultOrg(userId, orgId, appDomain);
 	}
 
 	private User getAppUser(Map<String, Object> props, boolean fetchRole, boolean fetchSpace, boolean isPortalUser) throws Exception {

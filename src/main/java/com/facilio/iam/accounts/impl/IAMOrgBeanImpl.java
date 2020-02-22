@@ -8,11 +8,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -26,6 +28,7 @@ import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -33,7 +36,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
-import com.facilio.util.FacilioUtil;
 
 public class IAMOrgBeanImpl implements IAMOrgBean {
 
@@ -41,12 +43,6 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	public boolean updateOrgv2(long orgId, Organization org) throws Exception {
 		if (org.getLogo() != null) {
 			FileStore fs;
-//			if (FacilioProperties.isProduction()) {
-//				fs = FacilioFactory.getFileStoreFromOrg(orgId);
-//			} else {
-//				fs = FacilioFactory.getFileStore();
-//			}
-//			fs = FacilioFactory.getFileStoreFromOrg(orgId);
 			fs = FacilioFactory.getFileStore();
 			long fileId = fs.addFile(org.getLogoFileName(), org.getLogo(), org.getLogoContentType());
 			org.setLogoId(fileId);
@@ -155,16 +151,18 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
     	List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
-		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+		fields.addAll(IAMAccountConstants.getAccountUserAppOrgsFields());
 		fields.add(IAMAccountConstants.getOrgIdField());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Account_Users")
-				.innerJoin("Account_ORG_Users")
-				.on("Account_Users.USERID = Account_ORG_Users.USERID");
+				.innerJoin("Account_User_Apps")
+				.on("Account_Users.USERID = Account_User_Apps.USERID")
+				.innerJoin("Account_User_Apps_Orgs")
+				.on("Account_User_Apps.ID = Account_User_Apps_Orgs.ACCOUNT_USER_APPID");
 		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		
 		
@@ -172,7 +170,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<IAMUser> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				IAMUser user = IAMUserBeanImpl.createUserFromProps(prop, true, true);
+				IAMUser user = IAMUtil.getUserBean().createUserFromProps(prop);
 				users.add(user);
 			}
 			return users;
@@ -180,87 +178,89 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		return null;
 	}
 	
+    @Override
+   	public List<IAMUser> getAllOrgUsersv2(long orgId, String appDomain) throws Exception {
+   		
+       	List<FacilioField> fields = new ArrayList<>();
+   		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+   		fields.addAll(IAMAccountConstants.getAccountUserAppOrgsFields());
+   		fields.add(IAMAccountConstants.getOrgIdField());
+   		fields.add(IAMAccountConstants.getAppDomainField());
+   		
+   		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+   				.select(fields)
+   				.table("Account_Users")
+   				.innerJoin("Account_User_Apps")
+   				.on("Account_Users.USERID = Account_User_Apps.USERID")
+   				.innerJoin("App_Domain")
+   				.on("App_Domain.ID = Account_User_Apps.APP_DOMAIN_ID")
+   				.innerJoin("Account_User_Apps_Orgs")
+   				.on("Account_User_Apps.ID = Account_User_Apps_Orgs.ACCOUNT_USER_APPID");
+   		
+   		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+   		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+   	
+   	
+   		if(StringUtils.isNotEmpty(appDomain)) {
+   			selectBuilder.andCondition(CriteriaAPI.getCondition("DOMAIN", "domain", appDomain, StringOperators.IS));
+   		}
+   		
+   		List<Map<String, Object>> props = selectBuilder.get();
+   		if (props != null && !props.isEmpty()) {
+   			List<IAMUser> users = new ArrayList<>();
+   			for(Map<String, Object> prop : props) {
+   				IAMUser user = IAMUtil.getUserBean().createUserFromProps(prop);
+				users.add(user);
+   			}
+   			return users;
+   		}
+   		return null;
+   	}
+   	
 	@Override
-	public List<IAMUser> getOrgUsersv2(long orgId, boolean status) throws Exception {
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsOrgUserFields());
+	public List<IAMUser> getOrgUsersv2(long orgId, boolean status, String appDomain) throws Exception {
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountUserAppOrgsFields());
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("userStatus"), String.valueOf(status), NumberOperators.EQUALS));
-		return getOrgUsersv2(orgId, criteria);
-	}
-	
-	@Override
-	public List<IAMUser> getOrgUsersv2(long orgId, Criteria criteria) throws Exception {
+		
+		if(StringUtils.isNotEmpty(appDomain)) {
+   			criteria.addAndCondition(CriteriaAPI.getCondition("DOMAIN", "domain", appDomain, StringOperators.IS));
+   		}
+   		
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
 		if (props != null && !props.isEmpty()) {
 			List<IAMUser> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				users.add(IAMUserBeanImpl.createUserFromProps(prop, true, false));
+				users.add(IAMUtil.getUserBean().createUserFromProps(prop));
 			}
 			return users;
 		}
 		return null;
-	}
 	
-	@Override
-	public Map<Long, IAMUser> getOrgUsersAsMapv2(long orgId, Criteria criteria) throws Exception {
-		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
-		if (props != null && !props.isEmpty()) {
-			Map<Long, IAMUser> users = new HashMap<>();
-			for(Map<String, Object> prop : props) {
-				IAMUser user = IAMUserBeanImpl.createUserFromProps(prop, true, false);
-				users.put(user.getId(), user);
-			}
-			return users;
-		}
-		return null;
 	}
 	
 	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
-		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+		fields.addAll(IAMAccountConstants.getAccountUserAppOrgsFields());
+		fields.add(IAMAccountConstants.getAppDomainField());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Account_Users")
-				.innerJoin("Account_ORG_Users")
-				.on("account_Users.USERID = Account_ORG_Users.USERID");
-		
+				.innerJoin("Account_User_Apps")
+				.on("Account_Users.USERID = Account_User_Apps.USERID")
+				.innerJoin("App_Domain")
+				.on("App_Domain.ID = Account_User_Apps.APP_DOMAIN_ID")
+				.innerJoin("Account_User_Apps_Orgs")
+				.on("Account_User_Apps.ID = Account_User_Apps_Orgs.ACCOUNT_USER_APPID");
+			
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 	
 		return selectBuilder.get();
 	}
 
-	public List<IAMUser> getActiveOrgUsersv2(long orgId) throws Exception {
-
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(IAMAccountConstants.getAccountsUserFields());
-		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
-
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Account_Users")
-				.innerJoin("Account_ORG_Users")
-				.on("Account_Users.USERID = Account_ORG_Users.USERID");
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("INVITATION_ACCEPT_STATUS", "invitationAcceptStatus", "1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			List<IAMUser> users = new ArrayList<>();
-			for(Map<String, Object> prop : props) {
-				users.add(IAMUserBeanImpl.createUserFromProps(prop, true, false));
-			}
-			return users;
-		}
-		return null;
-	}
-	
 	
 	@Override
 	public Organization createOrgv2(Organization org) throws Exception {
@@ -353,12 +353,6 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		String timezone = (String) signupInfo.get("timezone");
 		Locale locale = (Locale) signupInfo.get("locale");
 
-		IAMUser userObj = IAMUtil.getUserBean().getFacilioUser(email, orgId, null);
-		if (userObj != null) {
-			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS,
-					"This user is not permitted to do this action.");
-		}
-
 		IAMUser user = new IAMUser();
 		user.setName(name);
 		user.setEmail(email);
@@ -366,8 +360,6 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		user.setTimezone(timezone);
 		user.setLanguage(locale.getLanguage());
 		user.setCountry(locale.getCountry());
-		//setting app domain for super admin
-		user.setDomainName("app");
 		if (phone != null) {
 			user.setPhone(phone);
 		}
@@ -377,17 +369,16 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		if (FacilioProperties.isDevelopment()) {
 			user.setUserVerified(true);
 		}
-		IAMUtil.getUserBean().signUpSuperAdminUserv2(orgId, user);
+	//	IAMUtil.getUserBean().signUpSuperAdminUserv2(orgId, user);
+		IAMUtil.getUserBean().signUpSuperAdminUserv3(orgId, user, 1, AccountUtil.getDefaultAppDomain() );
+		
 		return user;
 	}
 
 	@Override
 	public boolean rollbackSignUpOrg(long orgId, long superAdminUserId) throws Exception {
 		// TODO Auto-generated method stub
-		IAMUser user = new IAMUser();
-		user.setOrgId(orgId);
-		user.setUid(superAdminUserId);
-		if(IAMUtil.getUserBean().deleteUserv2(user)) {
+		if(IAMUtil.getUserBean().deleteUserv2(superAdminUserId, orgId, AccountUtil.getDefaultAppDomain())) {
 			return deleteSignedUpOrgv2(orgId);
 		}
 		return false;
@@ -412,4 +403,5 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		}
 		return false;
 	}
+
 }

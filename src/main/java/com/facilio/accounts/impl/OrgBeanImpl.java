@@ -11,14 +11,14 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.UserBean;
-import com.facilio.accounts.dto.IAMUser.AppType;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
-import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.accounts.util.UserUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -35,13 +35,13 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 
 public class OrgBeanImpl implements OrgBean {
 
@@ -68,40 +68,6 @@ public class OrgBeanImpl implements OrgBean {
 	@Override
 	public List<Organization> getOrgs() throws Exception {
 		return IAMOrgUtil.getOrgs();
-	}
-	
-	@Override
-	public Organization getPortalOrg(long portalId, AppType appType) throws Exception {
-		
-		PortalInfoContext portalInfo = getPortalInfo(portalId, true);
-		if (portalInfo == null) {
-			throw new IllegalArgumentException("Portal not found");
-		}
-		Organization org = getOrg(portalInfo.getOrgId());
-		if (org == null) {
-			throw new IllegalArgumentException("Organization not found");
-		}
-		org.setPortalId(portalId);
-
-			FileStore fs = FacilioFactory.getFileStoreFromOrg(org.getId());
-			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
-			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
-
-		if(appType == AppType.SERVICE_PORTAL) {
-	        if(portalInfo.getCustomDomain() != null) {
-	            org.setDomain(portalInfo.getCustomDomain()); 
-	        } else { 
-	            org.setDomain(org.getDomain() + "." + FacilioProperties.getConfig("portal.domain"));
-	        } 
-		}
-		else if(appType == AppType.TENANT_PORTAL) {
-			org.setDomain(org.getDomain() + ".faciliotenants.com");
-		}
-		else if(appType == AppType.VENDOR_PORTAL) {
-			org.setDomain(org.getDomain() + ".faciliovendors.com");
-		}
-	             
-	   return org;
 	}
 	
 	@Override
@@ -177,7 +143,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserProps(props, orgId, false);
+			UserUtil.setIAMUserPropsv3(props, orgId, false, null);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, true, false);
 				UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
@@ -209,7 +175,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserProps(props, orgId, false);
+			UserUtil.setIAMUserPropsv3(props, orgId, false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.USER.getValue()) {
@@ -226,7 +192,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
 		if (props != null && !props.isEmpty()) {
 			Map<Long, User> users = new HashMap<>();
-			UserUtil.setIAMUserProps(props, orgId, true);
+			UserUtil.setIAMUserPropsv3(props, orgId, true, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.USER.getValue()) {
@@ -294,7 +260,7 @@ public class OrgBeanImpl implements OrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, orgId, false);
+			UserUtil.setIAMUserPropsv3(props, orgId, false, AccountUtil.getDefaultAppDomain());
 			if(CollectionUtils.isNotEmpty(props)) {
 				return UserBeanImpl.createUserFromProps(props.get(0), true, false, false);
 			}
@@ -303,17 +269,6 @@ public class OrgBeanImpl implements OrgBean {
 	}
 	
 
-	public List getEnergyMeterList() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.CV_NAME, "all");
-		
-		FacilioChain getEnergyMeterListChain = FacilioChainFactory.getEnergyMeterListChain();
-		getEnergyMeterListChain.execute(context);
-		
-		return ((List<EnergyMeterContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
-	}
-		
 	public long getFeatureLicense() throws Exception{
 
 //    	String orgidString = String.valueOf(orgId);
@@ -373,7 +328,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, null);
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserProps(props, orgId, false);
+			UserUtil.setIAMUserPropsv3(props, orgId, false, null);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.REQUESTER.getValue()) {
@@ -397,6 +352,40 @@ public class OrgBeanImpl implements OrgBean {
 		// TODO Auto-generated method stub
 		copyAssetReadingCommand.insertAssetCopyValue(prop,module,orgId,assetId,timeDiff,fields , targetmodId);
 	} 
+	
+	@Override
+	public Organization getPortalOrg(long portalId, AppDomainType appType) throws Exception {
+		
+		PortalInfoContext portalInfo = getPortalInfo(portalId, true);
+		if (portalInfo == null) {
+			throw new IllegalArgumentException("Portal not found");
+		}
+		Organization org = getOrg(portalInfo.getOrgId());
+		if (org == null) {
+			throw new IllegalArgumentException("Organization not found");
+		}
+		org.setPortalId(portalId);
+
+			FileStore fs = FacilioFactory.getFileStoreFromOrg(org.getId());
+			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
+			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
+
+		if(appType == AppDomainType.SERVICE_PORTAL) {
+	        if(portalInfo.getCustomDomain() != null) {
+	            org.setDomain(portalInfo.getCustomDomain()); 
+	        } else { 
+	            org.setDomain(org.getDomain() + "." + FacilioProperties.getConfig("portal.domain"));
+	        } 
+		}
+		else if(appType == AppDomainType.TENANT_PORTAL) {
+			org.setDomain(org.getDomain() + ".faciliotenants.com");
+		}
+		else if(appType == AppDomainType.VENDOR_PORTAL) {
+			org.setDomain(org.getDomain() + ".faciliovendors.com");
+		}
+	             
+	   return org;
+	}
 	
 	
 }

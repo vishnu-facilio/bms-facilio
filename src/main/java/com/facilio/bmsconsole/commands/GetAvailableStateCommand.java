@@ -11,10 +11,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.dto.IAMUser.AppType;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.TransitionType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -92,13 +93,13 @@ public class GetAvailableStateCommand extends FacilioCommand {
 				continue;
 			}
 			
-			if(AccountUtil.getCurrentUser().getAppTypeEnum() == AppType.TENANT_PORTAL) {
+			if(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomainType.TENANT_PORTAL.getIndex()) {
 				if (!transition.isShowInTenantPortal()) {
 					iterator.remove();
 					continue;
 				}
 			}
-			else if (AccountUtil.getCurrentUser().getAppTypeEnum() == AppType.VENDOR_PORTAL) {
+			else if(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomainType.VENDOR_PORTAL.getIndex()) {
 				if (!transition.isShowInVendorPortal()) {
 					iterator.remove();
 					continue;

@@ -24,7 +24,7 @@ public class CreateAppSuperAdminCommand extends FacilioCommand{
 		if(FacilioProperties.isDevelopment()) {
 			user.setUserVerified(true);
 		}
-		AccountUtil.getUserBean().createUserEntry(orgId, user, true);
+		AccountUtil.getUserBean().createUserEntry(orgId, user, true, AccountUtil.getDefaultAppDomain());
 		return false;
 	}
 

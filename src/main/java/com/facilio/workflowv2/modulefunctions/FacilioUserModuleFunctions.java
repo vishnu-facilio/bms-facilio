@@ -63,7 +63,6 @@ public class FacilioUserModuleFunctions extends FacilioModuleFunctionImpl {
 			HttpServletRequest request = ServletActionContext.getRequest();
 			String value = FacilioCookie.getUserCookie(request, "fc.authtype");
 			user.setFacilioAuth("facilio".equals(value));
-			user.setDomainName("app");
 			
 			boolean emailVerificationNeeded = true;
 			

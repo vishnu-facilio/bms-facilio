@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.chargebee.internal.StringJoiner;
-import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -464,40 +463,6 @@ public class TenantsAPI {
 	}
 	
 
-	
-	public static void addTenantContact(User user, Long tenantId) throws Exception{
-		long orgid = AccountUtil.getCurrentOrg().getOrgId();
-		user.setOrgId(orgid);
-		user.setAppType(AppType.TENANT_PORTAL);
-		if(user.getEmail() == null || user.getEmail().isEmpty()) {
-			user.setEmail(user.getMobile());
-		}
-
-		try {
-			AccountUtil.getUserBean().inviteRequester(orgid, user, true, false);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-    
-		Map<String, Object> prop = new HashMap<>();
-		
-		prop.put("tenantId", tenantId);
-		prop.put("ouid", user.getId());
-		prop.put("orgId", user.getOrgId());
-				
-		
-		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();
-		insert.table(ModuleFactory.getTenantsuserModule().getTableName());
-		insert.fields(FieldFactory.getTenantsUserFields());
-		insert.addRecord(prop);
-
-		insert.save(); 
-
-		
-	}
-
-	
 	public static int updateTenantStatus(Long tenantId,int status) throws Exception{
         
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

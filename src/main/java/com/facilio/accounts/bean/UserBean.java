@@ -16,19 +16,17 @@ import org.json.simple.JSONObject;
 
 public interface UserBean {
 	
-	public void createUser(long orgId, User user) throws Exception;
+	public void createUser(long orgId, User user, int identifier, String appDomain) throws Exception;
 	
-//	public long inviteAdminConsoleUser(long orgId, User user) throws Exception;
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String appDomain, int identifier) throws Exception;
+
+	User verifyEmail(String token, String appDomain) throws Exception;
+
+	User validateUserInvite(String token, String appDomain) throws Exception;
+
+	public boolean resendInvite(long orgId, long userId, String appDomain) throws Exception;
 	
-	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError) throws Exception;
-
-	User verifyEmail(String token) throws Exception;
-
-	User validateUserInvite(String token) throws Exception;
-
-	public boolean resendInvite(long ouid) throws Exception;
-	
-	public boolean acceptInvite(String token, String password) throws Exception;
+	public boolean acceptInvite(String token, String password, String appDomain) throws Exception;
 	
 	public boolean updateUser(User user) throws Exception;
 	
@@ -36,15 +34,15 @@ public interface UserBean {
 	
 	public void removeUserMobileSetting(String mobileInstanceId) throws Exception;
 	
-	public boolean deleteUser(long ouid) throws Exception;
+	public boolean deleteUser(long orgId, long userId, String appDomain) throws Exception;
 
-	public boolean disableUser(long ouid) throws Exception;
+	public boolean disableUser(long orgId, long userId, String appDomain) throws Exception;
 	
-	public boolean enableUser(long ouid) throws Exception;
+	public boolean enableUser(long orgId, long userId, String appDomain) throws Exception;
 	
 	public User getUser(long ouid, boolean fetchDeleted) throws Exception;
 	
-	public User getUser(long orgId, long userId) throws Exception;
+	public User getUser(long orgId, long userId, String appDomain) throws Exception;
 
 	public User getUserInternal(long ouid, boolean withRole) throws Exception;
 	
@@ -62,17 +60,15 @@ public interface UserBean {
 
 	public User getUser(long orgId, String email) throws Exception;
 	
-	public List<Organization> getOrgs(long uid) throws Exception;
+	public List<Organization> getOrgs(long uid, String appDomain) throws Exception;
 	
-	public Organization getDefaultOrg(long uid) throws Exception;
+	public Organization getDefaultOrg(long uid, String appDomain) throws Exception;
 	
 	public String updateUserPhoto(long uid, User user) throws Exception;
 
-    public User getUser(String email, String portalDomain) throws Exception;
+    public User getUser(String email, String appDomain) throws Exception;
     
     public User getUser(String email) throws Exception;
-    
-    public User getPortalUser(long uid) throws Exception;
     
     public String generatePermalinkForURL(String url, User user) throws Exception;
 
@@ -89,15 +85,15 @@ public interface UserBean {
 
 	public HashMap<Long, Set<Long>> getUserSites(List<Long> users) throws Exception;
 	
-	public boolean sendResetPasswordLinkv2(User user) throws Exception;
+	public boolean sendResetPasswordLinkv2(User user, String appDomain) throws Exception;
 	
 	public boolean verifyUser(long userId) throws Exception;
 
 	public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception;
 
-	public void createUserEntry(long orgId, User user, boolean isEmailVerificationNeeded) throws Exception;
+	public void createUserEntry(long orgId, User user, boolean isEmailVerificationNeeded, String appDomain) throws Exception;
 
-	public boolean setDefaultOrg(long orgId, long userId) throws Exception;
+	public boolean setDefaultOrg(long orgId, long userId, String appDomain) throws Exception;
 
 	
 }

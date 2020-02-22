@@ -346,6 +346,8 @@ public class LoginAction extends FacilioAction {
 	public String currentAccount() throws Exception {
 		
 		HashMap<String, Object> appProps = new HashMap<>();
+		HttpServletRequest request = ServletActionContext.getRequest(); 
+		
 		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
 		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
 		appProps.put("operators", CommonCommandUtil.getOperators());
@@ -364,7 +366,7 @@ public class LoginAction extends FacilioAction {
 //		List<Group> groups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
-		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid(), request.getServerName());
 		Map<Long, Set<Long>> userSites = new HashMap<>();
 		if (users != null) {
 			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
@@ -447,14 +449,15 @@ public class LoginAction extends FacilioAction {
 		HashMap<String, Object> appProps = new HashMap<>();
 		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
 		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
-
+		HttpServletRequest request = ServletActionContext.getRequest(); 
+		
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
-		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid(), request.getServerName());
 
 		Map<String, Object> data = new HashMap<>();
 		data.put("users", users);
@@ -853,7 +856,8 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String getOrgs() throws Exception {
-		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
+		HttpServletRequest request = ServletActionContext.getRequest(); 
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid(), request.getServerName());
 		setResult("Orgs", orgs);
 		return SUCCESS;
 	}
@@ -891,7 +895,9 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String validatePermalink() throws Exception {
-		IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(getPermalink(), null);
+		HttpServletRequest request = ServletActionContext.getRequest();
+		
+		IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(getPermalink(), null, request.getServerName());
 		if(iamAccount != null) {
 			Account permalinkAccount = AccountUtil.getUserBean(iamAccount.getOrg().getOrgId()).getPermalinkAccount(iamAccount);
 			if(permalinkAccount != null) {

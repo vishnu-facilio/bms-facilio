@@ -101,35 +101,32 @@ public class ContactsAPI {
 	
 	public static void updatePortalUserAccess(ContactsContext contact, boolean updateContactRecord) throws Exception {
 		
-		if(contact != null && contact.getRequester() != null && contact.getRequester().getOuid() > 0) {
-			if(!contact.isPortalAccessNeeded()) {
-				AccountUtil.getUserBean().disableUser(contact.getRequester().getOuid());
-			}
-			else {
-				User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), contact.getRequester().getUid());
-				if(user != null) {
-					AccountUtil.getUserBean().enableUser(contact.getRequester().getOuid());
-					if(!user.isUserVerified() || !user.isInviteAcceptStatus() ) {
-						AccountUtil.getUserBean().resendInvite(user.getOuid());
-					}
-				}
-				else {
-					addUserAsRequester(contact);
-				}
-			}
-		}
-		else {
-			if(contact.getIsPortalAccessNeeded()) {
-				addUserAsRequester(contact);
-			}
-		}
-		if(updateContactRecord) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
-			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.CONTACT);
-		
-			RecordAPI.updateRecord(contact, module, fields);
-		}
+//		if(contact != null && contact.getRequester() != null && contact.getRequester().getOuid() > 0) {
+//			if(!contact.isPortalAccessNeeded()) {
+//				AccountUtil.getUserBean().disableUser(contact.getRequester().getOuid());
+//			}
+//			else {
+//				User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), contact.getRequester().getUid());
+//				if(!user.isUserVerified() || !user.isInviteAcceptStatus() ) {
+//					AccountUtil.getUserBean().resendInvite(user.getOuid());
+//				}
+//				else {
+//					AccountUtil.getUserBean().enableUser(contact.getRequester().getOuid());
+//				}
+//			}
+//		}
+//		else {
+//			if(contact.getIsPortalAccessNeeded()) {
+//				addUserAsRequester(contact);
+//			}
+//		}
+//		if(updateContactRecord) {
+//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTACT);
+//			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.CONTACT);
+//		
+//			RecordAPI.updateRecord(contact, module, fields);
+//		}
 		
 	}
 	
@@ -141,20 +138,18 @@ public class ContactsAPI {
 		user.setUserVerified(false);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
-
-		if(contact.getContactType() == 1) {
-			user.setAppType(2);
-		}
-		else if(contact.getContactType() == 2) {
-			user.setAppType(3);
-		}
-		else if(contact.getContactType() == 3) {
-			user.setAppType(1);
-		} else if(contact.getContactType() == 4) {
-			user.setAppType(4);
-		}
-		long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false);
-		user.setId(userId);
+//
+//		if(contact.getContactType() == 1) {
+//			user.setAppType(2);
+//		}
+//		else if(contact.getContactType() == 2) {
+//			user.setAppType(3);
+//		}
+//		else if(contact.getContactType() == 3) {
+//			user.setAppType(1);
+//		}
+//		long userId = AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, AccountUtil.getDefaultAppDomain(), 1);
+//		user.setId(userId);
 		contact.setRequester(user);
 	}
 	
@@ -275,10 +270,10 @@ public class ContactsAPI {
 	}
 
 	public static void deleteContactUser(long contactId) throws Exception {
-		ContactsContext contact = (ContactsContext) RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, contactId);
-		if(contact != null && contact.getRequester() != null && contact.getRequester().getOuid() > 0) {
-			AccountUtil.getUserBean().deleteUser(contact.getRequester().getOuid());
-		}
+//		ContactsContext contact = (ContactsContext) RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, contactId);
+//		if(contact != null && contact.getRequester() != null && contact.getRequester().getOuid() > 0) {
+//			AccountUtil.getUserBean().deleteUser(contact.getRequester().getOuid());
+//		}
 	}
 	
 	public static ContactsContext getContactsIdForUser(Long userId) throws Exception {

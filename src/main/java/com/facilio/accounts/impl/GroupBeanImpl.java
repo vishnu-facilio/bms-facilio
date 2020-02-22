@@ -201,7 +201,7 @@ public class GroupBeanImpl implements GroupBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<GroupMember> members = new ArrayList<>();
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
+			UserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			for(Map<String, Object> prop : props) {
 				members.add(FieldUtil.getAsBeanFromMap(prop, GroupMember.class));
 			}

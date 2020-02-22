@@ -852,36 +852,12 @@ public class AccountConstants {
 		license.setModule(module);
 		fields.add(license);
 
-		/*
-		 * FacilioField otp = new FacilioField(); otp.setName("otp");
-		 * otp.setDataType(FieldType.STRING); otp.setColumnName("OTP");
-		 * otp.setModule(module); fields.add(otp);
-		 * 
-		 * FacilioField otp_time = new FacilioField(); otp_time.setName("otpTime");
-		 * otp_time.setDataType(FieldType.NUMBER); otp_time.setColumnName("OTP_TIME");
-		 * otp_time.setModule(module); fields.add(otp_time);
-		 */
-
 		FacilioField invitedTime = new FacilioField();
 		invitedTime.setName("invitedTime");
 		invitedTime.setDataType(FieldType.NUMBER);
 		invitedTime.setColumnName("INVITEDTIME");
 		invitedTime.setModule(module);
 		fields.add(invitedTime);
-
-//		FacilioField isDefaultOrg = new FacilioField();
-//		isDefaultOrg.setName("isDefaultOrg");
-//		isDefaultOrg.setDataType(FieldType.BOOLEAN);
-//		isDefaultOrg.setColumnName("ISDEFAULT");
-//		isDefaultOrg.setModule(module);
-//		fields.add(isDefaultOrg);
-//
-//		FacilioField userStatus = new FacilioField();
-//		userStatus.setName("userStatus");
-//		userStatus.setDataType(FieldType.BOOLEAN);
-//		userStatus.setColumnName("USER_STATUS");
-//		userStatus.setModule(module);
-//		fields.add(userStatus);
 
 		FacilioField inviteAcceptStatus = new FacilioField();
 		inviteAcceptStatus.setName("inviteAcceptStatus");
@@ -917,6 +893,20 @@ public class AccountConstants {
 		iamOrgUserIdField.setColumnName("IAM_ORG_USERID");
 		iamOrgUserIdField.setModule(module);
 		fields.add(iamOrgUserIdField);
+		
+		FacilioField peopleId = new FacilioField();
+		peopleId.setName("peopleId");
+		peopleId.setDataType(FieldType.NUMBER);
+		peopleId.setColumnName("PEOPLE_ID");
+		peopleId.setModule(module);
+		fields.add(peopleId);
+		
+		FacilioField userId = new FacilioField();
+		userId.setName("userId");
+		userId.setDataType(FieldType.NUMBER);
+		userId.setColumnName("USERID");
+		userId.setModule(module);
+		fields.add(userId);
 
 
 		return fields;

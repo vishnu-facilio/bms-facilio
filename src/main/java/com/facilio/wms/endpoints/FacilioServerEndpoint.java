@@ -23,6 +23,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.IAMAccount;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.screen.context.RemoteScreenContext;
@@ -132,7 +133,7 @@ public class FacilioServerEndpoint
 			}
 			
 			if (idToken != null) {
-				IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(idToken, false, null, "app", null, null);
+				IAMAccount iamAccount = IAMUserUtil.verifiyFacilioTokenv3(idToken, false, null, AccountUtil.getDefaultAppDomain(), null);
 				if (iamAccount == null) {
 					throw new Exception("Invalid auth!");
 				}

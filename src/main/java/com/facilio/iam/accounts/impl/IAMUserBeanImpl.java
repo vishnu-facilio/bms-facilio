@@ -32,16 +32,14 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.AccountUserApp;
 import com.facilio.accounts.dto.AccountUserAppOrg;
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
-import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.EncryptionUtil;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.OrgInfoKeys;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -59,6 +57,7 @@ import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -77,35 +76,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	private static Logger log = LogManager.getLogger(IAMUserBeanImpl.class.getName());
 	public static final String JWT_DELIMITER = "#";
 
-
-	
-	private long addUserEntryv2(IAMUser user, boolean emailVerificationRequired) throws Exception {
-
-		if (StringUtils.isEmpty(user.getDomainName())) {
-			user.setDomainName("app");
-		}
-		
-		IAMUser existingUser = getFacilioUser(user.getEmail(), user.getDomainName());
-		if(existingUser == null) {
-			List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
-			fields.add(IAMAccountConstants.getUserPasswordField());
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(IAMAccountConstants.getAccountsUserModule().getTableName())
-					.fields(fields);
-	
-			Map<String, Object> props = FieldUtil.getAsProperties(user);
-	
-			insertBuilder.addRecord(props);
-			insertBuilder.save();
-			long userId = (Long) props.get("id");
-			user.setUid(userId);
-			
-			return userId;
-		}
-		return existingUser.getUid();
-	}
-
-	
 	public boolean updateUserv2(IAMUser user, List<FacilioField> fields) throws Exception {
 		return updateUserEntryv2(user, fields);
 	}
@@ -124,47 +94,23 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 
-	private long addUserv2(long orgId, IAMUser user, boolean emailRegRequired) throws Exception {
-
-		IAMUser orgUser = getFacilioUser(user.getEmail(), orgId, user.getDomainName());
-		if (orgUser != null) {
-			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
-		}
-		else {
-			long uid = addUserEntryv2(user, emailRegRequired);
-			user.setUid(uid);
-		}
-		IAMUser userExistsForAnyOrg = getFacilioUserFromUserId(user.getUid(), null);
-		if(userExistsForAnyOrg != null) {
-			user.setDefaultOrg(false);
-		}
-		else {
-			user.setDefaultOrg(true);
-		}
-		user.setUserStatus(true);
-		user.setOrgId(orgId);
-		long ouid = addToORGUsersv2(user);
-		return ouid;
+	@Override
+	public long signUpSuperAdminUserv3(long orgId, IAMUser user, int identifier, String appDomain) throws Exception {
+		return  addUserv3(orgId, user, identifier, appDomain);
 	}
 
 	@Override
-	public long signUpSuperAdminUserv2(long orgId, IAMUser user) throws Exception {
-		return  addUserv2(orgId, user, true);
+	public long addUserv3(long orgId, IAMUser user, int identifier, String appDomain) throws Exception {
+		return  addUserV3(orgId, user, false, identifier, appDomain);
 	}
 
-	@Override
-	public long addUserv2(long orgId, IAMUser user) throws Exception {
-	//	return  addUserv2(orgId, user, false);
-		return  addUserV3(orgId, user, false);
-	}
-
-	public IAMUser getUserFromToken(String userToken) throws Exception{
+	public IAMUser getUserFromToken(String userToken, String appDomain) throws Exception{
 		String[] tokenPortal = userToken.split("&");
 		String token = EncryptionUtil.decode(tokenPortal[0]);
 		String[] userObj = token.split(USER_TOKEN_REGEX);
 		IAMUser user = null;
 		if(userObj.length == 4) {
-			user = getFacilioUser(Long.parseLong(userObj[0]), Long.parseLong(userObj[1]));
+			user = getFacilioUser(Long.parseLong(userObj[0]), Long.parseLong(userObj[1]), appDomain, true);
 		}
 		return user;
 	}
@@ -174,7 +120,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		IAMUserBeanImpl us = new IAMUserBeanImpl();
 		IAMUser s;
 		try {
-			s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=");System.out.println(s.getEmail());
+			s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=", AccountUtil.getDefaultAppDomain());System.out.println(s.getEmail());
 			System.out.println(s.getUid());
 //			System.out.println(s.getOuid());
 //			System.out.println(s.getPortalId());
@@ -190,8 +136,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	
 	@Override
-	public IAMUser verifyEmailv2(String token) throws Exception{
-		IAMUser user = getUserFromToken(token);
+	public IAMUser verifyEmailv2(String token, String appDomain) throws Exception{
+		IAMUser user = getUserFromToken(token, appDomain);
 
 		if(user != null) {
 //			if((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
@@ -212,8 +158,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public IAMUser resetPasswordv2(String token, String password) throws Exception{
-		IAMUser user = getUserFromToken(token);
+	public IAMUser resetPasswordv2(String token, String password, String appDomain) throws Exception{
+		IAMUser user = getUserFromToken(token, appDomain);
 
 		if(user != null) {
 			long orgId=user.getOrgId();
@@ -237,46 +183,53 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public IAMUser validateUserInvitev2(String token) throws  Exception{
-		IAMUser user = getUserFromToken(token);
+	public IAMUser validateUserInvitev2(String token, String appDomain) throws  Exception{
+		IAMUser user = getUserFromToken(token, appDomain);
 		return user;
 	}
 
 	@Override
-	public IAMUser acceptInvitev2(String token, String password) throws Exception {
-		IAMUser user = getUserFromToken(token);
+	public IAMUser acceptInvitev2(String token, String password, String appDomain) throws Exception {
+		IAMUser user = getUserFromToken(token, appDomain);
 		user.setPassword(password);
 		long orgId=(user.getOrgId());
-		if(IAMUtil.getTransactionalUserBean().acceptUserv2(user)) {
+		if(StringUtils.isEmpty(appDomain)) {
+			appDomain = AccountUtil.getDefaultAppDomain();
+		}
+		if(IAMUtil.getTransactionalUserBean().acceptUserv2(user, appDomain)) {
 			return user;
 		}
 		return null;
 	}
 
-	public boolean acceptUserv2(IAMUser user) throws Exception {
+	public boolean acceptUserv2(IAMUser user, String appDomain) throws Exception {
 		if(user != null && user.isActive()) {
 			FacilioField isDefaultOrg = new FacilioField();
 			isDefaultOrg.setName("isDefaultOrg");
 			isDefaultOrg.setDataType(FieldType.BOOLEAN);
 			isDefaultOrg.setColumnName("ISDEFAULT");
-			isDefaultOrg.setModule(IAMAccountConstants.getAccountsOrgUserModule());
+			isDefaultOrg.setModule(IAMAccountConstants.getAccountUserAppOrgsModule());
 
 			FacilioField userStatus = new FacilioField();
 			userStatus.setName("userStatus");
 			userStatus.setDataType(FieldType.BOOLEAN);
 			userStatus.setColumnName("USER_STATUS");
-			userStatus.setModule(IAMAccountConstants.getAccountsOrgUserModule());
+			userStatus.setModule(IAMAccountConstants.getAccountUserAppOrgsModule());
 
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(userStatus);
 			fields.add(isDefaultOrg);
 
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
-					.fields(fields);
-			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
-			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(user.getOrgId()), NumberOperators.EQUALS));
+			GenericUpdateRecordBuilder updateBuilder = getUpdateBuilder(fields);
 			
+			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ORGID", "orgId", String.valueOf(user.getOrgId()), NumberOperators.EQUALS));
+			if(StringUtils.isEmpty(appDomain)) {
+				appDomain = AccountUtil.getDefaultAppDomain();
+			}
+			AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+				
 			Map<String, Object> props = new HashMap<>();
 			//props.put("isDefaultOrg", true);
 			props.put("userStatus", true);
@@ -300,30 +253,32 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public boolean deleteUserv2(IAMUser user) throws Exception {
-		
-		IAMUser userData = getFacilioUser(user.getOrgId(), user.getUid());
-		if(userData != null) {
+	public boolean deleteUserv2(long userId, long orgId, String appDomain) throws Exception {
+		IAMUser user = getFacilioUser(orgId, userId, appDomain, false);
+		if(user != null) {
 			FacilioField deletedTime = new FacilioField();
 			deletedTime.setName("deletedTime");
 			deletedTime.setDataType(FieldType.NUMBER);
 			deletedTime.setColumnName("DELETED_TIME");
-			deletedTime.setModule(IAMAccountConstants.getAccountsOrgUserModule());
+			deletedTime.setModule(IAMAccountConstants.getAccountUserAppOrgsModule());
 			
 			if(user.isDefaultOrg()) {
-				updateDefaultOrgForUser(user.getUid(), user.getOrgId());
+				updateDefaultOrgForUser(user.getUid(), user.getOrgId(), appDomain);
 			}
 			
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(deletedTime);
 			
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
-					.fields(fields);
+			GenericUpdateRecordBuilder updateBuilder = getUpdateBuilder(fields);
 			
-			updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userData.getUid()), NumberOperators.EQUALS));
-			updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(userData.getOrgId()), NumberOperators.EQUALS));
+			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(user.getOrgId()), NumberOperators.EQUALS));
 			updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+			
+			if(StringUtils.isNotEmpty(appDomain)) {
+				AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+				updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+			}	
 			
 			Map<String, Object> props = new HashMap<>();
 			props.put("deletedTime", System.currentTimeMillis());
@@ -339,44 +294,48 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 	}
 
-	private void updateDefaultOrgForUser(long uId, long currentOrg) throws Exception {
-		List<IAMUser> orgUsers = getFacilioOrgUserList(uId);
-		if(CollectionUtils.isNotEmpty(orgUsers)) {
-			for(IAMUser u : orgUsers) {
-				if(u.getOrgId() != currentOrg) {
-					setDefaultOrgv2(orgUsers.get(0).getUid(), u.getOrgId());
+	private void updateDefaultOrgForUser(long uId, long currentOrg, String appDomain) throws Exception {
+		List<Organization> orgs = getOrgsv2(uId, appDomain);
+		if(CollectionUtils.isNotEmpty(orgs)) {
+			for(Organization org: orgs) {
+				if(org.getOrgId() != currentOrg) {
+					setDefaultOrgv2(uId, org.getOrgId(), appDomain);
 					break;
 				}
 			}
 		}
-		
 	}
+	
 	@Override
-	public boolean disableUserv2(long orgId, long uId) throws Exception {
+	public boolean disableUserv2(long orgId, long uId, String appDomain) throws Exception {
 		
-		IAMUser user = getFacilioUser(orgId, uId);
+		IAMUser user = getFacilioUser(orgId, uId, appDomain, true);
 		if(user == null) {
 			return false;
 		}
 		if(user.isDefaultOrg()) {
-			updateDefaultOrgForUser(user.getUid(), user.getOrgId());
+			updateDefaultOrgForUser(user.getUid(), user.getOrgId(), appDomain);
 		}
 		FacilioField userStatus = new FacilioField();
 		userStatus.setName("userStatus");
 		userStatus.setDataType(FieldType.BOOLEAN);
 		userStatus.setColumnName("USER_STATUS");
-		userStatus.setModule(IAMAccountConstants.getAccountsOrgUserModule());
+		userStatus.setModule(IAMAccountConstants.getAccountUserAppOrgsModule());
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(userStatus);
 		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(fields);
-		
+		GenericUpdateRecordBuilder updateBuilder = getUpdateBuilder(fields);
 		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.USERID", "userId", String.valueOf(uId), NumberOperators.EQUALS));
+		
+		if(StringUtils.isEmpty(appDomain)) {
+			appDomain = AccountUtil.getDefaultAppDomain();
+		}
+		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+		
 		
 		Map<String, Object> props = new HashMap<>();
 		props.put("userStatus", false);
@@ -387,26 +346,43 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		return false;
 	}
+	
+	private GenericUpdateRecordBuilder getUpdateBuilder(List<FacilioField> fields) {
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(IAMAccountConstants.getAccountUserAppOrgsModule().getTableName())
+				.innerJoin("Account_User_Apps")
+				.on("Account_User_Apps.ID = Account_User_Apps_Orgs.ACCOUNT_USER_APPID")
+				.innerJoin("Account_Users")
+				.on("Account_Users.USERID = Account_User_Apps.USERID")
+				.fields(fields);
+		
+		return updateBuilder;
+	}
 
 	@Override
-	public boolean enableUserv2(long orgId, long uid) throws Exception {
+	public boolean enableUserv2(long orgId, long uid, String appDomain) throws Exception {
 		
 		FacilioField userStatus = new FacilioField();
 		userStatus.setName("userStatus");
 		userStatus.setDataType(FieldType.BOOLEAN);
 		userStatus.setColumnName("USER_STATUS");
-		userStatus.setModule(IAMAccountConstants.getAccountsOrgUserModule());
+		userStatus.setModule(IAMAccountConstants.getAccountUserAppOrgsModule());
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(userStatus);
 		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(fields);
+		GenericUpdateRecordBuilder updateBuilder = getUpdateBuilder(fields);
 		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
-	
+		updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		
+		if(StringUtils.isEmpty(appDomain)) {
+			appDomain = AccountUtil.getDefaultAppDomain();
+		}
+		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+		
 		
 		Map<String, Object> props = new HashMap<>();
 		props.put("userStatus", true);
@@ -419,38 +395,39 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 	@Override
-	public boolean setDefaultOrgv2(long uid, long orgId) throws Exception {
+	public boolean setDefaultOrgv2(long uid, long orgId, String appDomain) throws Exception {
 		
 		FacilioField isDefaultOrg = new FacilioField();
 		isDefaultOrg.setName("isDefaultOrg");
 		isDefaultOrg.setDataType(FieldType.BOOLEAN);
 		isDefaultOrg.setColumnName("ISDEFAULT");
-		isDefaultOrg.setModule(IAMAccountConstants.getAccountsOrgUserModule());
+		isDefaultOrg.setModule(IAMAccountConstants.getAccountUserAppOrgsModule());
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(isDefaultOrg);
 		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(fields);
+		GenericUpdateRecordBuilder updateBuilder = getUpdateBuilder(fields);
 		
 		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		
+		if(StringUtils.isEmpty(appDomain)) {
+			appDomain = AccountUtil.getDefaultAppDomain();
+		}
+		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
 		
 		Map<String, Object> props = new HashMap<>();
 		props.put("isDefaultOrg", false);
 		
 		updateBuilder.update(props);
 		
-		GenericUpdateRecordBuilder updateBuilder1 = new GenericUpdateRecordBuilder()
-				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(fields)
-				;
-		
+		GenericUpdateRecordBuilder updateBuilder1 = getUpdateBuilder(fields);
 		updateBuilder1.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		updateBuilder1.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		updateBuilder1.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
-	
+		updateBuilder1.andCondition(CriteriaAPI.getCondition("Account_User_Apps.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		updateBuilder1.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+		
 		Map<String, Object> props1 = new HashMap<>();
 		props1.put("isDefaultOrg", true);
 		
@@ -459,50 +436,26 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public IAMUser getFacilioUser(long orgId, long userId) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null,false);
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedtime", String.valueOf(-1), NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true);
-			return user;
-		}
-		return null;
-	}
-	
-	@Override
-	public IAMUser getFacilioUser(long orgId, String email) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null,false);
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("EMAIL", "email", email, StringOperators.IS));
-		
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true);
-			return user;
-		}
-		return null;
-	}
-	
-	@Override
-	public List<Organization> getOrgsv2(long uid) throws Exception {
+	public List<Organization> getOrgsv2(long uid, String appDomain) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getOrgFields())
-				.table("Organizations")
-				.innerJoin("Account_ORG_Users")
-				.on("Organizations.ORGID = Account_ORG_Users.ORGID");
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+   				.select(IAMAccountConstants.getOrgFields())
+   				.table("Organizations")
+   				.innerJoin("Account_User_Apps_Orgs")
+   				.on("Organizations.ORGID = Account_User_Apps_Orgs.ORGID")
+   				.innerJoin("Account_User_Apps")
+   				.on("Account_User_Apps.ID = Account_User_Apps_Orgs.ACCOUNT_USER_APPID");
+   			
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
+		
+		if(StringUtils.isEmpty(appDomain)) {
+			appDomain = AccountUtil.getDefaultAppDomain();
+		}
+		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -515,29 +468,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return null;
 	}
 
-	@Override
-	public Organization getDefaultOrgv2(long uid) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getOrgFields())
-				.table("Organizations")
-				.innerJoin("Account_ORG_Users")
-				.on("Organizations.ORGID = Account_ORG_Users.ORGID");
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
-		
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			return IAMOrgUtil.createOrgFromProps(props.get(0));
-		}
-		return null;
-	}
-	
 	@Override
 	public String updateUserPhoto(long uid, User user) throws Exception {
 		
@@ -671,73 +601,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return null;
 	
 	}
-	@Override
-	public IAMAccount verifyUserSessionv2(String uId, String token, String orgDomain, String userType, AppType appType) throws Exception {		
-		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uId);
-		if (sessions == null) {
-			sessions = new ArrayList<>();
-		}
-		for (Map<String, Object> session : sessions) {
-			String sessionToken = (String) session.get("token");
-			if (Objects.equals(sessionToken, token)) {
-				IAMAccount account = getAccount((long) session.get("uid"), orgDomain);
-				if(account != null) {
-					account.setUserSessionId((long) session.get("id"));
-				}
-				return account;
-			}
-		}
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getUserSessionFields())
-				.table("Account_Users")
-				.innerJoin("UserSessions")
-				.on("Account_Users.USERID = UserSessions.USERID");
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", uId, StringOperators.IS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
-		
-		if(appType != null && userType != null && !userType.equals("mobile")) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.APP_TYPE", "appType", String.valueOf(appType.getIndex()) , NumberOperators.EQUALS));
-		}
-		
 	
-		Map<String, Object> props = selectBuilder.fetchFirst();
-		if (MapUtils.isNotEmpty(props)) {
-			sessions.add(props);
-			LRUCache.getUserSessionCache().put(uId, sessions);
-			IAMAccount account = getAccount((long) props.get("uid"), orgDomain);
-			if(account != null && account.getUser() != null) {
-				account.setUserSessionId((long)props.get("id"));
-			}
-			return account;
-		}
-		return null;
-		
-	}
-	
-	@Override
-	public IAMAccount getAccount(long userId, String orgDomain) throws Exception {
-		IAMUser user = getFacilioUserFromUserId(userId, orgDomain);
-		if (user == null) {
-			throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "IAMUser doesn't exists in the current Org");
-		}
-		Organization org = IAMUtil.getOrgBean().getOrgv2(user.getOrgId());
-		IAMAccount account = new IAMAccount(org, user);
-		return account;
-	}
-	
-	private IAMAccount getAccount(String email, String portalDomain) throws Exception {
-		IAMUser user = getFacilioUser(email, portalDomain);
-		if (user == null) {
-			throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "IAMUser doesn't exists in the current Org");
-		}
-		Organization org = IAMUtil.getOrgBean().getOrgv2(user.getOrgId());
-		IAMAccount account = new IAMAccount(org, user);
-		return account;
-	}
-
 	@Override
 	public void clearUserSessionv2(long uid, String email, String token) throws Exception {
 
@@ -765,13 +629,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 	}
 	
-	static IAMUser createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace) throws Exception {
+	@Override
+	public IAMUser createUserFromProps(Map<String, Object> prop) throws Exception {
 		IAMUser user = FieldUtil.getAsBeanFromMap(prop, IAMUser.class);
 		if (user.getPhotoId() > 0) {
 			FileStore fs = FacilioFactory.getFileStoreFromOrg(user.getOrgId(), -1);
 			user.setAvatarUrl(fs.newPreviewFileUrl("user", user.getPhotoId()));
-//			user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
 		}
+		if(prop.get("domain") != null && StringUtils.isNotEmpty((String)prop.get("domain"))){
+			AppDomain appDomainObj = getAppDomain((String)prop.get("domain"));
+			user.setAppDomain(appDomainObj);
+		}
+
+
 		return user;
 	}
 
@@ -858,33 +728,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
     }
 
 	
-	private long addToORGUsersv2(IAMUser user) throws Exception {
-		
-		if(user.getUid() > 0) {
-			IAMUser userExistsInOrg = getFacilioUser(user.getOrgId(), user.getUid());
-			if(userExistsInOrg != null) {
-				throw new AccountException(ErrorCode.USER_ALREADY_EXISTS_IN_ORG, "The user already exist in thie organization");
-			}
-		}
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(IAMAccountConstants.getAccountsOrgUserFields());
-		
-		Map<String, Object> props = FieldUtil.getAsProperties(user);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID, props.get("id"));
-		user.setIamOrgUserId((Long)props.get("id"));
-//		user.setOuid((Long)props.get("id"));
-		return (Long)props.get("id");
-	}
-	
 	@Override
-	public String getEncodedTokenv2(IAMUser user) throws Exception {
-		IAMUser iamUser = getFacilioUser(user.getOrgId(), user.getUid());
+	public String getEncodedTokenv2(IAMUser user, String appDomain) throws Exception {
+		IAMUser iamUser = getFacilioUser(user.getOrgId(), user.getUid(), appDomain, true);
 		if(iamUser != null) {
 			return EncryptionUtil.encode(iamUser.getOrgId()+ USER_TOKEN_REGEX + iamUser.getUid()+ USER_TOKEN_REGEX + iamUser.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
 		}
@@ -892,168 +738,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	
-	private GenericSelectRecordBuilder getFacilioUserBuilder(String portalDomain, boolean includePortal) {
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(IAMAccountConstants.getAccountsUserFields());
-		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
-		fields.add(IAMAccountConstants.getOrgIdField(IAMAccountConstants.getOrgModule()));
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Account_Users")
-				.innerJoin("Account_ORG_Users")
-					.on("Account_Users.USERID = Account_ORG_Users.USERID")
-				.innerJoin("Organizations")
-					.on("Account_ORG_Users.ORGID=Organizations.ORGID");
-
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
-		
-		if (includePortal) {
-			if (StringUtils.isEmpty(portalDomain)) {
-				portalDomain = "app";
-			}
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "portalDomain", portalDomain, StringOperators.IS));
-			
-		}
-		
-		return selectBuilder;
-	}
-	
-	public IAMUser getFacilioUserFromUserId(long userId, String orgDomain) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null, false);
-		Criteria userEmailCriteria = new Criteria();
-		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
-		selectBuilder.andCriteria(userEmailCriteria);
-		
-		if (!StringUtils.isEmpty(orgDomain)) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.FACILIODOMAINNAME", "facilioDomainName", orgDomain, StringOperators.IS));
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-			
-		} 
-		else {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
-		}
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true);
-			return user;
-		}
-		return null;
-	}
-	
-	
-	private List<IAMUser> getFacilioOrgUserList(long userId) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null, false);
-		Criteria userEmailCriteria = new Criteria();
-		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
-		selectBuilder.andCriteria(userEmailCriteria);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		List<IAMUser> userList = new ArrayList<IAMUser>();
-		if (props != null && !props.isEmpty()) {
-			for(Map<String, Object> user : props) {
-				userList.add(createUserFromProps(user, true, true));
-			}
-		return userList;	
-		}
-		return null;
-	}
-	
 	@Override
-	public IAMUser getFacilioUser(String email, String orgDomain, String portalDomain) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(portalDomain, true);
-		Criteria userEmailCriteria = new Criteria();
-		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
-		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", email, StringOperators.IS));
-		selectBuilder.andCriteria(userEmailCriteria);
-		
-		if (!StringUtils.isEmpty(orgDomain)) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.FACILIODOMAINNAME", "facilioDomainName", orgDomain, StringOperators.IS));
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-			
-		} 
-		else {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
-		}
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true);
-			return user;
-		}
-		return null;
-	}
-
-	@Override
-	public IAMUser getFacilioUser(String email, long orgId, String portalDomain) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(portalDomain, true);
-		Criteria userEmailCriteria = new Criteria();
-		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
-		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", email, StringOperators.IS));
-		selectBuilder.andCriteria(userEmailCriteria);
-		
-		if (orgId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-			
-		} 
-		else {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
-		}
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
-		
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true);
-			return user;
-		}
-		return null;
-	}
-
-	@Override
-	public IAMUser getFacilioUser(String email) throws Exception {
-		// TODO Auto-generated method stub
-		return getFacilioUser(email, -1, null);
-	}
-
-	@Override
-	public IAMUser getFacilioUser(String email, String portalDomain) throws Exception {
-		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(IAMAccountConstants.getAccountsUserFields());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Account_Users");
-		Criteria userEmailCriteria = new Criteria();
-		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
-		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", email, StringOperators.IS));
-			
-		selectBuilder.andCriteria(userEmailCriteria);
-		if (StringUtils.isEmpty(portalDomain)) {
-			portalDomain = "app";
-		}
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "portalDomain", portalDomain, StringOperators.IS));
-	
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true);
-			return user;
-		}
-		return null;
-	}
-
-
-	@Override
-	public IAMAccount getPermalinkAccount(String token, List<String> urls) throws Exception {
+	public IAMAccount getPermalinkAccount(String token, List<String> urls, String appDomain) throws Exception {
 		// TODO Auto-generated method stub
 		if(verifyPermalinkForURL(token, urls)) {
 			DecodedJWT decodedjwt = validateJWT(token, "auth0");
@@ -1068,196 +754,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			long orgId = Long.parseLong(tokens[0]);
 			long uid = Long.parseLong(tokens[1]);
 			
-			IAMAccount currentAccount = new IAMAccount(IAMUtil.getOrgBean().getOrgv2(orgId), getFacilioUser(orgId, uid));
+			IAMAccount currentAccount = new IAMAccount(IAMUtil.getOrgBean().getOrgv2(orgId), getFacilioUser(orgId, uid, appDomain, true));
 			return currentAccount;
 		}
 		return null;
 	}
 
 
-	@Override
-	public IAMAccount verifyUserSessionUsingEmail(String email, String token, String portalDomain, String userType, AppType appType) throws Exception {
-		String cacheKey = email + "###" + portalDomain;
-		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(cacheKey);
-		if (sessions == null) {
-			sessions = new ArrayList<>();
-		}
-		for (Map<String, Object> session : sessions) {
-			String sessionToken = (String) session.get("token");
-			if (Objects.equals(sessionToken, token)) {
-				IAMAccount account = getAccount(email, portalDomain);
-				if(account != null) {
-					account.setUserSessionId((long)session.get("id"));
-				}
-				return account;
-			}
-		}
-		if(org.apache.commons.lang3.StringUtils.isEmpty(portalDomain)) {
-			portalDomain = "app";
-		}
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(IAMAccountConstants.getUserSessionFields())
-				.table("Account_Users")
-				.innerJoin("UserSessions")
-				.on("Account_Users.USERID = UserSessions.USERID");
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "domainName", portalDomain, StringOperators.IS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
-		
-	
-		if(appType != null && userType != null && !userType.equals("mobile")) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.APP_TYPE", "appType", String.valueOf(appType.getIndex()) , NumberOperators.EQUALS));
-		}
-	
-		Map<String, Object> props = selectBuilder.fetchFirst();
-		if (MapUtils.isNotEmpty(props)) {
-			sessions.add(props);
-			LRUCache.getUserSessionCache().put(cacheKey, sessions);
-			IAMAccount account = getAccount(email, portalDomain);
-			if(account != null && account.getUser() != null) {
-				account.setUserSessionId((long)props.get("id"));
-			}
-		}
-		return null;
-	}
-
-
-	@Override
-	public Map<Long, Map<String, Object>> getUserData(Criteria criteria, long orgId, boolean shouldFetchDeleted) throws Exception {
-		// TODO Auto-generated method stub
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(IAMAccountConstants.getAccountsUserFields());
-		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
-		fields.add(IAMAccountConstants.getOrgIdField(IAMAccountConstants.getOrgModule()));
-		
-		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null, false);
-				
-		if(criteria != null) {
-			selectBuilder.andCriteria(criteria);
-		}
-		if(orgId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		}
-		if(!shouldFetchDeleted) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedtime", String.valueOf(-1), NumberOperators.EQUALS));
-		}
-		
-		List<Map<String, Object>> list = selectBuilder.get();
-		if(CollectionUtils.isNotEmpty(list)) {
-			Map<Long, Map<String, Object>> userMap = new HashMap<>();
-			for (Map<String, Object> prop : list) {
-				userMap.put((long)prop.get("iamOrgUserId"), prop);
-				Long photoId = (Long) prop.get("photoId"); 
-				if (photoId != null && photoId > 0) {
-					prop.put("avatarUrl", FacilioFactory.getFileStore().newPreviewFileUrl("user", photoId));
-				}
-			}
-			return userMap;
-		}
-		return null;
-	}
-
-	@Override
-	public Map<Long, Map<String, Object>> getUserDataForUids(List<Long> userIds, long orgId, boolean shouldFetchDeleted) throws Exception {
-		// TODO Auto-generated method stub
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsOrgUserFields());
-		
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("iamOrgUserId"), userIds, NumberOperators.EQUALS));
-		
-		return getUserData(criteria, orgId, shouldFetchDeleted);
-		
-	}
-
-	@Override
-	public boolean verifyPasswordv2(String emailAddress, String domain, String password, String userType, AppType appType) throws Exception {
-		// TODO Auto-generated method stub
-		boolean passwordValid = false;
-		try {
-			if (StringUtils.isEmpty(domain)) {
-				domain = "app";
-			}
-			
-			List<FacilioField> fields = new ArrayList<>();
-			fields.addAll(IAMAccountConstants.getAccountsUserFields());
-			fields.add(IAMAccountConstants.getUserPasswordField());
-			
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.select(fields)
-					.table("Account_Users");
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", emailAddress, StringOperators.IS));
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "domainName", domain, StringOperators.IS));
-			selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
-			
-			if(!domain.equals("app") && userType != null && !userType.equals("mobile")) {
-				selectBuilder.andCondition(CriteriaAPI.getCondition("APP_TYPE", "appType", String.valueOf(appType.getIndex()), NumberOperators.EQUALS));
-			}
-			
-			log.info("Domain  " + domain);
-			log.info("Email Address  " + emailAddress);
-			log.info("PAssword  " + password);
-			
-			List<Map<String, Object>> props = selectBuilder.get();
-
-			if (CollectionUtils.isNotEmpty(props)) {
-				Map<String, Object> result = props.get(0);
-				String storedPass = (String)result.get("password");
-				if (storedPass.equals(password)) {
-					passwordValid = true;
-				}
-			} else {
-				log.info("No records found for  " + emailAddress);
-				throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists");
-			}
-
-		} catch (SQLException | RuntimeException e) {
-			log.info("Exception while verifying password, "+ e.toString());
-		} 
-		return passwordValid;
-	}
-
-
-	@Override
-	public String validateAndGenerateToken(String emailaddress, String password, String userAgent, String userType,
-			String ipAddress, String domain, boolean startUserSession, AppType appType) throws Exception {
-		// TODO Auto-generated method stub
-		if (verifyPasswordv2(emailaddress, domain, password, userType ,appType)) {
-
-			IAMUser user = getFacilioUser(emailaddress, -1, domain);
-			if (user != null) {
-				long uid = user.getUid();
-				String jwt = createJWT("id", "auth0", String.valueOf(user.getUid()),
-						System.currentTimeMillis() + 24 * 60 * 60000);
-				if (startUserSession) {
-					startUserSessionv2(uid, emailaddress, jwt, ipAddress, userAgent, userType);
-				}
-				return jwt;
-			}
-			throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
-
-		}
-		throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid Password");
-	}
-	
-	public String generateTokenForWithoutPassword(String emailaddress, String userAgent, String userType,
-			String ipAddress, String domain, boolean startUserSession, AppType appType) throws Exception  {
-		
-		IAMUser user = getFacilioUser(emailaddress, -1, domain);
-		if (user != null) {
-			long uid = user.getUid();
-			String jwt = createJWT("id", "auth0", String.valueOf(user.getUid()),
-					System.currentTimeMillis() + 24 * 60 * 60000);
-			if (startUserSession) {
-				startUserSessionv2(uid, emailaddress, jwt, ipAddress, userAgent, userType);
-			}
-			return jwt;
-		}
-		throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
-	}
-	
 	public static String createJWT(String id, String issuer, String subject, long ttlMillis) {
 		 
 		try {
@@ -1295,47 +798,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 
 	@Override
-	public IAMAccount verifyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain,
-			String portalDomain, String userType, AppType appType) throws Exception {
-		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
-		try {
-			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
-			if(decodedjwt != null) {
-				String uId = null;
-				if (decodedjwt.getSubject().contains(JWT_DELIMITER)) {
-					uId = decodedjwt.getSubject().split(JWT_DELIMITER)[0];
-				}
-				else {
-					uId = decodedjwt.getSubject().split("_")[0];
-				}
-				IAMAccount account = null;
-				try {
-					long userId = Long.parseLong(uId);
-					if(overrideSessionCheck) {
-						account = IAMUtil.getUserBean().getAccount(userId, orgDomain);
-					}
-					else {
-						account = IAMUtil.getUserBean().verifyUserSessionv2(uId, idToken, orgDomain, userType, appType);
-					}
-				}
-				catch(NumberFormatException e) {
-					account = IAMUtil.getUserBean().verifyUserSessionUsingEmail(uId, idToken, portalDomain, userType, appType);
-				}
-				return account;
-			}
-			return null;
-		}
-		catch (AccountException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			log.info("Exception occurred "+e.toString());
-			return null;
-		}
-	}
-
-
-	@Override
 	public boolean verifyUser(long userId) throws Exception {
 		// TODO Auto-generated method stub
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -1355,9 +817,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public boolean addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception {
 		// TODO Auto-generated method stub
-		if (userMobileSetting.getUserId() == -1) {
-			userMobileSetting.setUserId(getFacilioUser(userMobileSetting.getEmail()).getUid());
-		}
+//		if (userMobileSetting.getUserId() == -1) {
+//			userMobileSetting.setUserId(getUserForEmailOrPhone(userMobileSetting.getEmail(), false,).getUid());
+//		}
 		if (userMobileSetting.getCreatedTime() == -1) {
 			userMobileSetting.setCreatedTime(System.currentTimeMillis());
 		}
@@ -1465,18 +927,21 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public Organization getOrgv2(String currentOrgDomain, long uid) throws Exception {
 		// TODO Auto-generated method stub
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getOrgFields())
 				.table("Organizations")
-				.innerJoin("Account_ORG_Users")
-				.on("Organizations.ORGID = Account_ORG_Users.ORGID");
+				.innerJoin("Account_User_Apps_Orgs")
+				.on("Organizations.ORGID = Account_User_Apps_Orgs.ORGID")
+				.innerJoin("Account_User_Apps")
+				.on("Account_User_Apps.ID = Account_User_Apps_Orgs.ACCOUNT_USER_APPID")
+				;
 		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("FACILIODOMAINNAME", "domainName", currentOrgDomain, StringOperators.IS));
-		
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -1507,37 +972,46 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	}
 	
-	public IAMUser getFacilioUserV3(String username, String pwd, int identifier) throws Exception {
+	public IAMUser getFacilioUserV3(String username, int identifier) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Account_Users")
-				.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME","userName" , username, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition("Account_Users.PASSWORD","password" , pwd, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL","email" , username, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER","identifier" , String.valueOf(identifier), NumberOperators.EQUALS));
-		
+			
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true);
+			IAMUser user =  createUserFromProps(props.get(0));
 			return user;
 		}
 		return null;
 	}
 	
-	private long addUserV3(long orgId, IAMUser user, boolean emailRegRequired) throws Exception {
+	private long addUserV3(long orgId, IAMUser user, boolean emailRegRequired, int identifier, String appDomain) throws Exception {
 
-		IAMUser orgUser = getFacilioUserV3(user.getEmail(), user.getPassword(), 1);
-		long finalIdAdded = -1;
-		if (orgUser != null) {
-			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
+		if(StringUtils.isEmpty(appDomain)) {
+			appDomain = AccountUtil.getDefaultAppDomain();
+		}
+		AppDomain appDomainObj = getAppDomain(appDomain);
+		IAMUser appUser = getFacilioUserV3(user.getEmail(), identifier);
+		if (appUser != null) {
+			if(!StringUtils.equals(appDomain, AccountUtil.getDefaultAppDomain())) {
+				long accountUserAppId = checkIfUserAlreadyPresentInApp(appUser.getUid(), appDomainObj.getId(), orgId);
+				if(accountUserAppId > 0) {
+					throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
+				}
+			}
+			else {
+				user.setUid(appUser.getUid());
+			}
 		}
 		else {
-			 finalIdAdded = addUserEntryV3(user, orgId, "app.facilio.com", 1, 1);
+			addUserEntryV3(user, orgId);
 		}
-		//if apptype == 1,put this
-		IAMUser userExistsForAnyOrg = getFacilioUserFromUserId(user.getUid(), null);
+		IAMUser userExistsForAnyOrg = getFacilioUserFromUserIdv3(user.getUid(), appDomainObj.getId(), null);
 		if(userExistsForAnyOrg != null) {
 			user.setDefaultOrg(false);
 		}
@@ -1546,14 +1020,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		user.setUserStatus(true);
 		user.setOrgId(orgId);
-		return finalIdAdded;
+		long accoutUserAppId = addAccountUserAppEntry(appDomainObj.getId(), user.getUid());
+		long ouId = addAccountUserAppOrgEntry(accoutUserAppId, orgId, user);
+		user.setIamOrgUserId(ouId);
+		return ouId;
 	}
 
-	private long addUserEntryV3(IAMUser user, long orgId, String domain_name, int group_type, int app_type) throws Exception {
+	private long addUserEntryV3(IAMUser user, long orgId) throws Exception {
 
-		if(StringUtils.isEmpty(domain_name)) {
-			domain_name = "app.facilio.com";
-		}
 		List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
 		fields.add(IAMAccountConstants.getUserPasswordField());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -1567,14 +1041,35 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		long userId = (Long) props.get("id");
 		user.setUid(userId);
 		
-		long appDomainId = checkDomainExists(domain_name, group_type, app_type);
-		long accUserAppId = addAccountUserAppEntry(user.getUid(), appDomainId);
-		long accUserAppOrgId = addAccountUserAppOrgEntry(accUserAppId, orgId);
 		
-		return accUserAppOrgId;
+		return userId;
 	}
 	
-	private long checkDomainExists(String domainName, int groupType, int appType) throws Exception {
+	
+	private long checkIfUserAlreadyPresentInApp(long userId, long appDomainId, long orgId) throws Exception {
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(IAMAccountConstants.getAccountUserAppsFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Account_User_Apps")
+				.innerJoin("Account_User_Apps_Orgs")
+				.on("Account_User_Apps.ID = Account_User_Apps_Orgs.ACCOUNT_USER_APPID")
+				.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID","appDomainId" , String.valueOf(appDomainId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ORGID","orgId" , String.valueOf(orgId), NumberOperators.EQUALS));
+				
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			Map<String, Object> map = props.get(0);
+			return (long)map.get("id");
+		}
+		return -1;
+		
+	}
+	
+	@Override
+	public long addAppDomain(String domainName, int groupType, int appType) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAppDomainFields());
 		
@@ -1591,29 +1086,41 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return (long)map.get("id");
 		}
 		else {
-			return addAppDomain(domainName, groupType, appType);
+			return addNewAppDomain(domainName, groupType, appType);
 		}
 		
 	}
 	
-	private long addAppDomain(String domain_name, int group_type, int app_type) throws Exception {
+	@Override
+	public int deleteAppDomain(long appDomainId) throws Exception {
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table("App_Domain")
+				.andCondition(CriteriaAPI.getCondition("App_Domain.ID","id" , String.valueOf(appDomainId), NumberOperators.EQUALS));
+				
+		return deleteBuilder.delete();
+		
+	}
+	
+	private static long addNewAppDomain(String domain_name, int group_type, int app_type) throws Exception {
 
-		if(StringUtils.isEmpty(domain_name)) {
-			domain_name = "app.facilio.com";
+		if(StringUtils.isNotEmpty(domain_name)) {
+			
+			List<FacilioField> fields = IAMAccountConstants.getAppDomainFields();
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(IAMAccountConstants.getAppDomainModule().getTableName())
+					.fields(fields);
+	
+			AppDomain appDomain = new AppDomain(domain_name, app_type, group_type);
+			Map<String, Object> props = FieldUtil.getAsProperties(appDomain);
+	
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+			long appdomainId = (Long) props.get("id");
+			return appdomainId;
 		}
 		
-		List<FacilioField> fields = IAMAccountConstants.getAppDomainFields();
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(IAMAccountConstants.getAppDomainModule().getTableName())
-				.fields(fields);
-
-		AppDomain appDomain = new AppDomain(domain_name, app_type, group_type);
-		Map<String, Object> props = FieldUtil.getAsProperties(appDomain);
-
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		long appdomainId = (Long) props.get("id");
-		return appdomainId;
+		return -1;
 			
 	}
 	
@@ -1633,14 +1140,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			
 	}
 	
-	private long addAccountUserAppOrgEntry(long accUserAppId, long orgId) throws Exception {
+	private long addAccountUserAppOrgEntry(long accUserAppId, long orgId, IAMUser user) throws Exception {
 
 		List<FacilioField> fields = IAMAccountConstants.getAccountUserAppOrgsFields();
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(IAMAccountConstants.getAccountUserAppOrgsModule().getTableName())
 				.fields(fields);
 
-		AccountUserAppOrg accUserAppOrg = new AccountUserAppOrg(accUserAppId, orgId);
+		AccountUserAppOrg accUserAppOrg = new AccountUserAppOrg(accUserAppId, orgId, user.isDefaultOrg(), user.isActive());
 		Map<String, Object> props = FieldUtil.getAsProperties(accUserAppOrg);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
@@ -1648,4 +1155,444 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return accUserAppOrgId;
 			
 	}
+
+
+	@Override
+	public AppDomain getAppDomain(String domain) throws Exception {
+		// TODO Auto-generated method stub
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainFields())
+				.table("App_Domain");
+				
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN", "domain", domain, StringOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
+		}
+		return null;
+
+	}
+
+	public static AppDomain getAppDomain(long domainId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainFields())
+				.table("App_Domain");
+				
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.ID", "id", String.valueOf(domainId), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
+		}
+		return null;
+
+	}
+
+
+	@Override
+	public String validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName,
+			String userAgent, String userType, String ipAddress, boolean startUserSession) throws Exception {
+		long validUid = verifyPasswordv3(emailaddress, password, appDomainName, userType);
+		if (validUid > 0) {
+			//IAMUser user = getFacilioUser(emailaddress, -1, domain);
+			String jwt = createJWT("id", "auth0", String.valueOf(validUid),
+					System.currentTimeMillis() + 24 * 60 * 60000);
+			if (startUserSession) {
+				startUserSessionv2(validUid, emailaddress, jwt, ipAddress, userAgent, userType);
+			}
+			return jwt;
+			//throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
+
+		}
+		throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid Password");
+	}
+	
+	
+	@Override
+	public long verifyPasswordv3(String emailAddress, String password, String appDomainName, String userType) throws Exception {
+		try {
+			if (StringUtils.isEmpty(appDomainName)) {
+				appDomainName = AccountUtil.getDefaultAppDomain();
+			}
+			
+			List<FacilioField> fields = new ArrayList<>();
+			fields.addAll(IAMAccountConstants.getAccountsUserFields());
+			fields.add(IAMAccountConstants.getUserPasswordField());
+			
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table("Account_Users")
+					.innerJoin("Account_User_Apps")
+					.on("Account_Users.USERID = Account_User_Apps.USERID")
+					.innerJoin("App_Domain")
+					.on("Account_User_Apps.APP_DOMAIN_ID = App_Domain.ID")
+					.innerJoin("Account_User_Apps_Orgs")
+					.on("Account_User_Apps_Orgs.ACCOUNT_USER_APPID = Account_User_Apps.ID")
+				
+					;
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", emailAddress, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN", "domain", appDomainName, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
+			
+			log.info("App Domain  " + appDomainName);
+			log.info("Email Address  " + emailAddress);
+			log.info("PAssword  " + password);
+			
+			List<Map<String, Object>> props = selectBuilder.get();
+
+			if (CollectionUtils.isNotEmpty(props)) {
+				Map<String, Object> result = props.get(0);
+				String storedPass = (String)result.get("password");
+				if (storedPass.equals(password)) {
+					return (long)result.get("uid");
+				}
+			} else {
+				log.info("No records found for  " + emailAddress);
+				throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists");
+			}
+
+		} catch (SQLException | RuntimeException e) {
+			log.info("Exception while verifying password, "+ e.toString());
+		} 
+		return -1;
+	}
+
+
+	@Override
+	public IAMAccount verifyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String appDomain,
+			String userType, String orgDomain) throws Exception {
+		// TODO Auto-generated method stub
+		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
+		try {
+			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
+			if(decodedjwt != null) {
+				String uId = null;
+				if (decodedjwt.getSubject().contains(JWT_DELIMITER)) {
+					uId = decodedjwt.getSubject().split(JWT_DELIMITER)[0];
+				}
+				else {
+					uId = decodedjwt.getSubject().split("_")[0];
+				}
+				IAMAccount account = null;
+				long userId = Long.parseLong(uId);
+				if(overrideSessionCheck) {
+					account = IAMUtil.getUserBean().getAccountv3(userId, appDomain, orgDomain);
+				}
+				else {
+					account = IAMUtil.getUserBean().verifyUserSessionv3(uId, idToken, appDomain, userType, orgDomain);
+				}
+			
+				return account;
+			}
+			return null;
+		}
+		catch (AccountException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			log.info("Exception occurred "+e.toString());
+			return null;
+		}
+
+	}
+
+
+	@Override
+	public IAMAccount verifyUserSessionv3(String uId, String token, String appDomain, String userType, String orgDomain)
+			throws Exception {
+		// TODO Auto-generated method stub
+		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(uId);
+		if (sessions == null) {
+			sessions = new ArrayList<>();
+		}
+		for (Map<String, Object> session : sessions) {
+			String sessionToken = (String) session.get("token");
+			if (Objects.equals(sessionToken, token)) {
+				IAMAccount account = getAccountv3((long) session.get("uid"), appDomain, orgDomain);
+				if(account != null) {
+					account.setUserSessionId((long) session.get("id"));
+				}
+				return account;
+			}
+		}
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getUserSessionFields())
+				.table("Account_Users")
+				.innerJoin("UserSessions")
+				.on("Account_Users.USERID = UserSessions.USERID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", uId, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
+		
+		Map<String, Object> props = selectBuilder.fetchFirst();
+		if (MapUtils.isNotEmpty(props)) {
+			sessions.add(props);
+			LRUCache.getUserSessionCache().put(uId, sessions);
+			IAMAccount account = getAccountv3((long) props.get("uid"), appDomain, orgDomain);
+			if(account != null && account.getUser() != null) {
+				account.setUserSessionId((long)props.get("id"));
+			}
+			return account;
+		}
+		return null;
+	}
+	
+	private GenericSelectRecordBuilder getSelectBuilder(List<FacilioField> fields) {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Account_Users")
+				.innerJoin("Account_User_Apps")
+				.on("Account_Users.USERID = Account_User_Apps.USERID")
+				.innerJoin("App_Domain")
+				.on("Account_User_Apps.APP_DOMAIN_ID = App_Domain.ID")
+				.innerJoin("Account_User_Apps_Orgs")
+				.on("Account_User_Apps_Orgs.ACCOUNT_USER_APPID = Account_User_Apps.ID")
+				.innerJoin("Organizations")
+				.on("Organizations.ORGID = Account_User_Apps_Orgs.ORGID")
+				;
+		
+		return selectBuilder;
+	}
+
+	public IAMUser getFacilioUserFromUserIdv3(long userId, long appDomainId, String orgDomain) throws Exception {
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.add(IAMAccountConstants.getUserPasswordField());
+		fields.add(IAMAccountConstants.getAppDomainField());
+		
+		GenericSelectRecordBuilder selectBuilder = getSelectBuilder(fields);
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
+		
+		if (!StringUtils.isEmpty(orgDomain)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.FACILIODOMAINNAME", "facilioDomainName", orgDomain, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		} 
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
+		}
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+
+
+		if (props != null && !props.isEmpty()) {
+			IAMUser user =  createUserFromProps(props.get(0));
+			return user;
+		}
+		return null;
+	}
+	
+	@Override
+	public IAMAccount getAccountv3(long userId, String appDomain, String orgDomain) throws Exception {
+		AppDomain appDomainObj = getAppDomain(appDomain);
+		if(appDomainObj == null) {
+			throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "Invalid app domain");
+		}
+		IAMUser user = getFacilioUserFromUserIdv3(userId, appDomainObj.getId(), orgDomain);
+		if (user == null) {
+			throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "IAMUser doesn't exists in the current Org");
+		}
+		Organization org = IAMUtil.getOrgBean().getOrgv2(user.getOrgId());
+		IAMAccount account = new IAMAccount(org, user);
+		return account;
+	}
+	
+	@Override
+	public Organization getDefaultOrgv3(long uid, String appDomain) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getOrgFields())
+				.table("Organizations")
+				.innerJoin("Account_User_Apps_Orgs")
+				.on("Organizations.ORGID = Account_User_Apps_Orgs.ORGID")
+				.innerJoin("Account_User_Apps")
+				.on("Account_User_Apps.ID = Account_User_Apps_Orgs.ACCOUNT_USER_APPID")
+				;
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
+		
+		if(StringUtils.isEmpty(appDomain)) {
+			appDomain = AccountUtil.getDefaultAppDomain();
+		}
+		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+	
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return IAMOrgUtil.createOrgFromProps(props.get(0));
+		}
+		return null;
+	}
+	
+	@Override
+	public List<IAMUser> getUserDataForUidsv3(String userIds, long orgId, boolean shouldFetchDeleted, String appDomain) throws Exception {
+		// TODO Auto-generated method stub
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountUserAppOrgsFields());
+		fields.add(IAMAccountConstants.getAppDomainField());
+		
+		GenericSelectRecordBuilder selectBuilder = getSelectBuilder(fields);
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ID", "userId", userIds, NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
+		if(orgId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		}
+		if(!shouldFetchDeleted) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
+		}
+		
+		if(StringUtils.isNotEmpty(appDomain)) {
+			AppDomain appDomainObj = getAppDomain(appDomain);
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+		}
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			List<IAMUser> iamUsers = new ArrayList<IAMUser>();
+			for(Map<String, Object> map : props) {
+				iamUsers.add(createUserFromProps(map));
+			}
+			return iamUsers;
+		}
+		return null;
+		
+	}
+
+	@Override
+	public boolean verifyPassword(long orgId, long userId, String oldPassword, String appDomain) throws Exception {
+		// TODO Auto-generated method stub
+
+		IAMUser iamUser = getFacilioUser(orgId, userId, appDomain, true);
+		if(iamUser == null) {
+			return false;
+		}
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.add(IAMAccountConstants.getUserPasswordField());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Account_Users")
+				;
+		selectBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			Map<String, Object> result = props.get(0);
+			String storedPass = (String)result.get("password");
+			if (storedPass.equals(oldPassword)) {
+				return true;
+			}
+		} 
+		return false;
+	}
+
+	@Override
+	public Map<String, Object> getUserForEmailOrPhone(String emailOrPhone, String appDomain, boolean isPhone, long orgId) throws Exception {
+		// TODO Auto-generated method stub
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountUserAppOrgsFields());
+		fields.add(IAMAccountConstants.getAppDomainField());
+		
+		
+		GenericSelectRecordBuilder selectBuilder = getSelectBuilder(fields);
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.USER_STATUS", "status", "1", NumberOperators.EQUALS));
+		
+		if(StringUtils.isNotEmpty(appDomain)) {
+			AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+		}
+	
+		if(isPhone) {
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.PHONE", "phone", emailOrPhone, StringOperators.IS));
+			criteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", emailOrPhone, StringOperators.IS));
+			selectBuilder.andCriteria(criteria);
+		}
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", emailOrPhone, StringOperators.IS));
+		}
+		
+		if(orgId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		}
+		List<Map<String, Object>> list = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(list)) {
+			return list.get(0);
+		}
+		return null;
+	
+	}
+
+	@Override
+	public IAMUser getFacilioUser(long orgId, long userId, String appDomain, boolean checkStatus) throws Exception {
+		// TODO Auto-generated method stub
+		
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountUserAppOrgsFields());
+		
+		GenericSelectRecordBuilder selectBuilder = getSelectBuilder(fields);
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
+		if(checkStatus) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.USER_STATUS", "status", "1", NumberOperators.EQUALS));
+		}
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
+		
+		if(StringUtils.isNotEmpty(appDomain)) {
+			AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+		}
+	
+		if(orgId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		}
+		
+		List<Map<String, Object>> mapList = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(mapList)) {
+			IAMUser iamUser = createUserFromProps(mapList.get(0));
+			return iamUser;
+		}
+		return null;
+	
+	}
+
+	@Override
+	public AppDomain getAppDomain(AppDomainType type) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getAppDomainFields())
+				.table("App_Domain");
+				
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", String.valueOf(type), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), AppDomain.class);
+		}
+		return null;
+
+	}
+		
 }

@@ -105,12 +105,12 @@ public class AdminAction extends ActionSupport {
 		newUser.setInviteAcceptStatus(true);
 		newUser.setInvitedTime(System.currentTimeMillis());
 		newUser.setUserStatus(true);
-		try {
-			AccountUtil.getTransactionalUserBean(orgId).createUser(orgId, newUser);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			AccountUtil.getTransactionalUserBean(orgId).createUser(orgId, newUser);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		return SUCCESS;
 	}

@@ -3,15 +3,12 @@ package com.facilio.bmsconsole.context;
 import java.io.File;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.dto.IAMUser.AppType;
-import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.VisitorManagementAPI;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.time.DateTimeUtil;
 
 public class VisitorLoggingContext extends ModuleBaseWithCustomFields{
 

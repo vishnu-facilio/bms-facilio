@@ -125,12 +125,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Command getChangeUserStatusCommand() {
-		FacilioChain c = FacilioChain.getTransactionChain();
-		c.addCommand(new ChangeUserStatusCommand());
-		return c;
-	}
-	
 	public static Command getChangeTeamStatusCommand(){
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new ChangeTeamStatusCommand());
@@ -2244,6 +2238,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForPeople());
 		c.addCommand(new GenericDeleteModuleDataCommand());
+		c.addCommand(new DeletePeopleUsersCommand());
 		return c;
 	}
 	
@@ -2251,6 +2246,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForVendorContact());
 		c.addCommand(new GenericDeleteModuleDataCommand());
+		c.addCommand(new DeletePeopleUsersCommand());
 		return c;
 	}
 	
@@ -2259,6 +2255,8 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
 		c.addCommand(new GenericDeleteModuleDataCommand());
+		c.addCommand(new DeletePeopleUsersCommand());
+		
 		return c;
 	}
 	
@@ -2266,6 +2264,8 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForEmployee());
 		c.addCommand(new GenericDeleteModuleDataCommand());
+		c.addCommand(new DeletePeopleUsersCommand());
+		
 		return c;
 	}
 }

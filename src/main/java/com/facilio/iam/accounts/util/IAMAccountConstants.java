@@ -100,15 +100,6 @@ public class IAMAccountConstants {
 			return orgModule;
 		}
 
-		public static FacilioModule getAccountsOrgUserModule() {
-			FacilioModule orgModule = new FacilioModule();
-			orgModule.setName("accountsorguser");
-			orgModule.setDisplayName("Accounts Org Users");
-			orgModule.setTableName("Account_ORG_Users");
-
-			return orgModule;
-		}
-		
 		public static FacilioModule getUserSessionModule() {
 			FacilioModule userSession = new FacilioModule();
 			userSession.setName("usersession");
@@ -448,6 +439,18 @@ public class IAMAccountConstants {
 
 			return fields;
 		}
+		
+		public static FacilioField getAppDomainField() {
+			FacilioModule module = getAppDomainModule();
+			
+			FacilioField domain = new FacilioField();
+			domain.setName("domain");
+			domain.setDataType(FieldType.STRING);
+			domain.setColumnName("DOMAIN");
+			domain.setModule(module);
+			
+			return domain;
+		}
 
 		
 		public static List<FacilioField> getAccountUserAppsFields() {
@@ -484,34 +487,18 @@ public class IAMAccountConstants {
 			List<FacilioField> fields = new ArrayList<>();
 
 			FacilioField id = new FacilioField();
-			id.setName("id");
-			id.setDataType(FieldType.NUMBER);
+			id.setName("iamOrgUserId");
+			id.setDataType(FieldType.ID);
 			id.setColumnName("ID");
 			id.setModule(module);
 			fields.add(id);
-
-			FacilioField orgId = new FacilioField();
-			orgId.setName("orgId");
-			orgId.setDataType(FieldType.NUMBER);
-			orgId.setColumnName("ORGID");
-			orgId.setModule(module);
-			fields.add(orgId);
 			
-			return fields;
-		}
-
-		public static List<FacilioField> getAccountsOrgUserFields() {
-			FacilioModule module = getAccountsOrgUserModule();
-			List<FacilioField> fields = new ArrayList<>();
-
-			FacilioField iamOrgUserid = new FacilioField();
-			iamOrgUserid.setName("iamOrgUserId");
-			iamOrgUserid.setDataType(FieldType.NUMBER);
-			iamOrgUserid.setColumnName("ORG_USERID");
-			iamOrgUserid.setModule(module);
-			fields.add(iamOrgUserid);
-
-			fields.add(getUserIdField(module));
+			FacilioField accountUserAppId = new FacilioField();
+			accountUserAppId.setName("accountUserAppId");
+			accountUserAppId.setDataType(FieldType.NUMBER);
+			accountUserAppId.setColumnName("ACCOUNT_USER_APPID");
+			accountUserAppId.setModule(module);
+			fields.add(accountUserAppId);
 
 			FacilioField orgId = new FacilioField();
 			orgId.setName("orgId");
@@ -533,11 +520,10 @@ public class IAMAccountConstants {
 			userStatus.setColumnName("USER_STATUS");
 			userStatus.setModule(module);
 			fields.add(userStatus);
-
+			
 			return fields;
 		}
-		
-		
+
 		
 		public static List<FacilioField> getUserSessionFields() {
 			FacilioModule module = getUserSessionModule();
@@ -618,14 +604,14 @@ public class IAMAccountConstants {
 			return fields;
 		}
 		
-		public static FacilioField getOrgUserDeletedTimeField() {
-			FacilioField deletedTime = new FacilioField();
-			deletedTime.setName("deletedTime");
-			deletedTime.setDataType(FieldType.NUMBER);
-			deletedTime.setColumnName("DELETED_TIME");
-			deletedTime.setModule(getAccountsOrgUserModule());
-			return deletedTime;
-		}
+//		public static FacilioField getOrgUserDeletedTimeField() {
+//			FacilioField deletedTime = new FacilioField();
+//			deletedTime.setName("deletedTime");
+//			deletedTime.setDataType(FieldType.NUMBER);
+//			deletedTime.setColumnName("DELETED_TIME");
+//			deletedTime.setModule(getAccountsOrgUserModule());
+//			return deletedTime;
+//		}
 
 		public static FacilioField getOrgDeletedTimeField() {
 			FacilioField deletedTime = new FacilioField();

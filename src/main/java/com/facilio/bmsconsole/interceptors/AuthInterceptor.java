@@ -66,7 +66,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					URL url = new URL(referrer);
 					urlsToValidate.add(url.getPath());
 				}
-				IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urlsToValidate);
+				IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urlsToValidate, request.getServerName());
 				if(iamAccount == null) {
 					return Action.ERROR;
 				} else {
@@ -76,7 +76,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			else if (!isRemoteScreenMode(request)) {
 				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
 				if(authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
-					IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false, "app");
+					IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false, request.getServerName());
 
 					if (iamAccount != null) {
 						request.setAttribute("iamAccount", iamAccount);

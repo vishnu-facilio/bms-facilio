@@ -68,12 +68,12 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 		}
 	}
 	
-	private ResourceContext locatedSpace;
+	private BaseSpaceContext locatedSpace;
 
-	public ResourceContext getLocatedSpace() {
+	public BaseSpaceContext getLocatedSpace() {
 		return locatedSpace;
 	}
-	public void setLocatedSpace(ResourceContext locatedSpace) {
+	public void setLocatedSpace(BaseSpaceContext locatedSpace) {
 		this.locatedSpace = locatedSpace;
 	}
 	

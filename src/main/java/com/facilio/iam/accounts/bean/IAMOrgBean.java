@@ -27,18 +27,15 @@ public interface IAMOrgBean {
 
 	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception;
 	
-	public List<IAMUser> getOrgUsersv2(long orgId, boolean status) throws Exception;
+	public List<IAMUser> getOrgUsersv2(long orgId, boolean status, String appDomain) throws Exception;
 	
-	public List<IAMUser> getOrgUsersv2(long orgId, Criteria criteria) throws Exception;
-	
-	public Map<Long, IAMUser> getOrgUsersAsMapv2(long orgId, Criteria criteria) throws Exception;
-
-	public List<IAMUser> getActiveOrgUsersv2(long orgId) throws Exception;
-
 	public void updateLoggerLevel(int level, long orgId) throws Exception;
 
 	public boolean rollbackSignUpOrg(long orgId, long superAdminUserId) throws Exception;
 	
 	public List<Organization> getOrgs() throws Exception ;
+	
+ 	public List<IAMUser> getAllOrgUsersv2(long orgId, String appDomain) throws Exception;
+ 		  
 		
 }

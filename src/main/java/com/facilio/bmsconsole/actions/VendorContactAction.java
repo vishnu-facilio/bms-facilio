@@ -175,4 +175,18 @@ public class VendorContactAction extends FacilioAction{
 		
 		return SUCCESS;
 	}
+	
+	public String updateVendorPortalAccess() throws Exception {
+		
+		if(!CollectionUtils.isEmpty(vendorContacts)) {
+			FacilioChain c = TransactionChainFactory.updateVendorContactChain();
+			//1 - Vendor portal
+			c.getContext().put(FacilioConstants.ContextNames.ACCESS_NEEDED_FOR, 1);
+			c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, vendorContacts);
+			c.execute();
+			setResult(FacilioConstants.ContextNames.VENDOR_CONTACTS, c.getContext().get(FacilioConstants.ContextNames.RECORD_LIST));
+		}
+		return SUCCESS;
+		  
+	}	
 }

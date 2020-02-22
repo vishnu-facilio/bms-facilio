@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.IAMUser.AppType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.db.criteria.Criteria;
@@ -24,14 +24,8 @@ public interface OrgBean {
 	
 	public Organization getOrg(String orgDomain) throws Exception;
 	
-	public Organization getPortalOrg(long portalId, AppType appType) throws Exception;
-	
 	public PortalInfoContext getPortalInfo(long id, boolean isPortalID) throws Exception;
 	
-//	public PortalInfoContext getPortalInfo(long o) throws Exception;
-
-//    Organization getPortalOrg(String orgDomain) throws Exception;
-
 	public List<User> getOrgPortalUsers(long orgId) throws Exception;
 
 	public List<User> getAllOrgUsers(long orgId) throws Exception;
@@ -46,8 +40,6 @@ public interface OrgBean {
 
 	public User getSuperAdmin(long orgId) throws Exception;
 	
-	public List getEnergyMeterList() throws Exception ;
-
 	public long getFeatureLicense() throws Exception;
 	
 	public boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception;
@@ -60,5 +52,7 @@ public interface OrgBean {
 	
 	public List<Organization> getOrgs() throws Exception;
 	
+	public Organization getPortalOrg(long portalId, AppDomainType appType) throws Exception;
+		
 	public void copyReadingValue(List<Map<String,Object>> porp, FacilioModule module, long targetOrgId, long targetAssetId, long timeDiff, List<FacilioField> fields, long targetId)throws Exception;
 }

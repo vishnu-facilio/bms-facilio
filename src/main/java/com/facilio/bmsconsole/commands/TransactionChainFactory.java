@@ -50,17 +50,12 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 
 			c.addCommand(new AddDefaultModulesCommand());
-//			c.addCommand(new AddDefaultRoleAndPermissionCommand());
-//			c.addCommand(new AddDefaultReportCommand());            // stoping default dashboard population since it has old reports.
 			c.addCommand(new AddDefaultUnitsCommand());
 			c.addCommand(new AddDefaultGraphicsCommand());
 			c.addCommand(new AddDefaultWoStateflowCommand());
 			c.addCommand(new AddEventModuleCommand());
-			//add command to insert into product tables
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateAppSuperAdminCommand());
-//			c.addCommand(new PopulateDefaultConnectionsCommand());
-//			c.addCommand(getpopulateDefaultChatBotIntnetChain());
 			return c;
 		}
 
@@ -4807,6 +4802,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
 		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new AddPeopleAccessCommand());
 		
 		return c;
 	}
@@ -4815,7 +4811,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendorContact());
 		c.addCommand(new GenericAddModuleDataListCommand());
-		
+		c.addCommand(new AddPeopleAccessCommand());
 		return c;
 	}
 	
@@ -4823,7 +4819,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForEmployee());
 		c.addCommand(new GenericAddModuleDataListCommand());
-		
+		c.addCommand(new AddPeopleAccessCommand());
 		return c;
 	}
 	public static FacilioChain getListOfFloorPlanChain() {
@@ -4837,7 +4833,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTenantContact());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
-		
+		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		return c;
 	}
 	
@@ -4845,7 +4841,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendorContact());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
-		
+		c.addCommand(new UpdatePeoplePrimaryContactCommand());
 		return c;
 	}
 	
@@ -4864,6 +4860,31 @@ public class TransactionChainFactory {
 		
 		return c;
 	}
+	
+	public static FacilioChain updateEmployeeAppAccessChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForEmployee());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new UpdateEmployeePeopleAppPortalAccessCommand());
+		return c;
+	}
+	
+	public static FacilioChain updateVendorContactAppAccessChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVendorContact());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new UpdateVendorContactAppPortalAccessCommand());
+		return c;
+	}
+	
+	public static FacilioChain updateTenantContactAppAccessChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForTenantContact());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new UpdateTenantAppPortalAccessCommand());
+		return c;
+	}
+	
 
 	public static FacilioChain addOrUpdateFeedbackKioskChain()
 	{
