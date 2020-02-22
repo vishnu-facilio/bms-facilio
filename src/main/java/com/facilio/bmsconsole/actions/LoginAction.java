@@ -65,6 +65,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ConnectedDeviceContext;
 import com.facilio.bmsconsole.context.DeviceContext;
 import com.facilio.bmsconsole.context.DeviceContext.DeviceType;
+import com.facilio.bmsconsole.context.FeedbackKioskContext;
 import com.facilio.bmsconsole.context.VisitorKioskContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
@@ -552,7 +553,7 @@ public class LoginAction extends FacilioAction {
 		account.put("data", data);
 		
 		ConnectedDeviceContext connectedDevice = AccountUtil.getCurrentAccount().getConnectedDevice();
-		DeviceContext device=DevicesAPI.getDevice(connectedDevice.getDeviceId());
+		DeviceContext device=DevicesAPI.getDevice(connectedDevice.getDeviceId());//to do , fetch parentDevice table details also in each kioskType API only,change websockets to use connectedDevice ID instead of device ID
 		if (connectedDevice!= null && connectedDevice.getDeviceId()> 0) {
 			data.put("device", device);
 			
@@ -560,6 +561,11 @@ public class LoginAction extends FacilioAction {
 			{
 				VisitorKioskContext visitorKioskCtx=DevicesAPI.getVisitorKioskConfig(device.getId());
 				data.put("visitorKiosk",visitorKioskCtx);
+			}
+			if(device.getDeviceTypeEnum()==DeviceType.FEEDBACK_KIOSK)
+			{
+				FeedbackKioskContext feedbackKiosk=DevicesAPI.getFeedbackKioskDetails(device.getId());
+				data.put("feedbackKiosk",feedbackKiosk);
 			}
 			
 			config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(device.getId(), LiveSessionType.DEVICE, ((device.getDeviceTypeEnum()==DeviceType.VISITOR_KIOSK) ? LiveSessionSource.TABLET : LiveSessionSource.WEB)));

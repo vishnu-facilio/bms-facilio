@@ -95,7 +95,10 @@ public class FacilioConstants {
 		public static final String VENDOR ="vendor";
 		public static final String PRINTERS ="printers";
 		public static final String VISITOR_KIOSK_CONFIG ="visitorKioskConfig";
-		public static final String FEEDBACK_KIOSK_CONFIG = "feedbackKioskConfig";
+		public static final String FEEDBACK_KIOSK = "feedbackKiosk";
+		public static final String FEEDBACK_TYPE = "feedbackType";
+		public static final String FEEDBACK_TYPE_CATALOG_MAPPING = "feedbackTypeCatalogMapping";
+		
 
 	}
 
@@ -1476,6 +1479,7 @@ public class FacilioConstants {
 
 		public static final String TIME_DIFF = "timeDiff";
 		public static final String NEED_CRITERIAREPORT = "needCriteriaReport";
+		public static final String FILL_CATALOG_FORM = "fillCatalogForm";
 		
 		public static final String CLIENT = "client";
 		public static final String CLIENTS = "clients";

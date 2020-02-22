@@ -3194,13 +3194,6 @@ public class ModuleFactory {
 		return module;
 	}
 
-	public static FacilioModule getFeedbackKioskConfigModule() {
-		FacilioModule module = new FacilioModule();
-		module.setName(ModuleNames.FEEDBACK_KIOSK_CONFIG);
-		module.setDisplayName("Feedback Kiosk Config");
-		module.setTableName("Devices_Feedback_Kiosk");
-		return module;
-	}
 
 	public static FacilioModule getDeviceCatalogMappingModule() {
 		FacilioModule module = new FacilioModule();
@@ -3353,6 +3346,28 @@ public class ModuleFactory {
 		module.setTableName("Clients");
 		return module;
 	}
+	public static FacilioModule getFeedbackKioskModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ModuleNames.FEEDBACK_KIOSK);
+		module.setDisplayName("Feedback Kiosk");
+		module.setTableName("Feedback_Kiosk");
+		return module;
+	}
+	public static FacilioModule getFeedbackTypeModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ModuleNames.FEEDBACK_TYPE);
+		module.setDisplayName("Feedback Type");
+		module.setTableName("Feedback_Type");
+		return module;
+	}
+	public static FacilioModule getFeedbackTypeCatalogMappingModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ModuleNames.FEEDBACK_TYPE_CATALOG_MAPPING);
+		module.setDisplayName("Feedback Type Catalog mapping");
+		module.setTableName("Feedback_Type_Catalog_Mapping");
+		return module;
+	}
+	
 
 	public static FacilioModule getSiteModule() {
 		FacilioModule workOrdersModule = new FacilioModule();

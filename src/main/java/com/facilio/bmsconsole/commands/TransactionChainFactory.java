@@ -4323,12 +4323,7 @@ public class TransactionChainFactory {
 	}
 
 
-	public static FacilioChain addOrUpdateFeedbackKioskConfigChain() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(addOrUpdateVisitorKioskConfigChain());
-		chain.addCommand(new AddOrUpdateDeviceServiceCatalogCommand());
-		return chain;
-	}
+
 	public static FacilioChain addOrUpdateVisitorKioskConfigChain()
 	{
 		FacilioChain chain =getDefaultChain();
@@ -4752,6 +4747,21 @@ public class TransactionChainFactory {
 
 		return c;
 	}
+	public static FacilioChain addOrUpdateFeedbackKioskChain()
+	{
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new AddOrUpdateFeedbackKioskCommand());
+		
+		return c;
+	}
+	public static FacilioChain addOrUpdateFeedbackTypeChain()
+	{
+		FacilioChain c=getDefaultChain();
+		c.addCommand(new AddOrUpdateFeedbackTypeCommand());
+		
+		return c;
+	}
+	
 
 	public static FacilioChain disassociateClientFromSiteChain() {
 		FacilioChain c = getDefaultChain();

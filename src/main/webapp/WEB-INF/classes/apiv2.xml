@@ -4797,9 +4797,21 @@
 			</action>
 	</package>
 	<package name="feedbackKiosk" namespace="/api/v2/feedbackKiosk" extends="v2Api">
-		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.FeedbackKioskConfigAction" method="addOrUpdate">
+		<action name="list" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="getFeedbackKioskList">
 		</action>
-		<action name="getCatalogs" class="com.facilio.bmsconsole.actions.FeedbackKioskConfigAction" method="getServiceCatalog">
+		<action name="get" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="getFeedbackKioskDetails">
+		</action>
+		<action name="add" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackKiosk">
+		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackKiosk">
+		</action>
+	</package>
+	<package name="feedbackType" namespace="/api/v2/feedbackType" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="getFeedbackTypeList">
+		</action>
+		<action name="add" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackType">
+		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackType">
 		</action>
 	</package>
 

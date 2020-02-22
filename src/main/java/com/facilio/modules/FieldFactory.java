@@ -123,14 +123,7 @@ public class FieldFactory {
 		return getField("fileName","FILE_NAME", ModuleFactory.getSecretFileModule(),FieldType.STRING);
 	}
 
-	public static List<FacilioField> getDeviceCatalogMappingFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getDeviceCatalogMappingModule();
-
-		fields.add(getField("deviceId", "DEVICE_ID", module, FieldType.NUMBER));
-		fields.add(getField("catalogId", "SERVICE_CATALOG_ID", module, FieldType.NUMBER));
-		return fields;
-	}
+	
 
 
 	public static class Fields {
@@ -7574,16 +7567,7 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getFeedbackKioskConfigFields() {
-		FacilioModule module = ModuleFactory.getFeedbackKioskConfigModule();
-		List<FacilioField> fields = new ArrayList<>();
 
-		fields.add(getField("id", "ID", module, FieldType.LOOKUP));
-		fields.add(getField("printerId", "PRINTER_ID", module, FieldType.LOOKUP));
-		fields.add(getField("kioskForSpaceId", "KIOSK_FOR_SPACE", module, FieldType.LOOKUP));
-
-		return fields;
-	}
 
 //	public static List<FacilioField> getAgentMetricV2Fields() {
 //		FacilioModule module = ModuleFactory.getAgentMetricsV2Module();
@@ -7828,6 +7812,28 @@ public class FieldFactory {
 		fields.add(getField("faceId", "FACE_ID", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 
+		return fields;
+	}
+	public static List<FacilioField> getFeedbackKioskFields() {
+		FacilioModule module = ModuleFactory.getFeedbackKioskModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("id", "ID", module,FieldType.NUMBER));
+		fields.add(getField("feedbackTypeId", "FEEDBACK_TYPE_ID",module, FieldType.NUMBER));
+		return fields;
+	}
+	public static List<FacilioField> getFeedbackTypeFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField());		
+		fields.add(getField("name", "NAME", FieldType.STRING));
+		return fields;
+	}
+	public static List<FacilioField> getFeedbackTypeCatalogMappingFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField());
+		fields.add(getField("feedbackTypeId", "FEEDBACK_TYPE_ID", FieldType.NUMBER));
+		fields.add(getField("catalogId", "CATALOG_ID", FieldType.NUMBER));
+		fields.add(getField("order", "CATALOG_ORDER", FieldType.NUMBER));
 		return fields;
 	}
 }

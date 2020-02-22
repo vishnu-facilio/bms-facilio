@@ -1876,11 +1876,7 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
-	public static FacilioChain getDeviceServiceCatalogChain() {
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new FetchDeviceServiceCatalogCommand());
-		return chain;
-	}
+	
 	public static FacilioChain getPrintersListChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetPrintersListCommand());
@@ -2143,4 +2139,20 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getFeedbackTypeListChain() {
+		FacilioChain chain = getDefaultChain();		
+		chain.addCommand(new FeedbackTypeListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getFeedbackKioskListChain() {
+		FacilioChain chain = getDefaultChain();		
+		chain.addCommand(new FeedbackKioskListCommand());
+		return chain;
+	}
+	public static FacilioChain getFeedbackKioskDetailsChain() {
+		FacilioChain chain = getDefaultChain();		
+		chain.addCommand(new FeedbackKioskDetailsCommand());
+		return chain;
+	}
 }
