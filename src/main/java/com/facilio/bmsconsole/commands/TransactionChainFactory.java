@@ -4580,6 +4580,8 @@ public class TransactionChainFactory {
 		c.addCommand(new ExecuteStateFlowCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+		
 		return c;
 	}
 
@@ -4589,6 +4591,8 @@ public class TransactionChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new UpdateStateForModuleDataCommand());
 		c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+		c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
+		
 
 		return c;
 	}
