@@ -752,9 +752,9 @@ public class PointsAPI extends AgentUtilities {
     public static List<Map<String, Object>> getPointsFromDb(List<String> pointNames, Controller controller) throws Exception {
         Criteria criteria = new Criteria();
         LOGGER.info("GET_POINTS_FROM_DB: " + pointNames);
-        LOGGER.info("GET_POINTS_FROM_DB: " + controller.getId());
 
         if (controller != null) {
+            LOGGER.info("CONTROLLER_ID: " + controller.getId());
             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), String.valueOf(controller.getId()), NumberOperators.EQUALS));
         } else {
             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(ModuleFactory.getPointModule()), CommonOperators.IS_EMPTY));

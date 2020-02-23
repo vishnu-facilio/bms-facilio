@@ -29,66 +29,60 @@ public class ProcessDataCommandV2 extends AgentV2Command {
 
                 Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
 
-                    if( containsCheck(AgentConstants.DATA,payload)){
-                        JSONArray pointData = (JSONArray) payload.get(AgentConstants.DATA);
-                        LOGGER.info("Point data is "+pointData);
-                        List<String> pointNames = new ArrayList<>();
-                        JSONObject pointJSON;
-                        Map<String, Map<String,String>> deviceData= new HashMap<>();
-                        if (controller !=null) {
-                            deviceData.put(controller.getName(),new HashMap<>());
-                        }
-                        else  {
-                            deviceData.put("UNKNOWN",new HashMap<>());
-                        }
-                        for (Object point : pointData) {
-                            pointJSON = (JSONObject) point;
-                            if (!pointJSON.isEmpty()) {
-                                for (Object key : pointJSON.keySet()) {
-                                    String pointName = (String) key;
-                                    if(containsCheck(pointName,pointJSON)){
-                                        pointNames.add(pointName);
-                                        if (controller != null) {
-                                            deviceData.get(controller.getName()).put(pointName, String.valueOf(pointJSON.get(key)));
-                                        }
-                                        else {
-                                            deviceData.get("UNKNOWN").put(pointName,String.valueOf(pointJSON.get(key)));
-                                        }
-                                        }
-                                }
-                                    LOGGER.info("DEVICE_DATA_2 "+deviceData);
-                                 context.put("DEVICE_DATA_2", deviceData);
+                if( containsCheck(AgentConstants.DATA,payload)){
+                    JSONArray pointData = (JSONArray) payload.get(AgentConstants.DATA);
+                    LOGGER.info("Point data is "+pointData);
+                    List<String> pointNames = new ArrayList<>();
+                    JSONObject pointsJSON;
+                    Map<String, Map<String,String>> deviceData= new HashMap<>();
+                    if (controller !=null) {
+                        deviceData.put(controller.getName(),new HashMap<>());
+                    }
+                    else  {
+                        deviceData.put("UNKNOWN",new HashMap<>());
+                    }
+                    pointsJSON = (JSONObject) pointData.get(0);
 
+                    for (Object key : pointsJSON.keySet()) {
+                        String pointName = (String) key;
+                        if (containsCheck(pointName, pointsJSON)) {
+                            pointNames.add(pointName);
+                            if (controller != null) {
+                                deviceData.get(controller.getName()).put(pointName, String.valueOf(pointsJSON.get(key)));
                             } else {
-                                LOGGER.info(" points can't be empty ");
+                                deviceData.get("UNKNOWN").put(pointName, String.valueOf(pointsJSON.get(key)));
                             }
-                        }
-                        if( ! pointNames.isEmpty()){
-                            List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
-                            if( ! pointsFromDb.isEmpty() && controller!=null){
-                                for (Map<String, Object> pointRow : pointsFromDb) {
-                                    if( ! pointRow.isEmpty()){
-                                        pointRow.put(AgentConstants.CONTROLLER_NAME, controller.getName());
-                                        reformatDataPoint(pointRow);
-                                    }
-                                }
-
-                                context.put("DATA_POINTS",pointsFromDb);
-                            }
-                            if(! pointsFromDb.isEmpty() && controller==null){
-                                for (Map<String, Object> pointRow : pointsFromDb) {
-                                    if( ! pointRow.isEmpty()){
-                                        pointRow.put(AgentConstants.CONTROLLER_NAME, "UNKNOWN");
-                                        reformatDataPoint(pointRow);
-                                    }
-                                }
-                                context.put("DATA_POINTS_WITHOUT_CONTROLLER",pointsFromDb);
-                            }
-
-                        }else {
-                            throw new Exception(" points name can't be empty");
                         }
                     }
+                    LOGGER.info("DEVICE_DATA_2 " + deviceData);
+                    context.put("DEVICE_DATA_2", deviceData);
+
+                    if( ! pointNames.isEmpty()){
+                        List<Map<String, Object>> pointsFromDb = getPointsFromDb(pointNames,controller);
+                        if( ! pointsFromDb.isEmpty() && controller!=null){
+                            for (Map<String, Object> pointRow : pointsFromDb) {
+                                if( ! pointRow.isEmpty()){
+                                    pointRow.put(AgentConstants.CONTROLLER_NAME, controller.getName());
+                                    reformatDataPoint(pointRow);
+                                }
+                            }
+
+                            context.put("DATA_POINTS",pointsFromDb);
+                        }
+                        if(! pointsFromDb.isEmpty() && controller==null){
+                            for (Map<String, Object> pointRow : pointsFromDb) {
+                                if( ! pointRow.isEmpty()){
+                                    pointRow.put(AgentConstants.CONTROLLER_NAME, "UNKNOWN");
+                                    reformatDataPoint(pointRow);
+                                }
+                            }
+                            context.put("DATA_POINTS_WITHOUT_CONTROLLER",pointsFromDb);
+                        }
+
+                    }else {
+                        throw new Exception(" points name can't be empty");
+                    }
+                }
 
             }else {
                 throw new Exception(" payload must be a jsonObject");

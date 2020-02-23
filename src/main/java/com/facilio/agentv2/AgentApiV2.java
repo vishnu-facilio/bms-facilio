@@ -140,7 +140,7 @@ public class AgentApiV2 {
     }
 
     public static long addAgent(FacilioAgent agent) throws Exception {
-        LOGGER.info(" adding new agent " + stackStrace());
+        LOGGER.info(" adding new agent ");
         Chain chain = TransactionChainFactory.addNewAgent();
         FacilioContext context = new FacilioContext();
         agent.setCreatedTime(System.currentTimeMillis());
