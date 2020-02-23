@@ -182,9 +182,15 @@ public class PeopleAPI {
 			
 			List<Map<String, Object>> list = selectBuilder.get();
 			if(CollectionUtils.isNotEmpty(list)) {
-				long uId = (long)list.get(0).get("userId");
+				long uId = (long)list.get(0).get("uid");
 				if((appDomainType == AppDomainType.FACILIO && person.isAppAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
-					AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
+					User user = AccountUtil.getUserBean().getUser(person.getEmail(), appDomain.getDomain());
+					if(user != null) {
+						AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
+					}
+					else {
+						addAppUser(person, appDomain.getDomain());
+					}
 				}
 				else {
 					AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
@@ -207,9 +213,15 @@ public class PeopleAPI {
 			
 			List<Map<String, Object>> list = selectBuilder.get();
 			if(CollectionUtils.isNotEmpty(list)) {
-				long uId = (long)list.get(0).get("userId");
+				long uId = (long)list.get(0).get("uid");
 				if((appDomainType == AppDomainType.TENANT_PORTAL && person.isTenantPortalAccess()) || (appDomainType == AppDomainType.SERVICE_PORTAL && person.isOccupantPortalAccess())) {
-					AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
+					User user = AccountUtil.getUserBean().getUser(person.getEmail(), appDomain.getDomain());
+					if(user != null) {
+						AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
+					}
+					else {
+						addPortalAppUser(person, appDomain.getDomain(), 1);
+					}
 				}
 				else {
 					AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
@@ -232,9 +244,15 @@ public class PeopleAPI {
 			
 			List<Map<String, Object>> list = selectBuilder.get();
 			if(CollectionUtils.isNotEmpty(list)) {
-				long uId = (long)list.get(0).get("userId");
+				long uId = (long)list.get(0).get("uid");
 				if((appDomainType == AppDomainType.VENDOR_PORTAL && person.isVendorPortalAccess())) {
-					AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
+					User user = AccountUtil.getUserBean().getUser(person.getEmail(), appDomain.getDomain());
+					if(user != null) {
+						AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
+					}
+					else {
+						addPortalAppUser(person, appDomain.getDomain(), 1);
+					}
 				}
 				else {
 					AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
@@ -254,7 +272,7 @@ public class PeopleAPI {
 		
 		List<Map<String, Object>> list = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(list)) {
-			AccountUtil.getUserBean().deleteUser(AccountUtil.getCurrentOrg().getOrgId(), (long)list.get(0).get("userId"), null);
+			AccountUtil.getUserBean().deleteUser(AccountUtil.getCurrentOrg().getOrgId(), (long)list.get(0).get("uid"), null);
 		}
 	}
 		
@@ -267,20 +285,23 @@ public class PeopleAPI {
 		user.setUserVerified(false);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
+		user.setPeopleId(person.getId());
 		
 		AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user, 1, appDomain);
 		AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid(), appDomain);
 		
 	}
 	
-	public static void addPortalAppUser(PeopleContext contact, String appDomain, int identifier) throws Exception {
+	public static void addPortalAppUser(PeopleContext people, String appDomain, int identifier) throws Exception {
 		User user = new User();
-		user.setEmail(contact.getEmail());
-		user.setPhone(contact.getPhone());
-		user.setName(contact.getName());
+		user.setEmail(people.getEmail());
+		user.setPhone(people.getPhone());
+		user.setName(people.getName());
 		user.setUserVerified(false);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
+		user.setPeopleId(people.getId());
+		
 		
 		AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getOrgId(), user, true, false, appDomain, identifier);
 		AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), user.getUid(), appDomain);

@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -36,7 +37,9 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
@@ -98,7 +101,6 @@ public class OrgBeanImpl implements OrgBean {
 				.table("ORG_Users")
 		;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_TYPE", "userType", String.valueOf(AccountConstants.UserType.USER.getValue()), NumberOperators.EQUALS));
 				
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
@@ -143,7 +145,8 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserPropsv3(props, orgId, false, null);
+			AppDomain appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO);
+			UserUtil.setIAMUserPropsv3(props, orgId, false, appDomain != null ? appDomain.getDomain() : null);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, true, false);
 				UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());

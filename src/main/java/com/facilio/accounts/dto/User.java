@@ -26,8 +26,7 @@ public class User extends IAMUser {
 		setZip(user.getZip());
 		setCountry(user.getCountry());
 		setOrgId(user.getOrgId());
-		setIamOrgUserId(user.getIamOrgUserId());
-		setAppDomain(user.getAppDomain());
+			setAppDomain(user.getAppDomain());
 	
 	}
 
@@ -92,13 +91,6 @@ public class User extends IAMUser {
 		this.userType = userType;
 	}
 	
-	private long portalId;
-	public long getPortalId() {
-		return portalId;
-	}
-	public void setPortalId(long portalId) {
-		this.portalId = portalId;
-	}
 	
 //	private String serverName;
 	private FacilioLicense license;
@@ -155,23 +147,6 @@ public class User extends IAMUser {
 		this.ouid = id;
 	}
 
-	public boolean isPortalUser() {
-		if(portalId > 0) {
-			return true;
-		}
-		return false;
-	}
-
-	private long iamOrgUserId;
-
-	public long getIamOrgUserId() {
-		return iamOrgUserId;
-	}
-
-	public void setIamOrgUserId(long iamOrgUserId) {
-		this.iamOrgUserId = iamOrgUserId;
-	}
-	
 	private File avatar;
 	
 	public File getAvatar() {

@@ -771,10 +771,6 @@ public class FacilioAuthAction extends FacilioAction {
 			Map<String, Object> userMap = UserUtil.getUserFromEmailOrPhone(getEmailaddress(), request.getServerName());
 			if(MapUtils.isNotEmpty(userMap)) {
 				user = FieldUtil.getAsBeanFromMap(userMap, User.class);
-				if(user.getUserType() != 1) {
-					PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
-					user.setPortalId(portalInfo.getPortalId());
-				}
 			} 
 			if (user != null) {
 				AccountUtil.getUserBean().sendResetPasswordLinkv2(user, request.getServerName());
@@ -897,7 +893,6 @@ public class FacilioAuthAction extends FacilioAction {
 		User user = new User();
 		user.setName(username);
 		user.setEmail(emailaddress);
-		user.setPortalId(portalId);
 		user.setPassword(password);
 		
 		//if(emailVerificationNeeded) {

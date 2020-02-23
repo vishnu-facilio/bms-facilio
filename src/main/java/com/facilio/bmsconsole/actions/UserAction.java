@@ -342,19 +342,7 @@ public class UserAction extends FacilioAction {
 		
 		System.out.println("##########userOrgid   :"+user.getOrgId());
 		if(user != null) {
-			if(user.getUserType() == AccountConstants.UserType.REQUESTER.getValue())
-			{
-				PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
-				long portalid = portalInfo.getPortalId();
-				user.setPortalId(portalid);
-				(new UserBeanImpl()).resendInvite(user.getOrgId(), user.getUid(), ServletActionContext.getRequest().getServerName());
-			}
-			else
-			{
-				long orgId=user.getOrgId();
-				// normal user 
-				AccountUtil.getTransactionalUserBean(orgId).resendInvite(user.getOrgId(), user.getUid(), ServletActionContext.getRequest().getServerName());
-			}
+			(new UserBeanImpl()).resendInvite(user.getOrgId(), user.getUid(), ServletActionContext.getRequest().getServerName());
 			return SUCCESS;
 		}
 		return ERROR;

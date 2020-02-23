@@ -147,38 +147,6 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 
 	
     @Override
-	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception {
-		
-    	List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(IAMAccountConstants.getAccountsUserFields());
-		fields.addAll(IAMAccountConstants.getAccountUserAppOrgsFields());
-		fields.add(IAMAccountConstants.getOrgIdField());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Account_Users")
-				.innerJoin("Account_User_Apps")
-				.on("Account_Users.USERID = Account_User_Apps.USERID")
-				.innerJoin("Account_User_Apps_Orgs")
-				.on("Account_User_Apps.ID = Account_User_Apps_Orgs.ACCOUNT_USER_APPID");
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			List<IAMUser> users = new ArrayList<>();
-			for(Map<String, Object> prop : props) {
-				IAMUser user = IAMUtil.getUserBean().createUserFromProps(prop);
-				users.add(user);
-			}
-			return users;
-		}
-		return null;
-	}
-	
-    @Override
    	public List<IAMUser> getAllOrgUsersv2(long orgId, String appDomain) throws Exception {
    		
        	List<FacilioField> fields = new ArrayList<>();

@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -42,9 +44,7 @@ public class GetTicketActivitesCommand extends FacilioCommand {
 															.andCustomWhere("TICKET_ID = ?", ticketId)
 															.orderBy("MODIFIED_TIME desc");
 			
-			long portalID =  AccountUtil.getCurrentUser().getPortalId();
-			if (portalID > 0)
-			{
+			if (AccountUtil.getCurrentUser().isPortalUser())			{
 				Condition con = new Condition();
 				int index = fields.indexOf("activityType");
 				if( index > -1) {
@@ -59,7 +59,7 @@ public class GetTicketActivitesCommand extends FacilioCommand {
 				List<TicketActivity> activities = new ArrayList<>();
 				for(Map<String, Object> prop : activityProps) {
 					TicketActivity checkIsNotify = FieldUtil.getAsBeanFromMap(prop, TicketActivity.class);
-					if (portalID > 0) {
+					if (AccountUtil.getCurrentUser().isPortalUser()) {
 						if (checkIsNotify.getActivityType() == EventType.ADD_TICKET_NOTE.getValue())
 						{
 							if (checkIsNotify.getInfo().get("notifyRequester") != null) {

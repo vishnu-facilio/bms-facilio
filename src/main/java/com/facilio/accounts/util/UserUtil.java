@@ -65,14 +65,14 @@ public class UserUtil {
 			List<Map<String, Object>> finalMap = new ArrayList<Map<String,Object>>();
 			StringJoiner userIds = new StringJoiner(",");
 			for(Map<String, Object> map : actualPropsList) {
-				userIds.add(String.valueOf((long)map.get("iamOrgUserId")));
+				userIds.add(String.valueOf((long)map.get("uid")));
 			}
 			List<IAMUser> iamUsers = getIAMUserPropsv3(userIds.toString(), orgId, shouldFetchDeleted, appDomain);
 			if (CollectionUtils.isNotEmpty(iamUsers)) {
 				for(Map<String, Object> map : actualPropsList) {
-					long iamOrgUserId = (long)map.get("iamOrgUserId");
+					long uId = (long)map.get("uid");
 					List<IAMUser> result = iamUsers.stream()  
-	                .filter(user -> user.getIamOrgUserId() == iamOrgUserId)     
+	                .filter(user -> user.getUid() == uId)     
 	                .collect(Collectors.toList());
 					if(CollectionUtils.isNotEmpty(result)) {
 						map.putAll(FieldUtil.getAsProperties(result.get(0)));

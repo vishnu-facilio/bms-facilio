@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -87,8 +89,7 @@ public class NotesAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS))
 				.maxLevel(0);
 		
-		long portalID =  AccountUtil.getCurrentUser().getPortalId();
-		if (portalID > 0) {
+		if (AccountUtil.getCurrentUser().isPortalUser()) {
 			Criteria cri = new Criteria();
 			cri.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("createdBy"), AccountUtil.getCurrentUser().getId() + "", NumberOperators.EQUALS));
 			if(!moduleName.equalsIgnoreCase("insurancenotes"))

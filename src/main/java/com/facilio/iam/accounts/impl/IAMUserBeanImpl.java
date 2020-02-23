@@ -47,6 +47,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -992,6 +993,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	private long addUserV3(long orgId, IAMUser user, boolean emailRegRequired, int identifier, String appDomain) throws Exception {
 
+		user.setIdentifier(identifier);
 		if(StringUtils.isEmpty(appDomain)) {
 			appDomain = AccountUtil.getDefaultAppDomain();
 		}
@@ -1022,7 +1024,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		user.setOrgId(orgId);
 		long accoutUserAppId = addAccountUserAppEntry(appDomainObj.getId(), user.getUid());
 		long ouId = addAccountUserAppOrgEntry(accoutUserAppId, orgId, user);
-		user.setIamOrgUserId(ouId);
+		//user.setIamOrgUserId(ouId);
 		return ouId;
 	}
 
@@ -1551,6 +1553,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
 		fields.addAll(IAMAccountConstants.getAccountUserAppOrgsFields());
+		fields.add(IAMAccountConstants.getAppDomainField());
+   		
 		
 		GenericSelectRecordBuilder selectBuilder = getSelectBuilder(fields);
 
@@ -1585,7 +1589,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.select(IAMAccountConstants.getAppDomainFields())
 				.table("App_Domain");
 				
-		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", String.valueOf(type), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.APP_DOMAIN_TYPE", "appDomainType", String.valueOf(type.getIndex()), EnumOperators.IS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(props)) {

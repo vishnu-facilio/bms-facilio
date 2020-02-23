@@ -156,43 +156,62 @@ public class UserBeanImpl implements UserBean {
 		
 	}
 	
+	private long checkIfExistsInAppOrgUsers(long uId, long orgId) throws Exception {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uId), NumberOperators.EQUALS));
+
+		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(criteria, orgId, null);
+		List<Map<String , Object>> mapList = selectRecordBuilder.get();
+		if(CollectionUtils.isNotEmpty(mapList)) {
+			return (long)mapList.get(0).get("ouid");
+		}
+		return -1;
+
+	}
+	
 	private void addToAppORGUsers(User user, boolean isEmailVerificationNeeded, String appDomain) throws Exception {
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-		InsertRecordBuilder<ResourceContext> insertRecordBuilder = new InsertRecordBuilder<ResourceContext>()
-				.moduleName(FacilioConstants.ContextNames.RESOURCE)
-				.fields(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE));
-		ResourceContext resource = new ResourceContext();
-		resource.setName(user.getEmail());
-		resource.setResourceType(ResourceType.USER);
-
-		long id = insertRecordBuilder.insert(resource);
-		user.setId(id);
-
-		List<FacilioField> fields = new ArrayList<FacilioField>();
-		fields.addAll(AccountConstants.getAppOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getAppOrgUserModule().getTableName()).fields(fields);
-
-		Map<String, Object> props = FieldUtil.getAsProperties(user);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-
-		user.setOuid((long) props.get("ouid"));
-		if((long)props.get("ouid") > 0) {
-			if(isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
-				sendInvitation(user, false, appDomain);
+		long ouId = checkIfExistsInAppOrgUsers(user.getUid(), user.getOrgId());
+		if(ouId <= 0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	
+			InsertRecordBuilder<ResourceContext> insertRecordBuilder = new InsertRecordBuilder<ResourceContext>()
+					.moduleName(FacilioConstants.ContextNames.RESOURCE)
+					.fields(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE));
+			ResourceContext resource = new ResourceContext();
+			resource.setName(user.getEmail());
+			resource.setResourceType(ResourceType.USER);
+	
+			long id = insertRecordBuilder.insert(resource);
+			user.setId(id);
+	
+			List<FacilioField> fields = new ArrayList<FacilioField>();
+			fields.addAll(AccountConstants.getAppOrgUserFields());
+			fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(AccountConstants.getAppOrgUserModule().getTableName()).fields(fields);
+	
+			Map<String, Object> props = FieldUtil.getAsProperties(user);
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+	
+			user.setOuid((long) props.get("ouid"));
+			if((long)props.get("ouid") > 0) {
+				if(isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
+					sendInvitation(user, false, appDomain);
+				}
 			}
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+			context.put(FacilioConstants.ContextNames.MODULE_LIST,
+					modBean.getSubModules(FacilioConstants.ContextNames.USERS, FacilioModule.ModuleType.READING));
+	
+			FacilioChain addRDMChain = FacilioChainFactory.addResourceRDMChain();
+			addRDMChain.execute(context);
 		}
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
-		context.put(FacilioConstants.ContextNames.MODULE_LIST,
-				modBean.getSubModules(FacilioConstants.ContextNames.USERS, FacilioModule.ModuleType.READING));
-
-		FacilioChain addRDMChain = FacilioChainFactory.addResourceRDMChain();
-		addRDMChain.execute(context);
+		else {
+			user.setOuid(ouId);
+		}
 	}
 	
 	private void sendInvitation(User user, boolean registration, String appDomain) throws Exception {
@@ -202,13 +221,13 @@ public class UserBeanImpl implements UserBean {
 		placeholders.put("inviter",AccountUtil.getCurrentUser());
 		
 		addBrandPlaceHolders("brandUrl", placeholders);
-
-		if (user.isPortalUser()) {
+		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		
+		if (appDomainObj != null && appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
 			String inviteLink = getUserLink(user, "/invitation/", appDomain);
 			if (registration) {
 				inviteLink = getUserLink(user, "/emailregistration/", appDomain);
 			}
-			AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
 			String portalType = "Service Portal";
 			if(appDomainObj.getAppDomainTypeEnum() == AppDomainType.TENANT_PORTAL) {
 				portalType = "Tenant Portal" ;
@@ -366,15 +385,15 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public void addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception {
-		userMobileSetting.setFromPortal(AccountUtil.getCurrentAccount().getUser().isPortalUser());
+//		userMobileSetting.setFromPortal(AccountUtil.getCurrentAccount().getUser().isPortalUser());
 		IAMUserUtil.addUserMobileSettings(userMobileSetting);
 	}
 
 	
 	@Override
 	public void removeUserMobileSetting(String mobileInstanceId) throws Exception {
-		boolean isPortal = AccountUtil.getCurrentAccount().getUser().isPortalUser();
-		IAMUserUtil.removeUserMobileSettings(mobileInstanceId, isPortal);
+//		boolean isPortal = AccountUtil.getCurrentAccount().getUser().isPortalUser();
+		IAMUserUtil.removeUserMobileSettings(mobileInstanceId, true);
 
 	}
 
@@ -424,7 +443,8 @@ public class UserBeanImpl implements UserBean {
 		IAMUser iamUser = IAMUserUtil.getFacilioUser(orgId, userId, appDomain);
 		if (iamUser != null) {
 			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition("IAM_ORG_USERID", "iamOrgUserId", String.valueOf(iamUser.getIamOrgUserId()), NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
 			
 			GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(criteria, orgId, null);
 			List<Map<String , Object>> mapList = selectRecordBuilder.get();
@@ -655,10 +675,7 @@ public class UserBeanImpl implements UserBean {
 		try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				Organization org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
-				PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(org.getId(), false);
-				org.setPortalId(portalInfo.getPortalId());
 				user.setOrgId(org.getOrgId());
-				user.setPortalId(org.getPortalId());
 				user.setId(addRequester(orgId, user, isEmailVerificationNeeded, shouldThrowExistingUserError, appDomain, identifier));
 				return user.getOuid();
 			}
@@ -829,10 +846,6 @@ public class UserBeanImpl implements UserBean {
 			UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
 			user.setAccessibleSpace(userBean.getAccessibleSpaceList(user.getOuid()));
 		}
-		if(user.getUserType() == UserType.REQUESTER.getValue()) {
-			PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
-			user.setPortalId(portalInfo.getPortalId());
-		}
 		
 		return user;
 	}
@@ -977,12 +990,12 @@ public class UserBeanImpl implements UserBean {
 	private String getUserLink(User user, String url, String appDomain) throws Exception {
 		String inviteToken = IAMUserUtil.getEncodedToken(user, appDomain);
 		String hostname = "";
-		if (user.isPortalUser()) {
+		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		
+		if (appDomainObj != null && appDomainObj.getAppDomainTypeEnum() != AppDomainType.FACILIO) {
 			try {
-				AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
-				Organization org = AccountUtil.getOrgBean().getPortalOrg(user.getPortalId(), appDomainObj.getAppDomainTypeEnum());
+				Organization org = AccountUtil.getOrgBean().getPortalOrg(-1, appDomainObj.getAppDomainTypeEnum());
 				hostname = "https://" + org.getDomain() + "/service";
-				inviteToken = inviteToken + "&portalid=" + user.getPortalId();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				log.info("Exception occurred ", e);
@@ -1029,7 +1042,7 @@ public class UserBeanImpl implements UserBean {
 		Map<String, Object> props = UserUtil.getUserFromEmailOrPhoneForOrg(emailOrPhone, null);
 		if (props != null && !props.isEmpty()) {
 			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition("IAM_ORG_USERID", "iamOrgUserId", String.valueOf((long)props.get("iamOrgUserId")), NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf((long)props.get("uid")), NumberOperators.EQUALS));
 			
 			GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(criteria, currentOrg.getOrgId(), null);
 			List<Map<String , Object>> mapList = selectRecordBuilder.get();
@@ -1050,8 +1063,8 @@ public class UserBeanImpl implements UserBean {
 
 	private User getAppUser(Map<String, Object> props, boolean fetchRole, boolean fetchSpace, boolean isPortalUser) throws Exception {
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition("IAM_ORG_USERID", "iamOrgUserId", String.valueOf((long)props.get("iamOrgUserId")), NumberOperators.EQUALS));
-		
+		criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf((long)props.get("uid")), NumberOperators.EQUALS));
+
 		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(criteria, (long)props.get("orgId"), null);
 		List<Map<String , Object>> mapList = selectRecordBuilder.get();
 		if(CollectionUtils.isNotEmpty(mapList)) {

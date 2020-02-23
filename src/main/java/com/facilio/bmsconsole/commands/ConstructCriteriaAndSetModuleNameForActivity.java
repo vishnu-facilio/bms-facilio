@@ -8,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
@@ -54,8 +56,7 @@ public class ConstructCriteriaAndSetModuleNameForActivity extends FacilioCommand
 			int index = -1;
 			
 			Criteria filterCriteria = new Criteria();
-			long portalID =  AccountUtil.getCurrentUser().getPortalId();
-			if (portalID > 0) {	
+			if (AccountUtil.getCurrentUser().isPortalUser())  {
 				for (int i = 0; i<fields.size(); i++) {
 				if (fields.get(i).getName().contains("type")) { 
 					index = i;
