@@ -158,13 +158,13 @@ public class ScriptParser extends CommonParser<Value> {
 	@Override
 	public Value visitNameSpaceInitialization(NameSpaceInitializationContext ctx) {
 		try {
-    		Value nameSpaceValue = this.visit(ctx.expr());
-    		WorkflowV2Util.checkForNullAndThrowException(nameSpaceValue, ctx.expr().getText());
-        	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue.asString());
+    		String nameSpaceValue = ctx.expr().getText();
+    		nameSpaceValue = nameSpaceValue.substring(1, nameSpaceValue.trim().length()-1);
+        	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue);
         	if(nameSpaceEnum == null) {
-        		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceValue.asString());
+        		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceValue);
         		if(namespace == null) {
-        			throw new RuntimeException("No such namespace - "+nameSpaceValue.asString());
+        			throw new RuntimeException("No such namespace - "+nameSpaceValue);
         		}
         		return new Value(namespace);
         	}
@@ -325,7 +325,7 @@ public class ScriptParser extends CommonParser<Value> {
     				value = operators[1].trim();
     			}
     			else {
-    				operator = DateOperators.valueOf(operatorString.trim().substring(1,operatorString.trim().length()-1));
+    				operator = DateOperators.getAllOperators().get(operatorString.trim().substring(1,operatorString.trim().length()-1));
     			}
     		}
     	}

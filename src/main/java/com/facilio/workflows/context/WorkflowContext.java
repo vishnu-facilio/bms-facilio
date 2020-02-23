@@ -425,6 +425,7 @@ public class WorkflowContext implements Serializable {
 //				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				this.setWorkflowExpressions(null);
 				this.setParsedV2Script(false);
+				this.setWorkflowUIMode(WorkflowUIMode.XML);
 			}
 		}
 	}
