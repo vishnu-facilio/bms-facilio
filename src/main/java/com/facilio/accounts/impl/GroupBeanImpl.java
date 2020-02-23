@@ -16,7 +16,6 @@ import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.UserUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -27,6 +26,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -201,7 +201,7 @@ public class GroupBeanImpl implements GroupBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<GroupMember> members = new ArrayList<>();
-			UserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
+			IAMUserUtil.setIAMUserPropsv3(props, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			for(Map<String, Object> prop : props) {
 				members.add(FieldUtil.getAsBeanFromMap(prop, GroupMember.class));
 			}

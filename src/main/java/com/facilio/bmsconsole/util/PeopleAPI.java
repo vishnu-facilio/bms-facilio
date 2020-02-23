@@ -197,6 +197,9 @@ public class PeopleAPI {
 				}
 			}
         }
+        else {
+        	throw new IllegalArgumentException("Invalid App Domain");
+        }
 		
 	}
 	
@@ -227,6 +230,9 @@ public class PeopleAPI {
 					AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
 				}
 			}
+        }
+        else {
+        	throw new IllegalArgumentException("Invalid App Domain");
         }
 		
 	}
@@ -259,6 +265,9 @@ public class PeopleAPI {
 				}
 			}
         }
+        else {
+        	throw new IllegalArgumentException("Invalid App Domain");
+        }
 		
 	}
 	
@@ -278,6 +287,9 @@ public class PeopleAPI {
 		
 	
 	public static void addAppUser(PeopleContext person, String appDomain) throws Exception {
+		if(StringUtils.isEmpty(appDomain)) {
+			throw new IllegalArgumentException("Invalid App Domain");
+		}
 		User user = new User();
 		user.setEmail(person.getEmail());
 		user.setPhone(person.getPhone());
@@ -293,6 +305,9 @@ public class PeopleAPI {
 	}
 	
 	public static void addPortalAppUser(PeopleContext people, String appDomain, int identifier) throws Exception {
+		if(StringUtils.isEmpty(appDomain)) {
+			throw new IllegalArgumentException("Invalid App Domain");
+		}
 		User user = new User();
 		user.setEmail(people.getEmail());
 		user.setPhone(people.getPhone());

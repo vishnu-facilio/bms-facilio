@@ -133,7 +133,7 @@ public class UserAction extends FacilioAction {
 //			  checkforTenantPrimaryContact(user.getEmail());
 //			}
 			HttpServletRequest request = ServletActionContext.getRequest(); 
-			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getEmail(), request.getServerName());
+			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getUserName(), request.getServerName());
 			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOrgId(), userTobeDeleted.getUid(), request.getServerName())) {
 				setUserId(userTobeDeleted.getOuid());
 			    return SUCCESS;

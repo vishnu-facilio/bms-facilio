@@ -58,15 +58,13 @@ public interface UserBean {
 	
 	public Map<Long, User> getUsersAsMap(Criteria criteria, Collection<Long>... ouids) throws Exception;
 
-	public User getUser(long orgId, String email) throws Exception;
-	
 	public List<Organization> getOrgs(long uid, String appDomain) throws Exception;
 	
 	public Organization getDefaultOrg(long uid, String appDomain) throws Exception;
 	
 	public String updateUserPhoto(long uid, User user) throws Exception;
 
-    public User getUser(String email, String appDomain) throws Exception;
+    public User getUser(String username, String appDomain) throws Exception;
     
     public User getUser(String email) throws Exception;
     

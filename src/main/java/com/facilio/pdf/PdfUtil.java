@@ -9,10 +9,10 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.UserUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.executor.CommandExecutor;
 import com.facilio.fs.FileInfo.FileFormat;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.services.filestore.PublicFileUtil;
@@ -41,7 +41,7 @@ public class PdfUtil {
           
           if(directoryExits) {
         	  try {
-        		  String token = UserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
+        		  String token = IAMUserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
         		  File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
                   pdfFileLocation = pdfFile.getAbsolutePath();
                   String serverName = FacilioProperties.getAppDomain();

@@ -9,15 +9,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.UserUtil;
 import com.facilio.bmsconsole.util.DevicesUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.service.FacilioService;
 
 
 public class DeviceClientAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
 	private String code;
-	public void setCode(String code) {
+	public void setCode(String code) { 
 		this.code = code;
 	}
 	
@@ -59,7 +59,7 @@ public String validateCode() {
 				//connected Device has been added user side.
 				if (connectedDeviceId != null && connectedDeviceId > 0) {
 					
-					String jwt = UserUtil.createJWT("id", "auth0", connectedDeviceId + "", System.currentTimeMillis() + 24 * 60 * 60000);
+					String jwt = IAMUserUtil.createJWT("id", "auth0", connectedDeviceId + "", System.currentTimeMillis() + 24 * 60 * 60000);
 
 	                ServletActionContext.getRequest();
 	                HttpServletResponse response = ServletActionContext.getResponse();

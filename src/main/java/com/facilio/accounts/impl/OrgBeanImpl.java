@@ -20,17 +20,11 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
-import com.facilio.accounts.util.UserUtil;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.copyAssetReadingCommand;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -39,7 +33,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
-import com.facilio.iam.accounts.util.IAMUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
@@ -146,7 +140,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			AppDomain appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO);
-			UserUtil.setIAMUserPropsv3(props, orgId, false, appDomain != null ? appDomain.getDomain() : null);
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, false, appDomain != null ? appDomain.getDomain() : null);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, true, false);
 				UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
@@ -178,7 +172,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserPropsv3(props, orgId, false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.USER.getValue()) {
@@ -195,7 +189,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
 		if (props != null && !props.isEmpty()) {
 			Map<Long, User> users = new HashMap<>();
-			UserUtil.setIAMUserPropsv3(props, orgId, true, AccountUtil.getCurrentUser().getAppDomain().getDomain());
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, true, AccountUtil.getCurrentUser().getAppDomain().getDomain());
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.USER.getValue()) {
@@ -263,7 +257,7 @@ public class OrgBeanImpl implements OrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserPropsv3(props, orgId, false, AccountUtil.getDefaultAppDomain());
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, false, AccountUtil.getDefaultAppDomain());
 			if(CollectionUtils.isNotEmpty(props)) {
 				return UserBeanImpl.createUserFromProps(props.get(0), true, false, false);
 			}
@@ -331,7 +325,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, null);
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserPropsv3(props, orgId, false, null);
+			IAMUserUtil.setIAMUserPropsv3(props, orgId, false, null);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.REQUESTER.getValue()) {

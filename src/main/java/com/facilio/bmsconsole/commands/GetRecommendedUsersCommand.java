@@ -14,7 +14,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.UserUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
@@ -25,6 +24,7 @@ import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -148,7 +148,7 @@ public class GetRecommendedUsersCommand extends FacilioCommand {
         List<Map<String, Object>> userProps = selectRecordBuilder.get();
         List<User> usersWithRole = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(userProps)) {
-        	UserUtil.setIAMUserPropsv3(userProps, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
+        	IAMUserUtil.setIAMUserPropsv3(userProps, AccountUtil.getCurrentOrg().getOrgId(), false, AccountUtil.getCurrentUser().getAppDomain().getDomain());
             for (Map<String, Object> prop : userProps) {
                 usersWithRole.add(UserBeanImpl.createUserFromProps(prop, false, false, false));
             }

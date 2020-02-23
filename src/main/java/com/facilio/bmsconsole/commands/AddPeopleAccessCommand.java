@@ -30,16 +30,16 @@ public class AddPeopleAccessCommand extends FacilioCommand{
 	    	
 	    	for(PeopleContext person : people) {
 	    		if(facilioApp != null && person.getPeopleTypeEnum() == PeopleType.EMPLOYEE && ((EmployeeContext)person).isAppAccess()) {
-	    			PeopleAPI.addAppUser(person, facilioApp.getDomain());
+	    			PeopleAPI.addAppUser(person, facilioApp != null ? facilioApp.getDomain() : null);
 	    		}
 	    		if(occupantPortalApp != null && ((person.getPeopleTypeEnum() == PeopleType.EMPLOYEE && ((EmployeeContext)person).isOccupantPortalAccess())|| (person.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT && ((TenantContactContext)person).isOccupantPortalAccess()))) {
-	    	  		PeopleAPI.addPortalAppUser(person, occupantPortalApp.getDomain(), 1);
+	    	  		PeopleAPI.addPortalAppUser(person, occupantPortalApp != null ? occupantPortalApp.getDomain() : null, 1);
 	    		}
 	    		if(vendorPortalApp != null && person.getPeopleTypeEnum() == PeopleType.VENDOR_CONTACT && ((VendorContactContext)person).isVendorPortalAccess()) {
-	    	  		PeopleAPI.addPortalAppUser(person, vendorPortalApp.getDomain(), 1);
+	    	  		PeopleAPI.addPortalAppUser(person, vendorPortalApp != null ? vendorPortalApp.getDomain() : null, 1);
 	    		}
 	    		if(tenantPortalApp != null && person.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT && ((TenantContactContext)person).isTenantPortalAccess()) {
-	    	  		PeopleAPI.addPortalAppUser(person, tenantPortalApp.getDomain(), 1);
+	    	  		PeopleAPI.addPortalAppUser(person, tenantPortalApp != null ? tenantPortalApp.getDomain() : null, 1);
 	    		}
 		    }
 	    }

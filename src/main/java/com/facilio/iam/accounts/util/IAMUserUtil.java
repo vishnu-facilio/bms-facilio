@@ -1,12 +1,19 @@
 package com.facilio.iam.accounts.util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
@@ -14,15 +21,20 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+
 
 public class IAMUserUtil {
 
 	private static final Logger logger = Logger.getLogger(IAMUserUtil.class.getName());
 	
-
+	public static final String JWT_DELIMITER = "#";
+	private static Logger log = LogManager.getLogger(IAMUserUtil.class.getName());
 	
 	public static long addUser(IAMUser user, long orgId, int identifier, String appDomain) throws Exception {
 		if ((user != null) && orgId > 0) {
@@ -135,15 +147,15 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getPermalinkAccount(token, urls, appDomain));
 	}
 	
-	public static String generateAuthToken(String emailaddress, String password, String appDomain) throws Exception {
-		return validateLoginv3(emailaddress, password, appDomain, null, null, null, true);
+	public static String generateAuthToken(String username, String password, String appDomain) throws Exception {
+		return validateLoginv3(username, password, appDomain, null, null, null, true);
 	}
 
-	public static boolean logOut(long uId, String facilioToken, String userEmail) throws Exception {
+	public static boolean logOut(long uId, String facilioToken) throws Exception {
 		// end user session
 		try {
 			if (facilioToken != null) {
-				return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().endUserSessionv2(uId, userEmail, facilioToken));
+				return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().endUserSessionv2(uId, facilioToken));
 			}
 		} catch (Exception e) {
 			throw e;
@@ -155,8 +167,8 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getEncodedTokenv2(user, appDomain));
 	}
 
-	public static long startUserSession(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().startUserSessionv2(uid, email, token, ipAddress, userAgent, userType));
+	public static long startUserSession(long uid, String token, String ipAddress, String userAgent, String userType) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().startUserSessionv2(uid, token, ipAddress, userAgent, userType));
 	}
 
 	public static List<Map<String, Object>> getUserSessions(long uId, Boolean isActive) throws Exception {
@@ -172,8 +184,8 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getDefaultOrgv3(uId, appDomain));
 	}
 	
-	public static void clearUserSessions(long uid, String email) throws Exception {
-		FacilioService.runAsService(() -> IAMUtil.getUserBean().clearAllUserSessionsv2(uid, email));
+	public static void clearUserSessions(long uid) throws Exception {
+		FacilioService.runAsService(() -> IAMUtil.getUserBean().clearAllUserSessionsv2(uid));
 	}
 	
 	public static boolean setDefaultOrg(long uid, long orgId, String appDomain) throws Exception {
@@ -208,9 +220,9 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getAppDomain(domain));
 	}
 	
-	public static String validateLoginv3(String emailaddress, String password, String appDomainName, String userAgent, String userType,
+	public static String validateLoginv3(String username, String password, String appDomainName, String userAgent, String userType,
 			String ipAddress, boolean startUserSession) throws Exception {
-       return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().validateAndGenerateTokenV3(emailaddress, password, appDomainName, userAgent, userType, ipAddress, startUserSession));
+       return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().validateAndGenerateTokenV3(username, password, appDomainName, userAgent, userType, ipAddress, startUserSession));
 		
 	}
 	
@@ -227,8 +239,72 @@ public class IAMUserUtil {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForEmailOrPhone(email, appDomain, isPhone, orgId));
 	}
 	
+	public static Map<String, Object> getUserForUsername(String username, String appDomain, boolean isPhone, long orgId) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserForUsername(username, appDomain, orgId));
+	}
+	
+	
 	public static IAMUser getFacilioUser(long orgId, long uId, String appDomain) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getFacilioUser(orgId, uId, appDomain, true));
 	}
+	
+	public static String createJWT(String id, String issuer, String subject, long ttlMillis) {
+		 
+		try {
+		    Algorithm algorithm = Algorithm.HMAC256("secret");
+		    
+		    String key = subject + JWT_DELIMITER + System.currentTimeMillis();
+		    JWTCreator.Builder builder = JWT.create().withSubject(key)
+	        .withIssuer(issuer);
+		    
+		    return builder.sign(algorithm);
+		} catch (UnsupportedEncodingException | JWTCreationException exception){
+			log.info("exception occurred while creating JWT "+ exception.toString());
+		    //UTF-8 encoding not supported
+		}
+		return null;
+	}
+
+	public static void setIAMUserPropsv3(List<Map<String, Object>> actualPropsList, long orgId, boolean shouldFetchDeleted, String appDomain) throws Exception {
+		if(CollectionUtils.isNotEmpty(actualPropsList)) {
+			List<Map<String, Object>> finalMap = new ArrayList<Map<String,Object>>();
+			StringJoiner userIds = new StringJoiner(",");
+			for(Map<String, Object> map : actualPropsList) {
+				userIds.add(String.valueOf((long)map.get("uid")));
+			}
+			List<IAMUser> iamUsers = getIAMUserPropsv3(userIds.toString(), orgId, shouldFetchDeleted, appDomain);
+			if (CollectionUtils.isNotEmpty(iamUsers)) {
+				for(Map<String, Object> map : actualPropsList) {
+					long uId = (long)map.get("uid");
+					List<IAMUser> result = iamUsers.stream()  
+	                .filter(user -> user.getUid() == uId)     
+	                .collect(Collectors.toList());
+					if(CollectionUtils.isNotEmpty(result)) {
+						map.putAll(FieldUtil.getAsProperties(result.get(0)));
+						finalMap.add(map);
+					}
+				}
+			}
+			actualPropsList.clear();
+			actualPropsList.addAll(finalMap);
+		}
+	}
+	
+	public static Map<String, Object> getUserFromUsername(String username, String appDomain) throws Exception {
+		return getUserForUsername(username, appDomain, false, -1);
+	}
+	
+	public static List<IAMUser> getIAMUserPropsv3(String userIds, long orgId, boolean shouldFetchDeleted, String appDomain) throws Exception {
+		return getUserDatav3(userIds, orgId, shouldFetchDeleted, appDomain);
+	}
+	
+	public static Map<String, Object> getUserFromPhone(String phone, String appDomain) throws Exception {
+		return getUserForEmailOrPhone(phone, appDomain, true, -1);
+	}
+	
+	public static Map<String, Object> getUserFromEmailOrPhoneForOrg(String emailOrPhone, String appDomain) throws Exception {
+		return getUserForEmailOrPhone(emailOrPhone, appDomain, true, AccountUtil.getCurrentOrg().getOrgId());
+	}
+	
 	
 }

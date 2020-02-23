@@ -36,7 +36,6 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.UserUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.aws.util.FederatedIdentityUtil;
@@ -768,7 +767,7 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		} else {
 			User user = null;
-			Map<String, Object> userMap = UserUtil.getUserFromEmailOrPhone(getEmailaddress(), request.getServerName());
+			Map<String, Object> userMap = IAMUserUtil.getUserFromUsername(getEmailaddress(), request.getServerName());
 			if(MapUtils.isNotEmpty(userMap)) {
 				user = FieldUtil.getAsBeanFromMap(userMap, User.class);
 			} 
@@ -1005,7 +1004,7 @@ public class FacilioAuthAction extends FacilioAction {
 			if (facilioToken != null) {
 				User currentUser = AccountUtil.getCurrentUser();
 				if (currentUser != null) {
-					IAMUserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
+					IAMUserUtil.logOut(currentUser.getUid(), facilioToken
 							);
 				}
 			}

@@ -26,7 +26,8 @@ public class User extends IAMUser {
 		setZip(user.getZip());
 		setCountry(user.getCountry());
 		setOrgId(user.getOrgId());
-			setAppDomain(user.getAppDomain());
+		setAppDomain(user.getAppDomain());
+		setUserName(user.getUserName());	
 	
 	}
 

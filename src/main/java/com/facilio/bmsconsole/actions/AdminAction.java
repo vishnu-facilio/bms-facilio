@@ -543,7 +543,7 @@ public class AdminAction extends ActionSupport {
 	public String clearSession() throws Exception {
 		String email = getEmail();
 		long uid = getUserId();
-		IAMUserUtil.clearUserSessions(uid, email);
+		IAMUserUtil.clearUserSessions(uid);
 		return SUCCESS;
 
 	}

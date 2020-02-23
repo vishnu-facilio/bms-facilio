@@ -45,15 +45,15 @@ public interface IAMUserBean {
 	
 	public String updateUserPhoto(long uid, User user) throws Exception;
 
-	public long startUserSessionv2(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception;
+	public long startUserSessionv2(long uid, String token, String ipAddress, String userAgent, String userType) throws Exception;
     
-    public boolean endUserSessionv2(long uid, String email, String token) throws Exception;
+    public boolean endUserSessionv2(long uid, String token) throws Exception;
     
     public List<Map<String, Object>> getUserSessionsv2(long uid, Boolean isActive) throws Exception;
     
-    public void clearUserSessionv2(long uid, String email, String token) throws Exception;
+    public void clearUserSessionv2(long uid, String token) throws Exception;
     
-    public void clearAllUserSessionsv2(long uid, String email) throws Exception;
+    public void clearAllUserSessionsv2(long uid) throws Exception;
     
     public boolean acceptUserv2(IAMUser user, String appDomain) throws Exception;
 	
@@ -86,7 +86,7 @@ public interface IAMUserBean {
     public String validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName, String userAgent, String userType,
 			String ipAddress, boolean startUserSession) throws Exception ;
 
-    public long verifyPasswordv3(String email, String password, String appDomainName, String userType) throws Exception;
+    public long verifyPasswordv3(String username, String password, String appDomainName, String userType) throws Exception;
     
     public IAMAccount verifyFacilioTokenv3(String idToken, boolean overrideSessionCheck, String appDomain, String userType, String orgDomain) throws Exception;
 	
@@ -109,6 +109,10 @@ public interface IAMUserBean {
     public AppDomain getAppDomain(AppDomainType type) throws Exception;
 
     public IAMUser createUserFromProps(Map<String, Object> prop) throws Exception;
-    	
+    
+    public Map<String, Object> getUserForUsername(String username, String appDomain, long orgId) throws Exception;
+
+	public IAMUser getFacilioUserV3(String username, int identifier) throws Exception;
+	
     	
 }

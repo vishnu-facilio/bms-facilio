@@ -278,6 +278,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			
 			if(StringUtils.isNotEmpty(appDomain)) {
 				AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+				if(appDomainObj == null) {
+					throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "Invalid app Domain");
+				}
 				updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
 			}	
 			
@@ -335,6 +338,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			appDomain = AccountUtil.getDefaultAppDomain();
 		}
 		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		if(appDomainObj == null) {
+			throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "Invalid app Domain");
+		}
 		updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
 		
 		
@@ -382,6 +388,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			appDomain = AccountUtil.getDefaultAppDomain();
 		}
 		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		if(appDomainObj == null) {
+			throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "Invalid app Domain");
+		}
 		updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
 		
 		
@@ -416,6 +425,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			appDomain = AccountUtil.getDefaultAppDomain();
 		}
 		AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+		if(appDomainObj == null) {
+			throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "Invalid app Domain");
+		}
 		updateBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
 		
 		Map<String, Object> props = new HashMap<>();
@@ -502,7 +514,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public long startUserSessionv2(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception {
+	public long startUserSessionv2(long uid, String token, String ipAddress, String userAgent, String userType) throws Exception {
 		TransactionManager transactionManager = null;
 		try {
 			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
@@ -542,7 +554,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public boolean endUserSessionv2(long uid, String email, String token) throws Exception {
+	public boolean endUserSessionv2(long uid, String token) throws Exception {
 		boolean status = false;
 		TransactionManager transactionManager = null;
 		try {
@@ -604,7 +616,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 	@Override
-	public void clearUserSessionv2(long uid, String email, String token) throws Exception {
+	public void clearUserSessionv2(long uid, String token) throws Exception {
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(IAMAccountConstants.getUserSessionModule().getTableName());
@@ -618,7 +630,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public void clearAllUserSessionsv2(long uid, String email) throws Exception {
+	public void clearAllUserSessionsv2(long uid) throws Exception {
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(IAMAccountConstants.getUserSessionModule().getTableName());
@@ -973,6 +985,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	}
 	
+	@Override
 	public IAMUser getFacilioUserV3(String username, int identifier) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
@@ -980,7 +993,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Account_Users")
-				.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL","email" , username, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME","username" , username, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition("Account_Users.IDENTIFIER","identifier" , String.valueOf(identifier), NumberOperators.EQUALS));
 			
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -998,7 +1011,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			appDomain = AccountUtil.getDefaultAppDomain();
 		}
 		AppDomain appDomainObj = getAppDomain(appDomain);
-		IAMUser appUser = getFacilioUserV3(user.getEmail(), identifier);
+		if(appDomainObj == null) {
+			throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "Invalid app Domain");
+		}
+		IAMUser appUser = getFacilioUserV3(user.getUserName(), identifier);
 		if (appUser != null) {
 			if(!StringUtils.equals(appDomain, AccountUtil.getDefaultAppDomain())) {
 				long accountUserAppId = checkIfUserAlreadyPresentInApp(appUser.getUid(), appDomainObj.getId(), orgId);
@@ -1193,15 +1209,15 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 
 	@Override
-	public String validateAndGenerateTokenV3(String emailaddress, String password, String appDomainName,
+	public String validateAndGenerateTokenV3(String username, String password, String appDomainName,
 			String userAgent, String userType, String ipAddress, boolean startUserSession) throws Exception {
-		long validUid = verifyPasswordv3(emailaddress, password, appDomainName, userType);
+		long validUid = verifyPasswordv3(username, password, appDomainName, userType);
 		if (validUid > 0) {
 			//IAMUser user = getFacilioUser(emailaddress, -1, domain);
 			String jwt = createJWT("id", "auth0", String.valueOf(validUid),
 					System.currentTimeMillis() + 24 * 60 * 60000);
 			if (startUserSession) {
-				startUserSessionv2(validUid, emailaddress, jwt, ipAddress, userAgent, userType);
+				startUserSessionv2(validUid, jwt, ipAddress, userAgent, userType);
 			}
 			return jwt;
 			//throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
@@ -1212,7 +1228,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	
 	@Override
-	public long verifyPasswordv3(String emailAddress, String password, String appDomainName, String userType) throws Exception {
+	public long verifyPasswordv3(String username, String password, String appDomainName, String userType) throws Exception {
 		try {
 			if (StringUtils.isEmpty(appDomainName)) {
 				appDomainName = AccountUtil.getDefaultAppDomain();
@@ -1233,14 +1249,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					.on("Account_User_Apps_Orgs.ACCOUNT_USER_APPID = Account_User_Apps.ID")
 				
 					;
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", emailAddress, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME", "username", username, StringOperators.IS));
 			selectBuilder.andCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN", "domain", appDomainName, StringOperators.IS));
 			selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
 			selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 			selectBuilder.andCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 			
 			log.info("App Domain  " + appDomainName);
-			log.info("Email Address  " + emailAddress);
+			log.info("Email Address  " + username);
 			log.info("PAssword  " + password);
 			
 			List<Map<String, Object>> props = selectBuilder.get();
@@ -1252,7 +1268,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					return (long)result.get("uid");
 				}
 			} else {
-				log.info("No records found for  " + emailAddress);
+				log.info("No records found for  " + username);
 				throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists");
 			}
 
@@ -1450,7 +1466,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		GenericSelectRecordBuilder selectBuilder = getSelectBuilder(fields);
 
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ID", "userId", userIds, NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.USERID", "userId", userIds, NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
 		if(orgId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
@@ -1461,6 +1477,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		if(StringUtils.isNotEmpty(appDomain)) {
 			AppDomain appDomainObj = getAppDomain(appDomain);
+			if(appDomainObj == null) {
+				throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "Invalid app Domain");
+			}
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
 		}
 		
@@ -1522,6 +1541,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		if(StringUtils.isNotEmpty(appDomain)) {
 			AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+			if(appDomainObj == null) {
+				throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "Invalid app Domain");
+			}
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
 		}
 	
@@ -1567,6 +1589,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		if(StringUtils.isNotEmpty(appDomain)) {
 			AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+			if(appDomainObj == null) {
+				throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "Invalid app Domain");
+			}
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
 		}
 	
@@ -1597,6 +1622,42 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		return null;
 
+	}
+
+	@Override
+	public Map<String, Object> getUserForUsername(String username, String appDomain, long orgId) throws Exception {
+		// TODO Auto-generated method stub
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountUserAppOrgsFields());
+		fields.add(IAMAccountConstants.getAppDomainField());
+		
+		
+		GenericSelectRecordBuilder selectBuilder = getSelectBuilder(fields);
+
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.DELETED_TIME", "orgUserDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.USER_STATUS", "status", "1", NumberOperators.EQUALS));
+		
+		if(StringUtils.isNotEmpty(appDomain)) {
+			AppDomain appDomainObj = IAMUserUtil.getAppDomain(appDomain);
+			if(appDomainObj == null) {
+				throw new AccountException(ErrorCode.INVALID_APP_DOMAIN, "Invalid app Domain");
+			}
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps.APP_DOMAIN_ID", "appDomainId", String.valueOf(appDomainObj.getId()), NumberOperators.EQUALS));
+		}
+	
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.USERNAME", "username", username, StringOperators.IS));
+		
+		if(orgId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_User_Apps_Orgs.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		}
+		List<Map<String, Object>> list = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(list)) {
+			return list.get(0);
+		}
+		return null;
+	
 	}
 		
 }

@@ -11,6 +11,8 @@ import java.util.logging.Level;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -43,6 +45,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -392,7 +395,8 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 				return null;
 			}
 			
-			User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), (String) objects[4]);
+			AppDomain appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO);
+			User user = AccountUtil.getUserBean().getUser((String) objects[5],appDomain != null ? appDomain.getDomain() : AccountUtil.getDefaultAppDomain());
 			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			String permalLinkURL = objects[0].toString()+objects[1].toString()+"?token="+token+"&startDate="+Long.valueOf(objects[2].toString())+"&endDate="+Long.valueOf(objects[3].toString());
 			
@@ -408,8 +412,8 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			if (objects == null || objects.length < 1) {
 				return null;
 			}
-			
-			User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), (String) objects[5]);
+			AppDomain appDomain = IAMAppUtil.getAppDomain(AppDomainType.FACILIO);
+			User user = AccountUtil.getUserBean().getUser((String) objects[5],appDomain != null ? appDomain.getDomain() : AccountUtil.getDefaultAppDomain());
 			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			DashboardContext dashboard = DashboardUtil.getDashboard(Long.valueOf(objects[6].toString()));
 			if(dashboard == null) {

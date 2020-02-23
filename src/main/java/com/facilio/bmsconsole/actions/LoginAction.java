@@ -196,7 +196,7 @@ public class LoginAction extends FacilioAction {
 			if (facilioToken != null) {
 				User currentUser = AccountUtil.getCurrentUser();
 				if (currentUser != null) {
-					if(IAMUserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail())) {
+					if(IAMUserUtil.logOut(currentUser.getUid(), facilioToken)) {
 						if(mobileInstanceId != null) {
 							AccountUtil.getUserBean().removeUserMobileSetting(mobileInstanceId);
 						}
