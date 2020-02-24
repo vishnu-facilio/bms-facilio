@@ -32,6 +32,7 @@ import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_group_byContext
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_limitContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_rangeContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Db_param_sortContext;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.For_each_statementContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.NameSpaceInitializationContext;
@@ -264,6 +265,17 @@ public class ScriptParser extends CommonParser<Value> {
 						WorkflowFunctionContext wfFunctionContext = new WorkflowFunctionContext();
 						wfFunctionContext.setFunctionName(functionCall.VAR().getText());
 						wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace) value.asObject()).getName());
+						String params = null;
+						for(ExprContext expr : functionCall.expr()) {
+							params = params == null ? "" : params;
+							String text = expr.getText();
+//							text = "${"+text+"}";
+							params = params + text+",";
+						}
+						if(params != null) {
+							params = params.substring(0,params.length() - 1);
+						    wfFunctionContext.setParams(params);
+						}
 						return new Value(wfFunctionContext);
 					}
 				}
