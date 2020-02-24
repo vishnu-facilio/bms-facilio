@@ -561,6 +561,10 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 
         Value left = this.visit(ctx.expr(0));
         Value right = this.visit(ctx.expr(1));
+        
+        if(left.asObject() == null || right.asObject() == null) {
+    		return Value.VOID;
+    	}
 
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.MULT:
@@ -579,7 +583,9 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 
         Value left = this.visit(ctx.expr(0));
         Value right = this.visit(ctx.expr(1));
-
+        if(left.asObject() == null || right.asObject() == null) {
+    		return Value.VOID;
+    	}
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.PLUS:
                 return left.isNumber() && right.isNumber() ?
@@ -597,6 +603,10 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
 
         Value left = this.visit(ctx.expr(0));
         Value right = this.visit(ctx.expr(1));
+        
+        if(left.asObject() == null || right.asObject() == null) {
+    		return Value.VOID;
+    	}
 
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.LT:
