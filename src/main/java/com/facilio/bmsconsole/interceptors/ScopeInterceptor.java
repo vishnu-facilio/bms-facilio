@@ -260,7 +260,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					}
 					if(data != null) {
 						AuditData finalData = data;
-						FacilioService.runAsServiceWihReturn(() ->audit.add(finalData));
+//						FacilioService.runAsServiceWihReturn(() ->audit.add(finalData));
 						data.setId(finalData.getId());
 					}
 					LOGGER.info("Audit entry add timetaken:::: "+(System.currentTimeMillis()-addStart));
@@ -276,7 +276,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 						data.setStatus(status);
 						data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());
 						AuditData finalData1 = data;
-						FacilioService.runAsServiceWihReturn(() ->audit.update(finalData1));
+//						FacilioService.runAsServiceWihReturn(() ->audit.update(finalData1));
 					}
 					LOGGER.info("Audit entry update timetaken:::: "+(System.currentTimeMillis()-updateStart));
 				}
