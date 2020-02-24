@@ -1,8 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
-import java.util.List;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.SpaceContext;
@@ -16,6 +13,9 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+
+import java.util.HashMap;
+import java.util.List;
 
 
 
@@ -59,11 +59,6 @@ public class ImportSpaceAction {
 				.fields(modBean.getAllFields(module.getName()));
 		
 		long id = builder.insert(space);
-		
-		System.out.println("-------------> space : "+ spaceName+" Site ID "+ siteId);
-		
-		System.out.println("space created with the following Id :"+id);
-	    //	building.setId(id);
 		SpaceAPI.updateHelperFields(space);
 		return id;
 		
@@ -90,11 +85,6 @@ public class ImportSpaceAction {
 				.fields(modBean.getAllFields(module.getName()));
 		
 		long id = builder.insert(space);
-		
-		System.out.println("-------------> space : "+ spaceName+" Site ID "+ siteId);
-		
-		System.out.println("Space created with the following Id :"+id);
-	    //	building.setId(id);
 		SpaceAPI.updateHelperFields(space);
 		return id;
 		

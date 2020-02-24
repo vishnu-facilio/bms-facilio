@@ -153,7 +153,6 @@ public class SpaceAPI {
 		UpdateRecordBuilder<BaseSpaceContext> updateBuilder = new UpdateRecordBuilder<BaseSpaceContext>()
 																	.fields(bean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE))
 																	.module(module)
-//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCondition(CriteriaAPI.getIdCondition(space.getId(), module))
 																	;
 		
@@ -280,6 +279,7 @@ public class SpaceAPI {
 		
 		insertRecordBuilder.table(module.getTableName()).module(module).fields(fields);
 		Long spaceId = insertRecordBuilder.insert(spaceContext);
+		SpaceAPI.updateHelperFields(spaceContext);
 		
 		
 		return spaceId;
