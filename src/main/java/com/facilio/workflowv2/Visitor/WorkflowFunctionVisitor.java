@@ -604,18 +604,26 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
         Value left = this.visit(ctx.expr(0));
         Value right = this.visit(ctx.expr(1));
         
-        if(left.asObject() == null || right.asObject() == null) {
-    		return Value.VOID;
-    	}
-
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.LT:
+            	if(left.asObject() == null || right.asObject() == null) {
+            		return Value.VOID;
+            	}
                 return new Value(left.asDouble() < right.asDouble());
             case WorkflowV2Parser.LTEQ:
+            	if(left.asObject() == null || right.asObject() == null) {
+            		return Value.VOID;
+            	}
                 return new Value(left.asDouble() <= right.asDouble());
             case WorkflowV2Parser.GT:
+            	if(left.asObject() == null || right.asObject() == null) {
+            		return Value.VOID;
+            	}
                 return new Value(left.asDouble() > right.asDouble());
             case WorkflowV2Parser.GTEQ:
+            	if(left.asObject() == null || right.asObject() == null) {
+            		return Value.VOID;
+            	}
                 return new Value(left.asDouble() >= right.asDouble());
             case WorkflowV2Parser.EQ:
             	if(left.asObject() != null && right.asObject() != null && FacilioUtil.isNumeric(left.asString()) && FacilioUtil.isNumeric(right.asString()) ) {
