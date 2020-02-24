@@ -1,9 +1,3 @@
-<%@page import="com.facilio.modules.FieldFactory"%>
-<%@page import="java.util.Collections"%>
-<%@page import="com.facilio.db.criteria.operators.NumberOperators"%>
-<%@page import="com.facilio.db.criteria.CriteriaAPI"%>
-<%@page import="com.facilio.modules.FieldUtil"%>
-<%@page import="com.facilio.db.builder.GenericUpdateRecordBuilder"%>
 <%@ page import="com.facilio.bmsconsole.commands.FacilioCommand" %>
 <%@ page import="org.apache.commons.chain.Context" %>
 <%@ page import="org.apache.log4j.Logger" %>
@@ -12,15 +6,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.facilio.accounts.util.AccountUtil" %>
 <%@ page import="com.facilio.chain.FacilioChain" %>
-<%@ page import="com.facilio.beans.ModuleBean" %>
-<%@ page import="com.facilio.fw.BeanFactory" %>
-<%@ page import="com.facilio.modules.FacilioModule" %>
-<%@ page import="com.facilio.bmsconsole.tenant.TenantSpaceContext" %>
-<%@ page import="com.facilio.modules.fields.FacilioField" %>
-<%@ page import="com.facilio.modules.UpdateRecordBuilder" %>
-<%@ page import="com.facilio.bmsconsole.util.TenantsAPI" %>
-<%@ page import="com.facilio.bmsconsole.tenant.TenantContext" %>
-<%@ page import="com.facilio.modules.SelectRecordsBuilder" %>
 
 <%--
 
@@ -43,24 +28,6 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
-            try{
-	            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-	            FacilioModule module = modBean.getModule("tenantspaces");
-	            	List<FacilioField> fields = modBean.getAllFields(module.getName());
-				TenantSpaceContext tenantSpace = new TenantSpaceContext();
-				tenantSpace.setModuleId(module.getModuleId());
-				
-				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-						.table(module.getTableName())
-						.fields(Collections.singletonList(FieldFactory.getModuleIdField(module)))
-						.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
-						;
-				updateBuilder.update(FieldUtil.getAsProperties(tenantSpace));
-			
-            }
-            catch(Exception e) {
-            		e.printStackTrace();
-            }
 
             return false;
         }
