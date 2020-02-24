@@ -216,7 +216,7 @@ public class SpaceAction extends ActionSupport {
 	
 	public String getTenantForSpace() throws Exception
 	{
-		setTenant(TenantsAPI.fetchTenantForSpace(spaceId));
+		setTenant(TenantsAPI.getTenantForSpace(spaceId));
 		return SUCCESS;
 		
 	}

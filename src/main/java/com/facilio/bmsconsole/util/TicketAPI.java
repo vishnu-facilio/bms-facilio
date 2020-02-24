@@ -1474,7 +1474,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				break;
 		}
 	}
-
+	
 	public static <T extends TicketContext> void validateSiteSpecificData(T ticket) throws Exception {
 		long siteId = ticket.getSiteId();
 		skipSiteValidation(ticket);
@@ -1569,25 +1569,17 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	public static void associateTenant (TicketContext ticket) throws Exception {
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) && ticket.getResource() != null && ticket.getResource().getId() != -1) {
 			ResourceContext resource = ResourceAPI.getResource(ticket.getResource().getId());
-				if (resource.getResourceTypeEnum() ==  ResourceType.ASSET) {
-					if (ticket.getTenant() != null && ticket.getTenant().getId() > 0 && TenantsAPI.getTenantForAsset(ticket.getResource().getId()) != null && (ticket.getTenant().getId() != TenantsAPI.getTenantForAsset(ticket.getResource().getId()).getId())) {
-						throw new IllegalArgumentException("The tenant associated doesn’t belong to the workorder asset.");
-					}
-					else {
-						ticket.setTenant(TenantsAPI.getTenantForAsset(ticket.getResource().getId()));
-					}
+			TenantContext tenant = TenantsAPI.getTenantForResource(resource.getId());
+			if (tenant != null) {
+				if (ticket.getTenant() != null && ticket.getTenant().getId() > 0 && ticket.getTenant().getId() != tenant.getId()) {
+					throw new IllegalArgumentException("The tenant associated doesn’t belong to the workorder space/asset");
 				}
-				else if (resource.getResourceTypeEnum() ==  ResourceType.SPACE) {
-					if (ticket.getTenant() != null && ticket.getTenant().getId() > 0 && TenantsAPI.getTenantForSpace(ticket.getResource().getId()) != null && (ticket.getTenant().getId() != TenantsAPI.getTenantForSpace(ticket.getResource().getId()).getId())) {
-						throw new IllegalArgumentException("The tenant associated doesn’t belong to the workorder space.");
-					}
-					else {
-						ticket.setTenant(TenantsAPI.getTenantForSpace(ticket.getResource().getId()));
-					}
-				}
+				ticket.setTenant(tenant);
+			}
 		}
 	}
 
+	// For PM
 	public static void associateTenant(List<? extends TicketContext> tickets) throws Exception {
 		if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 			return;
@@ -1598,16 +1590,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		if (resourceIds != null && CollectionUtils.isEmpty(resourceIds)) {
 			return;
 		}
-
-		List<ResourceContext> resources = ResourceAPI.getResources(resourceIds, false);
-
-		List<Long> assetIds = resources.stream().filter(i -> i.getResourceTypeEnum() == ResourceType.ASSET).map(i -> i.getId()).collect(Collectors.toList());
-
-		Map<Long, TenantContext>  assetTenants = TenantsAPI.getAssetTenant(assetIds);
-
-		List<Long> spaceIds = resources.stream().filter(i -> i.getResourceTypeEnum() == ResourceType.SPACE).map(i -> i.getId()).collect(Collectors.toList());
-
-		Map<Long, TenantContext> spaceTenants = TenantsAPI.getSpaceTenant(spaceIds);
+		
+		Map<Long, TenantContext> tenants = TenantsAPI.getTenantForResources(resourceIds);
 
 		for (int i = 0; i < tickets.size(); i++) {
 			TicketContext ticketContext = tickets.get(i);
@@ -1615,12 +1599,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			if (resource == null || resource.getId() == -1) {
 				continue;
 			}
-
-			if (resource.getResourceTypeEnum() == ResourceType.ASSET) {
-				ticketContext.setTenant(assetTenants.get(resource.getId()));
-			} else if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
-				ticketContext.setTenant(spaceTenants.get(resource.getId()));
-			}
+			ticketContext.setTenant(tenants.get(resource.getId()));
 		}
 	}
 

@@ -183,7 +183,7 @@ public class AddOrUpdateWorkorderToolsCommand extends FacilioCommand {
 		double duration = 0;
 		if (woTool.getDuration() <= 0) {
 			if (woTool.getIssueTime() <= 0) {
-				woTool.setIssueTime(workorder.getEstimatedStart());
+				woTool.setIssueTime(workorder.getScheduledStart());
 			}
 			if (woTool.getReturnTime() <= 0) {
 				woTool.setReturnTime(workorder.getEstimatedEnd());

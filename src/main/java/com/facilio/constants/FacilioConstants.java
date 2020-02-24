@@ -1126,6 +1126,7 @@ public class FacilioConstants {
 		public static final String STORE_ROOM_COUNT = "storeRoomCount";
 
 		public static final String TENANT = "tenant";
+		public static final String TENANT_SPACES = "tenantspaces";
 		public static final String TENANT_UTILITY_IDS = "utilityIds";
 		public static final String TENANT_CONTEXT = "tenantContext";
 

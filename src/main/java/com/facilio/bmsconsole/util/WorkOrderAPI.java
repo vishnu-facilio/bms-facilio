@@ -27,9 +27,8 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.DocumentContext;
 import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.PurchaseRequestContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.SpaceContext;
@@ -39,6 +38,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext.AllowNegativePreRequisite
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -58,10 +58,8 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -2838,5 +2836,39 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
        }
    }
    
+   public static void handleSiteRelations(WorkOrderContext workOrder) throws Exception {
+		if (workOrder.getTenant() != null && workOrder.getTenant().getId() != -1) {
+			if (workOrder.getResource() == null || workOrder.getResource().getId() == -1) {
+				List<BaseSpaceContext> tenantSpaces = TenantsAPI.fetchTenantSpaces(workOrder.getTenant().getId());
+				if (CollectionUtils.isNotEmpty(tenantSpaces) && tenantSpaces.size() == 1) {
+					ResourceContext resource = new ResourceContext();
+					resource.setId(tenantSpaces.get(0).getId());
+					workOrder.setResource(resource);
+				}
+				TenantContext tenant = TenantsAPI.getTenant(workOrder.getTenant().getId());
+				if (workOrder.getSiteId() == -1) {
+					workOrder.setSiteId(tenant.getSiteId());
+				}
+				else if (tenant.getSiteId() != workOrder.getSiteId()) {
+					throw new IllegalArgumentException("Tenant doesn't bellong to work order site");
+				}
+			}
+			else {
+				TicketAPI.associateTenant(workOrder);
+			}
+		}
+		else {
+			TicketAPI.associateTenant(workOrder);
+		}
+		if (workOrder.getSiteId() == -1 && workOrder.getResource() != null && workOrder.getResource().getId() != -1) {
+			ResourceContext resource = ResourceAPI.getResource(workOrder.getResource().getId());
+			workOrder.setSiteId(resource.getSiteId());
+		}
+		if (workOrder.getSiteId() > 0) {
+			workOrder.setClient(RecordAPI.getClientForSite(workOrder.getSiteId()));
+		} else {
+			workOrder.setClient(null);
+		}
+	}
   
  }

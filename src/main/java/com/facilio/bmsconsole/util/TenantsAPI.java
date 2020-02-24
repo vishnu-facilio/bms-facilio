@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -26,27 +28,31 @@ import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.OccupantsContext;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.VisitorLoggingContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.RateCardServiceContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.tenant.TenantSpaceContext;
 import com.facilio.bmsconsole.tenant.TenantUserContext;
 import com.facilio.bmsconsole.tenant.UtilityAsset;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
+import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
@@ -56,6 +62,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateRange;
@@ -114,7 +121,7 @@ public class TenantsAPI {
 		if (id<=0 ) {
 			return null;
 		}
-		getTenant(id, true);
+		getTenant(id);
 		FacilioModule module = ModuleFactory.getTenantsuserModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getTenantsUserFields())
@@ -208,7 +215,7 @@ public class TenantsAPI {
 }
 	
 	
-	public static TenantContext getTenant(long id, Boolean...fetchTenantOnly) throws Exception {
+	public static TenantContext getTenant(long id) throws Exception {
 		
 		if (id <= 0) {
 			return null;
@@ -223,37 +230,7 @@ public class TenantsAPI {
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
 
-		List<TenantContext> tenants = builder.get();
-		loadTenantLookups(tenants);
-		if (tenants != null && !tenants.isEmpty()) {
-			return tenants.get(0);
-		}
-		return null;
-	}
-	
-	public static TenantContext fetchTenant(long id) throws Exception {
-		
-		if (id <= 0) {
-			return null;
-		}
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
-		SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
-														.module(module)
-														.beanClass(TenantContext.class)
-														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(id, module));
-		
-		
-		List<TenantContext> records = builder.get();
-		TenantsAPI.loadTenantLookups(records);
-		if (records != null && !records.isEmpty()) {
-			records.get(0).setTenantContacts(TenantsAPI.getTenantContacts(records.get(0).getId()));
-		//	records.get(0).setOccupantList(TenantsAPI.getTenantOccupants(records.get(0).getId()));
-		    return records.get(0);
-		}
-		return null;
+		return builder.fetchFirst();
 	}
 	
 	public static TenantContext fetchTenantForZone(long zoneId) throws Exception {
@@ -277,47 +254,6 @@ public class TenantsAPI {
 	//	TenantsAPI.loadTenantLookups(records);
 	    if (records != null && !records.isEmpty()) {
 			return records.get(0);
-		}
-		return null;
-	}
-	
-	public static TenantContext fetchTenantForSpace(long spaceId) throws Exception {
-		
-		if (spaceId <= 0) {
-			return null;
-		}
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		FacilioModule module = ModuleFactory.getZoneRelModule();
-		
-		FacilioField isDeletedField = FieldFactory.getIsDeletedField();
-		isDeletedField.setModule(resourceModule);
-		
-		Condition isDeletedCond = new Condition();
-		isDeletedCond.setField(isDeletedField);
-		isDeletedCond.setOperator(NumberOperators.NOT_EQUALS);
-		isDeletedCond.setValue(""+1);
-
-		
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-														.select(FieldFactory.getZoneRelFields()).table(module.getTableName())
-														.innerJoin(resourceModule.getTableName())
-														.on(module.getTableName()+".ZONE_ID = "+resourceModule.getTableName()+".ID")
-														.andCondition(CriteriaAPI.getCondition(module.getTableName()+".BASE_SPACE_ID", "base_space_id" ,spaceId+"", StringOperators.STARTS_WITH))
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(isDeletedCond)
-														;
-												
-		List<Map<String,Object>> records = builder.get();
-	    if (records != null && !records.isEmpty()) {
-	    	for(Map<String,Object> map: records) {
-	    		TenantContext tenant = fetchTenantForZone((Long)map.get("zoneId"));
-	    		if(tenant != null) {
-	    			return tenant;
-	    		}
-	    	}
-			
 		}
 		return null;
 	}
@@ -1105,9 +1041,47 @@ public class TenantsAPI {
 		
 		return rs;
 	}
+	
+	public static TenantContext getTenantForResource(long resourceId) throws Exception{
+		Map<Long, TenantContext> tenantMap = getTenantForResources(Collections.singletonList(resourceId));
+		if (MapUtils.isNotEmpty(tenantMap)) {
+			return tenantMap.get(resourceId);
+		}
+		return null;
+	}
+	
+	public static Map<Long, TenantContext> getTenantForResources(List<Long> resourceIds) throws Exception{
+		List<ResourceContext> resources = ResourceAPI.getResources(resourceIds, false);
+		List<Long> spaceIds = new ArrayList<>();
+		for(ResourceContext resource: resources) {
+			long spaceId = resource.getResourceTypeEnum() == ResourceType.ASSET ? resource.getSpaceId() : resource.getId();
+			if (spaceId != -1) {
+				spaceIds.add(spaceId);
+			}
+		}
+		Map<Long, TenantContext> spaceTenants = TenantsAPI.getTenantForSpace(spaceIds);
+		if (MapUtils.isNotEmpty(spaceTenants)) {
+			Map<Long, TenantContext> tenants = new HashMap<>();
+			for(ResourceContext resource: resources) {
+				long spaceId = resource.getResourceTypeEnum() == ResourceType.ASSET ? resource.getSpaceId() : resource.getId();
+				if (spaceId != -1 && spaceTenants.containsKey(spaceId)) {
+					tenants.put(resource.getId(), spaceTenants.get(spaceId));
+				}
+			}
+			return tenants;
+		}
+		return null;
+	}
+	
+	public static TenantContext getTenantForSpace(long spaceId) throws Exception{
+		Map<Long, TenantContext> spaceTenant = getTenantForSpace(Collections.singletonList(spaceId));
+		if (spaceTenant != null) {
+			return spaceTenant.get(spaceId);
+		}
+		return null;
+	}
 
-
-	public static Map<Long, TenantContext> getSpaceTenant(Collection<Long> spaceIds) throws Exception {
+	public static Map<Long, TenantContext> getTenantForSpace(Collection<Long> spaceIds) throws Exception {
 		List<Long> filteredSpaces = spaceIds.stream().filter(i -> i > 0).collect(Collectors.toList());
 		Map<Long, TenantContext> empty = new HashMap<>();
 		TenantContext emptyTenant = new TenantContext();
@@ -1118,105 +1092,25 @@ public class TenantsAPI {
 			return empty;
 		}
 
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule zoneRelModule = ModuleFactory.getZoneRelModule();
-		FacilioModule tenantModule = modBean.getModule("tenant");
-		FacilioModule zoneModule = ModuleFactory.getZoneModule();
-		Map<String, FacilioField> zoneRelMap = FieldFactory.getAsMap(FieldFactory.getZoneRelFields());
-
-		List<FacilioField> tenantFields = modBean.getAllFields(tenantModule.getName());
-		List<FacilioField> selectFields = new ArrayList<>(tenantFields);
-		selectFields.add(zoneRelMap.get("basespaceId"));
-
-		SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
-				.module(tenantModule)
-				.beanClass(TenantContext.class)
-				.select(selectFields)
-				.innerJoin(zoneModule.getTableName())
-				.on(tenantModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
-				.innerJoin(zoneRelModule.getTableName())
-				.on(zoneRelModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
-				.andCondition(CriteriaAPI.getCondition(zoneRelMap.get("basespaceId"), filteredSpaces, NumberOperators.EQUALS))
-				.andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1);
-
-		List<Map<String, Object>> props = builder.getAsProps();
-		if(CollectionUtils.isEmpty(props)) {
-			return empty;
+		FacilioModule module = modBean.getModule(ContextNames.TENANT_SPACES);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<TenantSpaceContext> builder = new SelectRecordsBuilder<TenantSpaceContext>()
+				  .module(module)
+				  .beanClass(TenantSpaceContext.class)
+				  .select(fields)
+				  .andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("space"), spaceIds, NumberOperators.EQUALS))
+				  .fetchSupplement((LookupField)tenantSpaceFieldMap.get("tenant"))
+				  ;
+		List<TenantSpaceContext> tenantSpaces = builder.get();
+		if (tenantSpaces != null && !tenantSpaces.isEmpty()) {
+			return tenantSpaces.stream().collect(Collectors.toMap(tenantSpace -> tenantSpace.getSpace().getId(), TenantSpaceContext::getTenant));
 		}
-
-		Map<Long, TenantContext> result = new HashMap<>();
-
-		for (Map<String, Object> prop: props) {
-			TenantContext tenant = FieldUtil.getAsBeanFromMap(prop, TenantContext.class);
-			long baseSpaceId = (long) prop.get("basespaceId");
-
-			result.put(baseSpaceId, tenant);
-		}
-
-		return result;
+		return empty;
 	}
-
-	public static TenantContext getTenantForSpace(long spaceId) throws Exception{
-		Map<Long, TenantContext> spaceTenantsMap = getSpaceTenant(Collections.singletonList(spaceId));
-		Collection<TenantContext> values = spaceTenantsMap.values();
-		TenantContext[] tenants = values.toArray(new TenantContext[values.size()]);
-		return tenants[0];
-	}
-
-	public static TenantContext getTenantForAsset(long assetId) throws Exception {
-		Map<Long, TenantContext> assetTenantsMap = getAssetTenant(Collections.singletonList(assetId));
-		Collection<TenantContext> values = assetTenantsMap.values();
-		TenantContext[] tenants = values.toArray(new TenantContext[values.size()]);
-		return tenants[0];
-	}
-
-	public static Map<Long, TenantContext> getAssetTenant(Collection<Long> assetIds) throws Exception{
-		List<Long> filteredAssets = assetIds.stream().filter(i -> i > 0).collect(Collectors.toList());
-		Map<Long, TenantContext> empty = new HashMap<>();
-		TenantContext emptyTenant = new TenantContext();
-		emptyTenant.setId(-99);
-		empty.put(-1L, emptyTenant);
-
-		if (filteredAssets.isEmpty()) {
-			return empty;
-		}
-
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule tenantUtilityModule = ModuleFactory.getTenantsUtilityMappingModule();
-		List<FacilioField> tenantUtilityMappingFields = FieldFactory.getTenantsUtilityMappingFields();
-		Map<String, FacilioField> tenantUtilityFields = FieldFactory.getAsMap(tenantUtilityMappingFields);
-		FacilioModule tenantModule = modBean.getModule("tenant");
-
-		List<FacilioField> tenantFields = modBean.getAllFields(tenantModule.getName());
-		List<FacilioField> selectFields = new ArrayList<>(tenantFields);
-		selectFields.add(tenantUtilityFields.get("assetId"));
-
-		SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
-														.module(tenantModule)
-														.beanClass(TenantContext.class)
-														.select(selectFields)
-														.innerJoin(tenantUtilityModule.getTableName())
-														.on(tenantUtilityModule.getTableName()+".TENANT_ID = "+tenantModule.getTableName()+".ID")
-														.andCondition(CriteriaAPI.getCondition(tenantUtilityFields.get("assetId"), filteredAssets, NumberOperators.EQUALS))
-														.andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1);
-
-		List<Map<String, Object>> props = builder.getAsProps();
-		if(CollectionUtils.isEmpty(props)) {
-			return empty;
-		}
-
-		Map<Long, TenantContext> result = new HashMap<>();
-		for (Map<String, Object> prop: props) {
-			TenantContext tenant = FieldUtil.getAsBeanFromMap(prop, TenantContext.class);
-			Map<String, Object> assetMap = (Map<String, Object>) prop.get("assetId");
-			Long assetId = (Long) assetMap.get("id");
-			if (assetId != null) {
-				result.put(assetId, tenant);
-			}
-		}
-
-		return result;
-	}
+	
     public static List<Map<String,Object>> getPmCount(long tenantId) throws Exception {
 		
     	
@@ -1292,4 +1186,56 @@ public class TenantsAPI {
 		}
 
 }
+	
+	
+	public static void checkSpaceOccupancy(long siteId, List<BaseSpaceContext> spaces) throws Exception {
+		List<Long> childrenIds = spaces.stream().map(space -> space.getId()).collect(Collectors.toList());
+		FacilioModule module = ModuleFactory.getTenantSpacesModule();
+		List<FacilioField> fields = FieldFactory.getTenantSpacesFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(new HashSet<>())
+				.table(module.getTableName())
+				.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), childrenIds, BuildingOperator.BUILDING_IS))
+				;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			long count = (long) props.get(0).get("count");
+			if (count > 0) {
+				throw new IllegalArgumentException(childrenIds.size() == 1 ? "One" : "Some" + " of the space is already occupied by another tenant");
+			}
+		}
+		
+	}
+	
+	public static List<BaseSpaceContext> fetchTenantSpaces(long tenantId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.TENANT_SPACES);
+		Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+		SelectRecordsBuilder<TenantSpaceContext> builder = new SelectRecordsBuilder<TenantSpaceContext>()
+				  .module(module)
+				  .beanClass(TenantSpaceContext.class)
+				  .select(Collections.singletonList(tenantSpaceFieldMap.get("space")))
+				  .andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("tenant"), String.valueOf(tenantId), NumberOperators.EQUALS))
+				  .fetchSupplement((LookupField)tenantSpaceFieldMap.get("space"))
+				  ;
+		
+		List<TenantSpaceContext> tenantSpaces = builder.get();
+		if (tenantSpaces != null && !tenantSpaces.isEmpty()) {
+			return tenantSpaces.stream().map(TenantSpaceContext::getSpace).collect(Collectors.toList());
+		}
+		return null;
+	}
+	
+	public static void deleteTenantSpace(List<Long> tenantIds) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.TENANT_SPACES);
+		Map<String, FacilioField> tenantSpaceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        DeleteRecordBuilder<? extends ResourceContext> deleteBuilder = new DeleteRecordBuilder<ResourceContext>()
+				.module(module)
+				.andCondition(CriteriaAPI.getCondition(tenantSpaceFieldMap.get("tenant"), tenantIds, NumberOperators.EQUALS));
+        deleteBuilder.delete();
+	}
 }

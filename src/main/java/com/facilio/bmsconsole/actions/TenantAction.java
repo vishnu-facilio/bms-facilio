@@ -702,7 +702,7 @@ private Map<String, Double> readingData;
 	   }
 
    public String getTenantForAssetId() throws Exception {
-      TenantContext tenantContext = TenantsAPI.getTenantForAsset(assetId);
+      TenantContext tenantContext = TenantsAPI.getTenantForResource(assetId);
       setResult("tenant", tenantContext);
       return SUCCESS;
 

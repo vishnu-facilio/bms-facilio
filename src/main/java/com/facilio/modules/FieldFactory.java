@@ -188,6 +188,7 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("scheduledStart");
 			workOrderFieldsInclude.add("sourceType");
 			workOrderFieldsInclude.add("status");
+			workOrderFieldsInclude.add("moduleState");
 			workOrderFieldsInclude.add("type");
 			workOrderFieldsInclude.add("sendForApproval");
 			workOrderFieldsInclude.add("prerequisiteEnabled");

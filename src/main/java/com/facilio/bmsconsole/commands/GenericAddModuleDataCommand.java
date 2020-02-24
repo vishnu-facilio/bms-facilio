@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -44,7 +43,6 @@ public class GenericAddModuleDataCommand extends FacilioCommand {
 			if (withChangeSet != null && withChangeSet) {
 				insertRecordBuilder.withChangeSet();
 			}
-			CommonCommandUtil.handlePicklistFormData(fields, record.getData());
 			long id = insertRecordBuilder.insert(record);
 			record.setId(id);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, id);

@@ -129,8 +129,6 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 				.withChangeSet(oldWos)
 				; //No where condition because Old records are specified
 		
-		// temp
-        CommonCommandUtil.handlePicklistFormData(fields, workOrder.getData());
 		
 		rowsUpdated = updateBuilder.update(workOrder);
 		if (updateBuilder.getChangeSet() != null) {
@@ -194,7 +192,7 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 	
 	public static <T extends TicketContext> void transferToAnotherTenant(WorkOrderContext workOrder, List<T> oldTickets) throws Exception {
 		
-		TenantContext tenant = TenantsAPI.fetchTenant(workOrder.getTenant().getId());
+		TenantContext tenant = TenantsAPI.getTenant(workOrder.getTenant().getId());
 		
 		for(T oldWo: oldTickets) {
 			long siteId = oldWo.getSiteId();

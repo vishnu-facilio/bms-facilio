@@ -19,7 +19,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -150,13 +149,9 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
                     }
 
                     List<FacilioField> fileFields = new ArrayList<>();
-                    List<FacilioField> picklistFields = new ArrayList<>();
                     for (FacilioField f : fields) {
                         if (f instanceof FileField) {
                             fileFields.add(f);
-                        }
-                        else if (f.getDataTypeEnum() == FieldType.ENUM) {
-                        		picklistFields.add(f);
                         }
                     }
 
@@ -173,18 +168,6 @@ public class GenericAddSubModuleDataCommand extends FacilioCommand {
                             if (remove != null) {
                                 fileMap.put(f, (StrutsUploadedFile) remove);
                             }
-                        }
-                        // Temp...to remove
-                        for(FacilioField f: picklistFields) {
-                        		Object picklistVal = map.get(f.getName());
-                        		if (picklistVal != null) {
-                        			String picklistString =  picklistVal.toString();
-                        			try {
-                    					Long val = Long.parseLong(picklistString);
-                    					map.put(f.getName(), val);
-                    				}
-                    				catch (NumberFormatException e) {}
-                        		}
                         }
                         ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(map, contextClass);
                         for (FacilioField field : fileMap.keySet()) {

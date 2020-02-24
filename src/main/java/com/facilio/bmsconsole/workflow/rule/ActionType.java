@@ -12,10 +12,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.facilio.accounts.impl.OrgBeanImpl;
-import com.facilio.activity.ActivityContext;
-import com.facilio.activity.ActivityType;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
@@ -24,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -32,6 +27,8 @@ import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.ActivityContext;
+import com.facilio.activity.ActivityType;
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -605,6 +602,8 @@ public enum ActionType {
 							.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
 							.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
 					updateBuilder.update(updateWO);
+					
+					CommonCommandUtil.addEventType(EventType.ASSIGN_TICKET, (FacilioContext) context);
 				}
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);

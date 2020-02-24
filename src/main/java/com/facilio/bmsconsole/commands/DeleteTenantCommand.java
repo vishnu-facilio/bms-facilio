@@ -30,12 +30,13 @@ public class DeleteTenantCommand extends FacilioCommand {
 			List<Long> zoneIds = new ArrayList<Long>(); 
 			for(int i=0;i<recordIds.size();i++)
 			{
-				TenantContext oldTenant = TenantsAPI.getTenant(recordIds.get(i), true);
+				TenantContext oldTenant = TenantsAPI.getTenant(recordIds.get(i));
 				if (oldTenant.getZone() != null) {
 					zoneIds.add(oldTenant.getZone().getId());
 				}
 				TenantsAPI.deleteTenantLogo(oldTenant.getLogoId());
 			}
+			TenantsAPI.deleteTenantSpace(recordIds);
 			
 			DeleteRecordBuilder<? extends ResourceContext> deleteBuilder = new DeleteRecordBuilder<ResourceContext>()
 																				.module(module)
@@ -51,5 +52,6 @@ public class DeleteTenantCommand extends FacilioCommand {
 		return false;
 	}
 
+	
 }
 

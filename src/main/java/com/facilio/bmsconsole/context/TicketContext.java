@@ -255,14 +255,6 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.scheduledStart = scheduledStart;
 	}
 	
-	private long estimatedStart = -1;
-	public long getEstimatedStart() {
-		return estimatedStart;
-	}
-	public void setEstimatedStart(long estimatedStart) {
-		this.estimatedStart = estimatedStart;
-	}
-	
 	private long estimatedEnd = -1;
 	public long getEstimatedEnd() {
 		return estimatedEnd;

@@ -15,10 +15,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -42,13 +39,11 @@ public class AddWorkOrderCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		if(workOrder != null) {
-			if(workOrder.getRequester() == null || workOrder.getRequester().getId() == -1)
-			{
+			if(workOrder.getRequester() != null && workOrder.getRequester().getId() == -1) {
 				workOrder.setRequester(null);
 			}
 			
-			long initialSiteId = workOrder.getSiteId();
-			
+			WorkOrderAPI.handleSiteRelations(workOrder);
 			TicketAPI.validateSiteSpecificData(workOrder);
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -66,7 +61,6 @@ public class AddWorkOrderCommand extends FacilioCommand {
 
 			workOrder.setModifiedTime(workOrder.getCreatedTime());
 			workOrder.setScheduledStart(workOrder.getCreatedTime());
-			workOrder.setEstimatedStart(workOrder.getCreatedTime());	// TODO remove
 			workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED);
 			
 			if (workOrder.getPriority() == null || workOrder.getPriority().getId() == -1) {
@@ -77,14 +71,7 @@ public class AddWorkOrderCommand extends FacilioCommand {
 				workOrder.setDueDate(workOrder.getCreatedTime()+(workOrder.getDuration()*1000));
 			}
 			workOrder.setEstimatedEnd(workOrder.getDueDate());
-			if (workOrder.getSiteId() > 0) {
-				workOrder.setClient(RecordAPI.getClientForSite(workOrder.getSiteId()));
-			} else {
-				workOrder.setClient(null);
-			}
 
-			//associate Tenant
-			TicketAPI.associateTenant(workOrder);
 			TicketAPI.updateTicketAssignedBy(workOrder);
 			TicketAPI.updateTicketStatus(workOrder);
 			
@@ -103,8 +90,6 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155) && workOrder != null) {
 				LOGGER.info("Workorder subject : "+ workOrder.getSubject()+"\n Description : "+workOrder.getDescription());
 			}
-			
-			CommonCommandUtil.handlePicklistFormData(fields, workOrder.getData());
 			
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
@@ -132,76 +117,7 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			
 			if (!changeSets.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
-				Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
-				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
-				List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST); //All IDs (bulk and individual) of WOs to be updated
-				Iterator it = recordIds.iterator();
-				List<UpdateChangeSet> changeSetList = null;
-				while (it.hasNext()) {
-					Object record = it.next();
-					 changeSetList = currentChangeSet == null ? null : currentChangeSet.get(record);
-				}
-                JSONObject addWO = new JSONObject();
-                List<Object> wolist = new ArrayList<Object>();
-                Boolean pm_exec= (Boolean) context.get(FacilioConstants.ContextNames.IS_PM_EXECUTION);
-              
-                if(pm_exec == null) {
-				for (UpdateChangeSet changeset : changeSetList) {
-				    long fieldid = changeset.getFieldId();
-					Object oldValue = changeset.getOldValue();
-					Object newValue = changeset.getNewValue();
-					FacilioField field = modBean.getField(fieldid, moduleName);
-					
-					JSONObject info = new JSONObject();
-					info.put("field", field.getName());
-					info.put("displayName", field.getDisplayName());
-					info.put("oldValue", oldValue);
-					info.put("newValue", newValue);
-	                wolist.add(info);
-
-				}	
-				addWO.put("addWO", wolist);
-
-				CommonCommandUtil.addActivityToContext(workOrder.getId(), -1, WorkOrderActivityType.ADD, addWO, (FacilioContext) context);
-            }
-                else if(pm_exec)  {
-					JSONObject newinfo = new JSONObject();
-					newinfo.put("pmid", workOrder.getPm().getId());
-	                wolist.add(newinfo);
-
-    				for (UpdateChangeSet changeset : changeSetList) {
-    				    long fieldid = changeset.getFieldId();
-    					Object oldValue = changeset.getOldValue();
-    					Object newValue = changeset.getNewValue();
-    					FacilioField field = modBean.getField(fieldid, moduleName);
-    					
-    					JSONObject info = new JSONObject();
-    					info.put("field", field.getName());
-    					info.put("displayName", field.getDisplayName());
-    					info.put("oldValue", oldValue);
-    					info.put("newValue", newValue);
-    	                wolist.add(info);
-    				}	
-
-    				addWO.put("addPMWO", wolist);
-
-    				CommonCommandUtil.addActivityToContext(workOrder.getId(), -1, WorkOrderActivityType.ADD_PM_WO, addWO, (FacilioContext) context);
-                }
-               
-
-			}
-			
-			long newSiteId = workOrder.getSiteId();
-			if (workOrder.getPm() != null && workOrder.getPm().getId() != -1) {
-				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM(workOrder.getPm().getId(), false);
-				if (newSiteId != initialSiteId || pm.getSiteId() != newSiteId) {
-					StringBuilder strBuilder = new StringBuilder();
-					strBuilder.append("woId: ").append(workOrder.getId())
-	            		.append("\nInitial SiteId: ").append(initialSiteId)
-	            		.append("\nNew SiteId: ").append(newSiteId)
-	            		.append("\nPm SiteId: ").append( pm.getSiteId());
-					CommonCommandUtil.emailException("AddWorkOrderCommand", "Workorder site different from PM", strBuilder.toString());
-				}
+				addActivity(context, changeSets, workOrder, modBean, moduleName);
 			}
 			context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 
@@ -210,6 +126,48 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");
 		}
 		return false;
+	}
+	
+	private void addActivity(Context context, Map<Long, List<UpdateChangeSet>> changeSets, WorkOrderContext workOrder, ModuleBean modBean, String moduleName) throws Exception {
+		
+		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+		Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
+		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST); //All IDs (bulk and individual) of WOs to be updated
+		Iterator it = recordIds.iterator();
+		List<UpdateChangeSet> changeSetList = null;
+		while (it.hasNext()) {
+			Object record = it.next();
+			 changeSetList = currentChangeSet == null ? null : currentChangeSet.get(record);
+		}
+		
+		JSONObject addWO = new JSONObject();
+		List<Object> wolist = new ArrayList<Object>();
+		for (UpdateChangeSet changeset : changeSetList) {
+			long fieldid = changeset.getFieldId();
+			Object oldValue = changeset.getOldValue();
+			Object newValue = changeset.getNewValue();
+			FacilioField field = modBean.getField(fieldid, moduleName);
+
+			JSONObject info = new JSONObject();
+			info.put("field", field.getName());
+			info.put("displayName", field.getDisplayName());
+			info.put("oldValue", oldValue);
+			info.put("newValue", newValue);
+			wolist.add(info);
+		}	
+
+		Boolean pm_exec= (Boolean) context.get(FacilioConstants.ContextNames.IS_PM_EXECUTION);
+		if(pm_exec == null) {
+			addWO.put("addWO", wolist);
+			CommonCommandUtil.addActivityToContext(workOrder.getId(), -1, WorkOrderActivityType.ADD, addWO, (FacilioContext) context);
+		}
+		else if(pm_exec)  {
+			JSONObject newinfo = new JSONObject();
+			newinfo.put("pmid", workOrder.getPm().getId());
+			wolist.add(newinfo);
+			addWO.put("addPMWO", wolist);
+			CommonCommandUtil.addActivityToContext(workOrder.getId(), -1, WorkOrderActivityType.ADD_PM_WO, addWO, (FacilioContext) context);
+		}
 	}
 
 	private void validateStatusOfParentAndChild(WorkOrderContext workOrder) throws Exception {

@@ -1,15 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
+import java.util.Collections;
+
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.ModuleFactory;
 
 public class DeleteTenantSpaceRelationCommand extends FacilioCommand {
 
@@ -24,10 +21,7 @@ public class DeleteTenantSpaceRelationCommand extends FacilioCommand {
 		Long id = tenant.getId();
 		if ((spacesUpdate != null && spacesUpdate) || (tenant.getSpaces() != null && tenant.getSpaces().size() > 0)) {
 			if (id != null && id > 0) {
-	            GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-	                    .table(ModuleFactory.getTenantSpacesModule().getTableName())
-	                    .andCondition(CriteriaAPI.getCondition("TENANT_ID", "tenantId", String.valueOf(id), NumberOperators.EQUALS));
-	            builder.delete();
+	            TenantsAPI.deleteTenantSpace(Collections.singletonList(id));
 	        }
 		}
 		

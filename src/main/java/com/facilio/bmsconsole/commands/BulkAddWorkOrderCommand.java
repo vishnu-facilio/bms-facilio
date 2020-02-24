@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.util.ImportAPI;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -19,6 +18,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -79,8 +79,6 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
                     workOrder.setScheduledStart(workOrder.getCreatedTime());
                 }
                 workOrder.setModifiedTime(workOrder.getCreatedTime());
-                workOrder.setEstimatedStart(workOrder.getScheduledStart());
-
 
                 if (workOrder.getDuration() != -1 && workOrder.getDueDate() < 0) {
                     workOrder.setDueDate(workOrder.getScheduledStart() + (workOrder.getDuration() * 1000));
