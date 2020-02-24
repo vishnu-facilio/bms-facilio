@@ -596,6 +596,9 @@ public enum ActionType {
 						workOrder.setStatus(status);
 						updateWO.setStatus(status);
 					}
+					workOrder.setAssignedBy(AccountUtil.getCurrentUser());
+					updateWO.setAssignedBy(AccountUtil.getCurrentUser());
+					
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 					UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
