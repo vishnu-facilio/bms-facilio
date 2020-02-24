@@ -1,6 +1,7 @@
 package com.facilio.fw.cache;
 
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
@@ -89,6 +90,11 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
     public void purgeCache() {
         cache.clear();
         deleteInRedis("all");
+    }
+
+    @Override
+    public Set<K> keySet() {
+        return cache.keySet();
     }
 
     public V get(K key){

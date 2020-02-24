@@ -3,6 +3,7 @@ package com.facilio.fw;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.facilio.fw.cache.FacilioCache;
@@ -47,6 +48,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 	private static final Logger LOGGER = LogManager.getLogger(LRUCache.class.getName());
 
 	private static FacilioCache<String, Object> fieldCache = new LRUCache<>("fieldCache", 2000);
+	private static FacilioCache<String, Object> fieldNameCache = new LRUCache<>("fieldNameCache", 2000);
 	private static FacilioCache<String, Object> modulefieldCache = new LRUCache<>("moduleFieldCache", 2000);
 	private static FacilioCache<String, Object> userSessionCache = new LRUCache<>("userSessionCache", 300);
 	private static FacilioCache<String, Object> moduleCache = new LRUCache<>("moduleCache", 2000);
@@ -54,6 +56,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 	private static FacilioCache<String, Object> responseCache = new LRUCache<>("responseCache", 5000);
 
 	private static FacilioCache<String, Object> fieldCachePS = new PubSubLRUCache<>("fieldCache", 2000);
+	private static FacilioCache<String, Object> fieldNameCachePS = new PubSubLRUCache<>("fieldNameCache", 2000);
 	private static FacilioCache<String, Object> modulefieldCachePS = new PubSubLRUCache<>("moduleFieldCache", 2000);
 	private static FacilioCache<String, Object> userSessionCachePS = new PubSubLRUCache<>("userSessionCache", 300);
 	private static FacilioCache<String, Object> moduleCachePS = new PubSubLRUCache<>("moduleCache", 2000);
@@ -88,6 +91,12 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 			return fieldCache;
 		}
 		return fieldCachePS;
+	}
+	public static FacilioCache<String, Object> getFieldNameCache() {
+		if(FacilioProperties.isProduction()) {
+			return fieldNameCache;
+		}
+		return fieldNameCachePS;
 	}
 	public static FacilioCache<String, Object> getUserSessionCache() {
 		if(FacilioProperties.isProduction()) {
@@ -216,7 +225,12 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
         cache.clear();
     }
 
-    public boolean contains(K key) {
+	@Override
+	public Set<K> keySet() {
+		return cache.keySet();
+	}
+
+	public boolean contains(K key) {
     	return cache.containsKey(key);
     }
 

@@ -15,6 +15,10 @@
 	out.println(com.facilio.fw.LRUCache.getFieldsCache());
 %></textarea>
 
+<br>Field Name Cache = <textarea  rows="8" cols="150"><%
+	out.println(com.facilio.fw.LRUCache.getFieldNameCache());
+%></textarea>
+
 <br><a href="clearcache"> Clear Cache</a>
 <br><a href="reloadBrowser"> Reload all users</a>
 

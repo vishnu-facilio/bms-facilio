@@ -2,6 +2,7 @@ package com.facilio.beans;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.facilio.fw.cache.FacilioCache;
@@ -219,40 +220,34 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public FacilioField getField(long fieldId) throws Exception {
-		try {
 		FacilioCache cache = LRUCache.getFieldsCache();
-
 		String key = CacheUtil.FIELD_KEY(getOrgId(), fieldId);
 		FacilioField field = (FacilioField)cache.get(key);
-		
-		
 		if (field == null) {
-			
 			field = super.getField(fieldId);
-			
-			cache.put(key, field);
-			
-		}
-		else {
+			if (field != null) {
+				cache.put(key, field);
+			}
 		}
 		return field;
-		}
-		catch (Exception e) {
-			LOGGER.error("Exception occurred ", e);
-			throw e;
-		}
 	}
 	
 	@Override
 	public FacilioField getFieldFromDB(long fieldId) throws Exception {
-		
 		return super.getField(fieldId);
 	}
 	
 	@Override
 	public FacilioField getField(String fieldName, String moduleName) throws Exception {
-		
-		FacilioField field = super.getField(fieldName, moduleName);
+		FacilioCache cache = LRUCache.getFieldNameCache();
+		String key = CacheUtil.FIELD_NAME_KEY(getOrgId(), fieldName, moduleName);
+		FacilioField field = (FacilioField)cache.get(key);
+		if (field == null) {
+			field = super.getField(fieldName, moduleName);
+			if (field != null) {
+				cache.put(key, field);
+			}
+		}
 		return field;
 	}
 	
@@ -293,6 +288,20 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 		
 		cache = LRUCache.getFieldsCache();
 		cache.remove(CacheUtil.FIELD_KEY(getOrgId(), newField.getFieldId()));
+
+		//Removing all field names with the same name because we might have multiple copies for the same field with different extended modules.
+		//Having multiple copies of the same field with different extended modules in cache is a conscious decision to avoid fetching of modules in getField
+		//The side effect of this is if another field has same name, even that will be removed from cache even if it doesn't extend the module of the field. We shall see how this goes!!
+		cache = LRUCache.getFieldNameCache();
+		String key = CacheUtil.FIELD_NAME_KEY_FOR_REMOVAL(getOrgId(), newField.getName());
+		Iterator<String> itr = (Iterator<String>) cache.keySet().iterator();
+		while (itr.hasNext()) {
+			String cacheKey = itr.next();
+			if (cacheKey.startsWith(key)) {
+				itr.remove();
+			}
+		}
+
 	}
 	@Override
 	public int deleteField(long fieldId) throws Exception {

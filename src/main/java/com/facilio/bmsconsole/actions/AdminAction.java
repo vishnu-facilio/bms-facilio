@@ -218,6 +218,7 @@ public class AdminAction extends ActionSupport {
 
 	public String clearCache() throws IOException {
 		LRUCache.getFieldsCache().purgeCache();
+		LRUCache.getFieldNameCache().purgeCache();
 		LRUCache.getModuleFieldsCache().purgeCache();
 		LRUCache.getUserSessionCache().purgeCache();
 		System.out.println("Clear cache called");

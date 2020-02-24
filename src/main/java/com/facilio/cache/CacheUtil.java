@@ -70,9 +70,13 @@ public class CacheUtil {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + fieldId + KEY_SEPARATOR + FIELD;
 	}
 	
-	public static String FIELD_KEY(long orgId, String fieldName,String moduleName) {
-		return ORG_KEY(orgId) + KEY_SEPARATOR + fieldName+ KEY_SEPARATOR+ moduleName + KEY_SEPARATOR + FIELD;
+	public static String FIELD_NAME_KEY(long orgId, String fieldName, String moduleName) {
+		return FIELD_NAME_KEY_FOR_REMOVAL(orgId, fieldName) + moduleName + KEY_SEPARATOR + FIELD;
 	}
+	public static String FIELD_NAME_KEY_FOR_REMOVAL (long orgId, String fieldName) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + fieldName+ KEY_SEPARATOR;
+	}
+
 	public static String PRIMARY_FIELD_KEY(long orgId, String moduleName) {
 		return FIELDS_KEY(orgId, moduleName) + KEY_SEPARATOR + PRIMARY;
 	}

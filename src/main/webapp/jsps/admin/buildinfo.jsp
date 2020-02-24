@@ -61,6 +61,9 @@ function init() {
 <br>Fields Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
 	out.println(com.facilio.fw.LRUCache.getFieldsCache());
 %></textarea>
+<br>Field Name Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
+    out.println(com.facilio.fw.LRUCache.getFieldNameCache());
+%></textarea>
 <br>Response Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%
 	out.println(com.facilio.fw.LRUCache.getResponseCache());
 %></textarea>
