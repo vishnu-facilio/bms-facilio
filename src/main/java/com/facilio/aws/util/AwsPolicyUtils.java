@@ -18,6 +18,10 @@ public class AwsPolicyUtils
 {
     private static final Logger LOGGER = LogManager.getLogger(AwsPolicyUtils.class.getName());
 
+    private static void addClientToPolicy(JSONObject policy, List<String> connectTopics) throws Exception {
+        updatePolicyStatement(policy,new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),connectTopics);
+    }
+
     private static void updatePolicyStatement( JSONObject policy, List<String> subscribeTopics, List<String> publishTopics, List<String> receiveTopics, List<String> connectTopics) throws Exception {
         if(policy.containsKey("Statement") && (policy.get("Statement") != null)){
             JSONArray policyStatements = (JSONArray) policy.get("Statement");
@@ -29,7 +33,7 @@ public class AwsPolicyUtils
                             case "iot:Connect":
                                 addResourceToPolicyIfNotPresent(policyStatement,connectTopics);
                                 break;
-                            case "iot:Publish":
+                            /*case "iot:Publish":
                                 addResourceToPolicyIfNotPresent(policyStatement,publishTopics);
                                 break;
                             case "iot:Receive":
@@ -37,7 +41,7 @@ public class AwsPolicyUtils
                                 break;
                             case "iot:Subscribe":
                                 addResourceToPolicyIfNotPresent(policyStatement,subscribeTopics);
-                                break;
+                                break;*/
                         }
                 }else{
                     throw new Exception("key -Action- missing from policyJson ");
@@ -53,14 +57,14 @@ public class AwsPolicyUtils
         JSONObject policy = new JSONObject();
         policy = getPolicyDocumentJson(getPolicy(policyName, client));
         LOGGER.info("existing policy document "+policy);
-        List<String> subscribeTopics = rule.getPublishtopics();
+        /*List<String> subscribeTopics = rule.getPublishtopics();
         LOGGER.info(subscribeTopics);
         List<String> publishTopics = rule.getPublishtopics();
         LOGGER.info(publishTopics);
         List<String> receiveTopics = rule.getReceiveTopics();
-        LOGGER.info(receiveTopics);
+        LOGGER.info(receiveTopics);*/
         List<String> connectTopics = rule.getClientIds();
-        updatePolicyStatement(policy, subscribeTopics, publishTopics, receiveTopics, connectTopics);
+        addClientToPolicy(policy, connectTopics);
         LOGGER.info(" updated policy document "+policy);
         updateClientPolicyVersion(client, policyName, policy);
         return policy.toString();
@@ -94,11 +98,12 @@ public class AwsPolicyUtils
         }
     }
 
-    public static IotPolicy createIotPolicy(String topic, String policyName, String type, AWSIot iotClient) {
+    public static IotPolicy createIotPolicy(String clientName, String policyName, String type, AWSIot iotClient) {
         LOGGER.info(" creating iot policy "+policyName);
         IotPolicy policy;
-        policy = AwsPolicyUtils.getIotRule(topic,type);
+        policy = AwsPolicyUtils.getIotRule(policyName,type);
         policy.setName(policyName);
+        policy.getClientIds().add(getIotArnClientId(clientName));
         LOGGER.info("p topics "+policy.getPublishtopics());
         LOGGER.info("s topics "+policy.getSubscribeTopics());
         LOGGER.info("r topics "+policy.getReceiveTopics());
@@ -147,7 +152,7 @@ public class AwsPolicyUtils
             List<String> resourcesToAdd = getResourcesToAdd(resourcesPresent, topics);
             addResourcesToPolicy(policyStatement,resourcesToAdd);
         } catch (ParseException e) {
-            e.printStackTrace();
+           LOGGER.info(" Exception while adding resource to policy ",e);
         }
     }
 

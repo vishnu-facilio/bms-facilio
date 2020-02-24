@@ -4,6 +4,7 @@ import com.facilio.agent.AgentType;
 import com.facilio.events.tasker.tasks.EventUtil;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +16,11 @@ public class IotPolicy
     public void setType(String type) { this.type = type; }
 
 
-    private List<String> publishtopics;
+    private List<String> publishtopics = new ArrayList<>();
     public List<String> getPublishtopics() { return publishtopics; }
     public void setPublishtopics(List<String> publishtopics) { this.publishtopics = publishtopics; }
 
-    private List<String> publishTypes;
+    private List<String> publishTypes = new ArrayList<>();
     public List<String> getPublishTypes() { return publishTypes; }
     public void setPublishTypes(List<String> publishTypes) { this.publishTypes = publishTypes; }
 
@@ -31,17 +32,18 @@ public class IotPolicy
     public String getStreamName() { return streamName; }
     public void setStreamName(String streamName) { this.streamName = streamName; }
 
-    private List<String> subscribeTopics;
+    private List<String> subscribeTopics = new ArrayList<>();
     public List<String> getSubscribeTopics() { return subscribeTopics; }
     public void setSubscribeTopics(List<String> subscribeTopics) { this.subscribeTopics = subscribeTopics; }
 
-    private List<String> receiveTopics;
+    private List<String> receiveTopics = new ArrayList<>();
     public List<String> getReceiveTopics() { return receiveTopics; }
     public void setReceiveTopics(List<String> receiveTopics) { this.receiveTopics = receiveTopics; }
 
     public List<String> getClientIds() { return clientIds; }
     public void setClientIds(List<String> clientIds) { this.clientIds = clientIds; }
-    private List<String> clientIds;
+    private List<String> clientIds = new ArrayList<>();
+
 
     private String name;
     public String getName() { return name; }

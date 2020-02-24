@@ -651,8 +651,8 @@ public class AwsUtil
 	}
 */
 
-	public static String createIotPolicy(String topic, String domain, String facilio) {
-		IotPolicy policy = AwsPolicyUtils.createIotPolicy(topic, domain, facilio, getIotClient());
+	public static String createIotPolicy(String clientName, String domain, String facilio) {
+		IotPolicy policy = AwsPolicyUtils.createIotPolicy(clientName, domain, facilio, getIotClient());
 		return policy.getPolicyDocument().toString();
 	}
 
