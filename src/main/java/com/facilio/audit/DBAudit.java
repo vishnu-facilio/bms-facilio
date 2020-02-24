@@ -185,6 +185,7 @@ public class DBAudit implements FacilioAudit {
 
 	public long add(AuditData data) {
 		long id = 0L;
+		long addStart = System.currentTimeMillis();
 		try {
 			String module = data.getModule();
 			long moduleId = 0L;
@@ -194,26 +195,31 @@ public class DBAudit implements FacilioAudit {
 			long methodId = 0L;
 			String referer = data.getReferer();
 			long refereId = 0L;
+			long addStartModule = System.currentTimeMillis();
 			if(StringUtils.isNotEmpty(module)) {
 				 moduleId= checkModule(module);
 				if (moduleId == 0) {
 					moduleId = addModule(module);
 				}
 			}
+			LOGGER.info("Audit entry add & check module timetaken:::: "+(System.currentTimeMillis()-addStartModule));
+			long addStartAction = System.currentTimeMillis();
 			if(StringUtils.isNotEmpty(action)) {
 				 actionId = checkAction(action);
 				if (actionId == 0) {
 					actionId = addAction(moduleId, action);
 				}
 			}
-			
+			LOGGER.info("Audit entry add & check Action timetaken:::: "+(System.currentTimeMillis()-addStartAction));
+			long addStartMethod = System.currentTimeMillis();
 			if(StringUtils.isNotEmpty(method)) {
 				 methodId = checkMethod(method);
 				if(methodId == 0) {
 					methodId =  addMethod(actionId, method);
 				}
 			}
-			
+			LOGGER.info("Audit entry add & check method timetaken:::: "+(System.currentTimeMillis()-addStartMethod));
+			long addStartreferer = System.currentTimeMillis();
 			if(StringUtils.isNotEmpty(referer)) {
 				 refereId = checkReferer(referer);
 				if(refereId == 0) {
@@ -223,6 +229,7 @@ public class DBAudit implements FacilioAudit {
 					data.setRefererId(refereId);
 				}
 			}
+			LOGGER.info("Audit entry add & check Referer timetaken:::: "+(System.currentTimeMillis()-addStartreferer));
 			if(SERVERID != -1) {
 				data.setServerId(SERVERID);
 			}
@@ -232,6 +239,7 @@ public class DBAudit implements FacilioAudit {
 		} catch (Exception e) {
 			LOGGER.info("Exception while adding : ", e);
 		}
+		LOGGER.info("Audit entry add full time timetaken:::: "+(System.currentTimeMillis()-addStart));
 		return id;
 	}
 
@@ -295,7 +303,8 @@ public class DBAudit implements FacilioAudit {
     		MODULE_INFO_LIST = getModuleInfoList();
     	}
     		if(MapUtils.isNotEmpty(MODULE_INFO_LIST)) {
-    		if(StringUtils.isNotEmpty(module)) {
+    			LOGGER.info("Size of ModuleInfo Map is :"+MODULE_INFO_LIST.size());
+    			if(StringUtils.isNotEmpty(module)) {
     			if(MODULE_INFO_LIST.containsKey(module)) {
     				id = (long) MODULE_INFO_LIST.get(module);
     			}else{
@@ -314,6 +323,7 @@ public class DBAudit implements FacilioAudit {
     	if(MapUtils.isEmpty(REFERER_INFO_LIST)) {
     		REFERER_INFO_LIST = getRefererInfoList();
     	}if(MapUtils.isNotEmpty(REFERER_INFO_LIST)){
+    		LOGGER.info("Size of RefererInfo Map is :"+REFERER_INFO_LIST.size());
     		if(StringUtils.isNotEmpty(data)) {
     			if(REFERER_INFO_LIST.containsKey(data)) {
     				id = (long) REFERER_INFO_LIST.get(data);
@@ -333,6 +343,7 @@ public class DBAudit implements FacilioAudit {
     	if(MapUtils.isEmpty(ACTION_INFO_LIST)) {
     		ACTION_INFO_LIST =getActionInfoList();
     	}if(MapUtils.isNotEmpty(ACTION_INFO_LIST)){
+    		LOGGER.info("Size of ActionInfo Map is :"+ACTION_INFO_LIST.size());
     		if(StringUtils.isNotEmpty(action)) {
     			if(ACTION_INFO_LIST.containsKey(action)) {
     				id = (long) ACTION_INFO_LIST.get(action);
@@ -352,6 +363,7 @@ public class DBAudit implements FacilioAudit {
     	if(MapUtils.isEmpty(METHOD_INFO_LIST)) {
     		METHOD_INFO_LIST =getMethodInfoList();
     	}if(MapUtils.isNotEmpty(METHOD_INFO_LIST)){
+    		LOGGER.info("Size of methodInfo Map is :"+METHOD_INFO_LIST.size());
     		if(StringUtils.isNotEmpty(data)) {
     			if(METHOD_INFO_LIST.containsKey(data)) {
     				id = getData(data, METHOD_TABLE_NAME, METHOD_FIELDS, "method");
