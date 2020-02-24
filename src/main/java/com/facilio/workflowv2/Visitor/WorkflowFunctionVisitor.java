@@ -718,7 +718,7 @@ public class WorkflowFunctionVisitor extends CommonParser<Value> {
             }
         }
 
-        if(!evaluatedBlock && ctx.statement_block() != null) {
+        if(!evaluatedBlock && (ctx != null && ctx.statement_block() != null)) {
             // evaluate the else-stat_block (if present == not null)
             this.visit(ctx.statement_block());
         }
