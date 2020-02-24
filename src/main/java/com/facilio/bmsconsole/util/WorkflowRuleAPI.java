@@ -61,6 +61,7 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowGlobalParamUtil;
@@ -229,6 +230,14 @@ public class WorkflowRuleAPI {
 			workflowRuleContext.setCriteriaId(criteriaId);
 		}
 		if(workflowRuleContext.getWorkflow() != null) {
+			
+			if(AccountUtil.getCurrentOrg().getId() == 1) {
+				if(workflowRuleContext.getWorkflow().getWorkflowUIMode() != WorkflowUIMode.XML.getValue()) {
+
+					fillExtraParamsForWorkflowV2(workflowRuleContext.getWorkflow()); 		// ^^^^^^^^^ TO BE REVERTED ON ERROR ^^^^^^^^
+				}
+			}
+			
 			long workflowId = WorkflowUtil.addWorkflow(workflowRuleContext.getWorkflow());
 			workflowRuleContext.setWorkflowId(workflowId);
 		}
