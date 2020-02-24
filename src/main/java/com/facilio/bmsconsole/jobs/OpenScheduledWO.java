@@ -54,6 +54,8 @@ public class OpenScheduledWO extends FacilioJob {
             selectRecordsBuilder.select(fields)
                     .module(module)
                     .beanClass(WorkOrderContext.class)
+                    .innerJoin("Resources")
+                    .on("Resources.ID = Tickets.RESOURCE_ID AND (Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = 0)")
                     .andCondition(CriteriaAPI.getIdCondition(woId, module));
 
             List<WorkOrderContext> workOrderContexts = selectRecordsBuilder.get();

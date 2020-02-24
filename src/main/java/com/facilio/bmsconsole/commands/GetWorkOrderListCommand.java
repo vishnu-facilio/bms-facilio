@@ -84,6 +84,8 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 			}
 		}
 
+		Boolean fetchWoWithDeletedResource = (Boolean) context.get(ContextNames.DONT_FETCH_WO_WITH_DELETED_RESOURCES);
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("workorder");
 		List<WorkOrderContext> workOrders;
@@ -94,6 +96,11 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 					.beanClass(WorkOrderContext.class)
 					.select(fields)
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module),StringUtils.join(woIds, ","),NumberOperators.EQUALS));
+			if (fetchWoWithDeletedResource != null && fetchWoWithDeletedResource) {
+				selectBuilder.innerJoin("Resources")
+						.on("Resources.ID = Tickets.RESOURCE_ID AND (Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = 0)");
+
+			}
 
 			workOrders = selectBuilder.get();
 		}
@@ -104,6 +111,10 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 					.beanClass(WorkOrderContext.class)
 					.select(fields)
 					.maxLevel(0);
+			if (fetchWoWithDeletedResource != null && fetchWoWithDeletedResource) {
+				selectBuilder.innerJoin("Resources")
+						.on("Resources.ID = Tickets.RESOURCE_ID AND (Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = 0)");
+			}
 
 			JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 			Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);

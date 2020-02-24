@@ -1418,6 +1418,8 @@ public class PreventiveMaintenanceAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getPMResourcePlannerFields())
 				.table(module.getTableName())
+				.innerJoin("Resources")
+				.on("Resources.ID = PM_Resource_Planner.RESOURCE_ID  AND (Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = 0)")
 				.andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();

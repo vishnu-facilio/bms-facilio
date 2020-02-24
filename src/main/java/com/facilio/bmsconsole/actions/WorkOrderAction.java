@@ -1933,6 +1933,7 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getCalendarSelectFields());
 			context.put(FacilioConstants.ContextNames.FETCH_CUSTOM_FIELDS, true);
 			context.put(FacilioConstants.ContextNames.FETCH_AS_MAP, true);
+			context.put(FacilioConstants.ContextNames.DONT_FETCH_WO_WITH_DELETED_RESOURCES, true);
 		}
 		else if (getSelectFields() != null) {
  			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getSelectFields());			

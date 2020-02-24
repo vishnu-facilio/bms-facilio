@@ -1278,7 +1278,9 @@ public class TemplateAPI {
 
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 		builder.table(ModuleFactory.getPMIncludeExcludeResourceModule().getTableName())
-		.select(FieldFactory.getPMIncludeExcludeResourceFields());
+		.select(FieldFactory.getPMIncludeExcludeResourceFields())
+				.innerJoin("Resources")
+				.on("Resources.ID = PM_Include_Exclude_Resource.RESOURCE_ID AND (Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = 0)");
 		
 		if(pmId != null && pmId > 0) {
 			builder.andCustomWhere("PM_ID = ? ", pmId);

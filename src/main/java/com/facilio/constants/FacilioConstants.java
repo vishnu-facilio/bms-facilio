@@ -138,6 +138,7 @@ public class FacilioConstants {
 
 		public static final String APP_ID = "appId";
 		public static final String FETCH_FULL_FORM = "fetchFullForm";
+        public static final String DONT_FETCH_WO_WITH_DELETED_RESOURCES = "dontFetchWOWithDeletedResources";
 
         public static class Reservation {
 			public static final String RESERVATION = "reservation";
