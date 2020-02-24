@@ -271,6 +271,19 @@ public class ProcessImportCommand extends FacilioCommand {
 						} else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 							props.put(FacilioConstants.ContextNames.STATE_FLOW_ID, StateFlowRulesAPI.getDefaultStateFlow(moduleObj).getId());
 						}
+						if (colVal.containsKey(fieldMapping.get(importProcessContext.getModule().getName() + "__site")))
+						{
+							String siteName = (String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
+							if (!(importProcessContext.getImportSetting() == ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportSetting.UPDATE_NOT_NULL.getValue())) {
+								List<SiteContext> sites = SpaceAPI.getAllSites();
+								for (SiteContext site : sites) {
+									if (!props.containsKey("siteId") && site.getName().trim().toLowerCase().equals(siteName.trim().toLowerCase())) {
+										props.put("siteId", site.getId());
+										break;
+									}
+								}
+							}
+						}
 					}
 						List<FacilioField> fields;
 						try {
