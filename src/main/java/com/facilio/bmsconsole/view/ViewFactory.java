@@ -4817,7 +4817,7 @@ public class ViewFactory {
 		createdTime.setName("createdTime");
 		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(ModuleFactory.getAgentAlarmOccurrenceModule());
+		createdTime.setModule(ModuleFactory.getAlarmOccurenceModule());
 
 		FacilioView allView = new FacilioView();
 		allView.setName("agentAll");
