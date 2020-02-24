@@ -108,7 +108,6 @@ public class ImportFieldFactory {
 		for(FacilioField field : fields) {
 			if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && !ImportAPI.isRemovableFieldOnImport(field.getName())) {
 				LookupField lookupField = (LookupField) field;
-				LOGGER.info("LookupField!!!" + field.getName() + " Module Name: " + lookupField.getLookupModule().getName());
 				List<FacilioField> lookupModuleFields = bean.getAllFields(lookupField.getLookupModule().getName());
 				for(FacilioField lkField : lookupModuleFields) {
 					additionalFields.add(lkField);

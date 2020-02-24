@@ -638,18 +638,12 @@ public class ImportAPI {
 						facilioModule.getName().equals(FacilioConstants.ContextNames.FLOOR)
 						|| facilioModule.getName().equals(FacilioConstants.ContextNames.SPACE)
 						) {
-					List<String> includeFields = ImportFieldFactory.includeFields(facilioModule.getName());
-					
-					Map<String, FacilioField> resourceFields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ContextNames.RESOURCE));
-					fields.add(resourceFields.get("name").getName());
-					fields.add(resourceFields.get("description").getName());
-					
 					if(customFields != null && !customFields.isEmpty()) {
 						fieldsList.addAll(customFields);
 					}
 					
 					for(FacilioField field : fieldsList) {
-						if(field.getModuleId() == facilioModule.getModuleId() || (!includeFields.isEmpty() && includeFields.contains(field.getName()))) {
+						if((!ImportAPI.isRemovableFieldOnImport(field.getName()))) {
 							fields.add(field.getName());
 						}
 					}					
