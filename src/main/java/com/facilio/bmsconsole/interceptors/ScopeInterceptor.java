@@ -249,6 +249,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
             if(  false ){  // make false to intercept
 				return arg0.invoke();
 			} else {
+				long addStart = System.currentTimeMillis();
 				AuditData data = null;
 				FacilioAudit audit = new DBAudit();
 				int status = 200;
@@ -262,12 +263,14 @@ public class ScopeInterceptor extends AbstractInterceptor {
 						FacilioService.runAsServiceWihReturn(() ->audit.add(finalData));
 						data.setId(finalData.getId());
 					}
+					LOGGER.info("Audit entry add timetaken:::: "+(System.currentTimeMillis()-addStart));
 					return arg0.invoke();
 				} catch (Exception e) {
 					status = 500;
 					LOGGER.info("Exception from action classs " + e.getMessage());
 					throw e;
 				} finally {
+					long updateStart = System.currentTimeMillis();
 					if(data != null) {
 						data.setEndTime(System.currentTimeMillis());
 						data.setStatus(status);
@@ -275,6 +278,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 						AuditData finalData1 = data;
 						FacilioService.runAsServiceWihReturn(() ->audit.update(finalData1));
 					}
+					LOGGER.info("Audit entry update timetaken:::: "+(System.currentTimeMillis()-updateStart));
 				}
 			}
 		} catch (Exception e) {
