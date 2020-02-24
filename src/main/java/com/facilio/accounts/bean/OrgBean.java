@@ -55,4 +55,6 @@ public interface OrgBean {
 	public Organization getPortalOrg(long portalId, AppDomainType appType) throws Exception;
 		
 	public void copyReadingValue(List<Map<String,Object>> porp, FacilioModule module, long targetOrgId, long targetAssetId, long timeDiff, List<FacilioField> fields, long targetId)throws Exception;
+	
+	public List getEnergyMeterList() throws Exception;
 }

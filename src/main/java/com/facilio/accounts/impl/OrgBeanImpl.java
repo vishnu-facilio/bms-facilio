@@ -21,10 +21,15 @@ import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.copyAssetReadingCommand;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -384,5 +389,16 @@ public class OrgBeanImpl implements OrgBean {
 	   return org;
 	}
 	
+	@Override
+	public List getEnergyMeterList() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CV_NAME, "all");
+		
+		FacilioChain getEnergyMeterListChain = FacilioChainFactory.getEnergyMeterListChain();
+		getEnergyMeterListChain.execute(context);
+		
+		return ((List<EnergyMeterContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
+	}
 	
 }
