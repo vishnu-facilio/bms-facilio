@@ -1784,7 +1784,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.MODULE_RULE_NOTIFICATION)));
-			
+			c.addCommand(new ExecuteWorkFlowsBusinessLogicInPostTransactionCommand());
 			return c;
 		}
 		
