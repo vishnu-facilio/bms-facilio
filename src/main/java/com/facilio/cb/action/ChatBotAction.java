@@ -1,12 +1,16 @@
 package com.facilio.cb.action;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.cb.context.ChatBotSession;
 import com.facilio.cb.context.ChatBotSessionConversation;
 import com.facilio.cb.util.ChatBotConstants;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.controlaction.util.ControlActionUtil;
+import com.facilio.modules.ModuleFactory;
 
 public class ChatBotAction extends FacilioAction {
 
@@ -66,6 +70,27 @@ public class ChatBotAction extends FacilioAction {
 		}
 		
 		return SUCCESS;
+	}
+	
+	public String getChatMessages() throws Exception {
+		
+		if(getPerPage() < 0) {
+			setPerPage(20);
+		}
+		if(getPage() < 0) {
+			setPage(1);
+		}
+		
+		FacilioChain rdmChain = ReadOnlyChainFactory.getChatBotConversationChain();
+		FacilioContext constructListContext = rdmChain.getContext();
+		constructListContext(constructListContext);
+		
+		rdmChain.execute();
+		
+		setResult(ChatBotConstants.CHAT_BOT_SESSIONS, constructListContext.get(ChatBotConstants.CHAT_BOT_SESSIONS));
+		
+		return SUCCESS;
+		
 	}
 	
 }

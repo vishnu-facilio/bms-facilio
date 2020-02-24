@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
-import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONArray;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -266,6 +265,38 @@ public class ChatBotUtil {
 				chatBotSession.setIntent(getIntent(chatBotSession.getIntentId()));
 			}
 			return chatBotSession;
+		}
+		return null;
+	}
+	
+	public static Map<Long,List<ChatBotSessionConversation>> getSessionConversationMap(List<Long> sessionIds) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getCBSessionConversationFields();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getCBSessionConversationModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(sessionIds, ModuleFactory.getCBSessionConversationModule()));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			
+			Map<Long,List<ChatBotSessionConversation>> sessionConversationMap = new HashMap<>();
+			
+			for(Map<String, Object> prop :props) {
+				ChatBotSessionConversation chatBotSessionConversation = FieldUtil.getAsBeanFromMap(prop, ChatBotSessionConversation.class);
+				
+				if(sessionConversationMap.containsKey(chatBotSessionConversation.getSessionId())) {
+					sessionConversationMap.get(chatBotSessionConversation.getSessionId()).add(chatBotSessionConversation);
+				}
+				else {
+					List<ChatBotSessionConversation> chatBotSessionConversations = new ArrayList<>();
+					chatBotSessionConversations.add(chatBotSessionConversation);
+					sessionConversationMap.put(chatBotSessionConversation.getSessionId(), chatBotSessionConversations);
+				}
+			}
+			return sessionConversationMap;
 		}
 		return null;
 	}

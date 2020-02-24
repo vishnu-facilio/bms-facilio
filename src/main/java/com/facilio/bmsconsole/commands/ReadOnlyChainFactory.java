@@ -354,6 +354,14 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain getChatBotConversationChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetChatBotConversationCommandCommand());
+		return c;
+	}
+	
 	public static FacilioChain getAlarmDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());

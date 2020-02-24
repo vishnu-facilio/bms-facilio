@@ -27,6 +27,8 @@ public class ChatBotConstants {
 	private static final String DEFAULT_REPLIES = "conf/chatbot/chatBotDefaultReplies.yml";
 	
 	public static final String CHAT_BOT_SESSION = "chatBotSession";
+	public static final String CHAT_BOT_SESSIONS = "chatBotSessions";
+	public static final String CHAT_BOT_SESSION_COUNT = "chatBotSessionCount";
 	public static final String CHAT_BOT_MESSAGE_STRING = "chatBotMessageString";
 	public static final String CHAT_BOT_OPTION_STRING = "chatBotOptionString";
 	public static final String CHAT_BOT_SESSION_CONVERSATION = "chatBotSessionConversation";

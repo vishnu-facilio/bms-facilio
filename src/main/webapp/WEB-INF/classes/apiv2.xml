@@ -5113,6 +5113,8 @@
 	<package name="chatbot" namespace="/api/v2/cb" extends="v2Api">
 		<action name="chat"
 				class="com.facilio.cb.action.ChatBotAction" method="chat" />
+		<action name="getChatMessages"
+				class="com.facilio.cb.action.ChatBotAction" method="getChatMessages" />
 	</package>
 	
 	<package name="servicerequests" namespace="/api/v2/servicerequests"

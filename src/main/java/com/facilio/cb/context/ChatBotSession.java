@@ -2,6 +2,7 @@ package com.facilio.cb.context;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ChatBotSession {
@@ -18,6 +19,16 @@ public class ChatBotSession {
 	long startTime = -1;
 	long parentSessionId = -1;
 	
+	List<ChatBotSessionConversation> chatBotSessionConversations;
+	
+	public List<ChatBotSessionConversation> getChatBotSessionConversations() {
+		return chatBotSessionConversations;
+	}
+
+	public void setChatBotSessionConversations(List<ChatBotSessionConversation> chatBotSessionConversations) {
+		this.chatBotSessionConversations = chatBotSessionConversations;
+	}
+
 	public long getParentSessionId() {
 		return parentSessionId;
 	}
