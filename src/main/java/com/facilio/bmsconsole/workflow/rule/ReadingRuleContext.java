@@ -1303,7 +1303,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			recordContextFilteredForRuleExecution.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME));	
 
 			instantParallelWorkflowRuleJobContext.put(FacilioConstants.ContextNames.RECORD_CONTEXT_FOR_RULE_EXECUTION, recordContextFilteredForRuleExecution);
-			FacilioTimer.scheduleInstantJob("ParallelWorkflowRuleExecutionJob", instantParallelWorkflowRuleJobContext);
+			FacilioTimer.scheduleInstantJob("rule","ParallelWorkflowRuleExecutionJob", instantParallelWorkflowRuleJobContext);
 		}
 		else {
 			return super.executeRuleAndChildren(workflowRule, module, record, changeSet, recordPlaceHolders, context, propagateError, parentRuleField, onSuccessField, workflowRuleCacheMap, isParallelRuleExecution, eventTypes, ruleTypes);		

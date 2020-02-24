@@ -4,3 +4,9 @@ executors :
     dataTableName : FacilioInstantJobQueue_Data
     maxThreads : 10 #optional default 10
     queueSize : 100 #optional default 100
+
+  - name : rule
+    tableName : FacilioRuleInstantJobQueue
+    dataTableName : FacilioRuleInstantJobQueue_Data
+    maxThreads : 10
+    queueSize : 100
