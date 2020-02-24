@@ -31,8 +31,15 @@ public class AddOrUpdateFeedbackKioskCommand extends FacilioCommand {
 		DeviceContext device=new DeviceContext();
 		device.setDeviceType(DeviceContext.DeviceType.FEEDBACK_KIOSK);
 		device.setName(feedbackKiosk.getName());
+		device.setDescription(feedbackKiosk.getDescription());
+		//TO CHECK , why not move all kiosk types as extended module
 		
 		device.setSiteId(feedbackKiosk.getSiteId());
+		device.setAssociatedResource(feedbackKiosk.getAssociatedResource());
+		if(device.getAssociatedResource()==null)
+		{
+			throw new Exception("Space required for feedback kiosk");
+		}
 		
 		if(feedbackKiosk.getId()>0)
 		{

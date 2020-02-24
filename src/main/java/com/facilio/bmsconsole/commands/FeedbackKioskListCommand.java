@@ -42,7 +42,7 @@ public class FeedbackKioskListCommand extends FacilioCommand {
 		
 		
 		SelectRecordsBuilder<FeedbackKioskContext> builder = new SelectRecordsBuilder<FeedbackKioskContext>().select(selectFields)
-				.beanClass(FeedbackKioskContext.class).module(devicesModule).leftJoin(feedbackKioskModule.getTableName())
+				.beanClass(FeedbackKioskContext.class).module(devicesModule).innerJoin(feedbackKioskModule.getTableName())
 				.on("Devices.ID=Feedback_Kiosk.ID")
 				.andCondition(CriteriaAPI.getCondition("DEVICE_TYPE", "deviceType", DeviceType.FEEDBACK_KIOSK.getIndex()+"", EnumOperators.IS)
 				);

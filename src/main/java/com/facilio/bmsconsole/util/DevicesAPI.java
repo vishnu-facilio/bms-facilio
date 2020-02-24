@@ -159,7 +159,7 @@ public class DevicesAPI {
 		
 		GenericDeleteRecordBuilder deleteBuilder =new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getFeedbackTypeCatalogMappingModule().getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(feedbackType.getId(),ModuleFactory.getFeedbackTypeCatalogMappingModule()));
+				.andCondition(CriteriaAPI.getCondition("FEEDBACK_TYPE_ID","feedbackTypeId",feedbackType.getId()+"",NumberOperators.EQUALS));
 		deleteBuilder.delete();
 				
 	}
