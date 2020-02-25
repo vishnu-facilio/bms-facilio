@@ -843,7 +843,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
-	public Map<Long, FacilioField> getFields(Collection<Long> fieldIds) throws Exception {
+	public List<FacilioField> getFields(Collection<Long> fieldIds) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getSelectFieldFields())
 				.table("Fields")
@@ -859,8 +859,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					moduleMap.putAll(splitModules(module));
 				}
 			}
-			List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
-			return FieldFactory.getAsIdMap(fields);
+			return getFieldFromPropList(fieldProps, moduleMap);
 		}
 		return null;
 	}

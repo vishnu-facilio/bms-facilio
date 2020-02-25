@@ -354,7 +354,7 @@
 				mcName = null;
 				if (thisYearOccurrence != null) {
 					for each index, value in thisYearOccurrence {
-						if (occurrenceCount < value.rule) {
+						if (value.rule != null && occurrenceCount < value.rule) {
 							ruleId = value.result.id;
 							occurrenceCount = value.rule;
 						}

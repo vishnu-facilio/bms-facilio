@@ -57,7 +57,7 @@ public class GetControllableFieldsCommand extends FacilioCommand {
 	    	}
 	    	
 	    	if(!fieldIDs.isEmpty()) {
-	    		context.put(ControlActionUtil.CONTROLLABLE_FIELDS, modBean.getFields(fieldIDs).values());
+	    		context.put(ControlActionUtil.CONTROLLABLE_FIELDS, modBean.getFields(fieldIDs));
 	    	}
 		}
 		else if(assetCategoryId != null && assetCategoryId > 0) {
@@ -87,7 +87,7 @@ public class GetControllableFieldsCommand extends FacilioCommand {
 	    	}
 	    	
 	    	if(!fieldIDs.isEmpty()) {
-	    		context.put(ControlActionUtil.CONTROLLABLE_FIELDS, modBean.getFields(fieldIDs).values());
+	    		context.put(ControlActionUtil.CONTROLLABLE_FIELDS, modBean.getFields(fieldIDs));
 	    	}
 		}
     	

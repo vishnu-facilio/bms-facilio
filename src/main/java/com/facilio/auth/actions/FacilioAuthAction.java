@@ -317,7 +317,7 @@ public class FacilioAuthAction extends FacilioAction {
 					portalUser = true;
 				}
 				HttpServletRequest request = ServletActionContext.getRequest();
-				HttpServletResponse response = ServletActionContext.getResponse();
+				
 				String userAgent = request.getHeader("User-Agent");
 				userAgent = userAgent != null ? userAgent : "";
 				String ipAddress = request.getHeader("X-Forwarded-For");
@@ -358,31 +358,7 @@ public class FacilioAuthAction extends FacilioAction {
 				setJsonresponse("token", authtoken);
 				setJsonresponse("username", getUsername());
 
-				Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
-				if (portalUser) {
-					cookie = new Cookie("fc.idToken.facilioportal", authtoken);
-				}
-				String parentdomain = request.getServerName().replaceAll("app.", "");
-				cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-				cookie.setPath("/");
-				cookie.setHttpOnly(true);
-				if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
-					cookie.setSecure(true);
-				}
-				cookie.setDomain(parentdomain);
-				response.addCookie(cookie);
-
-				Cookie authmodel = new Cookie("fc.authtype", "facilio");
-				authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-				authmodel.setPath("/");
-				authmodel.setHttpOnly(false);
-				if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
-					authmodel.setSecure(true);
-				}
-
-				authmodel.setDomain(parentdomain);
-				LOGGER.info("#################### facilio.in::: " + request.getServerName());
-				response.addCookie(authmodel);
+				addAuthCookies(authtoken, portalUser, request);
 
 			} 
 			catch (Exception e) {
@@ -410,32 +386,12 @@ public class FacilioAuthAction extends FacilioAction {
 		String authtoken = request.getParameter("authtoken");
 		String serviceurl = request.getParameter("serviceurl");
 		String isPortal = request.getParameter("isPortal");
-		
-		String parentdomain = request.getServerName().replaceAll("app.", "");
-
-		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
+		boolean isPotalUser = false;
 		if(org.apache.commons.lang3.StringUtils.isNotEmpty(isPortal) && isPortal.contentEquals("true")) {
-			cookie = new Cookie("fc.idToken.facilioportal", authtoken);
+			isPotalUser = true;
 		}
-		cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-		cookie.setPath("/");
-		cookie.setHttpOnly(true);
-		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
-			cookie.setSecure(true);
-		}
-		cookie.setDomain(parentdomain);
-		response.addCookie(cookie);
-
-		Cookie authmodel = new Cookie("fc.authtype", "facilio");
-		authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-		authmodel.setPath("/");
-		authmodel.setHttpOnly(false);
-		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
-			authmodel.setSecure(true);
-		}
-		authmodel.setDomain(parentdomain);
-		LOGGER.info("#################### facilio.in::: " + request.getServerName());
-		response.addCookie(authmodel);
+		
+		addAuthCookies(authtoken, isPotalUser, request);
 
 		Cookie token = new Cookie("fc.idToken", "facilio");
 		token.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
@@ -455,6 +411,35 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 
 		return null;
+	}
+	
+	private void addAuthCookies(String authtoken, boolean portalUser, HttpServletRequest request) {
+		HttpServletResponse response = ServletActionContext.getResponse();
+		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
+		if (portalUser) {
+			cookie = new Cookie("fc.idToken.facilioportal", authtoken);
+		}
+		String parentdomain = request.getServerName().replaceAll("app.", "").replaceAll("demo.", "");
+		cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+		cookie.setPath("/");
+		cookie.setHttpOnly(true);
+		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
+			cookie.setSecure(true);
+		}
+		cookie.setDomain(parentdomain);
+		response.addCookie(cookie);
+
+		Cookie authmodel = new Cookie("fc.authtype", "facilio");
+		authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+		authmodel.setPath("/");
+		authmodel.setHttpOnly(false);
+		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
+			authmodel.setSecure(true);
+		}
+
+		authmodel.setDomain(parentdomain);
+		LOGGER.info("#################### facilio.in::: " + request.getServerName());
+		response.addCookie(authmodel);
 	}
 
 	public long portalId() {

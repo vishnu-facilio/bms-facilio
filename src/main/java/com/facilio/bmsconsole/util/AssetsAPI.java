@@ -59,6 +59,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
 
 public class AssetsAPI {
@@ -558,22 +559,29 @@ public class AssetsAPI {
 		return null;
 	}
 	
-	public static JSONObject getAssetsWithReadings (List<Long> buildingIds) throws Exception {
+	public static JSONObject getAssetsWithReadings (List<Long> buildingIds, boolean fieldsNotRequired) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-		List<FacilioField> fields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
-		FacilioModule readingsModule = ModuleFactory.getReadingDataMetaModule();
-		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
-		redingFields.remove(0);
-		fields.addAll(redingFields);
-		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
+		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> assetFields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
+		Map<String, FacilioField> assetFieldMap = FieldFactory.getAsMap(assetFields);
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getIdField(assetModule));
+		fields.add(assetFieldMap.get("name"));
+		fields.add(assetFieldMap.get("category"));
+		
+		FacilioModule readingDataMetaModule = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> readingFields = FieldFactory.getReadingDataMetaFields();
+		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(readingFields);
+		fields.add(readingFieldsMap.get("fieldId"));
+		
 		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
 				.select(fields)
-				.table(module.getTableName())
-				.moduleName(module.getName())
+				.table(assetModule.getTableName())
+				.moduleName(assetModule.getName())
 				.beanClass(AssetContext.class)
-				.innerJoin(readingsModule.getTableName())
-				.on(readingsModule.getTableName()+"."+readingFieldsMap.get("resourceId").getColumnName()+"="+module.getTableName()+".ID")
+				.innerJoin(readingDataMetaModule.getTableName())
+				.on(readingDataMetaModule.getTableName()+"."+readingFieldsMap.get("resourceId").getColumnName()+"="+assetModule.getTableName()+".ID")
+				.setAggregation()
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T))
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
 
@@ -594,19 +602,22 @@ public class AssetsAPI {
 		Map<Long, Object> assetMap = new JSONObject();
 		data.put("assets", assetMap);
 
-		Map<Long, FacilioField> fieldMap = null;
+		Map<Long, Map<String,Object>> fieldMap = null;
 		data.put("fields", fieldMap);
 
 		if (assets == null || assets.isEmpty()) {
 			return data;
 		}
 		Set<Long> fieldIds = assets.stream().map(asset -> (Long) asset.getData().get("fieldId")).collect(Collectors.toSet());
-		fieldMap = modBean.getFields(fieldIds);
+		if (!fieldsNotRequired) {
+			List<FacilioField> fieldDetailList = modBean.getFields(fieldIds);
+			fieldMap =new HashMap<>();
+			for(FacilioField field: fieldDetailList) {
+				Map<String, Object> details = getFieldDefaultProp(field);
+				fieldMap.put(field.getFieldId(), details);
+			}
+		}
 		
-
-		
-
-
 		for(AssetContext asset: assets) {
 			if (asset.getCategory() == null) {
 				continue;
@@ -663,6 +674,22 @@ public class AssetsAPI {
 		
 		
 		return data;
+	}
+	
+	private static Map<String, Object> getFieldDefaultProp(FacilioField field) {
+		Map<String, Object> details =new HashMap<>();
+		details.put("name", field.getName());
+		details.put("displayName", field.getDisplayName());
+		details.put("fieldId", field.getFieldId());
+		details.put("id", field.getFieldId());
+		details.put("dataType", field.getDataType());
+		details.put("default", field.getDefault());
+		details.put("module", Collections.singletonMap("type", field.getModule().getType()));
+		if (field instanceof NumberField) {
+			NumberField numberField = (NumberField)field;
+			details.put("unit", numberField.getUnit());
+		}
+		return details;
 	}
 	
 	public static JSONObject getAssetsWithReadings(List<Long> buildingIds, String searchText, JSONObject pagination) throws Exception {

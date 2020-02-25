@@ -559,7 +559,7 @@ public class AssetAction extends FacilioAction {
 	
 	public String getReadingsWithAssets() throws Exception {
 		if (search == null || search.isEmpty()) {
-			assetsReadings = AssetsAPI.getAssetsWithReadings(buildingIds);
+			assetsReadings = AssetsAPI.getAssetsWithReadings(buildingIds, fieldsNotRequired != null && fieldsNotRequired);
 		}
 		else {
 			JSONObject pagination = new JSONObject();
@@ -570,6 +570,14 @@ public class AssetAction extends FacilioAction {
 		return SUCCESS;
   	}
 	
+	private Boolean fieldsNotRequired;
+	public Boolean getFieldsNotRequired() {
+		return fieldsNotRequired;
+	}
+	public void setFieldsNotRequired(Boolean fieldsNotRequired) {
+		this.fieldsNotRequired = fieldsNotRequired;
+	}
+
 	private List<Long> buildingIds;
 	public List<Long> getBuildingIds() {
 		return buildingIds;

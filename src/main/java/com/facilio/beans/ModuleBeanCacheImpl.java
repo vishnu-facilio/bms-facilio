@@ -1,17 +1,19 @@
 package com.facilio.beans;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.facilio.fw.cache.FacilioCache;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.cache.CacheUtil;
 import com.facilio.fw.LRUCache;
+import com.facilio.fw.cache.FacilioCache;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
@@ -230,6 +232,37 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			}
 		}
 		return field;
+	}
+	
+	@Override
+	public List<FacilioField> getFields(Collection<Long> fieldIds) throws Exception {
+		List<FacilioField> fields = null;
+		FacilioCache cache = LRUCache.getFieldsCache();
+		if (CollectionUtils.isNotEmpty(fieldIds)) {
+			List<Long> fieldIdsToFetch = new ArrayList<>();
+			fields = new ArrayList<>();
+			for(long fieldId: fieldIds) {
+				String key = CacheUtil.FIELD_KEY(getOrgId(), fieldId);
+				if (!cache.contains(key)) {
+					fieldIdsToFetch.add(fieldId);
+				}
+				else {
+					FacilioField field = (FacilioField)cache.get(key);
+					fields.add(field);
+				}
+			}
+			if (!fieldIdsToFetch.isEmpty()) {
+				List<FacilioField> fieldsFromDb = super.getFields(fieldIdsToFetch);
+				if (fieldsFromDb != null) {
+					fields.addAll(fieldsFromDb);
+					for(FacilioField field: fieldsFromDb) {
+						String key = CacheUtil.FIELD_KEY(getOrgId(), field.getFieldId());
+						cache.put(key, field);
+					}
+				}
+			}
+		}
+		return fields;
 	}
 	
 	@Override
