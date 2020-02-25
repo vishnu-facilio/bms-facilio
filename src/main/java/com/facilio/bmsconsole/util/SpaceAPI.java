@@ -1201,7 +1201,7 @@ public static long getSitesCount() throws Exception {
 		return spaces;
 	}
 	
-	public static List<BaseSpaceContext> getAllBaseSpaces(Criteria filterCriteria, Criteria searchCriteria, String orderBy, JSONObject pagination, Boolean withReadings) throws Exception
+	public static List<BaseSpaceContext> getAllBaseSpaces(Criteria filterCriteria, Criteria searchCriteria, String orderBy, JSONObject pagination, Boolean withReadings, Boolean fetchHierarchy) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
@@ -1227,6 +1227,14 @@ public static long getSitesCount() throws Exception {
 			if(scopeCriteria != null) {
 				selectBuilder.andCriteria(scopeCriteria);
 			}
+		}
+		if (fetchHierarchy  != null && fetchHierarchy) {
+			List<LookupField>lookUpfields = new ArrayList<>();
+			List<FacilioField> baseSpaceFields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(baseSpaceFields);
+			lookUpfields.add((LookupField) fieldsAsMap.get("building"));
+			lookUpfields.add((LookupField) fieldsAsMap.get("floor"));
+			selectBuilder.fetchSupplements(lookUpfields);
 		}
 		String orderByFloors = null;
 		if (orderBy != null && !orderBy.isEmpty()) {
@@ -1261,6 +1269,7 @@ public static long getSitesCount() throws Exception {
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("value"),"-1", StringOperators.ISN_T));
 			selectBuilder.andCriteria(criteria);
 		}
+		
 		
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;

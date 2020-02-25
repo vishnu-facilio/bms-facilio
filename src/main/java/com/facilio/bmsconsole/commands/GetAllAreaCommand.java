@@ -18,13 +18,14 @@ public class GetAllAreaCommand extends FacilioCommand{
 	//	Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
+		Boolean fetchHierarchy = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_HIERARCHY, false);
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		
 		Boolean withReadings = (Boolean) context.get(FacilioConstants.ContextNames.WITH_READINGS);
 		
-		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getAllBaseSpaces(filterCriteria, searchCriteria, orderBy, pagination, withReadings));
+		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getAllBaseSpaces(filterCriteria, searchCriteria, orderBy, pagination, withReadings, fetchHierarchy));
 		
 		return false;
 	}

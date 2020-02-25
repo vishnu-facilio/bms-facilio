@@ -50,6 +50,9 @@ public class BaseSpaceAction extends FacilioAction {
  		if (getPerPage() < 0) {
  			pagination.put("perPage", 5000);
  		}
+ 		if (fetchHierarchy != null && fetchHierarchy) {
+ 			context.put(FacilioConstants.ContextNames.FETCH_HIERARCHY, true);
+ 		}
  		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_SPACE);
 		context.put(FacilioConstants.ContextNames.WITH_READINGS, withReadings);
@@ -61,6 +64,8 @@ public class BaseSpaceAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	
 	private boolean isZone;
 	public boolean getIsZone() {
 		return isZone;
@@ -89,6 +94,16 @@ public class BaseSpaceAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	
+	private Boolean fetchHierarchy;
+	
+	public Boolean getFetchHierarchy() {
+		return fetchHierarchy;
+	}
+	public void setFetchHierarchy(Boolean fetchHierarchy) {
+		this.fetchHierarchy = fetchHierarchy;
+	}
+
 	private String moduleName;
 	public String getModuleName() 
 	{
