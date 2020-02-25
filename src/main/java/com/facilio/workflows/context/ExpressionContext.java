@@ -20,6 +20,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.FacilioModulePredicate;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
@@ -393,6 +394,13 @@ public class ExpressionContext implements WorkflowExpression {
 								}
 							}
 							return exprResult;
+						}
+					}
+					
+					if(moduleName != null && moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+						FacilioField markedField = modBean.getField("marked", moduleName);
+						if(markedField != null) {
+							selectBuilder.andCondition(CriteriaAPI.getCondition(markedField, Boolean.FALSE.toString(), BooleanOperators.IS));
 						}
 					}
 					if(workflowContext.isIgnoreMarkedReadings() && moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {

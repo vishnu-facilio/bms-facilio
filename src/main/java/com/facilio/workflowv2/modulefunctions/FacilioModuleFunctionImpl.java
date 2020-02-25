@@ -32,6 +32,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.FacilioModulePredicate;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
@@ -350,6 +351,12 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 								result = readingDataMeta.getValue();
 							}
 							return result;
+						}
+					}
+					if(module.getName().equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+						FacilioField markedField = modBean.getField("marked", module.getName());
+						if(markedField != null) {
+							selectBuilder.andCondition(CriteriaAPI.getCondition(markedField, Boolean.FALSE.toString(), BooleanOperators.IS));
 						}
 					}
 					if(dbParamContext.isIgnoreMarkedReadings() && module.getName().equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
