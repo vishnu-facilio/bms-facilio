@@ -184,7 +184,7 @@ public class IotMessageApiV2 {
 
     private static IotMessage getIotMessage(Long id) throws Exception {
         List<IotMessage> result = getIotMessages(Collections.singletonList(id));
-        if( (result != null) && (! result.isEmpty()) && (result.size()==0) ){
+        if( (result != null) && (! result.isEmpty()) && (result.size()==1) ){
             return result.get(0);
         }else {
             throw new Exception(" unexpected result, cant have this many records ->"+result.size());
