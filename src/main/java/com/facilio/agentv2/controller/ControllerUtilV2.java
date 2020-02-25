@@ -92,8 +92,10 @@ public class ControllerUtilV2 {
         Controller controller = null;
         try {
             if (controllerJSON != null && (!controllerJSON.isEmpty())) {
-                if (containsValueCheck(AgentConstants.CONTROLLER_TYPE, controllerJSON)) {
-                    FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact((Long) controllerJSON.get(AgentConstants.CONTROLLER_TYPE)));
+                if (containsValueCheck(AgentConstants.TYPE, controllerJSON)) {
+                    FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact((Long) controllerJSON.get(AgentConstants.TYPE)));
+                    controllerJSON.put(AgentConstants.CONTROLLER_TYPE,controllerType.asInt());
+                    controllerJSON.remove(AgentConstants.TYPE);
                     controller = ControllerApiV2.getControllerFromMap(controllerJSON,controllerType);
                 } else {
                     LOGGER.info(" Controller Type missing ");
