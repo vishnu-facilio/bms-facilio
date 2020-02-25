@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.db.criteria.Criteria;
