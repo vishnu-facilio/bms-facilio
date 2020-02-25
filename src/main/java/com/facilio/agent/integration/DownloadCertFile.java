@@ -96,32 +96,8 @@ public class DownloadCertFile {
     }
 
     public static String downloadAgentCertificate(String policyName, String agentName, String type) throws Exception {
-        LOGGER.info("policy name " + policyName + "  agent name " + agentName);
-        String certFileId = FacilioAgent.getCertFileId(type);
-        LOGGER.info("certFileId " + certFileId);
-        long orgId = AccountUtil.getCurrentOrg().getOrgId();
-        String url = null;
-        String orgDomainName = AccountUtil.getCurrentAccount().getOrg().getDomain();
-        CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgDomainName, policyName, type);
-        LOGGER.info(" certificate result "+certificateResult);
-        String directoryName = "facilio/";
-        String outFileName = FacilioAgent.getCertFileName(type);
-        File file = new File(System.getProperty("user.home") + outFileName);
-        try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
-            addToZip(out, directoryName + FACILIO_CERT_FILE, certificateResult.getCertificatePem());
-            addToZip(out, directoryName + FACILIO_PRIVATE_KEY, certificateResult.getKeyPair().getPrivateKey());
-            addToZip(out, directoryName + FACILIO_CONFIG, getFacilioConfig(orgDomainName, agentName));
-            out.finish();
-            out.flush();
-            FileStore fs = FacilioFactory.getFileStore();
-            long id = fs.addFile(file.getName(), file, "application/octet-stream");
-            url = fs.getPrivateUrl(id);
-            CommonCommandUtil.insertOrgInfo(orgId, certFileId, String.valueOf(id));
-            file.delete();
-        }
-        AwsUtil.addClientToPolicy(agentName, policyName, type);
-        LOGGER.info(" added client to policy ");
-        FacilioFactory.getMessageQueue().start();
+        String url = downloadCertificate(policyName,type);
+        AwsUtil.addClientToPolicy(agentName,policyName,type);
         return url;
     }
 

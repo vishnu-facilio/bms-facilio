@@ -719,7 +719,6 @@ public class ControllerApiV2 {
         for (FacilioControllerType controllerType : FacilioControllerType.values()) {
             FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
             String moduleName = getControllerModuleName(controllerType);
-            System.out.println(" module name "+moduleName);
             if(moduleName == null){
                 continue;
             }
@@ -739,7 +738,7 @@ public class ControllerApiV2 {
                 controllersData.addAll(new ArrayList(controllerData));
             }
         }
-        System.out.println(" returning data "+controllersData);
+        System.out.println(" returning data "+controllersData.size());
         return controllersData;
     }
 }
