@@ -47,6 +47,16 @@ public class ChatBotAction extends FacilioAction {
 	public void setChatBotSession(ChatBotSession chatBotSession) {
 		this.chatBotSession = chatBotSession;
 	}
+	
+	String modelName;
+	
+	public String getModelName() {
+		return modelName;
+	}
+
+	public void setModelName(String modelName) {
+		this.modelName = modelName;
+	}
 
 	public String chat() throws Exception {
 		
@@ -70,6 +80,19 @@ public class ChatBotAction extends FacilioAction {
 		}
 		
 		return SUCCESS;
+	}
+	
+	public String flushIntentAndModel() throws Exception {
+		
+		FacilioChain chain = TransactionChainFactory.FlushIntentAndModelChain();
+		FacilioContext context = chain.getContext();
+		
+		context.put(ChatBotConstants.CHAT_BOT_ML_MODEL_NAME, getModelName());
+		
+		chain.execute();
+		
+		return SUCCESS;
+		
 	}
 	
 	public String getChatMessages() throws Exception {

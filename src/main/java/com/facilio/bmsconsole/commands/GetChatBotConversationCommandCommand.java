@@ -127,13 +127,16 @@ public class GetChatBotConversationCommandCommand extends FacilioCommand {
 				sessions.add(chatBotSession);
 			}
 			
-			Map<Long, List<ChatBotSessionConversation>> sessionConversationMap = ChatBotUtil.getSessionConversationMap(sessionIDs);
-			
-			if(sessionConversationMap != null && !sessionConversationMap.isEmpty()) {
+			if(!sessionIDs.isEmpty()) {
 				
-				for(ChatBotSession session : sessions) {
-					if(sessionConversationMap.containsKey(session.getId())) {
-						session.setChatBotSessionConversations(sessionConversationMap.get(session.getId()));
+				Map<Long, List<ChatBotSessionConversation>> sessionConversationMap = ChatBotUtil.getSessionConversationMap(sessionIDs);
+				
+				if(sessionConversationMap != null && !sessionConversationMap.isEmpty()) {
+					
+					for(ChatBotSession session : sessions) {
+						if(sessionConversationMap.containsKey(session.getId())) {
+							session.setChatBotSessionConversations(sessionConversationMap.get(session.getId()));
+						}
 					}
 				}
 			}

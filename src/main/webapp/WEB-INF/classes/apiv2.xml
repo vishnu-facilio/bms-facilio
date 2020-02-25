@@ -5118,6 +5118,8 @@
 				class="com.facilio.cb.action.ChatBotAction" method="chat" />
 		<action name="getChatMessages"
 				class="com.facilio.cb.action.ChatBotAction" method="getChatMessages" />
+		<action name="flushIntentAndModel"
+				class="com.facilio.cb.action.ChatBotAction" method="flushIntentAndModel" />
 	</package>
 	
 	<package name="servicerequests" namespace="/api/v2/servicerequests"

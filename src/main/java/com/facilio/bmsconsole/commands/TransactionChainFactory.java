@@ -4519,6 +4519,13 @@ public class TransactionChainFactory {
 		chain.addCommand(new CreateAgentCommand());
 		return chain;
 	}
+	
+	public static FacilioChain FlushIntentAndModelChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DeleteChatBotIntentAndModel());
+		c.addCommand(getpopulateDefaultChatBotIntentChain());
+		return c;
+	}
 
 	public static FacilioChain HandleChatBotMessageChain() {
 		FacilioChain c = getDefaultChain();

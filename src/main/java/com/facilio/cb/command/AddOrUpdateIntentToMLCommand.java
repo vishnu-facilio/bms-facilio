@@ -15,19 +15,20 @@ public class AddOrUpdateIntentToMLCommand extends FacilioCommand{
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		
+		if(context.get(ChatBotConstants.CHAT_BOT_ML_MODEL_NAME) == null) {
+			
+			List<ChatBotIntent> chatBotIntents = (List<ChatBotIntent>)context.get(ChatBotConstants.CHAT_BOT_INTENT_LIST);
+			
+			JSONObject intentJSON = ChatBotMLUtil.getChatBotIntentJSONFromIntents(chatBotIntents);
+			
+			JSONObject respjson = ChatBotMLUtil.pushIntentToML(intentJSON);
+			
+			String mlModelName = (String) respjson.get(ChatBotMLUtil.ML_MODEL_NAME_STRING);
+			
+			context.put(ChatBotConstants.CHAT_BOT_ML_MODEL_NAME, mlModelName);
+		}
 
-		List<ChatBotIntent> chatBotIntents = (List<ChatBotIntent>)context.get(ChatBotConstants.CHAT_BOT_INTENT_LIST);
-		
-		JSONObject intentJSON = ChatBotMLUtil.getChatBotIntentJSONFromIntents(chatBotIntents);
-		
-		JSONObject respjson = ChatBotMLUtil.pushIntentToML(intentJSON);
-		
-		String mlModelName = (String) respjson.get(ChatBotMLUtil.ML_MODEL_NAME_STRING);
-		
-		context.put(ChatBotConstants.CHAT_BOT_ML_MODEL_NAME, mlModelName);
-		
-//		context.put(ChatBotConstants.CHAT_BOT_ML_MODEL_NAME, "sample String");
-		
 		return false;
 	}
 

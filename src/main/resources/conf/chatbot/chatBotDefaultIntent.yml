@@ -338,10 +338,14 @@
        isV2Script : true
        workflowV2String : 'ChatBotAction test(Map data){
                              if(data.woId == null) {
+                             
+                                db = {
+								    criteria : [sourceType != 7],
+								    limit : 10,
+								    orderBy: "createdTime" desc
+							    };
                                 
-                                cri = [sourceType != 7];
-
-                              	wos = WorkOrder().fetch(cri);
+                              	wos = WorkOrder().fetch(db);
                                 
                                 woMapList = [];
                                 

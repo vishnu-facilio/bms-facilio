@@ -9,7 +9,7 @@
 <%@page import="com.facilio.bmsconsole.util.AssetsAPI"%>
 <%@page import=" com.facilio.modules.fields.FacilioField"%>
 <%@page import="com.facilio.modules.FieldFactory"%>
-<%@page import="com.facilio.modules.FacilioModule"%>
+<%@page import="com.facilio.modules.FacilioModule,com.facilio.accounts.dto.*"%>
 <%@page import="com.facilio.modules.ModuleFactory"%>
 <%@page import="com.facilio.chain.FacilioContext"%>
 <%@page import="com.facilio.bmsconsole.workflow.rule.ReadingRuleContext"%>

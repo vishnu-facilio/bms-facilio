@@ -273,10 +273,12 @@ public class ChatBotUtil {
 		
 		List<FacilioField> fields = FieldFactory.getCBSessionConversationFields();
 		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(ModuleFactory.getCBSessionConversationModule().getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(sessionIds, ModuleFactory.getCBSessionConversationModule()));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sessionId"), sessionIds, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
