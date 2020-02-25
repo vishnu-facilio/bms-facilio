@@ -4,7 +4,7 @@ java.util.List,
 java.sql.Timestamp,
  java.util.Date, 
  java.util.Map,
-  com.facilio.accounts.dto.User"%>
+  com.facilio.accounts.dto.*"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
   
