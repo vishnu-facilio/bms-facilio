@@ -101,7 +101,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public long addUserv3(long orgId, IAMUser user, int identifier, String appDomain) throws Exception {
+	public long addUserv3(long orgId, IAMUser user, long identifier, String appDomain) throws Exception {
 		return  addUserV3(orgId, user, false, identifier, appDomain);
 	}
 
@@ -986,7 +986,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 	@Override
-	public IAMUser getFacilioUserV3(String username, int identifier) throws Exception {
+	public IAMUser getFacilioUserV3(String username, long identifier) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
 		
@@ -1004,7 +1004,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return null;
 	}
 	
-	private long addUserV3(long orgId, IAMUser user, boolean emailRegRequired, int identifier, String appDomain) throws Exception {
+	private long addUserV3(long orgId, IAMUser user, boolean emailRegRequired, long identifier, String appDomain) throws Exception {
 
 		user.setIdentifier(identifier);
 		if(StringUtils.isEmpty(appDomain)) {

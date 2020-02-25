@@ -39,7 +39,7 @@ public class AddPeopleAccessCommand extends FacilioCommand{
 	    	  		PeopleAPI.addPortalAppUser(person, occupantPortalApp != null ? occupantPortalApp.getDomain() : null, 1);
 	    		}
 	    		if(vendorPortalApp != null && person.getPeopleTypeEnum() == PeopleType.VENDOR_CONTACT && ((VendorContactContext)person).isVendorPortalAccess()) {
-	    	  		PeopleAPI.addPortalAppUser(person, vendorPortalApp != null ? vendorPortalApp.getDomain() : null, 1);
+	    	  		PeopleAPI.addPortalAppUser(person, vendorPortalApp != null ? vendorPortalApp.getDomain() : null, vendorPortalApp.getId());
 	    		}
 	    		if(tenantPortalApp != null && person.getPeopleTypeEnum() == PeopleType.TENANT_CONTACT && ((TenantContactContext)person).isTenantPortalAccess()) {
 	    	  		PeopleAPI.addPortalAppUser(person, tenantPortalApp != null ? tenantPortalApp.getDomain() : null, 1);

@@ -339,7 +339,7 @@ public class PeopleAPI {
 		
 	}
 	
-	public static void addPortalAppUser(PeopleContext people, String appDomain, int identifier) throws Exception {
+	public static void addPortalAppUser(PeopleContext people, String appDomain, long identifier) throws Exception {
 		if(StringUtils.isEmpty(appDomain)) {
 			throw new IllegalArgumentException("Invalid App Domain");
 		}

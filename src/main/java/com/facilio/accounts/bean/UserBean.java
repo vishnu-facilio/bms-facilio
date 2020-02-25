@@ -18,7 +18,7 @@ public interface UserBean {
 	
 	public void createUser(long orgId, User user, int identifier, String appDomain) throws Exception;
 	
-	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String appDomain, int identifier) throws Exception;
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String appDomain, long identifier) throws Exception;
 
 	User verifyEmail(String token, String appDomain) throws Exception;
 

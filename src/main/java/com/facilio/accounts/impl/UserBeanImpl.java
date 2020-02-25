@@ -127,7 +127,6 @@ public class UserBeanImpl implements UserBean {
 	public void createUser(long orgId, User user, int identifier, String appDomain) throws Exception {
 		try {
 			user.setUserStatus(true);
-			user.setIdentifier(identifier);
 			if(IAMUserUtil.addUser(user, orgId, identifier, appDomain) > 0) {
 				createUserEntry(orgId, user, false, appDomain);
 			}
@@ -661,7 +660,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String appDomain, int identifier) throws Exception {
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError, String appDomain, long identifier) throws Exception {
 		try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				Organization org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
@@ -687,7 +686,7 @@ public class UserBeanImpl implements UserBean {
 		return 0L;
 	}
 
-	private long addRequester(long orgId, User user, boolean emailVerification, boolean shouldThrowExistingUserError, String appDomain, int identifier)
+	private long addRequester(long orgId, User user, boolean emailVerification, boolean shouldThrowExistingUserError, String appDomain, long identifier)
 			throws Exception {
 		Map<String, Object> iamUser = IAMUserUtil.getUserFromUsername(user.getUserName(), appDomain);
 		if (MapUtils.isNotEmpty(iamUser)) {

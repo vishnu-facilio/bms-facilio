@@ -36,7 +36,7 @@ public class IAMUserUtil {
 	public static final String JWT_DELIMITER = "#";
 	private static Logger log = LogManager.getLogger(IAMUserUtil.class.getName());
 	
-	public static long addUser(IAMUser user, long orgId, int identifier, String appDomain) throws Exception {
+	public static long addUser(IAMUser user, long orgId, long identifier, String appDomain) throws Exception {
 		if ((user != null) && orgId > 0) {
 			return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getTransactionalUserBean().addUserv3(orgId, user, identifier, appDomain));
 		} else {

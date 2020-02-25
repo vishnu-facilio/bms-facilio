@@ -16,7 +16,7 @@ import com.facilio.modules.fields.FacilioField;
 
 public interface IAMUserBean {
 	
-	public long addUserv3(long orgId, IAMUser user, int identifier, String appDomain) throws Exception;
+	public long addUserv3(long orgId, IAMUser user, long identifier, String appDomain) throws Exception;
 		
 	
 //	public long inviteAdminConsoleUserv2(long orgId, User user) throws Exception;
@@ -112,7 +112,7 @@ public interface IAMUserBean {
     
     public Map<String, Object> getUserForUsername(String username, String appDomain, long orgId) throws Exception;
 
-	public IAMUser getFacilioUserV3(String username, int identifier) throws Exception;
+	public IAMUser getFacilioUserV3(String username, long identifier) throws Exception;
 	
     	
 }
