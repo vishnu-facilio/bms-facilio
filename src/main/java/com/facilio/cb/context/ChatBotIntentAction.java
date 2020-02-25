@@ -60,7 +60,7 @@ public class ChatBotIntentAction {
 		if(responseType != null) {
 			return responseType.getIntVal();
 		}
-		return -1;
+		return ResponseType.STRING.getIntVal();
 	}
 	public void setResponseType(int responseType) {
 		if(responseType > 0) {
@@ -72,7 +72,10 @@ public class ChatBotIntentAction {
 	public enum ResponseType {
 		STRING(1, "String"),
 		COUNT_CARD(2, "Count Card"),
-		LIST_CARD(3,"List Card");
+		LIST_CARD(3,"List Card"),
+		SINGLE_SELECT(4,"Single Select"),
+		GRAPH(5,"Graph"),
+		SUMMARY_CARD(6,"Summary Card"),
 		;
 
 		int intVal;

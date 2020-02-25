@@ -2,8 +2,12 @@ package com.facilio.cb.context;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
+import com.facilio.cb.context.ChatBotIntentAction.ResponseType;
 import com.facilio.modules.FieldType;
 
 public class ChatBotIntentParam {
@@ -16,6 +20,17 @@ public class ChatBotIntentParam {
 	FieldType dataType;
 	ML_Type mlType;
 	int localId;
+	
+	List<JSONObject> options;
+	
+
+	public List<JSONObject> getOptions() {
+		return options;
+	}
+
+	public void setOptions(List<JSONObject> options) {
+		this.options = options;
+	}
 	
 	public int getLocalId() {
 		return localId;

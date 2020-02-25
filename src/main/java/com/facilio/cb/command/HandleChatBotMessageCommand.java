@@ -64,7 +64,6 @@ public class HandleChatBotMessageCommand extends FacilioCommand {
 		if(newcontext.containsKey(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION)) {
 			ChatBotSessionConversation conversation = (ChatBotSessionConversation)newcontext.get(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION);
 			context.put(ChatBotConstants.CHAT_BOT_MESSAGE_STRING, conversation.getQuery());
-			context.put(ChatBotConstants.CHAT_BOT_OPTION_STRING, conversation.getOptions());
 		}
 		else {
 			chatBotSession = (ChatBotSession)newcontext.get(ChatBotConstants.CHAT_BOT_SESSION);

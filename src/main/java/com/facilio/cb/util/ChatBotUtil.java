@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -190,9 +191,9 @@ public class ChatBotUtil {
 			ChatBotParamContext params = (ChatBotParamContext) value;
 			
 			ChatBotIntentParam intentParam = ChatBotUtil.getIntentParam(intent.getId(), params.getParamName());
+			intentParam.setOptions(params.getOptions());
 			
 			ChatBotSessionConversation newChatBotSessionConversation = ChatBotUtil.constructAndAddCBSessionConversationParams(intentParam, session,null,null);
-			newChatBotSessionConversation.setOptions(params.getOptions());
 			
 			context.put(ChatBotConstants.CHAT_BOT_SESSION_CONVERSATION, newChatBotSessionConversation);
 			
@@ -207,7 +208,7 @@ public class ChatBotUtil {
 		
 	}
 	
-	public static ChatBotIntentParam getIntentParam(long intentId,String paramName) throws Exception {
+	private static ChatBotIntentParam getIntentParam(long intentId,String paramName) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getCBIntentParamFields();
 		
@@ -461,6 +462,9 @@ public class ChatBotUtil {
 		
 		chatBotSessionConversation1.setRequestedTime(DateTimeUtil.getCurrenTime());
 		
+		JSONArray resArray = new JSONArray();
+		JSONObject result = new JSONObject();
+		resArray.add(result);
 		if(parentChatBotConversation != null) {
 			
 			if(parentChatBotConversation.getParentConversationId() > 0) {
@@ -469,12 +473,24 @@ public class ChatBotUtil {
 			else {
 				chatBotSessionConversation1.setParentConversationId(parentChatBotConversation.getId());
 			}
+			result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());
+			result.put(ChatBotConstants.CHAT_BOT_RESPONSE, "The given value seems to be invalid.\n"+param.getAskAs());
 			
-			chatBotSessionConversation1.setQuery("The given value seems to be invalid.\n"+param.getAskAs());
 		}
 		else {
-			chatBotSessionConversation1.setQuery(param.getAskAs());
+			if(param.getOptions() != null && !param.getOptions().isEmpty()) {
+				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.SINGLE_SELECT.getIntVal());
+				
+				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_OPTIONS, param.getOptions());
+			}
+			else {
+				result.put(ChatBotConstants.CHAT_BOT_RESPONSE_TYPE, ChatBotIntentAction.ResponseType.STRING.getIntVal());
+			}
+			
+			result.put(ChatBotConstants.CHAT_BOT_RESPONSE, param.getAskAs());
 		}
+		
+		chatBotSessionConversation1.setQuery(resArray.toJSONString());
 		
 		ChatBotUtil.addChatBotSessionConversation(chatBotSessionConversation1);
 		

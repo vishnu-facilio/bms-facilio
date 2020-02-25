@@ -44,6 +44,7 @@ public class ChatBotConstants {
 	
 	public static final String CHAT_BOT_RESPONSE = "chatBotResponse";
 	public static final String CHAT_BOT_RESPONSE_TYPE = "chatBotResponseType";
+	public static final String CHAT_BOT_RESPONSE_OPTIONS = "chatBotResponseOptions";
 	
 	public static final String CHAT_BOT_INTENT = "chatBotIntent";
 	

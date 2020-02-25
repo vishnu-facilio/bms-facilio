@@ -18,17 +18,6 @@ public class ChatBotSessionConversation {
 	State state;
 	ChatBotSession chatBotSession;
 	long intentParamId = -1;
-	List<JSONObject> options;
-	
-
-	public List<JSONObject> getOptions() {
-		return options;
-	}
-
-	public void setOptions(List<JSONObject> options) {
-		this.options = options;
-	}
-
 
 	long requestedTime;
 	long respondedTime;

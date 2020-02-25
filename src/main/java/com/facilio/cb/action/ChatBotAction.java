@@ -70,13 +70,9 @@ public class ChatBotAction extends FacilioAction {
 			chain.execute();
 			
 			String chatBotReplyMessage = (String)context.get(ChatBotConstants.CHAT_BOT_MESSAGE_STRING);
-			if(context.get(ChatBotConstants.CHAT_BOT_OPTION_STRING) != null) {
-				chatBotReplyMessage += context.get(ChatBotConstants.CHAT_BOT_OPTION_STRING).toString();
-			}
 			
 			setResult(ChatBotConstants.CHAT_BOT_MESSAGE_STRING, chatBotReplyMessage);
 			
-			setResult(ChatBotConstants.CHAT_BOT_OPTION_STRING, context.get(ChatBotConstants.CHAT_BOT_OPTION_STRING));
 		}
 		
 		return SUCCESS;
