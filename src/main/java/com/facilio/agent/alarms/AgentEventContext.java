@@ -10,7 +10,11 @@ public class AgentEventContext extends BaseEventContext {
 
     @Override
     public String constructMessageKey() {
-        return "AgentAlarm_" + getAgent();
+        Long agentId=-1L;
+        if (this.agent!=null){
+            agentId= this.agent.getId();
+        }
+        return "AgentAlarm_" +agentId;
     }
 
     @Override
