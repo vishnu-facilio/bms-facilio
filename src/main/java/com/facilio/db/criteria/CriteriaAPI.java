@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.facilio.db.criteria.operators.Operator;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountConstants;
@@ -80,7 +79,7 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 					throw new IllegalArgumentException("Operator cannot be null in Condition");
 				}
 
-				if (condition.getOperator().isValueNeeded() && condition.getValue() == null) {
+				if (condition.getOperator().isValueNeeded() && condition.getValue() == null && condition.getCriteriaValue() == null && condition.getJsonValue() == null) {
 					throw new IllegalArgumentException("Value cannot be null for Condition with operator "+condition.getOperator());
 				}
 
