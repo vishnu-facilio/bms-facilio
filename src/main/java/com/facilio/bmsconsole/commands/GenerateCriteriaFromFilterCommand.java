@@ -19,6 +19,7 @@ import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 
@@ -88,7 +89,7 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 				throw new Exception("Field is not found for: " + fieldName + " : " + moduleName);
 			}
 		}
-		
+		Operator operator;
 		if (fieldJson.containsKey("operatorId")) {
 			operatorId = (int) (long) fieldJson.get("operatorId");
 			if (isOldField) {
@@ -99,7 +100,8 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 					operatorId = PickListOperators.ISN_T.getOperatorId();
 				}
 			}
-			operatorName = Operator.getOperator(operatorId).getOperator();
+			operator = Operator.getOperator(operatorId);
+			operatorName = operator.getOperator();
 		} else {
 			operatorName = (String) fieldJson.get("operator");
 			if (isOldField) {
@@ -110,7 +112,8 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 					operatorName = PickListOperators.ISN_T.getOperator();
 				}
 			}
-			operatorId = field.getDataTypeEnum().getOperator(operatorName).getOperatorId();
+			operator = field.getDataTypeEnum().getOperator(operatorName);
+			operatorId = operator.getOperatorId();
 		}
 		JSONArray value = (JSONArray) fieldJson.get("value");
 		if((value!=null && value.size() > 0) || (operatorName != null && !(operatorName.equals("is")) ) ) {
@@ -131,6 +134,9 @@ public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 					}
 					else {
 						isFirst = false;
+					}
+					if (operator instanceof StringOperators) {
+						obj = obj.replace(",", StringOperators.DELIMITED_COMMA);
 					}
 					values.append(obj.trim());
 					/*if (obj.indexOf("_") != -1 && !obj.equals(FacilioConstants.Criteria.LOGGED_IN_USER) && !obj.equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {

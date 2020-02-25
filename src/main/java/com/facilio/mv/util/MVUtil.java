@@ -1,6 +1,5 @@
 package com.facilio.mv.util;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -8,6 +7,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -437,6 +437,11 @@ public class MVUtil {
 		
 		if(criteria != null) {
 			selectProject.andCriteria(criteria);
+		}
+		
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
+		if(scopeCriteria != null){
+			selectProject.andCriteria(scopeCriteria);
 		}
 
 		if(isOpen != null) {

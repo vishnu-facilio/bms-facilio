@@ -45,6 +45,9 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			
 			WorkOrderAPI.handleSiteRelations(workOrder);
 			TicketAPI.validateSiteSpecificData(workOrder);
+			if (workOrder.getSiteId() == -1) {
+				throw new IllegalArgumentException("Please select site");
+			}
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
