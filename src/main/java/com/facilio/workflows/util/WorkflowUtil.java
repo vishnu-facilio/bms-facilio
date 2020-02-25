@@ -1141,7 +1141,7 @@ public class WorkflowUtil {
 	
 	private static WorkflowContext getWorkflowFromProp(Map<String, Object> prop, boolean isWithExpParsed) throws Exception {
 		WorkflowContext workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowContext.class);
-		if(workflow.isV2Script()) {
+		if(workflow.isV2Script() && workflow.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.GUI.getValue()) {
 			workflow.parseScript();
 		}
 		else {
