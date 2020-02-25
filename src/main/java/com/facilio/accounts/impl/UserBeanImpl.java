@@ -232,6 +232,9 @@ public class UserBeanImpl implements UserBean {
 			else if(appDomainObj.getAppDomainTypeEnum() == AppDomainType.VENDOR_PORTAL) {
 				portalType = "Vendor Portal" ;
 			}
+			else if(appDomainObj.getAppDomainTypeEnum() == AppDomainType.CLIENT_PORTAL) {
+				portalType = "Client Portal" ;
+			}
 			placeholders.put("invitelink", inviteLink);
 			placeholders.put("portalType", portalType);
 			

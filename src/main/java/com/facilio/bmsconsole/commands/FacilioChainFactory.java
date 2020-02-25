@@ -2268,4 +2268,13 @@ public class FacilioChainFactory {
 		
 		return c;
 	}
+	
+	public static FacilioChain deleteClientContactChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForClientContact());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		c.addCommand(new DeletePeopleUsersCommand());
+		
+		return c;
+	}
 }

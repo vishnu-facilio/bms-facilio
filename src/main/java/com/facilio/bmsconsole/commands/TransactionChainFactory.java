@@ -5072,7 +5072,31 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddOrUpdateApprovalRuleCommand());
 		return chain;
+	
+	public static FacilioChain addClientContactChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForClientContact());
+		c.addCommand(new GenericAddModuleDataListCommand());
+		c.addCommand(new AddPeopleAccessCommand());
+		return c;
+	}
+	
+	public static FacilioChain updateClientContactChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForClientContact());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new UpdatePeoplePrimaryContactCommand());
+		return c;
+	}
+	
+	public static FacilioChain updateClientContactAppAccessChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForClientContact());
+		c.addCommand(new GenericUpdateListModuleDataCommand());
+		c.addCommand(new UpdateClientAppPortalAccessCommand());
+		return c;
 	}
 }
+
 
 

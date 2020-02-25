@@ -1550,6 +1550,9 @@ public class FacilioConstants {
 		public static final String TENANT_CONTACT = "tenantcontact";
 		public static final String TENANT_CONTACTS = "tenantcontacts";
 	
+		public static final String CLIENT_CONTACT = "clientcontact";
+		public static final String CLIENT_CONTACTS = "clientcontacts";
+	
 		public static final String VENDOR_CONTACT = "vendorcontact";
 		public static final String VENDOR_CONTACTS = "vendorcontacts";
 	

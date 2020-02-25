@@ -16,6 +16,7 @@ import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ClientContactContext;
 import com.facilio.bmsconsole.context.ContactsContext;
 import com.facilio.bmsconsole.context.ContactsContext.ContactType;
 import com.facilio.bmsconsole.context.EmployeeContext;
@@ -237,6 +238,40 @@ public class PeopleAPI {
 		
 	}
 	
+	public static void updateClientContactAppPortalAccess(ClientContactContext person, AppDomainType appDomainType) throws Exception {
+        AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType);
+		
+        if(appDomain != null) {
+			List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table("ORG_Users")
+					;
+			selectBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(person.getId()), NumberOperators.EQUALS));
+			
+			List<Map<String, Object>> list = selectBuilder.get();
+			if(CollectionUtils.isNotEmpty(list)) {
+				long uId = (long)list.get(0).get("uid");
+				if((appDomainType == AppDomainType.CLIENT_PORTAL && person.isClientPortalAccess())) {
+					User user = AccountUtil.getUserBean().getUser(person.getEmail(), appDomain.getDomain());
+					if(user != null) {
+						AccountUtil.getUserBean().enableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
+					}
+					else {
+						addPortalAppUser(person, appDomain.getDomain(), 1);
+					}
+				}
+				else {
+					AccountUtil.getUserBean().disableUser(AccountUtil.getCurrentOrg().getOrgId(), uId, appDomain.getDomain());
+				}
+			}
+        }
+        else {
+        	throw new IllegalArgumentException("Invalid App Domain");
+        }
+		
+	}
+	
 	public static void updateVendorContactAppPortalAccess(VendorContactContext person, AppDomainType appDomainType) throws Exception {
         AppDomain appDomain = IAMAppUtil.getAppDomain(appDomainType);
 		
@@ -394,6 +429,14 @@ public class PeopleAPI {
 			FacilioField primaryContactField = fieldMap.get("isPrimaryContact");
 			updatedfields.add(primaryContactField);
 			condition = CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(parentId), NumberOperators.EQUALS);
+		}
+		else if(person.getPeopleTypeEnum() == PeopleType.CLIENT_CONTACT) {
+			module = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
+			fields.addAll(modBean.getAllFields(FacilioConstants.ContextNames.CLIENT_CONTACT));
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			FacilioField primaryContactField = fieldMap.get("isPrimaryContact");
+			updatedfields.add(primaryContactField);
+			condition = CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(parentId), NumberOperators.EQUALS);
 		}
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

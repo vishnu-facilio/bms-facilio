@@ -48,7 +48,7 @@ public class PeopleContext extends ModuleBaseWithCustomFields{
 	}
 
 	public static enum PeopleType implements FacilioEnum {
-		TENANT_CONTACT, VENDOR_CONTACT, EMPLOYEE, OTHERS;
+		TENANT_CONTACT, VENDOR_CONTACT, EMPLOYEE, CLIENT_CONTACT, OTHERS;
 
 		@Override
 		public int getIndex() {

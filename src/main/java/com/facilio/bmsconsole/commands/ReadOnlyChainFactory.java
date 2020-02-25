@@ -2309,6 +2309,18 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 	
+	
+	public static FacilioChain getClientContactListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForClientContact());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
 	public static FacilioChain getPeopleDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForPeople());
@@ -2333,6 +2345,13 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getEmployeeDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForEmployee());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+	
+	public static FacilioChain getClientContactDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForClientContact());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}

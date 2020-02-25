@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.bmsconsole.context.ClientContactContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.PeopleContext.PeopleType;
 import com.facilio.bmsconsole.context.TenantContactContext;
@@ -25,6 +26,9 @@ public class UpdatePeoplePrimaryContactCommand extends FacilioCommand{
 				}
 				else if(people.getPeopleTypeEnum() == PeopleType.VENDOR_CONTACT && ((VendorContactContext)people).isPrimaryContact()) {
 					PeopleAPI.unMarkPrimaryContact(people, ((VendorContactContext)people).getVendor().getId());
+				}
+				else if(people.getPeopleTypeEnum() == PeopleType.CLIENT_CONTACT && ((ClientContactContext)people).isPrimaryContact()) {
+					PeopleAPI.unMarkPrimaryContact(people, ((ClientContactContext)people).getClient().getId());
 				}
 			}
 		}
