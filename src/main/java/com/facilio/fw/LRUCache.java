@@ -80,42 +80,41 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
 
 
 	public static FacilioCache<String, Object> getModuleFieldsCache() {
-		if(FacilioProperties.isProduction()) {
-			return modulefieldCache;
-		} else {
-			return modulefieldCachePS;
-		}
+//		if(FacilioProperties.isProduction()) {
+//			return modulefieldCache;
+//		}
+		return modulefieldCachePS;
 	}
 	public static FacilioCache<String, Object> getFieldsCache() {
-		if(FacilioProperties.isProduction()) {
-			return fieldCache;
-		}
+//		if(FacilioProperties.isProduction()) {
+//			return fieldCache;
+//		}
 		return fieldCachePS;
 	}
 	public static FacilioCache<String, Object> getFieldNameCache() {
-		if(FacilioProperties.isProduction()) {
-			return fieldNameCache;
-		}
+//		if(FacilioProperties.isProduction()) {
+//			return fieldNameCache;
+//		}
 		return fieldNameCachePS;
 	}
 	public static FacilioCache<String, Object> getUserSessionCache() {
-		if(FacilioProperties.isProduction()) {
-			return userSessionCache;
-		}
+//		if(FacilioProperties.isProduction()) {
+//			return userSessionCache;
+//		}
 		return userSessionCachePS;
 	}
 	public static FacilioCache<String, Object> getModuleCache() {
-		if(FacilioProperties.isProduction()) {
-			return moduleCache;
-		}
+//		if(FacilioProperties.isProduction()) {
+//			return moduleCache;
+//		}
 		return moduleCachePS;
 	}
 	public static FacilioCache<String, Long> getQueryCache() {
-		if(FacilioProperties.isProduction()) {return queryCache;}
+//		if(FacilioProperties.isProduction()) {return queryCache;}
 		return queryCachePS;
 	}
 	public static FacilioCache<String, Object> getResponseCache() {
-		if(FacilioProperties.isProduction()){return responseCache;}
+//		if(FacilioProperties.isProduction()){return responseCache;}
 		return responseCachePS;
 	}
 
