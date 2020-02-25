@@ -101,9 +101,9 @@ public class DownloadCertFile {
         LOGGER.info("certFileId " + certFileId);
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         String url = null;
-        AwsUtil.addClientToPolicy(agentName, policyName, type);
         String orgDomainName = AccountUtil.getCurrentAccount().getOrg().getDomain();
         CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgDomainName, policyName, type);
+        LOGGER.info(" certificate result "+certificateResult);
         String directoryName = "facilio/";
         String outFileName = FacilioAgent.getCertFileName(type);
         File file = new File(System.getProperty("user.home") + outFileName);
@@ -119,6 +119,8 @@ public class DownloadCertFile {
             CommonCommandUtil.insertOrgInfo(orgId, certFileId, String.valueOf(id));
             file.delete();
         }
+        AwsUtil.addClientToPolicy(agentName, policyName, type);
+        LOGGER.info(" added client to policy ");
         FacilioFactory.getMessageQueue().start();
         return url;
     }
