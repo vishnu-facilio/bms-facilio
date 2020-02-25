@@ -51,6 +51,7 @@ public class SqliteBridge {
             }
         }
         String fileName = agentId + ".db";
+        LOGGER.info(" file path "+path);
         File file = new File(path + File.separator + fileName);
         createNewFile(file);
         return file;

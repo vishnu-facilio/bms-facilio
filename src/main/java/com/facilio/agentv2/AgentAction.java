@@ -16,10 +16,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class AgentAction extends AgentActionV2 {
@@ -270,6 +267,16 @@ public class AgentAction extends AgentActionV2 {
             LOGGER.info("Exception while getting controller",e);
             setResult(AgentConstants.RESULT,new JSONObject());
             setResult(AgentConstants.EXCEPTION,e.getMessage());
+        }
+        return SUCCESS;
+    }
+
+    public String getControllerUsingId(){
+        try{
+            List<Map<String, Object>> controllers = ControllerApiV2.getControllerData(getControllerId(), FacilioControllerType.valueOf(getControllerType()));
+                  setResult(AgentConstants.DATA,controllers);
+                    } catch (Exception e) {
+            LOGGER.info(" Exception occurred while getting controller data",e);
         }
         return SUCCESS;
     }

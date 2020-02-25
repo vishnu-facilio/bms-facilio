@@ -437,7 +437,18 @@ public class FieldFactory {
 		fields.add(getField(AgentKeys.TRANSFORM_WORKFLOW_ID,"TRANSFORM_WORKFLOW_ID",module,FieldType.NUMBER));
 		return fields;
 	}
-
+	public static FacilioField getSubscribedPointCountConditionField(){
+		return getField(AgentConstants.SUBSCRIBED_COUNT,"SUM(IF("+ModuleFactory.getPointModule().getTableName()+".SUBSCRIBE_STATUS = 3, 1, 0))",FieldType.NUMBER);
+	}
+	public static FacilioField getSubscriptionInProgressPointCountConditionField(){
+		return getField(AgentConstants.SUBSCRIPTION_COUNT,"SUM(IF("+ModuleFactory.getPointModule().getTableName()+".SUBSCRIBE_STATUS = 3, 1, 0))",FieldType.NUMBER);
+	}
+	public static FacilioField getConfiguredPointCountConditionField(){
+		return getField(AgentConstants.CONFIGURED_COUNT,"SUM(IF("+ModuleFactory.getPointModule().getTableName()+".CONFIGURE_STATUS = 3, 1, 0))",FieldType.NUMBER);
+	}
+	public static FacilioField getConfigurationInProgressPointCountConditionField(){
+		return getField(AgentConstants.CONFIGURATION_INPROGRESS_COUNT,"SUM(IF("+ModuleFactory.getPointModule().getTableName()+".CONFIGURE_STATUS = 2, 1, 0))",FieldType.NUMBER);
+	}
 
 	public static List<FacilioField> getAgentV2LogFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -489,7 +500,7 @@ public class FieldFactory {
 	 */
 	public static List<FacilioField> getIotMessageFields(){
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = new FacilioModule();
+		FacilioModule module = ModuleFactory.getIotMessageModule();
 		fields.add(getIdField(module));
 		fields.add(getField(AgentConstants.PARENT_ID, "PARENT_ID", module, FieldType.NUMBER));
 		fields.add(getField(AgentConstants.COMMAND, "COMMAND", module, FieldType.NUMBER));
@@ -500,6 +511,25 @@ public class FieldFactory {
 		fields.add(getField(AgentConstants.MSG_DATA, "MSG_DATA", module, FieldType.STRING));
 		return fields;
 	}
+
+	public static List<FacilioField> getControllersField(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getNewControllerModule();
+		fields.add(getIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getNewAgentIdField(module));
+		fields.add(getField(AgentConstants.DATA_INTERVAL,"DATA_INTERVAL",module,FieldType.NUMBER));
+		fields.add(getWritableField(module));
+		fields.add(getField(AgentConstants.ACTIVE,"ACTIVE",module,FieldType.NUMBER));
+		fields.add(getControllerTypeField(module));
+		fields.add(getField(AgentConstants.AVAILABLE_POINTS,"AVAILABLE_POINTS",FieldType.NUMBER));
+		fields.add(getField(AgentConstants.CONTROLLER_PROPS,"CONTROLLER_PROPS",module,FieldType.STRING));
+		fields.add(getCreatedTime(module));
+		fields.add(getLastModifiedTimeField(module));
+		return fields;
+	}
+
 
 	private static FacilioField getNewControllerIdField(FacilioModule module) {
 		return getField(AgentConstants.CONTROLLER_ID, "CONTROLLER_ID", module, FieldType.NUMBER);

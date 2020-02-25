@@ -113,7 +113,7 @@ public class AwsPolicyUtils
 
 
 
-    private static String createIotPolicy(AWSIot iotClient , IotPolicy rule) {
+    private static void createIotPolicy(AWSIot iotClient , IotPolicy rule) {
         LOGGER.info(" creating Iot policy for "+rule.getName());
 
        /* for(int i=0;i<rule.getPublishtopics().size();i++){
@@ -132,18 +132,17 @@ public class AwsPolicyUtils
                     .withPolicyName(rule.getName())
                     .withPolicyDocument(rule.getPolicyDocument().toString());
             CreatePolicyResult createPolicyResult = iotClient.createPolicy(createPolicyRequest);
-            return createPolicyResult.getPolicyVersionId();
+            createPolicyResult.getPolicyVersionId();
         } catch (ResourceAlreadyExistsException resourceExists){
             LOGGER.info("Policy already exists for name : " + rule.getName());
             try {
-                return updatePolicy(iotClient,rule.getName(),rule);
+                updatePolicy(iotClient, rule.getName(), rule);
             } catch (Exception e) {
                 LOGGER.info(" Exception while updating policy ",e);
             }
         } catch (Exception e) {
             LOGGER.info("Exception while creating iot policy ",e);
         }
-        return null;
     }
 
     private static void addResourceToPolicyIfNotPresent(JSONObject policyStatement, List<String> topics) {

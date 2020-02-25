@@ -23,6 +23,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class AgentApiV2 {
@@ -182,9 +183,15 @@ public class AgentApiV2 {
     }
 
     public static boolean editAgent(FacilioAgent agent, JSONObject jsonObject) throws Exception {
+        Long currTime = System.currentTimeMillis() ;
+        if(jsonObject.containsKey(AgentConstants.TIMESTAMP)){
+            currTime = (Long) jsonObject.get(AgentConstants.TIMESTAMP);
+        }
+        agent.setLastDataReceivedTime(currTime);
         if (containsValueCheck(AgentConstants.DISPLAY_NAME, jsonObject)) {
             if (!jsonObject.get(AgentConstants.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
                 agent.setDisplayName(jsonObject.get(AgentConstants.DISPLAY_NAME).toString());
+                agent.setLastModifiedTime(currTime);
             }
         }
 
@@ -192,6 +199,7 @@ public class AgentApiV2 {
             long currDataInterval = Long.parseLong(jsonObject.get(AgentConstants.DATA_INTERVAL).toString());
             if (agent.getInterval() != currDataInterval) {
                 agent.setInterval(currDataInterval);
+                agent.setLastModifiedTime(currTime);
             }
         }
 
@@ -199,6 +207,7 @@ public class AgentApiV2 {
             boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentConstants.WRITABLE).toString());
             if (agent.getWritable() != currWriteble) {
                 agent.setWritable(currWriteble);
+                agent.setLastModifiedTime(currTime);
             }
         }
         return updateAgent(agent);
@@ -225,9 +234,7 @@ public class AgentApiV2 {
 
     public static boolean updateAgent(FacilioAgent agent) throws Exception {
         long currTime = System.currentTimeMillis();
-        agent.setLastModifiedTime(currTime);
         agent.setLastUpdatedTime(currTime);
-        agent.setLastDataReceivedTime(currTime);
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
                 .table(MODULE.getTableName())
                 .fields(FieldFactory.getNewAgentDataFields())
@@ -238,6 +245,26 @@ public class AgentApiV2 {
             LOGGER.info("Exception occurred while updating agent, updating failed");
             return false;
         }
+    }
+
+    public static boolean updateAgentLastDataRevievedTime(FacilioAgent agent){
+        LOGGER.info(" updating agent last data recieved time "+agent.getCreatedTime());
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(MODULE.getTableName())
+                .fields(FieldFactory.getNewAgentDataFields())
+                .andCondition(CriteriaAPI.getIdCondition(agent.getId(), MODULE));
+        Map<String,Object> toUpdate = new HashMap<>();
+        toUpdate.put(AgentConstants.LAST_DATA_RECEIVED_TIME,agent.getLastDataReceivedTime());
+        try {
+            if (updateRecordBuilder.update(toUpdate) > 0) {
+                return true;
+            } else {
+                LOGGER.info("Exception occurred while updating agent, updating failed");
+            }
+        } catch (SQLException e) {
+            LOGGER.info("Eception occurred while updating agent last data received time");
+        }
+        return false;
     }
 
     public static long getAgentCount() {

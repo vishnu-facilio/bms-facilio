@@ -1155,7 +1155,7 @@ public class ModuleFactory {
 
 	public static FacilioModule getNewControllerModule() {
 		FacilioModule controllerModule = new FacilioModule();
-		controllerModule.setName("Controllers");
+		controllerModule.setName("controller");
 		controllerModule.setDisplayName("ControllerV2");
 		controllerModule.setTableName("Controllers");
 

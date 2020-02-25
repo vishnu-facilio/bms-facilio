@@ -30,52 +30,71 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class IotMessageApiV2 {
     private static final Logger LOGGER = LogManager.getLogger(IotMessageApiV2.class.getName());
+
+    private static final Map<String, FacilioField> FIELD_MAP = FieldFactory.getAsMap(FieldFactory.getIotMessageFields());
 
     private static final FacilioModule MODULE = ModuleFactory.getIotMessageModule();
 
     private static final int MAX_BUFFER = 45000; //45000 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
 
     public static boolean acknowdledgeMessage(long id, Status status) throws Exception {
+        IotMessage iotMessage = getIotMessage(id);
         int rowUpdated = 0;
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getIotMessageFields());
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(fieldMap.get(AgentConstants.STATUS));
-        Map<String, Object> toInsert = new HashMap<>();
-        toInsert.put(fields.get(0).getName(), status.asInt());
         Long currTime = System.currentTimeMillis();
-        switch (status) {
-            case MESSAGE_PROCESSING_SUCCESS:
-                toInsert.put(AgentConstants.COMPLETED_TIME, currTime);
-                toInsert.put(AgentConstants.ACK_TIME, currTime);
-                fields.add(fieldMap.get(AgentConstants.COMPLETED_TIME));
-                rowUpdated = updateIotMessage(id, fields, toInsert);
-                break;
-            case MESSAGE_PROCESSING:
-            case MESSAGE_PROCESSING_FAILED:
-            case MESSAGE_RECEIVED:
-                toInsert.put(AgentConstants.ACK_TIME, currTime);
-                fields.add(fieldMap.get(AgentConstants.ACK_TIME));
-                rowUpdated = updateIotMessage(id, fields, toInsert);
-                break;
-
-
+        if(status == Status.MESSAGE_PROCESSING_SUCCESS){
+            iotMessage.setCompletedTime(currTime);
         }
+        iotMessage.setStatus(status.asInt());
+        iotMessage.setAckTime(currTime);
+        rowUpdated = updateIotMessage(iotMessage);
         LOGGER.info(" updating message for ack ->" + rowUpdated);
         if (rowUpdated > 0) {
-            updatePointAcks(id);
+            handleSuccessNotification(iotMessage);
+            updatePointAcks(iotMessage);
             return true;
         }
         return false;
     }
 
-    private static void updatePointAcks(long id) throws Exception {
+    private static void handleSuccessNotification(IotMessage iotMessage) throws Exception {
+        List<IotMessage> iotMessages = getSiblingIotMessages(iotMessage);
+        if( ! iotMessages.isEmpty() ){
+            long pendingCount = getPendingCount(iotMessages);
+            if(pendingCount == 0){
+                // send notification
+            }
+        }
+        //send notification
+    }
+
+    private static long getPendingCount(List<IotMessage> iotMessages) {
+        long count = 0;
+        for (IotMessage iotMessage : iotMessages) {
+            if(iotMessage.getStatus() != Status.MESSAGE_PROCESSING_SUCCESS.asInt()){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private static List<IotMessage> getSiblingIotMessages(IotMessage iotMessage) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(MODULE.getTableName())
+                .select(FieldFactory.getIotMessageFields())
+                .andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.PARENT_ID), String.valueOf(iotMessage.getParentId()),NumberOperators.EQUALS));
+        return FieldUtil.getAsBeanListFromMapList(builder.get(),IotMessage.class);
+    }
+
+    private static void updatePointAcks(IotMessage iotMessage) throws Exception {
         // {"identifier":"1_#_1002_#_0_#_192.168.1.2","agent":"iamcvijay","agentId":1,"networkNumber":0,"ipAddress":"192.168.1.2","id":3,"instanceNumber":1002,"type":1,"command":255,"timestamp":1577086482410,"points":
         // [{"controllerId":3,"instanceType":8,"id":1,"instanceNumber":1002},{"controllerId":3,"instanceType":10,"id":2,"instanceNumber":1},{"controllerId":3,"instanceType":16,"id":3,"instanceNumber":1}]}
-        IotMessage iotMessage = getIotMessage(id);
         LOGGER.info("updating pointAcks iot message ->" + iotMessage);
         if (iotMessage != null) {
             FacilioCommand command = FacilioCommand.valueOf(iotMessage.getCommand());
@@ -162,20 +181,16 @@ public class IotMessageApiV2 {
         }
     }
 
-    public static IotMessage getIotMessage(long id) throws Exception {
-        List<IotMessage> iotmessages = getIotMessages(Collections.singletonList(id));
-        if ((!iotmessages.isEmpty())) {
-            if ((iotmessages.size() == 1)) {
-                return iotmessages.get(0);
-            } else {
-                throw new Exception("unexpected results, can't get two records");
-            }
-        } else {
-            return null;
+
+    private static IotMessage getIotMessage(Long id) throws Exception {
+        List<IotMessage> result = getIotMessages(Collections.singletonList(id));
+        if( (result != null) && (! result.isEmpty()) && (result.size()==0) ){
+            return result.get(0);
+        }else {
+            throw new Exception(" unexpected result, cant have this many records ->"+result.size());
         }
     }
-
-    private static List<IotMessage> getIotMessages(List<Long> ids) throws Exception {
+        private static List<IotMessage> getIotMessages(List<Long> ids) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
                 .select(FieldFactory.getIotMessageFields())
@@ -188,12 +203,13 @@ public class IotMessageApiV2 {
         }
     }
 
-    public static int updateIotMessage(long msgId, List<FacilioField> fields, Map<String, Object> map) throws Exception {
+
+    public static int updateIotMessage(IotMessage iotMessage) throws Exception {
         return new GenericUpdateRecordBuilder()
                 .table(MODULE.getTableName())
-                .fields(fields)
-                .andCondition(CriteriaAPI.getIdCondition(msgId, MODULE))
-                .update(map);
+                .fields(FieldFactory.getIotMessageFields())
+                .andCondition(CriteriaAPI.getIdCondition(iotMessage.getId(), MODULE))
+                .update(FieldUtil.getAsProperties(iotMessage));
     }
 
 

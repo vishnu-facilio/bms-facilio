@@ -53,10 +53,17 @@ public class AddAgentAction extends AgentActionV2
             addAgentChain.execute();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put(AgentConstants.AGENT_ID,agent.getId());
-            if (context.containsKey(AgentConstants.DOWNLOAD_LINK) )  {
-                jsonObject.put(AgentConstants.DOWNLOAD_LINK,context.get(AgentConstants.DOWNLOAD_LINK));
+            String downloadUrl = null;
+            String files = null;
+            if (context.containsKey(AgentConstants.DOWNLOAD_AGENT) )  {
+                downloadUrl = (String) context.get(AgentConstants.DOWNLOAD_AGENT);
             }
-            setResult(AgentConstants.DATA, agent.getId());
+            if(context.containsKey(AgentConstants.CERT_FILE_DOWNLOAD_URL)){
+                files = (String) context.get(AgentConstants.CERT_FILE_DOWNLOAD_URL);
+            }
+            jsonObject.put(AgentConstants.DOWNLOAD_AGENT,downloadUrl);
+            jsonObject.put("files",files);
+            setResult(AgentConstants.DATA, jsonObject);
             setResult(AgentConstants.RESULT, SUCCESS);
             setResponseCode(HttpURLConnection.HTTP_CREATED);
         }catch (Exception e){

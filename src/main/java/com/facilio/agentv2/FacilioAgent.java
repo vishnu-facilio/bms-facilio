@@ -3,13 +3,9 @@ package com.facilio.agentv2;
 import com.facilio.agent.AgentKeys;
 import org.json.simple.JSONObject;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-
 public class FacilioAgent {
 
 
-    @NotNull(message = " Agent name can't be null")
     private  String name;
     private  String deviceDetails;
     private  boolean connectionStatus;
@@ -19,8 +15,6 @@ public class FacilioAgent {
     private  int numberOfControllers;
     private  String type; // change it to int using some enum
     private long id;
-    @NotNull(message = " agent's siteId can't be null ")
-    @Min(value = 0,message = " agent's siteId can't be < 1")
     private long siteId;
     private long deletedTime = -1L ;
     private boolean writable;

@@ -65,7 +65,7 @@ public abstract class Controller extends AssetContext {
     private static Map<String, FacilioField> fieldsMap;
 
     @JsonInclude
-    private long deviceId;
+    private long deviceId=-1;
 
     public long getDeviceId() {
         return deviceId;

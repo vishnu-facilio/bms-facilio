@@ -33,10 +33,8 @@ public class DataProcessorV2
 
     private long orgId;
     private String orgDomainName;
-    private AgentUtilV2 au;
-    private AckUtil ackUtil;
-    private ControllerUtilV2 cU;
-    private DeviceUtil dU;
+    private AgentUtilV2 agentUtil;
+    private ControllerUtilV2 controllerUtil;
     private Map<Long, ControllerUtilV2> agentIdControllerUtilMap = new HashMap<>();
 
 
@@ -49,9 +47,7 @@ public class DataProcessorV2
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
         try {
-            au = new AgentUtilV2(orgId, orgDomainName);
-            ackUtil = new AckUtil();
-            dU = new DeviceUtil();
+            agentUtil = new AgentUtilV2(orgId, orgDomainName);
             LOGGER.info("done loading newProcessor ");
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
@@ -59,60 +55,38 @@ public class DataProcessorV2
     }
 
 
-    private static long getQuarterHourStartTime(long currTime) {
-        return 0;
-    }
-
-    public static void main(String[] args) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 1; i <= 1000; i++) {
-            if (i % 3 == 0) {
-                stringBuilder.append(i);
-            }
-        }
-        System.out.println(stringBuilder.toString());
-    }
-
     public boolean processRecord(JSONObject payload) {
         boolean processStatus = false;
         try {
-
-           /* JSONObject payload = record.getData();
-            if(payload == null || payload.isEmpty()){
-                throw new Exception(" payload can't be null or empty");
-            }*/
             LOGGER.info(" processing in processorV2 " + payload);
-            String agentName = orgDomainName.trim();
-            if (payload.containsKey(AgentConstants.AGENT)) {
-                agentName = payload.get(AgentConstants.AGENT).toString().trim();
-            }
-            FacilioAgent agent = au.getFacilioAgent(agentName);
-            if (agent == null) {
-                LOGGER.info(" agent is null ");
-                agent = AgentUtilV2.makeNewFacilioAgent(agentName);
-                long agentId = au.addAgent(agent);
-                if (agentId < 1L) {
-                    LOGGER.info(" Error in AgentId generation ");
-                } else {
-                    agent.setId(agentId);
-                }
-            }
             if (payload.containsKey("clearAgentCache")) {
-                au.getAgentMap().clear();
-                LOGGER.info(" agent cache cleared ->" + au.getAgentMap());
+                agentUtil.getAgentMap().clear();
+                LOGGER.info(" agent cache cleared ->" + agentUtil.getAgentMap());
                 return true;
             }
-            cU = getControllerUtil(agent.getId());
+
+            FacilioAgent agent = getFacilioAgentForPayload(payload);
+
+            Long timeStamp = System.currentTimeMillis();
+            if(payload.containsKey(AgentConstants.TIMESTAMP)){
+                timeStamp = (Long) payload.get(AgentConstants.TIMESTAMP);
+            }
+
+            agent.setLastDataReceivedTime(timeStamp);
+            AgentApiV2.updateAgentLastDataRevievedTime(agent);
+
+            controllerUtil = getControllerUtil(agent.getId());
             if (!payload.containsKey(AgentConstants.PUBLISH_TYPE)) {
                 LOGGER.info("Exception Occurred, " + AgentConstants.PUBLISH_TYPE + " is mandatory in payload " + payload);
                 return false;
             }
             PublishType publishType = PublishType.valueOf(JsonUtil.getInt((payload.get(AgentConstants.PUBLISH_TYPE)))); // change it to Type
             LOGGER.info(" publish type for this record is " + publishType.name());
+
             // markMetrices(agent.getId(), publishType, payload);
             switch (publishType) {
             	case CUSTOM:
-            		Controller customController = cU.getControllerFromAgentPayload(payload);
+            		Controller customController = controllerUtil.getControllerFromAgentPayload(payload);
             		
 	                 JSONObject customPayload = (JSONObject) payload.clone();
 	                 if (customController != null) {
@@ -133,10 +107,10 @@ public class DataProcessorV2
                     break;
                 case ACK:
                     payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
-                    processStatus = ackUtil.processAgentAck(payload, agent.getId(), orgId);
+                    processStatus = AckUtil.processAgentAck(payload, agent.getId(), orgId);
                     break;
                 case TIMESERIES:
-                    Controller controller = cU.getControllerFromAgentPayload(payload);
+                    Controller controller = controllerUtil.getControllerFromAgentPayload(payload);
 
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
                     if (controller != null) {
@@ -149,7 +123,7 @@ public class DataProcessorV2
 
                     break;
                 case COV:
-                    controller = cU.getControllerFromAgentPayload(payload);
+                    controller = controllerUtil.getControllerFromAgentPayload(payload);
 
                     timeSeriesPayload = (JSONObject) payload.clone();
                     if (controller != null) {
@@ -170,6 +144,27 @@ public class DataProcessorV2
         return processStatus;
     }
 
+    /**
+     * gets {@link FacilioAgent } for a payload.
+     * @param payload JSONObject which must contain the key 'agent' to which agent's name is mapped.
+     * @return {@link FacilioAgent}
+     * @throws Exception if the key 'agent' is missing from payload or if no agent is found for a name.
+     * */
+    private FacilioAgent getFacilioAgentForPayload(JSONObject payload) throws Exception {
+        String agentName = null;
+        if (payload.containsKey(AgentConstants.AGENT)) {
+            agentName = payload.get(AgentConstants.AGENT).toString().trim();
+            FacilioAgent agent = agentUtil.getFacilioAgent(agentName);
+            if (agent != null) {
+                return agent;
+            }else {
+                throw new Exception(" No such agent found ");
+            }
+        }else {
+            throw new Exception(" payload missing agent name");
+        }
+    }
+
     private void markMetrices(long id, com.facilio.agent.fw.constants.PublishType publishType, JSONObject payload) {
         try {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
@@ -181,7 +176,7 @@ public class DataProcessorV2
     private boolean processDevices(FacilioAgent agent, JSONObject payload) {
         try {
             LOGGER.info(" processing device ");
-            return dU.processDevices(agent, payload);
+            return DeviceUtil.processDevices(agent, payload);
         } catch (Exception e) {
             LOGGER.info("Exception occurred while processing device", e);
         }
@@ -223,7 +218,7 @@ public class DataProcessorV2
 
     private boolean processAgent(JSONObject payload, FacilioAgent agent) {
         try {
-            if (au.processAgent(payload, agent)) {
+            if (agentUtil.processAgent(payload, agent)) {
                 LOGGER.info(" Agent processing successful ");
                 return true;
             } else {

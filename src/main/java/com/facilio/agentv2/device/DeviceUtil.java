@@ -34,7 +34,7 @@ public class DeviceUtil {
         return false;
     }
 
-    public boolean processDevices(FacilioAgent agent, JSONObject payload) throws Exception {
+    public static boolean processDevices(FacilioAgent agent, JSONObject payload) throws Exception {
         LOGGER.info(" processing devices ");
         List<Device> devices = new ArrayList<>();
         if (containsValueCheck(AgentConstants.DATA, payload)) {
@@ -93,7 +93,7 @@ public class DeviceUtil {
         return null;
     }
 
-    public boolean addDevices(List<Device> devices) throws Exception {
+    public static boolean addDevices(List<Device> devices) throws Exception {
         if (devices != null && !devices.isEmpty()) {
             /*FacilioChain chain = TransactionChainFactory.getAddDevicesChain();
             FacilioContext context = chain.getContext();

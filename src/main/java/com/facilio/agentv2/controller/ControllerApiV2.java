@@ -666,6 +666,8 @@ public class ControllerApiV2 {
             Map<Long, FacilioControllerType> ids = new HashMap<>();
             results.forEach(row -> ids.put((Long) row.get(AgentConstants.ID), FacilioControllerType.valueOf(Integer.parseInt(String.valueOf(row.get(AgentConstants.CONTROLLER_TYPE))))));
             return ids;
+        }else {
+            LOGGER.info(" result empty ");
         }
         return new HashMap<>();
     }
@@ -675,5 +677,48 @@ public class ControllerApiV2 {
         controlleCountData.put(AgentConstants.TOTAL_COUNT, getControllerIds(agentId).size());
         controlleCountData.put(AgentConstants.CONFIGURED_COUNT, FieldDeviceApi.getDeviceCount());
         return controlleCountData;
+    }
+
+    public static List<Map<String,Object>> getControllerData(Long controllerId, FacilioControllerType controllerType) throws Exception {
+        FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
+        String moduleName = getControllerModuleName(controllerType);
+        System.out.println(" module name "+moduleName);
+        FacilioContext context = getControllerChain.getContext();
+        Criteria criteria = new Criteria();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        criteria.addAndCondition(CriteriaAPI.getIdCondition(controllerId,ModuleFactory.getNewControllerModule()));
+        context.put(FacilioConstants.ContextNames.FILTER_CRITERIA,criteria);
+        getControllerChain.execute();
+        return (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+    }
+
+    public static List<Map<String, Controller>> getControllerDataForAgent(Long agentId, FacilioContext paginationContext) throws Exception {
+        List<Map<String, Controller>> controllersData  = new ArrayList<>();
+        List<Map<String, Object>> controllerData = new ArrayList<>();
+        for (FacilioControllerType controllerType : FacilioControllerType.values()) {
+            FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
+            String moduleName = getControllerModuleName(controllerType);
+            System.out.println(" module name "+moduleName);
+            if(moduleName == null){
+                continue;
+            }
+            FacilioContext context = getControllerChain.getContext();
+            context.putAll(paginationContext);
+            context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+            context.put(AgentConstants.AGENT_ID,agentId);
+            try {
+                getControllerChain.execute();
+                controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+                System.out.println(" capi "+controllerData);
+            }catch (Exception e){
+                LOGGER.info("Exception occurred while getting controller for "+agentId+ " of type "+agentId+" ",e);
+                //  continue;
+            }
+            if(controllerData != null){
+                controllersData.addAll(new ArrayList(controllerData));
+            }
+        }
+        System.out.println(" returning data "+controllersData);
+        return controllersData;
     }
 }

@@ -1,17 +1,20 @@
 package com.facilio.wms.message;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.PublishData;
+import com.facilio.bmsconsole.context.PublishMessage;
+import com.facilio.bmsconsole.util.IoTMessageAPI;
+import com.facilio.modules.FieldUtil;
+import com.facilio.wms.util.WmsApi;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.PublishData;
-import com.facilio.modules.FieldUtil;
-import com.facilio.wms.util.WmsApi;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class WmsPublishResponse extends Message {
 	
@@ -53,10 +56,29 @@ public class WmsPublishResponse extends Message {
 	}
 	
 	public void send() throws Exception {
+		System.out.println(this.getContent());
+		System.out.println(this.toJson());
 		List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
 		List<Long> recipients = users.stream().map(user -> user.getId()).collect(Collectors.toList());
-		
 		WmsApi.sendPublishResponse(recipients, this);
 	}
+
+	public static void main(String[] args) throws Exception {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(1,1);
+		jsonObject.put(2,2);
+		PublishMessage message = new PublishMessage();
+		message.setData(jsonObject);
+		PublishMessage message1 = new PublishMessage();
+		message1.setData(jsonObject);
+
+		PublishData data = new PublishData();
+		data.setCommand(IoTMessageAPI.IotCommandType.CONFIGURE);
+		data.setMessages(new ArrayList<>(Arrays.asList(message,message1)));
+		data.setAcknowledgeTime(123);
+
+		WmsPublishResponse wmsPublishResponse = new WmsPublishResponse();
+		wmsPublishResponse.publish(data,null);
+		}
 	
 }

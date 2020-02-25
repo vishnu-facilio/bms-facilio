@@ -31,7 +31,7 @@ public class PointMigrator {
             FacilioControllerType controllerType = controllerIdsType.get(controllerId);
             if (controllerType != null) {
                 List<Point> points = PointsAPI.getControllerPoints(controllerType, controllerId);
-                LOGGER.info(" controllerId -> "+controllerId+"    points -> "+points.size());
+                LOGGER.info(" controllerId -> "+controllerId+"    points -> "+points);
                 addPointsToSqlite(points, controllerType);
             } else {
                 LOGGER.info(" controllerType cant be null ->" + controllerId);
@@ -41,17 +41,17 @@ public class PointMigrator {
     }
 
 
-    private static void addPointsToSqlite(List<Point> points, FacilioControllerType controllerType) throws Exception {
+    public static void addPointsToSqlite(List<Point> points, FacilioControllerType controllerType) throws Exception {
         if ((points != null) && (!points.isEmpty())) {
             if (controllerType != null) {
                 for (Point point : points) {
-                    /*try {*/
-                    if ( ! addPointToSqlite(point, controllerType)) {
-                        LOGGER.info(" failed adding point "+point.getId());
-                    }
-                    /*catch (Exception e){
+                    try {
+                        if (!addPointToSqlite(point, controllerType)) {
+                            LOGGER.info(" failed adding point " + point.getId());
+                        }
+                    }catch (Exception e){
                         LOGGER.info(" exception while adding point of type "+controllerType+"    "+e);
-                    }*/
+                    }
                 }
             } else {
                 LOGGER.info(" controller type cant be null ");
@@ -164,10 +164,20 @@ public class PointMigrator {
         agentPoint.setName(point.getName());
         agentPoint.setDataType(point.getDataType());
         agentPoint.setWritable(point.isWritable());
-        agentPoint.setInUse(point.isInUse());
-        agentPoint.setSubscribed(point.isSubscribed());
+        if(point.getSubscribeStatus() == 3){
+            agentPoint.setSubscribed(true);
+        }
+        if(point.getConfigureStatus() == 3){
+            agentPoint.setInUse(true);
+        }
         agentPoint.setThresholdJSON(point.getThresholdJSON());
         agentPoint.setCreatedTime(point.getCreatedTime());
         agentPoint.setUnit(point.getUnit());
+    }
+
+    public static void setNewControllerId(long controllerId, List<Point> points) {
+        for (Point point : points) {
+            point.setControllerId(controllerId);
+        }
     }
 }

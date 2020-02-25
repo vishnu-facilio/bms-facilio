@@ -15,14 +15,13 @@ public class CreateAgentCommand extends AgentV2Command {
             String orgDomainname = AccountUtil.getCurrentOrg().getDomain();
             String agentDownloadUrl = null;
             FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
-            String certFielDownloadUrl = DownloadCertFile.downloadCertificateCommand(orgDomainname, "facilio");
+            String certFielDownloadUrl = DownloadCertFile.downloadAgentCertificate(orgDomainname,agent.getName(), "facilio");
             if (certFielDownloadUrl != null) {
                 context.put(AgentConstants.CERT_FILE_DOWNLOAD_URL,certFielDownloadUrl);
-
                 // pack agent and give a download link
                 agentDownloadUrl = packAgent(agent);
                 if(agentDownloadUrl != null){
-                    context.put(AgentConstants.DOWNLOAD_LINK,agentDownloadUrl);
+                    context.put(AgentConstants.DOWNLOAD_AGENT,agentDownloadUrl);
                 }else {
                     throw new  Exception(" agentDownload link cant be null ");
                 }

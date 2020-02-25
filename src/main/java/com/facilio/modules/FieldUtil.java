@@ -1,28 +1,5 @@
 package com.facilio.modules;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
-import com.facilio.modules.fields.*;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -30,9 +7,11 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude.Value;
@@ -42,8 +21,17 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MutableConfigOverride;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
-import static com.serotonin.bacnet4j.type.enumerated.ObjectType.timeValue;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FieldUtil {
 	
@@ -381,7 +369,7 @@ public class FieldUtil {
 		if (isInsert && FacilioConstants.ContextNames.SITE.equals(module.getName())) { //Temp fix. Have to check how to handle this
 			return false;
 		}
-		return SITE_ID_ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && module.getExtendModule().getName().equals("asset"));
+		return SITE_ID_ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && (module.getExtendModule().getName().equals("asset") || module.getExtendModule().getName().equals("controller")));
 	}
 
 	private static final Set<String> SYSTEM_FIELDS_ALLOWED_MODULES = Collections.unmodifiableSet(

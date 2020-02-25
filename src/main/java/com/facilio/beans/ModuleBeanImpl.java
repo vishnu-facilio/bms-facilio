@@ -1,24 +1,17 @@
 package com.facilio.beans;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
 import com.facilio.accounts.dto.IAMUser;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.db.builder.*;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.util.DBConf;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,25 +20,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.db.builder.DBUtil;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.transaction.FacilioConnectionPool;
-import com.facilio.db.util.DBConf;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioEnum;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import java.sql.*;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class ModuleBeanImpl implements ModuleBean {

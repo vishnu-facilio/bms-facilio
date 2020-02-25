@@ -9,7 +9,6 @@ import com.facilio.agentv2.AgentUtilities;
 import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
@@ -217,6 +216,9 @@ public class PointsAPI extends AgentUtilities {
     }
 
     private static List<Map<String, Object>> getAllPoints(FacilioControllerType type, List<Long> pointIds, long controllerId, long fieldId, long assetCategoryId, long deviceId, FacilioContext paginationContext) {
+        if(paginationContext == null){
+            paginationContext = new FacilioContext();
+        }
         paginationContext.put(AgentConstants.CONTROLLER_TYPE, type);
         paginationContext.put(AgentConstants.POINT_IDS, pointIds);
         paginationContext.put(AgentConstants.CONTROLLER_ID, controllerId);
@@ -780,10 +782,12 @@ public class PointsAPI extends AgentUtilities {
     public static List<MiscPoint> getPointsSuperficial(Long agentId) throws Exception {
         Set<Long> controllerIds = new HashSet<>();
         if (agentId > 0) {
-            controllerIds = ControllerApiV2.getControllerIds(agentId).keySet();
+           // controllerIds = ControllerApiV2.getControllerIds(agentId);
+            LOGGER.info(" controller ids "+controllerIds);
         }
         return getPointsSuperficial(controllerIds);
     }
+
 
     private static List<MiscPoint> getPointsSuperficial(Set<Long> controllerIds) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -793,6 +797,7 @@ public class PointsAPI extends AgentUtilities {
         if( ! controllerIds.isEmpty()){
             builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(MODULE), controllerIds, NumberOperators.EQUALS));
         }else {
+            LOGGER.info(" no controllerID so no points ");
             return new ArrayList<>();
         }
         List<Map<String, Object>> data = builder.get();
@@ -806,6 +811,7 @@ public class PointsAPI extends AgentUtilities {
     }
     public static JSONObject getPointsCountData(Long agentId) throws Exception {
         List<MiscPoint> points = getPointsSuperficial(agentId);
+        LOGGER.info(" superficial points "+points.size());
         return getPointCountDataJSON( points);
     }
 

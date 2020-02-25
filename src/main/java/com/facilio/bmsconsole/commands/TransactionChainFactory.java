@@ -19,8 +19,8 @@ import com.facilio.agentv2.device.commands.getFieldDevicesCommand;
 import com.facilio.agentv2.iotmessage.AddAndSendIotMessageCommand;
 import com.facilio.agentv2.point.ConfigurePointCommand;
 import com.facilio.agentv2.point.EditPointCommand;
-import com.facilio.agentv2.sqlitebuilder.AgentDataMigrationCommand;
 import com.facilio.agentv2.sqlitebuilder.AgentMigratorCommand;
+import com.facilio.agentv2.sqlitebuilder.AgentSqliteMakerCommand;
 import com.facilio.bmsconsole.actions.GetModuleFromReportContextCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
@@ -4498,7 +4498,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getagentV2DataSqlite() {
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new AgentDataMigrationCommand());
+		chain.addCommand(new AgentSqliteMakerCommand());
 		return chain;
 	}
 
@@ -4777,6 +4777,12 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AssociateClientWithSiteCommand());
 		return c;
+	}
+
+	public static FacilioChain getControllerDataChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetControllerCommand());
+		return chain;
 	}
 }
 

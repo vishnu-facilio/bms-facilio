@@ -22,10 +22,9 @@ public class AckUtil
      * @param payLoad
      * @param orgId
      */
-    public void processAck(JSONObject payLoad, String agent, long orgId)  {
-
+    public static void processAck(JSONObject payLoad, String agent, long orgId)  {
         try {
-            Long msgId = (Long) payLoad.get(AgentKeys.MESSAGE_ID);
+            long msgId = getMessageIdFromPayload(payLoad);
             String message = (String) payLoad.get(AgentKeys.MESSAGE);
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             JSONObject newObj = new JSONObject();
@@ -37,31 +36,49 @@ public class AckUtil
         }
     }
 
-    public boolean processAgentAck(JSONObject payload, long agentId, long orgId) throws Exception {
-            if(payload.containsKey(AgentConstants.MESSAGE_ID)){
-                long msgId = Long.parseLong( payload.get(AgentConstants.MESSAGE_ID).toString() );
+    public static boolean processAgentAck(JSONObject payload, long agentId, long orgId) throws Exception {
+                long msgId = getMessageIdFromPayload(payload);
                 if(payload.containsKey(AgentConstants.STATUS)){
                     int status = ((Number) payload.get(AgentConstants.STATUS)).intValue();
-                    long timeStamp = System.currentTimeMillis();
-                    if (payload.containsKey(payload.get(AgentConstants.TIMESTAMP)) && (payload.get(AgentConstants.TIMESTAMP) != null)) {
-                        timeStamp = Long.parseLong(payload.get(AgentConstants.TIMESTAMP).toString());
-                    }
-                    LogsApi.logAgentMessages(agentId,msgId,null,Status.valueOf(status),timeStamp);
-                    FacilioChain chain = TransactionChainFactory.getAckProcessorChain();
-                    FacilioContext context = chain.getContext();
-                    context.put(AgentConstants.ID, msgId);
-                    context.put(AgentConstants.STATUS, Status.valueOf(status));
-                    context.put(AgentConstants.ORGID, orgId);
-                    chain.execute();
+                    long timeStamp = getTimestampFromPayload(payload);
+                    ackAndLogAgentAck(agentId, orgId, msgId, status, timeStamp);
                     return true;
                 }else {
                     throw new Exception(" status missing from payload ");
                 }
-            }else {
-                throw new Exception(" msgid missing from payload ");
-            }
 
+    }
 
+    private static void ackAndLogAgentAck(long agentId, long orgId, long msgId, int status, long timeStamp) throws Exception {
+        LogsApi.logAgentMessages(agentId,msgId,null, Status.valueOf(status),timeStamp);
+        FacilioChain chain = TransactionChainFactory.getAckProcessorChain();
+        FacilioContext context = chain.getContext();
+        context.put(AgentConstants.ID, msgId);
+        context.put(AgentConstants.STATUS, Status.valueOf(status));
+        context.put(AgentConstants.ORGID, orgId);
+        chain.execute();
+    }
+
+    public static boolean ackPing(long agentId,long orgId, JSONObject payload) throws Exception{
+        long timestamp = getTimestampFromPayload(payload);
+        long msgId = getMessageIdFromPayload(payload);
+        ackAndLogAgentAck(agentId,orgId,msgId,Status.MESSAGE_PROCESSING_SUCCESS.asInt(),timestamp);
+        return true;
+    }
+
+    private static long getMessageIdFromPayload(JSONObject payload) throws Exception {
+        if(payload.containsKey(AgentConstants.MESSAGE_ID)) {
+            return Long.parseLong(payload.get(AgentConstants.MESSAGE_ID).toString());
+        }
+        throw new Exception(" msgid missing from payload ");
+    }
+
+    private static long getTimestampFromPayload(JSONObject payload) {
+        long timeStamp = System.currentTimeMillis();
+        if (payload.containsKey(payload.get(AgentConstants.TIMESTAMP)) && (payload.get(AgentConstants.TIMESTAMP) != null)) {
+            timeStamp = Long.parseLong(payload.get(AgentConstants.TIMESTAMP).toString());
+        }
+        return timeStamp;
     }
 
 }

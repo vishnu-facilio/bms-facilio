@@ -8,6 +8,8 @@ import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
+import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.sqlUtils.contexts.bacnet.ip.BacnetIpController;
 import com.facilio.sqlUtils.contexts.modbus.ip.ModbusTcpController;
 import com.facilio.sqlUtils.contexts.modbus.rtu.ModbusRtuController;
@@ -18,6 +20,7 @@ import com.facilio.sqlUtils.utilities.FacilioJavaController;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.List;
 import java.util.Map;
 
 public class ControllerMigrator {
@@ -30,9 +33,28 @@ public class ControllerMigrator {
             LOGGER.info(" migrating controller " + controllerId + " of type " + controllerType.asString());
             if (controllerIdsType != null) {
                 Controller controller = ControllerApiV2.getControllerIdType(controllerId, controllerIdsType.get(controllerId));
+                if(controller == null){
+                    LOGGER.info(" No Controller for Id "+controllerId+"  of type "+controllerType.asString());
+                    continue;
+                }
                 LOGGER.info(" got controller " + controller.getName());
-                if ( ! addControllersToSqlite(controller, controllerType)) {
-                    LOGGER.info("failed adding controller " + controller.getName());
+                try {
+                    if (!addControllersToSqlite(controller, controllerType)) {
+                        LOGGER.info("failed adding controller " + controller.getName());
+                    }else {
+                        LOGGER.info(" added controller "+controllerId +" to sqlite "+controller.getId());
+                        List<Point> points = PointsAPI.getControllerPoints(controllerType, controllerId);
+                       if((points != null) && ( ! points.isEmpty())){
+                           LOGGER.info(" fetched points for controller "+controllerId+" is "+points.size());
+                           PointMigrator.setNewControllerId(controller.getId(),points);
+                           LOGGER.info(" set new controller id ");
+                           PointMigrator.addPointsToSqlite(points, controllerType);
+                       }else {
+                           LOGGER.info(" no points for controller "+controllerId);
+                       }
+                    }
+                }catch (Exception e){
+                    LOGGER.info("exception while inserting controller ",e);
                 }
             } else {
                 LOGGER.info("controllerType cant be null ->" + controllerId);
@@ -78,6 +100,7 @@ public class ControllerMigrator {
         if (controllerToInsert != null) {
             long controllerId = SQLiteUtil.addController(controllerToInsert);
             LOGGER.info(" controller added and id is " + controllerId);
+            controller.setId(controllerId);
             return (controllerId > 0);
         }
         return false;

@@ -11,7 +11,6 @@ import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;
-import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FieldUtil;
@@ -108,11 +107,12 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public String getControllers() {
+  /*  public String getControllers() {
         JSONArray controllerArray = new JSONArray();
         try {
             LOGGER.info(" getting controller for agentId "+agentId);
-                Map<String, Controller> controllerData = ControllerApiV2.getControllersForAgent(getAgentId(),constructListContext(new FacilioContext()));
+                //Map<String, Controller> controllerData = ControllerApiV2.getControllersForAgent(getAgentId(),constructListContext(new FacilioContext()));
+                Map<String, Controller> controllerData = ControllerApiV2.getControllerDataForAgent(getAgentId(),constructListContext(new FacilioContext()));
                 if ((controllerData != null) && (!controllerData.isEmpty())) {
                     JSONObject object = new JSONObject();
                     for (Controller controller : controllerData.values()) {
@@ -126,11 +126,11 @@ public class AgentIdAction extends AgentActionV2 {
                         object.putAll(controller.toJSON());
                         controllerArray.add(object);
                     }
-                    /*setResult(AgentConstants.RESULT, SUCCESS);*/
+                    *//*setResult(AgentConstants.RESULT, SUCCESS);*//*
                     setResult(AgentConstants.DATA, controllerArray);
                     return SUCCESS;
                 }else {
-                    /*setResult(AgentConstants.RESULT, NONE);*/
+                    *//*setResult(AgentConstants.RESULT, NONE);*//*
                     setResult(AgentConstants.DATA,controllerArray);
                 }
 
@@ -140,7 +140,19 @@ public class AgentIdAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
+*/
 
+    public String getControllers() {
+        try{
+            List<Map<String, Controller>> controllers = ControllerApiV2.getControllerDataForAgent(agentId, constructListContext(new FacilioContext()));
+            LOGGER.info(" action class "+controllers);
+            setResult(AgentConstants.DATA,controllers);
+        } catch (Exception e) {
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            LOGGER.info("exception while fetching controller data fro agent "+agentId+" ",e);
+        }
+        return SUCCESS;
+    }
 
 
     public String countAgentDevices(){
