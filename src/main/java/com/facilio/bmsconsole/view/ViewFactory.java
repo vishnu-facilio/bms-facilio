@@ -687,6 +687,8 @@ public class ViewFactory {
 		views.put("all", getAllWorkOrderHazardsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORKORDER_HAZARD, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllSites().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.SITE, views);
 
