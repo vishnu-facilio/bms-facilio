@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingContext.SourceType;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;

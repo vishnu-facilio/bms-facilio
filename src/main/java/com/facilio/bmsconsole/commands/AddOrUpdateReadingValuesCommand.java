@@ -4,7 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingContext.SourceType;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -105,7 +105,7 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 					reading.setNewReading(false);
 					updateReading(module, fields, reading, metaMap, currentReadingMap, updateLastReading);
 				}
-				reading.setSourceType(sourceType);
+				reading.setSourceType(sourceType.getIndex());
 			}
 			else {
 				itr.remove();

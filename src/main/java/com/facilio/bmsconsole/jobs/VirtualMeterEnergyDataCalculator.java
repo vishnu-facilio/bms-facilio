@@ -23,7 +23,7 @@ import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
-import com.facilio.bmsconsole.context.ReadingContext.SourceType;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.bmsconsole.util.MarkingUtil;

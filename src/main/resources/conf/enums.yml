@@ -60,3 +60,6 @@ enums:
 
   - name: DialogType
     enumClassName: com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext$DialogType
+
+  - name: SourceType
+    enumClassName: com.facilio.bmsconsole.enums.SourceType

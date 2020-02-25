@@ -309,7 +309,7 @@ public class HistoricalMLJob extends FacilioJob {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.READINGS, readings);
-		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, com.facilio.bmsconsole.context.ReadingContext.SourceType.ML);
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, com.facilio.bmsconsole.enums.SourceType.ML);
 		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		chain.execute(context);
 	}
@@ -347,7 +347,7 @@ public class HistoricalMLJob extends FacilioJob {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.READINGS, readingList);
-		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, com.facilio.bmsconsole.context.ReadingContext.SourceType.ML);
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, com.facilio.bmsconsole.enums.SourceType.ML);
 		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		chain.execute(context);
 	}

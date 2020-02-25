@@ -338,6 +338,7 @@ public class ModuleFactory {
 		systemModule.setName("systemEnumFields");
 		systemModule.setDisplayName("System Enum Fields");
 		systemModule.setTableName("SystemEnumFields");
+		systemModule.setExtendModule(getFieldsModule());
 
 		return systemModule;
 	}

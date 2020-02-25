@@ -10,7 +10,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingContext.SourceType;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;

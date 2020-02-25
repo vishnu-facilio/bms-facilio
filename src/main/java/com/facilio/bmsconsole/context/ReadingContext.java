@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.time.DateTimeUtil;
+
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.time.DateTimeUtil;
 
 public class ReadingContext extends ModuleBaseWithCustomFields {
 
@@ -129,12 +130,9 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 	public SourceType getSourceTypeEnum() {
 		return sourceType;
 	}
-	public void setSourceType(SourceType sourceType) {
-		this.sourceType = sourceType;
-	}
 	public int getSourceType() {
 		if (sourceType != null) {
-			return sourceType.getValue();
+			return sourceType.getIndex();
 		}
 		return -1;
 	}
@@ -142,25 +140,7 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 		this.sourceType = SourceType.valueOf(sourceType);
 	}
 
-	public static enum SourceType {
-		WEB_ACTION,
-		IMPORT,
-		FORMULA,
-		SHIFT_READING,
-		KINESIS,
-		ML
-		;
-		
-		public int getValue() {
-			return ordinal() + 1;
-		}
-		public static SourceType valueOf (int value) {
-			if (value > 0 && value <= values().length) {
-				return values() [value - 1];
-			}
-			return null;
-		}
-	}
+	private long sourceId=-1;
 	
 	@Override
 	public String toString() {
@@ -179,5 +159,13 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 	public ReadingContext clone() throws CloneNotSupportedException 
 	{ 
 		return (ReadingContext) super.clone(); 
-	} 
-} 
+	}
+
+	public long getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(long sourceId) {
+		this.sourceId = sourceId;
+	}
+}

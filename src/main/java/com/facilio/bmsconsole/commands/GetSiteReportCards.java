@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONArray;
@@ -37,8 +38,9 @@ public class GetSiteReportCards extends FacilioCommand {
 		if(campusId > 0) {
 			
 			JSONObject reports = new JSONObject();
-			reports.put("independent_spaces", getIndependentSpaces(campusId));
-			reports.put("allSpaces", getAllSpaces(campusId));
+				reports.put("independent_spaces", getIndependentSpaces(campusId));
+			reports.put("allSpaces", getAllSpaces(campusId, SpaceType.SPACE.getIntVal()));
+			reports.put("buildings", getAllSpaces(campusId, SpaceType.BUILDING.getIntVal()));
 			
 			JSONObject woCount = new JSONObject();
 			woCount.put("type", "count");
@@ -81,45 +83,45 @@ public class GetSiteReportCards extends FacilioCommand {
 	}
 
 	private long getIndependentSpaces (long siteId) throws Exception {
-		
-		FacilioField countFld = new FacilioField();
-		countFld.setName("count");
-		countFld.setColumnName("COUNT(*)");
-		countFld.setDataType(FieldType.NUMBER);
 
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(countFld);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Site")
-				.innerJoin("BaseSpace")
-				.on("Site.ID = BaseSpace.ID")
-				.andCustomWhere("Site.ORGID=? AND BaseSpace.ORGID = ? AND BaseSpace.SITE_ID = ? AND BaseSpace.BUILDING_ID = -1 AND BaseSpace.FLOOR_ID = -1", orgId, orgId, siteId);
-		
-		List<Map<String, Object>> rs = builder.get();
-		if (rs == null || rs.isEmpty()) {
-			return 0;
+		SelectRecordsBuilder builder = new SelectRecordsBuilder()
+				.select(new HashSet<>())
+				.module(module)
+				.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("spaceType"), String.valueOf(SpaceType.SPACE.getIntVal()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(siteId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("building"), CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("floor"), CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space1"), CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space2"), CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("space3"), CommonOperators.IS_EMPTY))
+				;
+
+		List<Map<String, Object>> props = builder.getAsProps();
+		long count = 0;
+		if (CollectionUtils.isNotEmpty(props)) {
+			count = ((Number) props.get(0).get("id")).longValue();
 		}
-		else {
-			return ((Number) rs.get(0).get("count")).longValue();
-		}
+		return count;
 	}
 	
-	private long getAllSpaces (long siteId) throws Exception {
+	private long getAllSpaces (long siteId, long spaceType) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		SelectRecordsBuilder builder = new SelectRecordsBuilder()
 				.select(new HashSet<>())
 				.module(module)
 				.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("spaceType"), String.valueOf(SpaceType.SPACE.getIntVal()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("spaceType"), String.valueOf(spaceType), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(module), String.valueOf(siteId), NumberOperators.EQUALS))
 				;
 		

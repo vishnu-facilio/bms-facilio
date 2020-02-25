@@ -1486,6 +1486,9 @@ public class FacilioConstants {
 		
 		public static final String CLIENT = "client";
 		public static final String CLIENTS = "clients";
+
+		public static final String SOURCE_TYPE = "sourceType";
+		public static final String SOURCE_ID = "sourceId";
 	
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
