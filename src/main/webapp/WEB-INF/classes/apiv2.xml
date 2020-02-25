@@ -1739,6 +1739,12 @@
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<param name="id">{1}</param>
 		</action>
+		<action name="runHistoricalRule"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="runHistoricalRule">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+		</action>
 	</package>
 	<package name="historicalScheduledRuleApiV2"
 		namespace="/api/v2/scheduled/rule/historicalrun" extends="v2Api">

@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.ResetCounterMetaContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.EnergyMeterUtilAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
@@ -1160,6 +1161,16 @@ public class ReadingAction extends FacilioAction {
 		this.isScaledFlow = isScaledFlow;
 	}
 	
+	private List<Long> historicalReadingRules;
+	
+	public List<Long> getHistoricalReadingRules() {
+		return historicalReadingRules;
+	}
+
+	public void setHistoricalReadingRules(List<Long> historicalReadingRules) {
+		this.historicalReadingRules = historicalReadingRules;
+	}
+
 	public String runThroughRule() throws Exception {
 		
 		try {
@@ -1185,6 +1196,27 @@ public class ReadingAction extends FacilioAction {
 		}
 		
 		return SUCCESS;
+	}
+	
+	public String runHistoricalRule() throws Exception
+	{
+		if(startTime >= endTime)
+		{
+			throw new Exception("Start time should be less than the Endtime");
+		}
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+		context.put(FacilioConstants.ContextNames.IS_SCALED_FLOW,true);
+
+		for(long ruleId:historicalReadingRules)
+		{
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, ruleId);
+			FacilioChain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
+			runThroughRuleChain.execute(context);
+		}	
+		setResult("success", "Historical rule evaluation in the given period has been started for all the given rules");	
+		return SUCCESS;	
 	}
 	
 	public String getWorkflowRuleParentLoggers() throws Exception {
