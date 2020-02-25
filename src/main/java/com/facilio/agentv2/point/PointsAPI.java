@@ -9,6 +9,7 @@ import com.facilio.agentv2.AgentUtilities;
 import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.modbusrtu.ModbusRtuPointContext;
@@ -782,7 +783,7 @@ public class PointsAPI extends AgentUtilities {
     public static List<MiscPoint> getPointsSuperficial(Long agentId) throws Exception {
         Set<Long> controllerIds = new HashSet<>();
         if (agentId > 0) {
-           // controllerIds = ControllerApiV2.getControllerIds(agentId);
+            controllerIds = ControllerApiV2.getControllerIds(agentId);
             LOGGER.info(" controller ids "+controllerIds);
         }
         return getPointsSuperficial(controllerIds);

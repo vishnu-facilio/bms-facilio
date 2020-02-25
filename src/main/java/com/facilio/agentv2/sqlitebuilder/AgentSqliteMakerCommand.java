@@ -26,7 +26,7 @@ public class AgentSqliteMakerCommand extends AgentV2Command {
             long agentId = Long.parseLong(String.valueOf(context.get(AgentConstants.AGENT_ID)));
             SqliteBridge bridge = new SqliteBridge();
             File file = bridge.getSqliteFile(agentId);
-            Map<Long, FacilioControllerType> controllerIdsType = ControllerApiV2.getControllerIds(agentId);
+            Map<Long, FacilioControllerType> controllerIdsType = ControllerApiV2.getControllerIdsType(agentId);
             LOGGER.info(" controllers " + controllerIdsType);
             SQLiteUtil.createAlternateConnection(file);
             ControllerMigrator.migrateControllers(agentId, controllerIdsType);

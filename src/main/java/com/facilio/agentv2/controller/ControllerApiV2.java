@@ -650,7 +650,7 @@ public class ControllerApiV2 {
 
     }
 
-    public static Map<Long, FacilioControllerType> getControllerIds(Long agentId) throws Exception {
+    public static Map<Long, FacilioControllerType> getControllerIdsType(Long agentId) throws Exception {
         List<FacilioField> idTypefields = new ArrayList<>();
         idTypefields.add(FieldFactory.getIdField(MODULE));
         idTypefields.add(FieldFactory.getControllerTypeField(MODULE));
@@ -672,9 +672,30 @@ public class ControllerApiV2 {
         return new HashMap<>();
     }
 
+    public static Set<Long> getControllerIds(Long agentId) throws Exception {
+        List<FacilioField> idTypefields = new ArrayList<>();
+        idTypefields.add(FieldFactory.getIdField(MODULE));
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(MODULE.getTableName())
+                .select(idTypefields);
+        if (agentId != null) {
+            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
+        }
+        //.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getPointFields()).get(AgentConstants.POINT_TYPE), String.valueOf(type.asInt()),NumberOperators.EQUALS));
+        List<Map<String, Object>> results = builder.get();
+        if ((results != null) && (!results.isEmpty())) {
+            Set<Long> ids = new HashSet<>();
+            results.forEach(row -> ids.add((Long) row.get(AgentConstants.ID)));
+            return ids;
+        }else {
+            LOGGER.info(" result empty ");
+        }
+        return new HashSet<>();
+    }
+
     public static JSONObject getControllerCountData(Long agentId) throws Exception {
         JSONObject controlleCountData = new JSONObject();
-        controlleCountData.put(AgentConstants.TOTAL_COUNT, getControllerIds(agentId).size());
+        controlleCountData.put(AgentConstants.TOTAL_COUNT, getControllerIdsType(agentId).size());
         controlleCountData.put(AgentConstants.CONFIGURED_COUNT, FieldDeviceApi.getDeviceCount());
         return controlleCountData;
     }

@@ -135,6 +135,10 @@
 
         <action name="getIotMessages" class="com.facilio.agentv2.actions.AgentIdAction" method="getIotMessages">
         </action>
+
+
+        <action name="getPointCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getPointCount">
+        </action>
     </package>
 
     <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent">

@@ -11,6 +11,7 @@ import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FieldUtil;
@@ -280,6 +281,17 @@ public class AgentIdAction extends AgentActionV2 {
             setResult(AgentConstants.DATA, result );
         }catch (Exception e){
             LOGGER.info("Exception occurred while getting iot messages->"+getAgentId()+" ",e);
+            setResult(AgentConstants.RESULT,ERROR);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+        }
+        return SUCCESS;
+    }
+
+    public String getPointCount(){
+        try{
+            setResult(AgentConstants.DATA,PointsAPI.getPointsCountData(getAgentId()));
+        }catch (Exception e){
+            LOGGER.info("Exception while getting point count for agent "+agentId);
             setResult(AgentConstants.RESULT,ERROR);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
         }
