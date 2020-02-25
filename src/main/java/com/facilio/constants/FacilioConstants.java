@@ -1,6 +1,7 @@
 package com.facilio.constants;
 
 import com.facilio.activity.ActivityContext;
+import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.misc.MiscController;
@@ -1646,6 +1647,7 @@ public class FacilioConstants {
 			classMap.put(BASE_EVENT, BaseEventContext.class);
 			classMap.put(READING_EVENT, ReadingEventContext.class);
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
+			classMap.put(AGENT_ALARM, AgentAlarmContext.class);
 			classMap.put(VISITOR, VisitorContext.class);
 			classMap.put(VISITOR_INVITE, VisitorInviteContext.class);
 			classMap.put(VISITOR_LOGGING, VisitorLoggingContext.class);

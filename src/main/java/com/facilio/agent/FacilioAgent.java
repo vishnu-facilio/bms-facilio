@@ -6,9 +6,10 @@ import com.facilio.constants.FacilioConstants;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.io.Serializable;
 import java.util.HashSet;
 
-public class FacilioAgent
+public class FacilioAgent implements Serializable
 {
     private  String name;
     public String getName() { return name; }
