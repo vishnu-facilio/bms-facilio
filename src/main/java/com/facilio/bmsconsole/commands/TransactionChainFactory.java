@@ -4784,6 +4784,12 @@ public class TransactionChainFactory {
 		chain.addCommand(new GetControllerCommand());
 		return chain;
 	}
+
+	public static FacilioChain getAddSLAPolicyWithChildrenChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateSLAPolicyWithChildrenCommand());
+		return chain;
+	}
 }
 
 

@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
@@ -14,13 +15,12 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SLAWorkflowAPI extends WorkflowRuleAPI {
 
     public static void updateSLAPolicyRule(SLAPolicyContext rule) throws Exception {
         WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
-//        deleteSLAPolicyEscalation(rule);
-//        addEscalations(rule);
     }
 
     public static void deleteSLAPolicyEscalation(SLAPolicyContext rule) throws Exception {
@@ -172,6 +172,20 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
         WorkflowRuleAPI.updateWorkflowRuleWithChildren(rule);
         deleteSLACommitmentDuration(rule);
         addSLACommitmentDuration(rule);
+    }
+
+    public static void deleteAllSLACommitments(SLAPolicyContext slaPolicy) throws Exception {
+        if (slaPolicy == null) {
+            return;
+        }
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_RULE_ID", "parentRuleId", String.valueOf(slaPolicy.getId()), NumberOperators.EQUALS));
+        List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE, false, criteria, null, null);
+        if (CollectionUtils.isNotEmpty(workflowRules)) {
+            List<Long> workflowIds = workflowRules.stream().map(WorkflowRuleContext::getWorkflowId).collect(Collectors.toList());
+            WorkflowRuleAPI.deleteWorkFlowRules(workflowIds);
+        }
     }
 
     public static void deleteSLACommitmentDuration(SLAWorkflowCommitmentRuleContext rule) throws Exception {

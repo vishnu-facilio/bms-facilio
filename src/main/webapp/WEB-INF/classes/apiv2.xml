@@ -379,6 +379,9 @@
 				class="com.facilio.bmsconsole.actions.SLAAction" method="addSLAPolicyEscalations" />
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="reorderSLAPolicy" />
+
+		<action name="addOrUpdateWithChildren"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="addSLAPolicyWithChildren" />
 	</package>
 
 	<package name="sla" namespace="/api/v2/sla" extends="v2Api">

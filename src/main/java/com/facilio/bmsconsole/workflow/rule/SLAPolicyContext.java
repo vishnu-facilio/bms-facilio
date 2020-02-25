@@ -22,6 +22,14 @@ public class SLAPolicyContext extends WorkflowRuleContext {
         this.escalations = escalations;
     }
 
+    private List<SLAWorkflowCommitmentRuleContext> commitments;
+    public List<SLAWorkflowCommitmentRuleContext> getCommitments() {
+        return commitments;
+    }
+    public void setCommitments(List<SLAWorkflowCommitmentRuleContext> commitments) {
+        this.commitments = commitments;
+    }
+
     @Override
     public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
         if (record instanceof ModuleBaseWithCustomFields) {

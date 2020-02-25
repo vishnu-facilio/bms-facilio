@@ -246,4 +246,16 @@ public class SLAAction extends FacilioAction {
 
         return SUCCESS;
     }
+
+    public String addSLAPolicyWithChildren() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getAddSLAPolicyWithChildrenChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.SLA_POLICY, slaPolicy);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.SLA_POLICY, context.get(FacilioConstants.ContextNames.SLA_POLICY));
+
+        return SUCCESS;
+    }
 }
