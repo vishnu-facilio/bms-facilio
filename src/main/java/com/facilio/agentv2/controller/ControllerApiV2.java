@@ -719,6 +719,7 @@ public class ControllerApiV2 {
             FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
             String moduleName = getControllerModuleName(controllerType);
             if(moduleName == null){
+                LOGGER.info(" module name is null for "+controllerType.asString());
                 continue;
             }
             FacilioContext context = getControllerChain.getContext();
@@ -728,7 +729,6 @@ public class ControllerApiV2 {
             try {
                 getControllerChain.execute();
                 controllerData = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-                System.out.println(" capi "+controllerData);
             }catch (Exception e){
                 LOGGER.info("Exception occurred while getting controller for "+agentId+ " of type "+agentId+" ",e);
                 //  continue;
@@ -737,7 +737,7 @@ public class ControllerApiV2 {
                 controllersData.addAll(new ArrayList(controllerData));
             }
         }
-        System.out.println(" returning data "+controllersData.size());
+        LOGGER.info(" returning data "+controllersData.size());
         return controllersData;
     }
 }

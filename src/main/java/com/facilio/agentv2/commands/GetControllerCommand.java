@@ -44,7 +44,6 @@ public class GetControllerCommand extends AgentV2Command {
 
 
         context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, allFields);
-        LOGGER.info(" fields size "+allFields.size());
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .select(allFields)
                 .table(controllerModule.getTableName())
@@ -76,6 +75,7 @@ public class GetControllerCommand extends AgentV2Command {
             selectRecordBuilder.groupBy(controllerModule.getTableName()+".ID");
             List<Map<String, Object>> result = selectRecordBuilder.get();
             context.put(FacilioConstants.ContextNames.RECORD_LIST, result);
+            LOGGER.info(" query "+selectRecordBuilder.toString());
             if (result != null) {
                 LOGGER.debug("No of records fetched for module : " + childTableModuleName + " is " + result.size());
             }
