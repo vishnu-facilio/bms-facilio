@@ -46,7 +46,7 @@ public class SitePageFactory extends PageFactory {
     }
 	
 	private static void addSecondaryDetailsWidget(Section section) {
-		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
+		PageWidget detailsWidget = new PageWidget(WidgetType.FIXED_DETAILS_WIDGET);
 		detailsWidget.addToLayoutParams(section, 24, 4);
 		section.addWidget(detailsWidget);
 	}
@@ -73,32 +73,14 @@ public class SitePageFactory extends PageFactory {
 	}
 	
 	private static void addBuildingsWidget(long siteId, Section section) throws Exception {
-		List<BuildingContext> buildings = SpaceAPI.getAllBuildings(siteId);
-		if (CollectionUtils.isEmpty(buildings)) {
-			return;
-		}
-		for(BuildingContext building : buildings) {
-			
-			PageWidget buildingWidget = new PageWidget(WidgetType.CARD);
-			buildingWidget.addToLayoutParams(section, 5, 5);
-			buildingWidget.addCardType(CardType.BUILDING);
-			
-			JSONObject obj = new JSONObject();
-			obj.put("id", building.getId());
-			obj.put("name", building.getName());
-			obj.put("noOfFloors", building.getNoOfFloors());
-			obj.put("area", building.getArea());
-			obj.put("avatarUrl", building.getAvatarUrl());
-
-			buildingWidget.addToWidgetParams("data", obj);
-			section.addWidget(buildingWidget);
-		}
+		PageWidget pageWidget = new PageWidget(WidgetType.LIST, "siteBuildings");
+		pageWidget.addToLayoutParams(section, 24, 10);
+		section.addWidget(pageWidget);
 	}
 	
 	private static void addSpacesWidget(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 8, 8);
-		cardWidget.addCardType(CardType.OPERATING_HOURS);
+		PageWidget cardWidget = new PageWidget(WidgetType.LIST);
+		cardWidget.addToLayoutParams(section, 24, 8);
 		section.addWidget(cardWidget);
 	}
 

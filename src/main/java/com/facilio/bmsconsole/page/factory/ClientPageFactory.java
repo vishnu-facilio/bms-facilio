@@ -8,7 +8,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ClientContext;
-import com.facilio.bmsconsole.context.SafetyPlanContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
@@ -76,7 +75,7 @@ public class ClientPageFactory extends PageFactory{
         List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == parenModuleId)).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(fields)) {
             for (FacilioField field : fields) {
-                PageWidget relatedListWidget = new PageWidget(WidgetType.SITE_LSIT_WIDGET);
+                PageWidget relatedListWidget = new PageWidget(WidgetType.SITE_LIST_WIDGET);
                 JSONObject relatedList = new JSONObject();
                 module.setDisplayName(moduleDisplayName);
                 relatedList.put("module", module);

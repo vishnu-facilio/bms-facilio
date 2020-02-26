@@ -464,7 +464,7 @@ public class AssetPageFactory extends PageFactory {
 		section.addWidget(cardWidget);
 	}
 	private static void addSafetyPlanHazardsWidget(Section section) {
-		PageWidget widget = new PageWidget(WidgetType.SAFETY_PLAN_PRECAUTIONS, "safetyPlanPrecautions");
+		PageWidget widget = new PageWidget(WidgetType.LIST, "safetyPlanPrecautions");
 		widget.addToLayoutParams(section, 24, 10);
 		section.addWidget(widget);
 	}

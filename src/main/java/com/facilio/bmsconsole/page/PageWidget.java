@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.page;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class PageWidget {
 	private static final long serialVersionUID = 1L;
@@ -238,12 +237,9 @@ public class PageWidget {
 		SPACE_WIDGET("spaceWidget"),
 		PORTAL_INSURANCE("portalInsurance"),
 		PORTAL_WORKPERMIT("portalWorkPermit"),
-		SAFETY_PLAN_PRECAUTIONS("safetyPlanPrecautions"),
-		PRECAUTION_HAZARDS_LIST("precautionHazardsList"),
-		HAZARD_PECAUTIONS_LIST("hazardPrecautionsList"),
 		RELATED_COUNT("relatedCount"),
-		PRECAUTION_HAZARDS("precautionHazards"),
-		SITE_LSIT_WIDGET ("siteListWidget")
+		SITE_LIST_WIDGET("siteListWidget"),
+		FIXED_DETAILS_WIDGET("fixedDetailsWidget")
  		;
 		
 		private String name;
