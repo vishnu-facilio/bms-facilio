@@ -412,7 +412,8 @@ public class FieldUtil {
 		// custom modules will have system fields by default
 		if (module.isCustom()
 				|| module.getTypeEnum() == FacilioModule.ModuleType.ENUM_REL_MODULE
-				|| module.getTypeEnum() == FacilioModule.ModuleType.LOOKUP_REL_MODULE) {
+				|| module.getTypeEnum() == FacilioModule.ModuleType.LOOKUP_REL_MODULE
+				|| module.getTypeEnum() == FacilioModule.ModuleType.RATING) {
 			return true;
 		}
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());

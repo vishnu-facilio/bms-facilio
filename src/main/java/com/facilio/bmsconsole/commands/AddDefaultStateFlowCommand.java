@@ -35,7 +35,7 @@ public class AddDefaultStateFlowCommand extends FacilioCommand {
         defaultRule.setDefaultStateId(openState.getId());
         defaultRule.setModuleId(module.getModuleId());
         context.put(FacilioConstants.ContextNames.RECORD, defaultRule);
-        context.put(FacilioConstants.ContextNames.DEFAULT_STATEFLOW, true);
+//        context.put(FacilioConstants.ContextNames.DEFAULT_STATEFLOW, true);
         FacilioChain addStateFlowTransition = TransactionChainFactory.getAddOrUpdateStateFlow();
         addStateFlowTransition.execute(context);
 

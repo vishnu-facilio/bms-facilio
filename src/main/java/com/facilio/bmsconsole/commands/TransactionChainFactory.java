@@ -4797,6 +4797,13 @@ public class TransactionChainFactory {
 		chain.addCommand(new AddOrUpdateSLAPolicyWithChildrenCommand());
 		return chain;
 	}
+
+	public static FacilioChain getAddOrUpdateRatingChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddOrUpdateRatingCommand());
+		chain.addCommand(new GenericAddModuleDataCommand());
+		return chain;
+	}
 }
 
 

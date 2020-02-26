@@ -396,6 +396,11 @@
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="deleteSLA" />
 	</package>
+
+	<package name="rating" namespace="/api/v2/rating" extends="v2Api">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.RatingAction" method="addOrUpdateRating" />
+	</package>
 	
 	<package name="automation" namespace="/api/v2/automation" extends="v2Api">
 		<action name="module"

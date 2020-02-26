@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -40,12 +41,16 @@ public class AddOrUpdateStateFlowCommand extends FacilioCommand {
 				throw new Exception("Invalid Module");
 			}
 			stateFlow.setModuleId(facilioModule.getModuleId());
-			Boolean defaultStateflow = (Boolean) context.get(FacilioConstants.ContextNames.DEFAULT_STATEFLOW);
-			if (defaultStateflow == null || defaultStateflow == false) {
+
+			StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(facilioModule);
+			if (defaultStateFlow == null) {
 				stateFlow.setDefaltStateFlow(false);
 			}
-			else {
+			else if (defaultStateFlow.getId() == stateFlow.getId()) {
 				stateFlow.setDefaltStateFlow(true);
+			}
+			else {
+				stateFlow.setDefaltStateFlow(false);
 			}
 			
 			if (stateFlow.getExecutionOrder() == -1) {

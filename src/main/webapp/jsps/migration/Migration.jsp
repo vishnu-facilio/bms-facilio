@@ -6,6 +6,14 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.facilio.accounts.util.AccountUtil" %>
 <%@ page import="com.facilio.chain.FacilioChain" %>
+<%@ page import="com.facilio.fw.BeanFactory" %>
+<%@ page import="com.facilio.beans.ModuleBean" %>
+<%@ page import="com.facilio.constants.FacilioConstants" %>
+<%@ page import="com.facilio.modules.FacilioModule" %>
+<%@ page import="com.facilio.modules.fields.FacilioField" %>
+<%@ page import="com.facilio.modules.FieldFactory" %>
+<%@ page import="com.facilio.modules.FieldType" %>
+<%@ page import="com.facilio.modules.fields.LookupField" %>
 
 <%--
 
@@ -28,6 +36,30 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+            if (baseSpaceModule != null) {
+                FacilioModule ratingModule = new FacilioModule();
+                ratingModule.setName(FacilioConstants.ContextNames.SPACE_RATING);
+                ratingModule.setDisplayName("Space Rating");
+                ratingModule.setTableName("Rating");
+                ratingModule.setType(FacilioModule.ModuleType.RATING);
+
+                modBean.addModule(ratingModule);
+
+                FacilioField nameField = FieldFactory.getField("name", "Name", "NAME", ratingModule, FieldType.STRING);
+                modBean.addField(nameField);
+
+                FacilioField descriptionField = FieldFactory.getField("description", "Description", "DESCRIPTION", ratingModule, FieldType.STRING);
+                modBean.addField(descriptionField);
+
+                FacilioField ratingField = FieldFactory.getField("ratingValue", "Rating Value", "RATING_VALUE", ratingModule, FieldType.NUMBER);
+                modBean.addField(ratingField);
+
+                FacilioField parentField = FieldFactory.getField("parent", "Parent", "PARENT_ID", ratingModule, FieldType.LOOKUP);
+                ((LookupField) parentField).setLookupModule(baseSpaceModule);
+                modBean.addField(parentField);
+            }
 
             return false;
         }

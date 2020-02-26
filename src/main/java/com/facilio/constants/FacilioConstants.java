@@ -407,6 +407,7 @@ public class FacilioConstants {
 		public static final String MODULE_FIELD_COUNT = "moduleFieldCount";
 		public static final String MODULE_DATA_INTERVAL = "moduleDataInterval";
 		public static final String PARENT_MODULE = "parentModule";
+		public static final String PARENT_MODULE_NAME = "parentModuleName";
 		public static final String READING_NAME = "readingName";
 		public static final String IS_SPECIAL_MODULE = "isSpecialModule";
 		public static final String TOTAL_CURRENT_OCCUPANCY = "currentOccupancy";
@@ -1232,7 +1233,7 @@ public class FacilioConstants {
 		public static final String TRANSITION = "transition";
 		public static final String STATE_TRANSITION_ONLY_CONDITIONED_CHECK = "stateTransitionOnlyConditionedCheck";
 		public static final String STATEFLOW_DIAGRAM = "stateFlowDiagram";
-		public static final String DEFAULT_STATEFLOW = "defaultStateflow";
+//		public static final String DEFAULT_STATEFLOW = "defaultStateflow";
 
 		public static final String ROTATING_ASSET = "rotatingAsset";
 		
@@ -1487,10 +1488,13 @@ public class FacilioConstants {
 		public static final String CLIENT = "client";
 		public static final String CLIENTS = "clients";
 
+		public static final String SPACE_RATING = "spaceRating";
+		public static final String RATING = "rating";
+
 		public static final String SOURCE_TYPE = "sourceType";
 		public static final String SOURCE_ID = "sourceId";
-	
-		
+
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1687,7 +1691,9 @@ public class FacilioConstants {
 			classMap.put(WORKORDER_HAZARD, WorkorderHazardContext.class);
 			classMap.put(ASSET_HAZARD, AssetHazardContext.class);
 			classMap.put(CLIENT, ClientContext.class);
-			
+
+			classMap.put(SPACE_RATING, RatingContext.class);
+
 			return classMap;
 		}
 		
