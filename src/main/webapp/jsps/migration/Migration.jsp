@@ -45,7 +45,8 @@
                 ratingModule.setTableName("Rating");
                 ratingModule.setType(FacilioModule.ModuleType.RATING);
 
-                modBean.addModule(ratingModule);
+                long moduleId = modBean.addModule(ratingModule);
+                ratingModule.setModuleId(moduleId);
 
                 FacilioField nameField = FieldFactory.getField("name", "Name", "NAME", ratingModule, FieldType.STRING);
                 modBean.addField(nameField);
