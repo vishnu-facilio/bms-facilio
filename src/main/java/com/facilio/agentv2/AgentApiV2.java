@@ -61,6 +61,7 @@ public class AgentApiV2 {
     }
 
     public static List<FacilioAgent> listFacilioAgents(FacilioContext context) throws Exception {
+        LOGGER.info(" getting agent ");
         return getAgents(null,null,false,context);
     }
 

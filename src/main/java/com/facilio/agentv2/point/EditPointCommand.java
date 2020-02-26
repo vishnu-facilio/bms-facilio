@@ -38,6 +38,7 @@ public class EditPointCommand extends FacilioCommand {
                 LOGGER.info(" to update map " + (Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_MAP));
                 rowsUpdated = builder.update((Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_MAP));
                 context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+                LOGGER.info(builder.toString());
             } else {
                 throw new Exception("criteris missing");
             }

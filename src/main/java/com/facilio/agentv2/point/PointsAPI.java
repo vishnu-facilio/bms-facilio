@@ -29,9 +29,11 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -420,6 +422,27 @@ public class PointsAPI extends AgentUtilities {
         ControllerMessenger.configurePoints(points, controllerType);
     }
 
+    public static void handlePointConfigurationAndSubscription(FacilioCommand command,List<Long> pointIds) throws Exception {
+        if ((command != FacilioCommand.SUBSCRIBE) && (command != FacilioCommand.CONFIGURE)) {
+            return;
+        }
+        if (!pointIds.isEmpty()) {
+                switch (command) {
+                    case CONFIGURE:
+                        PointsAPI.updatePointsConfigurationComplete(pointIds);
+                        return;
+                    case SUBSCRIBE:
+                        PointsAPI.updatePointSubsctiptionComplete(pointIds);
+                        return;
+                    default:
+                        LOGGER.info(" no update for command ->" + command.toString());
+                        return;
+                }
+            } else {
+                throw new Exception(" point ids cant be empty while ack processing for->" + command.toString());
+            }
+    }
+
     public static boolean configurePoints(List<Point> points, Controller controller) throws Exception {
         ControllerMessenger.configurePoints(points, FacilioControllerType.valueOf(controller.getControllerType()));
         if ((points != null) && (!points.isEmpty())) {
@@ -499,6 +522,42 @@ public class PointsAPI extends AgentUtilities {
         return false;
     }
 
+    private static boolean updatePointsConfigurationComplete(Long controllerId,List<String> pointNames) throws Exception {
+        LOGGER.info(" making configuration complete ->" + pointNames);
+        if ((pointNames != null) && (!pointNames.isEmpty())) {
+            FacilioChain editChain = TransactionChainFactory.getEditPointChain();
+            FacilioContext context = editChain.getContext();
+            Criteria criteria = getNameCriteria(pointNames);
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(MODULE), String.valueOf(controllerId),NumberOperators.EQUALS));
+            context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+            context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.CONFIGURE_STATUS, PointEnum.ConfigureStatus.CONFIGURED.getIndex()));
+            editChain.execute();
+            if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean updatePointSubsctiptionComplete(long controllerId,List<String> pointNames) throws Exception {
+        LOGGER.info(" making subscription complete ->" + pointNames);
+        if ((pointNames != null) && (!pointNames.isEmpty())) {
+            FacilioChain editChain = TransactionChainFactory.getEditPointChain();
+            FacilioContext context = editChain.getContext();
+            Criteria criteria = getNameCriteria(pointNames);
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getControllerIdField(MODULE), String.valueOf(controllerId),NumberOperators.EQUALS));
+            context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+            context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP, Collections.singletonMap(AgentConstants.SUBSCRIBE_STATUS, PointEnum.SubscribeStatus.SUBSCRIBED.getIndex()));
+            editChain.execute();
+            if (context.containsKey(FacilioConstants.ContextNames.ROWS_UPDATED) && ((Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED) > 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
     public static boolean UpdatePointsUnConfigured(List<Long> pointIds) throws Exception {
 
         if ((pointIds != null) && (!pointIds.isEmpty())) {
@@ -522,7 +581,13 @@ public class PointsAPI extends AgentUtilities {
 
     private static Criteria getIdCriteria(List<Long> pointIds) {
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getIdCondition(pointIds, ModuleFactory.getPointModule()));
+        criteria.addAndCondition(CriteriaAPI.getIdCondition(pointIds, MODULE));
+        return criteria;
+    }
+    private static Criteria getNameCriteria(List<String> pointNames) {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(MODULE),  StringUtils.join(pointNames, ",") , StringOperators.IS));
+        LOGGER.info(" name criteria "+criteria);
         return criteria;
     }
 
@@ -847,4 +912,25 @@ public class PointsAPI extends AgentUtilities {
     private static boolean checkIfComissioned(Point point) {
         return ((point.getResourceId() != null) && (point.getAssetCategoryId() != null) && (point.getFieldId() != null));
     }
+
+    public static boolean handlePointConfigurationAndSubscription(FacilioCommand command, long controllerId, List<String> pointNames) throws Exception {
+        if ((command != FacilioCommand.SUBSCRIBE) && (command != FacilioCommand.CONFIGURE)) {
+            return false;
+        }
+        if (!pointNames.isEmpty()) {
+            switch (command) {
+                case CONFIGURE:
+                    return PointsAPI.updatePointsConfigurationComplete(controllerId,pointNames);
+                case SUBSCRIBE:
+                    return PointsAPI.updatePointSubsctiptionComplete(controllerId,pointNames);
+                default:
+                    LOGGER.info(" no update for command ->" + command.toString());
+                    return false;
+            }
+        } else {
+            throw new Exception(" point ids cant be empty while ack processing for->" + command.toString());
+        }
+    }
+
+
 }

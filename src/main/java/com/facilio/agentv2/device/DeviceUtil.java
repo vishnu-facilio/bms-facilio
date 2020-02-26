@@ -85,7 +85,7 @@ public class DeviceUtil {
 
     public static String getControllerIdentifier(int type, JSONObject jsonObject) {
         try {
-            Controller controller = ControllerApiV2.getControllerFromMap(jsonObject,FacilioControllerType.valueOf(type));
+            Controller controller = ControllerApiV2.makeControllerFromMap(jsonObject,FacilioControllerType.valueOf(type));
             return controller.getIdentifier();
         }catch (Exception e){
             LOGGER.info("Exception while making identifier "+FacilioControllerType.valueOf(type));

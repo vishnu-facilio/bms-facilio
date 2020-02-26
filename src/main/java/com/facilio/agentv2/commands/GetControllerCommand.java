@@ -2,7 +2,6 @@ package com.facilio.agentv2.commands;
 
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.GenericGetModuleDataListCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GetControllerCommand extends AgentV2Command {
-    private static final Logger LOGGER = LogManager.getLogger(GenericGetModuleDataListCommand.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(GetControllerCommand.class.getName());
 
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
@@ -41,7 +40,10 @@ public class GetControllerCommand extends AgentV2Command {
             throw new Exception(" child fields cant be empty " + childTableModuleName);
         }
         fields.addAll(childFields);*/
-
+        allFields.add(FieldFactory.getSubscribedPointCountConditionField());
+        allFields.add(FieldFactory.getSubscriptionInProgressPointCountConditionField());
+        allFields.add(FieldFactory.getConfiguredPointCountConditionField());
+        allFields.add(FieldFactory.getConfigurationInProgressPointCountConditionField());
 
         context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, allFields);
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
@@ -70,6 +72,7 @@ public class GetControllerCommand extends AgentV2Command {
 
 
         if(containsCheck(AgentConstants.AGENT_ID,context)){
+            //selectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(controllerModule), String.valueOf(context.get(AgentConstants.AGENT_ID)), NumberOperators.EQUALS));
             selectRecordBuilder.andCustomWhere(controllerModule.getTableName()+"."+FieldFactory.getAgentIdField(controllerModule).getName()+"=?",context.get(AgentConstants.AGENT_ID));
         }
             selectRecordBuilder.groupBy(controllerModule.getTableName()+".ID");
@@ -77,7 +80,7 @@ public class GetControllerCommand extends AgentV2Command {
             context.put(FacilioConstants.ContextNames.RECORD_LIST, result);
             LOGGER.info(" query "+selectRecordBuilder.toString());
             if (result != null) {
-                LOGGER.debug("No of records fetched for module : " + childTableModuleName + " is " + result.size());
+                LOGGER.debug("No. of records fetched for module : " + childTableModuleName + " is " + result.size());
             }
         return false;
     }

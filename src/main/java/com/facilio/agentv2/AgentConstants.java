@@ -150,11 +150,11 @@ public class AgentConstants
     public static final String AGENT_V2_LOG_MODULE = "agentV2Log";
     public static final String ACTUAL_TIME = "actualTime";
     public static final String TIMEOUT = "timeout";
-    public static final String TOTAL_COUNT = "totalCount";
-    public static final String ACTIVE_COUNT ="activeCount";
-    public static final String CONFIGURED_COUNT = "configuredCount";
-    public static final String COMMISSIONED_COUNT = "commissionedCount";
-    public static final String SUBSCRIBED_COUNT = "subscribedCount";
+    public static final String TOTAL_COUNT = "total";
+    public static final String ACTIVE_COUNT ="active";
+    public static final String CONFIGURED_COUNT = "configured";
+    public static final String COMMISSIONED_COUNT = "commissioned";
+    public static final String SUBSCRIBED_COUNT = "subscribed";
     public static final String SUBNET_NODE = "subnetNode";
     public static final String NEURON_ID = "neuronId" ;
     public static final String LINK_TYPE = "linkType";
@@ -165,6 +165,6 @@ public class AgentConstants
     public static final String DOWNLOAD_AGENT = "downloadAgent";
     public static final String PROCESSOR_VERSION = "processorVersion";
 
-    public static final String CONFIGURATION_INPROGRESS_COUNT = "configurationInProgressCount";
-    public static final String SUBSCRIPTION_COUNT = "subscriptionInProgressCount";
+    public static final String CONFIGURATION_INPROGRESS_COUNT = "confInProgress";
+    public static final String SUBSCRIPTION_COUNT = "subsInProgress";
 }

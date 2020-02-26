@@ -35,6 +35,7 @@ public class AgentAction extends AgentActionV2 {
 
     public String listAgents() {
         try {
+            LOGGER.info(" listing agents");
             FacilioContext context = new FacilioContext();
             constructListContext(context);
             List<FacilioAgent> agents = AgentApiV2.listFacilioAgents(context);
@@ -52,7 +53,7 @@ public class AgentAction extends AgentActionV2 {
             setResult(AgentConstants.TOTAL_COUNT,agents.size());
             setResult(AgentConstants.ACTIVE_COUNT,agents.size()-offLineAgents);
             setResult(AgentConstants.DATA, jsonArray);
-            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            setResponseCode(HttpURLConnection.HTTP_OK);
             setResult(AgentConstants.RESULT, SUCCESS);
         }catch (Exception e){
             LOGGER.info("Exception while getting agent list",e);

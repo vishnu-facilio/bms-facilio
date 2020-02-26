@@ -185,7 +185,7 @@ public class ControllerApiV2 {
 
     public static Controller getControllerFromDb(JSONObject childJson, long agentId, FacilioControllerType controllerType) throws Exception {
         LOGGER.info("controller identifier " + childJson);
-        String controllerIdentifier = getControllerFromMap(childJson,controllerType).getIdentifier();
+        String controllerIdentifier = makeControllerFromMap(childJson,controllerType).getIdentifier();
         if (controllerType != null) {
             return getControllersFromDb(childJson, agentId, controllerType, -1, null).get(controllerIdentifier);
         }
@@ -367,12 +367,12 @@ public class ControllerApiV2 {
     private static List<Condition> getControllerCondition(JSONObject childJson, FacilioControllerType controllerType) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<Condition> conditions = new ArrayList<>();
-        conditions.addAll(getControllerFromMap(childJson,controllerType).getControllerConditions());
+        conditions.addAll(makeControllerFromMap(childJson,controllerType).getControllerConditions());
         return conditions;
     }
 
 
-    public static Controller getControllerFromMap(Map<String, Object> map, FacilioControllerType controllerType) throws Exception {
+    public static Controller makeControllerFromMap(Map<String, Object> map, FacilioControllerType controllerType) throws Exception {
         Controller controller;
         switch (controllerType) {
             case BACNET_IP:

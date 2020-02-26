@@ -1,7 +1,9 @@
 package com.facilio.agentv2;
 
+import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.DeviceUtil;
@@ -107,19 +109,24 @@ public class DataProcessorV2
                     break;
                 case ACK:
                     payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
+                    Controller controller = getControllerFromPayload(payload,agent.getId());
+                    if (AckUtil.handleConfigurationAndSubscription(AckUtil.getMessageIdFromPayload(payload),controller,payload)) {
+                       processStatus = true;
+                       break;
+                    }
                     processStatus = AckUtil.processAgentAck(payload, agent.getId(), orgId);
                     break;
                 case TIMESERIES:
-                    Controller controller = controllerUtil.getControllerFromAgentPayload(payload);
+                    Controller timeseriesController = getControllerFromPayload(payload,agent.getId());
 
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
-                    if (controller != null) {
-                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
+                    if (timeseriesController != null) {
+                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
                     } else {
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, null);
                     }
 
-                    processTimeSeries(timeSeriesPayload, controller, true);
+                    processTimeSeries(timeSeriesPayload, timeseriesController, true);
 
                     break;
                 case COV:
@@ -142,6 +149,39 @@ public class DataProcessorV2
         }
         LOGGER.info(" process status " + processStatus);
         return processStatus;
+    }
+
+    private Controller getControllerFromPayload(JSONObject payload,long agentId) throws Exception {
+        if(containsCheck(AgentConstants.CONTROLLER_TYPE,payload)){
+
+            if(containsCheck(AgentConstants.CONTROLLER,payload)){
+                FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
+                JSONObject controllerJSON = (JSONObject) payload.get(AgentConstants.CONTROLLER);
+                if(! controllerJSON.isEmpty()){
+                    Controller controller = ControllerApiV2.getControllerFromDb(controllerJSON,agentId,controllerType);
+                    LOGGER.info(" goet controller "+controller.getId());
+                    if(controller != null){
+                        return controller;
+                    }else {
+                        throw new Exception("No controller found "+controllerJSON);
+                    }
+                }else {
+                    throw new Exception(" controllerJSON cant be empty "+controllerJSON);
+                }
+            }else {
+                throw new Exception("payload is missing"+AgentConstants.CONTROLLER);
+            }
+        }else {
+            throw new Exception(" payload is missing "+AgentConstants.CONTROLLER_TYPE);
+        }
+
+    }
+
+    public static boolean containsCheck(String key, Map map){
+        if( (key != null) && ( ! key.isEmpty()) && ( map != null ) && ( ! map.isEmpty() ) && (map.containsKey(key)) && (map.get(key) != null) ){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -237,8 +277,8 @@ public class DataProcessorV2
             FacilioContext context = chain.getContext();
             context.put(AgentConstants.IS_NEW_AGENT, true);
             //TODO
-            context.put(AgentConstants.CONTROLLER, controller);
             if (controller != null) {
+                context.put(AgentConstants.CONTROLLER, controller);
                 context.put(AgentConstants.CONTROLLER_ID, controller.getId());
                 context.put(AgentConstants.AGENT_ID, controller.getAgentId());
             } else {

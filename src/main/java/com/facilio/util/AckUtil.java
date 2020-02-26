@@ -1,9 +1,14 @@
 package com.facilio.util;
 
 import com.facilio.agent.AgentKeys;
+import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.iotmessage.IotMessage;
+import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;
+import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
@@ -11,7 +16,12 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class AckUtil
 {
@@ -49,6 +59,55 @@ public class AckUtil
 
     }
 
+    public static boolean handleConfigurationAndSubscription(long msgId, Controller controller, JSONObject payload) {
+        LOGGER.info(" msgid->"+msgId);
+        try {
+            IotMessage iotMessage = IotMessageApiV2.getIotMessage(msgId);
+            if ( iotMessage != null ) {
+                List<String> pointNames = getPointsNameFromPayload(payload);
+                return PointsAPI.handlePointConfigurationAndSubscription(FacilioCommand.valueOf(iotMessage.getCommand()),controller.getId(),pointNames);
+            }else {
+                LOGGER.info("Exception occurred, iotmessage is null");
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception while handling subscription and configuration handling",e);
+        }
+        return false;
+    }
+
+    public static boolean containsCheck(String key, Map map){
+        if( (key != null) && ( ! key.isEmpty()) && ( map != null ) && ( ! map.isEmpty() ) && (map.containsKey(key)) && (map.get(key) != null) ){
+            return true;
+        }
+        return false;
+    }
+
+    private static List<String> getPointsNameFromPayload(JSONObject payload) {
+        List<String> pointNames = new ArrayList<>();
+        if (containsCheck(AgentConstants.DATA,payload)) {
+            JSONArray jsonArray = (JSONArray) payload.get(AgentConstants.DATA);
+            JSONObject pointStatusData = (JSONObject) jsonArray.get(0);
+            pointNames = getToUpdatePointNames(pointStatusData);
+        }
+        return pointNames;
+    }
+
+    private static List<String> getToUpdatePointNames(JSONObject jsonObject) {
+        List<String> pointToConfigure = new ArrayList<>();
+        if( ! jsonObject.isEmpty()){
+            for (Object o : jsonObject.keySet()) {
+                String pointName = (String) o;
+                if((Boolean) jsonObject.get(pointName)){
+                    pointToConfigure.add(pointName.trim());
+                }
+            }
+            return pointToConfigure;
+        }else {
+            LOGGER.info(" points data empty ");
+        }
+        return pointToConfigure;
+    }
+
     private static void ackAndLogAgentAck(long agentId, long orgId, long msgId, int status, long timeStamp) throws Exception {
         LogsApi.logAgentMessages(agentId,msgId,null, Status.valueOf(status),timeStamp);
         FacilioChain chain = TransactionChainFactory.getAckProcessorChain();
@@ -66,7 +125,7 @@ public class AckUtil
         return true;
     }
 
-    private static long getMessageIdFromPayload(JSONObject payload) throws Exception {
+    public static long getMessageIdFromPayload(JSONObject payload) throws Exception {
         if(payload.containsKey(AgentConstants.MESSAGE_ID)) {
             return Long.parseLong(payload.get(AgentConstants.MESSAGE_ID).toString());
         }

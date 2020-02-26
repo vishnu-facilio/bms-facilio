@@ -57,7 +57,7 @@ public class IotMessageApiV2 {
         LOGGER.info(" updating message for ack ->" + rowUpdated);
         if (rowUpdated > 0) {
             handleSuccessNotification(iotMessage);
-            updatePointAcks(iotMessage);
+            //updatePointAcks(iotMessage);
             return true;
         }
         return false;
@@ -102,7 +102,7 @@ public class IotMessageApiV2 {
                 return;
             }
             if (iotMessage.getMessageData().containsKey(AgentConstants.POINTS)) {
-                JSONArray pointData = getPointDataFRomIotMessage(iotMessage, command);
+                JSONArray pointData = getPointDataFromIotMessage(iotMessage, command);
                 List<Long> pointIds = new ArrayList<>();
                 for (Object pointDatumObject : pointData) {
                     JSONObject pointDatum = (JSONObject) pointDatumObject;
@@ -141,7 +141,7 @@ public class IotMessageApiV2 {
         }
     }
 
-    private static JSONArray getPointDataFRomIotMessage(IotMessage iotMessage, FacilioCommand command) throws Exception {
+    private static JSONArray getPointDataFromIotMessage(IotMessage iotMessage, FacilioCommand command) throws Exception {
         if (iotMessage.getMessageData().containsKey(AgentConstants.POINTS)) {
             JSONArray pointData = (JSONArray) iotMessage.getMessageData().get(AgentConstants.POINTS);
             if (pointData != null && (!pointData.isEmpty())) {
@@ -182,7 +182,7 @@ public class IotMessageApiV2 {
     }
 
 
-    private static IotMessage getIotMessage(Long id) throws Exception {
+    public static IotMessage getIotMessage(Long id) throws Exception {
         List<IotMessage> result = getIotMessages(Collections.singletonList(id));
         if( (result != null) && (! result.isEmpty()) && (result.size()==1) ){
             return result.get(0);
@@ -196,6 +196,7 @@ public class IotMessageApiV2 {
                 .select(FieldFactory.getIotMessageFields())
                 .andCondition(CriteriaAPI.getIdCondition(ids, MODULE));
         List<Map<String, Object>> records = builder.get();
+        LOGGER.info("  query "+builder.toString());
         if (records.isEmpty()) {
             return new ArrayList<>();
         } else {

@@ -110,7 +110,7 @@ public class ControllerUtilV2 {
                         }else {
                             controllerJSON.putAll((JSONObject)object);
                         }
-                        controller = ControllerApiV2.getControllerFromMap(controllerJSON,controllerType);
+                        controller = ControllerApiV2.makeControllerFromMap(controllerJSON,controllerType);
                     }else {
                         throw new Exception("controllerJSON missing controller specific props "+controllerJSON);
                     }
