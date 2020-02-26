@@ -140,6 +140,10 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 		this.sourceType = SourceType.valueOf(sourceType);
 	}
 
+	public void setSourceType(SourceType sourceType) {
+		this.sourceType = sourceType;
+	}
+
 	private long sourceId=-1;
 	
 	@Override

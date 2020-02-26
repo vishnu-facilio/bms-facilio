@@ -105,7 +105,7 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 					reading.setNewReading(false);
 					updateReading(module, fields, reading, metaMap, currentReadingMap, updateLastReading);
 				}
-				reading.setSourceType(sourceType.getIndex());
+				reading.setSourceType(sourceType);
 			}
 			else {
 				itr.remove();
