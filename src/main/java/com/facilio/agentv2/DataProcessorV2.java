@@ -159,8 +159,8 @@ public class DataProcessorV2
                 JSONObject controllerJSON = (JSONObject) payload.get(AgentConstants.CONTROLLER);
                 if(! controllerJSON.isEmpty()){
                     Controller controller = ControllerApiV2.getControllerFromDb(controllerJSON,agentId,controllerType);
-                    LOGGER.info(" goet controller "+controller.getId());
                     if(controller != null){
+                        LOGGER.info(" goet controller "+controller.getId());
                         return controller;
                     }else {
                         throw new Exception("No controller found "+controllerJSON);
