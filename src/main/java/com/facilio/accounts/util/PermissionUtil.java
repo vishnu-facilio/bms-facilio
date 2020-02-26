@@ -145,6 +145,7 @@ public class PermissionUtil {
 			criteria.addAndCondition(condition);
 		}
 		if (moduleName.equals(ContextNames.MV_PROJECT_MODULE)) {
+			criteria = criteria == null ? new Criteria() : criteria; 
 			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(), accessibleSpace, BuildingOperator.BUILDING_IS));
 		}
 		if (fields != null && fields.length > 0) {
