@@ -276,7 +276,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			if(dbParamContext.getFieldName() != null && dbParamContext.getFieldCriteria() == null) {
 				List<FacilioField> selectFields = new ArrayList<>();
 				
-				FacilioField select = modBean.getField(dbParamContext.getFieldName(), module.getName());
+				FacilioField selectOriginal = modBean.getField(dbParamContext.getFieldName(), module.getName());
+				
+				FacilioField select = selectOriginal.clone();
 				
 				if(select == null) {
 					throw new Exception("Field is null for FieldName - "+dbParamContext.getFieldName() +" moduleName - "+module.getName());
@@ -361,7 +363,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					}
 					if(dbParamContext.isIgnoreMarkedReadings() && module.getName().equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
 						
-						FacilioField selectMarked = modBean.getField("marked", module.getName());
+						FacilioField selectMarkedOriginal = modBean.getField("marked", module.getName());
+						
+						FacilioField selectMarked = selectMarkedOriginal.clone();
+						
 						if(selectMarked == null) {
 							selectMarked = new FacilioField();
 							selectMarked.setColumnName("MAX(MARKED)");

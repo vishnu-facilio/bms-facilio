@@ -316,7 +316,9 @@ public class ExpressionContext implements WorkflowExpression {
 			if(fieldName != null && !isManualAggregateQuery()) {
 				List<FacilioField> selectFields = new ArrayList<>();
 				
-				FacilioField select = modBean.getField(fieldName, moduleName);
+				FacilioField selectOriginal = modBean.getField(fieldName, moduleName);
+				
+				FacilioField select = selectOriginal.clone();
 				
 				if(select == null) {
 					throw new Exception("Field is null for FieldName - "+fieldName +" moduleName - "+moduleName);
@@ -405,7 +407,9 @@ public class ExpressionContext implements WorkflowExpression {
 					}
 					if(workflowContext.isIgnoreMarkedReadings() && moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
 						
-						FacilioField selectMarked = modBean.getField("marked", moduleName);
+						FacilioField selectMarkedOriginal = modBean.getField("marked", moduleName);
+						
+						FacilioField selectMarked = selectMarkedOriginal.clone();
 						if(selectMarked == null) {
 							selectMarked = new FacilioField();
 							selectMarked.setColumnName("MAX(MARKED)");
