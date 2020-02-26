@@ -424,7 +424,7 @@ public class ReadingsAPI {
 			}
 		}
 		try {
-			if (AccountUtil.getCurrentOrg().getId() == 210l && meta.getTtime() > System.currentTimeMillis()) {
+			if ((AccountUtil.getCurrentOrg().getId() == 210l || AccountUtil.getCurrentOrg().getId() == 321l) && meta.getTtime() > System.currentTimeMillis()) {
 				int interval = getDataInterval(meta.getResourceId(), field);
 				ZonedDateTime zdt = DateTimeUtil.getDateTime();
 				zdt = zdt.truncatedTo(new SecondsChronoUnit(interval * 60));

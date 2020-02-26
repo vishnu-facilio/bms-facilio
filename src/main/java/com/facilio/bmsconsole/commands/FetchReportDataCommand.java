@@ -14,14 +14,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringJoiner;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
@@ -47,7 +45,6 @@ import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -59,14 +56,11 @@ import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
-import com.facilio.report.context.ReportFactory;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.context.ReportTemplateCategoryFilterContext;
-import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.report.context.ReportUserFilterContext;
-import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.util.FilterUtil;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
@@ -124,7 +118,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			}
 		}
 		
-		if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210 && !enableFutureData) {
+		if (FacilioProperties.isProduction() && (AccountUtil.getCurrentOrg().getOrgId() == 210 || AccountUtil.getCurrentOrg().getOrgId() == 321l) && !enableFutureData) {
 			DateRange dateRange = report.getDateRange();
 			if (dateRange != null) {
 				long currentTimeMillis = System.currentTimeMillis();
