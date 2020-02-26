@@ -56,6 +56,9 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				if (!fieldMapping.containsKey("resource__name")) {
 					missingColumns.add("Asset Name");
 				}
+				if (ImportAPI.isInsertImport(importProcessContext) && !fieldMapping.containsKey("asset__category")) {
+					missingColumns.add("Category");
+				}
 			} else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 				if (!fieldMapping.containsKey("ticket__subject")) {
 					missingColumns.add("Subject");
@@ -152,9 +155,13 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				if(ImportAPI.isInsertImport(importProcessContext) && importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) ||
 						(importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
 					String name = fieldMapping.get("resource__name");
+					String category = fieldMapping.get("asset__category");
 					ArrayList<String> columns = new ArrayList<>();
 					if(!colVal.containsKey(name) || colVal.get(name) == null) {
 						columns.add("Name");
+					}
+					if(ImportAPI.isInsertImport(importProcessContext) && (!colVal.containsKey(category) || colVal.get(category) == null)) {
+						columns.add("Category");
 					}
 					if (CollectionUtils.isNotEmpty(columns)) {
 						throw new ImportMandatoryFieldsException(row_no, columns, new Exception());

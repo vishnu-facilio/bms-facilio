@@ -843,7 +843,7 @@ public class ProcessImportCommand extends FacilioCommand {
 				 buildingId = buildingMeta.getBuildingId(siteId, buildingName);
 			 }
 			 else {
-				 List<BuildingContext> buildings = SpaceAPI.getAllBuildings();
+				 List<BuildingContext> buildings = SpaceAPI.getAllBuildings(siteId);
 				 HashMap<String, Long> buildingMap = new HashMap();
 				 for (BuildingContext buildingContext : buildings)
 				 {
@@ -869,17 +869,7 @@ public class ProcessImportCommand extends FacilioCommand {
 				floorId = floorMeta.getFloorId(buildingId,floorName);
 			}
 			else {
-				
-				 List<FloorContext> floors = SpaceAPI.getAllFloors();
-				 HashMap<String, Long> floorMap = new HashMap();
-				 for (FloorContext floorContext : floors)
-				 {
-					 floorMap.put(floorContext.getName().trim().toLowerCase(), floorContext.getId());
-				 }
-				 if(floorMap.containsKey(floorName.trim().toLowerCase()))
-				 {
-					 floorId = floorMap.get(floorName.trim().toLowerCase());
-				 }
+				throw new Exception(floorName + " can be added only under a building");
 			}
 		    if(floorId == null)
 		    {

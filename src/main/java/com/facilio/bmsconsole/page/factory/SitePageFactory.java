@@ -1,12 +1,5 @@
 package com.facilio.bmsconsole.page.factory;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
@@ -14,8 +7,9 @@ import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
+
+import java.util.Arrays;
 
 public class SitePageFactory extends PageFactory {
 	
@@ -47,7 +41,7 @@ public class SitePageFactory extends PageFactory {
 	
 	private static void addSecondaryDetailsWidget(Section section) {
 		PageWidget detailsWidget = new PageWidget(WidgetType.FIXED_DETAILS_WIDGET);
-		detailsWidget.addToLayoutParams(section, 24, 4);
+		detailsWidget.addToLayoutParams(section, 24, 3);
 		section.addWidget(detailsWidget);
 	}
 	
@@ -79,7 +73,7 @@ public class SitePageFactory extends PageFactory {
 	}
 	
 	private static void addSpacesWidget(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.LIST);
+		PageWidget cardWidget = new PageWidget(WidgetType.LIST, "siteSpaces");
 		cardWidget.addToLayoutParams(section, 24, 8);
 		section.addWidget(cardWidget);
 	}
