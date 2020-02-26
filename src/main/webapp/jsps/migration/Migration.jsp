@@ -38,6 +38,10 @@
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+            FacilioModule spaceRatingModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_RATING);
+            if (spaceRatingModule != null) {
+                return false;
+            }
             if (baseSpaceModule != null) {
                 FacilioModule ratingModule = new FacilioModule();
                 ratingModule.setName(FacilioConstants.ContextNames.SPACE_RATING);
