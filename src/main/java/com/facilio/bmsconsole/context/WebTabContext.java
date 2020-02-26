@@ -179,4 +179,11 @@ public class WebTabContext implements Serializable {
 		this.appId = appId;
 	}
     
+    private long permissionVal;
+    public long getPermissionVal() {
+		return permissionVal;
+	}
+    public void setPermissionVal(long permissionVal) {
+		this.permissionVal = permissionVal;
+	}
 }

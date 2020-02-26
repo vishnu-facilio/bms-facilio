@@ -314,15 +314,15 @@ public class ScopeInterceptor extends AbstractInterceptor {
 		return null;
 	}
 
-	private boolean isAuthorizedAccess(String moduleName, String action) throws Exception { 
-        
-        if (action == null || "".equals(action.trim())) { 
-            return true; 
-        } 
- 
-        if(AccountUtil.getCurrentUser() == null) { 
-            return false; 
-        } 
+	private boolean isAuthorizedAccess(String moduleName, String action) throws Exception {
+
+		if (action == null || "".equals(action.trim())) {
+			return true;
+		}
+
+		if (AccountUtil.getCurrentUser() == null) {
+			return false;
+		}
 		if (AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB)) {
 			HttpServletRequest request = ServletActionContext.getRequest();
 			String currentTab = request.getHeader("X-Tab-Id");
@@ -330,9 +330,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				long tabId = Long.valueOf(currentTab);
 				return PermissionUtil.currentUserHasPermission(tabId, action);
 			}
+		} else {
+			return PermissionUtil.currentUserHasPermission(moduleName, action);
 		}
-        return PermissionUtil.currentUserHasPermission(moduleName, action); 
-    } 
+		return false;
+	}
 	
 	 
 }

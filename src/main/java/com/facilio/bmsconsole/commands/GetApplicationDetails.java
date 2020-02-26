@@ -9,6 +9,7 @@ import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.NewPermission;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
@@ -39,7 +40,10 @@ public class GetApplicationDetails extends FacilioCommand {
 						for (WebTabContext webtab : webTabs) {
 							webtab.setPermissions(ApplicationApi.getPermissionsForWebTab(webtab.getId()));
 							webtab.setModuleIds(ApplicationApi.getModuleIdsForTab(webtab.getId()));
-
+							if (AccountUtil.getCurrentUser() != null) {
+								webtab.setPermissionVal(ApplicationApi.getRolesPermissionValForTab(webtab.getId(),
+										AccountUtil.getCurrentUser().getRoleId()));
+							}
 							if (CollectionUtils.isNotEmpty(webtab.getModuleIds())) {
 								List<FacilioModule> modules = new ArrayList<>();
 								for (Long moduleId : webtab.getModuleIds()) {
