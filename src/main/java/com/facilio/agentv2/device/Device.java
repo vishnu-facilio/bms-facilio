@@ -14,7 +14,7 @@ public class Device
     private long siteId;
     @JsonInclude
     private String name;
-    private int type;
+    private int controllerType = -1;
     @JsonInclude
     private JSONObject controllerProps;
     @JsonInclude
@@ -22,6 +22,14 @@ public class Device
 
     @JsonInclude
     private String identifier;
+
+    public int getControllerType() {
+        return controllerType;
+    }
+
+    public void setControllerType(int controllerType) {
+        this.controllerType = controllerType;
+    }
 
     public String getIdentifier() {
         return identifier;
@@ -31,9 +39,9 @@ public class Device
         this.identifier = identifier;
     }
 
-    public int getType() { return type; }
+   /* public int getType() { return type; }
 
-    public void setType(int type) { this.type = type; }
+    public void setType(int type) { this.type = type; }*/
 
     public JSONObject getControllerProps() { return controllerProps; }
 

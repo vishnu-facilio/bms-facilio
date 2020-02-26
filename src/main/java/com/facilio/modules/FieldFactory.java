@@ -576,7 +576,7 @@ public class FieldFactory {
 		fields.add(getField(AgentConstants.DATA_INTERVAL,"DATA_INTERVAL",module,FieldType.NUMBER));
 		fields.add(getField(AgentConstants.WRITABLE,"WRITABLE",module,FieldType.BOOLEAN));
 		fields.add(getField(AgentConstants.ACTIVE,"ACTIVE",module,FieldType.BOOLEAN));
-		fields.add(getField(AgentConstants.TYPE,"CONTROLLER_TYPE",module,FieldType.STRING));
+		fields.add(getField(AgentConstants.CONTROLLER_TYPE,"CONTROLLER_TYPE",module,FieldType.STRING));
 		fields.add(getField(AgentConstants.CONTROLLER_PROPS,"CONTROLLER_PROPS",module,FieldType.STRING));
 		fields.add(getField(AgentConstants.AVAILABLE_POINTS,"AVAILABLE_POINTS",module,FieldType.NUMBER));
 		fields.add(getField(AgentConstants.PORT_NUMBER,"PORT_NUMBER",module,FieldType.NUMBER));
@@ -5803,7 +5803,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getIdField(module));
 		fields.add(getField(AgentConstants.IDENTIFIER,"IDENTIFIER",module,FieldType.STRING));
-		fields.add(getField(AgentConstants.TYPE, "TYPE", module, FieldType.NUMBER));
+		fields.add(getField(AgentConstants.CONTROLLER_TYPE, "TYPE", module, FieldType.NUMBER));
 		fields.add(getField(AgentConstants.SITE_ID, "SITE_ID", module, FieldType.NUMBER));
 		fields.add(getNameField(module));
 		fields.add(getNewAgentIdField(module));

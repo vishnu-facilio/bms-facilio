@@ -7,6 +7,7 @@ public class AgentConstants
     //general JSON constants
     public static final String CONTROLLERS = "controllers";
     public static final String ID = "id";
+    public static final String AGENT_TYPE = "type";
 
 
     //controller constants
@@ -14,7 +15,6 @@ public class AgentConstants
     public static final String DATA_INTERVAL = "interval";
     public static final String WRITABLE = "writable";
     public static final String ACTIVE = "active";
-    public static final String TYPE = "type";
     public static final String CONTROLLER_PROPS_AS_PROPSSTR = "propsStr";
     public static final String CONTROLLER_PROPS = "controllerProps";
     public static final String AVAILABLE_POINTS = "availablePoints";
@@ -24,6 +24,8 @@ public class AgentConstants
     public static final String LAST_DATA_SENT_TIME = "lastDataSentTime";
     public static final String DELETED_TIME = "deletedTime";
     public static final String DATA = "data";
+    public static final String CONTROLLER_TYPE = "controllerType";
+
 
     //modbus constants
     public static final String SLAVE_ID = "slaveId";
@@ -108,7 +110,6 @@ public class AgentConstants
     public static final String AGENT_TABLE = "Agent";
     public static final String CONNECTION_STATUS = "connectionStatus";
     public static final String DEVICE_DETAILS = "deviceDetails";
-    public static final String AGENT_TYPE = "agentType";
     public static final String LAST_DATA_RECEIVED_TIME = "lastDataReceivedTime";
     public static final String STATE = "state";
     public static final String MESSAGE_ID = "msgid";
@@ -132,7 +133,6 @@ public class AgentConstants
     public static final String CONTROLLER_TABLE = "Controllers";
     public static final String POINT_IDS = "pointIds";
     public static final String UPDATE_CHILD = "updateChild";
-    public static final String CONTROLLER_TYPE = "controllerType";
 
     public static final String AGENT_METRICS_MODULE = "agentMetricsV2";
     public static final String NUMBER_OF_MSGS = "numberOfMessages";

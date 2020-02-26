@@ -49,8 +49,8 @@ public class DeviceUtil {
 
                 deviceJSON.put(AgentConstants.AGENT_ID, agent.getId());
                 Device device = new Device(AccountUtil.getCurrentOrg().getOrgId(), agent.getId());
-                if(containsValueCheck(AgentConstants.TYPE,deviceJSON)){
-                    device.setType(((Number) deviceJSON.get(AgentConstants.TYPE)).intValue());
+                if(containsValueCheck(AgentConstants.CONTROLLER_TYPE,deviceJSON)){
+                    device.setControllerType(((Number) deviceJSON.get(AgentConstants.CONTROLLER_TYPE)).intValue());
                 }else {
                     throw new Exception(" controllerType missing from deviceJson "+deviceJSON);
                 }
@@ -60,7 +60,7 @@ public class DeviceUtil {
                 }
                 device.setSiteId(agent.getSiteId());
                 if (deviceJSON.containsKey(AgentConstants.CONTROLLER)) {
-                    device.setIdentifier( getControllerIdentifier(device.getType(),(JSONObject) deviceJSON.get(AgentConstants.CONTROLLER)));
+                    device.setIdentifier( getControllerIdentifier(device.getControllerType(),(JSONObject) deviceJSON.get(AgentConstants.CONTROLLER)));
                 } else {
                     LOGGER.info("Exception occurred, controller params found in device json -> " + payload);
                     device.setName(deviceJSON.toString());

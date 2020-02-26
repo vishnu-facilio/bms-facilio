@@ -134,8 +134,8 @@ public class IotMessageApiV2 {
     }
 
     private static FacilioControllerType getControllerTypeFromIotMessage(IotMessage iotMessage) throws Exception {
-        if (iotMessage.getMessageData().containsKey(AgentConstants.TYPE)) {
-            return FacilioControllerType.valueOf((Integer) iotMessage.getMessageData().get(AgentConstants.TYPE));
+        if (iotMessage.getMessageData().containsKey(AgentConstants.CONTROLLER_TYPE)) {
+            return FacilioControllerType.valueOf((Integer) iotMessage.getMessageData().get(AgentConstants.CONTROLLER_TYPE));
         } else {
             throw new Exception(" iot message is not having controllerType");
         }

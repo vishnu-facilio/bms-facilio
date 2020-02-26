@@ -75,7 +75,7 @@ public class FieldDeviceApi
                 if (result.size() == 1) {
                     Device device = FieldUtil.getAsBeanFromMap(result.get(0), Device.class);
                     if (device.getControllerProps().containsKey("type"))
-                        device.setType(Integer.parseInt(device.getControllerProps().get("type").toString()));
+                        device.setControllerType(Integer.parseInt(device.getControllerProps().get("type").toString()));
                     return device;
                 } else {
                     LOGGER.info("Exception, unexpected results, only one row should be selected for device->" + identifier + " agentId->" + agentId + " rowsSelected->" + result.size());
@@ -165,7 +165,7 @@ public class FieldDeviceApi
                 builder.andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.AGENT_ID), String.valueOf(agentId),NumberOperators.EQUALS));
             }
             if((type != null)){
-                builder.andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.TYPE), String.valueOf(type.asInt()),NumberOperators.EQUALS));
+                builder.andCondition(CriteriaAPI.getCondition(FIELD_MAP.get(AgentConstants.CONTROLLER_TYPE), String.valueOf(type.asInt()),NumberOperators.EQUALS));
             }
             return (long) builder.get().get(0).get(AgentConstants.ID);
         }catch (Exception e){

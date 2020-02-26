@@ -251,7 +251,7 @@ public abstract class Controller extends AssetContext {
         object.put(AgentConstants.DATA_INTERVAL, getDataInterval());
         object.put(AgentConstants.WRITABLE, isWritable());
         object.put(AgentConstants.ACTIVE, isActive());
-        object.put(AgentConstants.TYPE, getControllerType());
+        object.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
         object.put(AgentConstants.CONTROLLER_PROPS, "controllerProps");
         object.put(AgentConstants.AVAILABLE_POINTS, getAvailablePoints());
         if (getCreatedTime() < 0) {
@@ -289,8 +289,8 @@ public abstract class Controller extends AssetContext {
         if (containsValueCheck(AgentConstants.ACTIVE, row)) {
             setActive(JsonUtil.getBoolean(row.get(AgentConstants.ACTIVE)));
         }
-        if (containsValueCheck(AgentConstants.TYPE, row)) {
-            setControllerType(JsonUtil.getInt(row.get(AgentConstants.TYPE)));
+        if (containsValueCheck(AgentConstants.CONTROLLER_TYPE, row)) {
+            setControllerType(JsonUtil.getInt(row.get(AgentConstants.CONTROLLER_TYPE)));
         }
         if (containsValueCheck(AgentConstants.CONTROLLER_PROPS, row)) {
             setControllerProps(row.get(AgentConstants.CONTROLLER_PROPS));

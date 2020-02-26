@@ -167,7 +167,7 @@ public class AgentApiV2 {
 
     public static long addAgent(JSONObject jsonObject) {
         if( (jsonObject != null) && ( ! jsonObject.isEmpty() ) ){
-            if (containsValueCheck(AgentConstants.NAME, jsonObject) && containsValueCheck(AgentConstants.TYPE, jsonObject) && containsValueCheck(AgentConstants.SITE_ID, jsonObject)) {
+            if (containsValueCheck(AgentConstants.NAME, jsonObject) && containsValueCheck(AgentConstants.AGENT_TYPE, jsonObject) && containsValueCheck(AgentConstants.SITE_ID, jsonObject)) {
                 FacilioAgent agent = new FacilioAgent();
                 agent.setName((String) jsonObject.get(AgentConstants.NAME));
                 //agent.setType(AgentType.valueOf((int)jsonObject.get(AgentConstants.TYPE)));

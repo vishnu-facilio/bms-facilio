@@ -41,8 +41,8 @@ public class EditPointCommand extends FacilioCommand {
             } else {
                 throw new Exception("criteris missing");
             }
-            if (alterChildtable && containdAndNotNull(context, AgentConstants.TYPE)) {
-                rowsUpdated += updateChild(context, (FacilioControllerType) context.get(AgentConstants.TYPE));
+            if (alterChildtable && containdAndNotNull(context, AgentConstants.CONTROLLER_TYPE)) {
+                rowsUpdated += updateChild(context, (FacilioControllerType) context.get(AgentConstants.CONTROLLER_TYPE));
             }
             if (rowsUpdated > 0) {
                 return true;

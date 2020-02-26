@@ -78,7 +78,7 @@ public class ControllerMessenger {
             JSONObject object = new JSONObject();
             object.put(AgentConstants.COMMAND, command.asInt());
             LOGGER.info(" controller type  " + controller.getControllerType());
-            object.put(AgentConstants.TYPE, controller.getControllerType());
+            object.put(AgentConstants.CONTROLLER_TYPE, controller.getControllerType());
             object.put(AgentConstants.CONTROLLER, controller.getChildJSON());
             //object.putAll(controller.getChildJSON());
             object.put("timestamp", System.currentTimeMillis());

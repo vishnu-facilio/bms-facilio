@@ -29,6 +29,14 @@ public class BacnetIpControllerContext extends Controller {
         setControllerType(FacilioControllerType.BACNET_IP.asInt());
     }
 
+    public static boolean validateControllerJSON(Map<String, Object> map) throws Exception {
+        LOGGER.info(" validating controllerjson "+map);
+        if(  containsValueCheck(AgentConstants.IP_ADDRESS,map) && containsValueCheck(AgentConstants.INSTANCE_NUMBER,map) && containsValueCheck(AgentConstants.NETWORK_NUMBER,map) ){
+            return true;
+        }
+        throw new Exception(" controllerJSON of type "+ASSETCATEGORY+" must have keys "+ AgentConstants.IP_ADDRESS+ ","+AgentConstants.INSTANCE_NUMBER+","+AgentConstants.NETWORK_NUMBER+"  and json is ->"+map);
+    }
+
     @Override
     public long getAgentId() {
         return agentId;

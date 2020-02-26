@@ -405,7 +405,7 @@ public class PointsAPI extends AgentUtilities {
                 context.put(AgentConstants.ID, deviceId);
                 context.put(AgentConstants.POINTS, points);
                 context.put(AgentConstants.RECORD_IDS, pointIds);
-                context.put(AgentConstants.TYPE, controllerType);
+                context.put(AgentConstants.CONTROLLER_TYPE, controllerType);
                 chain.execute();
                 //sendConfigurePointCommand(points,controllerType);
             } else {
@@ -478,7 +478,7 @@ public class PointsAPI extends AgentUtilities {
         FacilioChain chain = TransactionChainFactory.unconfigurePointsChain();
         FacilioContext context = chain.getContext();
         context.put(AgentConstants.POINT_IDS, pointIds);
-        context.put(AgentConstants.TYPE, type);
+        context.put(AgentConstants.CONTROLLER_TYPE, type);
         chain.execute();
         return true;
     }
@@ -632,7 +632,7 @@ public class PointsAPI extends AgentUtilities {
             FacilioChain chain = TransactionChainFactory.deletepointsChain();
             FacilioContext context = chain.getContext();
             context.put(AgentConstants.POINT_IDS, pointIds);
-            context.put(AgentConstants.TYPE, type);
+            context.put(AgentConstants.CONTROLLER_TYPE, type);
             chain.execute();
             return true;
         } catch (Exception e) {
@@ -722,7 +722,7 @@ public class PointsAPI extends AgentUtilities {
         FacilioChain chain = TransactionChainFactory.subscribeUnsbscribechain();
         FacilioContext context = chain.getContext();
         context.put(AgentConstants.POINT_IDS, pointIds);
-        context.put(AgentConstants.TYPE, type);
+        context.put(AgentConstants.CONTROLLER_TYPE, type);
         context.put(AgentConstants.COMMAND, command);
         chain.execute();
         return true;

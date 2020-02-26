@@ -34,7 +34,7 @@ public class ConfigurePointCommand extends FacilioCommand {
                 PointsAPI.configurePoints(pointsToConfigure, controller);
             }
         } else {
-            throw new Exception(AgentConstants.RECORD_IDS + ", " + AgentConstants.TYPE + " missing from context->" + context);
+            throw new Exception(AgentConstants.RECORD_IDS + ", " + AgentConstants.CONTROLLER_TYPE + " missing from context->" + context);
         }
         return false;
     }

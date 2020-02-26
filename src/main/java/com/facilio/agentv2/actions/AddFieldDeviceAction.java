@@ -3,11 +3,9 @@ package com.facilio.agentv2.actions;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.bmsconsole.actions.FacilioAction;
-import jdk.nashorn.api.scripting.JSObject;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -61,7 +59,7 @@ public class AddFieldDeviceAction extends FacilioAction {
                     fieldDevice.setOrgId(orgId);
                     fieldDevice.setSiteId(siteId);
                     fieldDevice.setAgentId(agentId);
-                    fieldDevice.setType(type);
+                    fieldDevice.setControllerType(type);
                     fieldDevice.setControllerProps(controllerProps);
                     fieldDevice.setCreatedTime(System.currentTimeMillis());
 

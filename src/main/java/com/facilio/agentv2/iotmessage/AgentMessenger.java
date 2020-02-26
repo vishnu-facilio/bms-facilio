@@ -17,7 +17,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FieldUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -41,7 +40,7 @@ public class AgentMessenger {
             iotData.setCommand(command.asInt());
             object.put(AgentConstants.AGENT,agent.getName());
             if(type != null){
-                object.put(AgentConstants.TYPE,type.asInt());
+                object.put(AgentConstants.CONTROLLER_TYPE,type.asInt());
             }
             object.put(AgentConstants.TIMESTAMP,System.currentTimeMillis());
             object.put(AgentConstants.AGENT_ID,agentId);

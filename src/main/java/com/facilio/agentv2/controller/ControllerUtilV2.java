@@ -12,6 +12,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,8 +56,10 @@ public class ControllerUtilV2 {
         if ((controllerProps != null) && (!controllerProps.isEmpty())) {
             controllerProps.put(AgentConstants.DEVICE_ID, device.getId());
             controllerProps.putAll((JSONObject)device.getControllerProps().get(AgentConstants.CONTROLLER));
-            controllerProps.put(AgentConstants.CONTROLLER_TYPE,controllerProps.get(AgentConstants.TYPE));
-            controllerProps.remove(AgentConstants.TYPE);
+            controllerProps.put(AgentConstants.CONTROLLER_TYPE,controllerProps.get(AgentConstants.CONTROLLER_TYPE));
+            if(controllerProps.containsKey(AgentConstants.AGENT_TYPE)){
+                controllerProps.remove(AgentConstants.AGENT_TYPE);
+            }
             controller = getControllerFromJSON( controllerProps);
             if (controller != null) {
                 controller.setAgentId(agentId);
@@ -92,11 +95,25 @@ public class ControllerUtilV2 {
         Controller controller = null;
         try {
             if (controllerJSON != null && (!controllerJSON.isEmpty())) {
-                if (containsValueCheck(AgentConstants.TYPE, controllerJSON)) {
-                    FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact((Long) controllerJSON.get(AgentConstants.TYPE)));
+                if (containsValueCheck(AgentConstants.CONTROLLER_TYPE, controllerJSON)) {
+                    FacilioControllerType controllerType = FacilioControllerType.valueOf(Math.toIntExact((Long) controllerJSON.get(AgentConstants.CONTROLLER_TYPE)));
                     controllerJSON.put(AgentConstants.CONTROLLER_TYPE,controllerType.asInt());
-                    controllerJSON.remove(AgentConstants.TYPE);
-                    controller = ControllerApiV2.getControllerFromMap(controllerJSON,controllerType);
+                    if(controllerJSON.containsKey(AgentConstants.AGENT_TYPE)){
+                        controllerJSON.remove(AgentConstants.AGENT_TYPE);
+                    }
+                    JSONObject controllerPropJSON = new JSONObject();
+                    if(containsValueCheck(AgentConstants.CONTROLLER,controllerJSON)){
+                        Object object = controllerJSON.get(AgentConstants.CONTROLLER);
+                        if(object instanceof String){
+                            controllerPropJSON = (JSONObject) new JSONParser().parse(String.valueOf(object));
+                            controllerJSON.putAll(controllerPropJSON);
+                        }else {
+                            controllerJSON.putAll((JSONObject)object);
+                        }
+                        controller = ControllerApiV2.getControllerFromMap(controllerJSON,controllerType);
+                    }else {
+                        throw new Exception("controllerJSON missing controller specific props "+controllerJSON);
+                    }
                 } else {
                     LOGGER.info(" Controller Type missing ");
                 }
@@ -236,8 +253,8 @@ public class ControllerUtilV2 {
 
         JSONObject controllerJson = (JSONObject) payload.get(AgentConstants.CONTROLLER);
 
-        if (payload.containsKey(AgentConstants.TYPE)) {
-            FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.TYPE)).intValue());
+        if (payload.containsKey(AgentConstants.CONTROLLER_TYPE)) {
+            FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
 
             if (controllerType != null) {
                 LOGGER.info(" getControllerFromPayload " + controllerMapList.get(controllerType.asInt()));

@@ -198,10 +198,10 @@ public class DataProcessorV2
                 throw new Exception("Exception occurred, Controller identifier can't be null ->" + payload);
             }
             LOGGER.info(" controller json "+controllerJson);
-            if( ! payload.containsKey(AgentConstants.TYPE)){
+            if( ! payload.containsKey(AgentConstants.CONTROLLER_TYPE)){
                 throw new Exception("payload missing controllerType ");
             }
-            int type = ((Number)payload.get(AgentConstants.TYPE)).intValue();
+            int type = ((Number)payload.get(AgentConstants.CONTROLLER_TYPE)).intValue();
             Device device = FieldDeviceApi.getDevice(agent.getId(), DeviceUtil.getControllerIdentifier(type,controllerJson));
             if (device != null) {
                 LOGGER.info(" device not null and so processing point");

@@ -78,20 +78,20 @@ public class PointsUtil
                 JSONObject pointJSON = (JSONObject) o;
                 pointJSON.put(AgentConstants.DEVICE_NAME, device.getName());
                 pointJSON.put(AgentConstants.DEVICE_ID, device.getId());
-                pointJSON.put(AgentConstants.POINT_TYPE, device.getType());
+                pointJSON.put(AgentConstants.POINT_TYPE, device.getControllerType());
                 LOGGER.info(" point json " + pointJSON);
                 try {
                     Point point = PointsAPI.getPointFromJSON(pointJSON);
                     LOGGER.info("point made");
                     LOGGER.info("point to json ->" + FieldUtil.getAsJSON(point));
                     if (point != null) {
-                        if (point.getControllerId() < 1) {
+                        if (point.getControllerId() > 0) {
                             point.setControllerId(-1);
                         }
                         points.add(point);
                     }
                 } catch (Exception e) {
-                    LOGGER.info("Exception occurred while getting point");
+                    LOGGER.info("Exception occurred while getting point",e);
                 }
             }
             if (points.size() == 0) {

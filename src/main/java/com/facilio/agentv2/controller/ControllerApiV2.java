@@ -366,8 +366,6 @@ public class ControllerApiV2 {
      */
     private static List<Condition> getControllerCondition(JSONObject childJson, FacilioControllerType controllerType) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> fields = modBean.getAllFields(getControllerModuleName(controllerType));
-        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
         List<Condition> conditions = new ArrayList<>();
         conditions.addAll(getControllerFromMap(childJson,controllerType).getControllerConditions());
         return conditions;
@@ -378,6 +376,7 @@ public class ControllerApiV2 {
         Controller controller;
         switch (controllerType) {
             case BACNET_IP:
+                BacnetIpControllerContext.validateControllerJSON(map);
                 controller = FieldUtil.getAsBeanFromMap(map, BacnetIpControllerContext.class);
                 break;
             case MODBUS_RTU:
