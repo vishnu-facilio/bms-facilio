@@ -179,6 +179,25 @@ public class TimeSeries extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String pointList () throws Exception {
+		
+		FacilioChain chain = ReadOnlyChainFactory.getUnmodelledInstancesForController();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
+		context.put(FacilioConstants.ContextNames.CONFIGURE, true);
+		context.put(FacilioConstants.ContextNames.FETCH_AS_MAP, true);
+		if (getSearch() != null) {
+			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+		}
+		chain.execute();
+		
+		setResult("points", context.get(FacilioConstants.ContextNames.INSTANCE_INFO));
+		setResult(ContextNames.RESOURCE_LIST, context.get(FacilioConstants.ContextNames.RESOURCE_LIST));
+		setResult(ContextNames.FIELDS, context.get(FacilioConstants.ContextNames.FIELDS));
+		
+		return SUCCESS;
+	}
+	
 	public String configureInstances () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);

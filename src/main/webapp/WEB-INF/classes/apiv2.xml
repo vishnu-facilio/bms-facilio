@@ -2546,6 +2546,13 @@
 			<param name="controllerId">{1}</param>
 		</action>
 	</package>
+	
+	<package name="commissioningApiv2" namespace="/api/v2/commissioning" extends="v2Api">
+		<action name="points" class="com.facilio.bmsconsole.actions.TimeSeries" method="pointList">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
+	</package>
 
 	<package name="inventoryApi" namespace="/api/v2/inventory"
 		extends="v2Api">
