@@ -38,6 +38,7 @@ public class controllerTypeIdsAction extends IdsAction {
                 PointsAPI.configurePointsAndMakeController(pointIds, FacilioControllerType.valueOf(getControllerType()));
                 setResponseCode(HttpURLConnection.HTTP_OK);
                 setResult(AgentConstants.RESULT, SUCCESS);
+                setResponseCode(HttpURLConnection.HTTP_OK);
             } else {
                 throw new Exception(" ids can't be empty");
             }
@@ -46,6 +47,7 @@ public class controllerTypeIdsAction extends IdsAction {
             setResult(AgentConstants.RESULT, ERROR);
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_OK);
         }
         return SUCCESS;
     }

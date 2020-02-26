@@ -172,10 +172,12 @@ public class AgentIdAction extends AgentActionV2 {
         try {
                 setResult(AgentConstants.DATA,AgentMessenger.getJVMStatus(getAgentId()));
                 setResult(AgentConstants.RESULT,SUCCESS);
+                setResponseCode(HttpURLConnection.HTTP_OK);
         }catch (Exception e){
             LOGGER.info("Exception occurred while getJVM command ",e);
             setResult(AgentConstants.RESULT,ERROR);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
@@ -184,10 +186,12 @@ public class AgentIdAction extends AgentActionV2 {
         try {
             setResult(AgentConstants.DATA, AgentMessenger.getThreadDump(agentId));
             setResult(AgentConstants.RESULT, SUCCESS);
+            setResponseCode(HttpURLConnection.HTTP_OK);
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getThreadDump command ", e);
             setResult(AgentConstants.RESULT, ERROR);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
@@ -198,13 +202,16 @@ public class AgentIdAction extends AgentActionV2 {
             if (fileId > 0) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 setResult(AgentConstants.FILE_ID, fileId);
+                setResponseCode(HttpURLConnection.HTTP_OK);
                 return SUCCESS;
             } else {
+                setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
                 setResult(AgentConstants.RESULT, ERROR);
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred while migrating data", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
@@ -212,9 +219,11 @@ public class AgentIdAction extends AgentActionV2 {
     public String migrate(){
         try{
             SqliteBridge.migrateToNewAgent(getAgentId());
+            setResponseCode(HttpURLConnection.HTTP_OK);
             setResult(AgentConstants.RESULT,SUCCESS);
         }catch (Exception e){
             setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             LOGGER.info("Exception occurred while migrating to new Agent "+getAgentId());
         }
         return SUCCESS;
@@ -225,10 +234,12 @@ public class AgentIdAction extends AgentActionV2 {
             List<Map<String, Object>> data = LogsApi.getMetrics(agentId, -1, -1);
             setResult(AgentConstants.DATA, data);
             setResult(AgentConstants.RESULT, SUCCESS);
+            setResponseCode(HttpURLConnection.HTTP_OK);
             LOGGER.info("DATA : " + data);
             return SUCCESS;
         }catch (Exception e){
             setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             LOGGER.info("Exception while getting agent logs for ->" + agentId + "  ", e);
         }
         return SUCCESS;
@@ -254,10 +265,12 @@ public class AgentIdAction extends AgentActionV2 {
 
             setResult(AgentConstants.DATA, array);
             setResult(AgentConstants.RESULT, SUCCESS);
+            setResponseCode(HttpURLConnection.HTTP_OK);
             return SUCCESS;
         } catch (Exception e) {
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResult(AgentConstants.RESULT, ERROR);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             LOGGER.info("Exception while getting agentMetrics for ->" + getAgentId());
         }
         return SUCCESS;
@@ -266,10 +279,12 @@ public class AgentIdAction extends AgentActionV2 {
     public String getAgentOverView(){
         try{
             setResult(AgentConstants.DATA, AgentUtilV2.getAgentOverView(getAgentId()));
+            setResponseCode(HttpURLConnection.HTTP_OK);
         }catch (Exception e){
             LOGGER.info("Exception occurred while getting agent overview ",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             setResult(AgentConstants.RESULT,ERROR);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
@@ -279,10 +294,12 @@ public class AgentIdAction extends AgentActionV2 {
             List<Map<String, Object>> result = new ArrayList<>();
             result = IotMessageApiV2.listIotMessages(agentId, constructListContext(new FacilioContext()));
             setResult(AgentConstants.DATA, result );
+            setResponseCode(HttpURLConnection.HTTP_OK);
         }catch (Exception e){
             LOGGER.info("Exception occurred while getting iot messages->"+getAgentId()+" ",e);
             setResult(AgentConstants.RESULT,ERROR);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
@@ -290,10 +307,12 @@ public class AgentIdAction extends AgentActionV2 {
     public String getPointCount(){
         try{
             setResult(AgentConstants.DATA,PointsAPI.getPointsCountData(getAgentId()));
+            setResponseCode(HttpURLConnection.HTTP_OK);
         }catch (Exception e){
             LOGGER.info("Exception while getting point count for agent "+agentId);
             setResult(AgentConstants.RESULT,ERROR);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }

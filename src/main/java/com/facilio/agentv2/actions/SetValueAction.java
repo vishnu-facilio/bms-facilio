@@ -6,6 +6,7 @@ import com.facilio.agentv2.point.PointsAPI;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.net.HttpURLConnection;
 
 public class SetValueAction extends PointIdAction
 {
@@ -37,9 +38,11 @@ public class SetValueAction extends PointIdAction
         try {
             if (PointsAPI.setValue(getPointId(), FacilioControllerType.valueOf(getControllerType()), getValue())) {
                 setResult(AgentConstants.RESULT,SUCCESS);
+                setResponseCode(HttpURLConnection.HTTP_OK);
                 return SUCCESS;
             }
         }catch (Exception e){
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
         }
         setResult(AgentConstants.RESULT,ERROR);

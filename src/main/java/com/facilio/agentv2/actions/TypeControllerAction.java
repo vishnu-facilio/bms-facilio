@@ -13,6 +13,7 @@ import org.json.simple.JSONArray;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.net.HttpURLConnection;
 import java.util.List;
 
 public class TypeControllerAction extends ControllerActions
@@ -35,10 +36,12 @@ public class TypeControllerAction extends ControllerActions
                     try {
                         setResult(AgentConstants.RESULT, SUCCESS);
                         setResult(AgentConstants.DATA, FieldUtil.getAsJSON(controller));
+                        setResponseCode(HttpURLConnection.HTTP_OK);
                     } catch (Exception e) {
                         LOGGER.info(" Exception occurred ", e);
                         setResult(AgentConstants.EXCEPTION, e.getMessage());
                         setResult(AgentConstants.RESULT, ERROR);
+                        setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
                     }
                 }
 
@@ -46,6 +49,7 @@ public class TypeControllerAction extends ControllerActions
             LOGGER.info("Exception occurred while getting controller using id and type ",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             setResult(AgentConstants.RESULT,ERROR);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }

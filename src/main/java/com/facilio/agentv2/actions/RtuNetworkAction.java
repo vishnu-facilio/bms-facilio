@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
+import java.net.HttpURLConnection;
 
 public class RtuNetworkAction extends AgentIdAction {
 
@@ -106,9 +107,14 @@ public class RtuNetworkAction extends AgentIdAction {
             addRtuNetworkChain.execute();
             if (context.containsKey(AgentConstants.ID)) {
                 setResult(AgentConstants.ID, context.get(AgentConstants.ID));
+                setResponseCode(HttpURLConnection.HTTP_OK);
                 setResult(AgentConstants.RESULT, SUCCESS);
             }
+            else {
+                setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
+            }
         } catch (Exception e) {
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResult(AgentConstants.RESULT, ERROR);
             LOGGER.info(" Exception while adding rtuNetworkContxt ", e);

@@ -8,6 +8,7 @@ import org.json.simple.JSONArray;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class TypeDevices extends DeviceIdActions {
                 JSONArray pointsArray = new JSONArray();
                 points.forEach(point -> pointsArray.add(point.toJSON()));
                 setResult(AgentConstants.DATA, pointsArray);
+                setResponseCode(HttpURLConnection.HTTP_OK);
             }else {
                 throw new Exception(" deviceId ->"+getDeviceId());
             }
@@ -42,6 +44,7 @@ public class TypeDevices extends DeviceIdActions {
             LOGGER.info("Exception occurred while getting device points",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             setResult(AgentConstants.RESULT,ERROR);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }

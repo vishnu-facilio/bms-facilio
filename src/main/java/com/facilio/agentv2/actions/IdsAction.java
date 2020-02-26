@@ -30,13 +30,16 @@ public class IdsAction extends AgentActionV2
             List<Long> controllerIds = getRecordIds();
             if (ControllerApiV2.deleteControllers(controllerIds)) {
                 setResult(AgentConstants.RESULT, SUCCESS);
+                setResponseCode(HttpURLConnection.HTTP_OK);
             } else {
                 setResult(AgentConstants.RESULT, ERROR);
+                setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
             }
         }catch (Exception e){
             LOGGER.info("Exception while deleting controller"+e.getMessage());
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             setResult(AgentConstants.RESULT,ERROR);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }
@@ -49,16 +52,19 @@ public class IdsAction extends AgentActionV2
             if( !deviceIds.isEmpty() ){
                 if(FieldDeviceApi.discoverPoints(deviceIds)){
                     setResult(AgentConstants.RESULT,SUCCESS);
+                    setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
                 }
             }else {
                 setResult(AgentConstants.RESULT,ERROR);
                 setResult(AgentConstants.EXCEPTION," Ids can't be empty ");
+                setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
             }
         }catch (Exception e){
             LOGGER.info("Exception occurred while discovering points "+e.getMessage());
             setResult(AgentConstants.RESULT,ERROR);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         setResult(AgentConstants.RESULT,ERROR);
         return SUCCESS;
@@ -87,6 +93,7 @@ public class IdsAction extends AgentActionV2
                 LOGGER.info("Exception occurred while deleting agent and agentIds can't be empty");
             }
         }catch (Exception e){
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             LOGGER.info("Exception while agent delete->"+recordIds+"  ",e);
         }
         return SUCCESS;
@@ -101,13 +108,17 @@ public class IdsAction extends AgentActionV2
                     AgentMessenger.shutDown(id);
                 }
                 setResult(AgentConstants.RESULT, SUCCESS);
+                setResponseCode(HttpURLConnection.HTTP_OK);
                 return SUCCESS;
+            }else {
+                setResult(AgentConstants.EXCEPTION, "AgentIds empty");
+                setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
             }
-            setResult(AgentConstants.EXCEPTION, "AgentIds empty");
         }catch (Exception e){
             LOGGER.info("Exception occurr3ed while shutdown agent command");
+            setResult(AgentConstants.RESULT, ERROR);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
-        setResult(AgentConstants.RESULT, ERROR);
         return SUCCESS;
     } //TODO to test
 
@@ -119,11 +130,13 @@ public class IdsAction extends AgentActionV2
         try{
             if(FieldDeviceApi.deleteDevices(getRecordIds())>0){
                 setResult(AgentConstants.RESULT,SUCCESS);
+                setResponseCode(HttpURLConnection.HTTP_OK);
             }
         }catch (Exception e){
             LOGGER.info("Exception occurred while getting agentDevices count",e);
             setResult(AgentConstants.RESULT,ERROR);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
         }
         return SUCCESS;
     }

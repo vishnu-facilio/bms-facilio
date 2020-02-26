@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.net.HttpURLConnection;
 
 public class UpdateControllerAction extends AgentActionV2 {
 
@@ -38,12 +39,15 @@ public class UpdateControllerAction extends AgentActionV2 {
         try {
                 if (ControllerApiV2.editController(getControllerId(),getToUpdate())) {
                     setResult(AgentConstants.RESULT, SUCCESS);
+                    setResponseCode(HttpURLConnection.HTTP_OK);
                 } else {
                     setResult(AgentConstants.RESULT, ERROR);
+                    setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
                     setResult(AgentConstants.EXCEPTION, "Exception while updating controller");
                 }
 
         }catch (Exception e){
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             LOGGER.info("Exception occurred while updating controller",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
             setResult(AgentConstants.RESULT,ERROR);

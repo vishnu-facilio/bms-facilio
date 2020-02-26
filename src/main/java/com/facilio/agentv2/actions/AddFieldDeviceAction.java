@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import javax.validation.constraints.NotNull;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,16 +68,19 @@ public class AddFieldDeviceAction extends FacilioAction {
                     deviceList.add(fieldDevice);
 
                     FieldDeviceApi.addFieldDevices(deviceList);
-
+                    setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
                 } else {
+                    setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
                     return ERROR;
                 }
             } else {
+                setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
                 return ERROR;
             }
         } catch (Exception ex) {
             LOGGER.info("Exception while adding Field Device :" + ex.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             return ERROR;
         }
     }

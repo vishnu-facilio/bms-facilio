@@ -31,6 +31,7 @@ public class updateAgentAction extends AgentAction {
         try {
             if (AgentApiV2.editAgent(AgentApiV2.getAgent(getAgentId()),getToUpdate())) {
                 setResult(AgentConstants.RESULT, SUCCESS);
+                setResponseCode(HttpURLConnection.HTTP_OK);
             }else {
                 setResponseCode(HttpURLConnection.HTTP_NOT_MODIFIED);
                 setResult(AgentConstants.RESULT,ERROR);

@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
+import java.net.HttpURLConnection;
 
 public class ModbusControllerAction extends AgentIdAction {
 
@@ -72,8 +73,10 @@ public class ModbusControllerAction extends AgentIdAction {
                 controllerContext.setSlaveId(getSlaveId().intValue());
                 if (AgentMessenger.sendConfigureModbusRtuControllerCommand(controllerContext)) {
                     setResult(AgentConstants.RESULT, SUCCESS);
+                    setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
                 } else {
+                    setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
                     setResult(AgentConstants.RESULT, ERROR);
                 }
             }
@@ -84,12 +87,15 @@ public class ModbusControllerAction extends AgentIdAction {
                 controllerContext.setSlaveId(slaveId.intValue());
                 if (AgentMessenger.sendConfigModbusIpControllerCommand(controllerContext)) {
                     setResult(AgentConstants.RESULT, SUCCESS);
+                    setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
                 } else {
+                    setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
                     setResult(AgentConstants.RESULT, ERROR);
                 }
             }
         } catch (Exception e) {
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResult(AgentConstants.RESULT, ERROR);
             LOGGER.info("Exception occurred while sending modbus controller config command ", e);

@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.net.HttpURLConnection;
 import java.util.Map;
 
 public class TypeAgentAction extends AgentIdAction {
@@ -31,10 +32,12 @@ public class TypeAgentAction extends AgentIdAction {
     public String discoverControllers(){
         try {
             setResult(AgentConstants.DATA, AgentMessenger.discoverController(getAgentId(), FacilioControllerType.valueOf(getControllerType())));
+            setResponseCode(HttpURLConnection.HTTP_OK);
             setResult(AgentConstants.RESULT,SUCCESS);
         }catch (Exception e){
             LOGGER.info("Exception occurred while discoverControllers command ",e);
             setResult(AgentConstants.RESULT,ERROR);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             setResult(AgentConstants.EXCEPTION,e.getMessage());
         }
         return SUCCESS;
@@ -53,13 +56,16 @@ public class TypeAgentAction extends AgentIdAction {
                 }
                 /*setResult(AgentConstants.RESULT, SUCCESS);*/
                 setResult(AgentConstants.DATA, controllerArray);
+                setResponseCode(HttpURLConnection.HTTP_OK);
                 return SUCCESS;
             }else {
                 /*setResult(AgentConstants.RESULT, NONE);*/
                 setResult(AgentConstants.DATA,controllerArray);
+                setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
             }
             setResult(AgentConstants.RESULT,SUCCESS);
         }catch (Exception e){
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
             LOGGER.info("Exception occurred while getting controllers for type"+getControllerType()+" and agentID "+getAgentId());
             setResult(AgentConstants.RESULT,ERROR);
             setResult(AgentConstants.EXCEPTION,e.getMessage());

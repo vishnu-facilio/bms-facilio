@@ -5,9 +5,9 @@ import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.NotNull;
+import java.net.HttpURLConnection;
 
 public class OpcUaControllerAction extends AgentIdAction {
 
@@ -74,11 +74,13 @@ public class OpcUaControllerAction extends AgentIdAction {
             controllerContext.setAgentId(getAgentId());
             controllerContext.setName(getName());
             AgentMessenger.sendConfigureOpcUaControllerCommand(controllerContext);
+            setResponseCode(HttpURLConnection.HTTP_OK);
             setResult(AgentConstants.RESULT, SUCCESS);
         } catch (Exception e) {
             LOGGER.info("Exception while sending add opcua controller");
             setResult(AgentConstants.RESULT, ERROR);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST);
         }
         return SUCCESS;
     }

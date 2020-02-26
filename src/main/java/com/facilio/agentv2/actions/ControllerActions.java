@@ -34,6 +34,7 @@ public class ControllerActions extends AgentActionV2 {
             if (controller != null) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 setResult(AgentConstants.DATA, controller.toJSON());
+                setResponseCode(HttpURLConnection.HTTP_OK);
                 return SUCCESS;
             } else {
                 setResult(AgentConstants.RESULT, NONE);
@@ -44,6 +45,7 @@ public class ControllerActions extends AgentActionV2 {
             setResult(AgentConstants.RESULT, ERROR);
         }
         setResult(AgentConstants.DATA, new JSONObject());
+        setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         return SUCCESS;
     }
 
@@ -55,11 +57,13 @@ public class ControllerActions extends AgentActionV2 {
             } else {
                 setResult(AgentConstants.RESULT, ERROR);
             }
+            setResponseCode(HttpURLConnection.HTTP_OK);
             return SUCCESS;
         } catch (Exception e) {
             LOGGER.info("Exception while discoverPoints", e);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             setResult(AgentConstants.RESULT, ERROR);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }

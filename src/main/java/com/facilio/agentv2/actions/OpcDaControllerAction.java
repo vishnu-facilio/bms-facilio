@@ -54,6 +54,7 @@ public class OpcDaControllerAction extends AgentIdAction {
             controllerContext.setUserName(getUserName());
             controllerContext.setAgentId(getAgentId());
             AgentMessenger.sendConfigureOpcXmlDaController(controllerContext);
+            setResponseCode(HttpURLConnection.HTTP_OK);
             setResult(AgentConstants.RESULT, SUCCESS);
         } catch (Exception e) {
             setResult(AgentConstants.RESULT, ERROR);
