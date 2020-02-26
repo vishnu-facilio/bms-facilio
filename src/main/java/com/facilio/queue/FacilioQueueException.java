@@ -2,6 +2,7 @@ package com.facilio.queue;
 
 import java.util.List;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.queue.service.FacilioDbQueue;
 import com.facilio.queue.service.FacilioQueueService;
 import com.facilio.queue.service.QueueMessage;
@@ -15,7 +16,8 @@ public class FacilioQueueException {
 		return INSTANCE;
 	}
 	public static boolean addException(String message) throws Exception {
-		return  FacilioService.runAsServiceWihReturn(() ->getInstance().push(message));
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		return  FacilioService.runAsServiceWihReturn(() ->getInstance().push(message,orgId));
 	}
 
 //	public static QueueMessage pull() throws Exception{

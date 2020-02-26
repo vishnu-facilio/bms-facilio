@@ -8,6 +8,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.log4j.Logger;
 
 import com.amazonaws.util.Base64;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.queue.service.FacilioDbQueue;
 import com.facilio.queue.service.FacilioQueueService;
 import com.facilio.queue.service.QueueMessage;
@@ -28,7 +29,8 @@ public class FacilioObjectQueue {
 			return false;
 		}
 		String serializedString = Base64.encodeAsString(SerializationUtils.serialize(serializable));
-		return FacilioService.runAsServiceWihReturn(() -> queueInstance.push(serializedString));
+		long orgId = AccountUtil.getCurrentOrg().getId();
+		return FacilioService.runAsServiceWihReturn(() -> queueInstance.push(serializedString,orgId));
 	}
 
 	public List<ObjectMessage> getObjects( int limit) throws Exception {
