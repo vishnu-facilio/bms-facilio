@@ -210,7 +210,7 @@ public class LoginAction extends FacilioAction {
 
 		HttpSession session = request.getSession();
 		session.invalidate();
-		String parentdomain = request.getServerName().replaceAll("app.", "");
+		String parentdomain = request.getServerName().replaceAll("app.", "").replaceAll("demo.", "");
 		FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain);
 		FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
 		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
