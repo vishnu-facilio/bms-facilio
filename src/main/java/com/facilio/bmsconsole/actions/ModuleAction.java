@@ -448,26 +448,10 @@ public class ModuleAction extends FacilioAction {
 	
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		List<FacilioField> workorderFields = new ArrayList<>();
-//		List<FacilioField> alarmFields = new ArrayList<>();
 		if(FacilioConstants.ContextNames.WORK_ORDER.equals(getModuleName()))
 		{
 			for(FacilioField field : fields)
 			{
-				if(field.getName().equals("actualWorkStart")
-				|| field.getName().equals("actualWorkEnd")
-				|| field.getName().equals("estimatedEnd")
-				|| field.getName().equals("noOfAttachments")
-				|| field.getName().equals("noOfClosedTasks")
-				|| field.getName().equals("noOfNotes")
-				|| field.getName().equals("noOfTasks")
-				|| field.getName().equals("scheduledStart")
-				|| field.getName().equals("serialNumber")
-				|| field.getName().equals("sourceType")
-				|| field.getName().equals("assignmentGroup")
-				|| field.getName().equals("createdTime"))
-				{
-					continue;
-				}
 				if(field.getName().equals("tenant")) {
 					if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 					workorderFields.add(field);
@@ -478,28 +462,6 @@ public class ModuleAction extends FacilioAction {
 			}
 			setFields(workorderFields);
 		}
-//		else if(FacilioConstants.ContextNames.ALARM.equals(getModuleName()))
-//		{
-//			for(FacilioField field : fields)
-//			{
-//				if(field.getName().equals("acknowledgedBy")
-//				|| field.getName().equals("acknowledgedTime")
-//				|| field.getName().equals("createdTime")
-//				|| field.getName().equals("acknowledgedBy")
-//				|| field.getName().equals("isAcknowledged")
-//				|| field.getName().equals("alarmType")
-//				|| field.getName().equals("modifiedTime")
-//				|| field.getName().equals("clearedTime")
-//				|| field.getName().equals("serialNumber")
-//				|| field.getName().equals("sourceType")
-//				|| field.getName().equals("assignmentGroup")
-//				|| field.getName().equals("createdTime"))
-//				{
-//					continue;
-//				}
-//				alarmFields.add(field);
-//			}
-//		}
 		else
 		{
 			setFields(fields);
