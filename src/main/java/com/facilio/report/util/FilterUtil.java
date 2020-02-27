@@ -142,14 +142,7 @@ public class FilterUtil {
 				FacilioField timeField = modBean.getField("ttime", moduleName);
 //				FacilioField parentIdField = modBean.getField("parentId", moduleName);
 				FacilioField conditionField = modBean.getField(field, moduleName);
-				String value = "";
-				if (conditionField instanceof NumberField) {
-					NumberField numberField =  (NumberField)conditionField;
-					Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
-					value = String.valueOf(UnitsUtil.convertToSiUnit(condition.get("value"), siUnit));
-				}else {
-					value = (String) condition.get("value");
-				}
+				String value = (String) condition.get("value");
 				int operatorId = ((Number) condition.get("operatorId")).intValue();
 				Operator operator = Operator.getOperator(operatorId);
 				
@@ -213,33 +206,9 @@ public class FilterUtil {
 				
 				ReportDataPointContext dataPoint = new ReportDataPointContext();
 				
-//				String moduleName = (String) condition.get("moduleName");
-//				String field = (String) condition.get("fieldName");
-//				Long parentId = (Long) condition.get("parentId");
-				
 				FacilioField timeField = modBean.getField("ttime", moduleName);
-//				FacilioField parentIdField = modBean.getField("parentId", moduleName);
-//				FacilioField conditionField = modBean.getField(field, moduleName);
-//				String value = "";
-//				if (conditionField instanceof NumberField) {
-//					NumberField numberField =  (NumberField)conditionField;
-//					Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
-//					value = String.valueOf(UnitsUtil.convertToSiUnit(condition.get("value"), siUnit));
-//				}else {
-//					value = (String) condition.get("value");
-//				}
 				
 				FacilioModule module = timeField.getModule();
-//				String tableName = module.getTableName();
-				
-//				String value = (String) condition.get("value");
-//				int operatorId = ((Number) condition.get("operatorId")).intValue();
-//				Operator operator = Operator.getOperator(operatorId);
-				
-//				Criteria dpCriteria = new Criteria();
-//				dpCriteria.addAndCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), NumberOperators.EQUALS));
-//				dpCriteria.addAndCondition(CriteriaAPI.getCondition(conditionField, value, operator));
-//				dataPoint.setDpCriteria(dpCriteria);
 				
 				ReportFacilioField yField = getCriteriaField("appliedVsUnapplied", "appliedVsUnapplied", module, "ttime", FieldType.BOOLEAN);
 				ReportYAxisContext yAxis = new ReportYAxisContext();
@@ -256,24 +225,49 @@ public class FilterUtil {
 				xAxis.setField(module, timeField);
 				dataPoint.setxAxis(xAxis);
 				
-//				ReportFieldContext dateField = new ReportFieldContext();
-//				dateField.setField(module, timeField);
-//				dataPoint.setDateField(dateField);
-				
 				dataPoint.setName(key);
 				
 				Map<String, String> aliases = new HashMap<>();
 				aliases.put("actual", key);
 				dataPoint.setAliases(aliases);
 				
-//				List<String> orderBy = new ArrayList<>();
-//				orderBy.add(timeField.getCompleteColumnName());
-//				dataPoint.setType(DataPointType.CRITERIA);
-//				dataPoint.setOrderBy(orderBy);
 				dataPoints.add(dataPoint);
 			}
 		return dataPoints;
 		
+	}
+	
+	public static ReportDataPointContext getDataPoint(String moduleName, String name) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		ReportDataPointContext dataPoint = new ReportDataPointContext();
+		
+		FacilioField timeField = modBean.getField("ttime", moduleName);
+		
+		FacilioModule module = timeField.getModule();
+		
+		ReportFacilioField yField = getCriteriaField("appliedVsUnapplied", "appliedVsUnapplied", module, "ttime", FieldType.BOOLEAN);
+		ReportYAxisContext yAxis = new ReportYAxisContext();
+		yAxis.setField(module, yField);
+		Map<Integer, Object> enumMap = new HashMap<>();
+		enumMap.put(0, "False");
+		enumMap.put(1, "True");
+		yAxis.setEnumMap(enumMap);
+		dataPoint.setyAxis(yAxis);
+		
+		dataPoint.setModuleName(moduleName);
+		
+		ReportFieldContext xAxis = new ReportFieldContext();
+		xAxis.setField(module, timeField);
+		dataPoint.setxAxis(xAxis);
+		
+		dataPoint.setName(name);
+		
+		Map<String, String> aliases = new HashMap<>();
+		aliases.put("actual", name);
+		dataPoint.setAliases(aliases);
+		
+		return dataPoint;
 	}
 	
 	public static ReportFacilioField getCriteriaField(String name, String displayName, FacilioModule module, String columnName, FieldType fieldType){

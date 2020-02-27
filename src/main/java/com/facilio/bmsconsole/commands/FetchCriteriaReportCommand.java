@@ -7,11 +7,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.AbstractMap.SimpleEntry;
 
 //import java.util.List;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -22,7 +25,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -39,22 +41,25 @@ import com.facilio.report.context.ReportFactory.ReportFacilioField;
 import com.facilio.report.util.FilterUtil;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.unitconversion.Metric;
-import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 
 public class FetchCriteriaReportCommand extends FacilioCommand {
 	private static Logger log = LogManager.getLogger(FetchCriteriaReportCommand.class.getName());
+	private Map<Long, Long> combinedMap = new HashMap<>();
+	private List<Map<Long, Long>> combinedList = new ArrayList();
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		boolean needCriteriaReport =  (boolean) context.getOrDefault(FacilioConstants.ContextNames.NEED_CRITERIAREPORT, false);
 		if(needCriteriaReport) {
+			List<ReportDataPointContext> dataPoints = new ArrayList<>();
 			
 			ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 			JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 			Map<String, Object> reportAggrData = (Map<String, Object>) reportData.get(FacilioConstants.ContextNames.AGGR_KEY);
 			Map<String, Object> filters = new HashMap<>();
+			
+			List<ReportDataPointContext> reportDataPoints = report.getDataPoints();
 			
 			JSONObject dataFilter = (JSONObject) context.get(FacilioConstants.ContextNames.DATA_FILTER);
 			if(dataFilter != null && !dataFilter.isEmpty()) {
@@ -67,30 +72,36 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 						filters.put((String) key, timeLine);
 					}
 				}
-				List<ReportDataPointContext> reportDataPoints = report.getDataPoints();
 				
-				List<ReportDataPointContext> dataPoints = FilterUtil.getDFDataPoints(dataFilter);
-				reportDataPoints.addAll(dataPoints);
-				report.setDataPoints(reportDataPoints);
+				dataPoints.addAll(FilterUtil.getDFDataPoints(dataFilter));
 			}
+			
 			
 			JSONObject timeFilter = (JSONObject) context.get(FacilioConstants.ContextNames.TIME_FILTER);
 			if(timeFilter != null && !timeFilter.isEmpty()) {
 				filters.put("TimeFilter.timeline", getTFTimeLine(report.getDateRange(), timeFilter));
-				List<ReportDataPointContext> reportDataPoints = report.getDataPoints();
 				
-				List<ReportDataPointContext> dataPoints = FilterUtil.getTFDataPoints(reportDataPoints.get(0).getxAxis().getModuleName(), timeFilter);
-				reportDataPoints.addAll(dataPoints);
-				report.setDataPoints(reportDataPoints);
+				dataPoints.addAll(FilterUtil.getTFDataPoints(reportDataPoints.get(0).getxAxis().getModuleName(), timeFilter));
 			}
-//			reportAggrData.put("filters", filters);
+			
+			createCombinedMap();
+			if(MapUtils.isNotEmpty(combinedMap)) {
+				filters.put("Combine.timeline", getCombinedTimeLine(report.getDateRange()));
+				
+				dataPoints.add(FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Combine"));
+			}
+			dataPoints.addAll(reportDataPoints);
+			report.setDataPoints(dataPoints);
 			reportAggrData.putAll(filters);
+//			System.out.println(combinedMap);
 		}
 		return false;
 	}
 	
 	public List<Map<String, Object>> getDFTimeLine(JSONObject conditionObj, DateRange range) throws Exception{
 		List<Map<String, Object>> timeline = new ArrayList<>();
+		List<Map<Long, Long>> timeList = new ArrayList<>();
+		Map<Long, Long> localMap = new HashMap<>();
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -134,17 +145,34 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 		
 		if (props != null && !props.isEmpty()) {
 			int preVal = 0;
+			Long start = null;
 			for (Map<String, Object> prop : props) {
 				Map<String, Object> obj = new HashMap();
 				int val = Integer.parseInt((String)prop.get("appliedVsUnapplied"));
+				Long time = (Long) prop.get("ttime");
+				if(val == 1 && start == null) {
+					start = time;
+				}
+				if(val == 0 && start != null) {
+					localMap.put(start, time);
+					start = null;
+				}
 				if(preVal != val) {
 					preVal = val;
-//					obj.put(String.valueOf(prop.get("ttime")), val);
 					obj.put("key", prop.get("ttime"));
 					obj.put("value", val);
 					timeline.add(obj);
 				}
 			}
+			if(start != null) {
+				localMap.put(start, range.getEndTime());
+			}
+			timeList.add(localMap);
+			combinedList.add(localMap);
+			Map<String, Object> obj = new HashMap();
+			obj.put("key", range.getEndTime());
+			obj.put("value", preVal == 0 ? 1 : 0);
+			timeline.add(obj);
 		}
 		
 		return timeline;
@@ -152,6 +180,8 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 	
 	public List<Map<String, Object>> getTFTimeLine(DateRange dateRange, JSONObject criteriaObj) throws Exception {
 		List<Map<String, Object>> timeline = new ArrayList<>();
+		List<Map<Long, Long>> timeList = new ArrayList<>();
+		Map<Long, Long> localMap = new HashMap<>();
 		
 		if(criteriaObj != null && !criteriaObj.isEmpty()) {
 			JSONObject conditions = (JSONObject) criteriaObj.get("conditions");
@@ -174,8 +204,6 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				if((days != null && !days.isEmpty()) || (intervals != null && !intervals.isEmpty())) {
 					ZonedDateTime start = DateTimeUtil.getDateTime(dateRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(dateRange.getEndTime(), false);
 					do {
-//					    if (days.contains(new Long(start.getDayOfWeek().getValue())) || (intervals != null && !intervals.isEmpty())) {
-//					    	if(intervals != null && !intervals.isEmpty()) {
 					    		for (Object values : intervals.values()) {
 					    			Map<String, Object> obj = new HashMap();
 					    			Map<String, Object> obj1 = new HashMap();
@@ -184,15 +212,12 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 							    	if(interval != null && !interval.isEmpty()) {
 							    		Long startTime = (long) (LocalTime.parse((CharSequence) interval.get(0)).toSecondOfDay()*1000);
 								    	Long endTime = (long) (LocalTime.parse((CharSequence) interval.get(1)).toSecondOfDay()*1000);
-//								    	obj.put(String.valueOf(start.toInstant().toEpochMilli()+startTime), 1);
-//								    	obj1.put(String.valueOf(start.toInstant().toEpochMilli()+endTime), 0);
 								    	obj.put("key", start.toInstant().toEpochMilli()+startTime);
 								    	obj.put("value", 1);
 								    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
 								    	obj1.put("value", 0);
+								    	localMap.put(start.toInstant().toEpochMilli()+startTime, start.toInstant().toEpochMilli()+endTime);
 							    	}else {
-//							    		obj.put(String.valueOf(DateTimeUtil.getDayStartTimeOf(start.toInstant().toEpochMilli(), false)), 1);
-//								    	obj1.put(String.valueOf(DateTimeUtil.getDayEndTimeOf(start.toInstant().toEpochMilli(), false)), 0);
 							    		obj.put("key", DateTimeUtil.getDayStartTimeOf(start.toInstant().toEpochMilli(), false));
 								    	obj.put("value", 1);
 								    	obj1.put("key", DateTimeUtil.getDayEndTimeOf(start.toInstant().toEpochMilli(), false));
@@ -201,14 +226,83 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 							    	timeline.add(obj);
 							    	timeline.add(obj1);
 							    };
-//					    	}
-//					    }
 					    start = start.plusDays(1);
 					}  while (start.toEpochSecond() <= end.toEpochSecond());
+					timeList.add(localMap);
+					combinedList.add(localMap);
 				}
 			}
 		}
 		return timeline;
+	}
+	
+	public void createCombinedMap() {
+		for(int i = 0; i < combinedList.size(); i++) {
+			Map<Long, Long> map = combinedList.get(i);
+			if(MapUtils.isNotEmpty(combinedMap)) {
+				for(Map.Entry<Long, Long> entry: combinedMap.entrySet()) {
+					if(i+1 < combinedList.size()) {
+						aggregate(entry.getKey(), entry.getValue(), combinedList.get(i+1));
+					}
+				}
+			}else {
+				for(Map.Entry<Long, Long> entry: map.entrySet()) {
+					if(i+1 < combinedList.size()) {
+						aggregate(entry.getKey(), entry.getValue(), combinedList.get(i+1));
+					}
+				}
+			}
+		}
+	}
+	
+	public void aggregate(Long key, Long value, Map<Long,Long> map) {
+		Long start = null,end = null;
+		boolean setStart = false, setEnd = false;
+		Map<Long, Long> localMap = new HashMap();
+		for(Map.Entry<Long, Long> entry: map.entrySet()) {
+			Long from = entry.getKey();
+			Long to = entry.getValue();
+			if(from.equals(key) && !setStart) {
+				start = key;
+				setStart = true;
+			}
+			else if(from > key && !setStart){
+				start = from;
+				setStart = true;
+			}
+			else if(from < key && !setStart){
+				start = key;
+				setStart = true;
+			}
+			if((to.equals(value) || value < to) && start != null) {
+				end = value;
+			}
+			if(start != null && end != null) {
+				combinedMap.put(start, end);
+				start = end = null;
+				setStart = false;
+			}
+		}
+//		combinedMap = localMap;
+	}
+	
+	public List<Map<String, Object>> getCombinedTimeLine(DateRange dateRange) throws Exception {
+		List<Map<String, Object>> timeLine = new ArrayList<>();
+			
+		 TreeMap<Long, Long> sorted = new TreeMap<>(); 
+        sorted.putAll(combinedMap);
+	  
+        for (Map.Entry<Long, Long> entry : sorted.entrySet()) {
+        	Map<String, Object> obj = new HashMap();
+        	Map<String, Object> obj1 = new HashMap();
+        	obj.put("key", entry.getKey());
+	    	obj.put("value", 1);
+	    	obj1.put("key", entry.getValue());
+	    	obj1.put("value", 0);
+	    	timeLine.add(obj);
+	    	timeLine.add(obj1);
+        }
+		return timeLine;
 	}
 	
 }
