@@ -7895,4 +7895,16 @@ public class FieldFactory {
 		fields.add(getField("order", "CATALOG_ORDER", FieldType.NUMBER));
 		return fields;
 	}
+	public static List<FacilioField> getRecommendedRuleFields() {
+		FacilioModule module = ModuleFactory.getRecommendedRuleModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		//fields.add(getField("orgId","ORGID",module,FieldType.NUMBER));
+		fields.add(getField("id","ID",module, FieldType.NUMBER));
+		fields.add(getField("orgid","ORGID",module, FieldType.NUMBER));
+		fields.add(getField("ruleid","RULE_ID",module,FieldType.NUMBER));
+		fields.add(getField("categoryid","CATEGORY_ID",module,FieldType.NUMBER));
+		return  fields;
+	}
 }

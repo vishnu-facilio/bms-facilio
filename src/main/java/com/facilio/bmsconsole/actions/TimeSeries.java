@@ -125,7 +125,6 @@ public class TimeSeries extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, skipValidation);
 		FacilioChain mappingChain = TransactionChainFactory.getInstanceAssetMappingChain();
 		mappingChain.execute(context);
-		
 		setResult("result", "success");
 		return SUCCESS;
 	}

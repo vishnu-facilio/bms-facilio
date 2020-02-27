@@ -3346,7 +3346,7 @@ public class ModuleFactory {
 		module.setTableName("Safety_Plan");
 		return module;
 	}
-	
+
 	public static FacilioModule getClientModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.CLIENT);
@@ -3385,4 +3385,11 @@ public class ModuleFactory {
 		workOrdersModule.setExtendModule(getResourceModule());
 		return workOrdersModule;
 	}
+	public static FacilioModule getRecommendedRuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setTableName("RecommendedRule");
+		module.setDisplayName("recommended rule");
+		module.setName("recommended rule ids");
+		return module;
+    }
 }

@@ -11,6 +11,7 @@
 			"threshold_metric": "supplyairdamperstatus",
 			"threshold_metric_display": "Supply Air Damper Status",
 			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"Field_Metric":["runstatus","supplyairdampercommand","supplyairdamperstatus"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -162,6 +163,7 @@
 			"threshold_metric": "supplyairdamperstatus",
 			"threshold_metric_display": "Supply Air Damper Status",
 			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"Field_Metric":["runstatus","supplyairdampercommand","supplyairdamperstatus"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -314,6 +316,7 @@
 			"threshold_metric": "exhaustairdamperstatus",
 			"threshold_metric_display": "Supply Air Damper Status",
 			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"Field_Metric":["runstatus","exhaustairdampercommand","exhaustairdamperstatus"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -466,6 +469,7 @@
 			"threshold_metric": "exhaustairdamperstatus",
 			"threshold_metric_display": "Exhaust Air Damper Status",
 			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"Field_Metric":["runstatus","exhaustairdampercommand","exhaustairdamperstatus"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -618,6 +622,7 @@
 			"threshold_metric": "prefilterdp",
 			"threshold_metric_display": "Pre Filter DP",
 			"possible_solution": "Dirty/Clogged air filters lead to excessive air pressure drop resulting in reduced airflow, increased energy consumption by the fan and depositing dirt/debris on cooling coil, ducts etc.",
+			"Field_Metric":["runstatus","exhaustairdamperstatus"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -748,6 +753,7 @@
 			"threshold_metric": "bagfilterdp",
 			"threshold_metric_display": "Bag Filter DP",
 			"possible_solution": "Dirty/Clogged air filters lead to excessive air pressure drop resulting in reduced airflow, increased energy consumption by the fan and depositing dirt/debris on cooling coil, ducts etc.",
+			"Field_Metric":["runstatus","bagfilterdp"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -878,6 +884,7 @@
 			"threshold_metric": "returnairtemperature",
 			"threshold_metric_display": "Return Air Temperature",
 			"possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			"Field_Metric":["enthalpyheatwheelautomanualstatus","supplyfanairflowstatus","returnairtemperature","outsideairtemperature","enthalpyheatwheelcommand","enthalpyheatwheelrunstatus"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -1106,6 +1113,7 @@
 			"threshold_metric": "returnairtemperature",
 			"threshold_metric_display": "Return Air Temperature",
 			"possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			"Field_Metric":["enthalpyheatwheelautomanualstatus","supplyfanairflowstatus","returnairtemperature","outsideairtemperature","enthalpyheatwheelrunstatus"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -1334,6 +1342,7 @@
 			"threshold_metric": "returnairtemperature",
 			"threshold_metric_display": "Return Air Temperature",
 			"possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			"Field_Metric":["sensibleheatwheelautomanualstatus","supplyfanairflowstatus","returnairtemperature","outsideairtemperature","sensibleheatwheelcommand","sensibleheatwheelrunstatus"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -1562,6 +1571,7 @@
 			"threshold_metric": "returnairtemperature",
 			"threshold_metric_display": "Return Air Temperature",
 			"possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			"Field_Metric":["sensibleheatwheelautomanualstatus","supplyfanairflowstatus","returnairtemperature","outsideairtemperature","sensibleheatwheelcommand","sensibleheatwheelrunstatus"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -1790,6 +1800,7 @@
 			"threshold_metric": "enthalpyheatwheelrunstatus",
 			"threshold_metric_display": "Enthalpy Heatwheel Run Status",
 			"possible_solution": "",
+			"Field_Metric":["enthalpyheatwheelautomanualstatus","enthalpyheatwheelcommand","enthalpyheatwheelrunstatus"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -1947,6 +1958,7 @@
 			"threshold_metric": "sensibleheatwheelrunstatus",
 			"threshold_metric_display": "Sensible Heatwheel Run Status",
 			"possible_solution": "",
+			"Field_Metric":["sensibleheatwheelautomanualstatus","sensibleheatwheelcommand","sensibleheatwheelrunstatus"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -2104,6 +2116,7 @@
 			"threshold_metric": "supplyairtemperature",
 			"threshold_metric_display": "Supply Air Temperature ",
 			"possible_solution": "The cooling coil may be opening more than desired or not opening enough as commanded due to which there may be overcooling or undercooling issues.",
+			"Field_Metric":["coolingcoilvalvecommand","coolingcoilvalvefeedback","supplyairtemperature","supplyairtemperaturesetpoint"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -2279,6 +2292,7 @@
 			"threshold_metric": "supplyairtemperature",
 			"threshold_metric_display": "Supply Air Temperature ",
 			"possible_solution": "The cooling coil may be closing more than desired or not closing enough as commanded due to which there may be overcooling or undercooling issues.",
+			"Field_Metric":["coolingcoilvalvecommand","coolingcoilvalvefeedback","supplyairtemperature","supplyairtemperaturesetpoint"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -2451,6 +2465,7 @@
 			"threshold_metric": "coolingcoilvalvefeedback",
 			"threshold_metric_display": "Cooling Coil Valve FeedBack  ",
 			"possible_solution": "",
+			"Field_Metric":["supplyairfanautomanualstatus","coolingcoilvalvefeedback"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -2583,6 +2598,7 @@
 			"threshold_metric": "airflowcoildp",
 			"threshold_metric_display": "AirFlow Coil Differinatial Pressure",
 			"possible_solution": "1. Inspect the cooling coil for cleanliness and check any deposited particles and impurities.2. Wash and clean the cooling coil ",
+			"Field_Metric":["airflowcoildp"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -2724,6 +2740,7 @@
 			"threshold_metric": "airflowcoildp",
 			"threshold_metric_display": "AirFlow Coil Differinatial Pressure",
 			"possible_solution": "",
+			"Field_Metric":["chilledwaterflowdp"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -2864,6 +2881,7 @@
 			"threshold_metric": "returnairtemperature",
 			"threshold_metric_display": "Return Air Temperature",
 			"possible_solution": "",
+			"Field_Metric":["returnairtemperature","supplyairtemperature"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -2981,6 +2999,7 @@
 			"threshold_metric": "returnairtemperature",
 			"threshold_metric_display": "Return Air Temperature",
 			"possible_solution": "",
+			"Field_Metric":["returnairtemperature","supplyairtemperature"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -3098,6 +3117,7 @@
 			"threshold_metric": "chilledwaterenteringtemperature",
 			"threshold_metric_display": "Chilled Water Entering Temperature",
 			"possible_solution": "",
+			"Field_Metric":["supplyairfanautomanualstatus","coolingcoilvalvefeedback","chilledwaterenteringtemperature"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -3255,6 +3275,7 @@
 			"threshold_metric": "chilledwaterstrainerdp",
 			"threshold_metric_display": "Chilled Water Strainer DP",
 			"possible_solution": "",
+			"Field_Metric":["chilledwaterflowdp"],
 			"ASSET_SELECTION_CRITERIA": {
 				"categoryType": "FAHU",
 				"includeResource": "${includeResource}",
@@ -3391,6 +3412,7 @@
 			"description": "Supply air temperature is less than supply air temperature set-point by 95% for at least one hour.",
 			"threshold_metric": "supplyairdamperstatus",
 			"possible_solution": "Check for valve logic operation",
+			"Field_Metric":["supplyairfanautomanualstatus","supplyairtemperaturesetpoint","supplyairtemperature"],
 			"alarmCondition": {
 				"condition": "{{supplyairtemperature}} < 0.90* {{supplyairtemperaturesetpoint}}",
 				"workflow": {
@@ -3538,6 +3560,7 @@
 			"description": "Relative Higher Humidity",
 			"threshold_metric": "supplyairhumidity",
 			"possible_solution": "Replace if faulty sensor",
+			"Field_Metric":["supplyfanairflowstatus","supplyairhumiditysetpoint","supplyairhumidity"],
 			"alarmCondition": {
 				"condition": "{{supplyairhumidity}} > 1.1 * {{supplyairhumiditysetpoint}}",
 				"workflow": {
@@ -3684,6 +3707,7 @@
 			"description": "Relative Lower Humidity",
 			"threshold_metric": "supplyairhumidity",
 			"possible_solution": "Replace if faulty sensor",
+			"Field_Metric":["supplyfanairflowstatus","supplyairhumiditysetpoint","supplyairhumidity"],
 			"alarmCondition": {
 				"condition": "{{supplyairhumidity}} < 0.9 * {{supplyairhumiditysetpoint}}",
 				"workflow": {

@@ -17,7 +17,7 @@ public class RuleTemplateAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private long id = -1;
+	private long id ;
 	public long getId() {
 		return id;
 	}
