@@ -38,7 +38,6 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -283,6 +282,9 @@ public class ControllerApiV2 {
                 }
             }
             getControllerChain.execute(context);
+            if(containsCheck("query",context)){
+                LOGGER.info(" get controller query --"+context.get("query"));
+            }
             List<Controller> controllers = (List<Controller>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
             return controllers;
         } catch (Exception e) {
@@ -623,12 +625,6 @@ public class ControllerApiV2 {
 
     }
 
-    public static void main(String[] args) throws Exception {
-      String str = "{\"lastModifiedTime\":1582191684432,\"lastDataSentTime\":1582191684432,\"ipAddress\":\"ip\",\"name\":\"controller2\",\"active\":true,\"createdTime\":1582191684432,\"interval\":15,\"availablePoints\":11,\"writable\":true}";
-      JSONParser parser = new org.json.simple.parser.JSONParser();
-        BacnetIpControllerContext controller = FieldUtil.getAsBeanFromMap((Map<String, Object>) parser.parse(str), BacnetIpControllerContext.class);
-        System.out.println(" hello "+controller.getName());
-    }
 
     public static boolean checkForFieldDeviceController(long deviceId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -740,4 +736,17 @@ public class ControllerApiV2 {
         LOGGER.info(" returning data "+controllersData.size());
         return controllersData;
     }
+
+    /*
+    DO NOT CHANGE - - FOR TIME SERIES PURPOSE
+     */
+   /* public static Controller getControllerUsingControllerJSON(JSONObject controllerJSON, long agentId, FacilioControllerType controllerType) throws Exception {
+        if (controllerType != null) {
+            FacilioChain fetchControllerChain = getFetchControllerChain(controllerType);
+            FacilioContext context = fetchControllerChain.getContext();
+            context.put()
+
+        }
+        return null;
+    }*/
 }

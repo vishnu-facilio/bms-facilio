@@ -135,6 +135,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		}
 		
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
+		context.put("query",builder.toString());
 		/*LOGGER.info("- - - - select controllers - - - - "+builder.toString());*/
 		if (fetchCount) {
 			if (CollectionUtils.isNotEmpty(records)) {

@@ -48,7 +48,7 @@ public class AddAgentAction extends AgentActionV2
             FacilioAgent agent = new FacilioAgent();
             agent.setName(getAgentName());
             agent.setInterval(getDataInterval());
-            agent.setSiteId(getSiteId());
+            agent.setSiteId(getSiteId()); //TODO validate SITE ID.
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();
             JSONObject jsonObject = new JSONObject();
