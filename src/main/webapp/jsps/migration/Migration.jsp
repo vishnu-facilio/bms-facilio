@@ -11,21 +11,14 @@
 <%@ page import="com.facilio.constants.FacilioConstants" %>
 <%@ page import="com.facilio.modules.FacilioModule" %>
 <%@ page import="com.facilio.modules.fields.FacilioField" %>
-<%@ page import="com.facilio.modules.FieldFactory" %>
 <%@ page import="com.facilio.modules.FieldType" %>
 <%@ page import="com.facilio.modules.fields.LookupField" %>
 
 <%@ page import="com.facilio.modules.FacilioModule" %>
-<%@ page import="com.facilio.modules.FacilioStatus" %>
 <%@ page import="com.facilio.beans.ModuleBean" %>
 <%@ page import="com.facilio.fw.BeanFactory" %>
-<%@ page import="com.facilio.bmsconsole.util.TicketAPI" %>
-<%@ page import="com.facilio.bmsconsole.util.FormsAPI" %>
-<%@ page import="com.facilio.bmsconsole.forms.FacilioForm" %>
 <%@ page import="com.facilio.constants.FacilioConstants" %>
 <%@ page import="com.facilio.modules.fields.FacilioField" %>
-<%@ page import="com.facilio.bmsconsole.forms.FormField" %>
-<%@ page import="java.util.Collections" %>
 <%@ page import="java.util.Arrays" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.facilio.modules.FieldType" %>
@@ -54,35 +47,6 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
-            FacilioModule spaceRatingModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_RATING);
-            if (spaceRatingModule != null) {
-                return false;
-            }
-            if (baseSpaceModule != null) {
-                FacilioModule ratingModule = new FacilioModule();
-                ratingModule.setName(FacilioConstants.ContextNames.SPACE_RATING);
-                ratingModule.setDisplayName("Space Rating");
-                ratingModule.setTableName("Rating");
-                ratingModule.setType(FacilioModule.ModuleType.RATING);
-
-                long moduleId = modBean.addModule(ratingModule);
-                ratingModule.setModuleId(moduleId);
-
-                FacilioField nameField = FieldFactory.getField("name", "Name", "NAME", ratingModule, FieldType.STRING);
-                modBean.addField(nameField);
-
-                FacilioField descriptionField = FieldFactory.getField("description", "Description", "DESCRIPTION", ratingModule, FieldType.STRING);
-                modBean.addField(descriptionField);
-
-                FacilioField ratingField = FieldFactory.getField("ratingValue", "Rating Value", "RATING_VALUE", ratingModule, FieldType.NUMBER);
-                modBean.addField(ratingField);
-
-                FacilioField parentField = FieldFactory.getField("parent", "Parent", "PARENT_ID", ratingModule, FieldType.LOOKUP);
-                ((LookupField) parentField).setLookupModule(baseSpaceModule);
-                modBean.addField(parentField);
-            }
 
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -91,8 +55,10 @@
                     modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM),
                     modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT)
             );
+
             FacilioModule alarmOccurrenModule =  modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
             FacilioModule readingCatogory =  modBean.getModule(FacilioConstants.ContextNames.READING_ALARM_CATEGORY);
+
 
             FacilioModule prealarmoccurrence = new FacilioModule();
             prealarmoccurrence.setName("prealarmoccurrence");
@@ -155,6 +121,8 @@
             modBean.addField(eventsubRuleField);
             NumberField eventreadingIdField = new NumberField(preEvent,  "readingFieldId", "Reading Field ID",  FacilioField.FieldDisplayType.NUMBER, "READING_FIELD_ID",FieldType.NUMBER ,true, false, true, false);
             modBean.addField(eventreadingIdField);
+
+
             return false;
         }
     }
@@ -164,7 +132,6 @@
     List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
     for (Organization org : orgs) {
         AccountUtil.setCurrentAccount(org.getOrgId());
-
         FacilioChain c = FacilioChain.getTransactionChain();
         c.addCommand(new OrgLevelMigrationCommand());
         c.execute();

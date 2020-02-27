@@ -71,7 +71,7 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 			DateRange modifiedDateRange = new DateRange();	
 			// ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
 			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
-			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() != -1) {
+			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
 				modifiedDateRange = deleteEntirePreAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime);
 			}
 			modifiedDateRange = deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime);
