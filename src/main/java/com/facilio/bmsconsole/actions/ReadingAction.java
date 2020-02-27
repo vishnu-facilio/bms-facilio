@@ -25,13 +25,12 @@ import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.LoggerContext;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResetCounterMetaContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.EnergyMeterUtilAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
@@ -1469,7 +1468,7 @@ public class ReadingAction extends FacilioAction {
 		return this.perPage;
 	}
 	
-	// connected, writable, readable, formula or nonformula
+	// connected, nonconnected, writable, readable, unused, formula or nonformula
 	private String readingType;
 	public String getReadingType() {
 		return readingType;

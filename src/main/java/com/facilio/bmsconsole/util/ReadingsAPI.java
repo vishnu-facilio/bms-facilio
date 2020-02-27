@@ -1,15 +1,44 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -19,11 +48,21 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.*;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateTimeUtil;
@@ -36,21 +75,6 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 public class ReadingsAPI {
 	private static final Logger LOGGER = LogManager.getLogger(ReadingsAPI.class.getName());
@@ -249,11 +273,11 @@ public class ReadingsAPI {
 	}
 	
 	public static long getReadingDataMetaCount(Long resourceId, boolean excludeEmptyFields, String search, ReadingInputType...inputTypes) throws Exception {
-		return getReadingDataMetaCount(Collections.singletonList(resourceId), excludeEmptyFields, search, null, inputTypes);
+		return getReadingDataMetaCount(Collections.singletonList(resourceId), excludeEmptyFields, false, search, null, inputTypes);
 	}
 	
-	public static long getReadingDataMetaCount(Collection<Long> resourceIds, boolean excludeEmptyFields, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
-		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, true, null, search, readingType, inputTypes);
+	public static long getReadingDataMetaCount(Collection<Long> resourceIds, boolean excludeEmptyFields, boolean unused, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
+		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, unused, true, null, search, readingType, inputTypes);
 		if (props != null && !props.isEmpty()) {
 			return (long) props.get(0).get("count");
 		}
@@ -273,7 +297,7 @@ public class ReadingsAPI {
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingInputType...inputTypes) throws Exception {
-		return getReadingDataMetaList(resourceIds, fieldMap, excludeEmptyFields, pagination, search, null, inputTypes);
+		return getReadingDataMetaList(resourceIds, fieldMap, excludeEmptyFields, false, pagination, search, null, inputTypes);
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingType readingType) throws Exception {
@@ -285,15 +309,15 @@ public class ReadingsAPI {
 		if (fieldList != null) {
 			fieldMap = FieldFactory.getAsIdMap(fieldList);
 		}
-		return getReadingDataMetaList(resourceIds, fieldMap, excludeEmptyFields, pagination, search, readingType, inputTypes);
+		return getReadingDataMetaList(resourceIds, fieldMap, excludeEmptyFields, false, pagination, search, readingType, inputTypes);
 	}
 	
-	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
-		List<Map<String, Object>> stats = getRDMProps(resourceIds, fieldMap, excludeEmptyFields, false, pagination, search, readingType, inputTypes);
+	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean unused,JSONObject pagination, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
+		List<Map<String, Object>> stats = getRDMProps(resourceIds, fieldMap, excludeEmptyFields, unused, false, pagination, search, readingType, inputTypes);
 		return getReadingDataFromProps(stats, fieldMap);
 	}
 	
-	private static List<Map<String, Object>> getRDMProps (Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean fetchCount, JSONObject pagination, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
+	private static List<Map<String, Object>> getRDMProps (Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean unused, boolean fetchCount, JSONObject pagination, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
@@ -319,12 +343,17 @@ public class ReadingsAPI {
 			builder.andCondition(CriteriaAPI.getCondition(resourceIdField, resourceIds, NumberOperators.EQUALS));
 		}
 		
-		if (excludeEmptyFields) {
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T));
-			criteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
-			criteria.addOrCondition(CriteriaAPI.getCondition(readingFieldsMap.get("custom"), String.valueOf(true), BooleanOperators.IS));
-			builder.andCriteria(criteria);
+		Criteria valueCriteria = new Criteria();
+		if (unused) {
+			valueCriteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.IS));
+		}
+		else if (excludeEmptyFields) {
+			valueCriteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T));
+			valueCriteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
+//			valueCriteria.addOrCondition(CriteriaAPI.getCondition(readingFieldsMap.get("custom"), String.valueOf(true), BooleanOperators.IS));
+		}
+		if (!valueCriteria.isEmpty()) {
+			builder.andCriteria(valueCriteria);
 		}
 		
 		if(readingType != null) {
