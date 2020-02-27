@@ -16,6 +16,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -83,6 +84,7 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
 							.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
 					LOGGER.debug("Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
+					LOGGER.log(Level.INFO, "Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
 					builder.insert(baseAlarm);
 				}
 			}

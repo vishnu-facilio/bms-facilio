@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.SaveAlarmAndEventsCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
@@ -26,6 +27,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 
@@ -33,6 +37,7 @@ import java.util.*;
 
 public class PreEventContext extends BaseEventContext {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = LogManager.getLogger(PreEventContext.class.getName());
     private List<ReadingEventContext> readingEvent;
     public void addReadingEvent(ReadingEventContext baseEvent) {
         if (readingEvent == null) {
@@ -226,6 +231,7 @@ public class PreEventContext extends BaseEventContext {
         }
     }
     public void evaluateFlapping() throws  Exception {
+           LOGGER.log(Level.INFO, "flapping Rule" + rule + "readingContext" + readingContext);
             String key = rule.getId()+ "_"+ readingContext.getParentId() + "_" + BaseAlarmContext.Type.PRE_ALARM.getIndex();
             PreAlarmOccurrenceContext alarmOccurrence = (PreAlarmOccurrenceContext) NewAlarmAPI.getLatestAlarmOccurance(key);
             long flapCount = 0;
