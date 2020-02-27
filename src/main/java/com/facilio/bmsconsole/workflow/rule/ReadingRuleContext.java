@@ -918,7 +918,6 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		PreEventContext event = new PreEventContext();
 		event.setResource((ResourceContext) reading.getParent());
 
-		event.setReadingContext(reading);
 		event.setReadingFieldId(this.getReadingFieldId());
 
 		ReadingRuleContext rule =  new ReadingRuleContext();
@@ -955,6 +954,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		PreEventContext preEvent = (PreEventContext)event;
 		preEvent.setObj(obj);
 		preEvent.setReadingFieldId(this.getReadingFieldId());
+		preEvent.setReadingContext(reading);
 
 		ReadingRuleContext rule =  new ReadingRuleContext();
 		rule.setId(this.getRuleGroupId());
