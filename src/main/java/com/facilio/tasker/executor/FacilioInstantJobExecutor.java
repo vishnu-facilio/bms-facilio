@@ -16,6 +16,10 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.queue.FacilioObjectQueue;
 import com.facilio.queue.ObjectMessage;
 import com.facilio.tasker.config.InstantJobConf;
@@ -38,12 +42,18 @@ public class FacilioInstantJobExecutor implements Runnable {
 	private ConcurrentMap<String, JobTimeOutInfo> jobMonitorMap = new ConcurrentHashMap<>();
 	private int maxThreads;
 	private String name;
+	private String tableName;
+	private int dataRetention;
+	private int pollingFrequency;
 
 
-	public FacilioInstantJobExecutor(String name, String tableName, String dataTableName, int maxThreads, int queueSize) {
+	public FacilioInstantJobExecutor(String name, String tableName, String dataTableName, int maxThreads, int queueSize, int dataRetention, int pollingFrequency) { //pollingFrequency can have maximum of 30s and so int 
 		this.name = name;
 		objectQueue = new FacilioObjectQueue(tableName, dataTableName);
 		this.maxThreads = maxThreads > 0 ? maxThreads : DEFAULT_MAX_THREADS;
+		this.tableName = tableName;
+		this.dataRetention = dataRetention;
+		this.pollingFrequency = pollingFrequency;
 		threadPoolExecutor = new ThreadPoolExecutor(this.maxThreads, //core pool size
 													this.maxThreads, //max pool size
 													KEEP_ALIVE,
@@ -127,9 +137,9 @@ public class FacilioInstantJobExecutor implements Runnable {
 					}
 				}
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(pollingFrequency);
 				} catch (InterruptedException e) {
-					LOGGER.info("Exception in sleep ", e);
+					LOGGER.info("Exception in pollingFrequencySleep ", e);
 				}
 			} catch (Exception e) {
 				LOGGER.info("Exception in Facilio instant job queue executor " + e);
@@ -168,4 +178,22 @@ public class FacilioInstantJobExecutor implements Runnable {
 			throw new IllegalArgumentException("Unable to add instant job to queue");
 		}
 	}
+	
+	public void deleteInstantJobQueueTable() throws Exception {
+		long deletionTillDate = (System.currentTimeMillis() - (dataRetention * 24 * 60 * 60 * 1000)); 
+
+		try{
+            GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                    .table(tableName)
+                    .andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "", CommonOperators.IS_NOT_EMPTY))
+                    .andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", ""+ deletionTillDate, DateOperators.IS_BEFORE));
+            
+            int deletionCount = builder.delete();
+            LOGGER.info(tableName+ " deleted queue count is : "+deletionCount); 
+            
+        }catch(Exception e){
+        	CommonCommandUtil.emailException("FacilioExecutorInstantJobDeletion", "ExecutorDeletionJob Failed  -- "+tableName+ " with tillDate --" +deletionTillDate, e);
+        	LOGGER.info("Exception occurred in FacilioExecutorInstantJobDeletion :  "+tableName+ " with tillDate --" +deletionTillDate,e);
+        }
+    }
 }

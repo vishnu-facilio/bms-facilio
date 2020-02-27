@@ -50,7 +50,9 @@ public class FacilioInstantJobScheduler {
                 String dataTableName = (String) ex.get("dataTableName");
                 int maxThreads = (int) ex.getOrDefault("maxThreads", -1);
                 int queueSize = (int) ex.getOrDefault("queueSize", -1);
-                FacilioInstantJobExecutor executor = new FacilioInstantJobExecutor(name, tableName, dataTableName, maxThreads, queueSize);
+            	int dataRetention = (int) ex.get("dataRetention");
+                int pollingFrequency = (int) ex.get("pollingFrequency");
+                FacilioInstantJobExecutor executor = new FacilioInstantJobExecutor(name, tableName, dataTableName, maxThreads, queueSize, dataRetention, pollingFrequency);
                 executors.put(name, executor);
                 if (isInstantJobServer) {
                     executor.startExecutor();
@@ -116,6 +118,12 @@ public class FacilioInstantJobScheduler {
                     LOGGER.error("Invalid job configuration : "+jobConf);
                 }
             }
+        }
+    }
+    
+    public static void deleteExecutorsInstantJobQueueTable() throws Exception {
+    	for (FacilioInstantJobExecutor executor : executors.values()) {
+    		executor.deleteInstantJobQueueTable();
         }
     }
 }
