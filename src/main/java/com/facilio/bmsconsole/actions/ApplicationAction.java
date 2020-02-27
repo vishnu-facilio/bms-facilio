@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -58,7 +60,6 @@ public class ApplicationAction extends FacilioAction {
 		chain.execute();
 
 		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
-
 		return SUCCESS;
 	}
 	
@@ -84,6 +85,8 @@ public class ApplicationAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
 		chain.execute();
 		setResult(FacilioConstants.ContextNames.APPLICATION, context.get(FacilioConstants.ContextNames.APPLICATION));
+		boolean isWebTabEnabled = AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB);
+		setResult("isWebTabEnabled", isWebTabEnabled);
 		return SUCCESS;
 	}
 

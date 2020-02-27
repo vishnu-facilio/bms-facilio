@@ -31,7 +31,7 @@ public class GetApplicationDetails extends FacilioCommand {
 			throw new IllegalArgumentException("Invalid Application Id");
 		}
 		if (application != null) {
-			List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabGroupsForAppId(appId);
+			List<WebTabGroupContext> webTabGroups = ApplicationApi.getWebTabGroupsForAppId(application.getId());
 			if (webTabGroups != null && !webTabGroups.isEmpty()) {
 				for (WebTabGroupContext webTabGroup : webTabGroups) {
 					List<WebTabContext> webTabs = ApplicationApi.getWebTabsForWebGroup(webTabGroup.getId());
