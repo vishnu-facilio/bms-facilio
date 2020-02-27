@@ -191,6 +191,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			}
 			Map<Long, PMResourcePlannerContext> resourcePlanners = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
 			WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+			//PreventiveMaintenanceAPI.addJobPlanSectionsToWorkorderTemplate(pm, workorderTemplate);							 un command here to start using job plans 
 			WorkOrderContext wo = null;
 			List<Long> resourceIds = null;
 

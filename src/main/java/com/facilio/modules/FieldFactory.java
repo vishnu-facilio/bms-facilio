@@ -7687,6 +7687,28 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getPMJobPlanFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getPMJobPlanModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
+		fields.add(getField("jobPlanId", "JOB_PLAN_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getPMJobPlanTriggerFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getPMJobPlanTriggerModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("pmjobPlanId", "PM_JOB_PLAN_ID", module, FieldType.NUMBER));
+		fields.add(getField("triggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	
 	public static List<FacilioField> getCBModelFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getCBModelModule();

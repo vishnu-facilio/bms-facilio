@@ -35,6 +35,17 @@ public class PreventiveMaintenance extends ResourceContext {
 
 	List<PMResourcePlannerContext> resourcePlanners;
 	
+	
+	List<PMJobPlanContext> pmjobPlans;
+	
+	public List<PMJobPlanContext> getPmjobPlans() {
+		return pmjobPlans;
+	}
+
+	public void setPmjobPlans(List<PMJobPlanContext> pmjobPlans) {
+		this.pmjobPlans = pmjobPlans;
+	}
+
 	private static final long serialVersionUID = 1L;
 	public String getTitle() {
 		return getName();

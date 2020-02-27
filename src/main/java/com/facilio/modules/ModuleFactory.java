@@ -693,6 +693,13 @@ public class ModuleFactory {
 		return alarmFollowersModule;
 	}
 	
+	public static FacilioModule getPMJobPlanModule() {
+		return constructModule("pmjobplan", "pm job plan", "PM_Job_Plan");
+	}
+	public static FacilioModule getPMJobPlanTriggerModule() {
+		return constructModule("PMJobPlanTriggers", "PM Job Plan Triggers", "PM_Job_Plan_Triggers");
+	}
+	
 	public static FacilioModule getCBModelModule() {
 		return constructModule("cbmodel", "Chat Bot Model", "CB_Model");
 	}

@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.GetSpaceCategoriesCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.jobs.FailedPMNewScheduler;
+import com.facilio.bmsconsole.jobs.PMNewScheduler;
 import com.facilio.bmsconsole.templates.*;
 import com.facilio.db.builder.*;
 import com.facilio.modules.*;
@@ -100,7 +101,77 @@ public class PreventiveMaintenanceAPI {
 		}
 		return startTime;
 	}
-
+	
+	public static void addJobPlanSectionsToWorkorderTemplate(PreventiveMaintenance pm,WorkorderTemplate workorderTemplate) {
+		try {
+			pm.setPmjobPlans(getJobPlanFromPM(pm.getId()));
+			
+			if(pm.getPmjobPlans() != null && !pm.getPmjobPlans().isEmpty()) {
+				
+				for(PMJobPlanContext pmJobPlan : pm.getPmjobPlans()) {
+					workorderTemplate.getSectionTemplates().addAll(pmJobPlan.prepareAndGetJobPlanSections());
+				}
+			}
+		}
+		catch(Exception e) {
+			
+			LOGGER.error("ERROR IN APPLYING JOB PLAN TO  PMID: " + pm.getId());
+			CommonCommandUtil.emailException(PMNewScheduler.class.getName(), "ERROR IN APPLYING JOB PLAN TO  PMID: " + pm.getId(), e);
+		}
+	}
+	
+	private static List<PMJobPlanContext> getJobPlanFromPM(long pmId) throws Exception {
+		
+		FacilioModule module = ModuleFactory.getPMJobPlanModule();
+		List<FacilioField> fields = FieldFactory.getPMJobPlanFields();
+		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("pmId"), pmId+"", NumberOperators.EQUALS))
+														;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			
+			List<PMJobPlanContext> pmJobPlans = new ArrayList<>();
+			for(Map<String, Object> prop :props) {
+				PMJobPlanContext pmJobPlan = FieldUtil.getAsBeanFromMap(prop, PMJobPlanContext.class);
+				pmJobPlan.setJobPlanContext(JobPlanApi.getJobPlan(pmJobPlan.getJobPlanId()));
+				pmJobPlan.setPmjobPlanTriggers(getJobPlanTriggers(pmJobPlan.getId()));
+				pmJobPlans.add(pmJobPlan);
+			}
+			return pmJobPlans;
+		}
+		return null;
+	}
+	
+	private static List<PmJobPlanTriggerContext> getJobPlanTriggers(long pmjobPlanId) throws Exception {
+		
+		FacilioModule module = ModuleFactory.getPMJobPlanTriggerModule();
+		List<FacilioField> fields = FieldFactory.getPMJobPlanTriggerFields();
+		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("pmjobPlanId"), pmjobPlanId+"", NumberOperators.EQUALS))
+														;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			
+			List<PmJobPlanTriggerContext> pmJobPlanTriggers = new ArrayList<>();
+			for(Map<String, Object> prop :props) {
+				PmJobPlanTriggerContext pmJobPlanTrigger = FieldUtil.getAsBeanFromMap(prop, PmJobPlanTriggerContext.class);
+				pmJobPlanTriggers.add(pmJobPlanTrigger);
+			}
+			return pmJobPlanTriggers;
+		}
+		return null;
+	}
+	
 	public static void populateResourcePlanner(PreventiveMaintenance pm) throws Exception {
 		Map<Long, PMResourcePlannerContext> resourcePlanners = getPMResourcesPlanner(pm.getId());
 		populateResourcePlanner(pm, resourcePlanners);

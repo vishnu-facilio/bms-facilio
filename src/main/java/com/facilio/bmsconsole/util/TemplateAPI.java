@@ -999,6 +999,9 @@ public class TemplateAPI {
 	public static Map<String, List<TaskContext>> getTasksFromTemplate (JobPlanContext jobPlan) throws Exception {
 		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(null, jobPlan);
 		Map<String, List<TaskContext>> tasks = getTasksFromWOTemplate(null, sectionMap, jobPlan);
+		if(sectionMap != null) {
+			jobPlan.setSectionTemplates(new ArrayList<>(sectionMap.values()));
+		}
 		return tasks;
 	}
 

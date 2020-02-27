@@ -59,6 +59,11 @@ public class TaskSectionTemplate extends Template {
 		this.pmTriggerContexts = pmTriggerContexts;
 	}
 	
+	public void addPmTriggerContext(PMTriggerContext pmTriggerContext) {
+		this.pmTriggerContexts = pmTriggerContexts == null ? new ArrayList<>() : this.pmTriggerContexts;
+		this.pmTriggerContexts.add(pmTriggerContext);
+	}
+	
 	private List<PMTriggerContext> pmTriggerContexts;
 	
 	

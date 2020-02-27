@@ -14,6 +14,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
+import com.facilio.bmsconsole.context.PMJobPlanContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
@@ -129,7 +130,7 @@ public class PMNewScheduler extends FacilioJob {
 			CommonCommandUtil.emailException("PMScheduler", "Exception occurred in PM Scheduler Job - "+jc.getJobId(), e);
 		}
 	}
-		
+	
 	private List<BulkWorkOrderContext>  createPMJobs(PreventiveMaintenance pm, Map<Long,PMTriggerContext> triggerMap) throws Exception {
 	    List<BulkWorkOrderContext> bulkWorkOrderContexts = new ArrayList<>();
 		FacilioContext context = new FacilioContext();
@@ -138,6 +139,7 @@ public class PMNewScheduler extends FacilioJob {
 		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 			long templateId = pm.getTemplateId();
 			WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+			// PreventiveMaintenanceAPI.addJobPlanSectionsToWorkorderTemplate(pm, workorderTemplate); 								   un command here to start using job plans
 			if (workorderTemplate != null) {
 				Long baseSpaceId = pm.getBaseSpaceId();
 				if (baseSpaceId == null || baseSpaceId < 0) {
@@ -180,6 +182,7 @@ public class PMNewScheduler extends FacilioJob {
 		else {
 			long templateId = pm.getTemplateId();
 			WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
+			// PreventiveMaintenanceAPI.addJobPlanSectionsToWorkorderTemplate(pm, workorderTemplate);										un command here to start using job plans
 			List<BulkWorkOrderContext> bulkWorkOrderContextList = generateBulkWoContext(pm, context, workorderTemplate, pm.getTriggers());
 			if (!bulkWorkOrderContextList.isEmpty()) {
 				bulkWorkOrderContexts.addAll(bulkWorkOrderContextList);

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -7,8 +8,12 @@ import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class JobPlanContext {
+public class JobPlanContext implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name;
 	public String getName() {
 		return name;
