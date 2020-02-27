@@ -318,7 +318,12 @@ public class LoginAction extends FacilioAction {
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("assetCategory", AssetsAPI.getCategoryList());
-		data.put("sites", SpaceAPI.getAllSites());
+		if (AccountUtil.getCurrentAccount().isFromMobile()) {
+			data.put("sites", CommonCommandUtil.getMySites());
+		}
+		else {
+			data.put("sites", SpaceAPI.getAllSites());
+		}
 		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
 		
 		// temp	
