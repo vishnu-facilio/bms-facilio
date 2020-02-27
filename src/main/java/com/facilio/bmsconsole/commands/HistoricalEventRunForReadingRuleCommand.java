@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.bmsconsole.context.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -16,15 +17,6 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.LoggerContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ReadingEventContext;
-import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
-import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
-import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob;
 import com.facilio.bmsconsole.util.AlarmAPI;
@@ -164,12 +156,12 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 			long readingsFetchStartTime = System.currentTimeMillis();
 			long processStartTime = System.currentTimeMillis();
 			List<ReadingContext> readings = null;
-			List<ReadingEventContext> events = new ArrayList<>();
-			ReadingEventContext previousEventMeta = new ReadingEventContext();	
+			List<BaseEventContext> events = new ArrayList<>();
+			BaseEventContext previousEventMeta = new ReadingEventContext();
 
 			if(isFirstIntervalJob)
 			{
-				List<ReadingEventContext> beforeFetchFirstEvent = new ArrayList<ReadingEventContext>();	
+				List<BaseEventContext> beforeFetchFirstEvent = new ArrayList<BaseEventContext>();
 				ReadingContext previousFetchStartReading = fetchSingleReading(readingRule, resourceId, startTime, NumberOperators.LESS_THAN, "TTIME DESC");
 				
 				if(previousFetchStartReading != null)
@@ -199,12 +191,12 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 				
 				if(events != null && !events.isEmpty())
 				{
-					ReadingEventContext finalEventOfCurrentJobInterval = events.get(events.size() - 1);
+					BaseEventContext finalEventOfCurrentJobInterval = events.get(events.size() - 1);
 
 					if(!isLastIntervalJob && finalEventOfCurrentJobInterval.getCreatedTime() == endTime && !finalEventOfCurrentJobInterval.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY));
 					{		
 						previousEventMeta = finalEventOfCurrentJobInterval;
-						List<ReadingEventContext> nextJobFirstEvent = new ArrayList<ReadingEventContext>();
+						List<BaseEventContext> nextJobFirstEvent = new ArrayList<BaseEventContext>();
 						
 						ReadingContext nextSingleReading = fetchSingleReading(readingRule, resourceId, endTime, NumberOperators.GREATER_THAN, "TTIME");
 						if(nextSingleReading != null)
@@ -292,7 +284,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 		}
 	}
 	
-	private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<ReadingEventContext> readingEvents,ReadingEventContext previousEventMeta) throws Exception 
+	private int executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<BaseEventContext> readingEvents,BaseEventContext previousEventMeta) throws Exception
 	{
 		int alarmCount = 0;
 		if (readings != null && !readings.isEmpty()) 
@@ -340,7 +332,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 							alarmCount++;
 							context.put(FacilioConstants.ContextNames.IS_ALARM_CREATED, Boolean.FALSE);
 						}
-						List<ReadingEventContext> currentEvent = (List<ReadingEventContext>) context.remove(EventConstants.EventContextNames.EVENT_LIST);
+						List<BaseEventContext> currentEvent = (List<BaseEventContext>) context.remove(EventConstants.EventContextNames.EVENT_LIST);
 						if (CollectionUtils.isNotEmpty(currentEvent)) {
 							previousEventMeta = currentEvent.get(0);
 							readingEvents.addAll(currentEvent);
@@ -566,23 +558,46 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalEventRunForReadi
 		return extendedCurrentFields;
 	}
 	
-	private void insertEventsWithoutAlarmOccurrenceProcessed(List<ReadingEventContext> events, long ruleId) throws Exception 
-	{	
-		for(ReadingEventContext readingEvent:events)
+	private void insertEventsWithoutAlarmOccurrenceProcessed(List<BaseEventContext> events, long ruleId) throws Exception
+	{
+		List<ReadingEventContext> readingEvents  = new ArrayList<ReadingEventContext>();
+		List<PreEventContext> preEvents  = new ArrayList<PreEventContext>();
+		for(BaseEventContext event:events)
 		{
-			readingEvent.setRuleId(ruleId);
-			readingEvent.setSeverity(AlarmAPI.getAlarmSeverity(readingEvent.getSeverityString()));
-			readingEvent.setMessageKey(readingEvent.constructMessageKey());
-			readingEvent.setAlarmOccurrence(null);
-			readingEvent.setBaseAlarm(null);				
+			if (event instanceof  ReadingEventContext) {
+				ReadingEventContext readingEvent = (ReadingEventContext) event;
+				readingEvent.setRuleId(ruleId);
+				readingEvent.setSeverity(AlarmAPI.getAlarmSeverity(readingEvent.getSeverityString()));
+				readingEvent.setMessageKey(readingEvent.constructMessageKey());
+				readingEvent.setAlarmOccurrence(null);
+				// readingEvent.setReadingFieldId(((ReadingEventContext) event).getReadingFieldId());
+				readingEvent.setBaseAlarm(null);
+				readingEvents.add(readingEvent);
+			}
+			else if (event instanceof PreEventContext) {
+				PreEventContext preEvent = (PreEventContext) event;
+				preEvent.setSeverity(AlarmAPI.getAlarmSeverity(preEvent.getSeverityString()));
+				preEvent.setMessageKey(preEvent.constructMessageKey());
+				preEvent.setReadingContext(preEvent.getReadingContext());
+				preEvent.setAlarmOccurrence(null);
+				preEvent.setBaseAlarm(null);
+				preEvents.add(preEvent);
+			}
 		}
-		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (!preEvents.isEmpty()) {
+			String moduleName = NewEventAPI.getEventModuleName(Type.PRE_ALARM);
+			InsertRecordBuilder<PreEventContext> builder = new InsertRecordBuilder<PreEventContext>()
+					.moduleName(moduleName)
+					.fields(modBean.getAllFields(moduleName));
+			builder.addRecords(preEvents);
+			builder.save();
+		}
 		String moduleName = NewEventAPI.getEventModuleName(Type.READING_ALARM);
 		InsertRecordBuilder<ReadingEventContext> builder = new InsertRecordBuilder<ReadingEventContext>()
 				.moduleName(moduleName)
 				.fields(modBean.getAllFields(moduleName));
-		builder.addRecords(events);
+		builder.addRecords(readingEvents);
 		builder.save();	
 	}
 	

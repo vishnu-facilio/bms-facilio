@@ -5,6 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -12,17 +16,7 @@ import org.apache.log4j.Logger;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.ReadingEventContext;
-import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
-import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
-import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.NewEventAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLogsAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleResourceLoggerAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -54,9 +48,11 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			Long resourceId = parentRuleResourceLoggerContext.getResourceId();
 			Long lesserStartTime = parentRuleResourceLoggerContext.getModifiedStartTime();
 			Long greaterEndTime = parentRuleResourceLoggerContext.getModifiedEndTime();
-			
-			List<ReadingEventContext> readingEvents = fetchAllEventsBasedOnAlarmDeletionRange(ruleId, resourceId, lesserStartTime, greaterEndTime);
-			
+			List<BaseEventContext> readingEvents = new ArrayList<BaseEventContext>();
+			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
+			// ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
+			readingEvents.addAll(fetchAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule ,resourceId, lesserStartTime, greaterEndTime, Type.PRE_ALARM));
+			readingEvents.addAll(fetchAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule,resourceId, lesserStartTime, greaterEndTime,  Type.READING_ALARM));
 			if (readingEvents != null && !readingEvents.isEmpty())
 			{
 				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
@@ -87,37 +83,51 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 		return false;
 	}
 	
-	private List<ReadingEventContext> fetchAllEventsBasedOnAlarmDeletionRange(long ruleId,long resourceId,long lesserStartTime,long greaterEndTime) throws Exception  
+	private List<BaseEventContext> fetchAllEventsBasedOnAlarmDeletionRange(long ruleId, AlarmRuleContext alarmRule ,long resourceId,long lesserStartTime,long greaterEndTime, Type type) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		String moduleName = NewEventAPI.getEventModuleName(Type.READING_ALARM);
+		String moduleName = NewEventAPI.getEventModuleName(type);
 		FacilioModule eventModule = modBean.getModule(moduleName);
-		
-		SelectRecordsBuilder<ReadingEventContext> selectEventbuilder = new SelectRecordsBuilder<ReadingEventContext>()
+		SelectRecordsBuilder<BaseEventContext> selectEventbuilder = new SelectRecordsBuilder<BaseEventContext>()
 				.select(modBean.getAllFields(eventModule.getName()))
 				.module(eventModule)
-				.beanClass(ReadingEventContext.class)
+				.beanClass(NewEventAPI.getEventClass(type))
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", ""+resourceId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lesserStartTime+","+greaterEndTime, DateOperators.BETWEEN))
 				.orderBy("CREATED_TIME");
 		
-		List<ReadingEventContext> completeEvents = selectEventbuilder.get();
+		List<BaseEventContext> completeEvents = selectEventbuilder.get();
 		
 		if(completeEvents != null && !completeEvents.isEmpty())
 		{
 			List<Long> readingEventIds = new ArrayList<Long>();
-			for(ReadingEventContext readingEvent :completeEvents)
+
+			for(BaseEventContext readingEvent :completeEvents)
 			{
 				readingEventIds.add(readingEvent.getSeverity().getId());
 			}
 			
 			Map<Long, AlarmSeverityContext> alarmSeverityMap = AlarmAPI.getAlarmSeverityMap(readingEventIds);
 			
-			for(ReadingEventContext readingEvent :completeEvents)
+			for(BaseEventContext readingEvent :completeEvents)
 			{
+//				readingEvent.setSeverity(alarmSeverityMap.get(readingEvent.getSeverity().getId()));
+				if (readingEvent instanceof  ReadingEventContext) {
+					ReadingEventContext readingEventContext = (ReadingEventContext) readingEvent;
+					readingEventContext.setRule(alarmRule.getPreRequsite());
+					readingEventContext.setSubRule(alarmRule.getAlarmTriggerRule());
+				}
+				else if (readingEvent instanceof PreEventContext) {
+					PreEventContext preEvent = (PreEventContext) readingEvent;
+					preEvent.setRule(alarmRule.getPreRequsite());
+					preEvent.setSubRule(alarmRule.getAlarmTriggerRule());
+
+					// preEvent.setReadingContext();
+				}
+				readingEvent.getSeverity().setSeverity(alarmSeverityMap.get(readingEvent.getSeverity().getId()).getSeverity());
 				readingEvent.setSeverityString(alarmSeverityMap.get(readingEvent.getSeverity().getId()).getSeverity());
-			}	
+			}
 		}	
 		return completeEvents;
 	}

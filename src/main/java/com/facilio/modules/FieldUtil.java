@@ -355,6 +355,9 @@ public class FieldUtil {
 										FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE,
 										FacilioConstants.ContextNames.BASE_EVENT,
 										FacilioConstants.ContextNames.READING_EVENT,
+										FacilioConstants.ContextNames.PRE_EVENT,
+										FacilioConstants.ContextNames.PRE_ALARM,
+										FacilioConstants.ContextNames.PRE_ALARM_OCCURRENCE,
 										FacilioConstants.ContextNames.WORKPERMIT,
 										FacilioConstants.ContextNames.SAFETY_PLAN
 										

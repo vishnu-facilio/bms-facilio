@@ -10,6 +10,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.*;
+import com.google.gson.JsonObject;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,13 +25,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ReadingEventContext;
-import com.facilio.bmsconsole.context.ReadingRCAEvent;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.AlarmAPI;
@@ -37,6 +33,7 @@ import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -81,7 +78,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
 	
 	List<ReadingRuleMetricContext> ruleMetrics;
-	
+
 	public List<ReadingRuleMetricContext> getRuleMetrics() {
 		return ruleMetrics;
 	}
@@ -437,27 +434,28 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	}
 	
 	@Override
-	public boolean evaluateWorkflowExpression(String moduleName, Object record, Map<String, Object> placeHolders,
-			FacilioContext context) throws Exception {
+	public boolean evaluateWorkflowExpression(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		boolean workflowFlag = evalWorkflow(placeHolders, (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META));
 		
-		if (record == null) {
-			return workflowFlag;
-		}
-		
-		if (overPeriod != -1 && occurences == -1) {
-			return evalOverPeriod(workflowFlag, (ReadingContext) record);
-		}
-		else if (overPeriod != -1 && occurences != -1) {
-			return evalOverPeriodAndOccurences(workflowFlag, (ReadingContext) record);
-		}
-		else if (isConsecutive() && occurences != -1) {
-			return evalConsecutive(workflowFlag, (ReadingContext) record);
-		}
-		else {
-			return workflowFlag;
-		}
+//		if (record == null) {
+//			return workflowFlag;
+//		}
+//
+//		if (overPeriod != -1 && occurences == -1) {
+//			return evalOverPeriod(workflowFlag, (ReadingContext) record);
+//		}
+//		else if (overPeriod != -1 && occurences != -1) {
+//			// evalOverPeriodPreOccurrence(workflowFlag, (ReadingContext) record, context);
+//			return evalOverPeriodPreOccurrence(workflowFlag, (ReadingContext) record, context);
+//		}
+//		else if (isConsecutive() && occurences != -1) {
+//			return evalConsecutive(workflowFlag, (ReadingContext) record);
+//		}
+//		else {
+//			return workflowFlag;
+//		}
+		return workflowFlag;
 	}
 	
 	private boolean evalWorkflow(Map<String, Object> placeHolders, Map<String, ReadingDataMeta> currentRDM) throws Exception {
@@ -480,54 +478,79 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			return false;
 		}
 	}
-	
-	private static final int OVER_PERIOD_BUFFER = 5 * 60 * 1000;
-	private boolean evalOverPeriod(boolean workflowFlag, ReadingContext reading) throws Exception {
-		if (workflowFlag) { ////If there is no prev flap, add flap and return false
-			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
-			List<Long> flapsToBeDeleted = filterFlapsAndGetOldIds(flaps, reading);
-			boolean result = false;
-			addFlap(reading.getTtime(), reading.getParentId()); //Add flap if it's true
-			if (flaps.isEmpty()) {
-				result = false;
-			}
-			else {
-				long firstFlapDiff = reading.getTtime() - (long)flaps.get(0).get("flapTime");
-				if (AccountUtil.getCurrentOrg().getId() == 134) {
-					LOGGER.info(getId()+"::First flap diff : "+firstFlapDiff+"::"+overPeriod);
-				}
-				if (firstFlapDiff < (overPeriod * 1000)) { // If the first flap is within over period, add flap and return false
-					if (AccountUtil.getCurrentOrg().getId() == 134) {
-						LOGGER.info(getId()+"::Within over period so ignoring");
-					}
-					result = false;
-				}
-				else if (firstFlapDiff <= ((overPeriod * 1000) + OVER_PERIOD_BUFFER)) {
-//					deleteAllFlaps(reading.getParentId());
-					if (AccountUtil.getCurrentOrg().getId() == 134) {
-						LOGGER.info(getId()+"::Rule passed");
-					}
-					result = true;
-				}
-				else { //This shouldn't happen. We can check anyway
-//					deleteAllFlaps(reading.getParentId());
-					addFlap(reading.getTtime(), reading.getParentId());
-//					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.info(getId()+"::Over buffer");
+//	public static Boolean evaluatePreEvent(JSONObject obj, ReadingRuleContext rule , ReadingContext currentRecord, Context context) throws  Exception {
+//		boolean result = false;
+//		String key = rule.getRuleGroupId()+ "_"+ currentRecord.getParentId() + "_" + BaseAlarmContext.Type.PRE_ALARM.getIndex();
+//		AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getLatestAlarmOccurance(key);
+//		if (alarmOccurrence != null) {
+//			if (rule.getOverPeriod() != -1 && rule.getOccurences() == -1) {
+//				long periodDiff = currentRecord.getTtime() - (long) alarmOccurrence.getLastOccurredTime();
+//				if (periodDiff < (rule.getOverPeriod() * 1000)) {
+//					result = false;
+//				} else if (periodDiff <= ((rule.getOverPeriod() * 1000) + OVER_PERIOD_BUFFER)) {
+//					result = true;
+//				}
+//			}
+//			else if (rule.getOverPeriod() != -1 && rule.getOccurences() != -1) {
+//				if (alarmOccurrence.getNoOfEvents() + 1 >= rule.getOccurences()) {
+//					result = true;
+//				}
+//			}
+//			else if (rule.isConsecutive() && rule.getOccurences() != -1) {
+//				// return evalConsecutive(workflowFlag, (ReadingContext) record);
+//			}
+//		}
+//		BaseEventContext event =  ((ReadingRuleContext) rule).constructPreEvent(obj, (ReadingContext) currentRecord,context);
+//		ActionType.addAlarm(event, obj, context, rule, currentRecord);
+//		return result;
+//	}
+//	private static final int OVER_PERIOD_BUFFER = 5 * 60 * 1000;
+//	private boolean evalOverPeriod(boolean workflowFlag, ReadingContext reading) throws Exception {
+//		if (workflowFlag) { ////If there is no prev flap, add flap and return false
+//			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
+//			List<Long> flapsToBeDeleted = filterFlapsAndGetOldIds(flaps, reading);
+//			boolean result = false;
+//			addFlap(reading.getTtime(), reading.getParentId()); //Add flap if it's true
+//			if (flaps.isEmpty()) {
+//				result = false;
+//			}
+//			else {
+//				long firstFlapDiff = reading.getTtime() - (long)flaps.get(0).get("flapTime");
+//				if (AccountUtil.getCurrentOrg().getId() == 134) {
+//					LOGGER.info(getId()+"::First flap diff : "+firstFlapDiff+"::"+overPeriod);
+//				}
+//				if (firstFlapDiff < (overPeriod * 1000)) { // If the first flap is within over period, add flap and return false
+//					if (AccountUtil.getCurrentOrg().getId() == 134) {
+//						LOGGER.info(getId()+"::Within over period so ignoring");
 //					}
-					result = false;
-				}
-			}
-			if (!flapsToBeDeleted.isEmpty()) {
-				deleteOldFlaps(flapsToBeDeleted);
-			}
-			return result;
-		}
-		else {
-			deleteAllFlaps(reading.getParentId());
-			return false;
-		}
-	}
+//					result = false;
+//				}
+//				else if (firstFlapDiff <= ((overPeriod * 1000) + OVER_PERIOD_BUFFER)) {
+////					deleteAllFlaps(reading.getParentId());
+//					if (AccountUtil.getCurrentOrg().getId() == 134) {
+//						LOGGER.info(getId()+"::Rule passed");
+//					}
+//					result = true;
+//				}
+//				else { //This shouldn't happen. We can check anyway
+////					deleteAllFlaps(reading.getParentId());
+//					addFlap(reading.getTtime(), reading.getParentId());
+////					if (AccountUtil.getCurrentOrg().getId() == 135) {
+//						LOGGER.info(getId()+"::Over buffer");
+////					}
+//					result = false;
+//				}
+//			}
+//			if (!flapsToBeDeleted.isEmpty()) {
+//				deleteOldFlaps(flapsToBeDeleted);
+//			}
+//			return result;
+//		}
+//		else {
+//			deleteAllFlaps(reading.getParentId());
+//			return false;
+//		}
+//	}
 	
 	private List<Long> filterFlapsAndGetOldIds (List<Map<String, Object>> flaps, ReadingContext reading) throws Exception {
 		List<Long> flapsToBeDeleted = new ArrayList<>();
@@ -550,50 +573,65 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 //											.collect(Collectors.toList());
 //		deleteOldFlaps(flapsToBeDeleted);
 //	}
-	
-	private boolean evalOverPeriodAndOccurences(boolean workflowFlag, ReadingContext reading) throws Exception {
+
+	private boolean evalOverPeriodPreOccurrence (boolean workflowFlag, ReadingContext reading, FacilioContext context) throws  Exception {
+
 		if (workflowFlag) {
-			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
-			List<Long> flapsToBeDeleted = filterFlapsAndGetOldIds(flaps, reading);
-			boolean flag = checkOccurences(flaps, reading);
-			deleteOldFlaps(flapsToBeDeleted);
-			return flag;
-		}
-		else {
-			return false;
-		}
-	}
-	
-	private boolean evalConsecutive(boolean workflowFlag, ReadingContext reading) throws Exception {
-		if (workflowFlag) {
-			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
-			boolean flag = checkOccurences(flaps, reading);
-			if (flag && CollectionUtils.isNotEmpty(flaps)) { //Remove oldest entry alone
-				deleteOldFlaps(Collections.singletonList((Long) flaps.get(0).get("id")));
-			}
-			return flag;
-		}
-		else {
-			deleteAllFlaps(reading.getParentId());
-			return false;
-		}
-	}
-	
-	private boolean checkOccurences(List<Map<String, Object>> flaps, ReadingContext reading) throws Exception {
-		addFlap(reading.getTtime(), reading.getParentId()); //Add flap if it's true
-		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 232l) {
-			if (getParentId() == 33962l) {
-				LOGGER.info("----- " + flaps.size() + " ----- " + occurences + " -----");
-			}
-		}
-		if (flaps.size() + 1 == occurences) { //Old flaps + current flap
-//			deleteAllFlaps(reading.getParentId());
+			context.put(FacilioConstants.ContextNames.IS_PRE_EVENT, true);
+			BaseEventContext event = constructPreEvent(new JSONObject(), (ReadingContext) reading, context);
+			ActionType.addAlarm(event, new JSONObject(), context, this, reading);
 			return true;
 		}
 		else {
 			return false;
 		}
 	}
+
+
+//	private boolean evalOverPeriodAndOccurences(boolean workflowFlag, ReadingContext reading) throws Exception {
+//		if (workflowFlag) {
+//			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
+//			List<Long> flapsToBeDeleted = filterFlapsAndGetOldIds(flaps, reading);
+//			boolean flag = checkOccurences(flaps, reading);
+//			deleteOldFlaps(flapsToBeDeleted);
+//			return flag;
+//		}
+//		else {
+//			return false;
+//		}
+//	}
+	
+//	private boolean evalConsecutive(boolean workflowFlag, ReadingContext reading) throws Exception {
+//		if (workflowFlag) {
+//			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
+//			boolean flag = checkOccurences(flaps, reading);
+//			if (flag && CollectionUtils.isNotEmpty(flaps)) { //Remove oldest entry alone
+//				deleteOldFlaps(Collections.singletonList((Long) flaps.get(0).get("id")));
+//			}
+//			return flag;
+//		}
+//		else {
+//			deleteAllFlaps(reading.getParentId());
+//			return false;
+//		}
+//	}
+	
+//	private boolean checkOccurences(List<Map<String, Object>> flaps, ReadingContext reading) throws Exception {
+//		addFlap(reading.getTtime(), reading.getParentId()); //Add flap if it's true
+//		if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 232l) {
+//			if (getParentId() == 33962l) {
+//				LOGGER.info("----- " + flaps.size() + " ----- " + occurences + " -----");
+//			}
+//		}
+//		if (flaps.size() +
+//		1 == occurences) { //Old flaps + current flap
+////			deleteAllFlaps(reading.getParentId());
+//			return true;
+//		}
+//		else {
+//			return false;
+//		}
+//	}
 	
 	private void updateLastValueForReadingRule(ReadingContext record) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
 		Criteria criteria = getCriteria();
@@ -656,13 +694,16 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 						double currentVal = Double.valueOf(currentMetric.toString());
 						double minVal = Math.min(prevVal, currentVal);
 						double maxVal = Math.max(prevVal, currentVal);
-						
-						singleFlap = minVal <= minFlapValue && maxVal >= maxFlapValue;
+						if (currentVal == minVal || currentVal == maxVal) {
+							singleFlap = minVal <= minFlapValue && maxVal >= maxFlapValue;
+						} else {
+							singleFlap = false;
+						}
 					}
 					else if (currentMetric instanceof Boolean) {
 						singleFlap = currentMetric != (Boolean) prevValue;
 					}
-					return singleFlap && isFlappedNTimes(reading);
+					return singleFlap;
 				default:
 					break;
 				}
@@ -697,109 +738,111 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		return false;
 	}
 	
-	private boolean isFlappedNTimes(ReadingContext record) throws Exception {
-		boolean flapThreshold = false;
-		List<Long> flapsToBeDeleted = new ArrayList<>();
-		List<Map<String, Object>> flaps = getFlaps(record.getParentId());
-		int flapCount = 0;
-		if (flaps != null && !flaps.isEmpty()) {
-			flapCount = flaps.size();
-			for(Map<String, Object> flap : flaps) {
-				if (record.getTtime() - (long) flap.get("flapTime") > flapInterval) {
-					flapsToBeDeleted.add((Long) flap.get("id"));
-					flapCount--;
-				}
-			}
-		}
-		flapCount++;
-		flapThreshold = flapCount == flapFrequency;
-		if (flapThreshold) {
-			//Reset prev flaps
-			flapsToBeDeleted.clear();
-			for(Map<String, Object> flap : flaps) {
-				flapsToBeDeleted.add((Long) flap.get("id"));
-			}
-			flapCount = 0;
-		}
-		else {
-			addFlap(record.getTtime(), record.getParentId());
-		}
-		updateFlapCount(getId(), flapCount);
-		deleteOldFlaps(flapsToBeDeleted);
-		return flapThreshold;
-	}
+//	private boolean isFlappedNTimes(ReadingContext record) throws Exception {
+//		boolean flapThreshold = false;
+//		List<Long> flapsToBeDeleted = new ArrayList<>();
+//		List<Map<String, Object>> flaps = getFlaps(record.getParentId());
+//		int flapCount = 0;
+//		if (flaps != null && !flaps.isEmpty()) {
+//			flapCount = flaps.size();
+//			for(Map<String, Object> flap : flaps) {
+//				if (record.getTtime() - (long) flap.get("flapTime") > flapInterval) {
+//					flapsToBeDeleted.add((Long) flap.get("id"));
+//					flapCount--;
+//				}
+//			}
+//		}
+//		flapCount++;
+//		flapThreshold = flapCount == flapFrequency;
+//		if (flapThreshold) {
+//			//Reset prev flaps
+//			flapsToBeDeleted.clear();
+//			for(Map<String, Object> flap : flaps) {
+//				flapsToBeDeleted.add((Long) flap.get("id"));
+//			}
+//			flapCount = 0;
+//		}
+//		else {
+//			addFlap(record.getTtime(), record.getParentId());
+//		}
+//		updateFlapCount(getId(), flapCount);
+//		deleteOldFlaps(flapsToBeDeleted);
+//		return flapThreshold;
+//	}
 	
-	private List<Map<String, Object>> getFlaps(long resourceId) throws Exception {
-		// TODO Auto-generated method stub
-		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
-		List<FacilioField> fields = FieldFactory.getReadingRuleFlapsFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		FacilioField ruleIdField = fieldMap.get("ruleId");
-		FacilioField resourceIdField = fieldMap.get("resourceId");
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.table(module.getTableName())
-														.select(fields)
-														.orderBy("flapTime")
-														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
-														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), PickListOperators.IS))
-														;
-		
-		return selectBuilder.get();
-	}
+//	private List<Map<String, Object>> getFlaps(long resourceId) throws Exception {
+//		// TODO Auto-generated method stub
+//		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
+//		List<FacilioField> fields = FieldFactory.getReadingRuleFlapsFields();
+//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+//		FacilioField ruleIdField = fieldMap.get("ruleId");
+//		FacilioField resourceIdField = fieldMap.get("resourceId");
+//
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//														.table(module.getTableName())
+//														.select(fields)
+//														.orderBy("flapTime")
+//														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
+//														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), PickListOperators.IS))
+//														;
+//
+//		return selectBuilder.get();
+//	}
+
+
 	
-	private long addFlap(long flapTime, long resourceId) throws Exception {
-		Map<String, Object> newFlap = new HashMap<>();
-		newFlap.put("ruleId", getId());
-		newFlap.put("flapTime", flapTime);
-		newFlap.put("resourceId", resourceId);
-		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-														.fields(FieldFactory.getReadingRuleFlapsFields())
-														.table(ModuleFactory.getReadingRuleFlapsModule().getTableName());
-		
-		return insertBuilder.insert(newFlap);
-	}
-	
-	private void updateFlapCount(long ruleId, int flapCount) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
-		ReadingRuleContext rule = new ReadingRuleContext();
-		rule.setFlapCount(flapCount);
-		
-		FacilioModule module = ModuleFactory.getReadingRuleModule();
-		List<FacilioField> fields = FieldFactory.getReadingRuleFields();
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-														.fields(fields)
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getIdCondition(ruleId, module));
-		
-		updateBuilder.update(FieldUtil.getAsProperties(rule));
-	}
-	
-	private void deleteOldFlaps(List<Long> flapsToBeDeleted) throws Exception {
-		// TODO Auto-generated method stub
-		if (!flapsToBeDeleted.isEmpty()) {
-			FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
-			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-															.table(module.getTableName())
-															.andCondition(CriteriaAPI.getIdCondition(flapsToBeDeleted, module))
-															;
-			deleteBuilder.delete();
-		}
-	}
-	
-	private void deleteAllFlaps(long resourceId) throws Exception {
-		// TODO Auto-generated method stub
-		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingRuleFlapsFields());
-		FacilioField ruleIdField = fieldMap.get("ruleId");
-		FacilioField resourceIdField = fieldMap.get("resourceId");
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
-														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), PickListOperators.IS))
-														;
-		deleteBuilder.delete();
-	}
+//	private long addFlap(long flapTime, long resourceId) throws Exception {
+//		Map<String, Object> newFlap = new HashMap<>();
+//		newFlap.put("ruleId", getId());
+//		newFlap.put("flapTime", flapTime);
+//		newFlap.put("resourceId", resourceId);
+//
+//		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+//														.fields(FieldFactory.getReadingRuleFlapsFields())
+//														.table(ModuleFactory.getReadingRuleFlapsModule().getTableName());
+//
+//		return insertBuilder.insert(newFlap);
+//	}
+//
+//	private void updateFlapCount(long ruleId, int flapCount) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+//		ReadingRuleContext rule = new ReadingRuleContext();
+//		rule.setFlapCount(flapCount);
+//
+//		FacilioModule module = ModuleFactory.getReadingRuleModule();
+//		List<FacilioField> fields = FieldFactory.getReadingRuleFields();
+//		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+//														.fields(fields)
+//														.table(module.getTableName())
+//														.andCondition(CriteriaAPI.getIdCondition(ruleId, module));
+//
+//		updateBuilder.update(FieldUtil.getAsProperties(rule));
+//	}
+//
+//	private void deleteOldFlaps(List<Long> flapsToBeDeleted) throws Exception {
+//		// TODO Auto-generated method stub
+//		if (!flapsToBeDeleted.isEmpty()) {
+//			FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
+//			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+//															.table(module.getTableName())
+//															.andCondition(CriteriaAPI.getIdCondition(flapsToBeDeleted, module))
+//															;
+//			deleteBuilder.delete();
+//		}
+//	}
+//
+//	private void deleteAllFlaps(long resourceId) throws Exception {
+//		// TODO Auto-generated method stub
+//		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
+//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingRuleFlapsFields());
+//		FacilioField ruleIdField = fieldMap.get("ruleId");
+//		FacilioField resourceIdField = fieldMap.get("resourceId");
+//		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+//														.table(module.getTableName())
+//														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
+//														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), PickListOperators.IS))
+//														;
+//		deleteBuilder.delete();
+//	}
 	
 	@Override
 	public Map<String, Object> constructPlaceHolders(String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
@@ -854,15 +897,77 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (val != null || getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
 			if (clearAlarm()) {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-//					LOGGER.info("Clearing new alarm ");
-					constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime());
+					if (overPeriod > 0 || occurences > 0 || isConsecutive() || thresholdType == ReadingRuleContext.ThresholdType.FLAPPING) {
+						PreEventContext preEvent = constructPreClearEvent(reading, (ResourceContext) reading.getParent());
+						preEvent.constructAndAddPreClearEvent(context);
+					}
+					else  {
+						constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime());
+					}
 				}
 				else {
 					ReadingRuleAPI.addClearEvent(context, placeHolders, this, reading.getId(), val, reading.getTtime(), reading.getParentId());
 				}
 			}
+			context.put(FacilioConstants.ContextNames.WORKFLOW_ALARM_TRIGGER_RULES, this);
 			super.executeFalseActions(record, context, placeHolders);
 		}
+	}
+	public PreEventContext constructPreClearEvent(ReadingContext reading, ResourceContext resource) {
+
+		PreEventContext event = new PreEventContext();
+		event.setResource((ResourceContext) reading.getParent());
+
+		event.setReadingContext(reading);
+		event.setReadingFieldId(this.getReadingFieldId());
+
+		ReadingRuleContext rule =  new ReadingRuleContext();
+		rule.setId(this.getRuleGroupId());
+		event.setRule(rule);
+
+		ReadingRuleContext subRule = this;
+		event.setSubRule(subRule);
+		event.setComment("System auto cleared Alarm because associated rule executed clear condition for the associated resource");
+		event.setCreatedTime(reading.getTtime());
+		event.setAutoClear(true);
+		event.setReadingContext(reading);
+		event.setSiteId(resource.getSiteId());
+		event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+
+		return event;
+	}
+
+	public BaseEventContext constructPreEvent (JSONObject obj, ReadingContext reading , Context context) throws  Exception {
+		// LOGGER.info("constructPreEvent Reading:  "+reading.getId());
+		JSONObject eventObj = (JSONObject) obj.clone();
+		BaseEventContext event = null;
+		if (eventObj == null) {
+			event = new PreEventContext();
+		}
+		else {
+			String severity = (String) eventObj.remove("severity");
+			eventObj.remove("alarmType");
+			event = FieldUtil.getAsBeanFromJson(eventObj, PreEventContext.class);
+			if (StringUtils.isNotEmpty(severity)) {
+				event.setSeverityString(severity);
+			}
+		}
+		PreEventContext preEvent = (PreEventContext)event;
+		preEvent.setObj(obj);
+		preEvent.setReadingFieldId(this.getReadingFieldId());
+
+		ReadingRuleContext rule =  new ReadingRuleContext();
+		rule.setId(this.getRuleGroupId());
+		preEvent.setRule(rule);
+
+		ReadingRuleContext subRule = this;
+		// subRule.setId(this.getRuleGroupId());
+		preEvent.setSubRule(subRule);
+
+		preEvent.setPreviousValue((Map<String, ReadingDataMeta>) context.getOrDefault(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, null));
+		addDefaultEventProps(event, eventObj, reading);
+
+		return event;
 	}
 
 	public BaseEventContext constructEvent(JSONObject obj, ReadingContext reading,Context context) throws Exception {
@@ -947,11 +1052,11 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (isHistorical) {
 			//metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
 			
-			ReadingEventContext previousEventMeta = (ReadingEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META);	
+			ReadingEventContext previousEventMeta = (ReadingEventContext)context.get(EventConstants.EventContextNames.PREVIOUS_EVENT_META);
 			if (previousEventMeta != null && previousEventMeta.getSeverityString() != null && !previousEventMeta.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
 				ReadingEventContext clearEvent = constructClearEvent(resource, ttime, previousEventMeta.getEventMessage());
 				context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(clearEvent));
-			}	
+			}
 		}
 		else {
 			metaMap = this.getAlarmMetaMap();
@@ -983,10 +1088,8 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 		return null;
 	}
-
-	public ReadingEventContext constructClearEvent(ResourceContext resource, long ttime, String eventMessage) {
+	public ReadingEventContext constructClearEvent(ResourceContext resource, long ttime, String eventMessage) throws Exception {
 		ReadingEventContext event = new ReadingEventContext();
-//		event.setEventMessage("Auto cleared event");
 		event.setResource(resource);
 		event.setReadingFieldId(this.getReadingFieldId());
 		event.setRuleId(this.getRuleGroupId());
@@ -997,7 +1100,6 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		event.setAutoClear(true);
 		event.setSiteId(resource.getSiteId());
 		event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
-
 		return event;
 	}
 

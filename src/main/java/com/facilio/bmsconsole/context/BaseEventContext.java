@@ -306,7 +306,8 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 			alarmOccurrence.setResource(getResource());
 			if(getSiteId() != -1) {
 				alarmOccurrence.setSiteId(getSiteId());
-			}	
+			}
+			alarmOccurrence.setNoOfEvents(1);
 		} 
 		else {
 			if (!previousSeverity.equals(getSeverity())) {
@@ -328,6 +329,7 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 				}
 				alarmOccurrence.setPreviousSeverity(previousSeverity);
 			}
+			alarmOccurrence.setNoOfEvents(alarmOccurrence.getNoOfEvents() + 1);
 		}
 		
 		if (StringUtils.isNotEmpty(getPossibleCause())) {
@@ -351,6 +353,9 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 		switch (typeEnum) {
 		case READING_ALARM:
 			baseEvent = new ReadingEventContext();
+			break;
+		case PRE_ALARM:
+			baseEvent = new PreEventContext();
 			break;
 
 		default:

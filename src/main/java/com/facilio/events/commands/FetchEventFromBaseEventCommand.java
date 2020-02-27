@@ -3,6 +3,7 @@ package com.facilio.events.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.bmsconsole.context.PreEventContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -66,6 +67,15 @@ public class FetchEventFromBaseEventCommand extends FacilioCommand {
                     BMSEventContext bmsEvent = (BMSEventContext) baseEventContext;
                     event.setSource(bmsEvent.getSource());
                     event.setCondition(bmsEvent.getCondition());
+                }
+                else if (baseEventContext instanceof PreEventContext) {
+                    PreEventContext preEventContext = (PreEventContext) baseEventContext;
+                    if (preEventContext.getRule() != null) {
+                        event.setEventRuleId(preEventContext.getRule().getId());
+                    }
+                    if (preEventContext.getSubRule() != null) {
+                        event.setSubRuleId(preEventContext.getSubRule().getId());
+                    }
                 }
 
                 list.add(event);

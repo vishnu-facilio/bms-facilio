@@ -299,7 +299,9 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		ANOMALY,
 		READING,
 		VIOLATION,
-		AGENT;
+		AGENT,
+		PRE_OCCURRENCE;
+		;
 
 		public int getIndex() {
 			return ordinal() + 1;

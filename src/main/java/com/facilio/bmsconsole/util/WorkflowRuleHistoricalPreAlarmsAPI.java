@@ -9,6 +9,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.PreAlarmOccurrenceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -26,15 +27,15 @@ import com.facilio.time.DateRange;
 
 public class WorkflowRuleHistoricalPreAlarmsAPI {
 	
-	public static List<AlarmOccurrenceContext> getAllPreAlarmOccurrences(long ruleId, long startTime, long endTime, long resourceId) throws Exception {
+	public static List<PreAlarmOccurrenceContext> getAllPreAlarmOccurrences(long ruleId, long startTime, long endTime, long resourceId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
 		List<FacilioField> allFields = modBean.getAllFields(module.getName());
 	
-		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
-				.beanClass(AlarmOccurrenceContext.class).moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
-//				.select(allFields).innerJoin("PreAlarm").on("AlarmOccurrence.ALARM_ID = PreAlarm.ID")
+		SelectRecordsBuilder<PreAlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<PreAlarmOccurrenceContext>()
+				.beanClass(PreAlarmOccurrenceContext.class).moduleName(FacilioConstants.ContextNames.PRE_ALARM_OCCURRENCE)
+				.select(allFields)
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", "" + ruleId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", "" + resourceId, NumberOperators.EQUALS));
 //				.andCondition(CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType",, NumberOperators.EQUALS));
@@ -50,7 +51,7 @@ public class WorkflowRuleHistoricalPreAlarmsAPI {
 		selectbuilder.andCriteria(criteria);
 		selectbuilder.orderBy("CREATED_TIME");
 		
-		List<AlarmOccurrenceContext> preAlarmOccurrenceList = selectbuilder.get();
+		List<PreAlarmOccurrenceContext> preAlarmOccurrenceList = selectbuilder.get();
 		
 		return preAlarmOccurrenceList;
 	}
@@ -58,7 +59,7 @@ public class WorkflowRuleHistoricalPreAlarmsAPI {
 	public static void clearAlarmOccurrenceIdForEdgePreAlarms(AlarmOccurrenceContext edgeAlarmOccurrence, long startTime, long endTime) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule preAlarmsModule = modBean.getModule(FacilioConstants.ContextNames.READING_EVENT); // change to preAlarms moduleName
+		FacilioModule preAlarmsModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT); // change to preAlarms moduleName
 		List<FacilioField> allPreAlarmsFields = modBean.getAllFields(preAlarmsModule.getName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allPreAlarmsFields);
 		

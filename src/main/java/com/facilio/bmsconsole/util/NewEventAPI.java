@@ -7,19 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.agent.alarms.AgentEventContext;
+import com.facilio.bmsconsole.context.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.BMSEventContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.MLAnomalyEvent;
-import com.facilio.bmsconsole.context.RCAEvent;
-import com.facilio.bmsconsole.context.ReadingEventContext;
-import com.facilio.bmsconsole.context.ReadingRCAEvent;
-import com.facilio.bmsconsole.context.ViolationEventContext;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -57,6 +51,9 @@ public class NewEventAPI {
 			case AGENT_ALARM:
 				return AgentEventContext.class;
 
+			case PRE_ALARM:
+				return PreEventContext.class;
+
 
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
@@ -86,10 +83,10 @@ public class NewEventAPI {
 				
 			case VIOLATION_ALARM:
 				return "violationevent";
-
 			case AGENT_ALARM:
 				return "agentAlarmEvent";
-
+			case  PRE_ALARM:
+				return "preevent";
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
 		}

@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -16,23 +19,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.ReadingEventContext;
-import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLogsContext;
-import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
-import com.facilio.bmsconsole.context.WorkflowRuleResourceLoggerContext;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.AlarmSeverityContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.NewAlarmAPI;
-import com.facilio.bmsconsole.util.NewEventAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLogsAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleHistoricalPreAlarmsAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleResourceLoggerAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -70,7 +57,7 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 		try {
 			parentRuleResourceLoggerId = (long) context.get(FacilioConstants.ContextNames.HISTORICAL_ALARM_OCCURRENCE_DELETION_JOB_ID);
 			parentRuleResourceLoggerContext = WorkflowRuleResourceLoggerAPI.getWorkflowRuleResourceLoggerById(parentRuleResourceLoggerId);
-			
+
 			WorkflowRuleLoggerContext parentRuleLoggerContext = WorkflowRuleLoggerAPI.getWorkflowRuleLoggerById(parentRuleResourceLoggerContext.getParentRuleLoggerId());
 			Long ruleId = parentRuleLoggerContext.getRuleId(); 
 			Long actualStartTime = parentRuleLoggerContext.getStartTime();
@@ -79,16 +66,16 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 			if (ruleId == null || resourceId == null) {
 				return false;
 			}
-			
+			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
+
 			DateRange modifiedDateRange = new DateRange();	
-			ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
-			
-			if(readingRule.isConsecutive() || readingRule.getOverPeriod() != -1) {
-			//	modifiedDateRange = deleteEntirePreAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime);	
+			// ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
+			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
+			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() != -1) {
+				modifiedDateRange = deleteEntirePreAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime);
 			}
-			else {
-				modifiedDateRange = deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime);	
-			}			
+			modifiedDateRange = deleteEntireAlarmOccurrences(ruleId, resourceId, actualStartTime, actualEndTime);
+
 						 		
 			updateParentRuleResourceLoggerToModifiedRangeAndEventGeneratingState(parentRuleResourceLoggerContext, modifiedDateRange);
 			
@@ -220,7 +207,7 @@ public class HistoricalAlarmOccurrenceDeletionCommand extends FacilioCommand imp
 	
 	public static DateRange deleteEntirePreAlarmOccurrences(long ruleId, long resourceId, long startTime, long endTime) throws Exception 
 	{
-		List<AlarmOccurrenceContext> preAlarmOccurrenceList = WorkflowRuleHistoricalPreAlarmsAPI.getAllPreAlarmOccurrences(ruleId, startTime, endTime, resourceId);
+		List<PreAlarmOccurrenceContext> preAlarmOccurrenceList = WorkflowRuleHistoricalPreAlarmsAPI.getAllPreAlarmOccurrences(ruleId, startTime, endTime, resourceId);
 		if (preAlarmOccurrenceList != null && !preAlarmOccurrenceList.isEmpty())
 		{
 			AlarmOccurrenceContext lastPreAlarmOccurrence = preAlarmOccurrenceList.get(preAlarmOccurrenceList.size() - 1);

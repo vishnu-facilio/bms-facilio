@@ -336,7 +336,10 @@ public class FacilioConstants {
 		public static final String CARD_LAYOUT = "cardLayout";
 		public static final String CARD_STATE = "cardState";
 		public static final String ALARM_ACTIVITY = "alarmActivity";
-		
+		public static final String PRE_ALARM ="prealarm";
+		public static final String PRE_ALARM_OCCURRENCE="prealarmoccurrence";
+		public  static final String PRE_EVENT="preevent";
+		public static final String IS_PRE_EVENT = "is_pre_event";
 		public static final String ML_ANOMALY_ALARM = "mlAnomalyAlarm";
 	
 		public static final String EVENT = "event";
@@ -1653,6 +1656,9 @@ public class FacilioConstants {
 			classMap.put(NEW_READING_ALARM, ReadingAlarm.class);
 			classMap.put(BASE_EVENT, BaseEventContext.class);
 			classMap.put(READING_EVENT, ReadingEventContext.class);
+			classMap.put(PRE_ALARM, PreAlarmContext.class);
+			classMap.put(PRE_ALARM_OCCURRENCE, PreAlarmOccurrenceContext.class);
+			classMap.put(PRE_EVENT, PreEventContext.class);
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
 			classMap.put(AGENT_ALARM, AgentAlarmContext.class);
 			classMap.put(VISITOR, VisitorContext.class);

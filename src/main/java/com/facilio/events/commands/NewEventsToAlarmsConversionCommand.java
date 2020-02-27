@@ -1,11 +1,6 @@
 package com.facilio.events.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.facilio.activity.AlarmActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -28,7 +23,7 @@ import org.json.simple.JSONObject;
 
 public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 
-	private Set<String> eventKeys = new HashSet<>();
+	private Set<String> eventKeys1 = new HashSet<>();
 	private Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = new HashMap<>();
 	private Map<String, BaseAlarmContext> alarmMap = new HashMap<>();
 	private List<BaseEventContext> baseEvents;
@@ -39,73 +34,94 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 		baseEvents = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		if (CollectionUtils.isNotEmpty(baseEvents)) {
 			baseEvents = new ArrayList<>((List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST));
-			context.put(context.get(EventConstants.EventContextNames.EVENT_LIST), baseEvents);
-			for (BaseEventContext baseEvent : baseEvents) {
-				String messageKey = baseEvent.getMessageKey();
-				eventKeys.add(messageKey);
-			}
+			context.put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
 
-			clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
-
-			List<AlarmOccurrenceContext> latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(new ArrayList<>(eventKeys));
-			for (AlarmOccurrenceContext alarmOccurrenceContext : latestAlarmOccurance) {
-				String key = alarmOccurrenceContext.getAlarm().getKey();
-				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
-				if (pointedList == null) {
-					// expecting records should come here
-					pointedList = new PointedList<>();
-					alarmOccurrenceMap.put(key, pointedList);
-				}
-				pointedList.add(alarmOccurrenceContext);
-			}
-			
-			List<BaseEventContext> additionEventsCreated = new ArrayList<>();
-			for (BaseEventContext baseEvent : baseEvents) {
-				processEventToAlarm(baseEvent, context, additionEventsCreated);
-			}
-			baseEvents.addAll(additionEventsCreated);
-
-			for (String key : eventKeys) {
-				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
-				if (CollectionUtils.isEmpty(pointedList)) {
-					continue;
+			List<BaseEventContext> events = baseEvents;
+			while (true) {
+				iterateEventToProcess(context, events);
+				Collection<BaseAlarmContext> values = alarmMap.values();
+				if (CollectionUtils.isEmpty(values)) {
+					break;
 				}
 
-				List<AlarmOccurrenceContext> list = new ArrayList<>(pointedList);
-				for (AlarmOccurrenceContext alarmOccurrence : list) {
-					if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
-						BaseAlarmContext alarm = alarmOccurrence.getAlarm();
-						alarm = NewAlarmAPI.getAlarm(alarm.getId());
-						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(),
-						AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getLastOccurredTime() + 1000);
-						JSONObject info = new JSONObject();
-						info.put("field", "Severity");
-						info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
-						if (alarmOccurrence.getPreviousSeverity() != null){
-							info.put("oldValue", AlarmAPI.getAlarmSeverity(alarmOccurrence.getPreviousSeverity().getId()).getDisplayName());
-						}
-						if (alarmOccurrence.getAlarm() != null && alarmOccurrence.getAlarm().getId() > 0) {
-							CommonCommandUtil.addAlarmActivityToContext(alarmOccurrence.getAlarm().getId(),-1, AlarmActivityType.CLEAR_ALARM, info, (FacilioContext) context, alarmOccurrence.getId());
-						}
-						baseEvents.add(createdEvent);
-						processEventToAlarm(createdEvent, context, additionEventsCreated);
+				events = new ArrayList<>();
+				for (BaseAlarmContext baseAlarm : values) {
+					List<BaseEventContext> baseEventContexts = baseAlarm.removeAdditionalEvents();
+					if (CollectionUtils.isNotEmpty(baseEventContexts)) {
+						events.addAll(baseEventContexts);
 					}
 				}
+				if (CollectionUtils.isEmpty(events)) {
+					break;
+				} else {
+					baseEvents.addAll(events);
+				}
 			}
-
 			context.put("alarmOccurrenceMap", alarmOccurrenceMap);
 			context.put("alarmMap", alarmMap);
 		}
 		return false;
 	}
 
-	private void saveRecords() throws Exception {
-		
+	private void iterateEventToProcess(Context context, List<BaseEventContext> baseEvents) throws Exception {
+		Set<String> eventKeys = new HashSet<>();
+		for (BaseEventContext baseEvent : baseEvents) {
+			String messageKey = baseEvent.getMessageKey();
+			eventKeys.add(messageKey);
+		}
+
+		clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
+
+		List<AlarmOccurrenceContext> latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(new ArrayList<>(eventKeys));
+		for (AlarmOccurrenceContext alarmOccurrenceContext : latestAlarmOccurance) {
+			String key = alarmOccurrenceContext.getAlarm().getKey();
+			PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
+			if (pointedList == null) {
+				// expecting records should come here
+				pointedList = new PointedList<>();
+				alarmOccurrenceMap.put(key, pointedList);
+			}
+			pointedList.add(alarmOccurrenceContext);
+		}
+
+		List<BaseEventContext> additionEventsCreated = new ArrayList<>();
+		for (BaseEventContext baseEvent : baseEvents) {
+			processEventToAlarm(baseEvent, context, additionEventsCreated);
+		}
+		baseEvents.addAll(additionEventsCreated);
+
+		for (String key : eventKeys) {
+			PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
+			if (CollectionUtils.isEmpty(pointedList)) {
+				continue;
+			}
+
+			List<AlarmOccurrenceContext> list = new ArrayList<>(pointedList);
+			for (AlarmOccurrenceContext alarmOccurrence : list) {
+				if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
+					BaseAlarmContext alarm = alarmOccurrence.getAlarm();
+					alarm = NewAlarmAPI.getAlarm(alarm.getId());
+					BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(),
+							AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getLastOccurredTime() + 1000);
+					JSONObject info = new JSONObject();
+					info.put("field", "Severity");
+					info.put("newValue", AlarmAPI.getAlarmSeverity("Clear").getDisplayName());
+					if (alarmOccurrence.getPreviousSeverity() != null){
+						info.put("oldValue", AlarmAPI.getAlarmSeverity(alarmOccurrence.getPreviousSeverity().getId()).getDisplayName());
+					}
+					if (alarmOccurrence.getAlarm() != null && alarmOccurrence.getAlarm().getId() > 0) {
+						CommonCommandUtil.addAlarmActivityToContext(alarmOccurrence.getAlarm().getId(),-1, AlarmActivityType.CLEAR_ALARM, info, (FacilioContext) context, alarmOccurrence.getId());
+					}
+					baseEvents.add(createdEvent);
+					processEventToAlarm(createdEvent, context, additionEventsCreated);
+				}
+			}
+		}
 	}
 
 	private void processEventToAlarm(BaseEventContext baseEvent, Context context, List<BaseEventContext> additionEventsCreated) throws Exception {
 		if (baseEvent.getEventStateEnum() != EventState.IGNORED) {
-			if(baseEvent.getSeverityString().equals(FacilioConstants.Alarm.INFO_SEVERITY)) {
+			if(baseEvent.getSeverity().getSeverity().equals(FacilioConstants.Alarm.INFO_SEVERITY)) {
 				baseEvent.setEventState(EventState.IGNORED);
 			}
 			else {
@@ -215,6 +231,10 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			}
 			this.position = position;
 		}
+
+//		public boolean add(E e) {
+//			return super.add(e);
+//		}
 		
 		public boolean isCurrentLast() {
 			return position == (size() - 1);

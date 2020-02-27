@@ -7,6 +7,10 @@ import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
@@ -167,7 +171,27 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 			lastOccurrence.setId(occurrenceId);
 		}
 	}
-	
+
+	private List<BaseEventContext> additionalEvents;
+	public List<BaseEventContext> getAdditionalEvents() {
+		return additionalEvents;
+	}
+	public void setAdditionalEvents(List<BaseEventContext> additionalEvents) {
+		this.additionalEvents = additionalEvents;
+	}
+	public void addAdditionalEvent(BaseEventContext baseEvent) {
+		if (additionalEvents == null) {
+			additionalEvents = new ArrayList<>();
+		}
+		additionalEvents.add(baseEvent);
+	}
+
+	public List<BaseEventContext> removeAdditionalEvents() {
+		List<BaseEventContext> additionalEvents = getAdditionalEvents();
+		setAdditionalEvents(null);
+		return additionalEvents;
+	}
+
 	public static enum Type implements FacilioEnum {
 		READING_ALARM,
 		ML_ANOMALY_ALARM,
@@ -175,8 +199,9 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		READING_RCA_ALARM,
 		BMS_ALARM,
 		VIOLATION_ALARM,
-		AGENT_ALARM;
-
+		AGENT_ALARM,
+		PRE_ALARM;
+		;
 		public int getIndex() {
 			return ordinal() + 1;
 		}

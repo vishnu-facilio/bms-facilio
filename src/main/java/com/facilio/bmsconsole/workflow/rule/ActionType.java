@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.facilio.bmsconsole.context.*;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
@@ -37,25 +38,7 @@ import com.facilio.bmsconsole.commands.ExecuteSpecificWorkflowsCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.UpdateWoIdInNewAlarmCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.AlarmSeverityContext;
-import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
-import com.facilio.bmsconsole.context.AttachmentContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.NotificationContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.ViolationEventContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
@@ -309,36 +292,42 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) {
 			try {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-					
-					BaseEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord,context);
-					///handle impacts
-					JSONObject impacts = (JSONObject) obj.get("impact");
-					if (impacts != null && !impacts.isEmpty()) {
-						Set<String> set = impacts.keySet();
-						for (String fieldName : set) {
-							JSONArray workFlowId = (JSONArray) impacts.get(fieldName);
-							for (int i = 0; i < workFlowId.size(); i++) {
-								long workFlowIds = (long) workFlowId.get(i);
-								WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(workFlowIds);
-								FacilioChain c = FacilioChain.getTransactionChain();
-								FacilioContext impactContext = c.getContext();
-								impactContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-								impactContext.put(FacilioConstants.ContextNames.RECORD, currentRecord);
-//								impactContext.put(FacilioConstants.ContextNames.IS_IMPACT, true);
-								String moduleName = currentRule.getModuleName();
-								impactContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-								c.addCommand(new ExecuteSpecificWorkflowsCommand(Collections.singletonList(workFlowIds), RuleType.IMPACT_RULE));
-								c.execute(impactContext);
-								if (impactContext.containsKey("impact_value")) {
-									double impact_key = (double) impactContext.get("impact_value");
-									PropertyUtils.setProperty(event, fieldName , impact_key);
+					LOGGER.info("performAction for Rule:  "+currentRule.getId());
+					ReadingRuleContext readingrule = (ReadingRuleContext) currentRule;
+					Boolean addRule = false;
+					if (readingrule.getOverPeriod() > 0 || readingrule.getOccurences() > 0 || readingrule.isConsecutive() || readingrule.getThresholdType() == ReadingRuleContext.ThresholdType.FLAPPING.getValue()) {
+						BaseEventContext event =  ((ReadingRuleContext) currentRule).constructPreEvent(obj, (ReadingContext) currentRecord,context);
+        				addAlarm(event, obj, context, readingrule, currentRecord);
+					}
+					else {
+						BaseEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord,context);
+						///handle impacts
+						JSONObject impacts = (JSONObject) obj.get("impact");
+						if (impacts != null && !impacts.isEmpty()) {
+							Set<String> set = impacts.keySet();
+							for (String fieldName : set) {
+								JSONArray workFlowId = (JSONArray) impacts.get(fieldName);
+								for (int i = 0; i < workFlowId.size(); i++) {
+									long workFlowIds = (long) workFlowId.get(i);
+									WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(workFlowIds);
+									FacilioChain c = FacilioChain.getTransactionChain();
+									FacilioContext impactContext = c.getContext();
+									impactContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+									impactContext.put(FacilioConstants.ContextNames.RECORD, currentRecord);
+									String moduleName = currentRule.getModuleName();
+									impactContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+									c.addCommand(new ExecuteSpecificWorkflowsCommand(Collections.singletonList(workFlowIds), RuleType.IMPACT_RULE));
+									c.execute(impactContext);
+									if (impactContext.containsKey("impact_value")) {
+										double impact_key = (double) impactContext.get("impact_value");
+										PropertyUtils.setProperty(event, fieldName , impact_key);
+									}
 								}
 							}
 						}
-
+						addAlarm(event, obj, context, currentRule, currentRecord);
 					}
-					addAlarm(event, obj, context, currentRule, currentRecord);
-					
+
 				} else {
 					if (obj != null) {
 						if (obj.containsKey("subject")) {
@@ -880,8 +869,16 @@ public enum ActionType {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-				((ReadingRuleContext) currentRule).constructAndAddClearEvent(context, (ResourceContext) ((ReadingContext) currentRecord).getParent(), ((ReadingContext) currentRecord).getTtime());
+				ReadingRuleContext alarmTriggerRule = (ReadingRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_ALARM_TRIGGER_RULES);
+				if (alarmTriggerRule.getOverPeriod() > 0 || alarmTriggerRule.getOccurences() > 0 || alarmTriggerRule.isConsecutive() || alarmTriggerRule.getThresholdTypeEnum() == ReadingRuleContext.ThresholdType.FLAPPING) {
+					PreEventContext preEvent = ((ReadingRuleContext) alarmTriggerRule).constructPreClearEvent((ReadingContext) currentRecord, (ResourceContext) ((ReadingContext) currentRecord).getParent());
+					preEvent.constructAndAddPreClearEvent(context);
+				}
+				else  {
+					((ReadingRuleContext) currentRule).constructAndAddClearEvent(context, (ResourceContext) ((ReadingContext) currentRecord).getParent(), ((ReadingContext) currentRecord).getTtime());
+				}
 			}
 			else {
 				Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
@@ -1672,7 +1669,7 @@ public enum ActionType {
 		addWorkOrder.execute(woContext);
 	}
 	
-	private static void addAlarm (BaseEventContext event, JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
+	public static void addAlarm(BaseEventContext event, JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 		context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
 		Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
 		if (isHistorical == null) {
