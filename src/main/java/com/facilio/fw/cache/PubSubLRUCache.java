@@ -67,7 +67,7 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
     
     public String toString() {
         double hitRatio =  ((hit*100d)/(hit+miss));
-        return (" The current size "+cache.size()+"\n hitCount= "+hit+"\n missCount= "+miss+"\n Cache Hit Ratio= "+ hitRatio+"\n\n"+cache );
+        return (" The current size "+cache.size()+"\n hitCount= "+hit+"\n missCount= "+miss+"\n Cache Hit Ratio= "+ hitRatio+"\n\n"+cache.keySet());
     }
 
     private void updateRedisDeleteCount() {
