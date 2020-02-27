@@ -218,7 +218,7 @@ public class AnomalyEventJob extends FacilioJob {
     {
 	    FacilioContext context = new FacilioContext();
 	    context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
-	    Chain chain = TransactionChainFactory.getV2AddEventChain(false);
+	    Chain chain = TransactionChainFactory.getV2AddEventChain(true);
 	    chain.execute(context);
     }
 

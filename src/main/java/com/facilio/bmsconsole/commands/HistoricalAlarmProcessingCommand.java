@@ -48,9 +48,11 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			Long resourceId = parentRuleResourceLoggerContext.getResourceId();
 			Long lesserStartTime = parentRuleResourceLoggerContext.getModifiedStartTime();
 			Long greaterEndTime = parentRuleResourceLoggerContext.getModifiedEndTime();
+			
 			List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();
 			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
 			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
+			
 			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
 				List<BaseEventContext> preAlarmEvents = fetchAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule ,resourceId, lesserStartTime, greaterEndTime, Type.PRE_ALARM);
 				if(preAlarmEvents != null) {
@@ -120,7 +122,6 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			
 			for(BaseEventContext readingEvent :completeEvents)
 			{
-//				readingEvent.setSeverity(alarmSeverityMap.get(readingEvent.getSeverity().getId()));
 				if (readingEvent instanceof  ReadingEventContext) {
 					ReadingEventContext readingEventContext = (ReadingEventContext) readingEvent;
 					readingEventContext.setRule(alarmRule.getPreRequsite());
@@ -130,8 +131,6 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 					PreEventContext preEvent = (PreEventContext) readingEvent;
 					preEvent.setRule(alarmRule.getPreRequsite());
 					preEvent.setSubRule(alarmRule.getAlarmTriggerRule());
-
-					// preEvent.setReadingContext();
 				}
 				readingEvent.getSeverity().setSeverity(alarmSeverityMap.get(readingEvent.getSeverity().getId()).getSeverity());
 				readingEvent.setSeverityString(alarmSeverityMap.get(readingEvent.getSeverity().getId()).getSeverity());
