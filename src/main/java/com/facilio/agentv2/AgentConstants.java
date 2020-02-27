@@ -160,7 +160,7 @@ public class AgentConstants
     public static final String LINK_TYPE = "linkType";
     public static final String TARGET_COMP = "targetComp";
     public static final String TARGET_NAME = "targetName";
-    public static final String SITE_COUNT = "siteCount";
+    public static final String SITE_COUNT = "sites";
     public static final String CERT_FILE_DOWNLOAD_URL = "certFileDownloadUrl";
     public static final String DOWNLOAD_AGENT = "downloadAgent";
     public static final String PROCESSOR_VERSION = "processorVersion";
