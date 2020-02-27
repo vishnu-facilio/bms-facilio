@@ -120,6 +120,7 @@ public class DataProcessorV2
                     Controller timeseriesController = getControllerFromPayload(payload,agent.getId());
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
                     if (timeseriesController != null) {
+                        LOGGER.info(" timeseries controller found ");
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
                     } else {
                         LOGGER.info(" timeseries controller not found ");

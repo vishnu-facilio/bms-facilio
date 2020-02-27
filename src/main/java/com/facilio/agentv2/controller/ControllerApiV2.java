@@ -274,7 +274,7 @@ public class ControllerApiV2 {
             }
             return controllers;
         } catch (Exception e) {
-            LOGGER.info("Exception occurred ", e);
+            LOGGER.info("Exception occurred while get controller final ", e);
         }
         return new ArrayList<>();
     }
