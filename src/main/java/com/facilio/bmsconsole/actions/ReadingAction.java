@@ -161,14 +161,16 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		List<List<ReadingRuleContext>> readingRules = getFieldReadingRules();
-		readingRules.stream().flatMap(List::stream).forEach((r) -> {
-			r.setReadingFieldId(getField().getFieldId());
-			r.setModuleId(getModuleId());
-		});
-		List<List<List<ActionContext>>> actionsList = readingRules.stream().map(l -> {return l.stream().map(ReadingRuleContext::getActions).collect(Collectors.toList());}).collect(Collectors.toList());
-		
-		context.put(FacilioConstants.ContextNames.READING_RULES_LIST, readingRules);
-		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actionsList);
+		if (readingRules != null && readingRules.size() > 0) {
+			readingRules.stream().flatMap(List::stream).forEach((r) -> {
+				r.setReadingFieldId(getField().getFieldId());
+				r.setModuleId(getModuleId());
+			});
+			List<List<List<ActionContext>>> actionsList = readingRules.stream().map(l -> {return l.stream().map(ReadingRuleContext::getActions).collect(Collectors.toList());}).collect(Collectors.toList());
+			
+			context.put(FacilioConstants.ContextNames.READING_RULES_LIST, readingRules);
+			context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actionsList);
+		}
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD, getField());
 		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, getDelReadingRulesIds());
 		
