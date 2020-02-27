@@ -46,6 +46,7 @@ import com.facilio.unitconversion.UnitsUtil;
 public class FetchCriteriaReportCommand extends FacilioCommand {
 	private static Logger log = LogManager.getLogger(FetchCriteriaReportCommand.class.getName());
 	private Map<Long, Long> combinedMap = new HashMap<>();
+	private HashMap<Long, Long> tempMap = new HashMap<>();
 	private List<Map<Long, Long>> combinedList = new ArrayList();
 	
 	@Override
@@ -265,6 +266,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 	public void createCombinedMap() {
 		for(int i = 0; i < combinedList.size(); i++) {
 			Map<Long, Long> map = combinedList.get(i);
+			combinedMap = (Map<Long, Long>) tempMap.clone();
 			if(MapUtils.isNotEmpty(combinedMap)) {
 				for(Map.Entry<Long, Long> entry: combinedMap.entrySet()) {
 					if(i+1 < combinedList.size()) {
@@ -304,12 +306,12 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				end = value;
 			}
 			if(start != null && end != null) {
-				combinedMap.put(start, end);
+				localMap.put(start, end);
 				start = end = null;
 				setStart = false;
 			}
 		}
-//		combinedMap = localMap;
+		tempMap.putAll(localMap);
 	}
 	
 	public List<Map<String, Object>> getCombinedTimeLine(DateRange dateRange) throws Exception {
