@@ -1,20 +1,19 @@
-<%@ page import="com.facilio.accounts.dto.Organization" %>
-<%@ page import="com.facilio.accounts.util.AccountUtil" %>
-<%@ page import="com.facilio.beans.ModuleBean" %>
 <%@ page import="com.facilio.bmsconsole.commands.FacilioCommand" %>
+<%@ page import="org.apache.commons.chain.Context" %>
+<%@ page import="org.apache.log4j.Logger" %>
+<%@ page import="org.apache.log4j.LogManager" %>
+<%@ page import="com.facilio.accounts.dto.Organization" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.facilio.accounts.util.AccountUtil" %>
 <%@ page import="com.facilio.chain.FacilioChain" %>
 <%@ page import="com.facilio.fw.BeanFactory" %>
+<%@ page import="com.facilio.beans.ModuleBean" %>
+<%@ page import="com.facilio.constants.FacilioConstants" %>
 <%@ page import="com.facilio.modules.FacilioModule" %>
+<%@ page import="com.facilio.modules.fields.FacilioField" %>
 <%@ page import="com.facilio.modules.FieldFactory" %>
 <%@ page import="com.facilio.modules.FieldType" %>
-<%@ page import="com.facilio.modules.fields.FacilioField" %>
-<%@ page import="com.facilio.modules.fields.NumberField" %>
-<%@ page import="com.facilio.modules.fields.SystemEnumField" %>
-<%@ page import="org.apache.commons.chain.Context" %>
-<%@ page import="org.apache.log4j.LogManager" %>
-<%@ page import="org.apache.log4j.Logger" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
+<%@ page import="com.facilio.modules.fields.LookupField" %>
 
 <%--
 
@@ -37,47 +36,35 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
-            try{
-                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                List<FacilioModule> modulesList =  modBean.getModuleList(FacilioModule.ModuleType.READING,false);
-                modulesList.addAll(modBean.getModuleList(FacilioModule.ModuleType.SCHEDULED_FORMULA,false));
-                modulesList.addAll(modBean.getModuleList(FacilioModule.ModuleType.LIVE_FORMULA,false));
-                modulesList.addAll(modBean.getModuleList(FacilioModule.ModuleType.SYSTEM_SCHEDULED_FORMULA,false));
-                for (FacilioModule module: modulesList) {
-                    List<FacilioField> fields = modBean.getAllFields(module.getName());
-                    Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-                    LOGGER.info(fieldMap.containsKey("sourceType") + "  " + fieldMap.containsKey("sourceId"));
-                    if (fieldMap.containsKey("sourceType") && fieldMap.containsKey("sourceId")) {
-                        LOGGER.info("######Check 1 Module Name "+module.getName() + " - ModuleId " + module.getModuleId() + " - Org id - " + module.getOrgId() + " -- contains source Type and Source Id");
-                    } else if (fieldMap.containsKey("sourceType") && !fieldMap.containsKey("sourceId")){
-                        LOGGER.info("######Check 2 Module Name "+module.getName() + " - ModuleId " + module.getModuleId() + " - Org id - " + module.getOrgId() + " -- contains source Type");
-                        LOGGER.info("Adding Source Id");
-                        NumberField sourceIdField = new NumberField(module, "sourceId", "Source Id", FacilioField.FieldDisplayType.NUMBER, "SOURCE_ID", FieldType.NUMBER, false, false, true, false);
-                        modBean.addField(sourceIdField);
-                    } else if (!fieldMap.containsKey("sourceType") && fieldMap.containsKey("sourceId")) {
-                        LOGGER.info("######Check 3 Module Name "+module.getName() + " - ModuleId " + module.getModuleId() + " - Org id - " + module.getOrgId() + " -- contains source Id");
-                        LOGGER.info("Adding Source Type");
-                        SystemEnumField sourceTypeField = (SystemEnumField) FieldFactory.getField("sourceType","Source Type", "SOURCE_TYPE", module,FieldType.SYSTEM_ENUM);
-                        sourceTypeField.setEnumName("SourceType");
-                        sourceTypeField.setDefault(true);;
-                        modBean.addField(sourceTypeField);
-                    } else {
-                        LOGGER.info("## Adding Source Type and Source Id ##");
-                        NumberField sourceIdField = new NumberField(module, "sourceId", "Source Id", FacilioField.FieldDisplayType.NUMBER, "SOURCE_ID", FieldType.NUMBER, false, false, true, false);
-                        modBean.addField(sourceIdField);
-                        SystemEnumField sourceTypeField = (SystemEnumField) FieldFactory.getField("sourceType","Source Type", "SOURCE_TYPE", module,FieldType.SYSTEM_ENUM);
-                        sourceTypeField.setEnumName("SourceType");
-                        sourceTypeField.setDefault(true);;
-                        modBean.addField(sourceTypeField);
-                    }
-                }
-
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+            FacilioModule spaceRatingModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_RATING);
+            if (spaceRatingModule != null) {
+                return false;
             }
-            catch(Exception e) {
-                LOGGER.info(e.getMessage());
+            if (baseSpaceModule != null) {
+                FacilioModule ratingModule = new FacilioModule();
+                ratingModule.setName(FacilioConstants.ContextNames.SPACE_RATING);
+                ratingModule.setDisplayName("Space Rating");
+                ratingModule.setTableName("Rating");
+                ratingModule.setType(FacilioModule.ModuleType.RATING);
+
+                long moduleId = modBean.addModule(ratingModule);
+                ratingModule.setModuleId(moduleId);
+
+                FacilioField nameField = FieldFactory.getField("name", "Name", "NAME", ratingModule, FieldType.STRING);
+                modBean.addField(nameField);
+
+                FacilioField descriptionField = FieldFactory.getField("description", "Description", "DESCRIPTION", ratingModule, FieldType.STRING);
+                modBean.addField(descriptionField);
+
+                FacilioField ratingField = FieldFactory.getField("ratingValue", "Rating Value", "RATING_VALUE", ratingModule, FieldType.NUMBER);
+                modBean.addField(ratingField);
+
+                FacilioField parentField = FieldFactory.getField("parent", "Parent", "PARENT_ID", ratingModule, FieldType.LOOKUP);
+                ((LookupField) parentField).setLookupModule(baseSpaceModule);
+                modBean.addField(parentField);
             }
-
-
 
             return false;
         }
