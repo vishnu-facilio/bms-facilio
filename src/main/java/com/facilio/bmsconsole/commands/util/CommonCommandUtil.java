@@ -502,19 +502,23 @@ public class CommonCommandUtil {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
 		
-		FacilioModule accessibleSpaceMod = ModuleFactory.getAccessibleSpaceModule();
-		GenericSelectRecordBuilder selectAccessibleBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getAccessbileSpaceFields())
-				.table(accessibleSpaceMod.getTableName())
-				.andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
-
-		List<Map<String, Object>> props = selectAccessibleBuilder.get();
 		List<Long> siteIds = new ArrayList<>();
-		if (props != null && !props.isEmpty()) {
-			for(Map<String, Object> prop : props) {
-				Long siteId = (Long) prop.get("siteId");
-				if (siteId != null) {
-					siteIds.add(siteId);
+		
+		if (AccountUtil.getCurrentUser() != null) {
+			FacilioModule accessibleSpaceMod = ModuleFactory.getAccessibleSpaceModule();
+			GenericSelectRecordBuilder selectAccessibleBuilder = new GenericSelectRecordBuilder()
+					.select(AccountConstants.getAccessbileSpaceFields())
+					.table(accessibleSpaceMod.getTableName())
+					.andCustomWhere("ORG_USER_ID = ?", AccountUtil.getCurrentAccount().getUser().getOuid());
+			
+			List<Map<String, Object>> props = selectAccessibleBuilder.get();
+			
+			if (props != null && !props.isEmpty()) {
+				for(Map<String, Object> prop : props) {
+					Long siteId = (Long) prop.get("siteId");
+					if (siteId != null) {
+						siteIds.add(siteId);
+					}
 				}
 			}
 		}
