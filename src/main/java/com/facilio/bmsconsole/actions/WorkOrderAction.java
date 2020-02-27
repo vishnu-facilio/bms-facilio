@@ -2597,7 +2597,7 @@ public class WorkOrderAction extends FacilioAction {
 		}
 
 		addWorkOrder(workorder);
-		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		v2viewWorkOrder();
 		return SUCCESS;
 	}
 	
