@@ -363,6 +363,7 @@ public class PreEventContext extends BaseEventContext {
             AlarmSeverityContext alarmSeverity = AlarmAPI.getAlarmSeverity(preEvent.getSeverity().getId());
             readingEvent.setSeverity(alarmSeverity);
             readingEvent.setRule(preEvent.getRule());
+            readingEvent.setAdditionalInfoJsonStr(preEvent.getAdditionalInfoJsonStr());
             readingEvent.setSubRule(preEvent.getSubRule());
             return  readingEvent;
 
