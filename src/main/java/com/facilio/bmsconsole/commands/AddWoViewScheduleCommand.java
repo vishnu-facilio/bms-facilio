@@ -89,7 +89,7 @@ public class AddWoViewScheduleCommand extends FacilioCommand {
 				jobId = recordIds;
 				
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-						.table(module.getTableName())
+						.table(viewInfoModule.getTableName())
 						.fields(fields)
 						.andCondition(CriteriaAPI.getIdCondition(jobId, viewInfoModule));
 
