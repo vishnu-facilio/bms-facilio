@@ -204,28 +204,54 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				if((days != null && !days.isEmpty()) || (intervals != null && !intervals.isEmpty())) {
 					ZonedDateTime start = DateTimeUtil.getDateTime(dateRange.getStartTime(), false),  end = DateTimeUtil.getDateTime(dateRange.getEndTime(), false);
 					do {
-					    		for (Object values : intervals.values()) {
-					    			Map<String, Object> obj = new HashMap();
-					    			Map<String, Object> obj1 = new HashMap();
-				
-					    			JSONArray interval = (JSONArray) values;
-							    	if(interval != null && !interval.isEmpty()) {
-							    		Long startTime = (long) (LocalTime.parse((CharSequence) interval.get(0)).toSecondOfDay()*1000);
-								    	Long endTime = (long) (LocalTime.parse((CharSequence) interval.get(1)).toSecondOfDay()*1000);
-								    	obj.put("key", start.toInstant().toEpochMilli()+startTime);
-								    	obj.put("value", 1);
-								    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
-								    	obj1.put("value", 0);
-								    	localMap.put(start.toInstant().toEpochMilli()+startTime, start.toInstant().toEpochMilli()+endTime);
-							    	}else {
-							    		obj.put("key", DateTimeUtil.getDayStartTimeOf(start.toInstant().toEpochMilli(), false));
-								    	obj.put("value", 1);
-								    	obj1.put("key", DateTimeUtil.getDayEndTimeOf(start.toInstant().toEpochMilli(), false));
-								    	obj1.put("value", 0);
-							    	}
-							    	timeline.add(obj);
-							    	timeline.add(obj1);
-							    };
+						if ((days != null && !days.isEmpty()) && days.contains(new Long(start.getDayOfWeek().getValue()))) {
+				    		for (Object values : intervals.values()) {
+				    			Map<String, Object> obj = new HashMap();
+				    			Map<String, Object> obj1 = new HashMap();
+			
+				    			JSONArray interval = (JSONArray) values;
+						    	if(interval != null && !interval.isEmpty()) {
+						    		Long startTime = (long) (LocalTime.parse((CharSequence) interval.get(0)).toSecondOfDay()*1000);
+							    	Long endTime = (long) (LocalTime.parse((CharSequence) interval.get(1)).toSecondOfDay()*1000);
+							    	obj.put("key", start.toInstant().toEpochMilli()+startTime);
+							    	obj.put("value", 1);
+							    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
+							    	obj1.put("value", 0);
+							    	localMap.put(start.toInstant().toEpochMilli()+startTime, start.toInstant().toEpochMilli()+endTime);
+						    	}else {
+						    		obj.put("key", DateTimeUtil.getDayStartTimeOf(start.toInstant().toEpochMilli(), false));
+							    	obj.put("value", 1);
+							    	obj1.put("key", DateTimeUtil.getDayEndTimeOf(start.toInstant().toEpochMilli(), false));
+							    	obj1.put("value", 0);
+						    	}
+						    	timeline.add(obj);
+						    	timeline.add(obj1);
+						    };
+						}
+						else if (days == null && intervals != null && !intervals.isEmpty()){
+							for (Object values : intervals.values()) {
+				    			Map<String, Object> obj = new HashMap();
+				    			Map<String, Object> obj1 = new HashMap();
+			
+				    			JSONArray interval = (JSONArray) values;
+						    	if(interval != null && !interval.isEmpty()) {
+						    		Long startTime = (long) (LocalTime.parse((CharSequence) interval.get(0)).toSecondOfDay()*1000);
+							    	Long endTime = (long) (LocalTime.parse((CharSequence) interval.get(1)).toSecondOfDay()*1000);
+							    	obj.put("key", start.toInstant().toEpochMilli()+startTime);
+							    	obj.put("value", 1);
+							    	obj1.put("key", start.toInstant().toEpochMilli()+endTime);
+							    	obj1.put("value", 0);
+							    	localMap.put(start.toInstant().toEpochMilli()+startTime, start.toInstant().toEpochMilli()+endTime);
+						    	}else {
+						    		obj.put("key", DateTimeUtil.getDayStartTimeOf(start.toInstant().toEpochMilli(), false));
+							    	obj.put("value", 1);
+							    	obj1.put("key", DateTimeUtil.getDayEndTimeOf(start.toInstant().toEpochMilli(), false));
+							    	obj1.put("value", 0);
+						    	}
+						    	timeline.add(obj);
+						    	timeline.add(obj1);
+						    };
+						}
 					    start = start.plusDays(1);
 					}  while (start.toEpochSecond() <= end.toEpochSecond());
 					timeList.add(localMap);
