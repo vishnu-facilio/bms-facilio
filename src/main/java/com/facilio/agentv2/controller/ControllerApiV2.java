@@ -116,11 +116,11 @@ public class ControllerApiV2 {
      * @param agentId
      * @return
      */
-    public static Map<String, Controller> getControllersForAgent(long agentId, FacilioContext pagenitionContext) {
+    public static Map<String, Controller> getControllersForAgent(long agentId, FacilioContext context) {
         Map<String, Controller> controllers = new HashMap<>();
         for (FacilioControllerType value : FacilioControllerType.values()) {
-            LOGGER.info(" getting controllers for agentId ->" + agentId + " and type " + value.asString());
-            controllers.putAll(getControllersFromDb(null, agentId, value, -1, pagenitionContext));
+           // LOGGER.info(" getting controllers for agentId ->" + agentId + " and type " + value.asString());
+            controllers.putAll(getControllersFromDb(null, agentId, value, -1, context));
         }
         return controllers;
     }
@@ -132,7 +132,7 @@ public class ControllerApiV2 {
      * @param type
      * @return
      */
-    public static Controller getControllerIdType(long controllerId, FacilioControllerType type) {
+    public static Controller getControllerUsingIdAndType(long controllerId, FacilioControllerType type) {
         if ((controllerId > 0) && (type != null)) {
             Map<String, Controller> controllers = getControllersFromDb(null, -1, type, controllerId, null);
             for (Controller controller : controllers.values()) {
@@ -145,22 +145,6 @@ public class ControllerApiV2 {
     }
 
 
-    private static Controller getControllerContext(long controllerId, boolean fetchDeleted) throws Exception {
-        FacilioChain assetDetailsChain = FacilioChainFactory.getControllerModuleName();
-        FacilioContext context = assetDetailsChain.getContext();
-        context.put(FacilioConstants.ContextNames.ID, controllerId);
-        AssetContext asset = AssetsAPI.getAssetInfo(controllerId, true);
-        if (asset == null) {
-            throw new Exception("Asset can't be null");
-        }
-        AssetCategoryContext category = asset.getCategory();
-        if (category != null && category.getId() != -1) {
-            context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, category.getId());
-        }
-        assetDetailsChain.execute(context);
-        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-        return getController(controllerId, moduleName);
-    }
 
     /**
      * this api is costly so avoid using it for frequent processes
@@ -183,7 +167,7 @@ public class ControllerApiV2 {
     }
 
     public static Controller getControllerFromDb(JSONObject childJson, long agentId, FacilioControllerType controllerType) throws Exception {
-        LOGGER.info("controller identifier " + childJson);
+       // LOGGER.info("controller identifier " + childJson);
         String controllerIdentifier = makeControllerFromMap(childJson,controllerType).getIdentifier();
         if (controllerType != null) {
             return getControllersFromDb(childJson, agentId, controllerType, -1, null).get(controllerIdentifier);
@@ -234,7 +218,7 @@ public class ControllerApiV2 {
      */
     private static Map<String, Controller> getControllersFromDb(JSONObject childJson, long agentId, FacilioControllerType controllerType, long controllerId, FacilioContext paginationContext) {
         List<Controller> controllerList = getControllerListFromDb(childJson, agentId, controllerType, controllerId, paginationContext);
-        LOGGER.info(" controllers obtained is " + controllerList.size());
+       // LOGGER.info(" controllers obtained is " + controllerList.size());
         Map<String, Controller> controllerMap = new HashMap<>();
         controllerList.forEach(controller -> {
             try {
@@ -282,10 +266,12 @@ public class ControllerApiV2 {
                 }
             }
             getControllerChain.execute(context);
-            if(containsCheck("query",context)){
-                LOGGER.info(" get controller query --"+context.get("query"));
-            }
             List<Controller> controllers = (List<Controller>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+            if((controllers == null) || (controllers.isEmpty())){
+                if(containsCheck("query",context)){
+                    LOGGER.info(" get controller query --"+context.get("query"));
+                }
+            }
             return controllers;
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
@@ -735,6 +721,23 @@ public class ControllerApiV2 {
         }
         LOGGER.info(" returning data "+controllersData.size());
         return controllersData;
+    }
+
+    private static Controller getControllerContext(long controllerId, boolean fetchDeleted) throws Exception {
+        FacilioChain assetDetailsChain = FacilioChainFactory.getControllerModuleName();
+        FacilioContext context = assetDetailsChain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, controllerId);
+        AssetContext asset = AssetsAPI.getAssetInfo(controllerId, true);
+        if (asset == null) {
+            throw new Exception("Asset can't be null");
+        }
+        AssetCategoryContext category = asset.getCategory();
+        if (category != null && category.getId() != -1) {
+            context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, category.getId());
+        }
+        assetDetailsChain.execute(context);
+        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        return getController(controllerId, moduleName);
     }
 
     /*

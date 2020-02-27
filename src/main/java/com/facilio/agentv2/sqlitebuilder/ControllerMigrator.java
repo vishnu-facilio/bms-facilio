@@ -32,7 +32,7 @@ public class ControllerMigrator {
             FacilioControllerType controllerType = controllerIdsType.get(controllerId);
             LOGGER.info(" migrating controller " + controllerId + " of type " + controllerType.asString());
             if (controllerIdsType != null) {
-                Controller controller = ControllerApiV2.getControllerIdType(controllerId, controllerIdsType.get(controllerId));
+                Controller controller = ControllerApiV2.getControllerUsingIdAndType(controllerId, controllerIdsType.get(controllerId));
                 if(controller == null){
                     LOGGER.info(" No Controller for Id "+controllerId+"  of type "+controllerType.asString());
                     continue;

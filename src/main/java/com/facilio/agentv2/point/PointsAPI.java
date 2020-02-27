@@ -735,8 +735,9 @@ public class PointsAPI extends AgentUtilities {
     }
 
     public static boolean setValue(long pointid, FacilioControllerType type, Object value) throws Exception {
+        LOGGER.info(" getting point "+pointid);
         Point point = getpoint(pointid, type);
-        LOGGER.info(" point ->" + point);
+        LOGGER.info(" point ->" + point.getName());
         if (point != null) {
             LOGGER.info(" point's cid ->" + point.getControllerId());
             point.setValue(value);

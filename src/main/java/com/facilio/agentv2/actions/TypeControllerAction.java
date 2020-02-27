@@ -31,7 +31,7 @@ public class TypeControllerAction extends ControllerActions
 
     public String getControllerUsingIdType() {
         try {
-                Controller controller = ControllerApiV2.getControllerIdType(getControllerId(), FacilioControllerType.valueOf(getControllerType()));
+                Controller controller = ControllerApiV2.getControllerUsingIdAndType(getControllerId(), FacilioControllerType.valueOf(getControllerType()));
                 if (controller != null) {
                     try {
                         setResult(AgentConstants.RESULT, SUCCESS);
