@@ -1,29 +1,26 @@
 package com.facilio.bmsconsole.commands;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportTemplateAction;
 import com.facilio.bmsconsole.actions.ImportTemplateContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.time.Instant;
+import java.util.*;
+import java.util.logging.Logger;
 
 
 public class ConstructVirtualSheetForReadingsImport extends FacilioCommand{
@@ -80,6 +77,8 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand{
 		List<String> fields  = new ArrayList(groupedFields.get(module));
 		HashMap<String,Object> props = new HashMap<>();
 		props.put(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD, rowContext.getParentId());
+		props.put(FacilioConstants.ContextNames.SOURCE_TYPE, SourceType.IMPORT.getIndex());
+		props.put(FacilioConstants.ContextNames.SOURCE_ID, importProcessContext.getId());
 			for(String field :fields){
 				String key = null;
 				
@@ -157,12 +156,12 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand{
 	context.put(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT, importTemplateContext);
 	context.put(ImportAPI.ImportProcessConstants.NULL_COUNT, nullFields);
 	
-	LOGGER.severe("Virtual sheet construction complete");
+	LOGGER.info("Virtual sheet construction complete");
 	return false;
 	
 	}
 	public void fieldMapParsing(HashMap<String, String> fieldMapping) throws Exception {
-		LOGGER.severe("fieldMapping -- " + fieldMapping);
+		LOGGER.info("fieldMapping -- " + fieldMapping);
 		List<String> fieldMappingKeys = new ArrayList<>(fieldMapping.keySet());
 		for (int i = 0; i < fieldMappingKeys.size(); i++) {
 			String[] modulePlusFieldName = fieldMappingKeys.get(i).split("__");
@@ -199,7 +198,7 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand{
 					}
 				}
 			}
-		LOGGER.severe("groupedFields -- " + groupedFields);
+		LOGGER.info("groupedFields -- " + groupedFields);
 
 	}
 }

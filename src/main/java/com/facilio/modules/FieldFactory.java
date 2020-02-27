@@ -3207,7 +3207,13 @@ public class FieldFactory {
 		parent.setDefault(true);
 		parent.setModule(module);
 		fields.add(parent);
-
+		SystemEnumField sourceTypeField = (SystemEnumField)  getField("sourceType","Source Type", "SOURCE_TYPE", module,FieldType.SYSTEM_ENUM);
+		sourceTypeField.setEnumName("SourceType");
+		sourceTypeField.setDefault(true);
+		fields.add(sourceTypeField);
+		FacilioField sourceIdField = getField("sourceId","Source Id", "SOURCE_ID", module,FieldType.NUMBER);
+		sourceIdField.setDefault(true);
+		fields.add(sourceIdField);
 //		fields.add(getField("sysCreatedTime", "CREATED_TIME", FieldType.DATE_TIME));
 
 		return fields;
