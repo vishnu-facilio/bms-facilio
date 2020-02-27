@@ -86,10 +86,6 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		{
 			throw new Exception("Not a valid Inclusion/Exclusion of Resources");
 		}
-	
-		if(((ReadingRuleContext) rule).isConsecutive() || ((ReadingRuleContext) rule).getOverPeriod() != -1) {
-			isScaledFlow = false;
-		}
 		
 		if(isScaledFlow)
 		{

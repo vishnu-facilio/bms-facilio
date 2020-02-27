@@ -239,7 +239,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
             eventList.add(event);
 	        FacilioContext context = new FacilioContext();
 			context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
-			FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
+			FacilioChain chain = TransactionChainFactory.getV2AddEventChain(false);
 			chain.execute(context);
         }
 	}

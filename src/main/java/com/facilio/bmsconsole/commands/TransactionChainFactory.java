@@ -3215,17 +3215,35 @@ public class TransactionChainFactory {
 		public static FacilioChain getV2AddEventPayloadChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new JsonToV2EventCommand());
-			c.addCommand(getV2AddEventChain());
+			c.addCommand(getV2AddEventChain(false));
 			return c;
 		}
 		
-		public static FacilioChain getV2AddEventChain() {
+		public static FacilioChain getV2AddEventChain(boolean isHistorical) {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new NewExecuteEventRulesCommand());
 			c.addCommand(new InsertNewEventsCommand());
 			c.addCommand(new NewEventsToAlarmsConversionCommand());
 			c.addCommand(new SaveAlarmAndEventsCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommandForSpecificRuleTypes());
+			
+			if(!isHistorical) {
+				c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.REPORT_DOWNTIME_RULE));
+				c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
+				c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.CONTROL_ACTION_READING_ALARM_RULE));
+				c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));
+				c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.ALARM_WORKFLOW_RULE));
+				c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
+				c.addCommand(new FacilioCommand() {
+					@Override
+					public boolean executeCommand(Context context) throws Exception {
+						context.remove(EventConstants.EventContextNames.EVENT_RULE_LIST);
+						return false;
+					}
+				});
+				c.addCommand(new ForkChainToInstantJobCommand()
+						.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
+				);		
+			}	
 			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ALARM_ACTIVITY));
 			return c;
 		}
@@ -3245,26 +3263,6 @@ public class TransactionChainFactory {
 		return c;
 	}
 
-		public static FacilioChain getExecuteAllWorkflowsForSpecificRuleTypes() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.REPORT_DOWNTIME_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.CONTROL_ACTION_READING_ALARM_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.MODULE_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.ALARM_WORKFLOW_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
-			c.addCommand(new FacilioCommand() {
-				@Override
-				public boolean executeCommand(Context context) throws Exception {
-					context.remove(EventConstants.EventContextNames.EVENT_RULE_LIST);
-					return false;
-				}
-			});
-			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.MODULE_RULE_NOTIFICATION))
-			);
-			return c;
-		}
 		public static FacilioChain configureStoreNotificationsChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AssociateFieldIdToStoreRuleTypeCommand());

@@ -278,7 +278,7 @@ public class PreEventContext extends BaseEventContext {
             this.setMessage(alarmMeta.getSubject());
             context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(this));
             if (!isHistorical) {
-                FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
+                FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(false);
                 FacilioContext addEventContext = addEvent.getContext();
                 addEventContext.put(EventConstants.EventContextNames.EVENT_LIST, context.get(EventConstants.EventContextNames.EVENT_LIST));
                 addEventContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));

@@ -1677,7 +1677,7 @@ public enum ActionType {
 		}
 
 		if (!isHistorical) {
-			FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
+			FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(false);
 			FacilioContext eventContext = addEvent.getContext();
 			eventContext.put(EventConstants.EventContextNames.EVENT_LIST, context.get(EventConstants.EventContextNames.EVENT_LIST));
 			eventContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));

@@ -48,19 +48,27 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			Long resourceId = parentRuleResourceLoggerContext.getResourceId();
 			Long lesserStartTime = parentRuleResourceLoggerContext.getModifiedStartTime();
 			Long greaterEndTime = parentRuleResourceLoggerContext.getModifiedEndTime();
-			List<BaseEventContext> readingEvents = new ArrayList<BaseEventContext>();
+			List<BaseEventContext> baseEvents = new ArrayList<BaseEventContext>();
 			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(ruleId),null);
-			// ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
-			readingEvents.addAll(fetchAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule ,resourceId, lesserStartTime, greaterEndTime, Type.PRE_ALARM));
-			readingEvents.addAll(fetchAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule,resourceId, lesserStartTime, greaterEndTime,  Type.READING_ALARM));
-			if (readingEvents != null && !readingEvents.isEmpty())
+			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
+			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
+				List<BaseEventContext> preAlarmEvents = fetchAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule ,resourceId, lesserStartTime, greaterEndTime, Type.PRE_ALARM);
+				if(preAlarmEvents != null) {
+					baseEvents.addAll(preAlarmEvents);
+				}
+			}	
+			List<BaseEventContext> readingEvents = fetchAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule,resourceId, lesserStartTime, greaterEndTime,  Type.READING_ALARM);
+			if(readingEvents != null) {
+				baseEvents.addAll(readingEvents);
+			}
+			
+			if (baseEvents != null && !baseEvents.isEmpty())
 			{
-				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
-				addEvent.getContext().put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
-				addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, readingEvents);
+				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
+				addEvent.getContext().put(EventConstants.EventContextNames.EVENT_LIST, baseEvents);
 				addEvent.execute();
 				
-				LOGGER.debug("Added Events: "+ readingEvents +" for alarm processing job Id: "+parentRuleLoggerContext.getId());
+				LOGGER.debug("Added Events: "+ baseEvents +" for alarm processing job Id: "+parentRuleLoggerContext.getId());
 				Integer alarmOccurrenceCount = (Integer) addEvent.getContext().get(FacilioConstants.ContextNames.ALARM_COUNT);
 				if(alarmOccurrenceCount != null)
 				{

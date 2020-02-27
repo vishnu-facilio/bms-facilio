@@ -1078,7 +1078,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 //			LOGGER.info("Clear event : "+FieldUtil.getAsJSON(event).toJSONString()+"\n Alarm Meta : "+alarmMeta);
 			context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
 			if (!isHistorical) {
-				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
+				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(false);
 				FacilioContext addEventContext = addEvent.getContext();
 				addEventContext.put(EventConstants.EventContextNames.EVENT_LIST, context.get(EventConstants.EventContextNames.EVENT_LIST));
 				addEventContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));

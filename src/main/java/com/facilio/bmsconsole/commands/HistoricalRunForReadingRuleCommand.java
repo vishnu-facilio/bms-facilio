@@ -194,7 +194,7 @@ private static final Logger LOGGER = Logger.getLogger(HistoricalRunForReadingRul
 					FacilioContext context = new FacilioContext();
 					context.put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
 					context.put(EventConstants.EventContextNames.EVENT_LIST, events);
-					FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
+					FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain(true);
 					addEvent.execute(context);
 					
 					if (AccountUtil.getCurrentOrg().getId() == 231) {
