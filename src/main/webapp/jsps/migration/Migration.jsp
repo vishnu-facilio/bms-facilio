@@ -6,6 +6,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.facilio.accounts.util.AccountUtil" %>
 <%@ page import="com.facilio.chain.FacilioChain" %>
+<<<<<<< Updated upstream
 <%@ page import="com.facilio.fw.BeanFactory" %>
 <%@ page import="com.facilio.beans.ModuleBean" %>
 <%@ page import="com.facilio.constants.FacilioConstants" %>
@@ -25,6 +26,7 @@
 <%@ page import="com.facilio.modules.fields.LookupField" %>
 <%@ page import="com.facilio.modules.fields.NumberField" %>
 <%@ page import="com.facilio.modules.fields.BooleanField" %>
+<%@ page import="com.facilio.bmsconsole.commands.util.CommonCommandUtil" %>
 
 <%--
 
@@ -48,8 +50,7 @@
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
 
-
-
+            CommonCommandUtil.migrateFieldAccessType();
 
             return false;
         }
