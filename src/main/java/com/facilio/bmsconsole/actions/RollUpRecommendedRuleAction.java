@@ -24,7 +24,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
-public class RollUpRecommendedRule extends FacilioAction{
+public class RollUpRecommendedRuleAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
 	Collection<DefaultTemplate> json=null;
 	Collection<DefaultTemplate> Result=   new ArrayList<>();
@@ -102,7 +102,7 @@ public class RollUpRecommendedRule extends FacilioAction{
 		defaultTemplateMap=(DefaultTemplate) i.next();
 		JSONObject jsonObject=(JSONObject)defaultTemplateMap.getJson();
 		jsonObject=(JSONObject)jsonObject.get("fdd_rule");
-		JSONArray jsonArray=(JSONArray)jsonObject.get("Field_Metric");
+		JSONArray jsonArray=(JSONArray)jsonObject.get("field_metric");
 					for(Map<List<Long>,String> str:groupedList.keySet())
 					{
 						flag=0;

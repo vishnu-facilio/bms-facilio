@@ -88,9 +88,6 @@ public class RecommendedRuleCommand extends FacilioCommand{
 		fieldresourceMap.put("resourceid",value.get("resourceid"));
 		fieldresource.add(fieldresourceMap);
 		}
-		
-		
-		
 		List<Long> comp=new ArrayList<>();
 		Map<Map<Long,String>,List<String>> groupedList=new HashMap<>();
 		for(Map<String,Object> firstiter:fieldresource)
@@ -110,10 +107,7 @@ public class RecommendedRuleCommand extends FacilioCommand{
 			groupedList.put(resourceidwithmodule, fieldNames);
 			}
 			comp.add((Long) firstiter.get("resourceid"));
-			}
-
-			
-			
+		}
 			List<Map<String,Object>> tobeinsert=new ArrayList<>();
 			json= (Collection<DefaultTemplate>) TemplateAPI.getAllRuleLibraryTemplate();
 			Iterator i=json.iterator();
@@ -125,7 +119,7 @@ public class RecommendedRuleCommand extends FacilioCommand{
 				defaultTemplateMap=(DefaultTemplate) i.next();
 				JSONObject jsonObject=(JSONObject)defaultTemplateMap.getJson();
 				jsonObject=(JSONObject)jsonObject.get("fdd_rule");
-				JSONArray jsonArray=(JSONArray)jsonObject.get("Field_Metric");
+				JSONArray jsonArray=(JSONArray)jsonObject.get("field_metric");
 				for(Map<String,Object> cv:combinedvalues)
 				{
 					if(jsonArray.contains(cv.get("FIELD_NAME")) && cv.get("MODULE_NAME").equals(jsonObject.get("moduleName").toString().toLowerCase()))
@@ -156,7 +150,7 @@ public class RecommendedRuleCommand extends FacilioCommand{
 				}
 				
 			}
-			
+		
 		if(tobeinsert.size()>0)
 		{
 
@@ -168,9 +162,9 @@ public class RecommendedRuleCommand extends FacilioCommand{
 					.fields(ff);
 			builderinsert.addRecords(tobeinsert);
 			builderinsert.save();
+
 		}
-	
 		return false;
 	}	
-}
 
+}

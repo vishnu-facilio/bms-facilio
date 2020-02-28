@@ -40,7 +40,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class RecommendedRuleTemplates extends FacilioAction{
+public class RecommendedRuleTemplatesAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
 
 	private JSONObject params;
@@ -50,7 +50,7 @@ public class RecommendedRuleTemplates extends FacilioAction{
 	public void setParams(JSONObject params) {
 		this.params = params;
 	}
-	public String GetRecommendedList() throws Exception
+	public String getRecommendedList() throws Exception
 	{
 		
 		Collection<DefaultTemplate> allRules=  new ArrayList<>();
@@ -88,7 +88,7 @@ public class RecommendedRuleTemplates extends FacilioAction{
 	}
 	
 	
-	public String GetAssetsAvailability() throws Exception
+	public String getAssetsAvailability() throws Exception
 	{
 		Map<String,Long> ruleAppliedDetails=new HashMap<>();
 		List<FacilioField> categoryFields=new ArrayList<>();
@@ -123,7 +123,6 @@ public class RecommendedRuleTemplates extends FacilioAction{
 		{
 			values.put(unavail, 0l);
 		}
-		System.out.println(values);
 		int notSetCount=0;
 		for(Map<String,Object> asset:builder.get())
 		{

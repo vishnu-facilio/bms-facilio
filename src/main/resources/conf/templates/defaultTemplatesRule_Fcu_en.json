@@ -11,7 +11,7 @@
       "moduleName": "fcureading",
       "threshold_metric": "roomTemperature",
       "threshold_metric_display": "Room Temperature",
-      "Field_Metric":["roomTemperature","setPoint","valveStatus","status"],
+      "field_metric":["roomTemperature","setPoint","valveStatus","status"],
       "ASSET_SELECTION_CRITERIA": {
         "categoryType": "FCU",
         "includeResource": "${includeResource}",
@@ -161,7 +161,7 @@
       "moduleName": "fcureading",
       "threshold_metric": "setPoint",
       "threshold_metric_display": "Set Point",
-      "Field_Metric":["setPoint"],
+      "field_metric":["setPoint"],
       "ASSET_SELECTION_CRITERIA": {
         "categoryType": "FCU",
         "includeResource": "${includeResource}",
@@ -251,7 +251,7 @@
       "moduleName": "fcureading",
       "threshold_metric": "valveStatus",
       "threshold_metric_display": "FCU Valve",
-      "Field_Metric":["valveStatus","status"],
+      "field_metric":["valveStatus","status"],
       "ASSET_SELECTION_CRITERIA": {
         "categoryType": "FCU",
         "includeResource": "${includeResource}",
@@ -363,7 +363,7 @@
       "moduleName": "fcureading",
       "threshold_metric": "valveStatus",
       "threshold_metric_display": "FCU Valve",
-      "Field_Metric":["roomTemperature","setPoint","valveStatus","status"],
+      "field_metric":["roomTemperature","setPoint","valveStatus","status"],
       "ASSET_SELECTION_CRITERIA": {
         "categoryType": "FCU",
         "includeResource": "${includeResource}",
@@ -513,7 +513,7 @@
       "moduleName": "fcureading",
       "threshold_metric": "valveStatus",
       "threshold_metric_display": "FCU Valve",
-      "Field_Metric":["roomTemperature","setPoint","status","valveStatus"],
+      "field_metric":["roomTemperature","setPoint","status","valveStatus"],
       "ASSET_SELECTION_CRITERIA": {
         "categoryType": "FCU",
         "includeResource": "${includeResource}",
@@ -663,7 +663,7 @@
       "moduleName": "fcureading",
       "threshold_metric": "fanMode",
       "threshold_metric_display": "Fan Mode",
-      "Field_Metric":["fanMode","roomTemperature","setPoint"],
+      "field_metric":["fanMode","roomTemperature","setPoint"],
       "ASSET_SELECTION_CRITERIA": {
         "categoryType": "FCU",
         "includeResource": "${includeResource}",

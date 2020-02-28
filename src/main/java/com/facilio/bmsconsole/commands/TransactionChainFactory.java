@@ -1210,15 +1210,10 @@ public class TransactionChainFactory {
 		public static FacilioChain getInstanceAssetMappingChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new InstanceAssetMappingCommand());
-			c.addCommand(new RecommendedRuleCommand());
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new RecommendedRuleCommand()));
 			return c;    
 		}
-//TESTING
-//		public static FacilioChain getRecommendedRuleChain() {
-//			FacilioChain c = getDefaultChain();
-//			c.addCommand(new RecommendedRuleCommand());
-//			return c;
-//		}
 		public static FacilioChain updateAutoCommissionCommand() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AutoCommissionCommand());

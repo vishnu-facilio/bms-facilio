@@ -3346,7 +3346,6 @@ public class ModuleFactory {
 		module.setTableName("Safety_Plan");
 		return module;
 	}
-
 	public static FacilioModule getClientModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.CLIENT);

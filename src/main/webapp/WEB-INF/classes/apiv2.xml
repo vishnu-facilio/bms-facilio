@@ -2504,18 +2504,21 @@
 	<package name="timeseriesApiv2" namespace="/api/v2/timeseries"
 		extends="v2Api">
 	</package>
-	<package name="RecommendedTemplatesv2" namespace="/api/v2/RuleTemplate"
+	<package name="RecommendedTemplatesv2" namespace="/api/v2/ruleTemplate"
 		extends="v2Api">
-		<action name="recList"
-			class="com.facilio.bmsconsole.actions.RecommendedRuleTemplates"
-			method="GetRecommendedList">
+		<action name="recommendedList"
+			class="com.facilio.bmsconsole.actions.RecommendedRuleTemplatesAction"
+			method="getRecommendedList">
 		</action>
-		<action name="getRuleAsset"
-			class="com.facilio.bmsconsole.actions.RecommendedRuleTemplates"
-			method="GetAssetsAvailability">
+		<action name="getAssetAvailabilityCount"
+			class="com.facilio.bmsconsole.actions.RecommendedRuleTemplatesAction"
+			method="getAssetsAvailability">
+		</action>
+		<action name="rollup"
+			class="com.facilio.bmsconsole.actions.RollUpRecommendedRuleAction"
+			method="getRecommendedList">
 		</action>
 	</package>
-	
 	<package name="instancesApiv2" namespace="/api/v2/instances"
 		extends="v2Api">
 		<action name="configure"
@@ -2740,13 +2743,6 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name="parentId">{1}</param>
-		</action>
-	</package>
-	<package name="RollUpRecommendedRuleV2" namespace="/api/v2/RuleTemplateRecommended"
-		extends="v2Api">
-		<action name="RollUp"
-			class="com.facilio.bmsconsole.actions.RollUpRecommendedRule"
-			method="getRecommendedList">
 		</action>
 	</package>
 	<package name="storeRoomApi" namespace="/api/v2/storeRoom"
