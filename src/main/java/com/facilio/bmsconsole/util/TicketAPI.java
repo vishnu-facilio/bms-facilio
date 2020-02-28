@@ -517,7 +517,8 @@ public class TicketAPI {
 				.module(ticketStatusModule)
 				.beanClass(FacilioStatus.class)
 				.orderBy(ticketStatusModule.getTableName() + ".ID desc")
-				.select(fields);
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentModuleId"), String.valueOf(parentModule.getModuleId()), NumberOperators.EQUALS));
 	
 		Criteria criteria = new Criteria();
 		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("status"), statusName, StringOperators.IS));
