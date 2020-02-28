@@ -180,7 +180,7 @@
     				SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
     						.module(tenantModule)
     						.beanClass(TenantContext.class)
-    						.select(FieldFactory.getTenantsFields())
+    						.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
     						;
     				List<TenantContext> tenants = builder.get();
     				System.out.print("test" + builder);
