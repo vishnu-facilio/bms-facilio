@@ -10,6 +10,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.WebTabContext.Type;
+import com.facilio.bmsconsole.page.Page.Tab;
 
 public class NewPermissionUtil {
 
@@ -126,6 +127,9 @@ public class NewPermissionUtil {
 		updateGroup.add(new Permission("UPDATE_TEAM", "Team", moduleTabType.get("UPDATE_TEAM"), null));
 		updateGroup.add(new Permission("UPDATE_OWN", "Own", moduleTabType.get("UPDATE_OWN"), null));
 		permissions.add(new PermissionGroup("Update", updateGroup));
+		permissions.add(new Permission("UPDATE_CHANGE_OWNERSHIP", "Change Ownership", moduleTabType.get("UPDATE_CHANGE_OWNERSHIP"), null));
+		permissions.add(new Permission("UPDATE_CLOSE_WORKORDER", "Close Workorder", moduleTabType.get("UPDATE_CLOSE_WORKORDER"), null));
+		permissions.add(new Permission("UPDATE_TASK", "Update Task", moduleTabType.get("UPDATE_TASK"), null));
 		List<Permission> deleteGroup = new ArrayList<>();
 		deleteGroup.add(new Permission("DELETE", "All", moduleTabType.get("DELETE"), null));
 		deleteGroup.add(new Permission("DELETE_TEAM", "Team", moduleTabType.get("DELETE_TEAM"), null));
@@ -155,17 +159,20 @@ public class NewPermissionUtil {
 		permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
 		permissions = new ArrayList<>();
+		permissionMap = new HashMap<>();
 		permissionMap.put("*",
 				Arrays.asList(new Permission("CAN_APPROVE", "Can Approve", approvalTabType.get("CAN_APPROVE"), null)));
 		permissionList.put(Type.APPROVAL.getIndex(), permissionMap);
 
 		permissions = new ArrayList<>();
+		permissionMap = new HashMap<>();
 		permissions.add(new Permission("CALENDAR", "Calendar", calendarTabType.get("CALENDAR"), null));
 		permissions.add(new Permission("PLANNER", "Planner", calendarTabType.get("PLANNER"), null));
 		permissionMap.put("*", permissions);
 		permissionList.put(Type.CALENDAR.getIndex(), permissionMap);
 
 		permissions = new ArrayList<>();
+		permissionMap = new HashMap<>();
 		permissions.add(new Permission("VIEW", "View", reportTabType.get("VIEW"), null));
 		permissions.add(new Permission("CREATE_EDIT", "Create/Edit", reportTabType.get("CREATE_EDIT"), null));
 		permissions.add(new Permission("EXPORT", "Export", reportTabType.get("EXPORT"), null));
@@ -173,13 +180,14 @@ public class NewPermissionUtil {
 		permissionList.put(Type.REPORT.getIndex(), permissionMap);
 
 		permissions = new ArrayList<>();
-		permissions
-				.add(new Permission("SAVE_AS_REPORT", "Save As Report", analyticsTabType.get("SAVE_AS_REPORT"), null));
+		permissionMap = new HashMap<>();
+		permissions.add(new Permission("SAVE_AS_REPORT", "Save As Report", analyticsTabType.get("SAVE_AS_REPORT"), null));
 		permissions.add(new Permission("VIEW", "view", analyticsTabType.get("VIEW"), null));
 		permissionMap.put("*", permissions);
 		permissionList.put(Type.ANALYTICS.getIndex(), permissionMap);
 
 		permissions = new ArrayList<>();
+		permissionMap = new HashMap<>();
 		permissions.add(new Permission("CREATE", "Create", kpiTabType.get("CREATE"), null));
 		permissions.add(new Permission("READ", "Read", kpiTabType.get("READ"), null));
 		permissions.add(new Permission("UPDATE", "Update", kpiTabType.get("UPDATE"), null));
@@ -188,14 +196,17 @@ public class NewPermissionUtil {
 		permissionList.put(Type.KPI.getIndex(), permissionMap);
 
 		permissions = new ArrayList<>();
+		permissionMap = new HashMap<>();
 		permissions.add(new Permission("CREATE", "Create", dashboardTabType.get("CREATE"), null));
 		permissions.add(new Permission("VIEW", "View", dashboardTabType.get("VIEW"), null));
 		permissions.add(new Permission("EDIT", "Edit", dashboardTabType.get("EDIT"), null));
 		permissions.add(new Permission("DELETE", "Delete", dashboardTabType.get("DELETE"), null));
 		permissions.add(new Permission("SHARE", "Share", dashboardTabType.get("SHARE"), null));
+		permissionMap.put("*", permissions);
 		permissionList.put(Type.DASHBOARD.getIndex(), permissionMap);
 
 		permissions = new ArrayList<>();
+		permissionMap = new HashMap<>();
 		permissions.add(new Permission("CREATE", "Create", customTabType.get("CREATE"), null));
 		permissions.add(new Permission("READ", "Read", customTabType.get("READ"), null));
 		permissions.add(new Permission("UPDATE", "Update", customTabType.get("UPDATE"), null));
@@ -207,6 +218,9 @@ public class NewPermissionUtil {
 
 	public static List<Permission> getPermissions(int tabType, String moduleName) {
 		Map<String, List<Permission>> stringListMap = permissionList.get(tabType);
+		if(moduleName!=null && !moduleName.equals("") && moduleName.equals("planned")) {
+			moduleName = "workorder";
+		}
 		if (stringListMap.containsKey(moduleName)) {
 			return stringListMap.get(moduleName);
 		} else {

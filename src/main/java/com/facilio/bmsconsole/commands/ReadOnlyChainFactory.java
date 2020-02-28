@@ -1956,6 +1956,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetTabPermissionsCommand());
 		return chain;
 	}
+	
+	public static FacilioChain getTabTypePermissionChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetTabTypePermissionCommand());
+		return chain;
+	}
 
 	public static FacilioChain getServiceRequestsListChain() {
 		FacilioChain chain = getDefaultChain();

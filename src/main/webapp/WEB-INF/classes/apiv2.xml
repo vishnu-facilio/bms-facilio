@@ -5189,7 +5189,11 @@
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.NewPermissionAction" method="getTabPermissions" />
 	</package>
-	
+	<package name="tabTypePermissions" namespace="/api/v2/tabtype"
+		extends="v2Api">
+		<action name="permission"
+			class="com.facilio.bmsconsole.actions.NewPermissionAction" method="getTabTypePermissions" />
+	</package>
 	<package name="chatbot" namespace="/api/v2/cb" extends="v2Api">
 		<action name="chat"
 				class="com.facilio.cb.action.ChatBotAction" method="chat" />

@@ -5,6 +5,7 @@ import java.util.List;
 import com.facilio.accounts.dto.NewPermission;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.Permission;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -49,6 +50,22 @@ public class NewPermissionAction extends FacilioAction {
 	public void setPermissionIds(List<Long> permissionIds) {
 		this.permissionIds = permissionIds;
 	}
+	
+	private int tabType;
+	public int getTabType() {
+		return tabType;
+	}
+	public void setTabType(int tabType) {
+		this.tabType = tabType;
+	}
+	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
 
 	public String addNewPermissions() throws Exception {
 		FacilioChain chain = TransactionChainFactory.getAddNewPermissionChain();
@@ -77,5 +94,17 @@ public class NewPermissionAction extends FacilioAction {
 
         return SUCCESS;
     }
+	
+	public String getTabTypePermissions() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getTabTypePermissionChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.WEB_TAB_TYPE, getTabType());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+        chain.execute();
+
+        setResult(FacilioConstants.ContextNames.PERMISSIONS, context.get(FacilioConstants.ContextNames.PERMISSIONS));
+
+        return SUCCESS;
+	}
 
 }
