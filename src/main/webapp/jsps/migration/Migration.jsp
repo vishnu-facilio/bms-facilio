@@ -7,6 +7,7 @@
 <%@page import="com.facilio.db.criteria.CriteriaAPI"%>
 <%@page import="com.facilio.modules.FieldUtil"%>
 <%@page import="com.facilio.db.builder.GenericUpdateRecordBuilder"%>
+<%@page import="com.facilio.bmsconsole.util.TenantsAPI"%>
 <%@ page import="com.facilio.bmsconsole.commands.FacilioCommand" %>
 <%@page import="com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.TransitionType"%>
 <%@page import="com.facilio.bmsconsole.util.TicketAPI"%>
@@ -194,6 +195,8 @@
     							tenant.setModuleState(expired);
     							tenant.setStateFlowId(defaultStateFlowRule.getId());
     						}
+    						List<Long> spaceIds = new ArrayList<>();
+    						TenantsAPI.updateTenant(tenant, spaceIds);
     					}
     					
     					
