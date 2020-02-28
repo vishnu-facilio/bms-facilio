@@ -121,7 +121,9 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 			 {
 				 try
 				 {
-					 updateExistingPredictReading(parentID,predictModule,predictReadingList);
+					 if(predictModule!=null){ // predictionModule null for ratiocheck in demo acc
+						 updateExistingPredictReading(parentID,predictModule,predictReadingList);
+					 }
 				 }
 				 catch(Exception e)
 				 {
