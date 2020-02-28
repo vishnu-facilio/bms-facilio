@@ -53,7 +53,7 @@ public class ExecuteNoteWorkflowCommand extends FacilioCommand {
 			if(workflowRules != null && workflowRules.size() > 0) {
 				WorkflowRuleContext workflowRule = workflowRules.get(0);
 				TicketContext ticket = TicketAPI.getParentTicket(note.getParentId(), ticketModule);
-				if(ticket != null && ticket.getAssignedTo() != null && ticket.getAssignedTo().getId() != note.getCreatedBy().getId()) {
+				if(ticket != null) {
 					long workflowRuleId = workflowRule.getId();
 					List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(workflowRuleId);
 					if(actions != null) {
