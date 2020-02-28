@@ -52,9 +52,7 @@
 <%@ page import="com.facilio.modules.fields.LookupField" %>
 <%@ page import="com.facilio.modules.fields.NumberField" %>
 <%@ page import="com.facilio.modules.fields.BooleanField" %>
-<<<<<<< HEAD
 <%@ page import="com.facilio.bmsconsole.commands.util.CommonCommandUtil" %>
-=======
 <%@ page import="com.facilio.constants.FacilioConstants" %>
 <%@ page import="com.facilio.modules.fields.LookupField" %>
 <%@ page import="com.facilio.modules.FieldType" %>
@@ -69,7 +67,6 @@
 <%@ page import="com.facilio.bmsconsole.util.TenantsAPI" %>
 <%@ page import="com.facilio.bmsconsole.tenant.TenantContext" %>
 <%@ page import="com.facilio.modules.SelectRecordsBuilder" %>
->>>>>>> tenant state flow related changes
 
 <%--
 
