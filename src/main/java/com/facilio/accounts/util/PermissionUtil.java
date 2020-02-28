@@ -15,6 +15,7 @@ import com.facilio.accounts.util.AccountConstants.ModulePermission;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabContext.Type;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
@@ -361,7 +362,8 @@ public class PermissionUtil {
 		if (perm == 0) {
 			return true;
 		}
-		return (perm & permission) == permission;
+		boolean val = (perm & permission) == permission;
+		return val;
 	}
 	
 	private static boolean hasPermission(long perm, String actions, long tabId) throws Exception {
@@ -376,44 +378,45 @@ public class PermissionUtil {
 				for (String action : actionArray) {
 					action = action.trim();
 					long permVal = -1;
-					try {
-						switch (tabType) {
-						case MODULE:
-							permVal = NewPermissionFactory.Module_Permission.valueOf(action).getPermission();
-							break;
-						case APPROVAL:
-							permVal = NewPermissionFactory.Approval_Permission.valueOf(action).getPermission();
-							break;
-						case CALENDAR:
-							permVal = NewPermissionFactory.Calendar_Permission.valueOf(action).getPermission();
-							break;
-						case REPORT:
-							permVal = NewPermissionFactory.Reports_Permission.valueOf(action).getPermission();
-							break;
-						case ANALYTICS:
-							permVal = NewPermissionFactory.Analytics_Permission.valueOf(action).getPermission();
-							break;
-						case KPI:
-							permVal = NewPermissionFactory.KPI_Permission.valueOf(action).getPermission();
-							break;
-						case DASHBOARD:
-							permVal = NewPermissionFactory.Dashboard_Permission.valueOf(action).getPermission();
-							break;
-						case CUSTOM:
-							permVal = NewPermissionFactory.Custom_Permission.valueOf(action).getPermission();
-							break;
-						case WORKORDER_MODULE:
-							permVal = NewPermissionFactory.Workorder_Permission.valueOf(action).getPermission();
-							break;
-						case INENTORY_MODULE:
-							permVal = NewPermissionFactory.Inventory_Permission.valueOf(action).getPermission();
-							break;
-						default:
-							break;
-						}
-					} catch (Exception e) {
-						e.getMessage();
-					}
+					permVal = NewPermissionUtil.getPermissionValue(tabType.getIndex(), action);
+//					try {
+//						switch (tabType) {
+//						case MODULE:
+//							permVal = NewPermissionFactory.Module_Permission.valueOf(action).getPermission();
+//							break;
+//						case APPROVAL:
+//							permVal = NewPermissionFactory.Approval_Permission.valueOf(action).getPermission();
+//							break;
+//						case CALENDAR:
+//							permVal = NewPermissionFactory.Calendar_Permission.valueOf(action).getPermission();
+//							break;
+//						case REPORT:
+//							permVal = NewPermissionFactory.Reports_Permission.valueOf(action).getPermission();
+//							break;
+//						case ANALYTICS:
+//							permVal = NewPermissionFactory.Analytics_Permission.valueOf(action).getPermission();
+//							break;
+//						case KPI:
+//							permVal = NewPermissionFactory.KPI_Permission.valueOf(action).getPermission();
+//							break;
+//						case DASHBOARD:
+//							permVal = NewPermissionFactory.Dashboard_Permission.valueOf(action).getPermission();
+//							break;
+//						case CUSTOM:
+//							permVal = NewPermissionFactory.Custom_Permission.valueOf(action).getPermission();
+//							break;
+//						case WORKORDER_MODULE:
+//							permVal = NewPermissionFactory.Workorder_Permission.valueOf(action).getPermission();
+//							break;
+//						case INENTORY_MODULE:
+//							permVal = NewPermissionUtil.getPermissionValue(tabType.getIndex(), action);
+//							break;
+//						default:
+//							break;
+//						}
+//					} catch (Exception e) {
+//						e.getMessage();
+//					}
 					if (permVal > 0) {
 						hasAccess = hasPermission(perm, permVal);
 					}
