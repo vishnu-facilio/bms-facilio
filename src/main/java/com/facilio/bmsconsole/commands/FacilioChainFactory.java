@@ -2020,6 +2020,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain addHistoricMLReadingsChain(){
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new AddReadingsForMLCommand());
+		return c;
+	}
+	
 	public static FacilioChain addEnergyPredictionchain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new AddEnergyPredictionCommand());
