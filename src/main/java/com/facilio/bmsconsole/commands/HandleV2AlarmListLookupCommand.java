@@ -22,19 +22,22 @@ public class HandleV2AlarmListLookupCommand extends FacilioCommand {
 			
 			NewAlarmAPI.loadAlarmLookups(alarms);
 			
-			Map<Long, AlarmOccurrenceContext> occurencesMap = NewAlarmAPI.getLatestAlarmOccuranceMap(alarms);
-			for (AlarmOccurrenceContext occurrence : occurencesMap.values()) {
-				occurrence.setAlarm(null);
-				occurrence.setResource(null);
-			}
+//			Map<Long, AlarmOccurrenceContext> occurencesMap = NewAlarmAPI.getLatestAlarmOccuranceMap(alarms);
+//			for (AlarmOccurrenceContext occurrence : occurencesMap.values()) {
+//				occurrence.setAlarm(null);
+//				occurrence.setResource(null);
+//			}
 			for(BaseAlarmContext alarm: alarms) {
 				if (alarm instanceof ReadingAlarm) {
 					ReadingAlarm readingAlarm = (ReadingAlarm) alarm;
 //					readingAlarm.setRule(null);
 					readingAlarm.setSubRule(null);
 				}
-				// AlarmOccurrenceContext occurrenceContext = occurencesMap.get(alarm.getLastOccurrenceId());
+				long alarmOccurrenceId = alarm.getLastOccurrenceId();
 				alarm.setLastOccurrence(null);
+				alarm.setLastOccurrenceId(alarmOccurrenceId);
+				// AlarmOccurrenceContext occurrenceContext = occurencesMap.get(alarm.getLastOccurrenceId());
+
 			}
 		}
 		return false;
