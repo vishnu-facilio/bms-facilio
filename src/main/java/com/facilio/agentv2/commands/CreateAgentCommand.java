@@ -28,7 +28,12 @@ public class CreateAgentCommand extends AgentV2Command {
                 context.put(AgentConstants.CERT_FILE_DOWNLOAD_URL, certFielDownloadUrl);
                 // pack agent and give a download link
                 agentDownloadUrl = packAgent(agent);
-                if (agentDownloadUrl != null) {
+                if ((agentDownloadUrl != null) && (agent.getType().equals("facilio")) && (agent.getType().equals("niagara")) ) {
+                    switch (agent.getType()){
+                        case "facilio":
+                        case "niagara":
+                        default:
+                    }
                     context.put(AgentConstants.DOWNLOAD_AGENT, agentDownloadUrl);
                 } else {
                     LOGGER.info(" agentDownload link cant be null ");

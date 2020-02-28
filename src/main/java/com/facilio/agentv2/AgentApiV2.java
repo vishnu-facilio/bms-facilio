@@ -290,15 +290,20 @@ public class AgentApiV2 {
                     .select(fields)
                     .andCondition(getDeletedTimeNullCondition(MODULE));
             List<Map<String, Object>> data = selectRecordBuilder.get();
+            Set<Long> siteSet = new HashSet<>();
             int offlineCount = 0;
             if( ! data.isEmpty() ){
                 for (Map<String, Object> datum : data) {
                     if( (datum.get(AgentConstants.CONNECTION_STATUS) == null ) || (! (boolean)datum.get(AgentConstants.CONNECTION_STATUS)) ){
                         offlineCount++;
                     }
+                    if((datum.get(AgentConstants.SITE_ID) != null) && (((Number)datum.get(AgentConstants.SITE_ID)).longValue()>0) ){
+                        siteSet.add((Long) datum.get(AgentConstants.SITE_ID));
+                    }
                 }
             }
             JSONObject countData = new JSONObject();
+            countData.put(AgentConstants.SITE_COUNT,siteSet.size());
             countData.put(AgentConstants.TOTAL_COUNT,data.size());
             countData.put(AgentConstants.ACTIVE_COUNT,(data.size()-offlineCount));
             LOGGER.info(" agent count -- "+countData);
@@ -356,6 +361,20 @@ public class AgentApiV2 {
         return false;
     }
 
+    private long getAgentSites(Long agentId) throws Exception {
+        FacilioModule newAgentDataModule = ModuleFactory.getNewAgentDataModule();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(newAgentDataModule.getTableName())
+                .select(Arrays.asList(FieldFactory.getCountOfDistinctField(FieldFactory.getSiteIdField(newAgentDataModule))));
+        if(agentId != null){
+            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(newAgentDataModule), String.valueOf(agentId),NumberOperators.EQUALS));
+        }
+        List<Map<String, Object>> result = builder.get();
+        if( ! result.isEmpty()){
+            return (long) result.get(1).get(AgentConstants.TOTAL_COUNT);
+        }
+        return 0;
+    }
 
     private FacilioAgent getAgent(Controller controller) throws Exception {
         if ((controller != null)) {

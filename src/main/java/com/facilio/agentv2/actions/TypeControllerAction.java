@@ -32,10 +32,11 @@ public class TypeControllerAction extends ControllerActions
     public String getControllerUsingIdType() {
         try {
                 Controller controller = ControllerApiV2.getControllerUsingIdAndType(getControllerId(), FacilioControllerType.valueOf(getControllerType()));
-                if (controller != null) {
+            Controller controllerFromDbUsingBuilder = ControllerApiV2.getControllerFromDb(controller.getChildJSON(), controller.getAgentId(), FacilioControllerType.valueOf(getControllerType()));
+            if (controller != null) {
                     try {
                         setResult(AgentConstants.RESULT, SUCCESS);
-                        setResult(AgentConstants.DATA, FieldUtil.getAsJSON(controller));
+                        setResult(AgentConstants.DATA, FieldUtil.getAsJSON(controllerFromDbUsingBuilder));
                         setResponseCode(HttpURLConnection.HTTP_OK);
                     } catch (Exception e) {
                         LOGGER.info(" Exception occurred ", e);

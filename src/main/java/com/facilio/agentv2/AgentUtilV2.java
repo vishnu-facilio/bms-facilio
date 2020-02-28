@@ -97,8 +97,8 @@ public class AgentUtilV2
                 Status status = Status.valueOf(((Number) payload.get(AgentConstants.STATUS)).intValue());
                 if(status == Status.CONNECTION_LOST || status == Status.DISCONNECTED){
                     agent.setConnectionStatus(false);
+                    return AgentApiV2.updateAgent(agent);
                 }
-                return updateAgent(agent,payload);
             }
             if(( ! payload.containsKey(AgentConstants.STATUS)) && (payload.containsKey(AgentConstants.MESSAGE_ID)) && (payload.containsKey(AgentConstants.COMMAND)) ){ // for PING
                 AckUtil.ackPing(agent.getId(),orgId,payload);

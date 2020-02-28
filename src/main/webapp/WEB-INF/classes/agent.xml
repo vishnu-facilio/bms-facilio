@@ -108,7 +108,7 @@
         </action>
 
         <!--9-->
-        <action name="shutdown" class="com.facilio.agentv2.actions.IdsAction" method="shutDownAgent"> <!--DONE-->
+        <action name="shutdown" class="com.facilio.agentv2.actions.IdsAction" method="shutDownAfgent"> <!--DONE-->
         </action>
 
         <!--10-->
@@ -298,6 +298,18 @@
 
     <package name="test" namespace="/api/v2/agent/test" extends="agent">
         <action name="createPolicy" class="com.facilio.agentv2.AgentAction" method="createPolicy">
+        </action>
+
+        <action name="getControllerUsingAgentId" class="com.facilio.agentv2.actions.TestAction" method="getControllerUsingAgentId">
+        </action>
+
+        <action name="testTsGetController" class="com.facilio.agentv2.actions.TestAction" method="getTsControllerTest">
+        </action>
+
+        <action name="getAgentSites" class="com.facilio.agentv2.actions.TestAction" method="getAgentSites">
+        </action>
+
+        <action name="getControllerUsingIdType" class="com.facilio.agentv2.actions.TypeControllerAction" method="getControllerUsingIdType">
         </action>
 
     </package>

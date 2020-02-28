@@ -10,7 +10,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.custom.CustomController;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -63,7 +62,11 @@ public class ControllerUtilV2 {
             controller = getControllerFromJSON( controllerProps);
             if (controller != null) {
                 controller.setAgentId(agentId);
-                Controller controllerFromDb = ControllerApiV2.getControllerFromDb(controller.getChildJSON(), agentId, FacilioControllerType.valueOf(controller.getControllerType()));
+                Controller controllerFromDb = null;//ControllerApiV2.getControllerFromDb(controller.getChildJSON(), agentId, FacilioControllerType.valueOf(controller.getControllerType()));
+                GetControllerRequest getControllerRequest = new GetControllerRequest()
+                        .withAgentId(agentId)
+                        .withControllerProperties(controller.getChildJSON(),FacilioControllerType.valueOf(controller.getControllerType()));
+                controllerFromDb = getControllerRequest.getController();
                 if (controllerFromDb != null) {
                     LOGGER.info(" controller present ");
                     deviceIdControllerMap.put(device.getId(), controllerFromDb);
@@ -151,6 +154,15 @@ public class ControllerUtilV2 {
     public static Controller makeCustomController(long orgId, long agentId, JSONObject controllerJson) {
         CustomController controller = null;
         try {
+
+            GetControllerRequest getControllerRequest = new GetControllerRequest()
+                    .withAgentId(agentId)
+                    .withControllerProperties(controllerJson,FacilioControllerType.CUSTOM);
+            try {
+                controller = (CustomController) getControllerRequest.getController();
+            }catch (Exception e){
+                LOGGER.info("Exception occurred while making custom controller ",e);
+            }
             controller = (CustomController) ControllerApiV2.getControllerFromDb(controllerJson, agentId, FacilioControllerType.CUSTOM); // check if a custom controller is present already
         } catch (Exception e) {
             LOGGER.info(" Exception while fetching controller ",e);
@@ -180,10 +192,8 @@ public class ControllerUtilV2 {
         return false;
     }
 
-    /**
-     * @param controllerType
-     * @return
-     */
+
+
     public Controller getController(JSONObject controllerJson, FacilioControllerType controllerType) {
         LOGGER.info(" getting controllers from db");
         // avoids null pointer --  loads the controller map
@@ -196,7 +206,15 @@ public class ControllerUtilV2 {
             //return ControllerApiV2.getAllControllersFromDb(agentId).get(controllerIdentifier);
         } else if ((controllerMapList.get(controllerType.asInt()).isEmpty())) { // map for the controllerType is empty
             LOGGER.info(" controller not found in map , getting from db");
-            Map<String, Controller> controllers = ControllerApiV2.getControllersFromDb(agentId, controllerType,null); // get all controller fpr that controllerType
+            Map<String, Controller> controllers = new HashMap<>(); // get all controller fpr that controllerType
+            try {
+                        GetControllerRequest getControllerRequest = new GetControllerRequest()
+                        .withAgentId(agentId)
+                        .ofType(controllerType);
+                        controllers = getControllerRequest.getControllersMap();
+            }catch (Exception e){
+                LOGGER.info("Exception while getting controller og type "+controllerType.asString()+" for agent "+agentId);
+            }
             if (controllers.isEmpty()) {
                 return null;
             }
@@ -278,18 +296,6 @@ public class ControllerUtilV2 {
             LOGGER.info(" EXveption occurred, Controller detail missing from payload -> " + payload);
         }
         return null;
-    }
-
-    public JSONArray getAllControllerList() {
-        JSONArray controllerArray = new JSONArray();
-        Map<String, Controller> controllers = new HashMap<>();
-        for (FacilioControllerType type : FacilioControllerType.values()) {
-            controllers.putAll(ControllerApiV2.getControllersFromDb(agentId, type,null));
-        }
-        for (String controllerIdentifier : controllers.keySet()) {
-            controllerArray.add(controllers.get(controllerIdentifier).toJSON());
-        }
-        return controllerArray;
     }
 
 }

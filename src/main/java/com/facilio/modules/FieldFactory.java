@@ -449,6 +449,9 @@ public class FieldFactory {
 	public static FacilioField getConfigurationInProgressPointCountConditionField(){
 		return getField(AgentConstants.CONFIGURATION_INPROGRESS_COUNT,"SUM(IF("+ModuleFactory.getPointModule().getTableName()+".CONFIGURE_STATUS = 2, 1, 0))",FieldType.NUMBER);
 	}
+	public static FacilioField getCountOfDistinctField(FacilioField facilioField){
+		return getField(AgentConstants.TOTAL_COUNT,"COUNT(DISTINCT ("+facilioField.getColumnName()+"))",FieldType.NUMBER);
+	}
 
 	public static List<FacilioField> getAgentV2LogFields() {
 		List<FacilioField> fields = new ArrayList<>();

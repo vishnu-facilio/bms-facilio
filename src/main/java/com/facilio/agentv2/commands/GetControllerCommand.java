@@ -44,7 +44,7 @@ public class GetControllerCommand extends AgentV2Command {
         allFields.add(FieldFactory.getSubscriptionInProgressPointCountConditionField());
         allFields.add(FieldFactory.getConfiguredPointCountConditionField());
         allFields.add(FieldFactory.getConfigurationInProgressPointCountConditionField());
-
+        allFields.add(FieldFactory.getIdField(controllerModule));
         context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, allFields);
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .select(allFields)

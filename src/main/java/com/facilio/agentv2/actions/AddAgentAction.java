@@ -40,6 +40,9 @@ public class AddAgentAction extends AgentActionV2
     public Long getSiteId() { return siteId; }
     public void setSiteId(Long siteId) { this.siteId = siteId; }
 
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type;}
+    private String type;
 
     public String createAgent() {
         try {
@@ -49,6 +52,7 @@ public class AddAgentAction extends AgentActionV2
             agent.setName(getAgentName());
             agent.setInterval(getDataInterval());
             agent.setSiteId(getSiteId()); //TODO validate SITE ID.
+            agent.setType(type);
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();
             JSONObject jsonObject = new JSONObject();

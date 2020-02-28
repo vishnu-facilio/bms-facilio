@@ -1,6 +1,7 @@
 package com.facilio.agentv2.actions;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
@@ -33,8 +34,11 @@ public class ControllerActions extends AgentActionV2 {
             Controller controller = ControllerApiV2.getControllerFromDb(getControllerId());
             if (controller != null) {
                 setResult(AgentConstants.RESULT, SUCCESS);
-                setResult(AgentConstants.DATA, controller.toJSON());
                 setResponseCode(HttpURLConnection.HTTP_OK);
+                LOGGER.info(" controller instance of "+ (controller instanceof BacnetIpControllerContext));
+                LOGGER.info(" controller controller to json  "+controller.toJSON());
+                LOGGER.info(" controller controller get child json  "+controller.getChildJSON());
+                setResult(AgentConstants.DATA, controller);
                 return SUCCESS;
             } else {
                 setResult(AgentConstants.RESULT, NONE);
@@ -68,21 +72,20 @@ public class ControllerActions extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public String resetController(){
-        try{
+    public String resetController() {
+        try {
             ControllerApiV2.resetController(getControllerId());
-            setResult(AgentConstants.RESULT,SUCCESS);
-            setResponseCode( HttpURLConnection.HTTP_OK);
+            setResult(AgentConstants.RESULT, SUCCESS);
+            setResponseCode(HttpURLConnection.HTTP_OK);
             return SUCCESS;
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER.info("Exception occurred while reset controller");
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
         }
-        setResult(AgentConstants.RESULT,ERROR);
+        setResult(AgentConstants.RESULT, ERROR);
         return SUCCESS;
     }
-
 
 
 }

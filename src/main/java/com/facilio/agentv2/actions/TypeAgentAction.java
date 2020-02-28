@@ -3,7 +3,7 @@ package com.facilio.agentv2.actions;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.chain.FacilioContext;
 import org.apache.log4j.LogManager;
@@ -46,7 +46,11 @@ public class TypeAgentAction extends AgentIdAction {
     public String getControllerOfTypeForAgent(){
         try{
             JSONArray controllerArray = new JSONArray();
-            Map<String, Controller> controllerData =  ControllerApiV2.getControllersFromDb(getAgentId(), FacilioControllerType.valueOf(getControllerType()),constructListContext(new FacilioContext()));
+            GetControllerRequest getControllerRequest = new GetControllerRequest()
+                    .withAgentId(getAgentId())
+                    .ofType(FacilioControllerType.valueOf(getControllerType()))
+                    .withPagination(constructListContext(new FacilioContext()));
+            Map<String, Controller> controllerData =  getControllerRequest.getControllersMap();
             if ((controllerData != null) && (!controllerData.isEmpty())) {
                 JSONObject object = new JSONObject();
                 for (Controller controller : controllerData.values()) {
