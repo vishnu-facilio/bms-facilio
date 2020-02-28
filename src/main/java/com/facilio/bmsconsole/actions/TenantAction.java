@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -270,6 +271,13 @@ private int status;
       this.tenantMeterId = tenantMeterId;
    }
 
+   private long stateTransitionId = -1;
+	public long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
 
    private JSONObject error;
    public JSONObject getError() {
@@ -462,6 +470,8 @@ private Map<String, Double> readingData;
 	         }
 //	         tenant.parseFormData();
 	         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+	         context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+	         context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
 	         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 	         context.put(FacilioConstants.ContextNames.RECORD, tenant);
 	         context.put(FacilioConstants.ContextNames.SITE_ID, tenant.getSiteId());
@@ -605,10 +615,18 @@ private Map<String, Double> readingData;
 	         if(CollectionUtils.isNotEmpty(utilityAssets)) {
 	            tenant.setUtilityAssets(utilityAssets);
 	         }
-	         
-	         tenant.parseFormData();
+	         if (tenant != null) {
+	        	 tenant.parseFormData();
+	         }
+	        if (tenantsId != null && tenantsId.size() > 0) {
+	 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, tenantsId);
+	 		}else {
+	 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(id));
+	 		}
 	         context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.EDIT);
+	         context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 	         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+	         context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
 	         context.put(FacilioConstants.ContextNames.SPACE_UPDATE, spacesUpdate);
 	         context.put(FacilioConstants.ContextNames.RECORD, tenant);
 	         if(tenantLogo != null) {

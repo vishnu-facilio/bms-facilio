@@ -14,7 +14,8 @@ public class UpdateTenantCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		TenantContext tenant = (TenantContext) context.get(TenantsAPI.TENANT_CONTEXT);
-		List<Long> spaceIds = (ArrayList<Long>)context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+//		List<Long> spaceIds = (ArrayList<Long>)context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		List<Long> spaceIds = new ArrayList<>();
 		
 		if(tenant.getStatusEnum() != null && tenant.getStatusEnum() != TenantContext.Status.ACTIVE) {
 			throw new IllegalArgumentException("Cannot update an inactive tenant");

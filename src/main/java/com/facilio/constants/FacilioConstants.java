@@ -1600,7 +1600,6 @@ public class FacilioConstants {
 			classMap.put(STOCKED_TOOLS_RETURN_TRACKING, StockedToolsReturnTrackingContext.class);
 			classMap.put(ITEM_VENDORS, ItemTypesVendorsContext.class);
 			classMap.put(PURCHASED_TOOL, PurchasedToolContext.class);
-			classMap.put(TENANT, TenantContext.class);
 			classMap.put(LABOUR, LabourContext.class);
 			classMap.put(WO_LABOUR, WorkOrderLabourContext.class);
 			classMap.put(PURCHASE_REQUEST, PurchaseRequestContext.class);
@@ -1688,7 +1687,9 @@ public class FacilioConstants {
 			classMap.put(SLA_RULE_MODULE, SLAWorkflowCommitmentRuleContext.class);
 
 			classMap.put(VENDOR_DOCUMENTS, DocumentContext.class);
-
+			
+			classMap.put(TENANT, TenantContext.class);
+			
 			classMap.put(SAFETY_PLAN, SafetyPlanContext.class);
 			classMap.put(HAZARD, HazardContext.class);
 			classMap.put(PRECAUTION, PrecautionContext.class);

@@ -217,6 +217,8 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTenantCommand());
 			c.addCommand(new AddTenantUserCommand());
 			c.addCommand(new AddTenantSpaceRelationCommand());
+			c.addCommand(new ExecuteStateFlowCommand());
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			return c;
 		}
 		
@@ -227,6 +229,9 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTenantUserCommand());
 			c.addCommand(new DeleteTenantSpaceRelationCommand());
 			c.addCommand(new AddTenantSpaceRelationCommand());
+			c.addCommand(new GenericGetModuleDataListCommand());
+			c.addCommand(new UpdateStateForModuleDataCommand());
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			return c;
 		}
 		
@@ -244,6 +249,7 @@ public class TransactionChainFactory {
 		public static FacilioChain v2DeleteTenantChain () {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new DeleteTenantCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
 			return c;
 		}
 		
