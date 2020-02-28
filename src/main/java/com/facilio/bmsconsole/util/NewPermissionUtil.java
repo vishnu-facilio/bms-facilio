@@ -205,8 +205,8 @@ public class NewPermissionUtil {
 
 	}
 
-	public static List<Permission> getPermissions(int tabId, String moduleName) {
-		Map<String, List<Permission>> stringListMap = permissionList.get(tabId);
+	public static List<Permission> getPermissions(int tabType, String moduleName) {
+		Map<String, List<Permission>> stringListMap = permissionList.get(tabType);
 		if (stringListMap.containsKey(moduleName)) {
 			return stringListMap.get(moduleName);
 		} else {
@@ -214,12 +214,12 @@ public class NewPermissionUtil {
 		}
 	}
 
-	public static PermissionGroup getPermissionGroup(int tabId, String module, String actionName) {
-		List<Permission> permissions = getPermissions(tabId, module);
+	public static PermissionGroup getPermissionGroup(int tabType, String module, String actionName) {
+		List<Permission> permissions = getPermissions(tabType, module);
 		if (permissions != null) {
 			for (Permission p : permissions) {
 				if (p instanceof PermissionGroup) {
-					if (((PermissionGroup) p).getDisplayName().equals(actionName)) {
+					if (((PermissionGroup) p).getDisplayName().equalsIgnoreCase(actionName)) {
 						return (PermissionGroup) p;
 					}
 				}

@@ -1,17 +1,25 @@
 package com.facilio.accounts.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants.ModulePermission;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.bmsconsole.context.Permission;
+import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabContext.Type;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -160,9 +168,125 @@ public class PermissionUtil {
 	}
 
 	public static Criteria getCurrentUserPermissionCriteria(String moduleName, String action) {
-    	return getPermissionCriteria(AccountUtil.getCurrentUser().getRole(), moduleName, action);
+			try {
+				if (AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB)) {
+					return getNewPermissionCriteria(AccountUtil.getCurrentUser().getRole(), moduleName, action);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			return getPermissionCriteria(AccountUtil.getCurrentUser().getRole(), moduleName, action);
 	}
 
+	
+	private static Criteria getNewPermissionCriteria(Role role, String moduleName, String action) {
+		Criteria criteria = null;
+		HttpServletRequest request = ServletActionContext.getRequest();
+		if (request != null) {
+			String currentTab = request.getHeader("X-Tab-Id");
+			if (currentTab != null && !currentTab.isEmpty()) {
+				long tabId = Long.valueOf(currentTab);
+				WebTabContext webTabContext;
+				try {
+					webTabContext = ApplicationApi.getWebTab(tabId);
+					if (webTabContext != null) {
+						boolean hasAccess = false;
+						long userPermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getId());
+						int tabType = webTabContext.getType();
+						String moduleNameToFetch = moduleName;
+						if (moduleNameToFetch.equals("planned")) {
+							moduleNameToFetch = "workorder";
+						}
+						PermissionGroup permissionGroup = NewPermissionUtil.getPermissionGroup(tabType, moduleNameToFetch, action);
+						if (permissionGroup != null) {
+							List<Permission> permissions = permissionGroup.getPermissions();
+							if (permissions != null && !permissions.isEmpty()) {
+								for (Permission permission : permissions) {
+									hasAccess = ((permission.getValue() & userPermissionVal) == permission.getValue());
+									if (hasAccess) {
+										if(permission.getActionName().equals("READ") || permission.getActionName().equals("UPDATE") || permission.getActionName().equals("DELETE")) {
+											return null;
+										} else if(permission.getActionName().equals("READ_OWN") || permission.getActionName().equals("UPDATE_OWN") || permission.getActionName().equals("DELETE_OWN")) {
+											if (moduleName.equals("inventory")) {
+												Condition storeRoomCondition = new Condition();
+												storeRoomCondition.setColumnName("Store_room.OWNER_ID");
+												storeRoomCondition.setFieldName("owner");
+												storeRoomCondition.setOperator(PickListOperators.IS);
+												storeRoomCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
+
+												criteria = new Criteria();
+												criteria.addAndCondition(storeRoomCondition);
+											}
+											else if (moduleName.equals("inventoryrequest")) {
+												Condition requestedForCondition = new Condition();
+												requestedForCondition.setColumnName("Inventory_Requests.REQUESTED_BY");
+												requestedForCondition.setFieldName("requestedBy");
+												requestedForCondition.setOperator(PickListOperators.IS);
+												requestedForCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
+
+												criteria = new Criteria();
+												criteria.addAndCondition(requestedForCondition);
+											}
+												else {
+												Condition userCondition = new Condition();
+												if (moduleName.equals("planned")) {
+													userCondition.setColumnName("Workorder_Template.ASSIGNED_TO_ID");
+												}
+												else {
+													userCondition.setColumnName("ASSIGNED_TO_ID");
+												}
+												userCondition.setFieldName("assignedToid");
+												userCondition.setOperator(PickListOperators.IS);
+												userCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
+
+												criteria = new Criteria();
+												criteria.addAndCondition(userCondition);
+												}
+											return criteria;
+										} else if(permission.getActionName().equals("READ_TEAM") || permission.getActionName().equals("UPDATE_TEAM") || permission.getActionName().equals("DELETE_TEAM")){
+											long ouid = AccountUtil.getCurrentAccount().getUser().getOuid();
+											List<Group> groups = new ArrayList<>();
+											try {
+												groups = AccountUtil.getGroupBean().getMyGroups(ouid);
+											} catch (Exception e) {
+												// TODO Auto-generated catch block
+												log.info("Exception occurred ", e);
+											}
+											List<Long> groupIds = new ArrayList<>();
+											for(Group group : groups) {
+												groupIds.add(group.getId());
+											}
+											String groupColName = "ASSIGNMENT_GROUP_ID";
+											String colName = "ASSIGNED_TO_ID";
+											if (moduleName.equals("planned")) {
+												groupColName = "Workorder_Template.ASSIGNMENT_GROUP_ID";
+												colName = "Workorder_Template.ASSIGNED_TO_ID";
+											}
+											Condition groupCondition = CriteriaAPI.getCondition(groupColName, "assignmentGroupId", StringUtils.join(groupIds, ","), PickListOperators.IS);
+											Condition userCondition = CriteriaAPI.getCondition(colName, "assignedToid", (FacilioConstants.Criteria.LOGGED_IN_USER), PickListOperators.IS);
+
+											criteria = new Criteria();
+											criteria.addOrCondition(groupCondition);
+											criteria.addOrCondition(userCondition);
+											return criteria;
+										}
+									}
+								}
+							}
+						}
+
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		}
+		return criteria;
+	}
+	
 	private static Criteria getPermissionCriteria(Role role, String moduleName, String action) {
 		Criteria criteria = null;
 		List<Permissions> permissions = role.getPermissions();
@@ -362,8 +486,7 @@ public class PermissionUtil {
 		if (perm == 0) {
 			return true;
 		}
-		boolean val = (perm & permission) == permission;
-		return val;
+		return (perm & permission) == permission;
 	}
 	
 	private static boolean hasPermission(long perm, String actions, long tabId) throws Exception {
