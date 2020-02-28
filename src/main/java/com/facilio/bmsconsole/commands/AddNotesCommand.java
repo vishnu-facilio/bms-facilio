@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.facilio.activity.AlarmActivityType;
-import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -14,7 +12,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.activity.AlarmActivityType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
@@ -33,6 +31,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
 
 
 public class AddNotesCommand extends FacilioCommand implements PostTransactionCommand {
@@ -60,7 +59,6 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 			String ticketModule = null;
 			if (moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 				ticketModule = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
-				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_NOTE);
 				if (ticketModule == null || ticketModule.isEmpty()) {
 					throw new IllegalArgumentException("Module name for ticket notes should be specified");
 				}
@@ -75,6 +73,7 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 					;
 			
 			Set<Long> parentIds = new HashSet<>();
+			boolean isNotifyRequester = false;	// Single note only will be there if notifyrequester is enabled  
 			for (NoteContext note : notes) {
 				if (StringUtils.isEmpty(note.getBody())) {
 					throw new IllegalArgumentException("Comment cannot be null/ empty");
@@ -89,6 +88,8 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				JSONObject info = new JSONObject();
 				info.put("Comment", note.getBody());
 				info.put("notifyRequester", note.getNotifyRequester());
+				isNotifyRequester = note.getNotifyRequester();
+				
 				info.put("addedBy", note.getCreatedBy().getOuid());
 	     		if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 				CommonCommandUtil.addActivityToContext(note.getParentId(), -1, WorkOrderActivityType.ADD_COMMENT, info, (FacilioContext) context);
@@ -104,9 +105,15 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				}
 				
 				noteBuilder.addRecord(note);
-				if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
+				/*if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 					sendEmail(moduleName, ticketModule, note);
-				}
+				}*/
+			}
+			if (isNotifyRequester) {
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_NOTE_REQUESTER);
+			}
+			else {
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_NOTE);
 			}
 			idsToUpdateCount = parentIds;
 			this.parentModuleName = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);

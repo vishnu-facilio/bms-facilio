@@ -45,7 +45,7 @@ public class ExecuteNoteWorkflowCommand extends FacilioCommand {
 	
 	private void executeWorkflow(NoteContext note, String ticketModule, EventType eventType, Context context) throws Exception {
 		long parentId = note.getParentId();
-		if(parentId != -1 && eventType != null && eventType == EventType.ADD_TICKET_NOTE) {
+		if(parentId != -1 && eventType != null && (eventType == EventType.ADD_TICKET_NOTE || eventType == EventType.ADD_NOTE_REQUESTER)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 //			long moduleId = modBean.getModule(FacilioConstants.ContextNames.TICKET).getModuleId();
 			FacilioModule module = modBean.getModule(ticketModule);

@@ -235,7 +235,14 @@ public enum EventType {
 		public String getMessage(JSONObject json) {
 			return null;
 		}
-	}
+	},
+	ADD_NOTE_REQUESTER(1 << 26) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "added a comment";
+		}
+	},
 	;
 
     private int eventType;
