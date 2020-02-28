@@ -6,7 +6,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.facilio.accounts.util.AccountUtil" %>
 <%@ page import="com.facilio.chain.FacilioChain" %>
-<<<<<<< Updated upstream
 <%@ page import="com.facilio.fw.BeanFactory" %>
 <%@ page import="com.facilio.beans.ModuleBean" %>
 <%@ page import="com.facilio.constants.FacilioConstants" %>
