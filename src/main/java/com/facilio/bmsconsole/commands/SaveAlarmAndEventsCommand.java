@@ -84,7 +84,7 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
 							.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
 					LOGGER.debug("Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
-					LOGGER.log(Level.INFO, "Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
+					// LOGGER.log(Level.INFO, "Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
 					builder.insert(baseAlarm);
 				}
 			}
