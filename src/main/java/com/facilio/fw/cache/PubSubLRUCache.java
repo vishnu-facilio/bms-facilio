@@ -1,5 +1,6 @@
 package com.facilio.fw.cache;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -67,7 +68,7 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
     
     public String toString() {
         double hitRatio =  ((hit*100d)/(hit+miss));
-        return (" The current size "+cache.size()+"\n hitCount= "+hit+"\n missCount= "+miss+"\n Cache Hit Ratio= "+ hitRatio+"\n\n"+cache.keySet());
+        return (" The current size "+cache.size()+"\n hitCount= "+hit+"\n missCount= "+miss+"\n Cache Hit Ratio= "+ hitRatio+"\n\n"+keySet());
     }
 
     private void updateRedisDeleteCount() {
@@ -94,7 +95,7 @@ public class PubSubLRUCache<K, V> implements FacilioCache<K, V>  {
 
     @Override
     public Set<K> keySet() {
-        return cache.keySet();
+        return new HashSet<>(cache.keySet());
     }
 
     public V get(K key){
