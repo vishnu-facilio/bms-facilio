@@ -4814,6 +4814,12 @@ public class TransactionChainFactory {
 		chain.addCommand(new GenericAddModuleDataCommand());
 		return chain;
 	}
+
+	public static FacilioChain getUpdateStateTransitionStateChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new UpdateStateTransitionStateCommand());
+		return chain;
+	}
 }
 
 

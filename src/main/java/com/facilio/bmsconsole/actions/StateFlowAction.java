@@ -308,4 +308,13 @@ public class StateFlowAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.SESSION, context.get(FacilioConstants.ContextNames.SESSION));
         return SUCCESS;
 	}
+
+	public String updateStateTransitionStates() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getUpdateStateTransitionStateChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_ID, stateFlowId);
+		context.put(FacilioConstants.ContextNames.TRANSITION, stateTransition);
+		chain.execute();
+		return SUCCESS;
+	}
 }

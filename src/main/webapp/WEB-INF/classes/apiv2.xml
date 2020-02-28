@@ -353,6 +353,9 @@
 		<action name="detailsFromToken"
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
 				method="getTransitionDetailsFromPermalink" />
+
+		<action name="updateState"
+				class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransitionStates" />
 	</package>
 
 	<package name="slaEntity" namespace="/api/v2/slaEntity" extends="v2Api">
@@ -382,6 +385,8 @@
 
 		<action name="addOrUpdateWithChildren"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="addSLAPolicyWithChildren" />
+		<action name="getWithChildren"
+				class="com.facilio.bmsconsole.actions.SLAAction" method="getSLAPolicyWithChildren" />
 	</package>
 
 	<package name="sla" namespace="/api/v2/sla" extends="v2Api">
