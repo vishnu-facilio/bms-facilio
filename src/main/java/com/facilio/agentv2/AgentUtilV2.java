@@ -45,6 +45,7 @@ public class AgentUtilV2
                 overiewData.putAll(FieldUtil.getAsJSON(agent));
                 overiewData.put(AgentConstants.CONTROLLER, ControllerApiV2.getControllerCountData(agentId));
                 overiewData.put(AgentConstants.POINTS, PointsAPI.getPointsCountData(agentId));
+                overiewData.put(AgentConstants.INTEGRATIONS,2);
             }
         } catch (Exception e) {
             LOGGER.info("Exception while getting controllerCountdata",e);
