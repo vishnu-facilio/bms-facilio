@@ -108,7 +108,7 @@
         </action>
 
         <!--9-->
-        <action name="shutdown" class="com.facilio.agentv2.actions.IdsAction" method="shutDownAfgent"> <!--DONE-->
+        <action name="shutdown" class="com.facilio.agentv2.actions.IdsAction" method="shutDownAgent"> <!--DONE-->
         </action>
 
         <!--10-->
