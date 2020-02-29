@@ -452,8 +452,8 @@ public class FieldFactory {
 	public static FacilioField getPointsCount(){
 		return getField(AgentConstants.POINTS,"COUNT("+ModuleFactory.getPointModule().getTableName()+".ID) ",FieldType.NUMBER);
 	}
-	public static FacilioField getCountOfDistinctField(FacilioField facilioField){
-		return getField(AgentConstants.TOTAL_COUNT,"COUNT(DISTINCT ("+facilioField.getColumnName()+"))",FieldType.NUMBER);
+	public static FacilioField getCountOfDistinctField(FacilioField facilioField,String key){
+		return getField(key,"COUNT(DISTINCT ("+facilioField.getModule().getTableName()+"."+facilioField.getColumnName()+"))",FieldType.NUMBER);
 	}
 
 	public static List<FacilioField> getAgentV2LogFields() {

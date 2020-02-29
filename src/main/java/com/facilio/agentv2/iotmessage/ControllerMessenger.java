@@ -69,7 +69,6 @@ public class ControllerMessenger {
         }
         IotData iotData = new IotData();
         long agentId = controller.getAgentId();
-        LOGGER.info(" controller json " + controller.toJSON());
         LOGGER.info(" agentId  " + agentId);
         FacilioAgent agent = AgentApiV2.getAgent(agentId);
         if (agent != null) {

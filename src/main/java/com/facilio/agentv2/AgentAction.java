@@ -17,10 +17,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class AgentAction extends AgentActionV2 {
@@ -42,21 +39,29 @@ public class AgentAction extends AgentActionV2 {
             LOGGER.info(" listing agents");
             FacilioContext context = new FacilioContext();
             constructListContext(context);
-            List<FacilioAgent> agents = AgentApiV2.listFacilioAgents(context);
-            JSONArray jsonArray = new JSONArray();
+            List<Map<String, Object>> agentListData = AgentApiV2.getAgentListData();
+                   // AgentApiV2.listFacilioAgents(context);
             long offLineAgents = 0;
             Set<Long> siteCount = new HashSet<>();
-            for (FacilioAgent agent : agents) {
+            for (Map<String, Object> agentListDatum : agentListData) {
+                if(agentListDatum.containsKey(AgentConstants.CONNECTED) && (agentListDatum.get(AgentConstants.CONNECTED) != null) && ((long)agentListDatum.get(AgentConstants.CONNECTED) != 1)){
+                    offLineAgents++;
+                    if(agentListDatum.containsKey(agentListDatum.get(AgentConstants.SITE_ID)) && (agentListDatum.get(AgentConstants.SITE_ID) != null)){
+                        siteCount.add((Long) agentListDatum.get(AgentConstants.SITE_ID));
+                    }
+                }
+            }
+           /* for (FacilioAgent agent : agents) {
                 jsonArray.add(agent.toJSON());
                 if( ! agent.getConnected()){
                     offLineAgents++;
                     siteCount.add(agent.getSiteId());
                 }
-            }
+            }*/
             setResult(AgentConstants.SITE_COUNT,siteCount.size());
-            setResult(AgentConstants.TOTAL_COUNT,agents.size());
-            setResult(AgentConstants.ACTIVE_COUNT,agents.size()-offLineAgents);
-            setResult(AgentConstants.DATA, jsonArray);
+            setResult(AgentConstants.TOTAL_COUNT,agentListData.size());
+            setResult(AgentConstants.ACTIVE_COUNT,agentListData.size()-offLineAgents);
+            setResult(AgentConstants.DATA, agentListData);
             setResponseCode(HttpURLConnection.HTTP_OK);
             setResult(AgentConstants.RESULT, SUCCESS);
         }catch (Exception e){

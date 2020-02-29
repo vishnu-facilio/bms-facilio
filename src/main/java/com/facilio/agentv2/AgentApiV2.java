@@ -1,6 +1,7 @@
 package com.facilio.agentv2;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentType;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.beans.ModuleCRUDBean;
@@ -268,13 +269,7 @@ public class AgentApiV2 {
         return false;
     }
 
-    public static long getAgentCount() {
-        long orgId = AccountUtil.getCurrentAccount().getOrg().getOrgId();
-        if( orgId > 0){
-            return getAgentCount(orgId);
-        }
-        return 0;
-    }
+
 
     public static Condition getDeletedTimeNullCondition(FacilioModule module){
         return CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(module), "NULL", CommonOperators.IS_EMPTY);
@@ -314,13 +309,12 @@ public class AgentApiV2 {
         return new JSONObject();
     }
 
-    private static long getAgentCount(long orgId) {
+    static long getAgentCount() {
         try {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .select(new HashSet<>())
                     .table(MODULE.getTableName())
-                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FIELDSMAP.get(AgentConstants.ID))
-                    .andCondition(CriteriaAPI.getOrgIdCondition(orgId, MODULE));
+                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FIELDSMAP.get(AgentConstants.ID));
             List<Map<String, Object>> result = builder.get();
             LOGGER.info(" count is "+result.get(0));
             return (long) result.get(0).get(AgentConstants.ID);
@@ -361,11 +355,39 @@ public class AgentApiV2 {
         return false;
     }
 
+    public static List<Map<String, Object>> getAgentListData() throws Exception {
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
+        FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
+        if( ! fieldMap.isEmpty()){
+            if(fieldMap.containsKey(AgentConstants.DELETED_TIME)){
+                fieldMap.remove(AgentConstants.DELETED_TIME);
+            }
+            if(fieldMap.containsKey(AgentConstants.DEVICE_DETAILS)){
+                fieldMap.remove(AgentConstants.DEVICE_DETAILS);
+            }
+            if(fieldMap.containsKey(AgentConstants.PROCESSOR_VERSION)){
+                fieldMap.remove(AgentConstants.PROCESSOR_VERSION);
+            }
+            if(fieldMap.containsKey(AgentKeys.TRANSFORM_WORKFLOW_ID)){
+                fieldMap.remove(AgentKeys.TRANSFORM_WORKFLOW_ID);
+            }
+        }
+        fieldMap.put(AgentConstants.CONTROLLERS,FieldFactory.getCountOfDistinctField(FieldFactory.getIdField(controllerModule),AgentConstants.CONTROLLERS));
+        GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(MODULE.getTableName())
+                .select(fieldMap.values())
+                .innerJoin(controllerModule.getTableName()).on(MODULE.getTableName()+".ID = "+controllerModule.getTableName()+".AGENT_ID")
+                .groupBy(MODULE.getTableName()+".ID");
+        List<Map<String, Object>> maps = genericSelectRecordBuilder.get();
+        LOGGER.info(" query "+genericSelectRecordBuilder.toString());
+        return maps;
+    }
+
     private long getAgentSites(Long agentId) throws Exception {
         FacilioModule newAgentDataModule = ModuleFactory.getNewAgentDataModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(newAgentDataModule.getTableName())
-                .select(Arrays.asList(FieldFactory.getCountOfDistinctField(FieldFactory.getSiteIdField(newAgentDataModule))));
+                .select(Arrays.asList(FieldFactory.getCountOfDistinctField(FieldFactory.getSiteIdField(newAgentDataModule),AgentConstants.TOTAL_COUNT)));
         if(agentId != null){
             builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(newAgentDataModule), String.valueOf(agentId),NumberOperators.EQUALS));
         }
