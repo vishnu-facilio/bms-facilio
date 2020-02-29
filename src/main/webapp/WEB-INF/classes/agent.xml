@@ -303,9 +303,6 @@
         <action name="getControllerUsingAgentId" class="com.facilio.agentv2.actions.TestAction" method="getControllerUsingAgentId">
         </action>
 
-        <action name="testTsGetController" class="com.facilio.agentv2.actions.TestAction" method="getTsControllerTest">
-        </action>
-
         <action name="getAgentSites" class="com.facilio.agentv2.actions.TestAction" method="getAgentSites">
         </action>
 

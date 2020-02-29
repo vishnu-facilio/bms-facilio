@@ -163,7 +163,6 @@ public class ControllerUtilV2 {
             }catch (Exception e){
                 LOGGER.info("Exception occurred while making custom controller ",e);
             }
-            controller = (CustomController) ControllerApiV2.getControllerFromDb(controllerJson, agentId, FacilioControllerType.CUSTOM); // check if a custom controller is present already
         } catch (Exception e) {
             LOGGER.info(" Exception while fetching controller ",e);
         }
@@ -194,60 +193,77 @@ public class ControllerUtilV2 {
 
 
 
-    public Controller getController(JSONObject controllerJson, FacilioControllerType controllerType) {
+    public Controller getCachedController(JSONObject controllerJson, FacilioControllerType controllerType) throws Exception {
         LOGGER.info(" getting controllers from db");
-        // avoids null pointer --  loads the controller map
-        if ((controllerMapList.get(controllerType.asInt()) == null)) {
-            controllerMapList.get(controllerType.asInt()).putAll(new HashMap<>());
-        }
-        // map empty
-        if (controllerType == null) { // controller type is null
-            return null;
-            //return ControllerApiV2.getAllControllersFromDb(agentId).get(controllerIdentifier);
-        } else if ((controllerMapList.get(controllerType.asInt()).isEmpty())) { // map for the controllerType is empty
-            LOGGER.info(" controller not found in map , getting from db");
-            Map<String, Controller> controllers = new HashMap<>(); // get all controller fpr that controllerType
-            try {
-                        GetControllerRequest getControllerRequest = new GetControllerRequest()
-                        .withAgentId(agentId)
-                        .ofType(controllerType);
-                        controllers = getControllerRequest.getControllersMap();
-            }catch (Exception e){
-                LOGGER.info("Exception while getting controller og type "+controllerType.asString()+" for agent "+agentId);
+
+        if((controllerJson != null)&&(controllerType != null)){
+            Controller mockController = ControllerApiV2.makeControllerFromMap(controllerJson,controllerType);
+            LOGGER.info(" looking controller "+mockController.getIdentifier());
+            if ((controllerMapList.get(controllerType.asInt()) == null)) {// avoids null pointer --  loads the controller map
+                LOGGER.info(" controllermap is null for controllerType ->"+controllerType);
+                controllerMapList.get(controllerType.asInt()).putAll(new HashMap<>());
             }
-            if (controllers.isEmpty()) {
-                return null;
-            }
-            for (String key : controllers.keySet()) {
-                controllerMapList.get(controllers.get(key).getControllerType()).put(key, controllers.get(key));
-            }
-            return controllerMapList.get(controllerType.asInt()).get(controllerJson.toString());
-        } else {
-            LOGGER.info(" controller found in map ");
-            if (controllerMapList.get(controllerType.asInt()).containsKey(controllerJson.toString())) {
-                return controllerMapList.get(controllerType.asInt()).get(controllerJson.toString());
-            } else {
-                Controller controller = null;
+            if ((controllerMapList.get(controllerType.asInt()).isEmpty())) { // map for the controllerType is empty
+                LOGGER.info(" controller map for type "+controllerType.asString()+" , getting from db");
+                Map<String, Controller> controllers = new HashMap<>(); // get all controller fpr that controllerType
                 try {
-                    controller = ControllerApiV2.getControllerFromDb(controllerJson, agentId, controllerType);
-                } catch (Exception e) {
-                    LOGGER.info(" Exception while fetching controller ",e);
+                    GetControllerRequest getControllerRequest = new GetControllerRequest()
+                            .withAgentId(agentId)
+                            .ofType(controllerType);
+                    controllers = getControllerRequest.getControllersMap();
+                }catch (Exception e){
+                    LOGGER.info("Exception while getting controller og type "+controllerType.asString()+" for agent "+agentId);
                 }
-                if (controller != null) {
-                    try {
-                        controllerMapList.get(controllerType.asInt()).put(controller.getChildJSON().toString(), controller);
-                        return controller;
-                    } catch (Exception e) {
-                        LOGGER.info("Exception occured, cant generate identifier");
-                    }
+                if (controllers.isEmpty()) {
+                    return null;
                 }
-                LOGGER.info("Exception Occurred, No such controller for agent " + agentId + ", with identifier " + controllerJson);
-                return null;
+                for (String key : controllers.keySet()) {
+                    controllerMapList.get(controllers.get(key).getControllerType()).put(key, controllers.get(key));
+                }
+                LOGGER.info(" got controllers from db and loading it to map "+controllers.size());
+                return controllerMapList.get(controllerType.asInt()).get(mockController.getIdentifier());
             }
+            else {
+                LOGGER.info(" controllers present for type "+controllerType.asString());
+                if (controllerMapList.get(controllerType.asInt()).containsKey(mockController.getIdentifier())) {
+                    LOGGER.info(" controller present in cache ");
+                    return controllerMapList.get(controllerType.asInt()).get(mockController.getIdentifier());
+                } else {
+                    Controller controller = null;
+                    try {
+                        GetControllerRequest getControllerRequest = new GetControllerRequest()
+                                .withAgentId(agentId)
+                                .withControllerProperties(controllerJson,controllerType);
+                        controller = getControllerRequest.getController();
+                        //controller = ControllerApiV2.getControllerFromDb(controllerJson, agentId, controllerType);
+                    } catch (Exception e) {
+                        LOGGER.info(" Exception while fetching controller ",e);
+                    }
+                    if (controller != null) {
+                        try {
+                            controllerMapList.get(controllerType.asInt()).put(controller.getIdentifier(), controller);
+                            LOGGER.info(" caching controller "+controller.getIdentifier());
+                            return controller;
+                        } catch (Exception e) {
+                            LOGGER.info("Exception occured, cant generate identifier");
+                        }
+                    }
+                    LOGGER.info("Exception Occurred, No such controller for agent " + agentId + ", with identifier " + controllerJson);
+                    return null;
+                }
+            }
+
+
+        }else {
+         throw new Exception(" controllerJSON "+controllerJson+" controllerType"+controllerType.asString()+" cant be null");
         }
+
+
+        // map empty
+
     }
 
-    /**
+/*    *//**
      * {
      * "controller": "X_#_X",
      * "type": 1,
@@ -263,39 +279,26 @@ public class ControllerUtilV2 {
      *
      * @param payload - must contain key "controller"
      * @return - null if controller is not found or if the key "controller" is missing.
-     */
-    public Controller getControllerFromAgentPayload(JSONObject payload) {
-        if (!payload.containsKey(AgentConstants.CONTROLLER)) {
-            return null;
-        }
+     *//*
+    public Controller getControllerFromAgentPayload(JSONObject payload) throws Exception {
+        if (payload.containsKey(AgentConstants.CONTROLLER)) {
 
-        JSONObject controllerJson = (JSONObject) payload.get(AgentConstants.CONTROLLER);
+            JSONObject controllerJson = (JSONObject) payload.get(AgentConstants.CONTROLLER);
+            if (payload.containsKey(AgentConstants.CONTROLLER_TYPE)) {
+                FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
+                if (controllerType != null) {
+                    LOGGER.info(" getControllerFromPayload " + controllerMapList.get(controllerType.asInt()));
+                    GetControllerRequest getControllerRequest = new GetControllerRequest()
+                            .withControllerProperties(controllerJson,controllerType);
+                    Controller controller = getControllerRequest.getController();
+                    return controller;
+                }
+                // if controllerType is null from the information - then make it custom
 
-        if (payload.containsKey(AgentConstants.CONTROLLER_TYPE)) {
-            FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
-
-            if (controllerType != null) {
-                LOGGER.info(" getControllerFromPayload " + controllerMapList.get(controllerType.asInt()));
-                return getController(controllerJson, controllerType);
             }
-            // if controllerType is null from the information - then make it custom
-            else {
-                LOGGER.info(" getControllerFromPayload " + controllerMapList.get(controllerType.asInt()));
-                Controller customController = ControllerUtilV2.makeCustomController(orgId, agentId, controllerJson);
-                controllerMapList.get(FacilioControllerType.CUSTOM.asInt()).put(customController.getName(), customController);
-                return customController;
-            }
+        }  else {
+            throw new Exception("payload is missing key "+AgentConstants.CONTROLLER);
         }
-        // if payload isn't having controllerType information- make it custom.
-        else if (payload.containsKey(AgentConstants.CONTROLLER)) {
-            LOGGER.info(" getControllerFromPayload " + controllerMapList.get(FacilioControllerType.CUSTOM.asInt()));
-            Controller customController = ControllerUtilV2.makeCustomController(orgId, agentId, controllerJson);
-            controllerMapList.get(FacilioControllerType.CUSTOM.asInt()).put(customController.getName(), customController);
-            return customController;
-        } else {
-            LOGGER.info(" EXveption occurred, Controller detail missing from payload -> " + payload);
-        }
-        return null;
-    }
+    }*/
 
 }

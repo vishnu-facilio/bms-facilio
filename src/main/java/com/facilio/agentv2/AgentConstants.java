@@ -108,7 +108,7 @@ public class AgentConstants
     public static final String IS_NEW_AGENT = "isNewAgent";
     public static final String TIMESTAMP = "timestamp";
     public static final String AGENT_TABLE = "Agent";
-    public static final String CONNECTION_STATUS = "connectionStatus";
+    public static final String CONNECTED = "connected";
     public static final String DEVICE_DETAILS = "deviceDetails";
     public static final String LAST_DATA_RECEIVED_TIME = "lastDataReceivedTime";
     public static final String STATE = "state";

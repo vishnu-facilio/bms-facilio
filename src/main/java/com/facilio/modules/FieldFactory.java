@@ -415,12 +415,12 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getNewAgentDataFields(){
+	public static List<FacilioField> getNewAgentFields(){
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getNewAgentDataModule();
 		fields.add(getIdField(module));
 		fields.add(getField(AgentConstants.DEVICE_DETAILS, "DEVICE_DETAILS", module, FieldType.STRING));
-		fields.add(getField(AgentConstants.CONNECTION_STATUS, "CONNECTION_STATUS", module, FieldType.BOOLEAN));
+		fields.add(getField(AgentConstants.CONNECTED, "CONNECTED", module, FieldType.BOOLEAN));
 		fields.add(getAgentNameField(module));
 		fields.add(getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", module, FieldType.STRING));
 		fields.add(getField(AgentConstants.DATA_INTERVAL, "DATA_INTERVAL", module, FieldType.NUMBER));
@@ -441,13 +441,16 @@ public class FieldFactory {
 		return getField(AgentConstants.SUBSCRIBED_COUNT,"SUM(IF("+ModuleFactory.getPointModule().getTableName()+".SUBSCRIBE_STATUS = 3, 1, 0))",FieldType.NUMBER);
 	}
 	public static FacilioField getSubscriptionInProgressPointCountConditionField(){
-		return getField(AgentConstants.SUBSCRIPTION_COUNT,"SUM(IF("+ModuleFactory.getPointModule().getTableName()+".SUBSCRIBE_STATUS = 3, 1, 0))",FieldType.NUMBER);
+		return getField(AgentConstants.SUBSCRIPTION_COUNT,"SUM(IF("+ModuleFactory.getPointModule().getTableName()+".SUBSCRIBE_STATUS = 2, 1, 0))",FieldType.NUMBER);
 	}
 	public static FacilioField getConfiguredPointCountConditionField(){
 		return getField(AgentConstants.CONFIGURED_COUNT,"SUM(IF("+ModuleFactory.getPointModule().getTableName()+".CONFIGURE_STATUS = 3, 1, 0))",FieldType.NUMBER);
 	}
 	public static FacilioField getConfigurationInProgressPointCountConditionField(){
 		return getField(AgentConstants.CONFIGURATION_INPROGRESS_COUNT,"SUM(IF("+ModuleFactory.getPointModule().getTableName()+".CONFIGURE_STATUS = 2, 1, 0))",FieldType.NUMBER);
+	}
+	public static FacilioField getPointsCount(){
+		return getField(AgentConstants.POINTS,"COUNT("+ModuleFactory.getPointModule().getTableName()+".ID) ",FieldType.NUMBER);
 	}
 	public static FacilioField getCountOfDistinctField(FacilioField facilioField){
 		return getField(AgentConstants.TOTAL_COUNT,"COUNT(DISTINCT ("+facilioField.getColumnName()+"))",FieldType.NUMBER);

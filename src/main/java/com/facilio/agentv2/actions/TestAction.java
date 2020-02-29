@@ -4,7 +4,6 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentAction;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.chain.FacilioContext;
 import org.apache.log4j.LogManager;
@@ -29,8 +28,15 @@ public class TestAction extends AgentAction {
     private long agentId;
     public String getControllerUsingAgentId(){
         try {
-            Map<String, Controller> controllersForAgent = ControllerApiV2.getControllersForAgent(getAgentId(), constructListContext(new FacilioContext()));
-            setResult(AgentConstants.DATA,controllersForAgent);
+            FacilioContext context = constructListContext(new FacilioContext());
+            GetControllerRequest controllerRequest = new GetControllerRequest()
+                    .withAgentId(agentId);
+            if(context != null){
+                controllerRequest.withPagination(context);
+            }
+            Map<String, Controller> controllers = controllerRequest.getControllersMap();
+            //Map<String, Controller> controllersForAgent = ControllerApiV2.getControllersForAgent(getAgentId(), constructListContext(new FacilioContext()));
+            setResult(AgentConstants.DATA,controllers);
         } catch (Exception e) {
             LOGGER.info(" Exception while getting controller using agentId ");
         }
@@ -63,31 +69,20 @@ public class TestAction extends AgentAction {
 
     public String getControllerUsingControllerId(){
         try {
-            Controller controllerUsingIdAndType = ControllerApiV2.getControllerUsingIdAndType(getControllerId(), FacilioControllerType.valueOf(getControllerType()));
-            setResult(AgentConstants.DATA,controllerUsingIdAndType.toJSON());
+            if ((controllerId > 0) && (getControllerType() != null)) {
+                GetControllerRequest getControllerRequest = new GetControllerRequest()
+                        .withControllerId(controllerId)
+                        .ofType(FacilioControllerType.valueOf(getControllerType()));
+                Controller controller = getControllerRequest.getController();
+                // Map<String, Controller> controllers = getControllersFromDb(null, -1, type, controllerId, null);
+                if(controller != null){
+                    setResult(AgentConstants.DATA,controller.toJSON());
+                }else {
+                    setResult("Exception"," no controllers found ");
+                }
+            }
         } catch (Exception e) {
             LOGGER.info(" Exception while getting controller using agentId ");
-        }
-        return SUCCESS;
-    }
-
-    public String getTsControllerTest(){
-        try {
-            Controller controller = ControllerApiV2.getControllerUsingIdAndType(getControllerId(), FacilioControllerType.valueOf(getControllerType()));
-            Controller controllerFromDb = ControllerApiV2.getControllerFromDb(controller.getChildJSON(), agentId, FacilioControllerType.valueOf(controller.getControllerType()));
-            setResult("data",controllerFromDb.toJSON());
-        }catch (Exception e){
-            LOGGER.info(" exception while getting ts controller ",e);
-        }
-        return SUCCESS;
-    }
-
-    public String testGetControllerBuilder(){
-        try{
-            List<Controller> controllers = ControllerApiV2.getControllerOfType(FacilioControllerType.valueOf(getControllerType()));
-            setResult("usingType",controllers);
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting controller using get controller builder");
         }
         return SUCCESS;
     }

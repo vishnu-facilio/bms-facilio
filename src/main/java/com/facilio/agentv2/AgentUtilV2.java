@@ -96,14 +96,14 @@ public class AgentUtilV2
             if(payload.containsKey(AgentConstants.STATUS)){ // for LWT
                 Status status = Status.valueOf(((Number) payload.get(AgentConstants.STATUS)).intValue());
                 if(status == Status.CONNECTION_LOST || status == Status.DISCONNECTED){
-                    agent.setConnectionStatus(false);
+                    agent.setConnected(false);
                     return AgentApiV2.updateAgent(agent);
                 }
             }
             if(( ! payload.containsKey(AgentConstants.STATUS)) && (payload.containsKey(AgentConstants.MESSAGE_ID)) && (payload.containsKey(AgentConstants.COMMAND)) ){ // for PING
                 AckUtil.ackPing(agent.getId(),orgId,payload);
             }
-            agent.setConnectionStatus(true);
+            agent.setConnected(true);
             return updateAgent(agent, payload);
         } else {
             throw new Exception("Agent can't be null");
@@ -154,8 +154,7 @@ public class AgentUtilV2
         LOGGER.info(" making new FacilioAgent for name "+agentName);
         com.facilio.agentv2.FacilioAgent agent = new com.facilio.agentv2.FacilioAgent();
         agent.setName(agentName);
-        agent.setConnectionStatus(Boolean.TRUE);
-        agent.setState(1);
+        agent.setConnected(Boolean.TRUE);
         agent.setWritable(false);
         agent.setInterval(15L);
         agent.setWritable(false);

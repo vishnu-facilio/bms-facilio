@@ -3,7 +3,6 @@ package com.facilio.agentv2;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.PublishType;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.DeviceUtil;
@@ -88,8 +87,8 @@ public class DataProcessorV2
             // markMetrices(agent.getId(), publishType, payload);
             switch (publishType) {
             	case CUSTOM:
-            		Controller customController = controllerUtil.getControllerFromAgentPayload(payload);
-            		
+            		Controller customController = getCachedControllerUsingPayload(payload,agent.getId());
+
 	                 JSONObject customPayload = (JSONObject) payload.clone();
 	                 if (customController != null) {
 	                	 customPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, customController.getId());
@@ -109,7 +108,7 @@ public class DataProcessorV2
                     break;
                 case ACK:
                     payload.put(AgentConstants.IS_NEW_AGENT, Boolean.TRUE);
-                    Controller controller = getControllerFromPayload(payload,agent.getId());
+                    Controller controller = getCachedControllerUsingPayload(payload,agent.getId());
                     if (AckUtil.handleConfigurationAndSubscription(AckUtil.getMessageIdFromPayload(payload),controller,payload)) {
                        processStatus = true;
                        break;
@@ -117,7 +116,7 @@ public class DataProcessorV2
                     processStatus = AckUtil.processAgentAck(payload, agent.getId(), orgId);
                     break;
                 case TIMESERIES:
-                    Controller timeseriesController = getControllerFromPayload(payload,agent.getId());
+                    Controller timeseriesController = getCachedControllerUsingPayload(payload,agent.getId());
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
                     if (timeseriesController != null) {
                         LOGGER.info(" timeseries controller found ");
@@ -127,20 +126,19 @@ public class DataProcessorV2
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, null);
                     }
 
-                    processTimeSeries(timeSeriesPayload, timeseriesController, true);
+                    processStatus = processTimeSeries(timeSeriesPayload, timeseriesController, true);
 
                     break;
                 case COV:
-                    controller = controllerUtil.getControllerFromAgentPayload(payload);
-
+                    controller = getCachedControllerUsingPayload(payload,agent.getId());
                     timeSeriesPayload = (JSONObject) payload.clone();
                     if (controller != null) {
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
                     } else {
                         timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, null);
                     }
-
-                    processTimeSeries(timeSeriesPayload, controller, false);
+                    processStatus = processTimeSeries(timeSeriesPayload, controller, false);
+                    break;
                     //processTimeSeries(payload,)
                 default:
                     throw new Exception("No such Publish type " + publishType.name());
@@ -152,29 +150,30 @@ public class DataProcessorV2
         return processStatus;
     }
 
-    private Controller getControllerFromPayload(JSONObject payload,long agentId) throws Exception {
-        if(containsCheck(AgentConstants.CONTROLLER_TYPE,payload)){
-
-            if(containsCheck(AgentConstants.CONTROLLER,payload)){
-                FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
+    private Controller getCachedControllerUsingPayload(JSONObject payload, long agentId) throws Exception {
+            if(containsCheck(AgentConstants.CONTROLLER,payload)) {
                 JSONObject controllerJSON = (JSONObject) payload.get(AgentConstants.CONTROLLER);
-                if(! controllerJSON.isEmpty()){
-                    Controller controller = ControllerApiV2.getControllerFromDb(controllerJSON,agentId,controllerType);
-                    if(controller != null){
-                        LOGGER.info(" goet controller "+controller.getId());
-                        return controller;
-                    }else {
-                        throw new Exception("No controller found "+controllerJSON);
+                if (containsCheck(AgentConstants.CONTROLLER_TYPE, payload)) {
+                    FacilioControllerType controllerType = FacilioControllerType.valueOf(((Number) payload.get(AgentConstants.CONTROLLER_TYPE)).intValue());
+                    if (!controllerJSON.isEmpty()) {
+                        Controller controller = controllerUtil.getCachedController(controllerJSON, controllerType);
+                        //Controller controller = ControllerApiV2.getControllerFromDb(controllerJSON, agentId, controllerType);
+                        if (controller != null) {
+                            LOGGER.info(" goet controller " + controller.getId());
+                            return controller;
+                        } else {
+                            throw new Exception("No controller found " + controllerJSON);
+                        }
+                    } else {
+                        throw new Exception(" controllerJSON cant be empty " + controllerJSON);
                     }
-                }else {
-                    throw new Exception(" controllerJSON cant be empty "+controllerJSON);
+                } else {
+                    Controller customController = ControllerUtilV2.makeCustomController(orgId, agentId, controllerJSON);
+                    return customController;
                 }
-            }else {
-                throw new Exception("payload is missing"+AgentConstants.CONTROLLER);
+            } else{
+                throw new Exception("payload is missing" + AgentConstants.CONTROLLER);
             }
-        }else {
-            throw new Exception(" payload is missing "+AgentConstants.CONTROLLER_TYPE);
-        }
 
     }
 
@@ -346,7 +345,7 @@ public class DataProcessorV2
     private long getAgentId(String agent) throws Exception {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getNewAgentDataModule().getTableName())
-                .select(FieldFactory.getNewAgentDataFields())
+                .select(FieldFactory.getNewAgentFields())
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getNewAgentDataModule()),agent, StringOperators.IS));
         List<Map<String, Object>> rows =selectRecordBuilder.get();
         if (rows.size()>0){

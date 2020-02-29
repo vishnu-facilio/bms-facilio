@@ -8,9 +8,8 @@ public class FacilioAgent {
 
     private  String name;
     private  String deviceDetails;
-    private  boolean connectionStatus;
+    private  boolean connected;
     private  String version;
-    private  int state;
     private  long interval;
     private  int numberOfControllers;
     private  String type; // change it to int using some enum
@@ -69,18 +68,11 @@ public class FacilioAgent {
         this.version = version;
     }
 
-    public int getState() {
-        return state;
+    public Boolean getConnected() {
+        return connected;
     }
-    public void setState(int state) {
-        this.state = state;
-    }
-
-    public Boolean getConnectionStatus() {
-        return connectionStatus;
-    }
-    public void setConnectionStatus(Boolean connectionStatus) {
-        this.connectionStatus = connectionStatus;
+    public void setConnected(Boolean connected) {
+        this.connected = connected;
     }
 
     public long getInterval() { return interval; }
@@ -177,9 +169,8 @@ public class FacilioAgent {
         }
         payload.put(AgentKeys.NAME,  getName());
         payload.put(AgentKeys.DEVICE_DETAILS, getDeviceDetails());
-        payload.put(AgentKeys.CONNECTION_STATUS, getConnectionStatus());
+        payload.put(AgentKeys.CONNECTION_STATUS, getConnected());
         payload.put(AgentKeys.VERSION, getVersion());
-        payload.put(AgentKeys.STATE, getState());
         payload.put(AgentKeys.DATA_INTERVAL, getInterval());
         payload.put(AgentKeys.NUMBER_OF_CONTROLLERS,getNumberOfControllers());
         payload.put(AgentKeys.AGENT_TYPE, getType());

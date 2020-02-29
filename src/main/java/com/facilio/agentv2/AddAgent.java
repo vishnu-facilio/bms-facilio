@@ -14,7 +14,7 @@ public class AddAgent extends FacilioCommand {
         if(agent == null){
             throw new Exception(" Agent Can't be null");
         }
-        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(AgentConstants.AGENT_TABLE).fields(FieldFactory.getNewAgentDataFields());
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(AgentConstants.AGENT_TABLE).fields(FieldFactory.getNewAgentFields());
         context.put(AgentConstants.AGENT_ID,builder.insert(FieldUtil.getAsProperties(agent)));
         /*context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentConstants.AGENT_TABLE);
         context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getNewAgentDataFields());

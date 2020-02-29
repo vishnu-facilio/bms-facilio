@@ -5,6 +5,7 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.actions.AgentActionV2;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
@@ -47,7 +48,7 @@ public class AgentAction extends AgentActionV2 {
             Set<Long> siteCount = new HashSet<>();
             for (FacilioAgent agent : agents) {
                 jsonArray.add(agent.toJSON());
-                if( ! agent.getConnectionStatus()){
+                if( ! agent.getConnected()){
                     offLineAgents++;
                     siteCount.add(agent.getSiteId());
                 }
@@ -260,7 +261,10 @@ public class AgentAction extends AgentActionV2 {
     private JSONObject childJson;
     public String getControllerUsingIdentifier(){
         try {
-            Controller controller = ControllerApiV2.getControllerFromDb(getChildJson(), getAgentId(), FacilioControllerType.valueOf(getControllerType()));
+            GetControllerRequest getControllerRequest = new GetControllerRequest()
+                    .withAgentId(agentId)
+                    .withControllerProperties(childJson,FacilioControllerType.valueOf(getControllerType()));
+            Controller controller = getControllerRequest.getController();
             JSONObject jsonObject = new JSONObject();
             if (controller != null) {
                 jsonObject.putAll(controller.toJSON());

@@ -4,7 +4,6 @@ import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
-import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.device.Device;
 import com.facilio.agentv2.device.FieldDeviceApi;
@@ -145,8 +144,7 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String getControllers() {
         try{
-            List<Map<String, Controller>> controllers = ControllerApiV2.getControllerDataForAgent(agentId, constructListContext(new FacilioContext()));
-            LOGGER.info(" action class "+controllers);
+            List<Map<String, Object>> controllers = ControllerApiV2.getControllerDataForAgent(agentId, constructListContext(new FacilioContext()));
             setResult(AgentConstants.DATA,controllers);
         } catch (Exception e) {
             setResult(AgentConstants.EXCEPTION,e.getMessage());

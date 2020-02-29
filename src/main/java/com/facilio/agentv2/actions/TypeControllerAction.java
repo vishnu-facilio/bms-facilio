@@ -3,7 +3,7 @@ package com.facilio.agentv2.actions;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.modules.FieldUtil;
@@ -31,12 +31,16 @@ public class TypeControllerAction extends ControllerActions
 
     public String getControllerUsingIdType() {
         try {
-                Controller controller = ControllerApiV2.getControllerUsingIdAndType(getControllerId(), FacilioControllerType.valueOf(getControllerType()));
-            Controller controllerFromDbUsingBuilder = ControllerApiV2.getControllerFromDb(controller.getChildJSON(), controller.getAgentId(), FacilioControllerType.valueOf(getControllerType()));
-            if (controller != null) {
+                Controller controller = null;
+            if ((getControllerId() > 0) && (getControllerType() != null)) {
+                GetControllerRequest getControllerRequest = new GetControllerRequest()
+                        .withControllerId(getControllerId())
+                        .ofType(FacilioControllerType.valueOf(getControllerType()));
+                controller = getControllerRequest.getController();
+                if (controller != null) {
                     try {
                         setResult(AgentConstants.RESULT, SUCCESS);
-                        setResult(AgentConstants.DATA, FieldUtil.getAsJSON(controllerFromDbUsingBuilder));
+                        setResult(AgentConstants.DATA, FieldUtil.getAsJSON(controller));
                         setResponseCode(HttpURLConnection.HTTP_OK);
                     } catch (Exception e) {
                         LOGGER.info(" Exception occurred ", e);
@@ -45,7 +49,7 @@ public class TypeControllerAction extends ControllerActions
                         setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
                     }
                 }
-
+            }
         }catch (Exception e){
             LOGGER.info("Exception occurred while getting controller using id and type ",e);
             setResult(AgentConstants.EXCEPTION,e.getMessage());

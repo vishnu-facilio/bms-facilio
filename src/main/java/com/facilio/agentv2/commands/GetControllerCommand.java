@@ -4,6 +4,7 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -46,6 +47,7 @@ public class GetControllerCommand extends AgentV2Command {
         allFields.add(FieldFactory.getConfiguredPointCountConditionField());
         allFields.add(FieldFactory.getConfigurationInProgressPointCountConditionField());
         allFields.add(FieldFactory.getIdField(controllerModule));
+        allFields.add(FieldFactory.getPointsCount());
         allFields.add(FieldFactory.getNameField(ModuleFactory.getResourceModule()));
         context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, allFields);
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
@@ -71,6 +73,10 @@ public class GetControllerCommand extends AgentV2Command {
 
             selectRecordBuilder.offset(offset);
             selectRecordBuilder.limit(perPage);
+        }
+
+        if(containsCheck(AgentConstants.CONTROLLER_ID,context)){
+            selectRecordBuilder.andCondition(CriteriaAPI.getIdCondition(String.valueOf(context.get(AgentConstants.CONTROLLER_ID)),controllerModule));
         }
 
 

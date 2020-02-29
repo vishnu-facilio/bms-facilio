@@ -258,12 +258,12 @@ public abstract class Controller extends AssetContext {
             object.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
         }
         object.put(AgentConstants.CREATED_TIME, getCreatedTime());
-        if (getLastModifiedTime() < 0) {
-            object.put(AgentConstants.LAST_MODIFIED_TIME, System.currentTimeMillis());
-        }
+//        if (getLastModifiedTime() < 0) {
+//            object.put(AgentConstants.LAST_MODIFIED_TIME, System.currentTimeMillis());
+//        }
         object.put(AgentConstants.LAST_MODIFIED_TIME, getLastModifiedTime());
         object.put(AgentConstants.LAST_DATA_SENT_TIME, getLastDataRecievedTime());
-        object.put(AgentConstants.DELETED_TIME, -1);
+        //object.put(AgentConstants.DELETED_TIME, -1);
         return object;
     }
 

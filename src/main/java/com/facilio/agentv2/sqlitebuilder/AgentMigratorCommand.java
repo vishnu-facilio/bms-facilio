@@ -288,7 +288,7 @@ public class AgentMigratorCommand extends AgentV2Command {
         if (agent != null) {
             com.facilio.agentv2.FacilioAgent agentV2 = new com.facilio.agentv2.FacilioAgent();
             agentV2.setDeviceDetails(agent.getDeviceDetails());
-            agentV2.setConnectionStatus(agent.getConnectionStatus());
+            agentV2.setConnected(agent.getConnectionStatus());
             agentV2.setName(agent.getName());
             agentV2.setDisplayName(agent.getDisplayName());
             if (agent.getInterval() != null) {
@@ -305,7 +305,7 @@ public class AgentMigratorCommand extends AgentV2Command {
                 agentV2.setLastDataReceivedTime(agent.getLastDataRecievedTime());
             }
             if (agent.getState() != null) {
-                agentV2.setState(agent.getState());
+                agentV2.setConnected(agent.getState()>0);
             } else {
                 agent.setState(0);
             }

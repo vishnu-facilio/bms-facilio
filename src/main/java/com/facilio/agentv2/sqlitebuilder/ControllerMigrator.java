@@ -3,7 +3,7 @@ package com.facilio.agentv2.sqlitebuilder;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.modbusrtu.ModbusRtuControllerContext;
 import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
@@ -32,9 +32,20 @@ public class ControllerMigrator {
             FacilioControllerType controllerType = controllerIdsType.get(controllerId);
             LOGGER.info(" migrating controller " + controllerId + " of type " + controllerType.asString());
             if (controllerIdsType != null) {
-                Controller controller = ControllerApiV2.getControllerUsingIdAndType(controllerId, controllerIdsType.get(controllerId));
-                if(controller == null){
-                    LOGGER.info(" No Controller for Id "+controllerId+"  of type "+controllerType.asString());
+                Controller controller;
+                try {
+
+                    GetControllerRequest getControllerRequest = new GetControllerRequest()
+                            .withControllerId(controllerId)
+                            .ofType(controllerType);
+
+                    controller = getControllerRequest.getController();
+                    if (controller == null) {
+                        LOGGER.info(" No Controller for Id " + controllerId + "  of type " + controllerType.asString());
+                        continue;
+                    }
+                }catch (Exception e){
+                    LOGGER.info("Exception while fetching controller ",e);
                     continue;
                 }
                 LOGGER.info(" got controller " + controller.getName());
