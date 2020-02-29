@@ -32,6 +32,7 @@ public class GetControllerCommand extends AgentV2Command {
             throw new Exception(" module name can't be null ");
         }
         FacilioModule childTableModule = modBean.getModule(childTableModuleName);
+        FacilioModule resourceModule = ModuleFactory.getResourceModule();
         List<FacilioField> allFields = new ArrayList<>();
         allFields.addAll(modBean.getModuleFields(controllerModule.getName()));
 
@@ -45,12 +46,14 @@ public class GetControllerCommand extends AgentV2Command {
         allFields.add(FieldFactory.getConfiguredPointCountConditionField());
         allFields.add(FieldFactory.getConfigurationInProgressPointCountConditionField());
         allFields.add(FieldFactory.getIdField(controllerModule));
+        allFields.add(FieldFactory.getNameField(ModuleFactory.getResourceModule()));
         context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, allFields);
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .select(allFields)
                 .table(controllerModule.getTableName())
                 .innerJoin(childTableModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + childTableModule.getTableName() + ".ID")
-                .leftJoin(pointModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + pointModule.getTableName() + "."+FieldFactory.getControllerIdField(pointModule).getColumnName());
+                .leftJoin(pointModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + pointModule.getTableName() + "."+FieldFactory.getControllerIdField(pointModule).getColumnName())
+                .innerJoin(resourceModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + resourceModule.getTableName() + ".ID");
 
   /*      if(context.containsKey(AgentConstants.AGENT_ID)){
             selectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(controllerModule), String.valueOf(context.get(AgentConstants.AGENT_ID)), NumberOperators.EQUALS));
