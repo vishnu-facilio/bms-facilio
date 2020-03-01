@@ -25,11 +25,11 @@ public class DBAudit implements FacilioAudit {
 
     private static final Logger LOGGER = Logger.getLogger(DBAudit.class.getName());
 
-    private static final String TABLE_NAME = "FacilioDBAudit";
-    private static final String MODULE_TABLE_NAME = "FacilioAuditModule";
-    private static final String METHOD_TABLE_NAME = "FacilioAuditMethod";
-    private static final String ACTION_TABLE_NAME = "FacilioAuditAction";
-    private static final String REFERER_TABLE_NAME = "FacilioAuditReferer";
+    private static final String TABLE_NAME = "FacilioDBAudit_1";
+    private static final String MODULE_TABLE_NAME = "FacilioAuditModule_1";
+    private static final String METHOD_TABLE_NAME = "FacilioAuditMethod_1";
+    private static final String ACTION_TABLE_NAME = "FacilioAuditAction_1";
+    private static final String REFERER_TABLE_NAME = "FacilioAuditReferer_1";
     private static final String ID = "id";
     private static final String MODULE_ID = "moduleId";
     private static final String DISPLAY_NAME = "display_name";
@@ -48,7 +48,8 @@ public class DBAudit implements FacilioAudit {
     private static final String SERVER_ID = "server_id";
     private static final String REFERER = "referer"; 
     private static final String REFERER_ID = "refererId";
-    
+    private static final String REMOTE_IP = "remoteAddr";
+
     private static final FacilioModule MODULE = getFacilioAuditModule();
     private static final FacilioField ID_FIELD = FieldFactory.getIdField(ID, "ID", MODULE);
     private static final List<FacilioField> FIELDS = getFacilioAuditFields();
@@ -72,7 +73,6 @@ public class DBAudit implements FacilioAudit {
 	private Map<String, Object> MODULE_INFO_LIST = new HashMap<String, Object>();
     private Map<String, Object> ACTION_INFO_LIST = new HashMap<String, Object>();
     private Map<String, Object> METHOD_INFO_LIST = new HashMap<String, Object>();
-    private Map<String, Object> REFERER_INFO_LIST = new HashMap<String, Object>();
     private long SERVERID = ServerInfo.getServerId();
 
     private static FacilioModule getFacilioAuditModule() {
@@ -130,7 +130,7 @@ public class DBAudit implements FacilioAudit {
         fields.add(FieldFactory.getNumberField(SERVER_ID, "SERVER_ID", MODULE));
         fields.add(FieldFactory.getNumberField(MODULE_ID, "MODULE_ID", MODULE));
         fields.add(FieldFactory.getNumberField(REFERER_ID, "REFERER_ID", MODULE));
-
+        fields.add(FieldFactory.getStringField(REMOTE_IP, "REMOTE_IP", MODULE));
         return fields;
     }
 
@@ -178,6 +178,7 @@ public class DBAudit implements FacilioAudit {
         valueMap.put(THREAD, data.getThread());
         valueMap.put(SERVER_ID,data.getServerId());
         valueMap.put(MODULE_ID, data.getModuleId());
+        valueMap.put(REMOTE_IP, data.getRemoteIPAddress());
         valueMap.put(REFERER_ID,data.getRefererId());
 
         return valueMap;
@@ -193,8 +194,6 @@ public class DBAudit implements FacilioAudit {
 			long actionId = 0L;
 			String method = data.getMethod();
 			long methodId = 0L;
-			String referer = data.getReferer();
-			long refereId = 0L;
 			long addStartModule = System.currentTimeMillis();
 			if(StringUtils.isNotEmpty(module)) {
 				 moduleId= checkModule(module);
@@ -219,17 +218,6 @@ public class DBAudit implements FacilioAudit {
 				}
 			}
 			LOGGER.info("Audit entry add & check method timetaken:::: "+(System.currentTimeMillis()-addStartMethod));
-			long addStartreferer = System.currentTimeMillis();
-			if(StringUtils.isNotEmpty(referer)) {
-				 refereId = checkReferer(referer);
-				if(refereId == 0) {
-					refereId = addReferer(referer);
-				}
-				if(refereId != 0) {
-					data.setRefererId(refereId);
-				}
-			}
-			LOGGER.info("Audit entry add & check Referer timetaken:::: "+(System.currentTimeMillis()-addStartreferer));
 			if(SERVERID != -1) {
 				data.setServerId(SERVERID);
 			}
@@ -267,14 +255,6 @@ public class DBAudit implements FacilioAudit {
 		long methodId= insertBuilder(prop, METHOD_TABLE_NAME, METHOD_FIELDS);
 		METHOD_INFO_LIST.put(method2,methodId);
 		return methodId;
-	}
-
-	private long addReferer(String data) throws Exception {
-		Map<String, Object> prop = new HashMap<String, Object>();
-		prop.put("referer", data);
-		long id = insertBuilder(prop, REFERER_TABLE_NAME, REFERER_FIELDS);
-		REFERER_INFO_LIST.put(data, id);
-		return id;
 	}
 
 	public long update(AuditData data) {
@@ -318,26 +298,6 @@ public class DBAudit implements FacilioAudit {
     	return id;
     }
 
-    private long checkReferer(String data) throws Exception {
-    	long id = 0L;
-    	if(MapUtils.isEmpty(REFERER_INFO_LIST)) {
-    		REFERER_INFO_LIST = getRefererInfoList();
-    	}if(MapUtils.isNotEmpty(REFERER_INFO_LIST)){
-    		LOGGER.info("Size of RefererInfo Map is :"+REFERER_INFO_LIST.size());
-    		if(StringUtils.isNotEmpty(data)) {
-    			if(REFERER_INFO_LIST.containsKey(data)) {
-    				id = (long) REFERER_INFO_LIST.get(data);
-    			}else {
-    				id = getData(data , REFERER_TABLE_NAME, REFERER_FIELDS,"referer");
-    				if(id != 0) {
-    					REFERER_INFO_LIST.put(data, id);
-    				}
-    			}
-    		}
-    	}
-    	return id;
-    }
-    
     private long checkAction(String action) throws Exception {
     	long id = 0L;
     	if(MapUtils.isEmpty(ACTION_INFO_LIST)) {
@@ -464,32 +424,6 @@ public class DBAudit implements FacilioAudit {
 			LOGGER.info("Exception Occurred In Getting MethodInfoList",e);
 		}
 		return METHOD_INFO_LIST;
-	}
-    
-    private Map<String, Object> getRefererInfoList() {
-
-    	List<FacilioField> fields = new ArrayList<FacilioField>();
-    	fields.addAll(REFERER_FIELDS);
-
-    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(REFERER_TABLE_NAME);
-    	List<Map<String, Object>> prop = new ArrayList<>();
-		try {
-			prop = builder.get();
-			if(CollectionUtils.isNotEmpty(prop)) {
-	    		for(Map<String ,Object> itr : prop) {
-	    			String referer = (String) itr.get("referer");
-	    			long refererId = (long) itr.get("id");
-	    			if(StringUtils.isNotEmpty(referer) && refererId != 0) {
-	    				REFERER_INFO_LIST.put(referer,refererId);
-	    			}
-	    		}
-			}
-		} catch (Exception e) {
-			LOGGER.info("Exception Occurred In Getting RefererInfoList",e);
-		}
-		return REFERER_INFO_LIST;
 	}
     
     private long getData(String data, String tableName, List<FacilioField> fields, String key) throws Exception {

@@ -20,6 +20,7 @@ public class AuditData {
     private String referer;
     private long moduleId;
     private long refererId;
+    private String remoteIPAddress;
 
     public int getStatus() {
         return status;
@@ -163,5 +164,13 @@ public class AuditData {
 
 	public void setRefererId(long refererId) {
 		this.refererId = refererId;
+	}
+
+	public String getRemoteIPAddress() {
+		return remoteIPAddress;
+	}
+
+	public void setRemoteIPAddress(String remoteIPAddress) {
+		this.remoteIPAddress = remoteIPAddress;
 	}
 }

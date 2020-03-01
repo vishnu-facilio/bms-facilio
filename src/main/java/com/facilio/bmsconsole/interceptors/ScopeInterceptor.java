@@ -246,7 +246,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 		try {
 			AccountUtil.setReqUri(request.getRequestURI());
             AccountUtil.setRequestParams(request.getParameterMap());
-            String referer = request.getHeader("referer");
+            String remoteIPAddress = request.getRemoteAddr();
             if(  false ){  // make false to intercept
 				return arg0.invoke();
 			} else {
@@ -255,8 +255,8 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				int status = 200;
 				try {
 					data = getAuditData(arg0);
-					if(StringUtils.isNotEmpty(referer) && data != null ){
-						data.setReferer(referer);
+					if(StringUtils.isNotEmpty(remoteIPAddress) && data != null ){
+						data.setRemoteIPAddress(remoteIPAddress);
 					}
 					if(data != null) {
 						AuditData finalData = data;
@@ -298,7 +298,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 			data.setUserId(AccountUtil.getCurrentUser().getUid());
 			data.setSessionId(AccountUtil.getCurrentUserSessionId());
 			data.setOrgUserId(AccountUtil.getCurrentUser().getIamOrgUserId());
-			data.setAction(proxy.getActionName());
+			data.setAction(proxy.getConfig().getName());
 			data.setMethod(proxy.getMethod());
 			data.setModule(proxy.getConfig().getPackageName());
 			data.setStartTime(System.currentTimeMillis());
