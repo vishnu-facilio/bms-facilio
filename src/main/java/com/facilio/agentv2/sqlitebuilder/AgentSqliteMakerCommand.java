@@ -32,7 +32,7 @@ public class AgentSqliteMakerCommand extends AgentV2Command {
             ControllerMigrator.migrateControllers(agentId, controllerIdsType);
             //PointMigrator.migratePoints(agentId, controllerIdsType);
             SQLiteUtil.closeConnection();
-            if(FacilioProperties.isProduction() && ( ! FacilioProperties.isProduction() )){
+            if(FacilioProperties.isProduction() ){
                 FileStore fs = FacilioFactory.getFileStoreFromOrg(AccountUtil.getCurrentOrg().getOrgId());
                 long fileId = fs.addFile(file.getName(), file, "application/vnd.sqlite3");
                 LOGGER.info(" fileId is ->" + fileId);
