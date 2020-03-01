@@ -42,7 +42,20 @@ public class AddAgentAction extends AgentActionV2
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type;}
+    @NotNull @Size(min = 3)
     private String type;
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    @NotNull @Size(min = 2,max = 15)
+    private String displayName;
+
 
     public String createAgent() {
         try {
@@ -52,7 +65,8 @@ public class AddAgentAction extends AgentActionV2
             agent.setName(getAgentName());
             agent.setInterval(getDataInterval());
             agent.setSiteId(getSiteId()); //TODO validate SITE ID.
-            agent.setType(type);
+            agent.setType(getType());
+            agent.setDisplayName(getDisplayName());
             context.put(AgentConstants.AGENT,agent);
             addAgentChain.execute();
             JSONObject jsonObject = new JSONObject();

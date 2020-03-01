@@ -39,7 +39,7 @@ public class AgentAction extends AgentActionV2 {
             LOGGER.info(" listing agents");
             FacilioContext context = new FacilioContext();
             constructListContext(context);
-            List<Map<String, Object>> agentListData = AgentApiV2.getAgentListData();
+            List<Map<String, Object>> agentListData = AgentApiV2.getAgentListData(false);
                    // AgentApiV2.listFacilioAgents(context);
             long offLineAgents = 0;
             Set<Long> siteCount = new HashSet<>();

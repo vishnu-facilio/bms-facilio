@@ -297,6 +297,7 @@ public class AgentApiV2 {
                     }
                 }
             }
+            LOGGER.info(" query ---- ---- ---- ---- -"+selectRecordBuilder.toString());
             JSONObject countData = new JSONObject();
             countData.put(AgentConstants.SITE_COUNT,siteSet.size());
             countData.put(AgentConstants.TOTAL_COUNT,data.size());
@@ -355,7 +356,7 @@ public class AgentApiV2 {
         return false;
     }
 
-    public static List<Map<String, Object>> getAgentListData() throws Exception {
+    public static List<Map<String, Object>> getAgentListData(boolean fetchDeleted) throws Exception {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
         if( ! fieldMap.isEmpty()){
@@ -378,6 +379,9 @@ public class AgentApiV2 {
                 .select(fieldMap.values())
                 .innerJoin(controllerModule.getTableName()).on(MODULE.getTableName()+".ID = "+controllerModule.getTableName()+".AGENT_ID")
                 .groupBy(MODULE.getTableName()+".ID");
+        if (!fetchDeleted) {
+            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(MODULE), "NULL", CommonOperators.IS_EMPTY));
+        }
         List<Map<String, Object>> maps = genericSelectRecordBuilder.get();
         LOGGER.info(" query "+genericSelectRecordBuilder.toString());
         return maps;

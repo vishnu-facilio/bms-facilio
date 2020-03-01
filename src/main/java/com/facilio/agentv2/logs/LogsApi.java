@@ -3,6 +3,7 @@ package com.facilio.agentv2.logs;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -32,7 +33,12 @@ public class LogsApi
             if(msgId > 0){
                 if(command != null){
                     long currTime = System.currentTimeMillis();
-                    return addLog(agentId,msgId,command,status,currTime,currTime) > 0;
+                    try {
+                        return addLog(agentId,msgId,command,status,currTime,currTime) > 0;
+                    } catch (Exception e) {
+                        LOGGER.info("Exception while adding iot command log ",e);
+                        return false;
+                    }
                 }else {
                     LOGGER.info("Exception while adding iot message to log, command cant be null");
                 }
@@ -51,7 +57,12 @@ public class LogsApi
                /* if(command != null){*/
                     long currTime = System.currentTimeMillis();
                     if(actualTime <= currTime){
-                        return addLog(agentId,msgId,command,status,actualTime,currTime) > 0;
+                        try{
+                            return addLog(agentId,msgId,command,status,actualTime,currTime) > 0;
+                        } catch (Exception e) {
+                            LOGGER.info("Exception while adding agent message log ",e);
+                            return false;
+                        }
                     }else {
                         LOGGER.info(" Exception while adding agent message  log, actual time can't be greater than curr time");
                     }
@@ -67,12 +78,15 @@ public class LogsApi
         return false;
     }
 
-    private static long addLog(long agentId, Long msgId,FacilioCommand command, Status status,long timestamp,long createdTime){
+    private static long addLog(long agentId, Long msgId,FacilioCommand command, Status status,long timestamp,long createdTime) throws Exception {
         Map<String,Object> toInsert = new HashMap<>();
         toInsert.put(AgentConstants.AGENT_ID,agentId);
         toInsert.put(AgentConstants.MESSAGE_ID,msgId);
         if(command != null){
             toInsert.put(AgentConstants.COMMAND,command.asInt());
+        }else {
+            IotMessage iotMessage = IotMessageApiV2.getIotMessage(msgId); // add if only iot message is present -> in case of agent message
+            toInsert.put(AgentConstants.COMMAND,iotMessage.getCommand());
         }
         if(status != null){
             toInsert.put(AgentConstants.STATUS,status.asInt());

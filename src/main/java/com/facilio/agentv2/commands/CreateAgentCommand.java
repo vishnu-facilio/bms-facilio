@@ -41,13 +41,13 @@ public class CreateAgentCommand extends AgentV2Command {
 
                 long agentId = AgentApiV2.addAgent(agent);
                 agent.setId(agentId);
+                return false;
             } else {
                 throw new Exception(" certFile download url can't be null ");
             }
         } else {
             throw new Exception(" agent missing from context " + context);
         }
-        return false;
     }
 
     private String packAgent(FacilioAgent agent) {

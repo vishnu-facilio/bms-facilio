@@ -369,32 +369,6 @@ public class PointsAPI extends AgentUtilities {
     }
 
 
-    /*public static Point getPoint(String pointName, List<Long> pointId, long controllerId, FacilioControllerType controllerType) {
-        try {
-            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getOrgId());
-            Criteria criteria = new Criteria();
-            FacilioModule module = ModuleFactory.getPointModule();
-            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getPointFields());
-            criteria.addAndCondition(CriteriaAPI.getNameCondition(pointName, module));
-            criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get(AgentConstants.CONTROLLER_ID), String.valueOf(controllerId), NumberOperators.EQUALS));
-            List<FacilioField> fields = FieldFactory.getPointFields();
-            FacilioContext context = getPointTypeBasedConditionAndFields(controllerType);
-            if (context != null) {
-                context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
-                context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentConstants.POINTS_TABLE);
-                ((List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS)).addAll(fields);
-                List<Map<String, Object>> pointsData = bean.getRows(context);
-                if (pointsData.size() == 1) {
-                    List<Point> points = getPointFromRows(pointsData);
-                    return points.get(0);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-*/
     public static void configurePointsAndMakeController(List<Long> pointIds, FacilioControllerType controllerType) throws Exception {
         LOGGER.info("configure controller and points ");
         if ((pointIds != null) && (!pointIds.isEmpty())) {
