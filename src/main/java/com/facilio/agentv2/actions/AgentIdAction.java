@@ -327,4 +327,30 @@ public class AgentIdAction extends AgentActionV2 {
         }
         return SUCCESS;
     }*/
+
+   public String getControllerFilter(){
+       try{
+           List<Map<String, Object>> agentControllerFilterData = ControllerApiV2.getAgentControllerFilterData(getAgentId());
+           setResult(AgentConstants.DATA,agentControllerFilterData);
+           setResponseCode(HttpURLConnection.HTTP_OK);
+           return SUCCESS;
+       } catch (Exception e) {
+           setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+           LOGGER.info("Excdeption occurred while getting controller filter",e);
+       }
+       return SUCCESS;
+   }
+
+   public String getDeviceFilter(){
+       try{
+           List<Map<String, Object>> deviceFilter = FieldDeviceApi.getDeviceFilterData(getAgentId());
+           setResult(AgentConstants.DATA,deviceFilter);
+           setResponseCode(HttpURLConnection.HTTP_OK);
+       }catch (Exception e){
+           setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+           LOGGER.info("Exception occurred while getting device filter ",e);
+           setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+       }
+       return SUCCESS;
+   }
 }

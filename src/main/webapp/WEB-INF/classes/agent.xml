@@ -139,6 +139,9 @@
 
         <action name="getPointCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getPointCount">
         </action>
+
+        <action name="getFilter" class="com.facilio.agentv2.AgentAction" method="getAgentFilter">
+        </action>
     </package>
 
     <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent">
@@ -179,7 +182,11 @@
 
         <action name="typeList" class="com.facilio.agentv2.actions.TypeAgentAction" method="getControllerOfTypeForAgent"> <!--DONE-->
         </action>
+
         <action name="getUsingId" class="com.facilio.agentv2.AgentAction" method="getControllerUsingId"> <!--DONE-->
+        </action>
+
+        <action name="getFilter" class="com.facilio.agentv2.actions.AgentIdAction" method="getControllerFilter"> <!--DONE-->
         </action>
 
     </package>
@@ -254,6 +261,9 @@
         </action>
 
         <action name="get" class="com.facilio.agentv2.actions.DeviceIdActions" method="device">
+        </action>
+
+        <action name="getFilter" class="com.facilio.agentv2.actions.AgentIdAction" method="getDeviceFilter">
         </action>
     </package>
 

@@ -5815,7 +5815,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getIdField(module));
 		fields.add(getField(AgentConstants.IDENTIFIER,"IDENTIFIER",module,FieldType.STRING));
-		fields.add(getField(AgentConstants.CONTROLLER_TYPE, "TYPE", module, FieldType.NUMBER));
+		fields.add(getFieldDeviceTypeField(module));
 		fields.add(getField(AgentConstants.SITE_ID, "SITE_ID", module, FieldType.NUMBER));
 		fields.add(getNameField(module));
 		fields.add(getNewAgentIdField(module));
@@ -5823,6 +5823,10 @@ public class FieldFactory {
 		fields.add(getCreatedTime(module));
 		fields.add(getNewDeletedTimeField(module));
 		return fields;
+	}
+
+	public static FacilioField getFieldDeviceTypeField(FacilioModule module){
+		return getField(AgentConstants.CONTROLLER_TYPE, "TYPE", module, FieldType.NUMBER);
 	}
 
 	public static FacilioField  getNewDeletedTimeField(FacilioModule module) {

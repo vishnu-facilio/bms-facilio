@@ -174,7 +174,7 @@ public class AgentAction extends AgentActionV2 {
                 for (Point point : points) {
                     JSONObject object = new JSONObject();
                     object.putAll(point.toJSON());
-                    object.put(AgentConstants.CHILDJSON, point.getChildJSON());
+                    object.put(AgentConstants.POINT, point.getChildJSON());
                     pointData.add(object);
                 }
             }
@@ -325,6 +325,17 @@ public class AgentAction extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String getAgentFilter(){
+        try{
+            List<Map<String, Object>> agentFilter = AgentApiV2.getAgentFilterData();
+            setResult(AgentConstants.DATA,agentFilter);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        }catch (Exception e){
+            LOGGER.info("Exception while getting agent filter ",e);
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+        return SUCCESS;
+    }
 
     //__________________________________________________
     // general utilities

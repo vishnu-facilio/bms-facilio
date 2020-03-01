@@ -498,4 +498,23 @@ public class ControllerApiV2 {
         return controllers;
     }
 
+    public static List<Map<String, Object>> getControllerFilterData() throws Exception {
+        return getAgentControllerFilterData(null);
+    }
+
+    public static List<Map<String, Object>> getAgentControllerFilterData(Long agentId) throws Exception {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule resourceModule = ModuleFactory.getResourceModule();
+        fields.add(FieldFactory.getNameField(resourceModule));
+        fields.add(FieldFactory.getIdField(MODULE));
+        fields.add(FieldFactory.getControllerTypeField(MODULE));
+        GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(MODULE.getTableName())
+                .select(fields)
+                .innerJoin(resourceModule.getTableName()).on(resourceModule.getTableName()+".ID="+MODULE.getTableName()+".ID");
+                if(agentId != null){
+                    genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId),NumberOperators.EQUALS));
+                }
+                return genericSelectRecordBuilder.get();
+    }
 }

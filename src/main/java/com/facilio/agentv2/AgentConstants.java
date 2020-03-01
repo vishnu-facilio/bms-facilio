@@ -168,4 +168,5 @@ public class AgentConstants
     public static final String CONFIGURATION_INPROGRESS_COUNT = "confInProgress";
     public static final String SUBSCRIPTION_COUNT = "subsInProgress";
     public static final String INTEGRATIONS = "integrations";
+    public static final String POINT = "point";
 }

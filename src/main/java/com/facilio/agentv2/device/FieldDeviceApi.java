@@ -192,4 +192,19 @@ public class FieldDeviceApi
         }
         return null;
     }
+
+    public static List<Map<String, Object>> getDeviceFilterData(Long agentId) throws Exception {
+        List<Map<String, Object>> deviceFilter = new ArrayList<>();
+        List<FacilioField> deviceFilterFields = new ArrayList<>();
+        deviceFilterFields.add(FieldFactory.getIdField(MODULE));
+        deviceFilterFields.add(FieldFactory.getNameField(MODULE));
+        deviceFilterFields.add(FieldFactory.getFieldDeviceTypeField(MODULE));
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(MODULE.getTableName())
+                .select(deviceFilterFields)
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(MODULE), "NULL", CommonOperators.IS_EMPTY));
+
+        return selectRecordBuilder.get();
+    }
 }

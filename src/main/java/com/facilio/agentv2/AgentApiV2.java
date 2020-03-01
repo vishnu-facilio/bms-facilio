@@ -387,6 +387,17 @@ public class AgentApiV2 {
         return maps;
     }
 
+    public static List<Map<String,Object>> getAgentFilterData() throws Exception {
+        List<FacilioField> filterFields = new ArrayList<>();
+        filterFields.add(FieldFactory.getIdField(MODULE));
+        filterFields.add(FieldFactory.getNameField(MODULE));
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(MODULE.getTableName())
+                .select(filterFields)
+                .andCondition(getDeletedTimeNullCondition(MODULE));
+        return selectRecordBuilder.get();
+    }
+
     private long getAgentSites(Long agentId) throws Exception {
         FacilioModule newAgentDataModule = ModuleFactory.getNewAgentDataModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
