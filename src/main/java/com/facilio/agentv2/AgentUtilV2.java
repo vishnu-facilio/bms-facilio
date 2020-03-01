@@ -34,6 +34,7 @@ public class AgentUtilV2
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting pointsCountData",e);
         }
+        overiewData.put(AgentConstants.INTEGRATIONS,2);
         return overiewData;
     }
 
@@ -45,7 +46,6 @@ public class AgentUtilV2
                 overiewData.putAll(FieldUtil.getAsJSON(agent));
                 overiewData.put(AgentConstants.CONTROLLER, ControllerApiV2.getControllerCountData(agentId));
                 overiewData.put(AgentConstants.POINTS, PointsAPI.getPointsCountData(agentId));
-                overiewData.put(AgentConstants.INTEGRATIONS,2);
             }
         } catch (Exception e) {
             LOGGER.info("Exception while getting controllerCountdata",e);
@@ -97,6 +97,7 @@ public class AgentUtilV2
             if(payload.containsKey(AgentConstants.STATUS)){ // for LWT
                 Status status = Status.valueOf(((Number) payload.get(AgentConstants.STATUS)).intValue());
                 if(status == Status.CONNECTION_LOST || status == Status.DISCONNECTED){
+                    LOGGER.info(" LWT -- "+payload);
                     agent.setConnected(false);
                     return AgentApiV2.updateAgent(agent);
                 }
