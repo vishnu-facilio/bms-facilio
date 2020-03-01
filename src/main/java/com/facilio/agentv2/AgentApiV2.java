@@ -387,7 +387,7 @@ public class AgentApiV2 {
         return maps;
     }
 
-    public static List<Map<String,Object>> getAgentFilterData() throws Exception {
+    public static List<Map<String,Object>> getAgentFilter() throws Exception {
         List<FacilioField> filterFields = new ArrayList<>();
         filterFields.add(FieldFactory.getIdField(MODULE));
         filterFields.add(FieldFactory.getNameField(MODULE));

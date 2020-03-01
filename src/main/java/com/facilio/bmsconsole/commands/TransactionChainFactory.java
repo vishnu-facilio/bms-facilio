@@ -3860,7 +3860,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain deleteControllerChain(){
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new GenericDeleteModuleDataCommand());
+		chain.addCommand(new DeleteResourceCommand());
 		return chain;
 	}
 

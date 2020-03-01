@@ -27,6 +27,7 @@ import com.facilio.custom.CustomController;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -34,7 +35,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.sql.SQLException;
 import java.util.*;
 
 public class ControllerApiV2 {
@@ -304,10 +304,13 @@ public class ControllerApiV2 {
 
     private static long getCount(Long agentId) {
         try {
+            FacilioModule resourceModule = ModuleFactory.getResourceModule();
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .table(MODULE.getTableName())
                     .select(new HashSet<>())
-                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(MODULE));
+                    .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(MODULE))
+                    .innerJoin(resourceModule.getTableName()).on(resourceModule.getTableName()+".ID="+MODULE.getTableName()+".ID")
+                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule), "NULL", CommonOperators.IS_EMPTY));
             if ((agentId != null) && (agentId > 0)) {
                 LOGGER.info("applying agent filter");
                 builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(MODULE), String.valueOf(agentId), NumberOperators.EQUALS));
@@ -322,20 +325,11 @@ public class ControllerApiV2 {
         return 0;
     }
 
-    public static boolean deleteControllerApi(Long id) throws SQLException {
+    public static boolean deleteControllerApi(Long id) throws Exception {
         return deleteControllerApi(Collections.singletonList(id));
     }
 
-    public static boolean deleteControllers(List<Long> ids) {
-        try {
-            return deleteControllerApi(ids);
-        } catch (SQLException e) {
-            LOGGER.info("Exception occurred while deleting controllers->" + ids + "  --  ", e);
-        }
-        return false;
-    }
-
-    public static boolean deleteControllerApi(List<Long> ids) throws SQLException {
+    public static boolean deleteControllerApi(List<Long> ids) throws Exception {
         if ((ids != null) && (!ids.isEmpty())) {
             FacilioChain deleteChain = TransactionChainFactory.deleteControllerChain();
             FacilioContext context = deleteChain.getContext();
@@ -352,14 +346,10 @@ public class ControllerApiV2 {
             } else {
                 LOGGER.info("Controller deletion failed, rows affected -> " + rowsAffected);
             }*/
-            try {
                 deleteChain.execute();
                 LOGGER.info(" rows affected in deleting controller -> " + context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
                 LOGGER.info(" rows  in deleting controller -> " + context.get(FacilioConstants.ContextNames.RECORD_LIST));
                 return (((Number) context.get(FacilioConstants.ContextNames.ROWS_UPDATED)).intValue() > 0);
-            } catch (Exception e) {
-                LOGGER.info("Exception while deleting controller ", e);
-            }
         }
         return false;
     }
@@ -458,7 +448,7 @@ public class ControllerApiV2 {
     public static JSONObject getControllerCountData(Long agentId) throws Exception {
         JSONObject controlleCountData = new JSONObject();
         controlleCountData.put(AgentConstants.TOTAL_COUNT,FieldDeviceApi.getDeviceCount());
-        controlleCountData.put(AgentConstants.CONFIGURED_COUNT, getControllerIdsType(agentId).size());
+        controlleCountData.put(AgentConstants.CONFIGURED_COUNT, getCount(agentId));
         return controlleCountData;
     }
 
@@ -511,8 +501,9 @@ public class ControllerApiV2 {
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
                 .select(fields)
-                .innerJoin(resourceModule.getTableName()).on(resourceModule.getTableName()+".ID="+MODULE.getTableName()+".ID");
-                if(agentId != null){
+                .innerJoin(resourceModule.getTableName()).on(resourceModule.getTableName()+".ID="+MODULE.getTableName()+".ID")
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getSysDeletedTimeField(resourceModule), "NULL", CommonOperators.IS_EMPTY));
+        if(agentId != null){
                     genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(MODULE), String.valueOf(agentId),NumberOperators.EQUALS));
                 }
                 return genericSelectRecordBuilder.get();

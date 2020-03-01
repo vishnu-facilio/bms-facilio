@@ -327,7 +327,7 @@ public class AgentAction extends AgentActionV2 {
 
     public String getAgentFilter(){
         try{
-            List<Map<String, Object>> agentFilter = AgentApiV2.getAgentFilterData();
+            List<Map<String, Object>> agentFilter = AgentApiV2.getAgentFilter();
             setResult(AgentConstants.DATA,agentFilter);
             setResponseCode(HttpURLConnection.HTTP_OK);
         }catch (Exception e){

@@ -28,7 +28,7 @@ public class IdsAction extends AgentActionV2
     public String deleteControllers(){
         try {
             List<Long> controllerIds = getRecordIds();
-            if (ControllerApiV2.deleteControllers(controllerIds)) {
+            if (ControllerApiV2.deleteControllerApi(controllerIds)) {
                 setResult(AgentConstants.RESULT, SUCCESS);
                 setResponseCode(HttpURLConnection.HTTP_OK);
             } else {
