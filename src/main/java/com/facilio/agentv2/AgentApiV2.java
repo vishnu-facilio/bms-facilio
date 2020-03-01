@@ -377,7 +377,7 @@ public class AgentApiV2 {
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(MODULE.getTableName())
                 .select(fieldMap.values())
-                .innerJoin(controllerModule.getTableName()).on(MODULE.getTableName()+".ID = "+controllerModule.getTableName()+".AGENT_ID")
+                .leftJoin(controllerModule.getTableName()).on(MODULE.getTableName()+".ID = "+controllerModule.getTableName()+".AGENT_ID")
                 .groupBy(MODULE.getTableName()+".ID");
         if (!fetchDeleted) {
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(MODULE), "NULL", CommonOperators.IS_EMPTY));
