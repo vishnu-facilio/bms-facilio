@@ -3,17 +3,12 @@ package com.facilio.bmsconsole.commands;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.AbstractMap.SimpleEntry;
-
-//import java.util.List;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -45,9 +40,9 @@ import com.facilio.unitconversion.UnitsUtil;
 
 public class FetchCriteriaReportCommand extends FacilioCommand {
 	private static Logger log = LogManager.getLogger(FetchCriteriaReportCommand.class.getName());
-	private Map<Long, Long> combinedMap = new HashMap<>();
-	private HashMap<Long, Long> tempMap = new HashMap<>();
-	private List<Map<Long, Long>> combinedList = new ArrayList();
+	private TreeMap<Long, Long> combinedMap = new TreeMap<>();
+	private TreeMap<Long, Long> tempMap = new TreeMap<>();
+	private List<TreeMap<Long, Long>> combinedList = new ArrayList();
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -87,14 +82,13 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 			
 			createCombinedMap();
 			if(MapUtils.isNotEmpty(combinedMap)) {
-				filters.put("Combine.timeline", getCombinedTimeLine(report.getDateRange()));
+				filters.put("Combine.timeline", getCombinedTimeLine());
 				
 				dataPoints.add(FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Combine"));
 			}
 			dataPoints.addAll(reportDataPoints);
 			report.setDataPoints(dataPoints);
 			reportAggrData.putAll(filters);
-//			System.out.println(combinedMap);
 		}
 		return false;
 	}
@@ -102,7 +96,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 	public List<Map<String, Object>> getDFTimeLine(JSONObject conditionObj, DateRange range) throws Exception{
 		List<Map<String, Object>> timeline = new ArrayList<>();
 		List<Map<Long, Long>> timeList = new ArrayList<>();
-		Map<Long, Long> localMap = new HashMap<>();
+		TreeMap<Long, Long> localMap = new TreeMap<>();
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -182,7 +176,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 	public List<Map<String, Object>> getTFTimeLine(DateRange dateRange, JSONObject criteriaObj) throws Exception {
 		List<Map<String, Object>> timeline = new ArrayList<>();
 		List<Map<Long, Long>> timeList = new ArrayList<>();
-		Map<Long, Long> localMap = new HashMap<>();
+		TreeMap<Long, Long> localMap = new TreeMap<>();
 		
 		if(criteriaObj != null && !criteriaObj.isEmpty()) {
 			JSONObject conditions = (JSONObject) criteriaObj.get("conditions");
@@ -195,6 +189,7 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 					calendarObj.put("days", condition.get("value"));
 				}
 				else if(condition.get("operatorId").equals(new Long(86))) {
+					index++;
 					timeObj.put(index, condition.get("value"));
 					calendarObj.put("time", timeObj);
 				}
@@ -263,46 +258,59 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 		return timeline;
 	}
 	
+	
 	public void createCombinedMap() {
 		for(int i = 0; i < combinedList.size(); i++) {
 			Map<Long, Long> map = combinedList.get(i);
-			combinedMap = (Map<Long, Long>) tempMap.clone();
-			if(MapUtils.isNotEmpty(combinedMap)) {
-				for(Map.Entry<Long, Long> entry: combinedMap.entrySet()) {
-					if(i+1 < combinedList.size()) {
-						aggregate(entry.getKey(), entry.getValue(), combinedList.get(i+1));
+			if(i+1 < combinedList.size()) {
+				TreeMap<Long, Long> nextMap = (TreeMap<Long, Long>) combinedList.get(i+1).clone();
+				if(MapUtils.isNotEmpty(combinedMap)) {
+					for(Map.Entry<Long, Long> entry: combinedMap.entrySet()) {
+							aggregate(entry.getKey(), entry.getValue(), nextMap);
 					}
-				}
-			}else {
-				for(Map.Entry<Long, Long> entry: map.entrySet()) {
-					if(i+1 < combinedList.size()) {
-						aggregate(entry.getKey(), entry.getValue(), combinedList.get(i+1));
+					if(MapUtils.isNotEmpty(tempMap)) {
+						combinedMap = (TreeMap<Long, Long>) tempMap.clone();
+						tempMap.clear();
+					}
+				}else {
+					for(Map.Entry<Long, Long> entry: map.entrySet()) {
+							aggregate(entry.getKey(), entry.getValue(), nextMap);
+					}
+					if(MapUtils.isNotEmpty(tempMap)) {
+						combinedMap = (TreeMap<Long, Long>) tempMap.clone();
+						tempMap.clear();
 					}
 				}
 			}
 		}
 	}
 	
-	public void aggregate(Long key, Long value, Map<Long,Long> map) {
+	public void aggregate(Long key, Long value, TreeMap<Long,Long> map) {
 		Long start = null,end = null;
 		boolean setStart = false, setEnd = false;
-		Map<Long, Long> localMap = new HashMap();
+		Map<Long, Long> localMap = new TreeMap();
 		for(Map.Entry<Long, Long> entry: map.entrySet()) {
 			Long from = entry.getKey();
 			Long to = entry.getValue();
-			if(from.equals(key) && !setStart) {
+			if(key.equals(from) && !setStart) {
 				start = key;
 				setStart = true;
 			}
-			else if(from > key && !setStart){
+			else if(key > from && !setStart){
+				start = key;
+				setStart = true;
+			}
+			else if(key < from && !setStart){
 				start = from;
 				setStart = true;
 			}
-			else if(from < key && !setStart){
-				start = key;
-				setStart = true;
+			if(start != null && value.equals(to)) {
+				end = value;
 			}
-			if((to.equals(value) || value < to) && start != null) {
+			else if(start != null && (value > to && start < to)){
+				end = to;
+			}
+			else if(start != null && (value < to && start < value)){
 				end = value;
 			}
 			if(start != null && end != null) {
@@ -310,11 +318,12 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				start = end = null;
 				setStart = false;
 			}
+			start = end = null;
+			setStart = false;
 		}
 		tempMap.putAll(localMap);
 	}
-	
-	public List<Map<String, Object>> getCombinedTimeLine(DateRange dateRange) throws Exception {
+	public List<Map<String, Object>> getCombinedTimeLine() throws Exception {
 		List<Map<String, Object>> timeLine = new ArrayList<>();
 			
 		 TreeMap<Long, Long> sorted = new TreeMap<>(); 
@@ -332,5 +341,4 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
         }
 		return timeLine;
 	}
-	
 }
