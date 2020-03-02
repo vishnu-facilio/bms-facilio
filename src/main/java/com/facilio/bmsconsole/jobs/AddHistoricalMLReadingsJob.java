@@ -1,16 +1,21 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.amazonaws.services.s3.model.S3Object;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
@@ -33,13 +38,54 @@ public class AddHistoricalMLReadingsJob extends FacilioJob {
 			String ratioCheckFileName = props.get("ratioCheckFileName").toString();
 			String checkGamFileName = props.get("checkGamFileName").toString();
 			
-			String home = System.getProperty("user.home");
-			File ratioCheckFile=new File(home+"/javeed/"+ratioCheckFileName);
-			File checkGamFile=new File(home+"/javeed/"+checkGamFileName);
+//			String home = System.getProperty("user.home");
+//			File ratioCheckFile=new File(home+"/javeed/"+ratioCheckFileName);
+//			File checkGamFile=new File(home+"/javeed/"+checkGamFileName);
 			
-			List<File> files = new ArrayList<File>(Arrays.asList(ratioCheckFile,checkGamFile));
-			for(File file:files){
-				String result = FileUtils.readFileToString(file, "UTF-8");
+			
+			String bucket = FacilioProperties.getAnomalyBucket();
+			String rcfilePath = FacilioProperties.getAnomalyBucketDir()+File.separator+ratioCheckFileName;
+			String cgfilePath = FacilioProperties.getAnomalyBucketDir()+File.separator+checkGamFileName;
+			 
+			S3Object so = AwsUtil.getAmazonS3Client().getObject(bucket, rcfilePath);
+			InputStream is = so.getObjectContent();
+			
+			LOGGER.info("RatioCheck is :: "+is);
+			
+			ByteArrayOutputStream result1 = new ByteArrayOutputStream();
+	        byte[] buffer = new byte[1024];
+	        int length;
+	        while ((length = is.read(buffer)) != -1) {
+	            result1.write(buffer, 0, length);
+	        }
+			
+			String rcStr= result1.toString(StandardCharsets.UTF_8.name());
+			
+			System.out.println("333 rc:: "+rcStr);
+			LOGGER.info("RatioCheck String :: "+rcStr);
+			
+			so = AwsUtil.getAmazonS3Client().getObject(bucket, cgfilePath);
+			is = so.getObjectContent();
+			
+			LOGGER.info("CheckGam is :: "+is);
+			
+			ByteArrayOutputStream result2 = new ByteArrayOutputStream();
+	        byte[] buffer1 = new byte[1024];
+	        int length1;
+	        while ((length1 = is.read(buffer1)) != -1) {
+	            result2.write(buffer1, 0, length1);
+	        }
+			
+			String cgStr=  result2.toString(StandardCharsets.UTF_8.name());
+			
+			System.out.println("333 cg:: "+cgStr);
+			LOGGER.info("CheckGam String :: "+cgStr);
+			
+			List<String> str = new ArrayList<String>(Arrays.asList(rcStr,cgStr));
+			for(String result:str){
+//			List<File> files = new ArrayList<File>(Arrays.asList(ratioCheckFile,checkGamFile));
+//			for(File file:files){
+//				String result = FileUtils.readFileToString(file, "UTF-8");
 				JSONArray arr = new JSONArray(result);
 				for(int i=0;i<arr.length();i++){
 
