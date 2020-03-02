@@ -7403,6 +7403,18 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	
+	public static List<FacilioField> getControllablePointFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getControllablePointModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+		fields.add(getField("controllablePoint", "CONTROLLABLE_POINT_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
 
 
 	public static List<FacilioField> getControlGroupSpaceFields() {

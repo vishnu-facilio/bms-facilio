@@ -2940,6 +2940,10 @@ public class ModuleFactory {
 		return module;
 	}
 	
+	public static FacilioModule getControllablePointModule() {
+		return constructModule("contollablepoint", "Controllable Point", "Controllable_Point");
+	}
+	
 	public static FacilioModule getControlGroupSpaceModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT_SPACE);

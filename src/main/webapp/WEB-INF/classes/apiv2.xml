@@ -580,6 +580,19 @@
 		<action name="metaData"
 		class="com.facilio.controlaction.action.ControlActionAction" method="metaData"></action>
 		
+		<action name="getControllableCategoryList"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableCategoryList">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+		
+		<action name="getControllableCategory"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableCategory">
+		</action>
+		
 	</package>
 	
 	<package name="KPIModule" namespace="/api/v2/kpi/module" extends="v2Api">

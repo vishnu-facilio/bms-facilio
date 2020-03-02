@@ -22,6 +22,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.context.ControlGroupContext;
+import com.facilio.controlaction.context.ControllableAssetCategoryContext.ControllableCategory;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
@@ -38,6 +39,8 @@ public class ControlActionAction extends FacilioAction {
 	long controlGroupId = -1l;
 	ControlGroupContext controlGroup;
 	long assetCategoryId;
+	long spaceId;
+	
 	
 	public long getAssetCategoryId() {
 		return assetCategoryId;
@@ -422,6 +425,12 @@ public class ControlActionAction extends FacilioAction {
 		
 	}
 	
+	public String getControllableCategoryList() {
+		
+		setResult(ControlActionUtil.CONTROLLABLE_CATEGORIES, ControllableCategory.getAllCategories());
+		return SUCCESS;
+	}
+	
 	public String getControlActionRule() throws Exception {
 		
 		
@@ -446,6 +455,30 @@ public class ControlActionAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	
+	public String getControllableCategory() throws Exception {
+		
+		FacilioChain getControllableCategoryChain = ReadOnlyChainFactory.getControllableCategoryChain();
+		
+		FacilioContext context = getControllableCategoryChain.getContext();
+		
+		context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
+		
+		getControllableCategoryChain.execute();
+		
+		setResult(ControlActionUtil.CONTROLLABLE_CATEGORIES, context.get(ControlActionUtil.CONTROLLABLE_CATEGORIES));
+		
+		return SUCCESS;
+		
+	}
+	
+	
+	public long getSpaceId() {
+		return spaceId;
+	}
+	public void setSpaceId(long spaceId) {
+		this.spaceId = spaceId;
+	}
 	public String setReadingValue() throws Exception {
 		
 //		if(resourceId <= 0 || fieldId <= 0 || value == null) {

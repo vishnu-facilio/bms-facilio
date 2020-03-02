@@ -619,6 +619,8 @@ public class FacilioConstants {
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		public static final String RO_MODULE_SPI_CINEMAS = "rowaterenpinew";
 		
+		public static final String CONTROLLABLE_ASSET_CATEGORY = "controllableassetcategory";
+		
 		public static final String ASSET_BREAKDOWN = "assetbreakdown";
 		public static final String BACNET_IP_CONTROLLER_MODULE_NAME = "bacnetipcontroller";
 		public static final String NIAGARA_CONTROLLER_MODULE_NAME = "niagaracontroller";

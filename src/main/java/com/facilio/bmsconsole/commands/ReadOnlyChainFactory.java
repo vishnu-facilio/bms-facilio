@@ -2169,4 +2169,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetSLAPolicyWithChildrenCommand());
 		return chain;
 	}
+	
+	
+	public static FacilioChain getControllableCategoryChain() {
+		FacilioChain chain = getDefaultChain();		
+		chain.addCommand(new GetControllableCategoryCommand());
+		return chain;
+	}
 }

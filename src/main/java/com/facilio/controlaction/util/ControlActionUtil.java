@@ -16,6 +16,7 @@ import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.context.ControlGroupInclExclContext;
 import com.facilio.controlaction.context.ControlGroupSpace;
+import com.facilio.controlaction.context.ControllableAssetCategoryContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -27,6 +28,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.mv.context.MVProjectContext;
+import com.facilio.mv.context.MVProjectWrapper;
 
 public class ControlActionUtil {
 
@@ -45,6 +48,32 @@ public class ControlActionUtil {
 	public static final String CONTROL_ACTION_GROUP_CONTEXT_INCL_EXLC = "controlActionGroupInclExcl";
 	public static final String CONTROL_ACTION_GROUP_CONTEXTS = "controlActionGroups";
 	public static final String CONTROL_ACTION_GROUP_COUNT = "controlActionGroupCount";
+	
+	
+	public static final String CONTROLLABLE_CATEGORIES= "controllableCategories";
+	public static final String CONTROLLABLE_CATEGORY= "controllableCategory";
+	
+	
+	public static ControllableAssetCategoryContext getControllableAssetCategory(long id) throws Exception {
+		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule controllableCategoryModule = modbean.getModule(FacilioConstants.ContextNames.CONTROLLABLE_ASSET_CATEGORY);
+		List<FacilioField> controllableCategoryFields = modbean.getAllFields(FacilioConstants.ContextNames.CONTROLLABLE_ASSET_CATEGORY);
+		
+		SelectRecordsBuilder<ControllableAssetCategoryContext> selectProject = new SelectRecordsBuilder<ControllableAssetCategoryContext>()
+				.module(controllableCategoryModule)
+				.select(controllableCategoryFields)
+				.beanClass(ControllableAssetCategoryContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(id, controllableCategoryModule));
+		
+		List<ControllableAssetCategoryContext> props = selectProject.get();
+		if(props == null || props.isEmpty()) {
+			return null;
+		}
+		return props.get(0);
+	}
+	
 	
 	public static List<ControlGroupContext> getControlActionGroups(List<Long> ids) throws Exception {
 		
