@@ -5367,4 +5367,7 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="spaceManagement" namespace="/api/v2/space" extends="v2Api">
+		<action name="delete" class="com.facilio.bmsconsole.actions.CampusAction" method="v2DeleteCampus" />
+	</package>
 </struts>

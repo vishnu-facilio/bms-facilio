@@ -1,27 +1,20 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.RecordSummaryLayout;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.ActionSupport;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("serial")
-public class CampusAction extends ActionSupport {
+public class CampusAction extends FacilioAction {
 	
 	/**
 	 * 
@@ -78,7 +71,6 @@ public class CampusAction extends ActionSupport {
 			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 			location.setId(locationId);
 		}
-		System.out.println(">>>>>>>>>>>>> Site :"+site);
 		context.put(FacilioConstants.ContextNames.SITE, site);
 		FacilioChain addCampus = FacilioChainFactory.getAddCampusChain();
 		addCampus.execute(context);
@@ -124,7 +116,7 @@ public class CampusAction extends ActionSupport {
 	public void setId(long id) {
 		this.id = id;
 	}
-	public String deleteCampus() {
+	public String deleteCampus() throws Exception {
 		try {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ID, id);
@@ -132,14 +124,22 @@ public class CampusAction extends ActionSupport {
 			FacilioChain deleteCampus = FacilioChainFactory.deleteSpaceChain();
 			deleteCampus.execute(context);
 			setId(id);
-			return SUCCESS;
 		}
 		catch (Exception e) {
 			setError("error",e.getMessage());
-			return ERROR;
+			throw e;
 		}
+		return SUCCESS;
 	
 	}
+
+	public String v2DeleteCampus () throws Exception {
+		deleteCampus();
+		setResult(FacilioConstants.ContextNames.ID,id);
+		return SUCCESS;
+	}
+
+
 	public String viewCampus() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();

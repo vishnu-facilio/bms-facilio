@@ -119,6 +119,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.PRECAUTION, getPrecautionModule());
 		moduleMap.put(ContextNames.CLIENT, getClientModule());
 		moduleMap.put(ContextNames.SITE, getSiteModule());
+		moduleMap.put(ContextNames.BUILDING, getBuildingModule());
 
 		return moduleMap;
 	}
@@ -3395,4 +3396,14 @@ public class ModuleFactory {
 		module.setName("recommended rule ids");
 		return module;
     }
+
+	public static FacilioModule getBuildingModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.BUILDING);
+		module.setDisplayName("Building");
+		module.setTableName("Building");
+		module.setExtendModule(getResourceModule());
+		return module;
+	}
+
 }

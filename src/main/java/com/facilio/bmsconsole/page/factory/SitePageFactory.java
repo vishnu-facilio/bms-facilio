@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
@@ -8,6 +9,9 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import org.json.simple.JSONObject;
 
 import java.util.Arrays;
 
@@ -18,6 +22,7 @@ public class SitePageFactory extends PageFactory {
 
         Tab tab1 = page.new Tab("summary");
         page.addTab(tab1);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
@@ -30,18 +35,18 @@ public class SitePageFactory extends PageFactory {
         addRelatedCountWidget(tab1Sec1, yPos, Arrays.asList(ContextNames.WORK_ORDER, ContextNames.NEW_READING_ALARM, ContextNames.ASSET));
         
         Section tab1Sec2 = page.new Section();
-        addBuildingsWidget(site.getId(), tab1Sec2);
+        addBuildingsWidget(site.getId(), tab1Sec2,modBean);
         tab1.addSection(tab1Sec2);
         
         Section tab1Sec3 = page.new Section();
-        addSpacesWidget(tab1Sec3);
+        addSpacesWidget(tab1Sec3,modBean);
         tab1.addSection(tab1Sec3);
         return page;
     }
 	
 	private static void addSecondaryDetailsWidget(Section section) {
 		PageWidget detailsWidget = new PageWidget(WidgetType.FIXED_DETAILS_WIDGET);
-		detailsWidget.addToLayoutParams(section, 24, 3);
+		detailsWidget.addToLayoutParams(section, 24, 4);
 		section.addWidget(detailsWidget);
 	}
 	
@@ -65,17 +70,26 @@ public class SitePageFactory extends PageFactory {
 		cardWidget.addCardType(CardType.OPERATING_HOURS);
 		section.addWidget(cardWidget);
 	}
-	
-	private static void addBuildingsWidget(long siteId, Section section) throws Exception {
+
+	private static void addBuildingsWidget(long siteId, Section section, ModuleBean modBean) throws Exception {
+		FacilioModule buildingModule = modBean.getModule(ContextNames.BUILDING);
 		PageWidget pageWidget = new PageWidget(WidgetType.LIST, "siteBuildings");
+		JSONObject relatedList = new JSONObject();
+		relatedList.put("module", buildingModule);
+		pageWidget.setRelatedList(relatedList);
 		pageWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(pageWidget);
 	}
-	
-	private static void addSpacesWidget(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.LIST, "siteSpaces");
-		cardWidget.addToLayoutParams(section, 24, 8);
-		section.addWidget(cardWidget);
+
+
+	private static void addSpacesWidget(Section section, ModuleBean modBean) throws Exception {
+		FacilioModule buildingModule = modBean.getModule(ContextNames.SPACE);
+		JSONObject relatedList = new JSONObject();
+		relatedList.put("module", buildingModule);
+		PageWidget widget = new PageWidget(WidgetType.LIST, "siteSpaces");
+		widget.setRelatedList(relatedList);
+		widget.addToLayoutParams(section, 24, 8);
+		section.addWidget(widget);
 	}
 
 }

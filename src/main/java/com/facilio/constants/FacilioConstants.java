@@ -583,6 +583,7 @@ public class FacilioConstants {
 		public static final String IS_ZONE = "isZone";
 		
 		public static final String SPACE_CATEGORY = "spacecategory";
+		public static final String SPACE_CATEGORY_FIELD = "spaceCategory";
 		
 		public static final String ZONE = "zone";
 		public static final String ZONE_LIST = "zones";

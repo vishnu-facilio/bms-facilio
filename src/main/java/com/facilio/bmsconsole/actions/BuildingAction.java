@@ -1,22 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
-import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.RecordSummaryLayout;
-import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -27,6 +14,12 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class BuildingAction extends ActionSupport {
@@ -148,6 +141,7 @@ public class BuildingAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+
 	
 	EnergyMeterContext mainEnergyMeter;
 	

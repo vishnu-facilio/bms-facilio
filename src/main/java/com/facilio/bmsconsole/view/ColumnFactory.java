@@ -1,17 +1,12 @@
 package com.facilio.bmsconsole.view;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+
+import java.util.*;
 
 public class ColumnFactory {
 	
@@ -39,7 +34,6 @@ public class ColumnFactory {
 //		columnMap.put("asset-energy", getDefaultAssetsColumns());
 		
 		// For getting default columns for a module
-		columnMap.put("site-default", getDefaultSiteViewColumns());
 		columnMap.put("workorder-default", getDefaultViewColumns());
 		columnMap.put("workorder-tenantWorkorder", getTenantWorkorderColumns());
 		columnMap.put("workorder-vendorWorkorder", getVendorWorkorderColumns());
@@ -166,6 +160,11 @@ public class ColumnFactory {
 		columnMap.put("hazardPrecaution-all", getAllHazardPrecautionsColumns());
 		columnMap.put("hazardPrecaution-associatedprecautions", getHazardPrecautionsColumns());
 		columnMap.put("hazardPrecaution-associatedhazards", getAssociatedHazardPrecautionsColumns());
+
+		// site,building,space columns
+		columnMap.put("site-default", getDefaultSiteViewColumns());
+		columnMap.put("building-default", getDefaultBuildingViewColumns());
+		columnMap.put("space-default", getDefaultSpaceViewColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -1215,6 +1214,27 @@ public class ColumnFactory {
 		columns.add(new ViewField("primaryContactName", "Primary Contact Name"));
 		columns.add(new ViewField("primaryContactEmail", "Primary Contact Email"));
 		
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultBuildingViewColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Building Name"));
+		columns.add(new ViewField("managedBy", "Mananged By"));
+		columns.add(new ViewField("noOfFloors", "Floors"));
+		columns.add(new ViewField("area", "Total Area"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultSpaceViewColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("name", "Space Name"));
+		columns.add(new ViewField("spaceCategory", "Category"));
+		columns.add(new ViewField("area", "Total Area"));
+
 		return columns;
 	}
 }
