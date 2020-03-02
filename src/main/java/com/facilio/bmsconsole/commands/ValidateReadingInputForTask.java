@@ -70,9 +70,9 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 			List<Long> recordIdsTemp = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);			
 			
-			if(recordIdsTemp!= null && !recordIdsTemp.isEmpty() && currentTask != null)
+			if(recordIdsTemp!= null && !recordIdsTemp.isEmpty() && currentTask != null && AccountUtil.getCurrentOrg().getId() == 316l)
 			{
-				LOGGER.debug("skipValidation: "+skipValidation+" Task record ID: "+ recordIdsTemp.get(0) + " Current Input Value: " +  currentTask.getInputValue() + 
+				LOGGER.info("skipValidation: "+skipValidation+" Task record ID: "+ recordIdsTemp.get(0) + " Current Input Value: " +  currentTask.getInputValue() + 
 						" Current Input Time: " + currentTask.getInputTime() +""+ " Reading Field Unit: " + currentTask.getReadingFieldUnitEnum());
 			}
 			
@@ -121,10 +121,14 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 												Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
 												if((numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata")))) 
 												{		
-													LOGGER.debug("Entered counterfield check");
+													if(AccountUtil.getCurrentOrg().getId() == 316l) {
+														LOGGER.info("Entered counterfield check");
+													}
 													List<TaskErrorContext> taskErrors = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
 													if(taskErrors!= null && !taskErrors.isEmpty()) {
-														LOGGER.debug("Entered errors check");
+														if(AccountUtil.getCurrentOrg().getId() == 316l) {
+														LOGGER.info("Entered errors check");
+														}
 														hasErrors = true;
 														errors.addAll(taskErrors);
 														TaskErrorContext unitSuggestion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
