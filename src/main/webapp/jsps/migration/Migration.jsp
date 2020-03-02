@@ -67,6 +67,7 @@
 <%@ page import="com.facilio.bmsconsole.util.TenantsAPI" %>
 <%@ page import="com.facilio.bmsconsole.tenant.TenantContext" %>
 <%@ page import="com.facilio.modules.SelectRecordsBuilder" %>
+<%@ page import="com.facilio.bmsconsole.actions.RollUpRecommendedRuleAction" %>
 
 <%--
 
@@ -90,7 +91,15 @@
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
 
-		    CommonCommandUtil.migrateFieldAccessType();
+            try{
+            	RollUpRecommendedRuleAction obj=new RollUpRecommendedRuleAction();
+                obj.getRecommendedList();
+            }
+            catch(Exception e)
+            {
+            	e.printStackTrace();
+            }
+		    //CommonCommandUtil.migrateFieldAccessType();
 
             return false;
         }
