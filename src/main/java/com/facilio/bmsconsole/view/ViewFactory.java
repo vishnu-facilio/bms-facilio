@@ -6082,11 +6082,7 @@ public class ViewFactory {
 
 		FacilioModule serviceRequestsModule = ModuleFactory.getServiceRequestModule();
 
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedtime");
-		createdTime.setDataType(FieldType.DATE_TIME);
-		createdTime.setColumnName("SYS_CREATED_TIME");
-		createdTime.setModule(serviceRequestsModule);
+		FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", serviceRequestsModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 

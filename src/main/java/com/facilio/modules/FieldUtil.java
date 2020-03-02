@@ -406,8 +406,8 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.VENDOR_DOCUMENTS,
 					FacilioConstants.ContextNames.SAFETY_PLAN,
 					FacilioConstants.ContextNames.HAZARD,
-					FacilioConstants.ContextNames.PRECAUTION
-					
+					FacilioConstants.ContextNames.PRECAUTION,
+					FacilioConstants.ContextNames.SERVICE_REQUEST
 					
 			))
 			);
