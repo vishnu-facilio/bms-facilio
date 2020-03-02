@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -80,11 +81,13 @@ public class FetchCriteriaReportCommand extends FacilioCommand {
 				dataPoints.addAll(FilterUtil.getTFDataPoints(reportDataPoints.get(0).getxAxis().getModuleName(), timeFilter));
 			}
 			
-			createCombinedMap();
-			if(MapUtils.isNotEmpty(combinedMap)) {
-				filters.put("Combine.timeline", getCombinedTimeLine());
-				
-				dataPoints.add(FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Combine"));
+			if(CollectionUtils.isNotEmpty(combinedList)) {
+				createCombinedMap();
+				if(MapUtils.isNotEmpty(combinedMap)) {
+					filters.put("Combine.timeline", getCombinedTimeLine());
+					
+					dataPoints.add(FilterUtil.getDataPoint(reportDataPoints.get(0).getxAxis().getModuleName(), "Combine"));
+				}
 			}
 			dataPoints.addAll(reportDataPoints);
 			report.setDataPoints(dataPoints);
