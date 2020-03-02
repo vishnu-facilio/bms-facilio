@@ -89,15 +89,8 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
-			
 
-            try{	
-            	
-            }
-            catch(Exception e) {
-            		e.printStackTrace();
-            }
-
+		    CommonCommandUtil.migrateFieldAccessType();
 
             return false;
         }
