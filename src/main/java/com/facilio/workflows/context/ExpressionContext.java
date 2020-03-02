@@ -395,6 +395,9 @@ public class ExpressionContext implements WorkflowExpression {
 									exprResult = readingDataMeta.getValue();
 								}
 							}
+							if(exprResult != null && exprResult.toString().equals("-1")) {
+								return null;
+							}
 							return exprResult;
 						}
 					}

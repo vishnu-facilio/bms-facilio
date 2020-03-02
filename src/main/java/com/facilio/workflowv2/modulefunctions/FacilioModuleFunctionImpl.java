@@ -352,6 +352,9 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 							else {
 								result = readingDataMeta.getValue();
 							}
+							if(result != null && result.toString().equals("-1")) {
+								return null;
+							}
 							return result;
 						}
 					}
