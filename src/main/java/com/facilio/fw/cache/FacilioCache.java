@@ -9,5 +9,5 @@ public interface FacilioCache<K, V> {
     void put(K key, V value);
     void remove(K key);
     void purgeCache();
-    Set<K> keySet();
+    Set<K> keys();
 }

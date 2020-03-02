@@ -225,7 +225,7 @@ public class LRUCache<K, V> implements FacilioCache<K, V> {
     }
 
 	@Override
-	public Set<K> keySet() {
+	public Set<K> keys() {
 		return cache.keySet();
 	}
 

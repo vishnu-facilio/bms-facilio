@@ -1,7 +1,9 @@
 package com.facilio.fw.cache;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class LRUCacheLinkedHashMap<K,V> extends LinkedHashMap<K,V> {
 
@@ -48,6 +50,12 @@ public class LRUCacheLinkedHashMap<K,V> extends LinkedHashMap<K,V> {
     public V putIfAbsent(K key, V value) {
         synchronized (this) {
             return super.putIfAbsent(key, value);
+        }
+    }
+
+    public Set<K> cloneKeys() {
+        synchronized (this) {
+            return new HashSet<>(super.keySet());
         }
     }
 }
