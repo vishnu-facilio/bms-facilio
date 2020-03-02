@@ -275,6 +275,11 @@ public class PointsAPI extends AgentUtilities {
                 paginationContext.put(FacilioConstants.ContextNames.TABLE_NAME, AgentConstants.POINTS_TABLE);
                 ((List<FacilioField>) paginationContext.get(FacilioConstants.ContextNames.FIELDS)).addAll(fields);
                 pointsData = bean.getRows(paginationContext);
+                if(pointsData == null || (pointsData.isEmpty()) ){
+                    if(containsValueCheck("query",paginationContext)){
+                        LOGGER.info(" no points for query "+paginationContext.get("query"));
+                    }
+                }
             }
         } catch (Exception e) {
             LOGGER.info("Exception occurred ", e);
@@ -853,7 +858,7 @@ public class PointsAPI extends AgentUtilities {
         return getPointCountDataJSON( points);
     }
 
-    private static JSONObject getPointCountDataJSON( List<MiscPoint> points) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    public static JSONObject getPointCountDataJSON( List<MiscPoint> points) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         JSONObject pointCountData = new JSONObject();
         int subPts = 0;
         int confPts = 0;
@@ -881,7 +886,7 @@ public class PointsAPI extends AgentUtilities {
         return pointCountData;
     }
 
-    private static boolean checkIfComissioned(Point point) {
+    public static boolean checkIfComissioned(Point point) {
         return ((point.getResourceId() != null) && (point.getAssetCategoryId() != null) && (point.getFieldId() != null));
     }
 

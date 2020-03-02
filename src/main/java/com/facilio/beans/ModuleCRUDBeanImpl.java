@@ -896,6 +896,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					if (context.containsKey(FacilioConstants.ContextNames.OFFSET)) {
 						selectRecordBuilder.offset(Integer.parseInt(context.get(FacilioConstants.ContextNames.OFFSET).toString()));
 					}if (context.containsKey(FacilioConstants.ContextNames.LIMIT_VALUE)) {
+						LOGGER.info(" limit in get rows  is "+context.get(FacilioConstants.ContextNames.LIMIT_VALUE));
 						selectRecordBuilder.limit(Integer.parseInt((context.get(FacilioConstants.ContextNames.LIMIT_VALUE).toString())));
 					} else {
 						selectRecordBuilder.limit(100);
@@ -907,6 +908,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				}
 
 				rows.addAll(selectRecordBuilder.get());
+				context.put("query",selectRecordBuilder.toString());
 			} else {
 				LOGGER.info("Exception occurred table name or criteria are mandatory and can't be null ");
 			}

@@ -1,6 +1,7 @@
 package com.facilio.agentv2.sqlitebuilder;
 
 import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.bacnet.BacnetIpControllerContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.GetControllerRequest;
@@ -9,7 +10,11 @@ import com.facilio.agentv2.modbustcp.ModbusTcpControllerContext;
 import com.facilio.agentv2.opcua.OpcUaControllerContext;
 import com.facilio.agentv2.opcxmlda.OpcXmlDaControllerContext;
 import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.sqlUtils.contexts.bacnet.ip.BacnetIpController;
 import com.facilio.sqlUtils.contexts.modbus.ip.ModbusTcpController;
 import com.facilio.sqlUtils.contexts.modbus.rtu.ModbusRtuController;
@@ -19,7 +24,9 @@ import com.facilio.sqlUtils.sqllite.SQLiteUtil;
 import com.facilio.sqlUtils.utilities.FacilioJavaController;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -54,11 +61,18 @@ public class ControllerMigrator {
                         LOGGER.info("failed adding controller " + controller.getName());
                     }else {
                         LOGGER.info(" added controller "+controllerId +" to sqlite "+controller.getId());
-                        List<Point> points = PointsAPI.getControllerPoints(controllerType, controllerId);
+                        FacilioContext context = new FacilioContext();
+                        context.put(FacilioConstants.ContextNames.LIMIT_VALUE,2000);
+                        List<Point> points = PointsAPI.getControllerPoints(controllerType, controllerId,context);
                        if((points != null) && ( ! points.isEmpty())){
-                           LOGGER.info(" fetched points for controller "+controllerId+" is "+points.size());
+                           LOGGER.info(" fetched points for controller "+controllerId+" are "+points.size());
                            PointMigrator.setNewControllerId(controller.getId(),points);
                            LOGGER.info(" set new controller id ");
+                           try {
+                               LOGGER.info(getPointCountDataJSON(points));
+                           }catch ( Exception e){
+                               LOGGER.info(" Exception while printing point count data ",e);
+                           }
                            PointMigrator.addPointsToSqlite(points, controllerType);
                        }else {
                            LOGGER.info(" no points for controller "+controllerId);
@@ -75,6 +89,33 @@ public class ControllerMigrator {
         return true;
     }
 
+    public static JSONObject getPointCountDataJSON(List<Point> points) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        JSONObject pointCountData = new JSONObject();
+        int subPts = 0;
+        int confPts = 0;
+        int commPts = 0;
+        for (Point point : points) {
+            LOGGER.info(" point id" + point.getId());
+            LOGGER.info(" point " + FieldUtil.getAsJSON(point));
+            LOGGER.info(" point sub" + point.getSubscribeStatus());
+            if (point.getConfigureStatusEnum().equals(PointEnum.ConfigureStatus.CONFIGURED)) {
+                confPts++;
+                if (PointsAPI.checkIfComissioned(point)) {
+                    commPts++;
+                }
+            }
+            LOGGER.info(" point subE" + point.getSubscribestatusEnum());
+            if (point.getSubscribestatusEnum().equals(PointEnum.SubscribeStatus.SUBSCRIBED)) {
+                subPts++;
+                LOGGER.info(" yes subscribed " + subPts);
+            }
+        }
+        pointCountData.put(AgentConstants.TOTAL_COUNT, points.size());
+        pointCountData.put(AgentConstants.CONFIGURED_COUNT, confPts);
+        pointCountData.put(AgentConstants.COMMISSIONED_COUNT, commPts);
+        pointCountData.put(AgentConstants.SUBSCRIBED_COUNT, subPts);
+        return pointCountData;
+    }
 
     private static boolean addControllersToSqlite(Controller controller, FacilioControllerType facilioControllerType) throws Exception {
         LOGGER.info(" adding controller to sqlite " + controller.getName() + "  of type " + facilioControllerType.asString());
