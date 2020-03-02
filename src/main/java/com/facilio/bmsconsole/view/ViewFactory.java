@@ -4792,10 +4792,15 @@ public class ViewFactory {
 		createdTime.setColumnName("LAST_OCCURRED_TIME");
 		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
 
+		Criteria criteria = new Criteria();
+		Condition tillDateAlarm = getOnlyTillDateAlarm();
+		criteria.addAndCondition(tillDateAlarm);
+
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Alarms");
 		allView.setModuleName("newreadingalarm");
+		allView.setCriteria(criteria);
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
 	}
@@ -4829,12 +4834,30 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static Condition getOnlyTillDateAlarm() {
+		// To get alarm list till now as in demo account alarm for the whole week will be avaiable
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+
+		Condition alarmCondition = new Condition();
+		alarmCondition.setField(createdTime);
+		alarmCondition.setOperator(DateOperators.TILL_NOW);
+
+		return alarmCondition;
+	}
+
 	private static FacilioView getReadingAlarmSeverity(String name, String displayName, String severity, boolean equals) {
 
 		Condition alarmCondition = getReadingAlarmSeverityCondition(severity, equals);
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(alarmCondition);
+		Condition tillDateAlarm = getOnlyTillDateAlarm();
+		criteria.addAndCondition(tillDateAlarm);
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("lastOccurredTime");
@@ -5003,6 +5026,8 @@ public class ViewFactory {
 		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("LAST_OCCURRED_TIME");
 		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+		Condition tillDateAlarm = getOnlyTillDateAlarm();
+		criteria.addAndCondition(tillDateAlarm);
 
 		FacilioView typeAlarms = new FacilioView();
 		typeAlarms.setName("unacknowledged");
