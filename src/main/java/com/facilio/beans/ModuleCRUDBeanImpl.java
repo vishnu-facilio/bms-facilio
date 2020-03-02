@@ -899,7 +899,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 						LOGGER.info(" limit in get rows  is "+context.get(FacilioConstants.ContextNames.LIMIT_VALUE));
 						selectRecordBuilder.limit(Integer.parseInt((context.get(FacilioConstants.ContextNames.LIMIT_VALUE).toString())));
 					} else {
-						selectRecordBuilder.limit(100);
+						selectRecordBuilder.limit(1000);
 					}
 				}
 
@@ -909,6 +909,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 				rows.addAll(selectRecordBuilder.get());
 				context.put("query",selectRecordBuilder.toString());
+				LOGGER.info(" rows obtained "+rows.size());
 			} else {
 				LOGGER.info("Exception occurred table name or criteria are mandatory and can't be null ");
 			}
