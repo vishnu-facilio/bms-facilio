@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class LRUCacheLinkedHashMap<K,V> extends LinkedHashMap<K,V> {
 
@@ -56,6 +58,27 @@ public class LRUCacheLinkedHashMap<K,V> extends LinkedHashMap<K,V> {
     public Set<K> cloneKeys() {
         synchronized (this) {
             return new HashSet<>(super.keySet());
+        }
+    }
+
+    @Override
+    public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
+        synchronized (this) {
+            return super.computeIfAbsent(key, mappingFunction);
+        }
+    }
+
+    @Override
+    public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        synchronized (this) {
+            return super.compute(key, remappingFunction);
+        }
+    }
+
+    @Override
+    public V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+        synchronized (this) {
+            return super.merge(key, value, remappingFunction);
         }
     }
 }
