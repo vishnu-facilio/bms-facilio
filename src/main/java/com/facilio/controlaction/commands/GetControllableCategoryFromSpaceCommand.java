@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.commands;
+package com.facilio.controlaction.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.constants.FacilioConstants;
@@ -31,7 +32,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.mv.context.MVProjectContext;
 
-public class GetControllableCategoryCommand extends FacilioCommand {
+public class GetControllableCategoryFromSpaceCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {

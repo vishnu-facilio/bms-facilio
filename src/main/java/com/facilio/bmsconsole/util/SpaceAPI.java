@@ -915,6 +915,23 @@ public class SpaceAPI {
 		return spaces;
 	}
 	
+	public static List<SpaceContext> getAllSpaces(long floorId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
+																	.select(fields)
+																	.module(module)
+																	.beanClass(SpaceContext.class)
+																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("floor"), floorId+"", NumberOperators.EQUALS))
+																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.SPACE.getIntVal());
+		List<SpaceContext> spaces = selectBuilder.get();
+		return spaces;
+	}
+	
 	public static List<SiteContext> getAllSites(boolean fetchLocation) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);

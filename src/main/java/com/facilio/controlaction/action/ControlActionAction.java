@@ -39,9 +39,30 @@ public class ControlActionAction extends FacilioAction {
 	long controlGroupId = -1l;
 	ControlGroupContext controlGroup;
 	long assetCategoryId;
-	long spaceId;
+	long spaceId = -1;
+	long floorId = -1;
+	List<Long> spaceIncludeIds;
+	List<Long> spaceExcludeIds;
 	
 	
+	public List<Long> getSpaceExcludeIds() {
+		return spaceExcludeIds;
+	}
+	public void setSpaceExcludeIds(List<Long> spaceExcludeIds) {
+		this.spaceExcludeIds = spaceExcludeIds;
+	}
+	public long getFloorId() {
+		return floorId;
+	}
+	public void setFloorId(long floorId) {
+		this.floorId = floorId;
+	}
+	public List<Long> getSpaceIncludeIds() {
+		return spaceIncludeIds;
+	}
+	public void setSpaceIncludeIds(List<Long> spaceIncludeIds) {
+		this.spaceIncludeIds = spaceIncludeIds;
+	}
 	public long getAssetCategoryId() {
 		return assetCategoryId;
 	}
@@ -458,15 +479,31 @@ public class ControlActionAction extends FacilioAction {
 	
 	public String getControllableCategory() throws Exception {
 		
-		FacilioChain getControllableCategoryChain = ReadOnlyChainFactory.getControllableCategoryChain();
-		
-		FacilioContext context = getControllableCategoryChain.getContext();
-		
-		context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
-		
-		getControllableCategoryChain.execute();
-		
-		setResult(ControlActionUtil.CONTROLLABLE_CATEGORIES, context.get(ControlActionUtil.CONTROLLABLE_CATEGORIES));
+		if(spaceId > 0) {
+			FacilioChain getControllableCategoryChain = ReadOnlyChainFactory.getControllableCategoryFromSpaceIdChain();
+			
+			FacilioContext context = getControllableCategoryChain.getContext();
+			
+			context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
+			
+			getControllableCategoryChain.execute();
+			
+			setResult(ControlActionUtil.CONTROLLABLE_CATEGORIES, context.get(ControlActionUtil.CONTROLLABLE_CATEGORIES));
+		}
+		else if (floorId > 0 || spaceIncludeIds != null) {
+			
+			FacilioChain getControllableCategoryChain = ReadOnlyChainFactory.getControllableCategoryChain();
+			
+			FacilioContext context = getControllableCategoryChain.getContext();
+			
+			context.put(FacilioConstants.ContextNames.FLOOR_ID, floorId);
+			context.put(ControlActionUtil.SPACE_INCLUDE_LIST, spaceIncludeIds);
+			context.put(ControlActionUtil.SPACE_EXCLUDE_LIST, spaceExcludeIds);
+			
+			getControllableCategoryChain.execute();
+			
+			setResult(ControlActionUtil.SPACE_CONTROLLABLE_CATEGORIES_MAP, context.get(ControlActionUtil.SPACE_CONTROLLABLE_CATEGORIES_MAP));
+		}
 		
 		return SUCCESS;
 		

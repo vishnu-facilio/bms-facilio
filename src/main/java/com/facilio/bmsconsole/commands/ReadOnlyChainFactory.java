@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.controlaction.commands.*;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
@@ -2171,9 +2172,16 @@ public class ReadOnlyChainFactory {
 	}
 	
 	
+	public static FacilioChain getControllableCategoryFromSpaceIdChain() {
+		FacilioChain chain = getDefaultChain();		
+		chain.addCommand(new GetControllableCategoryFromSpaceCommand());
+		return chain;
+	}
+	
 	public static FacilioChain getControllableCategoryChain() {
 		FacilioChain chain = getDefaultChain();		
-		chain.addCommand(new GetControllableCategoryCommand());
+		chain.addCommand(new GetIncludedSpaceListCommand());
+		chain.addCommand(new GetControllableCategoryFromSpaceListCommand());
 		return chain;
 	}
 }
