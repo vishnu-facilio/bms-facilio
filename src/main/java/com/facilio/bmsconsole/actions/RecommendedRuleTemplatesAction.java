@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;
@@ -113,6 +114,19 @@ public class RecommendedRuleTemplatesAction extends FacilioAction{
 				.table(ModuleFactory.getPointsModule().getTableName())
 				.andCustomWhere("ASSET_CATEGORY_ID=?", category_id);
 		
+		
+		List<FacilioField> fieldsCount = null;
+		FacilioField countFld = new FacilioField();
+		countFld.setName("count");
+		countFld.setColumnName("COUNT(Assets.ID)");
+		countFld.setDataType(FieldType.NUMBER);
+		fieldsCount = Collections.singletonList(countFld);
+		GenericSelectRecordBuilder builderCnt=new GenericSelectRecordBuilder()
+				.select(fieldsCount)
+				.table(ModuleFactory.getAssetsModule().getTableName())
+				.andCustomWhere("CATEGORY=?", category_id);
+		
+		long totalAssetCount= (long) builderCnt.fetchFirst().get("count");
 		//RULE FIELDS VS ASSET FIELDS COMPARISON
 
 		Map<String,Long> values=new HashMap<>();
@@ -123,7 +137,8 @@ public class RecommendedRuleTemplatesAction extends FacilioAction{
 		{
 			values.put(unavail, 0l);
 		}
-		int notSetCount=0;
+		List<Long> assetIds=new ArrayList<>();
+		int SetCount=0;
 		for(Map<String,Object> asset:builder.get())
 		{
 			int notSetFlag=0;
@@ -137,6 +152,7 @@ public class RecommendedRuleTemplatesAction extends FacilioAction{
 					assetFields.add((String) beanField.getName());
 				}
 			}
+			
 			grouped.put((Long) asset.get("resource"), assetFields);
 			temp.add(asset.get("resource"));
 			for(String unavail:unavailableFields)
@@ -147,15 +163,19 @@ public class RecommendedRuleTemplatesAction extends FacilioAction{
 					notSetFlag=1;
 				}
 			}
-			if(notSetFlag==1)
-			{
-				notSetCount++;
+			if(notSetFlag==0)
+			{   
+				SetCount++;
+				assetIds.add((Long) asset.get("resource"));
 			}
 			}
 		}
-		ruleAppliedDetails.put("available",(long) (grouped.size()-notSetCount));
-		ruleAppliedDetails.put("unavailable",(long) (notSetCount));
-		setResult("index",ruleAppliedDetails);
+		ruleAppliedDetails.put("totalAssets",(long) (totalAssetCount));
+		ruleAppliedDetails.put("available",(long) (SetCount));
+		ruleAppliedDetails.put("unavailable",(long) (totalAssetCount-SetCount));
+		setResult("availability",ruleAppliedDetails);
+		setResult("assets",assetIds);
+
 		return SUCCESS;
 	
 	}
