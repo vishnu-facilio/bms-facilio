@@ -744,7 +744,7 @@ public class NewAlarmAPI {
 		Map<Long, AlarmOccurrenceContext> delAlarmOccurrencesMap = new HashMap<Long, AlarmOccurrenceContext>();
 		AlarmOccurrenceContext initialEdgeCaseAlarmOccurrence = null, finalEdgeCaseAlarmOccurrence = null;
 		
-		List<AlarmOccurrenceContext> alarmOccurrenceList = getAllAlarmOccurrences(ruleId, startTime, endTime, resourceId);
+		List<AlarmOccurrenceContext> alarmOccurrenceList = getAllAlarmOccurrences(ruleId, startTime, endTime, resourceId, AlarmOccurrenceContext.Type.READING);
 
 		if (alarmOccurrenceList != null && !alarmOccurrenceList.isEmpty())
 		{
@@ -857,15 +857,15 @@ public class NewAlarmAPI {
 		return event;
 	}
 	
-	public static List<AlarmOccurrenceContext> getAllAlarmOccurrences(long ruleId, long startTime, long endTime, long resourceId) throws Exception {
+	public static List<AlarmOccurrenceContext> getAllAlarmOccurrences(long ruleId, long startTime, long endTime, long resourceId, AlarmOccurrenceContext.Type type) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		FacilioModule module = modBean.getModule(NewAlarmAPI.getOccurrenceModuleName(type));
 		List<FacilioField> allFields = modBean.getAllFields(module.getName());
 	
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
-				.beanClass(AlarmOccurrenceContext.class).moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
-				.select(allFields).innerJoin("ReadingAlarm").on("AlarmOccurrence.ALARM_ID = ReadingAlarm.ID")
+				.select(allFields)
+				.beanClass(NewAlarmAPI.getOccurrenceClass(type)).moduleName(NewAlarmAPI.getOccurrenceModuleName(type))
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", "" + ruleId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", "" + resourceId, NumberOperators.EQUALS));
 	
@@ -881,7 +881,7 @@ public class NewAlarmAPI {
 		selectbuilder.orderBy("CREATED_TIME");
 		
 		List<AlarmOccurrenceContext> alarmOccurrenceList = selectbuilder.get();
-		
+	
 		return alarmOccurrenceList;
 	}
 	

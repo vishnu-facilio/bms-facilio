@@ -141,6 +141,7 @@ public class WorkflowRuleHistoricalLogsContext {
 		
 		IS_FIRST_JOB(1),
 		IS_LAST_JOB(2),
+		FIRST_AS_WELL_AS_LAST(3),
 		;
 
 		int intVal;

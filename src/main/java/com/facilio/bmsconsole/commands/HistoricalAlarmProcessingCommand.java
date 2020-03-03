@@ -54,14 +54,14 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 			ReadingRuleContext triggerRule = alarmRule.getAlarmTriggerRule();
 			
 			if(triggerRule.isConsecutive() || triggerRule.getOverPeriod() != -1 || triggerRule.getOccurences() > 1) {
-				List<BaseEventContext> preAlarmEvents = fetchAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule ,resourceId, lesserStartTime, greaterEndTime, Type.PRE_ALARM);
-				if(preAlarmEvents != null) {
-					baseEvents.addAll(preAlarmEvents);
+				List<BaseEventContext> preEvents = fetchAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule ,resourceId, lesserStartTime, greaterEndTime, Type.PRE_ALARM);
+				if(preEvents != null) {
+					baseEvents.addAll(preEvents);
 				}
-			}	
-			List<BaseEventContext> readingEvents = fetchAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule,resourceId, lesserStartTime, greaterEndTime,  Type.READING_ALARM);
-			if(readingEvents != null) {
-				baseEvents.addAll(readingEvents);
+				WorkflowRuleHistoricalAlarmsDeletionAPI.deleteEntireAlarmOccurrences(ruleId, resourceId, lesserStartTime, greaterEndTime, AlarmOccurrenceContext.Type.READING);
+			}
+			else {	
+				baseEvents.addAll(fetchAllEventsBasedOnAlarmDeletionRange(ruleId, alarmRule,resourceId, lesserStartTime, greaterEndTime, Type.READING_ALARM));				
 			}
 			
 			if (baseEvents != null && !baseEvents.isEmpty())
@@ -111,29 +111,28 @@ public class HistoricalAlarmProcessingCommand extends FacilioCommand implements 
 		
 		if(completeEvents != null && !completeEvents.isEmpty())
 		{
-			List<Long> readingEventIds = new ArrayList<Long>();
+			List<Long> baseEventSeverityIds = new ArrayList<Long>();
 
-			for(BaseEventContext readingEvent :completeEvents)
-			{
-				readingEventIds.add(readingEvent.getSeverity().getId());
+			for(BaseEventContext baseEvent :completeEvents) {
+				baseEventSeverityIds.add(baseEvent.getSeverity().getId());
 			}
 			
-			Map<Long, AlarmSeverityContext> alarmSeverityMap = AlarmAPI.getAlarmSeverityMap(readingEventIds);
+			Map<Long, AlarmSeverityContext> alarmSeverityMap = AlarmAPI.getAlarmSeverityMap(baseEventSeverityIds);
 			
-			for(BaseEventContext readingEvent :completeEvents)
+			for(BaseEventContext baseEvent :completeEvents)
 			{
-				if (readingEvent instanceof  ReadingEventContext) {
-					ReadingEventContext readingEventContext = (ReadingEventContext) readingEvent;
+				if (baseEvent instanceof  ReadingEventContext) {
+					ReadingEventContext readingEventContext = (ReadingEventContext) baseEvent;
 					readingEventContext.setRule(alarmRule.getPreRequsite());
 					readingEventContext.setSubRule(alarmRule.getAlarmTriggerRule());
 				}
-				else if (readingEvent instanceof PreEventContext) {
-					PreEventContext preEvent = (PreEventContext) readingEvent;
+				else if (baseEvent instanceof PreEventContext) {
+					PreEventContext preEvent = (PreEventContext) baseEvent;
 					preEvent.setRule(alarmRule.getPreRequsite());
 					preEvent.setSubRule(alarmRule.getAlarmTriggerRule());
 				}
-				readingEvent.getSeverity().setSeverity(alarmSeverityMap.get(readingEvent.getSeverity().getId()).getSeverity());
-				readingEvent.setSeverityString(alarmSeverityMap.get(readingEvent.getSeverity().getId()).getSeverity());
+				baseEvent.getSeverity().setSeverity(alarmSeverityMap.get(baseEvent.getSeverity().getId()).getSeverity());
+				baseEvent.setSeverityString(alarmSeverityMap.get(baseEvent.getSeverity().getId()).getSeverity());
 			}
 		}	
 		return completeEvents;

@@ -29,11 +29,13 @@ import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.ReadingAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -105,11 +107,13 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 			}
 				
 			int alarmCount = 0;   //For HistoricalReadingRule
-			if(alarmOccurrenceMap.values() != null && !alarmOccurrenceMap.values().isEmpty() && alarmOccurrenceMap.size() == 1)
+			if(alarmOccurrenceMap.values() != null && !alarmOccurrenceMap.values().isEmpty() && alarmOccurrenceMap.size() <= 2)
 			{
 				for (PointedList<AlarmOccurrenceContext> uniqueAlarmOccurrenceList : alarmOccurrenceMap.values()) {
-					alarmCount = uniqueAlarmOccurrenceList.size();
-				}
+					if(uniqueAlarmOccurrenceList != null && !uniqueAlarmOccurrenceList.isEmpty() && uniqueAlarmOccurrenceList.get(0) instanceof ReadingAlarmOccurrenceContext) {
+						alarmCount = uniqueAlarmOccurrenceList.size();
+					}	
+				}	
 				context.put(FacilioConstants.ContextNames.ALARM_COUNT, alarmCount);
 			}
 				
