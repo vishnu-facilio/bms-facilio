@@ -93,9 +93,17 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 
 	private boolean matchedFormLevel;
 
+	private boolean shouldCheckOnlyFormBased;
+	public boolean isShouldCheckOnlyFormBased() {
+		return shouldCheckOnlyFormBased;
+	}
+	public void setShouldCheckOnlyFormBased(boolean shouldCheckOnlyFormBased) {
+		this.shouldCheckOnlyFormBased = shouldCheckOnlyFormBased;
+	}
+
 	@Override
 	public boolean evaluateCriteria(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
-		if (isDefaltStateFlow()) {
+		if (!isShouldCheckOnlyFormBased() && isDefaltStateFlow()) {
 			return true;
 		}
 		if (matchedFormLevel) {
@@ -106,7 +114,7 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 
 	@Override
 	public boolean evaluateWorkflowExpression(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
-		if (isDefaltStateFlow()) {
+		if (!isShouldCheckOnlyFormBased() && isDefaltStateFlow()) {
 			return true;
 		}
 		if (matchedFormLevel) {
@@ -122,7 +130,7 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 			return false;
 		}
 
-		if (isDefaltStateFlow()) {
+		if (!isShouldCheckOnlyFormBased() && isDefaltStateFlow()) {
 			return true;
 		}
 
@@ -130,7 +138,7 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		matchedFormLevel = false;
 
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
-		if (isFormLevel()) {
+		if (isShouldCheckOnlyFormBased()) {
 			if (moduleRecord.getFormId() > 0) {
 				Criteria criteria = new Criteria();
 				criteria.addAndCondition(CriteriaAPI.getIdCondition(moduleRecord.getFormId(), ModuleFactory.getFormModule()));
@@ -145,6 +153,7 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 					}
 				}
 			}
+			return false;
 		}
 
 		return super.evaluateMisc(moduleName, record, placeHolders, context);

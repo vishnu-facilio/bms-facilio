@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.util.ArrayList;
@@ -28,11 +29,11 @@ public class ExecuteStateFlowCommand extends ExecuteAllWorkflowsCommand {
 	        for (WorkflowRuleContext workflowRuleContext : workflowRules) {
 	            StateFlowRuleContext stateFlowRuleContext = (StateFlowRuleContext) workflowRuleContext;
 	            if (stateFlowRuleContext.isFormLevel()) {
-	                newWorkflowRules.add(0, workflowRuleContext);
+                    StateFlowRuleContext cloned = FieldUtil.cloneBean(stateFlowRuleContext, StateFlowRuleContext.class);
+                    cloned.setShouldCheckOnlyFormBased(true);
+	                newWorkflowRules.add(0, cloned);
 	            }
-	            else {
-	                newWorkflowRules.add(workflowRuleContext);
-	            }
+	            newWorkflowRules.add(stateFlowRuleContext);
 	        }
         }
         return newWorkflowRules;
