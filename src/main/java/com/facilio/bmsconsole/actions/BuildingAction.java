@@ -13,7 +13,6 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.ActionSupport;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -22,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("serial")
-public class BuildingAction extends ActionSupport {
+public class BuildingAction extends FacilioAction {
 	
 	/**
 	 * 
@@ -43,6 +42,11 @@ public class BuildingAction extends ActionSupport {
 		setBuildings((List<BuildingContext>) context.get(FacilioConstants.ContextNames.BUILDING_LIST));
 		
 		return SUCCESS;
+	}
+
+	public String v2buildingList() {
+		setResult(FacilioConstants.ContextNames.BUILDING_LIST,buildings);
+		return  SUCCESS;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -142,6 +146,11 @@ public class BuildingAction extends ActionSupport {
 		return SUCCESS;
 	}
 
+	public String v2BuildingDetails() throws Exception {
+		viewBuilding();
+		setResult(FacilioConstants.ContextNames.BUILDING, building);
+		return SUCCESS;
+	}
 	
 	EnergyMeterContext mainEnergyMeter;
 	

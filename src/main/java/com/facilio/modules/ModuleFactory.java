@@ -120,6 +120,7 @@ public class ModuleFactory {
 		moduleMap.put(ContextNames.CLIENT, getClientModule());
 		moduleMap.put(ContextNames.SITE, getSiteModule());
 		moduleMap.put(ContextNames.BUILDING, getBuildingModule());
+		moduleMap.put(ContextNames.FLOOR, getFloorModule());
 
 		return moduleMap;
 	}
@@ -3406,4 +3407,12 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getFloorModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.FLOOR);
+		module.setDisplayName("Floor");
+		module.setTableName("Floor");
+		module.setExtendModule(getResourceModule());
+		return module;
+	}
 }

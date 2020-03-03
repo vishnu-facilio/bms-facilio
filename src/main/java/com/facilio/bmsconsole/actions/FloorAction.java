@@ -1,29 +1,23 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.SetTableNamesCommand;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.opensymphony.xwork2.ActionContext;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.SetTableNamesCommand;
-import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.RecordSummaryLayout;
-import com.facilio.bmsconsole.context.ViewLayout;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.services.factory.FacilioFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.ActionSupport;
-
 @SuppressWarnings("serial")
-public class FloorAction extends ActionSupport {
+public class FloorAction extends FacilioAction {
 	
 	/**
 	 * 
@@ -108,6 +102,12 @@ public class FloorAction extends ActionSupport {
 		
 		setFloor((FloorContext) context.get(FacilioConstants.ContextNames.FLOOR));
 		
+		return SUCCESS;
+	}
+
+	public String v2FloorDetails () throws Exception {
+		viewFloor();
+		setResult(FacilioConstants.ContextNames.FLOOR, floor);
 		return SUCCESS;
 	}
 	

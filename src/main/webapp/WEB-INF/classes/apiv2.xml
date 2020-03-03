@@ -5370,4 +5370,11 @@
 	<package name="spaceManagement" namespace="/api/v2/space" extends="v2Api">
 		<action name="delete" class="com.facilio.bmsconsole.actions.CampusAction" method="v2DeleteCampus" />
 	</package>
+	<package name="buildingsApi" namespace="/api/v2/building" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.BuildingAction" method="v2buildingList" />
+		<action name="details" class="com.facilio.bmsconsole.actions.BuildingAction" method="v2BuildingDetails" />
+	</package>
+	<package name="floorApiv2" namespace="/api/v2/floor" extends="v2Api">
+		<action name="details" class="com.facilio.bmsconsole.actions.FloorAction" method="v2FloorDetails" />
+	</package>
 </struts>

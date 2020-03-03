@@ -240,7 +240,8 @@ public class PageWidget {
 		RELATED_COUNT("relatedCount"),
 		SITE_LIST_WIDGET("siteListWidget"),
 		FIXED_DETAILS_WIDGET("fixedDetailsWidget"),
-		AGENT_DETAILS_WIDGET("agentDetailsWidget")
+		AGENT_DETAILS_WIDGET("agentDetailsWidget"),
+		FLOOR_MAP("floorMap")
  		;
 		
 		private String name;

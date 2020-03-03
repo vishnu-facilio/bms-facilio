@@ -1,24 +1,7 @@
 
 package com.facilio.bmsconsole.page.factory;
 
-import java.util.List;
-
-import org.json.simple.JSONObject;
-
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.ClientContext;
-import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.HazardContext;
-import com.facilio.bmsconsole.context.InsuranceContext;
-import com.facilio.bmsconsole.context.PrecautionContext;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.SafetyPlanContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.context.VisitorLoggingContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkPermitContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -35,6 +18,9 @@ import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.mv.context.MVProjectWrapper;
+import org.json.simple.JSONObject;
+
+import java.util.List;
 
 public class PageFactory {
 
@@ -75,10 +61,13 @@ public class PageFactory {
 			case ContextNames.PRECAUTION:
 				return SafetyPlanPageFactory.getPrecautionPage((PrecautionContext) record);
 			case ContextNames.SITE:
-				return SitePageFactory.getSitePage((SiteContext) record);
+				return SpaceManagementPageFactory.getSitePage((SiteContext) record);
 			case ContextNames.CLIENT:
 				return ClientPageFactory.getclientPage((ClientContext) record);
-				
+			case ContextNames.BUILDING:
+				return SpaceManagementPageFactory.getBuildingPage((BuildingContext) record);
+			case ContextNames.FLOOR:
+				return SpaceManagementPageFactory.getFloorPage((FloorContext) record);
 		}
 		if (module.getExtendModule() == null) {	// temp
 			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);

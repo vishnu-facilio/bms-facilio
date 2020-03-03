@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
@@ -15,7 +17,7 @@ import org.json.simple.JSONObject;
 
 import java.util.Arrays;
 
-public class SitePageFactory extends PageFactory {
+public class SpaceManagementPageFactory extends PageFactory {
 	
 	public static Page getSitePage(SiteContext site) throws Exception {
         Page page = new Page();
@@ -27,7 +29,7 @@ public class SitePageFactory extends PageFactory {
         Section tab1Sec1 = page.new Section();
         tab1.addSection(tab1Sec1);
         addSecondaryDetailsWidget(tab1Sec1);
-        addWeatherWidget(tab1Sec1);
+		addWeatherWidget(tab1Sec1);
         int energyCardHeight = 4;
         addEnergyWidget(tab1Sec1, energyCardHeight);
         int yPos = tab1Sec1.getLatestY() + energyCardHeight;
@@ -43,6 +45,48 @@ public class SitePageFactory extends PageFactory {
         tab1.addSection(tab1Sec3);
         return page;
     }
+
+	public static Page getBuildingPage(BuildingContext building) throws Exception {
+		Page page = new Page();
+
+		Tab tab1 = page.new Tab("summary");
+		page.addTab(tab1);
+
+		Section tab1Sec1 = page.new Section();
+		tab1.addSection(tab1Sec1);
+		addSecondaryDetailsWidget(tab1Sec1);
+		addWeatherWidget(tab1Sec1);
+		int energyCardHeight = 4;
+		addEnergyWidget(tab1Sec1, energyCardHeight);
+		int yPos = tab1Sec1.getLatestY() + energyCardHeight;
+		addOperatingHoursWidget(tab1Sec1);
+		addRelatedCountWidget(tab1Sec1, yPos, Arrays.asList(ContextNames.WORK_ORDER, ContextNames.NEW_READING_ALARM, ContextNames.ASSET));
+
+		Section tab1Sec2 = page.new Section();
+		addBuildingRelatedListWidget(tab1Sec2);
+		tab1.addSection(tab1Sec2);
+		return page;
+	}
+
+	public static Page getFloorPage(FloorContext floor) throws Exception {
+		Page page = new Page();
+
+		Tab tab1 = page.new Tab("summary");
+		page.addTab(tab1);
+
+		Section tab1Sec1 = page.new Section();
+		tab1.addSection(tab1Sec1);
+		addSecondaryDetailsWidget(tab1Sec1);
+		addFloorMapWidget(tab1Sec1);
+		addRelatedCountWidget(tab1Sec1, 0,Arrays.asList(ContextNames.WORK_ORDER, ContextNames.NEW_READING_ALARM, ContextNames.ASSET));
+		int energyCardHeight = 4;
+		addEnergyWidget(tab1Sec1, energyCardHeight);
+
+		Section tab1Sec2 = page.new Section();
+		addFloorRelatedListWidget(tab1Sec2);
+		tab1.addSection(tab1Sec2);
+		return page;
+	}
 	
 	private static void addSecondaryDetailsWidget(Section section) {
 		PageWidget detailsWidget = new PageWidget(WidgetType.FIXED_DETAILS_WIDGET);
@@ -91,5 +135,27 @@ public class SitePageFactory extends PageFactory {
 		widget.addToLayoutParams(section, 24, 8);
 		section.addWidget(widget);
 	}
+	private static void addBuildingRelatedListWidget(Section section) throws Exception {
 
+		PageWidget pageWidget = new PageWidget(WidgetType.LIST, "buildingSpaces");
+		JSONObject relatedList = new JSONObject();
+		pageWidget.setRelatedList(relatedList);
+		pageWidget.addToLayoutParams(section, 24, 10);
+		section.addWidget(pageWidget);
+	}
+	private static void addFloorRelatedListWidget(Section section) throws Exception {
+
+		PageWidget pageWidget = new PageWidget(WidgetType.LIST, "floorSpaces");
+		JSONObject relatedList = new JSONObject();
+		pageWidget.setRelatedList(relatedList);
+		pageWidget.addToLayoutParams(section, 24, 10);
+		section.addWidget(pageWidget);
+	}
+
+	private static void addFloorMapWidget(Section section) throws Exception {
+
+		PageWidget pageWidget = new PageWidget(WidgetType.FLOOR_MAP);
+		pageWidget.addToLayoutParams(section, 24, 10);
+		section.addWidget(pageWidget);
+	}
 }
