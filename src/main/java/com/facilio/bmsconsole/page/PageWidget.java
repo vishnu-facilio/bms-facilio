@@ -239,7 +239,8 @@ public class PageWidget {
 		PORTAL_WORKPERMIT("portalWorkPermit"),
 		RELATED_COUNT("relatedCount"),
 		SITE_LIST_WIDGET("siteListWidget"),
-		FIXED_DETAILS_WIDGET("fixedDetailsWidget")
+		FIXED_DETAILS_WIDGET("fixedDetailsWidget"),
+		AGENT_DETAILS_WIDGET("agentDetailsWidget")
  		;
 		
 		private String name;

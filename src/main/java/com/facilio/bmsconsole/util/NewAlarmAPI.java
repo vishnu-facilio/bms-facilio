@@ -7,8 +7,12 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.facilio.activity.AlarmActivityType;
+import com.facilio.agent.AgentContent;
+import com.facilio.agent.AgentUtil;
+import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agent.alarms.AgentAlarmOccurrenceContext;
+import com.facilio.agentv2.AgentApiV2;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioContext;
@@ -392,8 +396,26 @@ public class NewAlarmAPI {
 
 	public static void loadAlarmLookups(List<BaseAlarmContext> alarms) throws Exception {
 		updateResource(alarms);
+		//updateAgentData(alarms);
 	}
 
+	public static void updateAgentData(List<BaseAlarmContext> alarms) throws Exception {
+		if (CollectionUtils.isNotEmpty(alarms)) {
+
+			List<AgentAlarmContext> agentAlarm = alarms.stream().map(i -> (AgentAlarmContext) i).collect(Collectors.toList());
+			List<Long> agentIds = agentAlarm.stream().filter(alarm -> alarm != null && alarm.getAgent() != null)
+					.map(alarm -> alarm.getAgent().getId()).collect(Collectors.toList());
+			Map<Long, FacilioAgent> extendedAgent = AgentUtil.getAgentsMap(agentIds);
+			for (AgentAlarmContext alarm : agentAlarm) {
+				if (alarm != null) {
+					FacilioAgent agent = alarm.getAgent();
+					if (agent != null) {
+						alarm.setAgent(extendedAgent.get(alarm.getAgent().getId()));
+					}
+				}
+			}
+		}
+	}
 	private static void updateResource(List<BaseAlarmContext> alarms) throws Exception {
 		if (CollectionUtils.isNotEmpty(alarms)) {
 			List<Long> resourceIds = alarms.stream().filter(alarm -> alarm != null && alarm.getResource() != null)

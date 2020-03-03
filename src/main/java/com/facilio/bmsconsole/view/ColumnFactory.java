@@ -71,8 +71,30 @@ public class ColumnFactory {
 		columnMap.put("shift-default", getDefaultShiftColumns());
 		columnMap.put("break-default", getDefaultBreakColumns());
 		columnMap.put("shiftRotation-default", getDefaultShiftRotationColumns());
+		// reading alarm
 		columnMap.put("newreadingalarm-default", getDefaultReadingAlarmColumns());
+		columnMap.put("newreadingalarm-active", getDefaultReadingAlarmColumns());
+		columnMap.put("newreadingalarm-unacknowledged", getDefaultReadingAlarmColumns());
+		columnMap.put("newreadingalarm-critical", getDefaultReadingAlarmColumns());
+		columnMap.put("newreadingalarm-major", getDefaultReadingAlarmColumns());
+		columnMap.put("newreadingalarm-minor", getDefaultReadingAlarmColumns());
+		columnMap.put("newreadingalarm-cleared", getDefaultReadingAlarmColumns());
+
+		//bmsAlarm
 		columnMap.put("bmsAlarm-default", getDefaultBmsAlarmColumns());
+		columnMap.put("bmsAlarm-bmsAlarm",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsAlarm-active",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsAlarm-unacknowledged",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsAlarm-critical",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsAlarm-major",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsAlarm-minor",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsAlarm-cleared",  getDefaultBmsAlarmColumns());
+
+		// agent Alarm
+
+		columnMap.put("agentAlarm-default", getDefaultAgentAlarmColumns());
+
+
 		columnMap.put("mlAnomalyAlarm-default", getDefaultMlAnomalyAlarmColumns());
 		columnMap.put("service-default", getDefaultServiceColumns());
 		columnMap.put("contracts-default", getDefaultContractColumns());
@@ -765,6 +787,19 @@ public class ColumnFactory {
 		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
 		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
 		columns.add(new ViewField("readingalarmcategory", "Category" ));
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultAgentAlarmColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("severity", "Severity"));
+		columns.add(new ViewField("subject", "Message"));
+		columns.add(new ViewField("agent", "Agent"));
+		columns.add(new ViewField("lastOccurredTime", "Last Reported Time"));
+		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
+		columns.add(new ViewField("acknowledged", "Acknowledged"));
+		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
+		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
 		return columns;
 	}
 	

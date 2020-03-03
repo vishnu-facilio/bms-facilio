@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
 
+import com.facilio.agent.alarms.AgentAlarmContext;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
@@ -20,6 +21,10 @@ public class GetV2AlarmsCommand extends FacilioCommand {
 			AlarmOccurrenceContext latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(alarm);
 			
 			NewAlarmAPI.loadAlarmLookups(Collections.singletonList(alarm));
+			if (alarm instanceof AgentAlarmContext) {
+				AgentAlarmContext agentAlarm = (AgentAlarmContext) alarm;
+				NewAlarmAPI.updateAgentData(Collections.singletonList(agentAlarm));
+			}
 			
 			context.put(FacilioConstants.ContextNames.RECORD, alarm);
 			context.put(FacilioConstants.ContextNames.LATEST_ALARM_OCCURRENCE, latestAlarmOccurance);

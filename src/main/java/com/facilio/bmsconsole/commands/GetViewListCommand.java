@@ -122,6 +122,7 @@ public class GetViewListCommand extends FacilioCommand {
 						agentAlarms.add("agentAll");
 						HashMap<String, Object> groupDetails = new HashMap<>();
 						groupDetails.put("name", "agentAlarmViews");
+						groupDetails.put("moduleName", ContextNames.AGENT_ALARM);
 						groupDetails.put("displayName", "Agent Alarms");
 						groupDetails.put("views", agentAlarms);
 						groupViews.add(2, groupDetails);

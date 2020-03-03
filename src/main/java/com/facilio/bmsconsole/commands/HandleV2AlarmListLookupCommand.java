@@ -17,11 +17,14 @@ public class HandleV2AlarmListLookupCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		List<BaseAlarmContext> alarms =  (List<BaseAlarmContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (CollectionUtils.isNotEmpty(alarms)) {
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, alarms);
 			
 			NewAlarmAPI.loadAlarmLookups(alarms);
-			
+			if (moduleName.equals(FacilioConstants.ContextNames.AGENT_ALARM)) {
+				NewAlarmAPI.updateAgentData(alarms);
+			}
 //			Map<Long, AlarmOccurrenceContext> occurencesMap = NewAlarmAPI.getLatestAlarmOccuranceMap(alarms);
 //			for (AlarmOccurrenceContext occurrence : occurencesMap.values()) {
 //				occurrence.setAlarm(null);

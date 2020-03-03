@@ -515,7 +515,7 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("agentAll", getAgentAlarmOccurrenceViews().setOrder(order++));
 
-		viewsMap.put(FacilioConstants.ContextNames.AGENT_ALARM_OCCURRENCE, views);
+		viewsMap.put(FacilioConstants.ContextNames.AGENT_ALARM, views);
 
 
 		order = 1;
@@ -832,6 +832,7 @@ public class ViewFactory {
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "fddAlarmsViews");
 		groupDetails.put("displayName", "FDD Alarms");
+		groupDetails.put("moduleName", FacilioConstants.ContextNames.NEW_READING_ALARM);
 		groupDetails.put("views", fddAlarms);
 		groupVsViews.add(groupDetails);
 
@@ -848,6 +849,7 @@ public class ViewFactory {
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "bmsAlarmsViews");
 		groupDetails.put("displayName", "BMS Alarms");
+		groupDetails.put("moduleName", FacilioConstants.ContextNames.BMS_ALARM);
 		groupDetails.put("views", bmsAlarms);
 		groupVsViews.add(groupDetails);
 
@@ -4821,16 +4823,17 @@ public class ViewFactory {
 
 	private static FacilioView getAgentAlarmOccurrenceViews() {
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("createdTime");
+		createdTime.setName("lastOccurredTime");
 		createdTime.setDataType(FieldType.DATE_TIME);
-		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(ModuleFactory.getAlarmOccurenceModule());
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
 
 		FacilioView allView = new FacilioView();
 		allView.setName("agentAll");
 		allView.setDisplayName("All Alarms");
 		allView.setModuleName("agentAlarm");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		allView.setDefault(true);
 		return allView;
 	}
 
@@ -4969,6 +4972,7 @@ public class ViewFactory {
 		view.setDisplayName(displayName);
 		view.setModuleName("bmsAlarm");
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		view.setDefault(true);
 
 		return view;
 	}

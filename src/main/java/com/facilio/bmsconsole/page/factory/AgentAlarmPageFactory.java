@@ -40,7 +40,7 @@ public class AgentAlarmPageFactory extends PageFactory  {
             addTimeLineWidget(tab1Sec1, alarms);
         }
         addAlarmDetailsWidget(tab1Sec1);
-        // addAssetAlarmDetailsWidget(tab1Sec1);
+        addAgentDetailsWidget(tab1Sec1);
         // addAlarmReport(tab1Sec1,alarms.getLastOccurrence());
         addCommonSubModuleGroup(tab1Sec1);
 
@@ -84,8 +84,8 @@ public class AgentAlarmPageFactory extends PageFactory  {
         pageWidget.setRelatedList(activities);
         section.addWidget(pageWidget);
     }
-    protected static void addAssetAlarmDetailsWidget (Page.Section section) {
-        PageWidget pageWidget = new PageWidget(PageWidget.WidgetType.ANOMALY_DETAILS_WIDGET);
+    protected static void addAgentDetailsWidget (Page.Section section) {
+        PageWidget pageWidget = new PageWidget(PageWidget.WidgetType.AGENT_DETAILS_WIDGET);
         pageWidget.addToLayoutParams(section, 24, 4);
         section.addWidget(pageWidget);
     }
