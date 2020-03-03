@@ -176,6 +176,7 @@ public class IotMessageApiV2 {
         for (IotMessage iotMessage : messages) {
             iotMessage.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
             iotMessage.setParentId(parentId);
+            iotMessage.setStatus(Status.MESSAGE_SENT.asInt());
             iotMessage.setSentTime(createdTime);
             iotMessage.setId(builder.insert(FieldUtil.getAsProperties(iotMessage)));
         }
