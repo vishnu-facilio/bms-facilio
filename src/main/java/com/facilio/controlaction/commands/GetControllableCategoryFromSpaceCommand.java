@@ -42,8 +42,6 @@ public class GetControllableCategoryFromSpaceCommand extends FacilioCommand {
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioModule assetModule = modbean.getModule(FacilioConstants.ContextNames.ASSET);
-		FacilioModule resourceModule = modbean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		
@@ -61,9 +59,6 @@ public class GetControllableCategoryFromSpaceCommand extends FacilioCommand {
 			.module(assetModule)
 			.beanClass(ModuleBaseWithCustomFields.class)
 				.select(fields)
-//				.table(resourceModule.getTableName())
-//				.innerJoin(assetModule.getTableName())
-//				.on(resourceModule.getTableName()+".ID = "+assetModule.getTableName()+".ID")
 				
 				.innerJoin(ModuleFactory.getReadingDataMetaModule().getTableName())
 				.on(ModuleFactory.getReadingDataMetaModule().getTableName()+".RESOURCE_ID = "+assetModule.getTableName()+".ID")

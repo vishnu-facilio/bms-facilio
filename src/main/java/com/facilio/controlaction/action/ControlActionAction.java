@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -43,6 +44,22 @@ public class ControlActionAction extends FacilioAction {
 	long floorId = -1;
 	List<Long> spaceIncludeIds;
 	List<Long> spaceExcludeIds;
+	
+	ControlActionMode controlActionMode;
+	
+	
+	public int getControlActionMode() {
+		if(controlActionMode != null) {
+			return controlActionMode.getValue();
+		}
+		return -1;
+	}
+
+	public void setControlActionMode(int controlActionMode) {
+		if(controlActionMode > 0) {
+			this.controlActionMode = ControlActionMode.valueOf(controlActionMode);
+		}
+	}
 	
 	
 	public List<Long> getSpaceExcludeIds() {
@@ -408,17 +425,53 @@ public class ControlActionAction extends FacilioAction {
 	
 	public String updateRDM() throws Exception {
 		
-		FacilioContext context = new FacilioContext();
+		FacilioChain addReadingAlarmRuleChain = TransactionChainFactory.updateReadingDataMetaChain();
+		
+		FacilioContext context = addReadingAlarmRuleChain.getContext();
 		
 		context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, Collections.singletonList(rdm));
 		
-		FacilioChain addReadingAlarmRuleChain = TransactionChainFactory.updateReadingDataMetaChain();
-		addReadingAlarmRuleChain.execute(context);
-		
+		addReadingAlarmRuleChain.execute();
 		
 		setResult("rdm", rdm);
 		
 		return SUCCESS;
+	}
+	
+	public String updateControlModeForBaseSpaces() throws Exception {
+		
+		if(controlActionMode == null) {
+			throw new IllegalArgumentException("controlActionMode cannot be null here");
+		}
+		if(spaceId > 0) {
+			
+			FacilioChain getControllableCategoryChain = TransactionChainFactory.updateControllableTypeForSpace();
+			
+			FacilioContext context = getControllableCategoryChain.getContext();
+			
+			context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
+			context.put(ControlActionUtil.CONTROL_MODE, controlActionMode);
+			
+			getControllableCategoryChain.execute();
+			
+		}
+		else if (floorId > 0 || spaceIncludeIds != null) {
+			
+			FacilioChain getControllableCategoryChain = TransactionChainFactory.updateControllableTypeForFloor();
+			
+			FacilioContext context = getControllableCategoryChain.getContext();
+			
+			context.put(FacilioConstants.ContextNames.FLOOR_ID, floorId);
+			context.put(ControlActionUtil.SPACE_INCLUDE_LIST, spaceIncludeIds);
+			context.put(ControlActionUtil.SPACE_EXCLUDE_LIST, spaceExcludeIds);
+			context.put(ControlActionUtil.CONTROL_MODE, controlActionMode);
+			
+			getControllableCategoryChain.execute();
+			
+		}
+		
+		return SUCCESS;
+		
 	}
 	
 	public String getControlActionRules() throws Exception {

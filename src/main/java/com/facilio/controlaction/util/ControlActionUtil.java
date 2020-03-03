@@ -56,6 +56,8 @@ public class ControlActionUtil {
 	public static final String SPACE_INCLUDE_LIST = "spaceIncludeList";
 	public static final String SPACE_EXCLUDE_LIST = "spaceExcludeList";
 	
+	public static final String CONTROL_MODE = "controlMode";
+	
 	public static ControllableAssetCategoryContext getControllableAssetCategory(long id) throws Exception {
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
