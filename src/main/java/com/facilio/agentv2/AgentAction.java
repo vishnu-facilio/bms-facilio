@@ -105,22 +105,6 @@ public class AgentAction extends AgentActionV2 {
 
     private Long agentId;
 
-    public String  getControllerCount() {
-        try {
-            setResult(AgentConstants.RESULT, SUCCESS);
-            if( (getAgentId() == null) || getAgentId() < 1){
-                LOGGER.info(" getting org controller count ");
-                setResult(AgentConstants.DATA, ControllerApiV2.getCountForOrg());
-            }else {
-                LOGGER.info(" getting agent controller count ");
-                setResult(AgentConstants.DATA, ControllerApiV2.getCountForAgent(agentId));
-            }
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting total controller count ");
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-        }
-        return SUCCESS;
-    }
 
     private Long controllerId;
     private Long deviceId;
@@ -214,7 +198,7 @@ public class AgentAction extends AgentActionV2 {
             }
             // TYPE ALONE
             else if ((controllerType != null) && (controllerType > 0)) {
-                setResult(AgentConstants.DATA, FieldDeviceApi.getTypeDeviceCount(getAgentId(), FacilioControllerType.valueOf(getControllerType())));
+                setResult(AgentConstants.DATA, FieldDeviceApi.getTypeDeviceCount(-1, FacilioControllerType.valueOf(getControllerType())));
             }
             //DEVICE POINT COUNT
             else {
@@ -294,17 +278,6 @@ public class AgentAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public String getOverview(){
-        try{
-            setResult(AgentConstants.DATA,AgentUtilV2.getOverview());
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting overview");
-            setResult(AgentConstants.RESULT,new JSONObject());
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-        }
-        return SUCCESS;
-    }
-
     public String getName() {
         return name;
     }
@@ -333,6 +306,17 @@ public class AgentAction extends AgentActionV2 {
         }catch (Exception e){
             LOGGER.info("Exception while getting agent filter ",e);
             setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+        return SUCCESS;
+    }
+
+    public String getOverview(){
+        try{
+            setResult(AgentConstants.DATA,AgentUtilV2.getOverview());
+        }catch (Exception e){
+            LOGGER.info("Exception occurred while getting overview");
+            setResult(AgentConstants.RESULT,new JSONObject());
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
         }
         return SUCCESS;
     }
