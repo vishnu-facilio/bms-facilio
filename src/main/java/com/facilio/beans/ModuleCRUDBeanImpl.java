@@ -909,7 +909,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 				rows.addAll(selectRecordBuilder.get());
 				context.put("query",selectRecordBuilder.toString());
-				LOGGER.info(" rows obtained "+rows.size());
+				//LOGGER.info(" rows obtained "+rows.size());
 			} else {
 				LOGGER.info("Exception occurred table name or criteria are mandatory and can't be null ");
 			}
