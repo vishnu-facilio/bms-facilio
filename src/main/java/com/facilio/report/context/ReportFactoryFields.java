@@ -785,26 +785,26 @@ public class ReportFactoryFields {
 			fields = getAlarmReportFields();
 			break;
 		}
-		case "item":{
-			fields = getitemReportFields();
-			break;
-		}
-		case "tool":{
-			fields = gettoolReportFields();
-			break;
-		}
+//		case "item":{
+//			fields = getitemReportFields();
+//			break;
+//		}
+//		case "tool":{
+//			fields = gettoolReportFields();
+//			break;
+//		}
 		case "assetbreakdown":{
 			fields = getassetDownTimeReportFields();
 			break;
 		}
-		case "itemtransactions":{
-			fields = getitemTransactionsReportFields();
-			break;
-		}
-		case "tooltransactions":{
-			fields = gettoolTransactionsReportFields();
-			break;
-		}
+//		case "itemtransactions":{
+//			fields = getitemTransactionsReportFields();
+//			break;
+//		}
+//		case "tooltransactions":{
+//			fields = gettoolTransactionsReportFields();
+//			break;
+//		}
 		default:{
 			fields = getDefaultReportFields(moduleName);
 			break;
