@@ -34,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class ReportFactory {
 	
 	public interface WorkOrder {
-		String OPENVSCLOSE_COL = "openvsclose";
+		String OPENVSCLOSEVSSKIPPED_COL = "openvsclosevsskipped";
 		String OVERDUE_OPEN_COL = "overdue_open";
 		String OVERDUE_CLOSED_COL = "overdue_closed";
 		String PLANNED_VS_UNPLANNED_COL = "plannedvsunplanned";
@@ -43,7 +43,7 @@ public class ReportFactory {
 		String TOTAL_SCORE_PERCENTAGE_COL = "totalscorepercentage";
 		
 		
-		int OPENVSCLOSE = 1;
+		int OPENVSCLOSEVSSKIPPED = 1;
 		int OVERDUE_OPEN = 2;
 		int OVERDUE_CLOSED = 3;
 		int PLANNED_VS_UNPLANNED = 4;
@@ -83,9 +83,10 @@ public class ReportFactory {
 		try {
 			// workorder fields
 			List<FacilioField> reportFields = new ArrayList<>();
-			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN STATUS_ID in (?) THEN 'Closed' ELSE 'Open' END ", FieldType.STRING, WorkOrder.OPENVSCLOSE);
-			openVsCloseField.addGenericCondition("Open", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.NOT_EQUALS));
+			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSEVSSKIPPED_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN STATUS_ID in (?) THEN 'Closed' ELSE CASE WHEN STATUS_ID in ($) THEN 'SKIPPED' ELSE CASE WHEN STATUS_ID in (*) THEN 'OPEN' END END END", FieldType.STRING, WorkOrder.OPENVSCLOSEVSSKIPPED);
+			openVsCloseField.addGenericCondition("Open", CriteriaAPI.getCondition("STATUS_ID", "status", "*", NumberOperators.EQUALS));
 			openVsCloseField.addGenericCondition("Closed", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.EQUALS));
+			openVsCloseField.addGenericCondition("Skipped", CriteriaAPI.getCondition("STATUS_ID", "status", "$", NumberOperators.EQUALS));
 			reportFields.add(openVsCloseField);
 			
 			ReportFacilioField overdueOpenField = (ReportFacilioField) getField(WorkOrder.OVERDUE_OPEN_COL, "Open Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN DUE_DATE IS NOT NULL THEN CASE WHEN DUE_DATE < ? THEN 'Overdue' ELSE 'On Schedule' END END ", FieldType.STRING, WorkOrder.OVERDUE_OPEN);
@@ -239,32 +240,66 @@ public class ReportFactory {
 		private void processData() {
 			try {
 				switch (type) {
-				case WorkOrder.OPENVSCLOSE:
+				case WorkOrder.OPENVSCLOSEVSSKIPPED:
 				{
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					List<FacilioStatus> list = TicketAPI.getStatusOfStatusType(StatusType.CLOSED);
-					Map<String, Object> data = new HashMap<>();
-					if (CollectionUtils.isNotEmpty(list)) {
+					
+					List<FacilioStatus> closedlist = TicketAPI.getStatusOfStatusType(StatusType.CLOSED);
+					Map<String, Object> closeddata = new HashMap<>();
+					if (CollectionUtils.isNotEmpty(closedlist)) {
 						List<Long> statusIds = new ArrayList<>();
-						for (FacilioStatus status : list) {
+						for (FacilioStatus status : closedlist) {
 							statusIds.add(status.getId());
 						}
-						data.put("closed_status_id", StringUtils.join(statusIds, ","));
+						closeddata.put("closed_status_id", StringUtils.join(statusIds, ","));
 					}
 
-					String arguments = String.valueOf(data.get("closed_status_id"));
+					String closedarguments = String.valueOf(closeddata.get("closed_status_id"));
+					
+					List<FacilioStatus> openlist = TicketAPI.getStatusOfStatusType(StatusType.OPEN);
+					Map<String, Object> opendata = new HashMap<>();
+					if (CollectionUtils.isNotEmpty(openlist)) {
+						List<Long> statusIds = new ArrayList<>();
+						for (FacilioStatus status : openlist) {
+							statusIds.add(status.getId());
+						}
+						opendata.put("open_status_id", StringUtils.join(statusIds, ","));
+					}
+
+					String openarguments = String.valueOf(opendata.get("open_status_id"));
+					
+					List<FacilioStatus> skippedlist = TicketAPI.getStatusOfStatusType(StatusType.SKIPPED);
+					Map<String, Object> skippeddata = new HashMap<>();
+					if (CollectionUtils.isNotEmpty(skippedlist)) {
+						List<Long> statusIds = new ArrayList<>();
+						for (FacilioStatus status : skippedlist) {
+							statusIds.add(status.getId());
+						}
+						skippeddata.put("skipped_status_id", StringUtils.join(statusIds, ","));
+					}
+
+					String skippedarguments = String.valueOf(skippeddata.get("skipped_status_id"));
 					
 					for (String key : genericConditions.keySet()) {
 						Condition condition = genericConditions.get(key);
 						Map<String, Object> conditionProperty = FieldUtil.getAsProperties(condition);
 						Condition c = FieldUtil.getAsBeanFromMap(conditionProperty, Condition.class);
 						String value = c.getValue();
-						c.setValue(value.replace("?", arguments));
+						value = value.replace("?", closedarguments);
+						value = value.replace("*", openarguments);
+						value = value.replaceAll("$", skippedarguments);
+						c.setValue(value);
 						conditions.put(key, c);
 					}
 					
-					setColumnName(getGenericColumnName().replace("?", arguments));
-					data.clear();
+					String columnName = getGenericColumnName();
+					columnName = columnName.replace("?", closedarguments);
+					columnName = columnName.replace("*", openarguments);
+					columnName = columnName.replace("$", skippedarguments);
+					setColumnName(columnName);
+					closeddata.clear();
+					opendata.clear();
+					skippeddata.clear();
 					break;
 				}
 					
