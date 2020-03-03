@@ -280,6 +280,7 @@ public class AgentApiV2 {
             List<FacilioField> fields = new ArrayList<>();
             fields.add(FIELDSMAP.get(AgentConstants.CONNECTED));
             fields.add(FieldFactory.getIdField(MODULE));
+            fields.add(FieldFactory.getSiteIdField(MODULE));
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                     .table(MODULE.getTableName())
                     .select(fields)
@@ -297,12 +298,10 @@ public class AgentApiV2 {
                     }
                 }
             }
-            LOGGER.info(" query ---- ---- ---- ---- -"+selectRecordBuilder.toString());
             JSONObject countData = new JSONObject();
             countData.put(AgentConstants.SITE_COUNT,siteSet.size());
             countData.put(AgentConstants.TOTAL_COUNT,data.size());
             countData.put(AgentConstants.ACTIVE_COUNT,(data.size()-offlineCount));
-            LOGGER.info(" agent count -- "+countData);
             return countData;
         } catch (Exception e) {
             LOGGER.info("Exception while getting agent count data ",e);

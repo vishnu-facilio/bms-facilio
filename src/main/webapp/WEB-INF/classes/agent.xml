@@ -147,7 +147,7 @@
     <package name="ControllerApiV2" namespace="/api/v2/controller" extends="agent">
 
         <!--1-->
-        <action name="count" class="com.facilio.agentv2.AgentAction" method="getControllerCount"> <!--DONE-->
+        <action name="count" class="com.facilio.agentv2.actions.AgentIdAction" method="getControllerCount"> <!--DONE-->
         </action>
 
         <!--3-->
