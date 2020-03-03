@@ -379,7 +379,7 @@ public class AgentApiV2 {
                 .leftJoin(controllerModule.getTableName()).on(MODULE.getTableName()+".ID = "+controllerModule.getTableName()+".AGENT_ID")
                 .groupBy(MODULE.getTableName()+".ID");
         if(fieldMap.containsKey(AgentConstants.CONNECTED)){
-                genericSelectRecordBuilder.orderBy(fieldMap.get(AgentConstants.CONNECTED).getColumnName()+" DESC");
+                genericSelectRecordBuilder.orderBy(fieldMap.get(AgentConstants.CONNECTED).getColumnName());
 
         }
         if (!fetchDeleted) {
