@@ -57,7 +57,21 @@ public class LRUCacheLinkedHashMap<K,V> extends LinkedHashMap<K,V> {
 
     public Set<K> cloneKeys() {
         synchronized (this) {
-            return new HashSet<>(super.keySet());
+            return new HashSet<>(keySet());
+        }
+    }
+
+    @Override
+    public Set<Map.Entry<K, V>> entrySet() {
+        synchronized (this) {
+            return super.entrySet();
+        }
+    }
+
+    @Override
+    public Set<K> keySet() {
+        synchronized (this) {
+            return super.keySet();
         }
     }
 
