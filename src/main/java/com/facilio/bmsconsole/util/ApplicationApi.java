@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.facilio.accounts.dto.NewPermission;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
@@ -132,5 +133,14 @@ public class ApplicationApi {
 			return webTabs.get(0);
 		}
 		return null;
+	}
+	
+	private List<NewPermission> getPermissionsForRole(long roleId) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getNewPermissionModule().getTableName())
+				.select(FieldFactory.getNewPermissionFields())
+				.andCondition(CriteriaAPI.getCondition("NewPermission.ROLE_ID", "roleId", String.valueOf(roleId), NumberOperators.EQUALS));
+		List<NewPermission> permissions = FieldUtil.getAsBeanListFromMapList(builder.get(), NewPermission.class);
+		return permissions;
 	}
 }

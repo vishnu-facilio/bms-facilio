@@ -12,8 +12,10 @@ import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.context.WebTabContext.Type;
 import com.facilio.bmsconsole.context.WebTabGroupContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -40,6 +42,13 @@ public class GetApplicationDetails extends FacilioCommand {
 						for (WebTabContext webtab : webTabs) {
 							webtab.setPermissions(ApplicationApi.getPermissionsForWebTab(webtab.getId()));
 							webtab.setModuleIds(ApplicationApi.getModuleIdsForTab(webtab.getId()));
+							String moduleName = "*";
+							if(webtab.getTypeEnum() == Type.MODULE) {
+								if (webtab.getModuleIds() != null && !webtab.getModuleIds().isEmpty()) {
+									moduleName = modBean.getModule(webtab.getModuleIds().get(0)).getName();
+								}
+							}
+							webtab.setPermission(NewPermissionUtil.getPermissions(webtab.getType(), moduleName));
 							if (AccountUtil.getCurrentUser() != null) {
 								webtab.setPermissionVal(ApplicationApi.getRolesPermissionValForTab(webtab.getId(),
 										AccountUtil.getCurrentUser().getRoleId()));

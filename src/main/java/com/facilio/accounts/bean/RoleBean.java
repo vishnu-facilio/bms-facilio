@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.db.criteria.Criteria;
@@ -39,5 +40,8 @@ public interface RoleBean {
 	public List<Permissions> getPermissions (long roleId) throws Exception;
 	
 	public boolean addPermission(long roleId, Permissions permissions) throws Exception;
+	
+	public boolean addNewPermission(long roleId, NewPermission permissions) throws Exception;
 
+	public List<NewPermission> getNewPermission(long roleId) throws Exception;
 }

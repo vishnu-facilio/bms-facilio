@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
@@ -137,5 +138,34 @@ public class RoleAction extends ActionSupport {
 		this.permissions = permissions;
 	}
 	
+	private List<NewPermission> newPermissions;
+	public List<NewPermission> getNewPermissions() {
+		return newPermissions;
+	}
+	public void setNewPermissions(List<NewPermission> newPermissions) {
+		this.newPermissions = newPermissions;
+	}
+	
+	
+	public String addWebTabRole() throws Exception {
+		// setting necessary fields
+		role.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		if (role.getName() == null)
+		{
+			setRoleResponse("message","Role Name Cannot be Null");
+			return ERROR;
+		}
+		FacilioContext context = new FacilioContext();
+		role.setCreatedTime(System.currentTimeMillis());
+		context.put(FacilioConstants.ContextNames.ROLE, getRole());
+		context.put(FacilioConstants.ContextNames.PERMISSIONS, getNewPermissions());
+		
+		Command addRole = FacilioChainFactory.getAddWebTabRoleCommmand();
+		addRole.execute(context);
+		setRoleId(role.getRoleId());
+		
+		return SUCCESS;
+}
+
 	
 }

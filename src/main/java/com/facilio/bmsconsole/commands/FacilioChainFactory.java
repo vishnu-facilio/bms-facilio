@@ -177,7 +177,13 @@ public class FacilioChainFactory {
 		c.addCommand(new AddPermissionsCommand());
 		return c;		
 	}
-
+	
+	public static Command getAddWebTabRoleCommmand() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AddRoleCommand());
+		c.addCommand(new AddNewPermissionsForRoleCommand());
+		return c;		
+	}
 	
 	public static Command getUpdateGroupCommand() {
 		FacilioChain c = FacilioChain.getTransactionChain();

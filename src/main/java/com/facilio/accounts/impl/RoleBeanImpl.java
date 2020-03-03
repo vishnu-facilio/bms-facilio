@@ -9,6 +9,7 @@ import java.util.StringJoiner;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.bean.RoleBean;
+import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
@@ -24,6 +25,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class RoleBeanImpl implements RoleBean {
@@ -177,6 +179,8 @@ public class RoleBeanImpl implements RoleBean {
 			for(Map<String, Object> prop : props) {
 				Role roleObj = FieldUtil.getAsBeanFromMap(prop, Role.class);
 				List<Permissions> permissions = getPermissions(roleObj.getId());
+				List<NewPermission> newPermissions = getNewPermission(roleObj.getId());
+				roleObj.setNewPermissions(newPermissions);
 				roleObj.setPermissions(permissions);
 				roles.add(roleObj);
 				
@@ -351,6 +355,35 @@ public class RoleBeanImpl implements RoleBean {
 				.table(AccountConstants.getPermissionModule().getTableName())
 				.andCustomWhere("ROLE_ID = ?", roleId);
 		builder.delete();
+	}
+
+
+	@Override
+	public boolean addNewPermission(long roleId, NewPermission permissions) throws Exception {
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getNewPermissionModule().getTableName())
+				.fields(FieldFactory.getNewPermissionFields());
+		builder.insert(FieldUtil.getAsProperties(permissions));
+		return false;
+	}
+
+
+	@Override
+	public List<NewPermission> getNewPermission(long roleId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getNewPermissionFields())
+				.table(ModuleFactory.getNewPermissionModule().getTableName())
+				.andCustomWhere("ROLE_ID = ?", roleId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if(props != null && !props.isEmpty()) {
+			List<NewPermission> permissions = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				permissions.add(FieldUtil.getAsBeanFromMap(prop, NewPermission.class));
+			}
+			return permissions;
+		}
+		return null;
 	}
 	
 }
