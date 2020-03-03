@@ -890,6 +890,8 @@ public class CommonCommandUtil {
 	}
 
 	public static void migrateFieldAccessType() throws Exception {
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		LOGGER.log(Level.ERROR, "Runnning for ORG " + orgId);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -967,9 +969,10 @@ public class CommonCommandUtil {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table("Fields")
 					.fields(Arrays.asList(fieldFieldMap.get("accessType")))
-					.andCustomWhere("ORGID = ? AND FIELDID = ?", AccountUtil.getCurrentOrg().getOrgId(), facilioField.getFieldId());
+					.andCustomWhere("ORGID = ? AND FIELDID = ?", orgId, facilioField.getFieldId());
 			updateBuilder.update(FieldUtil.getAsProperties(facilioField));
 		}
+		LOGGER.log(Level.ERROR, "Completed running for org " + orgId);
 	}
 
 	private static long calculateAccessType(FacilioField.AccessType... accessTypes) {
