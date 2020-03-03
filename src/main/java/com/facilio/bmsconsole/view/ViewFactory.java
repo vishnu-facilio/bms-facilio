@@ -4931,7 +4931,7 @@ public class ViewFactory {
 		view.setName(name);
 		view.setDisplayName(displayName);
 		view.setCriteria(criteria);
-		view.setModuleName("bmsAlarm");
+		view.setModuleName("bmsalarm");
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
 		return view;
@@ -4954,7 +4954,7 @@ public class ViewFactory {
 		view.setName(name);
 		view.setDisplayName(displayName);
 		view.setCriteria(criteria);
-		view.setModuleName("bmsAlarm");
+		view.setModuleName("bmsalarm");
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
 		return view;
@@ -4970,7 +4970,7 @@ public class ViewFactory {
 		FacilioView view = new FacilioView();
 		view.setName(name);
 		view.setDisplayName(displayName);
-		view.setModuleName("bmsAlarm");
+		view.setModuleName("bmsalarm");
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		view.setDefault(true);
 
@@ -4987,7 +4987,7 @@ public class ViewFactory {
 		FacilioView view = new FacilioView();
 		view.setName(name);
 		view.setDisplayName(displayName);
-		view.setModuleName("bmsAlarm");
+		view.setModuleName("bmsalarm");
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
 		return view;
@@ -5074,7 +5074,7 @@ public class ViewFactory {
 		typeAlarms.setName("unacknowledgedbmsalarm");
 		typeAlarms.setDisplayName("Unacknowledged");
 		typeAlarms.setCriteria(criteria);
-		typeAlarms.setModuleName("bmsAlarm");
+		typeAlarms.setModuleName("bmsalarm");
 		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
 		return typeAlarms;
@@ -5093,7 +5093,7 @@ public class ViewFactory {
 		typeAlarms.setName("unacknowledgedbmsalarm");
 		typeAlarms.setDisplayName("Unacknowledged");
 		typeAlarms.setCriteria(criteria);
-		typeAlarms.setModuleName("bmsAlarm");
+		typeAlarms.setModuleName("bmsalarm");
 		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
 		return typeAlarms;

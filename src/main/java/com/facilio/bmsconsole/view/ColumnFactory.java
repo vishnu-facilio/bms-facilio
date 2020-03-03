@@ -81,14 +81,14 @@ public class ColumnFactory {
 		columnMap.put("newreadingalarm-cleared", getDefaultReadingAlarmColumns());
 
 		//bmsAlarm
-		columnMap.put("bmsAlarm-default", getDefaultBmsAlarmColumns());
-		columnMap.put("bmsAlarm-bmsAlarm",  getDefaultBmsAlarmColumns());
-		columnMap.put("bmsAlarm-active",  getDefaultBmsAlarmColumns());
-		columnMap.put("bmsAlarm-unacknowledged",  getDefaultBmsAlarmColumns());
-		columnMap.put("bmsAlarm-critical",  getDefaultBmsAlarmColumns());
-		columnMap.put("bmsAlarm-major",  getDefaultBmsAlarmColumns());
-		columnMap.put("bmsAlarm-minor",  getDefaultBmsAlarmColumns());
-		columnMap.put("bmsAlarm-cleared",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsalarm-default", getDefaultBmsAlarmColumns());
+		columnMap.put("bmsalarm-bmsAlarm",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsalarm-active",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsalarm-unacknowledged",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsalarm-critical",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsalarm-major",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsalarm-minor",  getDefaultBmsAlarmColumns());
+		columnMap.put("bmsalarm-cleared",  getDefaultBmsAlarmColumns());
 
 		// agent Alarm
 
@@ -786,7 +786,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("acknowledged", "Acknowledged"));
 		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
 		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
-		columns.add(new ViewField("readingalarmcategory", "Category" ));
 		return columns;
 	}
 
