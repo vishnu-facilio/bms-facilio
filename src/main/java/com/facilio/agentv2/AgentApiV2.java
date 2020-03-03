@@ -378,6 +378,10 @@ public class AgentApiV2 {
                 .select(fieldMap.values())
                 .leftJoin(controllerModule.getTableName()).on(MODULE.getTableName()+".ID = "+controllerModule.getTableName()+".AGENT_ID")
                 .groupBy(MODULE.getTableName()+".ID");
+        if(fieldMap.containsKey(AgentConstants.CONNECTED)){
+                genericSelectRecordBuilder.orderBy(fieldMap.get(AgentConstants.CONNECTED).getColumnName()+" DESC");
+
+        }
         if (!fetchDeleted) {
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(MODULE), "NULL", CommonOperators.IS_EMPTY));
         }
