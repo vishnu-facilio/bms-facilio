@@ -52,8 +52,13 @@ public class PdfUtil {
                   if (StringUtils.isEmpty(htmlContent)) {
                 	  	htmlContent = "false";
                   }
+                  if (additionalInfo == null) {
+                	  	additionalInfo = new JSONObject();
+                  }
+                  additionalInfo.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
+                  additionalInfo.put("orgDomain", AccountUtil.getCurrentOrg().getDomain());
                   
-                  String[] command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, token, serverName, htmlContent, additionalInfo != null ? additionalInfo.toString() : ""};
+                  String[] command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, token, serverName, htmlContent, additionalInfo.toString()};
                   int exitStatus = CommandExecutor.execute(command);
                   LOGGER.info("Converted to pdf with exit status : " + exitStatus + " and file " + pdfFile.getAbsolutePath());
         	  }catch(IOException e) {

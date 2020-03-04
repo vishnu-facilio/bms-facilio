@@ -43,22 +43,23 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
     try{
     		
     		let size = {width: 800, height: 768};
-    		if (infoStr) {
-    			let info = JSON.parse(infoStr);
-    			if (info.width) {
-    				size.width = info.width;
-    			}
-    			if (info.height) {
-    				size.height = info.height;
-    			}
-    		}
+    		let info = JSON.parse(infoStr);
+		if (info.width) {
+			size.width = info.width;
+		}
+		if (info.height) {
+			size.height = info.height;
+		}
     	
         await page.setCookie(... cookies)
         await page.emulateMedia('print');
         await page.setViewport(size);
+        
         await page.setExtraHTTPHeaders({
             'X-Is-Export': 'true',
-            'X-Device-Type': 'puppeteer'
+            'X-Device-Type': 'puppeteer',
+            	'X-Current-Org': info.orgDomain,
+            	'X-Org-Id': info.orgId
         })
         
         if(htmlContent && htmlContent != "false")

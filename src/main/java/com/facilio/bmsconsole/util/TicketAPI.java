@@ -1571,12 +1571,10 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS) && ticket.getResource() != null && ticket.getResource().getId() != -1) {
 			ResourceContext resource = ResourceAPI.getResource(ticket.getResource().getId());
 			TenantContext tenant = TenantsAPI.getTenantForResource(resource.getId());
-			if (tenant != null) {
-				if (ticket.getTenant() != null && ticket.getTenant().getId() > 0 && ticket.getTenant().getId() != tenant.getId()) {
-					throw new IllegalArgumentException("The tenant associated doesn’t belong to the workorder space/asset");
-				}
-				ticket.setTenant(tenant);
+			if (ticket.getTenant() != null && ticket.getTenant().getId() > 0 && (tenant == null || ticket.getTenant().getId() != tenant.getId()) ) {
+				throw new IllegalArgumentException("The tenant associated doesn’t belong to the workorder space/asset");
 			}
+			ticket.setTenant(tenant);
 		}
 	}
 

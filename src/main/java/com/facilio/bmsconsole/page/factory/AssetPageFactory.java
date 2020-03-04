@@ -1,6 +1,17 @@
 
 package com.facilio.bmsconsole.page.factory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
@@ -25,16 +36,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class AssetPageFactory extends PageFactory {
 	
@@ -123,7 +124,7 @@ public class AssetPageFactory extends PageFactory {
 		addFailureRateWidget(tab4Sec1, breakdownCriteria);
 		addAvgTtrWidget(tab4Sec1, breakdownCriteria);
 		
-		if (AccountUtil.getCurrentOrg().getOrgId() == 155 || AccountUtil.getCurrentOrg().getOrgId() == 210){
+		if (AccountUtil.getCurrentOrg().getOrgId() == 155 || isDemoOrg()){
 		Tab tab7 = page.new Tab("financial");
 		page.addTab(tab7);
 		Section tab7Sec1 = page.new Section();
@@ -148,7 +149,7 @@ public class AssetPageFactory extends PageFactory {
 		}
 		
 		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
-		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) 
+		if ((isDemoOrg() && asset.isConnected() ) 
 				|| (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))
 				|| (AccountUtil.getCurrentOrg().getOrgId() == 253)
 				|| (AccountUtil.getCurrentOrg().getOrgId() == 297l && (module.getName().equals("ahu") || module.getName().equals("vav")))
@@ -222,6 +223,10 @@ public class AssetPageFactory extends PageFactory {
 		addHistoryWidget(tab9Sec1);
 		
 		return page;
+	}
+	
+	private static boolean isDemoOrg() {
+		return AccountUtil.getCurrentOrg().getOrgId() == 210 || AccountUtil.getCurrentOrg().getOrgId() == 321; 
 	}
 	
 	private static void addPrimaryDetailsWidget(Section section) {
