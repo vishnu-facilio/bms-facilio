@@ -400,6 +400,19 @@ public class WorkflowRuleAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	public String fetchWorkflowRuleSummary() throws Exception {
+
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, ruleId);
+		context.put(FacilioConstants.ContextNames.IS_SUMMARY, true);
+
+		FacilioChain fetchAlarmChain = ReadOnlyChainFactory.fetchRuleSummaryChain();
+		fetchAlarmChain.execute(context);
+		alarmRule =  (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
+		setResult("alarmRule", alarmRule);
+		return SUCCESS;
+	}
 	
 	private List<WorkflowRuleContext> workflowRuleList;
 	public List<WorkflowRuleContext> getWorkflowRuleList() {

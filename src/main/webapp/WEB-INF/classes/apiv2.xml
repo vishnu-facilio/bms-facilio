@@ -1238,6 +1238,12 @@
 <!--				<param name="includeProperties">responseCode, ^result.*</param>-->
 <!--			</result>-->
 		</action>
+		<action name="fetchRuleSummary"
+				class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
+				method="fetchWorkflowRuleSummary">
+			<param name="moduleName">alarmrules</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
 		<action name="fetchRuleActions"
 				class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
 				method="fetchRuleActions" />

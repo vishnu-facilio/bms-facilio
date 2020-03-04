@@ -1021,6 +1021,33 @@ public class WorkflowRuleAPI {
 		}
 		return null;
 	}
+	public static List<ReadingAlarmRuleContext> getReadingAlarmRules(long readingGroupId) throws Exception {
+
+		if(readingGroupId > 0) {
+			List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+			fields.addAll(FieldFactory.getReadingAlarmRuleFields());
+
+			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+			select.table(ModuleFactory.getWorkflowRuleModule().getTableName())
+					.innerJoin(ModuleFactory.getReadingAlarmRuleModule().getTableName())
+					.on(ModuleFactory.getWorkflowRuleModule().getTableName()+".ID = "+ModuleFactory.getReadingAlarmRuleModule().getTableName()+".ID")
+					.select(fields)
+					.andCustomWhere("READING_RULE_GROUP_ID = ?", readingGroupId);
+
+			List<Map<String, Object>> props = select.get();
+
+			if(props!= null && !props.isEmpty()) {
+
+				List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, false);
+				List<ReadingAlarmRuleContext> readingAlarmRuleContexts = new ArrayList<>();
+				for(WorkflowRuleContext workflowRuleContext :workflowRuleContexts) {
+					readingAlarmRuleContexts.add((ReadingAlarmRuleContext) workflowRuleContext);
+				}
+				return readingAlarmRuleContexts;
+			}
+		}
+		return null;
+	}
 
 	public static void executeScheduledRule (WorkflowRuleContext rule, long executionTime, FacilioContext context) throws Exception {
 		FacilioModule module = rule.getModule();

@@ -319,6 +319,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain fetchRuleSummaryChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchRuleSummaryCommand());
+		return c;
+	}
+
 	public static FacilioChain getFetchRuleActionChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new FetchRuleActionCommand());
