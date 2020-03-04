@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -17,6 +8,15 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class HazardAction extends FacilioAction{
 
@@ -138,6 +138,7 @@ public class HazardAction extends FacilioAction{
 		FacilioChain c = TransactionChainFactory.updateHazardChain();
 		c.getContext().put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.EDIT);
 		c.getContext().put(FacilioConstants.ContextNames.RECORD, hazard);
+		c.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(hazard.getId()));
 		if (StringUtils.isNotEmpty(hazardString)) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(hazardString);
