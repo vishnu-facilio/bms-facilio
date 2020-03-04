@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -38,6 +40,9 @@ public class RecommendedRuleCommand extends FacilioCommand{
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		final Logger logger = Logger.getLogger(RecommendedRuleCommand.class.getName());
+
+		logger.log(Level.INFO, "processing Recommend Templates");
 		Collection<DefaultTemplate> json=null;
 		Collection<DefaultTemplate> Result=   new ArrayList<>();
 		List<Map<String, Object>> combinedvalues=new ArrayList<>();
