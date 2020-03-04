@@ -41,14 +41,14 @@ public class WorkflowRuleHistoricalAlarmsDeletionAPI {
 			if (alarmOccurrenceList.get(0).getCreatedTime() < startTime) 
 			{
 				AlarmOccurrenceContext initialEdgeAlarmOccurrence = alarmOccurrenceList.get(0);				
-				clearAlarmOccurrenceIdForEdgeEvents(initialEdgeAlarmOccurrence, initialEdgeAlarmOccurrence.getCreatedTime(), startTime); 
+				clearAlarmOccurrenceIdForEdgeEvents(initialEdgeAlarmOccurrence, initialEdgeAlarmOccurrence.getCreatedTime(), startTime-1000); 
 				startTime = initialEdgeAlarmOccurrence.getCreatedTime();
 			}
 			if (lastAlarmOccurrence.getClearedTime() == -1 || lastAlarmOccurrence.getClearedTime() > endTime) 
 			{
 				BaseEventContext finalEvent = getFinalEventForAlarmOccurrence(lastAlarmOccurrence);
 				if(finalEvent != null && finalEvent.getCreatedTime() > endTime) {
-					clearAlarmOccurrenceIdForEdgeEvents(lastAlarmOccurrence, endTime, finalEvent.getCreatedTime()); //avoid event deletion
+					clearAlarmOccurrenceIdForEdgeEvents(lastAlarmOccurrence, endTime+1000, finalEvent.getCreatedTime()); //avoid event deletion
 					endTime = finalEvent.getCreatedTime();
 				}
 			}	
