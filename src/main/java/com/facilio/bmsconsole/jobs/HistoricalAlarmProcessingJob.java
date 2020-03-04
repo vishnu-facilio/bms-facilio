@@ -15,9 +15,11 @@ public class HistoricalAlarmProcessingJob extends FacilioJob {
 	
 	private static final Logger LOGGER = LogManager.getLogger(HistoricalAlarmProcessingJob.class.getName());
 	
+	long jobId = -1;
 	public void execute(JobContext jc) throws Exception {
 		
 		try {
+			jobId = jc.getJobId();
 			FacilioChain chain = TransactionChainFactory.getExecuteHistoricalRuleAlarmProcessing();
 			chain.getContext().put(FacilioConstants.ContextNames.HISTORICAL_ALARM_PROCESSING_JOB_ID, jc.getJobId());
 			chain.execute();
@@ -36,7 +38,7 @@ public class HistoricalAlarmProcessingJob extends FacilioJob {
 	@Override
 	public void handleTimeOut() {
 		// TODO Auto-generated method stub
-		LOGGER.info("Time out called during HistoricalRuleAlarmProcessing Job");
+		LOGGER.info("Time out called during HistoricalRuleAlarmProcessing JobId --"+jobId);
 	 	super.handleTimeOut();
 	}	
 			

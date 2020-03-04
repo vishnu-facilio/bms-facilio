@@ -59,10 +59,12 @@ import com.facilio.time.DateTimeUtil;
 public class HistoricalAlarmOccurrenceDeletionJob extends FacilioJob {
 	
 	private static final Logger LOGGER = LogManager.getLogger(HistoricalAlarmOccurrenceDeletionJob.class.getName());
-		
+	
+	long jobId = -1;
 	public void execute(JobContext jc) throws Exception {
 			
 		try {
+			jobId = jc.getJobId();
 			FacilioChain chain = TransactionChainFactory.getExecuteHistoricalAlarmOccurrenceDeletion();
 			chain.getContext().put(FacilioConstants.ContextNames.HISTORICAL_ALARM_OCCURRENCE_DELETION_JOB_ID, jc.getJobId());
 			chain.execute();
@@ -81,7 +83,7 @@ public class HistoricalAlarmOccurrenceDeletionJob extends FacilioJob {
 	@Override
 	public void handleTimeOut() {
 		// TODO Auto-generated method stub
-		LOGGER.info("Time out called during HistoricalRuleAlarmOccurrenceDeletion Job");
+		LOGGER.info("Time out called during HistoricalRuleAlarmOccurrenceDeletion JobId --"+jobId);
 	 	super.handleTimeOut();
 	}		
 }

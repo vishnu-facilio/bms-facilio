@@ -54,9 +54,11 @@ import com.facilio.workflows.util.WorkflowUtil;
 public class HistoricalEventRunForReadingRuleJob extends FacilioJob {
 	private static final Logger LOGGER = LogManager.getLogger(HistoricalEventRunForReadingRuleJob.class.getName());
 	
+	long jobId = -1;
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		try {
+			jobId = jc.getJobId();
 			FacilioChain chain = TransactionChainFactory.getExecuteHistoricalEventRuleCalculation();
 			chain.getContext().put(FacilioConstants.ContextNames.HISTORICAL_EVENT_RULE_JOB_ID, jc.getJobId());
 			chain.execute();
@@ -75,7 +77,7 @@ public class HistoricalEventRunForReadingRuleJob extends FacilioJob {
 	@Override
 	public void handleTimeOut() {
 		// TODO Auto-generated method stub
-		LOGGER.info("Time out called during HistoricalEventRuleCalculation Job");
+		LOGGER.info("Time out called during HistoricalEventRuleCalculation JobId --" + jobId);
 	 	super.handleTimeOut();
 	}	
 
