@@ -382,9 +382,11 @@ public class AwsUtil
 	private static void sendEmailViaAws(JSONObject mailJson) throws Exception  {
 		String toAddress = (String)mailJson.get("to");
 		String ccAddress = (String)mailJson.get("cc");
+		String bccAddress = (String)mailJson.get("bcc");
 		boolean sendEmail = true;
 		HashSet<String> to = new HashSet<>();
 		HashSet<String> cc = new HashSet<>();
+		HashSet<String> bcc = new HashSet<>();
 		if( !FacilioProperties.isProduction() ) {
 			if(toAddress != null) {
 				for(String address : toAddress.split(",")) {
@@ -396,6 +398,13 @@ public class AwsUtil
 					for(String address : ccAddress.split(",")) {
 						if(address.contains("@facilio.com")) {
 							cc.add(address);
+						}
+					}
+				}
+				if (bccAddress != null && StringUtils.isNotEmpty(bccAddress)) {
+					for(String address : bccAddress.split(",")) {
+						if(address.contains("@facilio.com")) {
+							bcc.add(address);
 						}
 					}
 				}
@@ -413,15 +422,18 @@ public class AwsUtil
 			}
 		}
 		if(sendEmail && to.size() > 0) {
-			sendMailViaMessage(mailJson, to, cc);
+			sendMailViaMessage(mailJson, to, cc, bcc);
 		}
 	}
 
-	public static void sendMailViaMessage(JSONObject mailJson,HashSet<String> to, HashSet<String> cc) {
+	public static void sendMailViaMessage(JSONObject mailJson,HashSet<String> to, HashSet<String> cc, HashSet<String> bcc) {
 
 		Destination destination = new Destination().withToAddresses(to);
 		if (CollectionUtils.isNotEmpty(cc)) {
 			destination.withCcAddresses(cc);
+		}
+		if (CollectionUtils.isNotEmpty(bcc)) {
+			destination.withBccAddresses(bcc);
 		}
 		Content subjectContent = new Content().withData((String) mailJson.get("subject"));
 		Content bodyContent = new Content().withData((String) mailJson.get("message"));

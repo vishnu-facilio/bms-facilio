@@ -69,6 +69,10 @@ public abstract class EmailClient {
         if (cc != null && StringUtils.isNotEmpty(cc)) {
             message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(cc));
         }
+        String bcc = (String) mailJson.get("bcc");
+        if (bcc != null && StringUtils.isNotEmpty(bcc)) {
+            message.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bcc));
+        }
         message.setSubject((String) mailJson.get(SUBJECT));
 
         MimeMultipart messageBody = new MimeMultipart(MIME_MULTIPART_SUBTYPE_ALTERNATIVE);

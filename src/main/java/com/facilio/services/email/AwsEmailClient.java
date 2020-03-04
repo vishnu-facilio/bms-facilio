@@ -2,23 +2,12 @@ package com.facilio.services.email;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
-import com.amazonaws.services.simpleemail.model.*;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 
@@ -45,7 +34,7 @@ class AwsEmailClient extends EmailClient {
     private void sendEmailViaAws(JSONObject mailJson) throws Exception  {
 
         if(canSendEmail(mailJson)) {
-            AwsUtil.sendMailViaMessage(mailJson, getEmailAddresses(mailJson, TO), getEmailAddresses(mailJson, CC));
+            AwsUtil.sendMailViaMessage(mailJson, getEmailAddresses(mailJson, TO), getEmailAddresses(mailJson, CC),getEmailAddresses(mailJson, BCC));
         }
     }
 
