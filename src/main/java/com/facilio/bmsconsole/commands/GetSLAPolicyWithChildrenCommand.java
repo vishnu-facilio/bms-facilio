@@ -4,12 +4,15 @@ import com.facilio.bmsconsole.util.SLAWorkflowAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.SLAPolicyContext;
 import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowEscalationContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GetSLAPolicyWithChildrenCommand extends FacilioCommand {
@@ -24,6 +27,14 @@ public class GetSLAPolicyWithChildrenCommand extends FacilioCommand {
             }
 
             List<SLAPolicyContext.SLAPolicyEntityEscalationContext> slaPolicyEntityEscalations = SLAWorkflowAPI.getSLAPolicyEntityEscalations(slaPolicyId);
+            if (CollectionUtils.isNotEmpty(slaPolicyEntityEscalations)) {
+                List<SLAWorkflowEscalationContext> allEscalations = new ArrayList<>();
+                for (SLAPolicyContext.SLAPolicyEntityEscalationContext escalation : slaPolicyEntityEscalations) {
+                    allEscalations.addAll(escalation.getLevels());
+                }
+
+                SLAWorkflowAPI.getActions(allEscalations);
+            }
             slaPolicyContext.setEscalations(slaPolicyEntityEscalations);
 
             FacilioChain allSLAChain = ReadOnlyChainFactory.getAllSLAChain();
