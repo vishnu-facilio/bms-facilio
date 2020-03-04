@@ -83,7 +83,7 @@ public class ReportFactory {
 		try {
 			// workorder fields
 			List<FacilioField> reportFields = new ArrayList<>();
-			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSEVSSKIPPED_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN STATUS_ID in (?) THEN 'Closed' ELSE CASE WHEN STATUS_ID in ($) THEN 'SKIPPED' ELSE CASE WHEN STATUS_ID in (*) THEN 'OPEN' END END END", FieldType.STRING, WorkOrder.OPENVSCLOSEVSSKIPPED);
+			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSEVSSKIPPED_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN STATUS_ID in (?) THEN 'Closed' ELSE CASE WHEN STATUS_ID in ($) THEN 'Skipped' ELSE CASE WHEN STATUS_ID in (*) THEN 'Open' END END END", FieldType.STRING, WorkOrder.OPENVSCLOSEVSSKIPPED);
 			openVsCloseField.addGenericCondition("Open", CriteriaAPI.getCondition("STATUS_ID", "status", "*", NumberOperators.EQUALS));
 			openVsCloseField.addGenericCondition("Closed", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.EQUALS));
 			openVsCloseField.addGenericCondition("Skipped", CriteriaAPI.getCondition("STATUS_ID", "status", "$", NumberOperators.EQUALS));
