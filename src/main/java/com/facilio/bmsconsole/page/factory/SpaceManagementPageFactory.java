@@ -62,9 +62,9 @@ public class SpaceManagementPageFactory extends PageFactory {
 		addOperatingHoursWidget(tab1Sec1);
 		addRelatedCountWidget(tab1Sec1, yPos, Arrays.asList(ContextNames.WORK_ORDER, ContextNames.NEW_READING_ALARM, ContextNames.ASSET));
 
-		Section tab1Sec2 = page.new Section();
-		addBuildingRelatedListWidget(tab1Sec2);
+		Section tab1Sec2 = page.new Section("buildingRelatedList");
 		tab1.addSection(tab1Sec2);
+		addBuildingRelatedListWidget(tab1Sec2);
 		return page;
 	}
 

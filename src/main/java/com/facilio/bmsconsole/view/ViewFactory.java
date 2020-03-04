@@ -702,6 +702,11 @@ public class ViewFactory {
 		views.put("all", getAllSpaces().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.SPACE, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllFloors().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.FLOOR, views);
+
 
 		return viewsMap;
 	}
@@ -6339,6 +6344,16 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Spaces");
+		allView.setSortFields(sortFields);
+
+		return allView;
+	}
+	private static FacilioView getAllFloors() {
+
+		List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("name","NAME",FieldType.STRING), true));
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Floors");
 		allView.setSortFields(sortFields);
 
 		return allView;
