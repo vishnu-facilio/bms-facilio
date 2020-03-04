@@ -9,7 +9,6 @@ import com.facilio.agent.commands.*;
 import com.facilio.agent.integration.AddIntegrationCommand;
 import com.facilio.agent.integration.UpdateIntegrationCommand;
 import com.facilio.agent.integration.wattsense.AgentIntegrationDeleteCommand;
-import com.facilio.agentv2.AddAgent;
 import com.facilio.agentv2.UpdateAgentCommand;
 import com.facilio.agentv2.commands.*;
 import com.facilio.agentv2.controller.commands.AddDevicesCommand;
@@ -31,11 +30,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.controlaction.commands.GetControlActionCommandsForSpaceCommand;
-import com.facilio.controlaction.commands.GetExecuteControlActionCommandForSpaceList;
-import com.facilio.controlaction.commands.GetIncludedSpaceListCommand;
-import com.facilio.controlaction.commands.UpdateControllableTypeForSpaceList;
-import com.facilio.controlaction.commands.UpdateControllableTypeForSpace;
+import com.facilio.controlaction.commands.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
@@ -567,7 +562,7 @@ public class TransactionChainFactory {
 
 		public static FacilioChain addNewAgent(){
 		FacilioChain c = getDefaultChain();
-		c.addCommand(new AddAgent());
+		c.addCommand(new AddAgentCommand());
 		return c;
 		}
 

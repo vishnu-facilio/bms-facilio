@@ -34,6 +34,9 @@ public class AgentMessenger {
     private static IotData constructNewIotAgentMessage(long agentId, FacilioCommand command, FacilioContext context, FacilioControllerType type) throws Exception{
         FacilioAgent agent = AgentApiV2.getAgent(agentId);
         if(agent != null){
+            if( ! agent.getConnected()){
+                throw new Exception("Agent is not connected");
+            }
             JSONObject object = new JSONObject();
             IotData iotData = new IotData();
             iotData.setAgentId(agentId);

@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class AgentMigratorCommand extends AgentV2Command {
 
-    private static final Logger LOGGER = LogManager.getLogger(AgentSqliteMakerCommand.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AgentMigratorCommand.class.getName());
 
 
     @Override
@@ -100,6 +100,7 @@ public class AgentMigratorCommand extends AgentV2Command {
                 try {
                     LOGGER.info(" controller Id for points is " + controller.getId());
                     List<Map<String, Object>> points = TimeSeriesAPI.getPointsForController(controller.getId());
+                    LOGGER.info(" old points "+points);
                     if (!points.isEmpty()) {
                         Point newPoint;
                         for (Map<String, Object> point : points) {

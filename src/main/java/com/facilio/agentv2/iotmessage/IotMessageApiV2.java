@@ -218,7 +218,7 @@ public class IotMessageApiV2 {
     public static void publishIotMessage(IotData data) throws Exception {
         long agentId = data.getAgentId();
         for (IotMessage message : data.getMessages()) {
-            LogsApi.logIotCommand(agentId,message.getId(),data.getFacilioCommand(),null);
+            LogsApi.logIotCommand(agentId,message.getId(),data.getFacilioCommand(),Status.MESSAGE_SENT);
             message.getMessageData().put("msgid", message.getId());
             publishIotMessage(AccountUtil.getCurrentOrg().getDomain(), message.getMessageData());
             //FacilioContext context = new FacilioContext();

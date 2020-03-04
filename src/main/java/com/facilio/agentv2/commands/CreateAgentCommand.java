@@ -1,10 +1,10 @@
 package com.facilio.agentv2.commands;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.integration.DownloadCertFile;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.aws.util.AwsUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
@@ -20,7 +20,8 @@ public class CreateAgentCommand extends AgentV2Command {
             FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
             String certFielDownloadUrl = "certDownloadUrl";
             try {
-                certFielDownloadUrl = DownloadCertFile.downloadAgentCertificate(orgDomainname, agent.getName(), "facilio");
+                AwsUtil.addClientToPolicy(agent.getName(),orgDomainname,"facilio");
+                //certFielDownloadUrl = DownloadCertFile.downloadAgentCertificate(orgDomainname, agent.getName(), "facilio");
             }catch (Exception e){
                 LOGGER.info(" Exception occurred while getting agent certificate  ",e);
             }
@@ -32,9 +33,10 @@ public class CreateAgentCommand extends AgentV2Command {
                     switch (agent.getType()){
                         case "facilio":
                         case "niagara":
+                            context.put(AgentConstants.DOWNLOAD_AGENT, agentDownloadUrl);
+                            break;
                         default:
                     }
-                    context.put(AgentConstants.DOWNLOAD_AGENT, agentDownloadUrl);
                 } else {
                     LOGGER.info(" agentDownload link cant be null ");
                 }

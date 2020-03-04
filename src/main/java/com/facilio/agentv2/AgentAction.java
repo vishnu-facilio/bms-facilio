@@ -44,10 +44,13 @@ public class AgentAction extends AgentActionV2 {
             long offLineAgents = 0;
             Set<Long> siteCount = new HashSet<>();
             for (Map<String, Object> agentListDatum : agentListData) {
-                if(agentListDatum.containsKey(AgentConstants.CONNECTED) && (agentListDatum.get(AgentConstants.CONNECTED) != null) && ( ! (boolean)agentListDatum.get(AgentConstants.CONNECTED))){
-                    offLineAgents++;
-                    if(agentListDatum.containsKey(agentListDatum.get(AgentConstants.SITE_ID)) && (agentListDatum.get(AgentConstants.SITE_ID) != null)){
-                        siteCount.add((Long) agentListDatum.get(AgentConstants.SITE_ID));
+                if(agentListDatum.containsKey(AgentConstants.CONNECTED)){
+                    if(agentListDatum.get(AgentConstants.CONNECTED) == null){
+                        offLineAgents++;
+                        continue;
+                    }
+                    if( ! (boolean)agentListDatum.get(AgentConstants.CONNECTED)){
+                        offLineAgents++;
                     }
                 }
             }

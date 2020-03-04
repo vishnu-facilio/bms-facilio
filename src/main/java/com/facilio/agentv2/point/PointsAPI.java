@@ -5,7 +5,6 @@ import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agentv2.AgentApiV2;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.agentv2.AgentUtilities;
 import com.facilio.agentv2.JsonUtil;
 import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
@@ -42,7 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
 
-public class PointsAPI extends AgentUtilities {
+public class PointsAPI {
     private static final Logger LOGGER = LogManager.getLogger(PointsAPI.class.getName());
     private static final FacilioModule MODULE = ModuleFactory.getPointModule();
     private static final Map<String, FacilioField> FIELD_MAP = FieldFactory.getAsMap(FieldFactory.getPointFields());
@@ -279,6 +278,11 @@ public class PointsAPI extends AgentUtilities {
                     if(containsValueCheck("query",paginationContext)){
                         LOGGER.info(" no points for query "+paginationContext.get("query"));
                     }
+                }else {
+                    if(containsValueCheck("query",paginationContext)){
+                        LOGGER.info(" points for query "+paginationContext.get("query"));
+                    }
+                    LOGGER.info(" points data fetch size "+pointsData.size());
                 }
             }
         } catch (Exception e) {
@@ -295,7 +299,7 @@ public class PointsAPI extends AgentUtilities {
             try {
                 pointList.add(PointsAPI.getPointFromJSON(point));
             } catch (Exception e) {
-                LOGGER.info("Exception occurred while making point from row ", e);
+                    LOGGER.info("Exception occurred while making point from row ", e);
             }
         }
         return pointList;
@@ -907,6 +911,21 @@ public class PointsAPI extends AgentUtilities {
         } else {
             throw new Exception(" point ids cant be empty while ack processing for->" + command.toString());
         }
+    }
+
+    public static boolean notNull(Object object) {
+        return object != null;
+    }
+
+    public static boolean checkValue(Long value){
+        return (value != null) && (value >  0);
+    }
+
+    public static boolean containsValueCheck(String key, Map<String,Object> map){
+        if(notNull(key) && notNull(map) && map.containsKey(key) && ( map.get(key) != null) ){
+            return true;
+        }
+        return false;
     }
 
 
