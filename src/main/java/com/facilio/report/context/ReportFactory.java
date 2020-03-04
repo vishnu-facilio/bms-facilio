@@ -34,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class ReportFactory {
 	
 	public interface WorkOrder {
-		String OPENVSCLOSEVSSKIPPED_COL = "openvsclosevsskipped";
+		String OPENVSCLOSE_COL = "openvsclose";
 		String OVERDUE_OPEN_COL = "overdue_open";
 		String OVERDUE_CLOSED_COL = "overdue_closed";
 		String PLANNED_VS_UNPLANNED_COL = "plannedvsunplanned";
@@ -43,7 +43,7 @@ public class ReportFactory {
 		String TOTAL_SCORE_PERCENTAGE_COL = "totalscorepercentage";
 		
 		
-		int OPENVSCLOSEVSSKIPPED = 1;
+		int OPENVSCLOSE = 1;
 		int OVERDUE_OPEN = 2;
 		int OVERDUE_CLOSED = 3;
 		int PLANNED_VS_UNPLANNED = 4;
@@ -83,7 +83,7 @@ public class ReportFactory {
 		try {
 			// workorder fields
 			List<FacilioField> reportFields = new ArrayList<>();
-			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSEVSSKIPPED_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN STATUS_ID in (?) THEN 'Closed' ELSE CASE WHEN STATUS_ID in ($) THEN 'Skipped' ELSE CASE WHEN STATUS_ID in (*) THEN 'Open' END END END", FieldType.STRING, WorkOrder.OPENVSCLOSEVSSKIPPED);
+			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN STATUS_ID in (?) THEN 'Closed' ELSE CASE WHEN STATUS_ID in ($) THEN 'Skipped' ELSE CASE WHEN STATUS_ID in (*) THEN 'Open' END END END", FieldType.STRING, WorkOrder.OPENVSCLOSE);
 			openVsCloseField.addGenericCondition("Open", CriteriaAPI.getCondition("STATUS_ID", "status", "*", NumberOperators.EQUALS));
 			openVsCloseField.addGenericCondition("Closed", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.EQUALS));
 			openVsCloseField.addGenericCondition("Skipped", CriteriaAPI.getCondition("STATUS_ID", "status", "$", NumberOperators.EQUALS));
@@ -240,7 +240,7 @@ public class ReportFactory {
 		private void processData() {
 			try {
 				switch (type) {
-				case WorkOrder.OPENVSCLOSEVSSKIPPED:
+				case WorkOrder.OPENVSCLOSE:
 				{
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					

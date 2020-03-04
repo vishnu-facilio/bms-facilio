@@ -961,7 +961,7 @@ public class ReportFactoryFields {
 //				metricFields.add(ReportFactory.getReportField(WorkOrder.TOTAL_SCORE_PERCENTAGE_COL));
 			}
 			List<FacilioField> workorderFields = dimensionFieldMap.get(module);
-			workorderFields.add(ReportFactory.getReportField(WorkOrder.OPENVSCLOSEVSSKIPPED_COL));
+			workorderFields.add(ReportFactory.getReportField(WorkOrder.OPENVSCLOSE_COL));
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_OPEN_COL));
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_CLOSED_COL));
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.PLANNED_VS_UNPLANNED_COL));
