@@ -15,7 +15,7 @@ public class AddSLAPolicyEscalationsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<SLAPolicyContext.SLAPolicyEntityEscalationContext> slaEscalations = (List<SLAPolicyContext.SLAPolicyEntityEscalationContext>) context.get(FacilioConstants.ContextNames.SLA_POLICY_ESCALATION_LIST);
         Long slaPolicyId = (Long) context.get(FacilioConstants.ContextNames.SLA_POLICY_ID);
-        if (CollectionUtils.isNotEmpty(slaEscalations) && (slaPolicyId != null && slaPolicyId > 0)) {
+        if (slaEscalations != null && (slaPolicyId != null && slaPolicyId > 0)) {
             SLAPolicyContext slaPolicy = (SLAPolicyContext) WorkflowRuleAPI.getWorkflowRule(slaPolicyId);
             SLAWorkflowAPI.deleteSLAPolicyEscalation(slaPolicy);
             slaPolicy.setEscalations(slaEscalations);

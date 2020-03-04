@@ -174,16 +174,17 @@ public class SLAWorkflowAPI extends WorkflowRuleAPI {
         addSLACommitmentDuration(rule);
     }
 
-    public static void deleteAllSLACommitments(SLAPolicyContext slaPolicy) throws Exception {
+    public static void deleteAllSLACommitments(SLAPolicyContext slaPolicy, List<Long> exceptIds) throws Exception {
         if (slaPolicy == null) {
             return;
         }
 
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_RULE_ID", "parentRuleId", String.valueOf(slaPolicy.getId()), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(exceptIds, ","), NumberOperators.NOT_EQUALS));
         List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE, false, criteria, null, null);
         if (CollectionUtils.isNotEmpty(workflowRules)) {
-            List<Long> workflowIds = workflowRules.stream().map(WorkflowRuleContext::getWorkflowId).collect(Collectors.toList());
+            List<Long> workflowIds = workflowRules.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList());
             WorkflowRuleAPI.deleteWorkFlowRules(workflowIds);
         }
     }

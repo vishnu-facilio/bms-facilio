@@ -2,11 +2,16 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.util.SLAWorkflowAPI;
 import com.facilio.bmsconsole.workflow.rule.SLAPolicyContext;
+import com.facilio.bmsconsole.workflow.rule.SLAWorkflowCommitmentRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AddOrUpdateSLAPolicyWithChildrenCommand extends FacilioCommand {
 
@@ -21,11 +26,16 @@ public class AddOrUpdateSLAPolicyWithChildrenCommand extends FacilioCommand {
             slaPolicyContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
             slaPolicyChain.execute();
 
-            SLAWorkflowAPI.deleteAllSLACommitments(slaPolicy);
+            List<SLAWorkflowCommitmentRuleContext> commitments = slaPolicy.getCommitments();
+            if (CollectionUtils.isNotEmpty(commitments)) {
+                List<Long> ids = commitments.stream().filter(sla -> sla.getId() > 0)
+                        .map(SLAWorkflowCommitmentRuleContext::getId).collect(Collectors.toList());
+                SLAWorkflowAPI.deleteAllSLACommitments(slaPolicy, ids);
+            }
 
             FacilioChain slaChain = TransactionChainFactory.getBulkAddOrUpdateSLAChain();
             FacilioContext slaContext = slaChain.getContext();
-            slaContext.put(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST, slaPolicy.getCommitments());
+            slaContext.put(FacilioConstants.ContextNames.SLA_RULE_MODULE_LIST, commitments);
             slaContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
             slaContext.put(FacilioConstants.ContextNames.SLA_POLICY_ID, slaPolicy.getId());
             slaChain.execute();
