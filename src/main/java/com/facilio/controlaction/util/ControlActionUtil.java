@@ -50,9 +50,10 @@ public class ControlActionUtil {
 	public static final String CONTROL_ACTION_GROUP_COUNT = "controlActionGroupCount";
 	
 	
-	public static final String CONTROLLABLE_CATEGORIES= "controllableCategories";
-	public static final String SPACE_CONTROLLABLE_CATEGORIES_MAP= "spaceControllableCategoriesMap";
-	public static final String CONTROLLABLE_CATEGORY= "controllableCategory";
+	public static final String CONTROLLABLE_CATEGORIES = "controllableCategories";
+	public static final String SPACE_CONTROLLABLE_CATEGORIES_MAP = "spaceControllableCategoriesMap";
+	public static final String CONTROLLABLE_CATEGORY = "controllableCategory";
+	public static final String CONTROLLABLE_POINT = "controllablePoint";
 	public static final String SPACE_INCLUDE_LIST = "spaceIncludeList";
 	public static final String SPACE_EXCLUDE_LIST = "spaceExcludeList";
 	

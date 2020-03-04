@@ -24,6 +24,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.context.ControllableAssetCategoryContext.ControllableCategory;
+import com.facilio.controlaction.context.ControllablePointContext.ControllablePoints;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
@@ -47,7 +48,26 @@ public class ControlActionAction extends FacilioAction {
 	
 	ControlActionMode controlActionMode;
 	
+	ControllableCategory controllableCategory;
+	ControllablePoints controllablePoint;
 	
+	
+	public ControllablePoints getControllablePoint() {
+		return controllablePoint;
+	}
+
+	public void setControllablePoint(int controllablePoint) {
+		this.controllablePoint = ControllablePoints.getControllableCategoryMap().get(controllablePoint);
+	}
+
+	public void setControllableCategory(int controllableCategory) {
+		this.controllableCategory = ControllableCategory.getControllableCategoryMap().get(controllableCategory);
+	}
+	
+	public ControllableCategory getControllableCategory() {
+		return controllableCategory;
+	}
+
 	public int getControlActionMode() {
 		if(controlActionMode != null) {
 			return controlActionMode.getValue();
@@ -530,7 +550,7 @@ public class ControlActionAction extends FacilioAction {
 	}
 	
 	
-	public String getControllableCategory() throws Exception {
+	public String getControllableCategories() throws Exception {
 		
 		if(spaceId > 0) {
 			FacilioChain getControllableCategoryChain = ReadOnlyChainFactory.getControllableCategoryFromSpaceIdChain();
@@ -569,6 +589,41 @@ public class ControlActionAction extends FacilioAction {
 	public void setSpaceId(long spaceId) {
 		this.spaceId = spaceId;
 	}
+	
+	public String setReadingValueForSpace() throws Exception {
+		
+		if(spaceId > 0) {
+			
+			FacilioChain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandForSpaceChain();
+			
+			FacilioContext context = executeControlActionCommandChain.getContext();
+			
+			context.put(ControlActionUtil.CONTROLLABLE_CATEGORY, controllableCategory);
+			context.put(ControlActionUtil.CONTROLLABLE_POINT, controllablePoint);
+			context.put(ControlActionUtil.VALUE, value);
+			context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
+			context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.MANUAL);
+			
+			executeControlActionCommandChain.execute();
+		}
+		else if(floorId > 0) {
+			
+			FacilioChain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandForFloorChain();
+			
+			FacilioContext context = executeControlActionCommandChain.getContext();
+			
+			context.put(ControlActionUtil.CONTROLLABLE_CATEGORY, controllableCategory);
+			context.put(ControlActionUtil.CONTROLLABLE_POINT, controllablePoint);
+			context.put(ControlActionUtil.VALUE, value);
+			context.put(FacilioConstants.ContextNames.FLOOR_ID, floorId);
+			context.put(ControlActionUtil.SPACE_INCLUDE_LIST, spaceIncludeIds);
+			context.put(ControlActionUtil.SPACE_EXCLUDE_LIST, spaceExcludeIds);
+			context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.MANUAL);
+			
+			executeControlActionCommandChain.execute();
+		}
+		return SUCCESS;
+	}
 	public String setReadingValue() throws Exception {
 		
 //		if(resourceId <= 0 || fieldId <= 0 || value == null) {
@@ -596,13 +651,14 @@ public class ControlActionAction extends FacilioAction {
 			controlActionCommand.setFieldId(fieldId);
 			controlActionCommand.setValue(value);
 			
-			FacilioContext context = new FacilioContext();
+			FacilioChain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
+			
+			FacilioContext context = executeControlActionCommandChain.getContext();
 			
 			context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS, Collections.singletonList(controlActionCommand));
 			context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.CARD);
 			
-			FacilioChain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
-			executeControlActionCommandChain.execute(context);
+			executeControlActionCommandChain.execute();
 		}
 		
 		return SUCCESS;

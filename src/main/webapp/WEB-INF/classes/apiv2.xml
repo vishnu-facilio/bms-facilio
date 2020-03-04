@@ -532,6 +532,9 @@
 		<action name="setReadingValue"
 			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValue"></action>
 			
+		<action name="setReadingValueForSpace"
+			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValueForSpace"></action>
+			
 		<action name="getControlGroups"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroups"></action>
 		
@@ -592,8 +595,8 @@
 			</result>
 		</action>
 		
-		<action name="getControllableCategory"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableCategory">
+		<action name="getControllableCategories"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableCategories">
 		</action>
 		
 	</package>

@@ -156,7 +156,7 @@
                                          };
                                          
                                          site = Module("site").fetch(cri)[0];
-                                         
+                                         wo.siteId = site.id;
                                          wo.site = site.id;
                                          
                                          WorkOrder().add(wo);

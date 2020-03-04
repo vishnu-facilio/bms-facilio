@@ -31,6 +31,8 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.controlaction.commands.GetControlActionCommandsForSpaceCommand;
+import com.facilio.controlaction.commands.GetExecuteControlActionCommandForSpaceList;
 import com.facilio.controlaction.commands.GetIncludedSpaceListCommand;
 import com.facilio.controlaction.commands.UpdateControllableTypeForSpaceList;
 import com.facilio.controlaction.commands.UpdateControllableTypeForSpace;
@@ -4834,6 +4836,21 @@ public class TransactionChainFactory {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetIncludedSpaceListCommand());
 		chain.addCommand(new UpdateControllableTypeForSpaceList());
+		return chain;
+	}
+
+	public static FacilioChain getExecuteControlActionCommandForSpaceChain() {
+		
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetControlActionCommandsForSpaceCommand());
+		chain.addCommand(TransactionChainFactory.getExecuteControlActionCommandChain());
+		return chain;
+	}
+	
+	public static FacilioChain getExecuteControlActionCommandForFloorChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetIncludedSpaceListCommand());
+		chain.addCommand(new GetExecuteControlActionCommandForSpaceList());
 		return chain;
 	}
 }
