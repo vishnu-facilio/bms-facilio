@@ -55,7 +55,7 @@ public class PdfUtil {
                   if (additionalInfo == null) {
                 	  	additionalInfo = new JSONObject();
                   }
-                  additionalInfo.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
+                  additionalInfo.put("orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
                   additionalInfo.put("orgDomain", AccountUtil.getCurrentOrg().getDomain());
                   
                   String[] command = new String[] {NODE, RENDER_PUPETTEER_JS, url, pdfFileLocation, token, serverName, htmlContent, additionalInfo.toString()};
