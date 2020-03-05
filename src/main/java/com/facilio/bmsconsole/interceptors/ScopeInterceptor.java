@@ -259,8 +259,8 @@ public class ScopeInterceptor extends AbstractInterceptor {
 						data.setRemoteIPAddress(remoteIPAddress);
 					}
 					if(data != null) {
-						AuditData finalData = data;
-						if(AccountUtil.getCurrentOrg().getId() == 155) {
+						if(AccountUtil.getCurrentOrg().getOrgId()==155) {
+							AuditData finalData = data;
 							FacilioService.runAsServiceWihReturn(() ->audit.add(finalData));
 							data.setId(finalData.getId());
 						}
@@ -272,7 +272,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					throw e;
 				} finally {
 					if(data != null) {
-						if(AccountUtil.getCurrentOrg().getId()==155) {
+						if(AccountUtil.getCurrentOrg().getOrgId()==155) {
 							data.setEndTime(System.currentTimeMillis());
 							data.setStatus(status);
 							data.setQueryCount(AccountUtil.getCurrentAccount().getTotalQueries());

@@ -18,7 +18,7 @@ public class AuditData {
     private String action;
     private String method;
     private String referer;
-    private long moduleId;
+    private long methodId;
     private long refererId;
     private String remoteIPAddress;
 
@@ -150,14 +150,6 @@ public class AuditData {
 		this.referer = referer;
 	}
 
-	public long getModuleId() {
-		return moduleId;
-	}
-
-	public void setModuleId(long moduleId) {
-		this.moduleId = moduleId;
-	}
-
 	public long getRefererId() {
 		return refererId;
 	}
@@ -172,5 +164,13 @@ public class AuditData {
 
 	public void setRemoteIPAddress(String remoteIPAddress) {
 		this.remoteIPAddress = remoteIPAddress;
+	}
+
+	public long getMethodId() {
+		return methodId;
+	}
+
+	public void setMethodId(long methodId) {
+		this.methodId = methodId;
 	}
 }

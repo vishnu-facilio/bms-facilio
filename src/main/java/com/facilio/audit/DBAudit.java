@@ -25,14 +25,14 @@ public class DBAudit implements FacilioAudit {
 
     private static final Logger LOGGER = Logger.getLogger(DBAudit.class.getName());
 
-    private static final String TABLE_NAME = "FacilioDBAudit_1";
-    private static final String MODULE_TABLE_NAME = "FacilioAuditModule_1";
-    private static final String METHOD_TABLE_NAME = "FacilioAuditMethod_1";
-    private static final String ACTION_TABLE_NAME = "FacilioAuditAction_1";
-    private static final String REFERER_TABLE_NAME = "FacilioAuditReferer_1";
+    private static final String TABLE_NAME = "FacilioAuditData";
+    private static final String MODULE_TABLE_NAME = "FacilioAuditModuleData";
+    private static final String METHOD_TABLE_NAME = "FacilioAuditMethodData";
+    private static final String ACTION_TABLE_NAME = "FacilioAuditActionData";
     private static final String ID = "id";
     private static final String MODULE_ID = "moduleId";
-    private static final String DISPLAY_NAME = "display_name";
+    private static final String METHOD_ID = "methodId";
+    private static final String ACTION_ID = "actionId";
     private static final String STATUS = "status";
     private static final String USERID = "userId";
     private static final String ORGID = "orgId";
@@ -46,8 +46,6 @@ public class DBAudit implements FacilioAudit {
     private static final String QUERY_COUNT = "queryCount";
     private static final String SESSION_ID = "sessionId";
     private static final String SERVER_ID = "server_id";
-    private static final String REFERER = "referer"; 
-    private static final String REFERER_ID = "refererId";
     private static final String REMOTE_IP = "remoteAddr";
 
     private static final FacilioModule MODULE = getFacilioAuditModule();
@@ -59,20 +57,16 @@ public class DBAudit implements FacilioAudit {
     private static final List<FacilioField> MODULE_FIELDS = getFacilioAuditModuleFields();
 
     private static final FacilioModule FACILIO_ACTION = getFacilioAuditActionTable();
-    private static final FacilioField ACTION_ID_FIELD = FieldFactory.getNumberField(ID, "MODULE_ID", FACILIO_ACTION);
+    private static final FacilioField ACTION_ID_FIELD = FieldFactory.getNumberField(ID, "ID", FACILIO_ACTION);
     private static final List<FacilioField> ACTION_FIELDS = getFacilioAuditActionFields();
 
     private static final FacilioModule FACILIO_METHOD = getFacilioAuditMethodTable();
-    private static final FacilioField METHOD_ID_FIELD = FieldFactory.getNumberField(ID, "ACTION_ID", FACILIO_METHOD);
+    private static final FacilioField METHOD_ID_FIELD = FieldFactory.getNumberField(ID, "ID", FACILIO_METHOD);
     private static final List<FacilioField> METHOD_FIELDS = getFacilioAuditMethodFields();
 
-    private static final FacilioModule REFERER_MODULE = getFacilioAuditRefererTable();
-    private static final FacilioField REFERER_ID_FIELD = FieldFactory.getIdField(ID, "REFERER_ID", REFERER_MODULE);
-    private static final List<FacilioField> REFERER_FIELDS = getFacilioAuditRefererFields();
-    
 	private Map<String, Object> MODULE_INFO_LIST = new HashMap<String, Object>();
-    private Map<String, Object> ACTION_INFO_LIST = new HashMap<String, Object>();
-    private Map<String, Object> METHOD_INFO_LIST = new HashMap<String, Object>();
+    private Map<String,Map<String,Map<String,Object>>> AUDIT_INFO = new HashMap<>();
+
     private long SERVERID = ServerInfo.getServerId();
 
     private static FacilioModule getFacilioAuditModule() {
@@ -107,14 +101,6 @@ public class DBAudit implements FacilioAudit {
         return module;
     }
 
-    private static FacilioModule getFacilioAuditRefererTable() {
-        FacilioModule module = new FacilioModule();
-        module.setTableName(REFERER_TABLE_NAME);
-        module.setDisplayName(REFERER_TABLE_NAME);
-        module.setName(REFERER_TABLE_NAME);
-        return module;
-    }
-
     private static List<FacilioField> getFacilioAuditFields() {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(ID_FIELD);
@@ -128,8 +114,7 @@ public class DBAudit implements FacilioAudit {
         fields.add(FieldFactory.getNumberField(STATUS, "STATUS", MODULE));
         fields.add(FieldFactory.getNumberField(THREAD, "THREAD", MODULE));
         fields.add(FieldFactory.getNumberField(SERVER_ID, "SERVER_ID", MODULE));
-        fields.add(FieldFactory.getNumberField(MODULE_ID, "MODULE_ID", MODULE));
-        fields.add(FieldFactory.getNumberField(REFERER_ID, "REFERER_ID", MODULE));
+        fields.add(FieldFactory.getNumberField(METHOD_ID, "METHOD_ID", MODULE));
         fields.add(FieldFactory.getStringField(REMOTE_IP, "REMOTE_IP", MODULE));
         return fields;
     }
@@ -145,7 +130,7 @@ public class DBAudit implements FacilioAudit {
     private static List<FacilioField> getFacilioAuditActionFields() {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(ACTION_ID_FIELD);
-//        fields.add(FieldFactory.getStringField(DISPLAY_NAME, "DISPLAY_NAME", FACILIO_ACTION));
+        fields.add(FieldFactory.getNumberField(MODULE_ID, "MODULE_ID", FACILIO_ACTION));
         fields.add(FieldFactory.getStringField(ACTION, "ACTION", FACILIO_ACTION));
         return fields;
     }
@@ -153,17 +138,11 @@ public class DBAudit implements FacilioAudit {
     private static List<FacilioField> getFacilioAuditMethodFields() {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(METHOD_ID_FIELD);
-//        fields.add(FieldFactory.getStringField(DISPLAY_NAME, "DISPLAY_NAME", FACILIO_METHOD));
+        fields.add(FieldFactory.getNumberField(ACTION_ID,"ACTION_ID", FACILIO_METHOD));
         fields.add(FieldFactory.getStringField(METHOD, "METHOD", FACILIO_METHOD));
         return fields;
     }
 
-    private static List<FacilioField> getFacilioAuditRefererFields(){
-    	List<FacilioField> fields = new ArrayList<>();
-        fields.add(REFERER_ID_FIELD);
-        fields.add(FieldFactory.getStringField(REFERER, "REFERER", REFERER_MODULE));
-        return fields;
-    }
     private Map<String, Object> getValueMap(AuditData data) {
         Map<String, Object> valueMap = new HashMap<>();
         valueMap.put(ID, data.getId());
@@ -177,9 +156,8 @@ public class DBAudit implements FacilioAudit {
         valueMap.put(QUERY_COUNT, data.getQueryCount());
         valueMap.put(THREAD, data.getThread());
         valueMap.put(SERVER_ID,data.getServerId());
-        valueMap.put(MODULE_ID, data.getModuleId());
+        valueMap.put(METHOD_ID, data.getMethodId());
         valueMap.put(REMOTE_IP, data.getRemoteIPAddress());
-        valueMap.put(REFERER_ID,data.getRefererId());
 
         return valueMap;
     }
@@ -194,34 +172,47 @@ public class DBAudit implements FacilioAudit {
 			long actionId = 0L;
 			String method = data.getMethod();
 			long methodId = 0L;
-			long addStartModule = System.currentTimeMillis();
-			if(StringUtils.isNotEmpty(module)) {
-				 moduleId= checkModule(module);
-				if (moduleId == 0) {
-					moduleId = addModule(module);
+			if(MapUtils.isEmpty(AUDIT_INFO) && MapUtils.isEmpty(MODULE_INFO_LIST)) {
+				getAuditInfoData(null,null);
+				getModuleInfoList();
+			}
+			if(StringUtils.isNotEmpty(module) && StringUtils.isNotEmpty(action) && StringUtils.isNotEmpty(method) ) {
+				long addStartModule = System.currentTimeMillis();
+				if(!AUDIT_INFO.containsKey(module)) {
+					getAuditInfoData(module, "module");
+					if(!AUDIT_INFO.containsKey(module)) {
+						moduleId = addModule(module);
+						actionId = addAction(moduleId, action, module);
+						methodId = addMethod(actionId, method, module, action);
+					}
+					LOGGER.info("Audit entry add & check module,action,method timetaken:::: "+(System.currentTimeMillis()-addStartModule));
+				 }
+				else if(!AUDIT_INFO.get(module).containsKey(action)) {
+					long addStartAction = System.currentTimeMillis();
+					getAuditInfoData( module, "module");
+					if(!AUDIT_INFO.get(module).containsKey(action)) {
+						getModuleInfoList();
+						moduleId = (long) MODULE_INFO_LIST.get(module);
+						actionId = addAction(moduleId, action, module);
+						methodId = addMethod(actionId, method, module, action);
+					}
+					LOGGER.info("Audit entry add & check Action,method timetaken:::: "+(System.currentTimeMillis()-addStartAction));
+				}
+				else if(!AUDIT_INFO.get(module).get(action).containsKey(method)) {
+					long addStartMethod = System.currentTimeMillis();
+					getAuditInfoData(module, "module");
+					methodId = (long) AUDIT_INFO.get(module).get(action).get(method);
+					LOGGER.info("Audit entry  check method timetaken:::: "+(System.currentTimeMillis()-addStartMethod));
+				}
+				else {
+					methodId = (long) AUDIT_INFO.get(module).get(action).get(method);
 				}
 			}
-			LOGGER.info("Audit entry add & check module timetaken:::: "+(System.currentTimeMillis()-addStartModule));
-			long addStartAction = System.currentTimeMillis();
-			if(StringUtils.isNotEmpty(action)) {
-				 actionId = checkAction(action);
-				if (actionId == 0) {
-					actionId = addAction(moduleId, action);
-				}
-			}
-			LOGGER.info("Audit entry add & check Action timetaken:::: "+(System.currentTimeMillis()-addStartAction));
-			long addStartMethod = System.currentTimeMillis();
-			if(StringUtils.isNotEmpty(method)) {
-				 methodId = checkMethod(method);
-				if(methodId == 0) {
-					methodId =  addMethod(actionId, method);
-				}
-			}
-			LOGGER.info("Audit entry add & check method timetaken:::: "+(System.currentTimeMillis()-addStartMethod));
+			LOGGER.info("Size of the Map ---> "+AUDIT_INFO.size());
 			if(SERVERID != -1) {
 				data.setServerId(SERVERID);
 			}
-			data.setModuleId(moduleId);
+			data.setMethodId(methodId);
 			id = insertBuilder(getValueMap(data), TABLE_NAME, FIELDS);
 			data.setId(id);
 		} catch (Exception e) {
@@ -231,29 +222,30 @@ public class DBAudit implements FacilioAudit {
 		return id;
 	}
 
-	private long addModule(String module2) throws Exception {
+	private long addModule(String module) throws Exception {
 		Map<String, Object> prop = new HashMap<String, Object>();
-		prop.put(MODULE_COLUMNS, module2);
+		prop.put(MODULE_COLUMNS, module);
 		long id = insertBuilder(prop, MODULE_TABLE_NAME, MODULE_FIELDS);
-		MODULE_INFO_LIST.put(module2, id);
+		MODULE_INFO_LIST.put(module, id);
+		AUDIT_INFO.put(module, new HashMap<>());
 		return id;
 	}
 	
-	private long addAction(long id, String action2) throws Exception {
+	private long addAction(long id, String action2,String module) throws Exception {
 		Map<String, Object> prop = new HashMap<String, Object>();
-		prop.put(ID, id);
+		prop.put(MODULE_ID, id);
 		prop.put(ACTION, action2);
 		long actionId = insertBuilder(prop, ACTION_TABLE_NAME, ACTION_FIELDS);
-		ACTION_INFO_LIST.put(action2, actionId);
+		AUDIT_INFO.get(module).put(action2, new HashMap<>());
 		return actionId;
 	}
 
-	private long addMethod(long actionId, String method2) throws Exception {
+	private long addMethod(long actionId, String method2,String module,String action) throws Exception {
 		Map<String, Object> prop = new HashMap<String, Object>();
-		prop.put(ID, actionId);
+		prop.put(ACTION_ID, actionId);
 		prop.put(METHOD, method2);
 		long methodId= insertBuilder(prop, METHOD_TABLE_NAME, METHOD_FIELDS);
-		METHOD_INFO_LIST.put(method2,methodId);
+		AUDIT_INFO.get(module).get(action).put(method2, methodId);
 		return methodId;
 	}
 
@@ -277,98 +269,11 @@ public class DBAudit implements FacilioAudit {
         return new ArrayList<>();
     }
 
-    private long checkModule(String module) throws Exception {
-    	long id = 0L;
-    	if(MapUtils.isEmpty(MODULE_INFO_LIST)) {
-    		MODULE_INFO_LIST = getModuleInfoList();
-    	}
-    		if(MapUtils.isNotEmpty(MODULE_INFO_LIST)) {
-    			LOGGER.info("Size of ModuleInfo Map is :"+MODULE_INFO_LIST.size());
-    			if(StringUtils.isNotEmpty(module)) {
-    			if(MODULE_INFO_LIST.containsKey(module)) {
-    				id = (long) MODULE_INFO_LIST.get(module);
-    			}else{
-    				id = getData(module,MODULE_TABLE_NAME,MODULE_FIELDS,"module");
-    				if(id != 0) {
-    					MODULE_INFO_LIST.put(module, id);
-    				}
-    			}
-    		}
-    	}
-    	return id;
-    }
-
-    private long checkAction(String action) throws Exception {
-    	long id = 0L;
-    	if(MapUtils.isEmpty(ACTION_INFO_LIST)) {
-    		ACTION_INFO_LIST =getActionInfoList();
-    	}if(MapUtils.isNotEmpty(ACTION_INFO_LIST)){
-    		LOGGER.info("Size of ActionInfo Map is :"+ACTION_INFO_LIST.size());
-    		if(StringUtils.isNotEmpty(action)) {
-    			if(ACTION_INFO_LIST.containsKey(action)) {
-    				id = (long) ACTION_INFO_LIST.get(action);
-    			}else {
-    				id = getData(action,ACTION_TABLE_NAME,ACTION_FIELDS,"action");
-    				if(id != 0) {
-    					ACTION_INFO_LIST.put(action, id);
-    				}
-    			}
-    		}
-    	}
-    	return id;
-    }
-
-    private long checkMethod(String data) throws Exception {
-    	long id=0L;
-    	if(MapUtils.isEmpty(METHOD_INFO_LIST)) {
-    		METHOD_INFO_LIST =getMethodInfoList();
-    	}if(MapUtils.isNotEmpty(METHOD_INFO_LIST)){
-    		LOGGER.info("Size of methodInfo Map is :"+METHOD_INFO_LIST.size());
-    		if(StringUtils.isNotEmpty(data)) {
-    			if(METHOD_INFO_LIST.containsKey(data)) {
-    				id = getData(data, METHOD_TABLE_NAME, METHOD_FIELDS, "method");
-    			}
-    			if(id != 0) {
-    				METHOD_INFO_LIST.put(data, id);
-    			}
-    		}
-    	}
-    	return id;
-	}
     private long insertBuilder(Map<String, Object> prop, String tableName, List<FacilioField> fields) throws Exception {
     	 GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder().table(tableName).fields(fields);
     	return insertBuilder.insert(prop);
 
     }
-    
-    private Map<String, Object> getActionInfoList() {
-    	
-    	List<FacilioField> fields = new ArrayList<FacilioField>();
-    	fields.addAll(ACTION_FIELDS);
-
-    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(ACTION_TABLE_NAME);
-    	List<Map<String, Object>> prop = new ArrayList<>();
-		try {
-			prop = builder.get();
-			if(CollectionUtils.isNotEmpty(prop)) {
-				for(Map<String ,Object> itr : prop) {
-					String action = (String) itr.get("action");
-	    			long actionId = (long) itr.get("id");
-	    			if(StringUtils.isNotEmpty(action) && actionId != 0) {
-	    				ACTION_INFO_LIST.put(action,actionId);
-	    			}
-	    			
-	    		}
-				return ACTION_INFO_LIST;
-				
-			}
-		} catch (Exception e) {
-			LOGGER.info("Exception Occurred In Getting ActionInfoList",e);
-		}
-		return ACTION_INFO_LIST;
-	}
     
     private Map<String, Object> getModuleInfoList() {
 
@@ -399,33 +304,6 @@ public class DBAudit implements FacilioAudit {
 		
 	}
 
-    private Map<String, Object> getMethodInfoList() {
-
-    	List<FacilioField> fields = new ArrayList<FacilioField>();
-    	fields.addAll(METHOD_FIELDS);
-
-    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(METHOD_TABLE_NAME);
-    	List<Map<String, Object>> prop = new ArrayList<>();
-		try {
-			prop = builder.get();
-			if(CollectionUtils.isNotEmpty(prop)) {
-	    		for(Map<String ,Object> itr : prop) {
-	    			String method = (String) itr.get("method");
-	    			long methodId = (long) itr.get("id");
-	    			if(StringUtils.isNotEmpty(method) && methodId != 0) {
-	    				METHOD_INFO_LIST.put(method , methodId);
-	    			}
-	    			
-	    		}
-			}
-		} catch (Exception e) {
-			LOGGER.info("Exception Occurred In Getting MethodInfoList",e);
-		}
-		return METHOD_INFO_LIST;
-	}
-    
     private long getData(String data, String tableName, List<FacilioField> fields, String key) throws Exception {
     	List<FacilioField> field = new ArrayList<FacilioField>();
     	field.addAll(fields);
@@ -443,5 +321,39 @@ public class DBAudit implements FacilioAudit {
     		}
     	}
     	return id;
+    }
+    
+    private void getAuditInfoData(String moduleVal, String key) throws Exception {
+    	List<FacilioField> fields = new ArrayList<>();
+    	fields.add(FieldFactory.getStringField(MODULE_COLUMNS, "MODULE", FACILIO_MODULE));
+    	fields.add(FieldFactory.getStringField(ACTION, "ACTION", FACILIO_ACTION));
+    	fields.addAll(METHOD_FIELDS);
+    	Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+    	
+    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(MODULE_TABLE_NAME)
+				.innerJoin(ACTION_TABLE_NAME)
+				.on("FacilioAuditModuleData.ID = FacilioAuditActionData.MODULE_ID")
+				.innerJoin(METHOD_TABLE_NAME)
+				.on("FacilioAuditActionData.ID = FacilioAuditMethodData.ACTION_ID");
+    	if(StringUtils.isNotEmpty(moduleVal)) {
+    		builder.andCondition(CriteriaAPI.getCondition(fieldMap.get(key), moduleVal, StringOperators.IS));
+    	}
+    	
+    	List<Map<String, Object>> prop = builder.get();
+    	for(Map<String,Object> itr:prop) {
+    		String module = (String) itr.get("module");
+    		String action = (String) itr.get("action");
+    		String method = (String) itr.get("method");
+    		long methodId = (long) itr.get("id");
+    		Map<String,Object> methodInfo = new HashMap<>();
+    		Map<String,Map<String,Object>> actionInfo = new HashMap<>();
+    		methodInfo.put(method,methodId);
+    		actionInfo.put(action, methodInfo);
+    		AUDIT_INFO.put(module, actionInfo);
+    	
+    	}
+    
     }
 }
