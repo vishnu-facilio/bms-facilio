@@ -3379,7 +3379,21 @@ public class ModuleFactory {
 		module.setTableName("Feedback_Type_Catalog_Mapping");
 		return module;
 	}
-	
+		
+	public static FacilioModule getFloorPlanModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.FLOOR_PLAN);
+		module.setDisplayName("Floor Plan");
+		module.setTableName("Floor_Plan");
+		return module;
+	}
+	public static FacilioModule getFloorPlanObjectModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(FacilioConstants.ContextNames.FLOORPLAN_OBJECT);
+		module.setDisplayName("Floor Plan Object");
+		module.setTableName("Floorplan_Objects");
+		return module;
+	}
 
 	public static FacilioModule getSiteModule() {
 		FacilioModule workOrdersModule = new FacilioModule();

@@ -4759,8 +4759,19 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForClient());
 		c.addCommand(new GenericUpdateListModuleDataCommand());
 		c.addCommand(new UpdateClientIdInSiteCommand());
+		return c;
+	}
 //		c.addCommand(new AddClientUserCommand());
-
+	public static FacilioChain addFloorPlanChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AddFloorPlanCommand());
+		
+		return c;
+	}
+	public static FacilioChain getFloorPlanChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new getFloorPlanCommand());
+		
 		return c;
 	}
 	public static FacilioChain addOrUpdateFeedbackKioskChain()
@@ -4778,6 +4789,13 @@ public class TransactionChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain updateFloorPlanChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new updateFloorPlanCommand());
+		
+		return c;
+	}
+
 
 	public static FacilioChain disassociateClientFromSiteChain() {
 		FacilioChain c = getDefaultChain();

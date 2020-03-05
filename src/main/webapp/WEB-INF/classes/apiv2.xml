@@ -5369,6 +5369,17 @@
 			<param name="clientId">{1}</param>
 		</action>
 	</package>
+	
+	<package name="floorPlan" namespace="/api/v2/floorPlan"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="addFloorPlan" />
+		<action name="get"
+			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="getFloorPlanData" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.FloorPlanAction" method="updateFloorPlanData" />
+	</package>
+	
 	<package name="clientViews" namespace="/api/v2/clients/view"
 		extends="v2Api">
 		<action name="*"
@@ -5386,4 +5397,5 @@
 	<package name="floorApiv2" namespace="/api/v2/floor" extends="v2Api">
 		<action name="details" class="com.facilio.bmsconsole.actions.FloorAction" method="v2FloorDetails" />
 	</package>
+	
 </struts>

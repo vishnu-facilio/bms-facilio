@@ -7958,12 +7958,40 @@ public class FieldFactory {
         FacilioModule module = ModuleFactory.getRecommendedRuleModule();
         List<FacilioField> fields = new ArrayList<>();
 
-        fields.add(getIdField(module));
-        //fields.add(getField("orgId","ORGID",module,FieldType.NUMBER));
-        fields.add(getField("id", "ID", module, FieldType.NUMBER));
-        fields.add(getField("orgid", "ORGID", module, FieldType.NUMBER));
-        fields.add(getField("ruleid", "RULE_ID", module, FieldType.NUMBER));
-        fields.add(getField("categoryid", "CATEGORY_ID", module, FieldType.NUMBER));
-        return fields;
-    }
+		fields.add(getIdField(module));
+		//fields.add(getField("orgId","ORGID",module,FieldType.NUMBER));
+		fields.add(getField("id","ID",module, FieldType.NUMBER));
+		fields.add(getField("orgid","ORGID",module, FieldType.NUMBER));
+		fields.add(getField("ruleid","RULE_ID",module,FieldType.NUMBER));
+		fields.add(getField("categoryid","CATEGORY_ID",module,FieldType.NUMBER));
+		return  fields;
+	}
+	public static List<FacilioField> getFloorPlanFields() {
+		FacilioModule module = ModuleFactory.getFloorPlanModule();
+		List<FacilioField> fields = getSystemFields(module);
+		fields.add(getIdField(module));
+		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("fileId","FILE_ID",module,FieldType.NUMBER));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("canvas", "CANVAS", module, FieldType.STRING));
+		fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
+		fields.add(getField("siteId", "SITE_ID", module, FieldType.NUMBER));
+		fields.add(getField("floorId", "FLOOR_ID", module, FieldType.NUMBER));
+		return fields;
+	}
+	public static List<FacilioField> getFloorPlanObjectFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFloorPlanObjectModule();
+		fields.add(getIdField(module));
+		fields.add(getField("floorPlanObjectId", "ID", module, FieldType.ID));
+		fields.add(getField("floorPlanId", "FLOORPLAN_ID", module, FieldType.ID));
+		fields.add(getField("objectType", "OBJECT_TYPE", module, FieldType.ENUM));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.ID));
+		fields.add(getField("info", "INFO", module, FieldType.STRING));
+		fields.add(getField("x", "x", module, FieldType.NUMBER));
+		fields.add(getField("y", "Y", module, FieldType.NUMBER));
+		fields.add(getField("w", "W", module, FieldType.NUMBER));
+		fields.add(getField("h", "H", module, FieldType.NUMBER));
+		return fields;
+	}
 }

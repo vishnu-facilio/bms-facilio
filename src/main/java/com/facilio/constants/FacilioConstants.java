@@ -1500,7 +1500,11 @@ public class FacilioConstants {
 		public static final String SOURCE_TYPE = "sourceType";
 		public static final String SOURCE_ID = "sourceId";
 
-
+	
+		public static final String FLOOR_PLAN = "floorPlan";
+		public static final String FLOORPLAN_OBJECT = "floorPlanObject";
+		
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1701,9 +1705,11 @@ public class FacilioConstants {
 			classMap.put(WORKORDER_HAZARD, WorkorderHazardContext.class);
 			classMap.put(ASSET_HAZARD, AssetHazardContext.class);
 			classMap.put(CLIENT, ClientContext.class);
-
 			classMap.put(SPACE_RATING, RatingContext.class);
-
+			classMap.put(ASSET_HAZARD, AssetHazardContext.class);
+			classMap.put(FLOOR_PLAN, FloorPlanContext.class);
+			classMap.put(FLOORPLAN_OBJECT, FloorPlanObjectContext.class);
+			
 			return classMap;
 		}
 		
