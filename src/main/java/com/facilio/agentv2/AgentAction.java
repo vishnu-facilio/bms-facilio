@@ -7,6 +7,7 @@ import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.GetControllerRequest;
 import com.facilio.agentv2.device.FieldDeviceApi;
+import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.aws.util.AwsUtil;
@@ -146,24 +147,34 @@ public class AgentAction extends AgentActionV2 {
     public String listPoints() {
         JSONArray pointData = new JSONArray();
         try {
-            List<Point> points = new ArrayList<>();
+            //List<Point> points = new ArrayList<>();
+            List<Point> pointsData = new ArrayList<>();
             FacilioContext context = constructListContext(new FacilioContext());
             if((controllerId != null) && (controllerId > 0) && (controllerType != null) && (controllerType > 0) && (deviceId == null)){
+                GetPointRequest getPointRequest = new GetPointRequest()
+                        .withControllerId(controllerId)
+                        .ofType(FacilioControllerType.valueOf(controllerType))
+                        .pagination(context);
+                pointsData = getPointRequest.getPoints();
                 LOGGER.info(" getting controller points");
-                points = PointsAPI.getControllerPoints(FacilioControllerType.valueOf(controllerType), getControllerId(),context);
             }
             else if((deviceId != null) && (deviceId>0) && (controllerType != null) && (controllerType > 0)){
                 LOGGER.info(" getting device points");
-               points =  PointsAPI.getDevicePoints(getDeviceId(), getControllerType(),context);
+                GetPointRequest getPointRequest = new GetPointRequest()
+                        .withDeviceId(deviceId)
+                        .ofType(FacilioControllerType.valueOf(controllerType))
+                        .pagination(context);
+                pointsData = getPointRequest.getPoints();
             }else {
                 if((controllerId == null)&&(deviceId == null)){
                     LOGGER.info(" getting all points");
-                    points = PointsAPI.getAllPoints(null,-1,context);
+                    GetPointRequest getPointRequest = new GetPointRequest()
+                            .pagination(context);
+                    pointsData = getPointRequest.getPoints();
                 }
             }
-            LOGGER.info(" in device action " + points);
-            if (!points.isEmpty()) {
-                for (Point point : points) {
+            if (!pointsData.isEmpty()) {
+                for (Point point : pointsData) {
                     JSONObject object = new JSONObject();
                     object.putAll(point.toJSON());
                     object.put(AgentConstants.POINT, point.getChildJSON());
@@ -325,6 +336,99 @@ public class AgentAction extends AgentActionV2 {
             LOGGER.info("Exception occurred while getting overview");
             setResult(AgentConstants.RESULT,new JSONObject());
             setResult(AgentConstants.EXCEPTION,e.getMessage());
+        }
+        return SUCCESS;
+    }
+
+    public String getConfiguredPoints(){
+        GetPointRequest getPointRequest = new GetPointRequest()
+                .filterConfigurePoints();
+
+        try {
+            if(controllerType > -1){
+                getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
+            }
+            if(deviceId > 0){
+                getPointRequest.withDeviceId(deviceId);
+            }else if(controllerId > 0){
+                getPointRequest.withControllerId(controllerId);
+            }
+            List<Map<String, Object>> points = getPointRequest.getPointsData();
+            setResult(AgentConstants.DATA,points);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            LOGGER.info("Exception  occurred while getting points ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+        return SUCCESS;
+    }
+
+    public String getSubscribedPoints(){
+        GetPointRequest getPointRequest = new GetPointRequest()
+                .filterSubsctibedPoints();
+        try {
+            if(controllerType > -1){
+                getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
+            }
+            if(deviceId > 0){
+                getPointRequest.withDeviceId(deviceId);
+            }else if(controllerId > 0){
+                getPointRequest.withControllerId(controllerId);
+            }
+            List<Map<String, Object>> points = getPointRequest.getPointsData();
+            setResult(AgentConstants.DATA,points);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            LOGGER.info("Exception  occurred while getting points ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+        return SUCCESS;
+    }
+
+    public String getUnconfiguredPoints(){
+        GetPointRequest getPointRequest = new GetPointRequest()
+                .filterUnConfigurePoints();
+        try {
+            if(controllerType > -1){
+                getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
+            }
+            if(deviceId > 0){
+                getPointRequest.withDeviceId(deviceId);
+            }else if(controllerId > 0){
+                getPointRequest.withControllerId(controllerId);
+            }
+            List<Map<String, Object>> points = getPointRequest.getPointsData();
+            setResult(AgentConstants.DATA,points);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            LOGGER.info("Exception  occurred while getting points ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+        return SUCCESS;
+    }
+
+    public String getCommissionedPoints(){
+        GetPointRequest getPointRequest = new GetPointRequest()
+                .filterCommissionedPoints();
+        try {
+            if(controllerType > -1){
+                getPointRequest.ofType(FacilioControllerType.valueOf(controllerType));
+            }
+            if(deviceId > 0){
+                getPointRequest.withDeviceId(deviceId);
+            }else if(controllerId > 0){
+                getPointRequest.withControllerId(controllerId);
+            }
+            List<Map<String, Object>> points = getPointRequest.getPointsData();
+            setResult(AgentConstants.DATA,points);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            LOGGER.info("Exception  occurred while getting points ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
         return SUCCESS;
     }

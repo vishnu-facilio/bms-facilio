@@ -48,7 +48,7 @@ public abstract class Point extends FacilioPoint{
     @JsonInclude
     private String deviceName;
     @JsonInclude
-    private Long assetCategoryId;
+    private Long categoryId;
     @JsonInclude
     private Long resourceId;
     @JsonInclude
@@ -86,7 +86,7 @@ public abstract class Point extends FacilioPoint{
         pointJSON.put(AgentConstants.DEVICE_NAME,getDeviceName());
         pointJSON.put(AgentConstants.DEVICE_ID,getDeviceId());
         pointJSON.put(AgentConstants.CONTROLLER_ID,getControllerId());
-        pointJSON.put(AgentConstants.ASSET_CATEGORY_ID,getAssetCategoryId());
+        pointJSON.put(AgentConstants.ASSET_CATEGORY_ID, getCategoryId());
         pointJSON.put(AgentConstants.RESOURCE_ID,getResourceId());
         pointJSON.put(AgentConstants.FIELD_ID,getFieldId());
         pointJSON.put(AgentConstants.IN_USE,isInUse());
@@ -127,8 +127,8 @@ public abstract class Point extends FacilioPoint{
     public String getDeviceName() { return deviceName; }
     public void setDeviceName(String deviceName) { this.deviceName = deviceName; }
 
-    public Long getAssetCategoryId() { return assetCategoryId; }
-    public void setAssetCategoryId(Long assetCategoryId) { this.assetCategoryId = assetCategoryId; }
+    public Long getCategoryId() { return categoryId; }
+    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
 
     public Long getResourceId() { return resourceId; }
     public void setResourceId(Long resourceId) { this.resourceId = resourceId; }

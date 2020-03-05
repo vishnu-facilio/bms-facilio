@@ -1,25 +1,34 @@
 package com.facilio.agentv2;
 
 import com.facilio.agent.AgentKeys;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.json.simple.JSONObject;
 
 public class FacilioAgent {
 
 
+    @JsonInclude
     private  String name;
     private  String deviceDetails;
+    @JsonInclude
     private  boolean connected;
     private  String version;
+    @JsonInclude
     private  long interval;
     private  int numberOfControllers;
     private  String type; // change it to int using some enum
     private long id;
     private long siteId;
     private long deletedTime = -1L ;
+    @JsonInclude
     private boolean writable;
+    @JsonInclude
     private  long lastModifiedTime = -1L;
+    @JsonInclude
     private  long lastUpdatedTime = -1L;
+    @JsonInclude
     private long lastDataReceivedTime = -1L ;
+    @JsonInclude
     private String displayName;
     private long createdTime = -1L;
     private long transformWorkflowId = -1;
@@ -177,7 +186,7 @@ public class FacilioAgent {
         payload.put(AgentKeys.SITE_ID, getSiteId());
         payload.put(AgentKeys.DELETED_TIME,getDeletedTime());
         payload.put(AgentKeys.DISPLAY_NAME,getDisplayName());
-        payload.put(AgentKeys.WRITABLE, getVersion());
+        payload.put(AgentKeys.WRITABLE, getWritable());
         if(createdTime>0){
             payload.put(AgentKeys.CREATED_TIME,getCreatedTime());
         }else {

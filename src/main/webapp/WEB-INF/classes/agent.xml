@@ -123,7 +123,7 @@
         <action name="downloadAgent" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method="downloadAgent">
         </action>
 
-        <action name="metrice" class="com.facilio.agentv2.actions.AgentIdAction" method="getMetrics">
+        <action name="metrics" class="com.facilio.agentv2.actions.AgentIdAction" method="getMetrics">
         </action>
 
         <action name="overview" class="com.facilio.agentv2.AgentAction" method="getOverview">
@@ -232,6 +232,38 @@
         <action name="remove" class="com.facilio.agentv2.actions.controllerTypeIdsAction"
                 method="removePoints"> <!--DONE-->
         </action>
+
+        <action name="getConfPoints" class="com.facilio.agentv2.AgentAction" method="getConfiguredPoints"> <!--DONE-->
+        </action>
+
+        <action name="getSubPoints" class="com.facilio.agentv2.AgentAction"
+                method="getSubscribedPoints"> <!--DONE-->
+        </action>
+
+        <action name="getUnonfPoints" class="com.facilio.agentv2.AgentAction"
+                method="getUnconfiguredPoints"> <!--DONE-->
+        </action>
+
+        <action name="getCommPoints" class="com.facilio.agentv2.AgentAction"
+                method="getCommissionedPoints"> <!--DONE-->
+        </action>
+
+        <!--.. list points using controllerId..-->
+        <action name="getControllerConfPoints" class="com.facilio.agentv2.actions.ControllerActions" method="getConfiguredPoints"> <!--DONE-->
+        </action>
+
+        <action name="getControllerSubPoints" class="com.facilio.agentv2.actions.ControllerActions"
+                method="getSubscribedPoints"> <!--DONE-->
+        </action>
+
+        <action name="getControllerUnonfPoints" class="com.facilio.agentv2.actions.ControllerActions"
+                method="getUnconfiguredPoints"> <!--DONE-->
+        </action>
+
+        <action name="getControllerCommPoints" class="com.facilio.agentv2.actions.ControllerActions"
+                method="getCommissionedPoints"> <!--DONE-->
+        </action>
+
 
 
     </package>

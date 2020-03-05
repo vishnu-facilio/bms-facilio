@@ -10,6 +10,8 @@ import com.facilio.agentv2.device.FieldDeviceApi;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;
+import com.facilio.agentv2.metrics.AgentMetrics;
+import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
 import com.facilio.chain.FacilioContext;
@@ -27,7 +29,6 @@ import java.util.Map;
 
 public class AgentIdAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentIdAction.class.getName());
-
 
     @NotNull
     private Long agentId;
@@ -350,6 +351,17 @@ public class AgentIdAction extends AgentActionV2 {
            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
            LOGGER.info("Exception occurred while getting device filter ",e);
            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+       }
+       return SUCCESS;
+   }
+
+   public String getMetrics(){
+       try {
+           List<AgentMetrics> metrics = MetricsApi.getMetrics();
+           setResponseCode(HttpURLConnection.HTTP_OK);
+           setResult(AgentConstants.DATA,metrics);
+       } catch (Exception e) {
+           LOGGER.info("Exception while getting metrics ",e);
        }
        return SUCCESS;
    }

@@ -867,19 +867,14 @@ public class PointsAPI {
         int confPts = 0;
         int commPts = 0;
         for (Point point : points) {
-            LOGGER.info(" point id" + point.getId());
-            LOGGER.info(" point " + FieldUtil.getAsJSON(point));
-            LOGGER.info(" point sub" + point.getSubscribeStatus());
             if (point.getConfigureStatusEnum().equals(PointEnum.ConfigureStatus.CONFIGURED)) {
                 confPts++;
                 if (checkIfComissioned(point)) {
                     commPts++;
                 }
             }
-            LOGGER.info(" point subE" + point.getSubscribestatusEnum());
             if (point.getSubscribestatusEnum().equals(PointEnum.SubscribeStatus.SUBSCRIBED)) {
                 subPts++;
-                LOGGER.info(" yes subscribed " + subPts);
             }
         }
         pointCountData.put(AgentConstants.TOTAL_COUNT, points.size());
@@ -890,7 +885,7 @@ public class PointsAPI {
     }
 
     public static boolean checkIfComissioned(Point point) {
-        return ((point.getResourceId() != null) && (point.getAssetCategoryId() != null) && (point.getFieldId() != null));
+        return ((point.getResourceId() != null) && (point.getCategoryId() != null) && (point.getFieldId() != null));
     }
 
     public static boolean handlePointConfigurationAndSubscription(FacilioCommand command, long controllerId, List<String> pointNames) throws Exception {
@@ -927,5 +922,27 @@ public class PointsAPI {
         return false;
     }
 
+        public static List<Map<String, Object>> getConfiguredPointsData() {
+            List<Map<String,Object>> points = new ArrayList<>();
+            for (FacilioControllerType value : FacilioControllerType.values()) {
+                FacilioContext context = new FacilioContext();
+                context.put(AgentConstants.CONTROLLER_TYPE,value);
+                try {
+                    getPointDataOfType(value);
+                } catch (Exception e) {
+                    LOGGER.info("Exception while fetching points ",e);
+                }
+                List<Map<String, Object>> maps = fetchPoints(context);
+                points.addAll(maps);
+           }
+            return points;
+        }
+
+    private static void getPointDataOfType(FacilioControllerType value) throws Exception {
+        FacilioContext pointTypeBasedConditionAndFields = getPointTypeBasedConditionAndFields(value);
+        List<FacilioField> pointsFields = FieldFactory.getPointsFields();
+        pointsFields.addAll((Collection<? extends FacilioField>) pointTypeBasedConditionAndFields.get(FacilioConstants.ContextNames.FIELDS));
+
+    }
 
 }

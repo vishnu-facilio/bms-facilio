@@ -255,4 +255,29 @@ public class MetricsApi {
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(MODULE), String.valueOf(metricsId), NumberOperators.EQUALS));
         return genericUpdateRecordBuilder.update(toUpdate) > 0;
     }
+
+    public static JSONObject getMetricsGraphData() {
+        JSONObject obj = new JSONObject();
+        /*obj.put("chartType", "line");
+
+        JSONObject xField = new JSONObject();
+        xField.put("aggr", BmsAggregateOperators.DateAggregateOperator.HOURSOFDAY);
+        xField.put("fieldName", AgentConstants.CREATED_TIME);
+        obj.put("xField", xField);
+
+        JSONObject yField = new JSONObject();
+        yField.put("aggr", BmsAggregateOperators.NumberAggregateOperator.);
+        yField.put("fieldName", yFieldName);
+        obj.put("yField", yField);
+
+        JSONObject groupBy = new JSONObject();
+        groupBy.put("fieldName", groupByFieldName);
+        obj.put("groupBy", groupBy);
+
+        obj.put("dateOperator", dateOperator.getOperatorId());
+        obj.put("dateOperatorValue", dateOperatorValue);
+        obj.put("criteria", criteria);
+        return null;*/
+        return obj;
+    }
 }

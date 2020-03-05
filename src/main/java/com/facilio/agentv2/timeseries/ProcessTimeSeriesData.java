@@ -43,7 +43,7 @@ public class ProcessTimeSeriesData extends FacilioCommand {
                     //Point point = PointsAPI.getPoint(pointName , controller.getAgentId(), controller.getId(), FacilioControllerType.valueOf(controller.getControllerType()) );
                     if(pointsMap.containsKey(pointName)){
                         Point point = pointsMap.get(pointName);
-                         if((point.getFieldId() != null) && (point.getAssetCategoryId() != null) ){
+                         if((point.getFieldId() != null) && (point.getCategoryId() != null) ){
                              // rocessUnaddedadd pointJson to module data
                          }else {
                              // unmoduled data

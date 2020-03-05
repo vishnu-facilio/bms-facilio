@@ -293,7 +293,7 @@ public class SqliteBridge {
             newPoint.setDeviceName((String) point.get("device"));
         }
         if (containsCheck(AgentConstants.ASSET_CATEGORY_ID, point)) {
-            newPoint.setAssetCategoryId((Long) point.get(AgentConstants.ASSET_CATEGORY_ID));
+            newPoint.setCategoryId((Long) point.get(AgentConstants.ASSET_CATEGORY_ID));
         }
         if (containsCheck(AgentConstants.RESOURCE_ID, point)) {
             newPoint.setResourceId((Long) point.get(AgentConstants.RESOURCE_ID));

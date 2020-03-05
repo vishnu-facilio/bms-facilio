@@ -3,6 +3,7 @@ package com.facilio.agentv2.actions;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.ControllerApiV2;
 import com.facilio.agentv2.controller.ControllerUtilV2;
+import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.chain.FacilioContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -85,5 +86,67 @@ public class ControllerActions extends AgentActionV2 {
         return SUCCESS;
     }
 
+    public String getConfiguredPoints(){
+            GetPointRequest getPointRequest = new GetPointRequest()
+                    .filterConfigurePoints();
+            try {
+                getPointRequest.withControllerId(getControllerId());
+                List<Map<String, Object>> points = getPointRequest.getPointsData();
+                setResult(AgentConstants.DATA,points);
+                setResponseCode(HttpURLConnection.HTTP_OK);
+            } catch (Exception e) {
+                LOGGER.info("Exception  occurred while getting points ",e);
+                setResult(AgentConstants.EXCEPTION,e.getMessage());
+                setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            }
+        return SUCCESS;
+    }
 
+    public String getSubscribedPoints(){
+        GetPointRequest getPointRequest = new GetPointRequest()
+                .filterSubsctibedPoints();
+        try {
+            getPointRequest.withControllerId(getControllerId());
+            List<Map<String, Object>> points = getPointRequest.getPointsData();
+            setResult(AgentConstants.DATA,points);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            LOGGER.info("Exception  occurred while getting points ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+        return SUCCESS;
+    }
+
+    public String getUnconfiguredPoints(){
+        GetPointRequest getPointRequest = new GetPointRequest()
+                .filterUnConfigurePoints();
+        try {
+            getPointRequest.withControllerId(getControllerId());
+            List<Map<String, Object>> points = getPointRequest.getPointsData();
+            setResult(AgentConstants.DATA,points);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            LOGGER.info("Exception  occurred while getting points ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+        return SUCCESS;
+    }
+
+    public String getCommissionedPoints(){
+        GetPointRequest getPointRequest = new GetPointRequest()
+                .filterCommissionedPoints();
+        try {
+            getPointRequest.withControllerId(getControllerId());
+            List<Map<String, Object>> points = getPointRequest.getPointsData();
+            setResult(AgentConstants.DATA,points);
+            setResponseCode(HttpURLConnection.HTTP_OK);
+        } catch (Exception e) {
+            LOGGER.info("Exception  occurred while getting points ",e);
+            setResult(AgentConstants.EXCEPTION,e.getMessage());
+            setResponseCode(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        }
+        return SUCCESS;
+    }
 }

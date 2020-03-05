@@ -2,6 +2,7 @@ package com.facilio.agentv2;
 
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.controller.ControllerApiV2;
+import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.modules.FieldUtil;
 import com.facilio.util.AckUtil;
@@ -34,6 +35,7 @@ public class AgentUtilV2
         } catch (Exception e) {
             LOGGER.info("Exception occurred while getting pointsCountData",e);
         }
+        overiewData.putAll(MetricsApi.getMetricsGraphData());
         overiewData.put(AgentConstants.INTEGRATIONS,2);
         return overiewData;
     }
