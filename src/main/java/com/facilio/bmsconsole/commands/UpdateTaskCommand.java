@@ -249,11 +249,12 @@ public class UpdateTaskCommand extends FacilioCommand {
 			TicketContext ticket = tickets.get(0);
 			
 			if (ticket.getStateFlowId() > 0) {
+				FacilioStatus statusObj = ticket.getModuleState();
+				if (statusObj != null && statusObj.isRecordLocked()) {
+					throw new IllegalArgumentException("Task cannot be updated for locked work orders");
+				}
 				StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(woModule);
 				if (ticket.getStateFlowId() == defaultStateFlow.getId()) {
-					FacilioStatus statusObj = ticket.getModuleState();
-					
-					
 					if (tickets.get(0).getQrEnabled() != null && tickets.get(0).getQrEnabled() && ticket.getResource() != null) {
 						if ("Submitted".equalsIgnoreCase(statusObj.getStatus()) || "Assigned".equalsIgnoreCase(statusObj.getStatus())) {
 							throw new IllegalArgumentException("Scan the QR before starting the task");
@@ -283,7 +284,7 @@ public class UpdateTaskCommand extends FacilioCommand {
 			else {
 				FacilioStatus statusObj = ticket.getStatus();
 				if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
-					throw new IllegalArgumentException("Task cannot be updated for completed tickets");
+					throw new IllegalArgumentException("Task cannot be updated for completed work orders");
 				}
 				
 				if (tickets.get(0).getQrEnabled() != null && tickets.get(0).getQrEnabled() && ticket.getResource() != null) {
