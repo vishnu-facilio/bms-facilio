@@ -189,7 +189,7 @@ public class DBAudit implements FacilioAudit {
 				 }
 				else if(!AUDIT_INFO.get(module).containsKey(action)) {
 					long addStartAction = System.currentTimeMillis();
-					getAuditInfoData( module, "module");
+					getAuditInfoData(action, "action");
 					if(!AUDIT_INFO.get(module).containsKey(action)) {
 						getModuleInfoList();
 						moduleId = (long) MODULE_INFO_LIST.get(module);
@@ -200,7 +200,7 @@ public class DBAudit implements FacilioAudit {
 				}
 				else if(!AUDIT_INFO.get(module).get(action).containsKey(method)) {
 					long addStartMethod = System.currentTimeMillis();
-					getAuditInfoData(module, "module");
+					getAuditInfoData(method, "method");
 					methodId = (long) AUDIT_INFO.get(module).get(action).get(method);
 					LOGGER.info("Audit entry  check method timetaken:::: "+(System.currentTimeMillis()-addStartMethod));
 				}
